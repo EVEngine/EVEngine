@@ -110,11 +110,11 @@ vkb::GenericBuffer &meshDrawIndices(GpuMesh &mesh) {
     return mesh.dynIndices[slot];
 }
 
-void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh) {
+void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh, uint32_t count = 1, uint32_t first = 0) {
     const vk::DeviceSize offset = 0;
     cb.bindVertexBuffers(0, 1, meshDrawVertices(mesh), &offset);
     cb.bindIndexBuffer(meshDrawIndices(mesh).buffer, 0, mesh.indexType);
-    cb.drawIndexed(mesh.indexCount, 1, 0, 0, 0);
+    cb.drawIndexed(mesh.indexCount, count, 0, 0, first);
 }
 
 /** Switch a mesh to the dynamic ring on first update; take a CPU copy of the

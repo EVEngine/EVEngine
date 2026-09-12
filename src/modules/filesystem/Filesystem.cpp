@@ -1,5 +1,6 @@
 
 #include "filesystem/Filesystem.h"
+#include "filesystem/PreparedFile.h"
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -202,6 +203,7 @@ void Filesystem::expose(ssq::Table &table) {
 }
 
 void Filesystem::expose(ssq::Class &cls) {
+    exposePreparedFileBindings(cls);
     cls.addFunc("getName", &Filesystem::getName);
     cls.addFunc("setFused", &Filesystem::setFused);
     cls.addFunc("isFused", &Filesystem::isFused);

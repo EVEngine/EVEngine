@@ -20,24 +20,25 @@
 #include "graphics/AlphaMask.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/CanvasScriptBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
+#include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/PrimitiveScriptBindings.h"
-#include "graphics/ShaderScriptBindings.h"
-#include "graphics/CanvasScriptBindings.h"
 #include "graphics/Quad.h"
 #include "graphics/ReflectionProbeCapture.h"
 #include "graphics/ReflectionProbeRegistry.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Renderable3DBindings.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/ShaderScriptBindings.h"
 #include "graphics/Texture.h"
@@ -278,6 +279,35 @@ void Graphics::expose(ssq::Table& table) {
     maskCls.addFunc("getInverted", &AlphaMask::getInverted);
     maskCls.addFunc("draw", &AlphaMask::draw);
 
+    auto mapFogCls =
+        table.addClass<MapFog>("MapFog", std::function<MapFog*()>([]() -> MapFog* { return nullptr; }), true);
+    mapFogCls.addFunc("update", &MapFog::update);
+    mapFogCls.addFunc("setTime", &MapFog::setTime);
+    mapFogCls.addFunc("getTime", &MapFog::getTime);
+    mapFogCls.addFunc("setCloudTexture", &MapFog::setCloudTexture);
+    mapFogCls.addFunc("getCloudTexture", &MapFog::getCloudTexture);
+    mapFogCls.addFunc("setMaskTexture", &MapFog::setMaskTexture);
+    mapFogCls.addFunc("getMaskTexture", &MapFog::getMaskTexture);
+    mapFogCls.addFunc("setCloudTiling", &MapFog::setCloudTiling);
+    mapFogCls.addFunc("setCloudSpeed", &MapFog::setCloudSpeed);
+    mapFogCls.addFunc("setDistort", &MapFog::setDistort);
+    mapFogCls.addFunc("setDistortFix", &MapFog::setDistortFix);
+    mapFogCls.addFunc("setFogColor", &MapFog::setFogColor);
+    mapFogCls.addFunc("setFogAlpha", &MapFog::setFogAlpha);
+    mapFogCls.addFunc("setEdgeSoftness", &MapFog::setEdgeSoftness);
+    mapFogCls.addFunc("setShadowEnabled", &MapFog::setShadowEnabled);
+    mapFogCls.addFunc("setShadow", &MapFog::setShadow);
+    mapFogCls.addFunc("setSelectStrength", &MapFog::setSelectStrength);
+    mapFogCls.addFunc("setDissolveScale", &MapFog::setDissolveScale);
+    mapFogCls.addFunc("setCloudMix", &MapFog::setCloudMix);
+    mapFogCls.addFunc("setCloudDensity", &MapFog::setCloudDensity);
+    mapFogCls.addFunc("getCloudTileA", &MapFog::getCloudTileA);
+    mapFogCls.addFunc("getCloudTileB", &MapFog::getCloudTileB);
+    mapFogCls.addFunc("getFogAlpha", &MapFog::getFogAlpha);
+    mapFogCls.addFunc("getShadowEnabled", &MapFog::getShadowEnabled);
+    mapFogCls.addFunc("makeCloudTexture", &MapFog::makeCloudTexture);
+    mapFogCls.addFunc("draw", &MapFog::draw);
+
     auto texCls =
         table.addClass<Texture>("Texture", std::function<Texture*()>([]() -> Texture* { return nullptr; }), true);
     texCls.addFunc("setCastOcclusion", &Texture::setCastOcclusion);
@@ -442,62 +472,7 @@ void Graphics::expose(ssq::Table& table) {
     light3d.addFunc("setVolumetricIntensity", &Light3D::setVolumetricIntensity);
     light3d.addFunc("getVolumetricIntensity", &Light3D::getVolumetricIntensity);
 
-    auto ent = table.addClass<Renderable3D>(
-        "Renderable3D", std::function<Renderable3D*()>([]() { return Renderable3D::create(); }), false);
-    ent.addFunc("getEntityId", &Renderable3D::getEntityId);
-    ent.addFunc("getEntityGeneration", &Renderable3D::getEntityGeneration);
-    ent.addFunc("setPosition", &Renderable3D::setPosition);
-    ent.addFunc("setRotation", &Renderable3D::setRotation);
-    ent.addFunc("setYaw", &Renderable3D::setYaw);
-    ent.addFunc("getYaw", &Renderable3D::getYaw);
-    ent.addFunc("setScale", &Renderable3D::setScale);
-    ent.addFunc("setMesh", &Renderable3D::setMesh);
-    ent.addFunc("getMesh", &Renderable3D::getMesh);
-    ent.addFunc("setTexture", &Renderable3D::setTexture);
-    ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
-    ent.addFunc("setHeightTexture", &Renderable3D::setHeightTexture);
-    ent.addFunc("setShader", &Renderable3D::setShader);
-    ent.addFunc("setMaterial", &Renderable3D::setMaterial);
-    ent.addFunc("getMaterial", &Renderable3D::getMaterial);
-    ent.addFunc("setPart", &Renderable3D::setPart);
-    ent.addFunc("setPartSortPriority", &Renderable3D::setPartSortPriority);
-    ent.addFunc("clearPartSortPriority", &Renderable3D::clearPartSortPriority);
-    ent.addFunc("getPartSortPriority", &Renderable3D::getPartSortPriority);
-    ent.addFunc("clearParts", &Renderable3D::clearParts);
-    ent.addFunc("getPartCount", &Renderable3D::getPartCount);
-    ent.addFunc("getPartName", &Renderable3D::getPartName);
-    ent.addFunc("getPartMesh", &Renderable3D::getPartMesh);
-    ent.addFunc("getPartMaterial", &Renderable3D::getPartMaterial);
-    ent.addFunc("setHair", &Renderable3D::setHair);
-    ent.addFunc("getHair", &Renderable3D::getHair);
-    ent.addFunc("setTint", &Renderable3D::setTint);
-    ent.addFunc("getTintR", &Renderable3D::getTintR);
-    ent.addFunc("getTintG", &Renderable3D::getTintG);
-    ent.addFunc("getTintB", &Renderable3D::getTintB);
-    ent.addFunc("getRoughness", &Renderable3D::getRoughness);
-    ent.addFunc("setMetallic", &Renderable3D::setMetallic);
-    ent.addFunc("setRoughness", &Renderable3D::setRoughness);
-    ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
-    ent.addFunc("getTexCellBombScale", &Renderable3D::getTexCellBombScale);
-    ent.addFunc("getTexCellBombStrength", &Renderable3D::getTexCellBombStrength);
-    ent.addFunc("getTexCellBombRotation", &Renderable3D::getTexCellBombRotation);
-    ent.addFunc("setParallax", &Renderable3D::setParallax);
-    ent.addFunc("getParallaxScale", &Renderable3D::getParallaxScale);
-    ent.addFunc("getParallaxMinLayers", &Renderable3D::getParallaxMinLayers);
-    ent.addFunc("getParallaxMaxLayers", &Renderable3D::getParallaxMaxLayers);
-    ent.addFunc("setVisible", &Renderable3D::setVisible);
-    ent.addFunc("setReflectionCaptureMask", &Renderable3D::setReflectionCaptureMask);
-    ent.addFunc("getReflectionCaptureMask", &Renderable3D::getReflectionCaptureMask);
-    ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
-    ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);
-    ent.addFunc("setReceiveShadow", &Renderable3D::setReceiveShadow);
-    ent.addFunc("setCastOcclusion", &Renderable3D::setCastOcclusion);
-    ent.addFunc("getCastOcclusion", &Renderable3D::getCastOcclusion);
-    ent.addFunc("setCamera", &Renderable3D::setCamera);
-    ent.addFunc("setMeshLod", &Renderable3D::setMeshLod);
-    ent.addFunc("clearMeshLod", &Renderable3D::clearMeshLod);
-    ent.addFunc("getMeshLodCount", &Renderable3D::getMeshLodCount);
-    ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
+    detail::exposeRenderable3DBindings(table);
 
     auto sprite2d = table.addClass<Renderable2D>(
         "Sprite2D", std::function<Renderable2D *()>([]() { return Renderable2D::create(); }), false);
@@ -1149,6 +1124,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
     cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("newAlphaMask", &Graphics::newAlphaMask);
+    cls.addFunc("newMapFog", &Graphics::newMapFog);
     cls.addFunc("getOutline", &Graphics::pipelineOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
@@ -1186,6 +1162,8 @@ AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(
 
 Outline* Graphics::newOutline() { return new Outline(this); }
 AlphaMask* Graphics::newAlphaMask() { return new AlphaMask(this); }
+
+MapFog* Graphics::newMapFog() { return new MapFog(this); }
 
 GlobalIllumination* Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 

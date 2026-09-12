@@ -32,6 +32,34 @@ function humanoidProfile(target) {
     return p;
 }
 
+// createRenderable enables the glTF extension PBR path whenever Assimp reports
+// an alphaMode. That shader is meant for IBL/capture, not this UI viewport:
+// albedo is decoded twice, linear ORM/normal maps are treated as sRGB, and the
+// characters render as a flat red unlit mass. Rebuild a conventional Material
+// so renderScene3DToCanvas uses mesh3d lighting like the original showcase.
+function labPreviewMaterial(part, albedo) {
+    local surface = gfx.newMaterial();
+    surface.setShadingModel("pbr");
+    surface.setMetallic(0.0);
+    surface.setRoughness(0.78);
+    surface.setReceiveLight(true);
+    surface.setReceiveShadow(true);
+    surface.setCastShadow(true);
+    surface.setTint(part.getTintR(), part.getTintG(), part.getTintB(), 1.0);
+    if (albedo != null) {
+        surface.setAlbedoTexture(albedo);
+        surface.setTint(1.0, 1.0, 1.0, 1.0);
+        part.setTexture(albedo);
+        part.setTint(1.0, 1.0, 1.0, 1.0);
+    }
+    part.setMaterial(surface);
+    part.setMetallic(0.0);
+    part.setRoughness(0.78);
+    part.setCastShadow(true);
+    part.setReceiveShadow(true);
+    part.setReceiveLight(true);
+}
+
 function addLabActor(model, name, x, source) {
     local sk = source ? lab.skeleton : anim.newSkeletonFromModel(model);
     local a = { model=model, name=name, skeleton=sk, clips=[], parts=[], skins=[],
@@ -50,14 +78,15 @@ function addLabActor(model, name, x, source) {
         if (!model.hasBones(i)) continue;
         local part = model3d.createRenderable(gfx, model, i);
         part.setPosition(x, 0.0, 0.0);
-        part.setCastShadow(true); part.setReceiveShadow(true); part.setReceiveLight(true);
-        part.setRoughness(0.78);
+        local albedo = null;
+        local imported = part.getMaterial();
+        if (imported != null) albedo = imported.getAlbedoTexture();
         local texturePath = model.getMaterialTexturePath(model.getMaterialIndex(i), "base_color", 0);
         if (texturePath != "") {
-            local texture = gfx.newTextureFromFile("assets/quaternius/" + texturePath);
-            a.textures.push(texture); part.setTexture(texture);
-            part.getMaterial().setAlbedoTexture(texture);
+            albedo = gfx.newTextureFromFile("assets/quaternius/" + texturePath);
+            a.textures.push(albedo);
         }
+        labPreviewMaterial(part, albedo);
         a.parts.push(part);
         a.skins.push(anim.newSkinFromModel(model, i, sk));
     }
@@ -98,11 +127,17 @@ eve_init = function() {
         "TARGET / Male", 2.5, false);
     lab.ground = eve.Renderable3D(); lab.ground.setMesh(gfx.newMeshCube(1.0));
     lab.ground.setPosition(0.0,-0.10,0.0); lab.ground.setScale(10.0,0.16,5.0);
-    lab.ground.setTint(0.13,0.17,0.21,1.0); lab.ground.setReceiveShadow(true);
+    lab.ground.setTint(0.13,0.17,0.21,1.0); lab.ground.setRoughness(0.92);
+    lab.ground.setReceiveShadow(true); lab.ground.setReceiveLight(true); lab.ground.setCastShadow(false);
     lab.camera = eve.Camera3D(); labCamera(); lab.camera.setUp(0.0,1.0,0.0);
     lab.camera.setFov(26.0); lab.camera.setAmbient(0.38,0.40,0.46); lab.camera.setActive(true);
+    gfx.setDirectionalLight(-0.4, 1.0, 0.7, 1.60, 1.49, 1.34);
     local key = eve.Light3D(); key.setType("dir"); key.setDirection(-0.4,1.0,0.7);
-    key.setColor(1.0,0.93,0.84,1.6); lab.lights.push(key);
+    key.setColor(1.0,0.93,0.84,1.6); key.setCastShadow(true); key.setShadowStrength(0.85);
+    lab.lights.push(key);
+    local fill = eve.Light3D(); fill.setType("point");
+    fill.setPosition(2.2, 2.6, 3.4); fill.setRadius(12.0);
+    fill.setColor(0.55, 0.68, 0.92, 1.15); lab.lights.push(fill);
     gfx.setBackgroundColor(0.045,0.065,0.09,1.0);
     ui.setScale(1.0); ui.setTheme("dark"); ui.beginBuild(); ui.beginWindow("Character Motion Lab", "root");
     ui.text("CHARACTER MOTION LAB   /   Quaternius CC0", "title");

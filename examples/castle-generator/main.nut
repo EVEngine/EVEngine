@@ -65,19 +65,21 @@ function rebuildCastle() {
 
 if (castleCamera == null) {
     castleCamera = eve.Camera3D();
-    castleCamera.setEye(54.0, 34.0, -58.0);
-    castleCamera.setTarget(0.0, 5.0, 0.0);
-    castleCamera.setUp(0.0, 1.0, 0.0);
-    castleCamera.setFov(43.0);
-    castleCamera.setAmbient(0.23, 0.25, 0.29);
     castleCamera.setActive(true);
-    gfx.setDirectionalLight(-0.55, -1.0, -0.35, 1.45, 1.30, 1.08);
 }
+// Default far plane is 100 m; a rotating keep with outer rings sits past that.
+castleCamera.setEye(88.0, 52.0, -96.0);
+castleCamera.setTarget(0.0, 7.0, 0.0);
+castleCamera.setUp(0.0, 1.0, 0.0);
+castleCamera.setFov(38.0);
+castleCamera.setClipPlanes(0.5, 2000.0);
+castleCamera.setAmbient(0.23, 0.25, 0.29);
+gfx.setDirectionalLight(-0.55, -1.0, -0.35, 1.45, 1.30, 1.08);
 if (castleParts.len() == 0) rebuildCastle();
 gfx.setBackgroundColor(0.10, 0.14, 0.20, 1.0);
 
 function eve_update(dt) {
-    castleYaw += dt * 3.5;
+    castleYaw += dt * 0.22;
     foreach (part in castleParts) part.setYaw(castleYaw);
     if (castlePressed("r") || castlePressed("R")) { castleSeed += 1; rebuildCastle(); }
     if (castlePressed("1")) { rings = max(1, rings - 1); rebuildCastle(); }

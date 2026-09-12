@@ -4,7 +4,7 @@
 #include "common/Result.h"
 #include "physics/OwnedQuery3D.h"
 #include "physics/PhysicsHandles.h"
-#include "physics/SimulationBackend.h"
+#include "physics/backend/SimulationBackend.h"
 
 #include <cstdint>
 #include <memory>
@@ -41,7 +41,12 @@ struct ClothContact3D {
     float  nz = 0.f;
     float  depth = 0.f;  // radius - distance (meters); > 0 when inside
     Body3D *body = nullptr;
+    float   friction = 0.f;
+    float   restitution = 0.f;
 };
+
+/** @brief Named outcome for a filtered cloth particle probe. */
+enum class ClothProbeStatus { Miss, Hit };
 
 /**
  * @brief Box3D rigid-body world. Script coordinates are meters (Box3D native),
@@ -835,6 +840,9 @@ public:
      * Returns false when nothing is hit. Used by Cloth3D for particle-vs-body collision.
      */
     bool pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const;
+    /** @brief Probe a cloth particle using symmetric category/mask filtering. */
+    [[nodiscard]] ClothProbeStatus pointProbeFiltered(float x, float y, float z, float radius, ClothContact3D *out,
+                                                      uint64_t categoryBits, uint64_t maskBits) const;
     /** @brief Raw Box3D world id. */
     b3WorldId raw() const { return worldId_; }
 

@@ -2,6 +2,13 @@
 # L4 -- rendering extensions and simulation
 # ---------------------------------------------------------------------------
 
+eve_declare_module(NAME physics_softbody_graphics DIR physics/softbody/graphics LAYER 4
+                   DEPS graphics physics_softbody
+                   GROUP 3d web)
+eve_declare_module(NAME physics_softbody_cook DIR physics/softbody/cook LAYER 4
+                   DEPS asset physics_softbody
+                   GROUP 3d web)
+
 eve_declare_module(NAME material_graphics_editing LAYER 4
                    DEPS graphics material_editing
                    GROUP 3d web)
@@ -32,7 +39,7 @@ eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
 # src/modules/CMakeLists.txt separately compiles the domain core (World/Body/
 # Shape/Joint/query/fixed-step) without those dependencies for core profiles.
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
-                   DEPS platform_event graphics gpgpu sensing
+                   DEPS physics_backend physics_softbody physics_softbody_graphics platform_event graphics gpgpu sensing
                    OPTIONAL_DEPS scene
                    THIRDPARTY box2d box3d
                    GROUP 2d 3d web)
@@ -52,6 +59,15 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
+# Cloth is a host-owned physics satellite: rigid-body physics stays usable in
+# trimmed builds without cloth topology, rendering, or compute backends.
+eve_declare_module(NAME physics_cloth DIR physics/cloth LAYER 5 SCRIPT Cloth SLOT cloth
+                   DEPS physics graphics gpgpu
+                   GROUP 2d 3d web)
+# Typed package bridge kept outside the physics domain core.
+eve_declare_module(NAME asset_physics DIR asset/physics LAYER 5
+                   DEPS asset physics_cloth
+                   GROUP 3d web)
 eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
@@ -63,6 +79,9 @@ eve_declare_module(NAME pixelworld_physics LAYER 5
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5
                    DEPS editing physics
+                   GROUP 3d web)
+eve_declare_module(NAME physics_softbody_editing DIR physics/softbody/editing LAYER 5
+                   DEPS editing physics_softbody
                    GROUP 3d web)
 
 # Vehicle entities, kinematic/tracked/wheeled mobility and the Vehicle adapter
