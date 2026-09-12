@@ -12,6 +12,9 @@
 #include "sound/Decoder.h"
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
+#include "scene/NodeDesc.h"
+#include "scene/Scene.h"
+#include "scene/SceneObject.h"
 
 #include <algorithm>
 #include <chrono>
@@ -108,6 +111,11 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
     if (!audio) return;
     auto* filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto* scene = eve::scene::Scene::create();
+    auto mounted = scene->mountAs("action-audio", eve::scene::node("source").withPosition(8.f, 9.f, 10.f));
+    REQUIRE(mounted.ok());
+    auto source = eve::scene::SceneObject::createObject("action-audio", "source");
+    REQUIRE(source.ok());
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     eve::action::ActionBlockRuntime runtime(registry.value());
@@ -125,6 +133,7 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
                                     eve::Duration::fromNanoseconds(100), payload});
     eve::action::ActionNotifyContext context;
     context.executionId = advance.id;
+    context.source = ecs::handle_of(source.value());
     REQUIRE(runtime.apply(advance, context).ok());
     REQUIRE(runtime.interrupt(context).ok());
 }

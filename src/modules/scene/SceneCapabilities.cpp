@@ -1,9 +1,14 @@
 #include "common/Capability.h"
+#include "common/EntitySpatialResolver.h"
 #include "common/ProcgenSceneSink.h"
 #include "common/SceneQuery.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
+#include "scene/SceneObject.h"
 #include "scene/TransformSystem.h"
+
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <cstdint>
 #include <string>
@@ -42,6 +47,42 @@ SceneHost *hostAt(int index) {
     }
     return nullptr;
 }
+
+class SceneEntitySpatialProvider final : public eve::IEntitySpatialProvider {
+public:
+    eve::Result<eve::EntitySpatialPose> resolve(ecs::EntityHandle handle,
+                                                std::string_view bone) const override {
+        auto* object = dynamic_cast<SceneObject*>(ecs::try_get(handle));
+        if (!object)
+            return failure(eve::DiagnosticCode::NotFound, "entity is not owned by Scene", "entity");
+        if (!bone.empty())
+            return failure(eve::DiagnosticCode::Unsupported,
+                           "Scene root provider cannot resolve a bone or socket", "bone");
+        auto* host = hostByName(object->meta()->hostName);
+        if (!host) return failure(eve::DiagnosticCode::NotFound, "owning scene host is unavailable", "entity");
+        auto node = host->findById(object->meta()->nodeId);
+        if (!node) return eve::Result<eve::EntitySpatialPose>::failure(node.status());
+        TransformSystem::updateHost(host);
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 translation;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        if (!glm::decompose(node.value()->world, scale, rotation, translation, skew, perspective))
+            return failure(eve::DiagnosticCode::Failed, "scene world transform could not be decomposed", "entity");
+        const glm::vec3 euler = glm::degrees(glm::eulerAngles(rotation));
+        return eve::Result<eve::EntitySpatialPose>::success({translation.x, translation.y, translation.z,
+                                                              euler.x, euler.y, euler.z,
+                                                              scale.x, scale.y, scale.z});
+    }
+
+private:
+    static eve::Result<eve::EntitySpatialPose> failure(eve::DiagnosticCode code, std::string message,
+                                                        std::string path) {
+        return eve::Result<eve::EntitySpatialPose>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    }
+};
 
 SceneNodeInfo toInfo(SceneHost *host, const SceneNode &n) {
     SceneNodeInfo info;
@@ -631,8 +672,10 @@ private:
 void registerSceneCapabilities() {
     static SceneQueryImpl impl;
     static ProcgenSceneSinkImpl procgenSink;
+    static SceneEntitySpatialProvider spatialProvider;
     eve::cap::provide<eve::ISceneQuery>(&impl);
     eve::cap::provide<eve::IProcgenSceneSink>(&procgenSink);
+    eve::cap::addListener<eve::IEntitySpatialProvider>(&spatialProvider);
 }
 
 }  // namespace eve::scene

@@ -1,6 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionSpatialBlock.h"
 #include "common/Capability.h"
+#include "common/EntitySpatialResolver.h"
 #include "common/ParticlesQuery.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleEffect.h"
@@ -65,8 +66,8 @@ public:
             return actionFailure<void>(eve::DiagnosticCode::Conflict, "VFX state is already active", "itemId");
         auto spatial = eve::action::ActionSpatialBinding::fromPayload(event.payload);
         if (!spatial) return eve::Result<void>::failure(spatial.status());
-        auto validated = validateResolvable(spatial.value(), context);
-        if (!validated) return validated;
+        auto pose = resolvePose(spatial.value(), context);
+        if (!pose) return eve::Result<void>::failure(pose.status());
         const auto uri = event.payload.find("uri");
         if (uri == event.payload.end() || !uri->second.getIf<std::string>())
             return actionFailure<void>(eve::DiagnosticCode::InvalidArgument, "VFX URI must be text", "uri");
@@ -79,9 +80,10 @@ public:
                                        particles->getLastEffectError().empty() ? "VFX asset could not be loaded"
                                                                               : particles->getLastEffectError(),
                                        "uri");
-        applyWorldOffsets(*effect, spatial.value());
+        applyWorldTransform(*effect, spatial.value(), pose.value());
         effect->start();
-        active_.emplace(key, ActiveEffect{std::move(effect), std::move(spatial).takeValue()});
+        active_.emplace(key, ActiveEffect{std::move(effect), std::move(spatial).takeValue(),
+                                          std::move(pose).takeValue()});
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -90,7 +92,18 @@ public:
         const auto found = active_.find({context.executionId, block.itemId.format()});
         if (found == active_.end())
             return actionFailure<void>(eve::DiagnosticCode::NotFound, "Active VFX state has no instance", "itemId");
-        applyWorldOffsets(*found->second.effect, found->second.spatial);
+        if (found->second.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
+            auto pose = resolvePose(found->second.spatial, context);
+            if (!pose) return eve::Result<void>::failure(pose.status());
+            if (found->second.spatial.mode == eve::action::ActionSpatialAttachmentMode::FollowPositionOnly) {
+                found->second.pose.positionX = pose.value().positionX;
+                found->second.pose.positionY = pose.value().positionY;
+                found->second.pose.positionZ = pose.value().positionZ;
+            } else {
+                found->second.pose = std::move(pose).takeValue();
+            }
+        }
+        applyWorldTransform(*found->second.effect, found->second.spatial, found->second.pose);
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -108,25 +121,31 @@ private:
     struct ActiveEffect {
         std::unique_ptr<ParticleEffect>       effect;
         eve::action::ActionSpatialBinding spatial;
+        eve::EntitySpatialPose             pose;
     };
 
-    static eve::Result<void> validateResolvable(const eve::action::ActionSpatialBinding& spatial,
-                                                const eve::action::ActionNotifyContext& context) {
-        const bool needsSource = spatial.target == eve::action::ActionSpatialTarget::Source && context.source.has_value();
-        const bool needsTarget = spatial.target == eve::action::ActionSpatialTarget::Target && !context.targets.empty();
-        if (needsSource || needsTarget)
-            return actionFailure<void>(eve::DiagnosticCode::Unsupported,
-                                       "Entity or bone anchored VFX requires a spatial resolver", "spatialTarget");
-        if (spatial.target == eve::action::ActionSpatialTarget::Target &&
-            spatial.targetIndex >= context.targets.size() && !context.targets.empty())
-            return actionFailure<void>(eve::DiagnosticCode::NotFound, "VFX target index is unavailable", "targetIndex");
-        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    static eve::Result<eve::EntitySpatialPose> resolvePose(
+        const eve::action::ActionSpatialBinding& spatial, const eve::action::ActionNotifyContext& context) {
+        std::optional<ecs::EntityHandle> handle;
+        if (spatial.target == eve::action::ActionSpatialTarget::Source) {
+            handle = context.source;
+        } else {
+            if (spatial.targetIndex >= context.targets.size())
+                return actionFailure<eve::EntitySpatialPose>(eve::DiagnosticCode::NotFound,
+                                                             "VFX target index is unavailable", "targetIndex");
+            handle = context.targets[spatial.targetIndex];
+        }
+        if (!handle) return eve::Result<eve::EntitySpatialPose>::success({});
+        return eve::resolveEntitySpatialPose(*handle, spatial.bone);
     }
 
-    static void applyWorldOffsets(ParticleEffect& effect, const eve::action::ActionSpatialBinding& spatial) {
-        effect.setPosition(static_cast<float>(spatial.positionOffset.x), static_cast<float>(spatial.positionOffset.y));
-        effect.setRotation(static_cast<float>(spatial.rotationOffsetDegrees.z * 0.017453292519943295));
-        effect.setScale(static_cast<float>(spatial.scale.x));
+    static void applyWorldTransform(ParticleEffect& effect, const eve::action::ActionSpatialBinding& spatial,
+                                    const eve::EntitySpatialPose& pose) {
+        effect.setPosition(static_cast<float>(pose.positionX + spatial.positionOffset.x),
+                           static_cast<float>(pose.positionY + spatial.positionOffset.y));
+        effect.setRotation(static_cast<float>((pose.rotationZDegrees + spatial.rotationOffsetDegrees.z) *
+                                              0.017453292519943295));
+        effect.setScale(static_cast<float>(pose.scaleX * spatial.scale.x));
     }
 
     std::map<ActiveKey, ActiveEffect> active_;

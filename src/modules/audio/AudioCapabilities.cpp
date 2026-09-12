@@ -4,6 +4,7 @@
 #include "audio/Source.h"
 #include "common/AudioQuery.h"
 #include "common/Capability.h"
+#include "common/EntitySpatialResolver.h"
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
 
@@ -48,10 +49,8 @@ public:
             return fail(eve::DiagnosticCode::InvalidArgument, "audio state requires enter or exit", "event.kind");
         auto spatial = eve::action::ActionSpatialBinding::fromPayload(event.payload);
         if (!spatial) return eve::Result<void>::failure(spatial.status());
-        if ((spatial.value().target == eve::action::ActionSpatialTarget::Source && context.source.has_value()) ||
-            (spatial.value().target == eve::action::ActionSpatialTarget::Target && !context.targets.empty()))
-            return fail(eve::DiagnosticCode::Unsupported,
-                        "entity or bone anchored audio requires a spatial resolver", "spatialTarget");
+        auto pose = resolvePose(spatial.value(), context);
+        if (!pose) return eve::Result<void>::failure(pose.status());
         const auto uri = event.payload.find("uri");
         if (uri == event.payload.end() || !uri->second.getIf<std::string>())
             return fail(eve::DiagnosticCode::InvalidArgument, "audio URI must be text", "uri");
@@ -67,11 +66,10 @@ public:
                 if (const auto* number = value->second.getIf<double>()) source->setPitch(static_cast<float>(*number));
             if (const auto value = event.payload.find("looping"); value != event.payload.end())
                 if (const auto* enabled = value->second.getIf<bool>()) source->setLooping(*enabled);
-            source->setPosition(static_cast<float>(spatial.value().positionOffset.x),
-                                static_cast<float>(spatial.value().positionOffset.y),
-                                static_cast<float>(spatial.value().positionOffset.z));
+            applyPosition(*source, spatial.value(), pose.value());
             source->play();
-            active_.emplace(key, ActiveSource{std::move(data), std::move(source), std::move(spatial).takeValue()});
+            active_.emplace(key, ActiveSource{std::move(data), std::move(source),
+                                              std::move(spatial).takeValue(), std::move(pose).takeValue()});
         } catch (const std::exception& error) {
             return fail(eve::DiagnosticCode::Failed, error.what(), "uri");
         }
@@ -82,9 +80,16 @@ public:
                              const eve::action::ActionNotifyContext& context) override {
         const auto found = active_.find({context.executionId, block.itemId.format()});
         if (found == active_.end()) return fail(eve::DiagnosticCode::NotFound, "active audio has no source", "itemId");
-        found->second.source->setPosition(static_cast<float>(found->second.spatial.positionOffset.x),
-                                          static_cast<float>(found->second.spatial.positionOffset.y),
-                                          static_cast<float>(found->second.spatial.positionOffset.z));
+        if (found->second.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
+            auto pose = resolvePose(found->second.spatial, context);
+            if (!pose) return eve::Result<void>::failure(pose.status());
+            found->second.pose.positionX = pose.value().positionX;
+            found->second.pose.positionY = pose.value().positionY;
+            found->second.pose.positionZ = pose.value().positionZ;
+            if (found->second.spatial.mode == eve::action::ActionSpatialAttachmentMode::FollowTarget)
+                found->second.pose = std::move(pose).takeValue();
+        }
+        applyPosition(*found->second.source, found->second.spatial, found->second.pose);
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -100,7 +105,31 @@ private:
         std::unique_ptr<eve::sound::SoundData> data;
         std::unique_ptr<Source> source;
         eve::action::ActionSpatialBinding spatial;
+        eve::EntitySpatialPose pose;
     };
+
+    static eve::Result<eve::EntitySpatialPose> resolvePose(
+        const eve::action::ActionSpatialBinding& spatial, const eve::action::ActionNotifyContext& context) {
+        std::optional<ecs::EntityHandle> handle;
+        if (spatial.target == eve::action::ActionSpatialTarget::Source) {
+            handle = context.source;
+        } else {
+            if (spatial.targetIndex >= context.targets.size())
+                return eve::Result<eve::EntitySpatialPose>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                           "audio target index is unavailable", "targetIndex"));
+            handle = context.targets[spatial.targetIndex];
+        }
+        if (!handle) return eve::Result<eve::EntitySpatialPose>::success({});
+        return eve::resolveEntitySpatialPose(*handle, spatial.bone);
+    }
+
+    static void applyPosition(Source& source, const eve::action::ActionSpatialBinding& spatial,
+                              const eve::EntitySpatialPose& pose) {
+        source.setPosition(static_cast<float>(pose.positionX + spatial.positionOffset.x),
+                           static_cast<float>(pose.positionY + spatial.positionOffset.y),
+                           static_cast<float>(pose.positionZ + spatial.positionOffset.z));
+    }
 
     static eve::Result<void> fail(eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));

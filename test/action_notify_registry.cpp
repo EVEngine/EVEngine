@@ -1,6 +1,7 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionSpatialBlock.h"
+#include "common/EntitySpatialResolver.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -73,6 +74,12 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     auto hitbox = registry.value().descriptor("combat:hitbox-window");
     REQUIRE(hitbox.ok());
     CHECK(static_cast<int>(hitbox.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
+}
+
+TEST_CASE("entitySpatialResolver.absentProviderFailsObservably") {
+    auto resolved = eve::resolveEntitySpatialPose({});
+    CHECK(!resolved.ok());
+    CHECK(static_cast<int>(resolved.status().code()) == static_cast<int>(eve::StatusCode::NotFound));
 }
 
 TEST_CASE("actionBlockRuntime.routesEnterUpdateExitAndSideEffectFreeSample") {

@@ -7,6 +7,9 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
 #include "filesystem/Filesystem.h"
+#include "scene/NodeDesc.h"
+#include "scene/Scene.h"
+#include "scene/SceneObject.h"
 
 #include <cmath>
 #include <fstream>
@@ -153,6 +156,11 @@ TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {
     auto* filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
     auto* particles = Particles::create();
+    auto* scene = eve::scene::Scene::create();
+    auto mounted = scene->mountAs("action-vfx", eve::scene::node("source").withPosition(5.f, 6.f, 7.f));
+    REQUIRE(mounted.ok());
+    auto source = eve::scene::SceneObject::createObject("action-vfx", "source");
+    REQUIRE(source.ok());
     auto  registry  = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     eve::action::ActionBlockRuntime runtime(registry.value());
@@ -175,6 +183,7 @@ TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {
                                     eve::Duration::fromNanoseconds(100), payload});
     eve::action::ActionNotifyContext context;
     context.executionId = advance.id;
+    context.source = ecs::handle_of(source.value());
     auto applied = runtime.apply(advance, context);
     REQUIRE(applied.ok());
     CHECK_EQ(particles->getEmitterCount(), before + 2);
