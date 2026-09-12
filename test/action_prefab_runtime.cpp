@@ -1,5 +1,7 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionPrefabInstances.h"
+#include "common/Capability.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem3D.h"
@@ -143,4 +145,14 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
                                                       "prefab-item:independent", independentPayload));
     REQUIRE(runtime.apply(independentExit, context).ok());
     CHECK_EQ(renderableCount(true), 1u);
+    auto* instances = eve::cap::query<eve::action::IActionPrefabInstances>();
+    REQUIRE(instances != nullptr);
+    const auto independent = instances->independentInstances();
+    REQUIRE_EQ(independent.size(), 1u);
+    CHECK_EQ(independent.front().uri, prefabUri);
+    REQUIRE(instances->recycleIndependent(independent.front().handle).ok());
+    CHECK_EQ(renderableCount(true), 0u);
+    auto stale = instances->recycleIndependent(independent.front().handle);
+    CHECK(!stale.ok());
+    CHECK_EQ(stale.status().code(), eve::StatusCode::NotFound);
 }

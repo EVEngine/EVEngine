@@ -1,7 +1,9 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPrefabBlock.h"
+#include "action/ActionPrefabInstances.h"
 #include "action/ActionSpatialBlock.h"
+#include "common/Capability.h"
 #include "common/EntitySpatialResolver.h"
 
 #include "zeroerr/assert.h"
@@ -70,6 +72,7 @@ public:
 }  // namespace
 
 TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
+    CHECK(eve::cap::query<eve::action::IActionPrefabInstances>() == nullptr);
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     const auto descriptors = registry.value().descriptors();

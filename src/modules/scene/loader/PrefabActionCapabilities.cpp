@@ -2,10 +2,10 @@
 
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPrefabBlock.h"
+#include "action/ActionPrefabInstances.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/EntitySpatialResolver.h"
-#include "common/RuntimeHandle.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem3D.h"
 #include "model3d/Model3D.h"
@@ -26,8 +26,7 @@ namespace {
 constexpr double kDegreesToRadians = 0.017453292519943295;
 using ActiveKey = std::pair<action::ActionExecutionId, std::string>;
 
-struct PrefabLeaseTag {};
-using PrefabLease = RuntimeHandle<PrefabLeaseTag>;
+using PrefabLease = action::PrefabInstanceHandle;
 
 template <typename T>
 Result<T> fail(DiagnosticCode code, std::string message, std::string path) {
@@ -117,6 +116,25 @@ public:
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
+    [[nodiscard]] std::vector<action::PrefabInstanceInfo> independentInstances() const {
+        std::vector<action::PrefabInstanceInfo> result;
+        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
+            const auto& slot = slots_[index];
+            if (!slot.occupied || !slot.independent || !allEntitiesAlive(slot)) continue;
+            result.push_back({PrefabLease(index, slot.generation), slot.uri});
+        }
+        return result;
+    }
+
+    [[nodiscard]] Result<void> recycleIndependent(PrefabLease lease) {
+        auto slot = resolve(lease);
+        if (!slot) return Result<void>::failure(slot.status());
+        if (!slot.value()->independent)
+            return fail<void>(DiagnosticCode::NotFound,
+                              "Prefab instance is still owned by an action block", "instance");
+        return recycle(lease);
+    }
+
 private:
     struct Slot {
         std::string uri;
@@ -162,8 +180,12 @@ private:
     std::vector<Slot> slots_;
 };
 
+class PrefabActionProvider;
+
 class PrefabActionHandler final : public action::IActionNotifyHandler {
 public:
+    explicit PrefabActionHandler(PrefabActionProvider& provider) : provider_(provider) {}
+
     Result<void> handle(const action::ActionTimelineEvent& event,
                         const action::ActionNotifyContext& context) override {
         const ActiveKey key{context.executionId, event.itemId.format()};
@@ -177,11 +199,15 @@ public:
         if (!binding) return Result<void>::failure(binding.status());
         auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return Result<void>::failure(pose.status());
-        auto lease = pool_.spawn(binding.value().uri, worldTransform(binding.value().spatial, pose.value()));
+        auto* instances = pool();
+        if (!instances)
+            return fail<void>(DiagnosticCode::NotFound,
+                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+        auto lease = instances->spawn(binding.value().uri, worldTransform(binding.value().spatial, pose.value()));
         if (!lease) return Result<void>::failure(lease.status());
         auto deadline = context.time.tryAdd(binding.value().customDuration);
         if (!deadline) {
-            auto recycled = pool_.recycle(lease.value());
+            auto recycled = instances->recycle(lease.value());
             recycled.ignore();
             return Result<void>::failure(deadline.status());
         }
@@ -199,7 +225,11 @@ public:
         if (active.recycled) return Result<void>::success(Status::success(StatusCode::NoOp));
         if (active.binding.lifecycle == action::PrefabSpawnLifecycle::CustomDuration &&
             context.time >= active.deadline) {
-            auto recycled = pool_.recycle(active.lease);
+            auto* instances = pool();
+            if (!instances)
+                return fail<void>(DiagnosticCode::NotFound,
+                                  "SceneLoader prefab instance service is unavailable", "sceneloader");
+            auto recycled = instances->recycle(active.lease);
             if (!recycled) return recycled;
             active.recycled = true;
             return recycled;
@@ -215,7 +245,11 @@ public:
                 active.pose = std::move(pose).takeValue();
             }
         }
-        return pool_.update(active.lease, worldTransform(active.binding.spatial, active.pose));
+        auto* instances = pool();
+        if (!instances)
+            return fail<void>(DiagnosticCode::NotFound,
+                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+        return instances->update(active.lease, worldTransform(active.binding.spatial, active.pose));
     }
 
     Result<void> sample(const action::ActionActiveBlock& block,
@@ -232,7 +266,11 @@ public:
                 ++index;
                 continue;
             }
-            auto recycled = pool_.recycle(timed_[index].lease);
+            auto* instances = pool();
+            if (!instances)
+                return fail<void>(DiagnosticCode::NotFound,
+                                  "SceneLoader prefab instance service is unavailable", "sceneloader");
+            auto recycled = instances->recycle(timed_[index].lease);
             if (!recycled) return recycled;
             timed_.erase(timed_.begin() + static_cast<std::ptrdiff_t>(index));
             outcome = StatusCode::Applied;
@@ -266,9 +304,13 @@ private:
             active_.erase(found);
             return Result<void>::success(Status::success(StatusCode::Applied));
         }
+        auto* instances = pool();
+        if (!instances)
+            return fail<void>(DiagnosticCode::NotFound,
+                              "SceneLoader prefab instance service is unavailable", "sceneloader");
         auto result = found->second.binding.lifecycle == action::PrefabSpawnLifecycle::RecycleOnBlockExit
-                          ? pool_.recycle(found->second.lease)
-                          : pool_.makeIndependent(found->second.lease);
+                          ? instances->recycle(found->second.lease)
+                          : instances->makeIndependent(found->second.lease);
         if (!result) return result;
         active_.erase(found);
         return result;
@@ -326,23 +368,67 @@ private:
         };
     }
 
-    RenderablePrefabPool pool_;
+    [[nodiscard]] RenderablePrefabPool* pool() const;
+
+    PrefabActionProvider& provider_;
     std::map<ActiveKey, Active> active_;
     std::vector<Timed> timed_;
 };
 
-class PrefabActionProvider final : public action::IActionNotifyProvider {
+class PrefabActionProvider final : public action::IActionNotifyProvider,
+                                   public action::IActionPrefabInstances {
 public:
-    Result<void> install(action::ActionNotifyRegistry& registry) override {
-        return registry.registerHandler("gameplay:prefab-spawn", std::make_shared<PrefabActionHandler>());
+    void start() {
+        if (!pool_) pool_ = std::make_unique<RenderablePrefabPool>();
     }
+
+    void shutdown() { pool_.reset(); }
+
+    Result<void> install(action::ActionNotifyRegistry& registry) override {
+        if (!pool_)
+            return fail<void>(DiagnosticCode::NotFound,
+                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+        return registry.registerHandler("gameplay:prefab-spawn", std::make_shared<PrefabActionHandler>(*this));
+    }
+
+    std::vector<action::PrefabInstanceInfo> independentInstances() const override {
+        return pool_ ? pool_->independentInstances() : std::vector<action::PrefabInstanceInfo>{};
+    }
+
+    Result<void> recycleIndependent(action::PrefabInstanceHandle handle) override {
+        if (!pool_)
+            return fail<void>(DiagnosticCode::NotFound,
+                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+        return pool_->recycleIndependent(handle);
+    }
+
+    [[nodiscard]] RenderablePrefabPool* pool() const noexcept { return pool_.get(); }
+
+private:
+    std::unique_ptr<RenderablePrefabPool> pool_;
 };
+
+PrefabActionProvider& provider() {
+    static PrefabActionProvider value;
+    return value;
+}
+
+RenderablePrefabPool* PrefabActionHandler::pool() const { return provider_.pool(); }
 
 }  // namespace
 
 void registerPrefabActionCapabilities() {
-    static PrefabActionProvider provider;
-    cap::addListener<action::IActionNotifyProvider>(&provider);
+    auto& value = provider();
+    value.start();
+    cap::provide<action::IActionPrefabInstances>(&value);
+    cap::addListener<action::IActionNotifyProvider>(&value);
+}
+
+void shutdownPrefabActionCapabilities() {
+    auto& value = provider();
+    cap::removeListener<action::IActionNotifyProvider>(&value);
+    cap::revoke<action::IActionPrefabInstances>(&value);
+    value.shutdown();
 }
 
 }  // namespace eve::sceneloader
