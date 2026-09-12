@@ -55,6 +55,7 @@ Result<MontageHandle> MontageCoordinator::play(std::size_t layer, action::Action
         return coordinatorError<MontageHandle>(DiagnosticCode::Failed, "montage slot generation is exhausted", "slot");
 
     auto           candidate = std::make_unique<MontagePlayer>(skeleton_);
+    if (entry.rootMotionReceiver) candidate->setRootMotionReceiver(*entry.rootMotionReceiver);
     const Duration blendOut  = timeline.montage.defaultBlendIn;
     auto           prepared  = candidate->prepare(std::move(timeline), std::move(clips));
     if (!prepared) return Result<MontageHandle>::failure(prepared.status());
@@ -169,6 +170,29 @@ Result<std::vector<float>> MontageCoordinator::layerBoneMask(std::size_t layer) 
         return coordinatorError<std::vector<float>>(DiagnosticCode::NotFound,
                                                     "montage layer does not exist", "layer");
     return Result<std::vector<float>>::success(layers_[layer].boneMask);
+}
+
+Result<void> MontageCoordinator::setLayerRootMotionReceiver(std::size_t layer,
+                                                            IMontageRootMotionReceiver& receiver) {
+    if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+    ensureLayer(layer);
+    Layer& entry = layers_[layer];
+    entry.rootMotionReceiver = &receiver;
+    for (Slot& slot : entry.slots)
+        if (slot.player) slot.player->setRootMotionReceiver(receiver);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontageCoordinator::clearLayerRootMotionReceiver(std::size_t layer) {
+    if (layer >= layers_.size())
+        return coordinatorError<void>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+    Layer& entry = layers_[layer];
+    if (!entry.rootMotionReceiver) return Result<void>::success(Status::success(StatusCode::NoOp));
+    for (Slot& slot : entry.slots)
+        if (slot.player) slot.player->clearRootMotionReceiver();
+    entry.rootMotionReceiver = nullptr;
+    return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t layerIndex) {

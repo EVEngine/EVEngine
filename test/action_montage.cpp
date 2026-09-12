@@ -386,6 +386,38 @@ TEST_CASE("actionMontage.coordinatorLayerMaskRestrictsCompositionPerBone") {
     CHECK(std::fabs(unmasked.value().get().local(1).py - 2.0f) < 1e-5f);
 }
 
+TEST_CASE("actionMontage.coordinatorRootMotionReceiverFollowsLayerSlots") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontageCoordinator coordinator(skeleton);
+    RootReceiver receiver;
+    REQUIRE(coordinator.setLayerRootMotionReceiver(0, receiver).ok());
+
+    auto first = coordinator.play(0, montageTimeline(), montageClips(), eve::action::ActionExecutionId(31),
+                                  eve::SimulationTick(1));
+    REQUIRE(first.ok());
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId(31);
+    advance.phase        = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(first.value(), advance, eve::SimulationTick(2)).ok());
+    CHECK_EQ(receiver.calls, 1);
+    CHECK(std::fabs(receiver.x - 0.5f) < 1e-5f);
+
+    auto second = coordinator.play(0, montageTimeline(), montageClips(), eve::action::ActionExecutionId(32),
+                                   eve::SimulationTick(3));
+    REQUIRE(second.ok());
+    advance.id = eve::action::ActionExecutionId(32);
+    REQUIRE(coordinator.present(second.value(), advance, eve::SimulationTick(4)).ok());
+    CHECK_EQ(receiver.calls, 2);
+
+    REQUIRE(coordinator.clearLayerRootMotionReceiver(0).ok());
+    advance.totalElapsed = eve::Duration::fromSeconds(0.75).takeValue();
+    REQUIRE(coordinator.present(second.value(), advance, eve::SimulationTick(5)).ok());
+    CHECK_EQ(receiver.calls, 2);
+    REQUIRE(coordinator.clearLayerRootMotionReceiver(0).ok());
+}
+
 TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");

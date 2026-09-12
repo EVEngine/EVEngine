@@ -65,6 +65,16 @@ public:
     [[nodiscard]] Result<void> clearLayerBoneMask(std::size_t layer);
     /** @brief Return an owning copy of one configured layer mask. */
     [[nodiscard]] Result<std::vector<float>> layerBoneMask(std::size_t layer) const;
+    /**
+     * @brief Install one root-motion receiver shared by current and future slots of a layer.
+     * @param layer Layer index.
+     * @param receiver Receiver that must outlive the coordinator or be explicitly cleared.
+     * @lifetime The coordinator and its players retain a non-owning observer until clearLayerRootMotionReceiver().
+     */
+    [[nodiscard]] Result<void> setLayerRootMotionReceiver(std::size_t layer,
+                                                          IMontageRootMotionReceiver& receiver);
+    /** @brief Clear the borrowed root-motion receiver from current and future slots of a layer. */
+    [[nodiscard]] Result<void> clearLayerRootMotionReceiver(std::size_t layer);
     /** @brief Borrow the composed layer pose; invalid layers return a structured failure. */
     [[nodiscard]] Result<std::reference_wrapper<AnimPose>> pose(std::size_t layer);
     /** @brief Reclaim finished slots and invalidate their handles. */
@@ -81,6 +91,7 @@ private:
         std::size_t               active = 1;
         std::unique_ptr<AnimPose> pose;
         std::vector<float>        boneMask;
+        IMontageRootMotionReceiver* rootMotionReceiver = nullptr;
     };
 
     [[nodiscard]] static std::size_t handleIndex(std::size_t layer, std::size_t slot) noexcept {
