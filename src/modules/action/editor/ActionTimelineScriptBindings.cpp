@@ -14,6 +14,7 @@
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
+#include "editor/EditorDiskDocumentStore.h"
 #include "editor/EditorWorkspace.h"
 #include "model3d/ModelData.h"
 
@@ -22,6 +23,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <filesystem>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -182,6 +184,57 @@ public:
     const ActionTimelineWidget& widget() const noexcept { return widget_; }
 
     [[nodiscard]] bool hasPreviewHost() const noexcept { return previewController_ != nullptr; }
+
+    void attachDocument(std::unique_ptr<DiskAtomicDocumentStore> store,
+                        std::unique_ptr<DocumentService> documents, DocumentSnapshot snapshot) {
+        documentStore_              = std::move(store);
+        documents_                  = std::move(documents);
+        document_                   = std::move(snapshot);
+        synchronizedEditorRevision_ = editor_.target().revision();
+        savedEditorRevision_        = editor_.target().revision();
+    }
+
+    [[nodiscard]] bool documentDirty() const {
+        if (!documents_ || document_.id.empty()) return false;
+        auto snapshot = documents_->snapshot(document_.id);
+        return !snapshot.ok() || snapshot.value().dirty() || editor_.target().revision() != savedEditorRevision_;
+    }
+
+    [[nodiscard]] EditorResult<DocumentSnapshot> saveDocument() {
+        auto synchronized = synchronizeDocument();
+        if (!synchronized.ok()) return synchronized;
+        auto ticket = documents_->requestSave(document_.id);
+        if (!ticket.ok()) return EditorResult<DocumentSnapshot>::failure(ticket.status());
+        auto saved = documents_->executeSave(ticket.value());
+        if (saved.ok()) {
+            document_            = saved.value();
+            savedEditorRevision_ = editor_.target().revision();
+        }
+        return saved;
+    }
+
+    [[nodiscard]] EditorResult<DocumentSnapshot> reconcileDocument() {
+        auto synchronized = synchronizeDocument();
+        if (!synchronized.ok()) return synchronized;
+        auto reconciled = documents_->reconcileExternal(document_.id, [](const EditorValue& content) {
+            auto timeline = action::ActionTimeline::fromValue(toPresentationValue(content));
+            if (!timeline) return EditorResult<void>::failure(timeline.status());
+            return eve::editing::applied<void>();
+        });
+        if (!reconciled.ok()) return reconciled;
+        auto content = documents_->content(document_.id);
+        if (!content.ok()) return EditorResult<DocumentSnapshot>::failure(content.status());
+        if (content.value() != editor_.target().snapshotValue()) {
+            auto loaded = editor_.reloadDocument(content.value());
+            if (!loaded.ok()) return EditorResult<DocumentSnapshot>::failure(loaded.status());
+            synchronizedEditorRevision_ = editor_.target().revision();
+            savedEditorRevision_        = editor_.target().revision();
+        }
+        document_ = reconciled.value();
+        return reconciled;
+    }
+
+    const DocumentSnapshot& document() const noexcept { return document_; }
 
     [[nodiscard]] EditorResult<void> seekPreview(Duration time) {
         if (previewInitializationFailure_)
@@ -424,6 +477,22 @@ public:
     }
 
 private:
+    [[nodiscard]] EditorResult<DocumentSnapshot> synchronizeDocument() {
+        if (!documents_ || document_.id.empty())
+            return eve::editing::failed<DocumentSnapshot>(EditorStatus::Unsupported,
+                                                          RuleId("editor.action.document.not-persistent"),
+                                                          "Action timeline editor is not attached to a document");
+        auto snapshot = documents_->snapshot(document_.id);
+        if (!snapshot.ok()) return snapshot;
+        if (editor_.target().revision() == synchronizedEditorRevision_) return snapshot;
+        auto edited = documents_->edit(document_.id, editor_.target().snapshotValue(), snapshot.value().revision.edit);
+        if (edited.ok()) {
+            synchronizedEditorRevision_ = editor_.target().revision();
+            document_                   = edited.value();
+        }
+        return edited;
+    }
+
     [[nodiscard]] action::ActionDefinition runtimeDefinition() const {
         action::ActionDefinition definition;
         definition.id = runtimeTimeline_->actionId;
@@ -497,6 +566,11 @@ private:
     std::unordered_map<std::size_t, double>   sectionRates_;
     double                                    runtimeRate_   = 1.0;
     bool                                      runtimePaused_ = false;
+    std::unique_ptr<DiskAtomicDocumentStore>  documentStore_;
+    std::unique_ptr<DocumentService>          documents_;
+    DocumentSnapshot                         document_;
+    std::uint64_t                            synchronizedEditorRevision_ = 0;
+    std::uint64_t                            savedEditorRevision_        = 0;
 };
 
 std::string eventKind(action::ActionTimelineEventKind kind) {
@@ -877,6 +951,32 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("isPlaying",
                          [](ScriptActionTimelineEditor* self) { return self && self->editor().playing(); });
+    actionEditor.addFunc("isDocumentBacked", [](ScriptActionTimelineEditor* self) {
+        return self && !self->document().id.empty();
+    });
+    actionEditor.addFunc("isDirty",
+                         [](ScriptActionTimelineEditor* self) { return self && self->documentDirty(); });
+    actionEditor.addFunc("saveDocument", [vm](ScriptActionTimelineEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto saved = self->saveDocument();
+        return project(vm, saved,
+                       saved.ok() ? Value(static_cast<std::int64_t>(saved.value().revision.saved)) : Value{});
+    });
+    actionEditor.addFunc("reconcileDocument", [vm](ScriptActionTimelineEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto reconciled = self->reconcileDocument();
+        return project(vm, reconciled,
+                       reconciled.ok() ? Value(static_cast<std::int64_t>(reconciled.value().revision.edit)) : Value{});
+    });
+    actionEditor.addFunc("getDocumentId", [](ScriptActionTimelineEditor* self) {
+        return self ? self->document().id.value() : std::string{};
+    });
+    actionEditor.addFunc("getDocumentTitle", [](ScriptActionTimelineEditor* self) {
+        return self ? self->document().title : std::string{};
+    });
+    actionEditor.addFunc("getDocumentUri", [](ScriptActionTimelineEditor* self) {
+        return self ? self->document().resourceUri : std::string{};
+    });
     actionEditor.addFunc("canUndo", [](ScriptActionTimelineEditor* self) { return self && self->editor().canUndo(); });
     actionEditor.addFunc("canRedo", [](ScriptActionTimelineEditor* self) { return self && self->editor().canRedo(); });
     actionEditor.addFunc("isDragging", [](ScriptActionTimelineEditor* self) {
@@ -1182,6 +1282,46 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         result.set("ownership", std::string("owned"));
         return result;
     });
+    moduleClass.addFunc(
+        "openDocument",
+        [vm, clipboard](eve::action_editor::ActionEditorModule*, const std::string& projectRoot,
+                        const std::string& assetGuid, const std::string& title, const std::string& resourceUri,
+                        const ssq::Object& initialTimelineObject) {
+            if (projectRoot.empty() || assetGuid.empty() || resourceUri.empty())
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "project root, asset guid and resource URI are required");
+            script::SquirrelValueOptions options;
+            options.source = kBindingSource;
+            auto value     = script::valueFromSquirrel(initialTimelineObject, options);
+            if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+            auto initialTimeline = action::ActionTimeline::fromValue(value.value());
+            if (!initialTimeline)
+                return script::projectStatusResult(vm, initialTimeline.status(), false, false);
+            auto initialValue = initialTimeline.value().toValue();
+            if (!initialValue) return script::projectStatusResult(vm, initialValue.status(), false, false);
+
+            auto store     = std::make_unique<DiskAtomicDocumentStore>(std::filesystem::path(projectRoot));
+            auto documents = std::make_unique<DocumentService>(store.get());
+            auto opened    = documents->open({DocumentKind::Timeline, AssetGuid(assetGuid)}, title, resourceUri,
+                                              toEditorValue(initialValue.value()));
+            if (!opened.ok()) return script::projectStatusResult(vm, opened.status(), false, false);
+            auto content = documents->content(opened.value().id);
+            if (!content.ok()) return script::projectStatusResult(vm, content.status(), false, false);
+            auto timeline = action::ActionTimeline::fromValue(toPresentationValue(content.value()));
+            if (!timeline) return script::projectStatusResult(vm, timeline.status(), false, false);
+            auto registry = action::ActionNotifyRegistry::withBuiltins();
+            if (!registry) return script::projectStatusResult(vm, registry.status(), false, false);
+            auto instance = std::make_unique<ScriptActionTimelineEditor>(
+                assetGuid, std::move(timeline).takeValue(), std::move(registry).takeValue(), clipboard);
+            instance->attachDocument(std::move(store), std::move(documents), opened.value());
+            auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineEditor>(vm, std::move(instance));
+            if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+            ssq::Object owned  = std::move(object).takeValue();
+            auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+            result.set("value", owned);
+            result.set("ownership", std::string("owned"));
+            return result;
+        });
 }
 
 }  // namespace eve::editor

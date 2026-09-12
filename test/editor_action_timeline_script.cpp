@@ -5,7 +5,9 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <chrono>
 #include <cmath>
+#include <filesystem>
 #include <string>
 
 TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
@@ -84,4 +86,55 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_EQ(vm.find("previewEventCount").toInt(), 2);
     CHECK(vm.find("snapshotResult").toTable().get<bool>("ok"));
     CHECK(!vm.find("invalidResult").toTable().get<bool>("ok"));
+}
+
+TEST_CASE("editor.actionTimeline.scriptPersistsDocumentAndReportsDirtyState") {
+    const auto root = std::filesystem::temp_directory_path() /
+                      ("eve_action_script_document_" +
+                       std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::error_code cleanupError;
+    std::filesystem::remove_all(root, cleanupError);
+
+    {
+        ssq::VM vm(2048, ssq::Libs::ALL);
+        eve::ModuleManager::expose(vm);
+        const std::string source = std::string(R"(
+            timelineAsset <- {
+                schema="eve.action.timeline", schemaVersion=1,
+                actionId="test:persistent", durationNs=1000000000,
+                animationUri="asset://test/attack.glb#Attack", metadata={},
+                tracks=[{
+                    id="test-track:gameplay", label="Gameplay", kind="gameplay",
+                    muted=false, locked=false, notifies=[], states=[]
+                }]
+            };
+            module <- eve.ActionEditorModule();
+            opened <- module.openDocument(")") + root.generic_string() + R"(", "test.asset.persistent", "Persistent Action",
+                "content://Actions/Persistent.action", timelineAsset);
+            actionEditor <- opened.value;
+            backed <- actionEditor.isDocumentBacked();
+            initiallyDirty <- actionEditor.isDirty();
+            renameResult <- actionEditor.renameTrack("test-track:gameplay", "Gameplay Saved");
+            dirtyAfterEdit <- actionEditor.isDirty();
+            saveResult <- actionEditor.saveDocument();
+            dirtyAfterSave <- actionEditor.isDirty();
+            reopened <- module.openDocument(")" + root.generic_string() + R"(", "test.asset.reopened", "Reopened Action",
+                "content://Actions/Persistent.action", timelineAsset);
+            reopenedLabel <- reopened.value.getTrackLabel(0);
+        )";
+        vm.run(vm.compileSource(source.c_str()));
+
+        CHECK(vm.find("opened").toTable().get<bool>("ok"));
+        CHECK(vm.find("backed").toBool());
+        CHECK(!vm.find("initiallyDirty").toBool());
+        CHECK(vm.find("renameResult").toTable().get<bool>("ok"));
+        CHECK(vm.find("dirtyAfterEdit").toBool());
+        CHECK(vm.find("saveResult").toTable().get<bool>("ok"));
+        CHECK(!vm.find("dirtyAfterSave").toBool());
+        CHECK(vm.find("reopened").toTable().get<bool>("ok"));
+        CHECK_EQ(vm.find("reopenedLabel").toString(), std::string("Gameplay Saved"));
+    }
+
+    CHECK(std::filesystem::is_regular_file(root / "Content" / "Actions" / "Persistent.action"));
+    std::filesystem::remove_all(root, cleanupError);
 }
