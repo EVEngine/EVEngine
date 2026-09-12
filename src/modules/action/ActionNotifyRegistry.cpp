@@ -2,6 +2,7 @@
 
 #include "action/ActionAudioBlock.h"
 #include "action/ActionCameraBlock.h"
+#include "action/ActionDamageBlock.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionVfxBlock.h"
@@ -42,6 +43,26 @@ public:
         });
         if (result) return std::move(*result);
         return failure(DiagnosticCode::NotFound, "no camera sink accepts the action cue", binding.value().cue.format());
+    }
+};
+
+class ActionDamageHandler final : public IActionNotifyHandler {
+public:
+    Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
+        if (event.kind != ActionTimelineEventKind::Notify)
+            return failure(DiagnosticCode::InvalidArgument, "damage block must be instantaneous", "event.kind");
+        auto binding = ActionDamageBinding::fromPayload(event.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        if (binding.value().targetIndex >= context.targets.size())
+            return failure(DiagnosticCode::NotFound, "damage target index is unavailable", "targetIndex");
+        std::optional<Result<void>> result;
+        cap::forEachUntil<IActionDamageSink>([&](IActionDamageSink* sink) {
+            if (!sink->supports(context.targets[binding.value().targetIndex])) return false;
+            result.emplace(sink->apply(binding.value(), context));
+            return true;
+        });
+        if (result) return std::move(*result);
+        return failure(DiagnosticCode::NotFound, "no damage sink accepts the action target", "target");
     }
 };
 
@@ -145,6 +166,8 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
     }
     auto cameraHandler = registry.registerHandler("presentation:camera", std::make_shared<ActionCameraCueHandler>());
     if (!cameraHandler) return Result<ActionNotifyRegistry>::failure(cameraHandler.status());
+    auto damageHandler = registry.registerHandler("combat:damage", std::make_shared<ActionDamageHandler>());
+    if (!damageHandler) return Result<ActionNotifyRegistry>::failure(damageHandler.status());
     auto parameterHandler = registry.registerHandler(
         "presentation:parameter-curve", std::make_shared<ActionParameterCurveHandler>());
     if (!parameterHandler) return Result<ActionNotifyRegistry>::failure(parameterHandler.status());
@@ -243,6 +266,10 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
     if (event.type.format() == "presentation:camera") {
         auto camera = ActionCameraCueBinding::fromPayload(event.payload);
         if (!camera) return Result<void>::failure(camera.status());
+    }
+    if (event.type.format() == "combat:damage") {
+        auto damage = ActionDamageBinding::fromPayload(event.payload);
+        if (!damage) return Result<void>::failure(damage.status());
     }
     return Result<void>::success();
 }
