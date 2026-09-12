@@ -135,6 +135,10 @@ void DevTool::attach(ssq::VM& vm, bool sampleLocals) { attach(vm.getHandle(), sa
 void DevTool::attach(eve::Runtime& runtime, bool sampleLocals) {
     attach(runtime.vm(), sampleLocals);
     runtime_ = &runtime;
+    // Capture throw-site stacks for try/catch so reportError / lastScriptError
+    // can surface the original site (load.nut pattern). Safe here because the
+    // Runtime-bound error hook only stashes context and does not notify/pause.
+    sq_notifyallexceptions(runtime.handle(), SQTrue);
     // Route Runtime-boundary errors into the slicer/report. The VM error hook
     // only captures the stack when this Runtime sink is bound; this handler
     // reports compile / reflect / unload failures and uncaught execute errors
@@ -182,7 +186,11 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     Debugger::instance().setPump([this]() { pumpWhilePaused(); });
 
     sq_enabledebuginfo(vm_, SQTrue);
-    sq_notifyallexceptions(vm_, SQTrue);
+    // Do not enable sq_notifyallexceptions here. With notify-all + break-on-error,
+    // this hook would pause on every caught throw before script catch/reportError
+    // runs (double pause → hung script thread → flaky teardown SEGFAULT in
+    // devtools.dap.caughtErrorPausesAtReportSite). Runtime::installErrorHandler
+    // already turns notify-all on for production VMs; attach(Runtime&) keeps it.
     sq_setnativedebughook(vm_, nativeDebugHook);
     // Route uncaught script errors into the debugger (break-on-error aware).
     sq_newclosure(vm_, runtimeErrorHook, 0);

@@ -55,6 +55,9 @@ public:
         float autoExposureMaxEV = 8.f;
         float bloomIntensity = 0.f;
         float bloomThreshold = 1.f;
+        float dofFocusDistance = 0.f;
+        float dofMaxBlurPx = 0.f;    // <= 0 disables DOF
+        float dofFocusRange = 8.f;
         bool active = false;
         Camera3D *entity = nullptr;
         // Last screenToRay() result (origin = eye, dir normalized).
@@ -111,6 +114,19 @@ public:
     float getBloomIntensity();
     /** @brief Return bloom threshold in linear HDR units. */
     float getBloomThreshold();
+    /**
+     * @brief Configure Gaussian depth-of-field on the final HDR resolve.
+     * @param focusDistance View-space distance of the sharp plane.
+     * @param maxBlurPx Maximum blur radius in texels; <= 0 disables DOF.
+     * @param focusRange Distance from focus at which blur reaches maxBlurPx.
+     */
+    void setDepthOfField(float focusDistance, float maxBlurPx, float focusRange = 8.f);
+    /** @brief Return DOF focus distance. */
+    float getDofFocusDistance();
+    /** @brief Return DOF max blur in texels (0 when disabled). */
+    float getDofMaxBlur();
+    /** @brief Return DOF focus range. */
+    float getDofFocusRange();
     /** @brief Enable box-projected IBL for the camera environment cubemap. */
     void setEnvProbe(float centerX, float centerY, float centerZ, float extentX, float extentY,
                      float extentZ);

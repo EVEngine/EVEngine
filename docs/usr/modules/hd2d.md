@@ -4,6 +4,7 @@ HD-2D 模块把 2D 内容叠加到现有 3D 渲染管线，实现「2D tilemap �
 
 - `TileMap3D`：把 2D tilemap（`map` 模块的 `TileLayer`）挤成 3D 地形网格。
 - `Sprite3D`：把 2D 精灵图/角色帧作为始终正对相机的 billboard 渲染进 3D 场景，支持精灵表帧动画。
+- `Hd2dLook`：参考 [HD2DURP](https://github.com/dulong-lab/HD2DURP) 的景深（DopFix）+ Bloom + 像素采样组合，一键写到 `Camera3D`。
 
 模块绑定在 `eve.Hd2D`，脚本槽位为 `hd2d`。
 
@@ -47,6 +48,11 @@ local scale = tile.getHeightScale();    // 读取当前高度缩放
 Pivot 使用可见图像左上角为 (0,0)、右下角为 (1,1)，旋转、缩放及 UV 翻转不改变世界锚点。
 相机必须在解除绑定前保持有效；退化相机基向量保留最后一次有效朝向。
 
+精灵默认使用 **masked cutout** 材质并开启深度写入（对齐 HD2DURP 的 DopFix /
+`TransparentCutout`）：透明像素丢弃，不透明像素写入深度，景深才能正确对焦角色。
+可用 `setAlphaCutoff` / `setDepthWrite` / `setDoubleSided` 调整；
+`setBillboardMode("yaw")` 切换为仅绕 Y 轴的圆柱 billboard。
+
 ```squirrel
 local hero = hd2d.newSprite(gfx);
 hero.setTexture(gfx.newTextureFromFile("assets/hero.png"));
@@ -55,6 +61,8 @@ hero.setSize(28.0, 56.0);               // billboard 尺寸
 hero.setTint(1.0, 1.0, 1.0, 1.0);       // 颜色倍率（alpha 参与裁切）
 hero.setVisible(true);
 hero.setCamera(cam);                    // 绑定相机后 update() 每帧转向相机
+hero.setAlphaCutoff(0.5);
+hero.setDepthWrite(true);
 gfx.setTextureSampler(hero.getTexture(), "nearest", "none", 1.0, 0.0); // 清晰像素采样
 
 local tx = hero.getPositionX(); local ty = hero.getPositionY(); local tz = hero.getPositionZ();
@@ -100,8 +108,27 @@ Sprite、Camera 与纹理的调用在渲染线程进行，Graphics 及相关 ECS
 固定步长、无随机数，足底锚点由图集透明边距确定。示例验收说明和素材
 生成记录见该示例的 README。
 
+## Hd2dLook：景深 + Bloom + 像素采样
+
+`Hd2dLook` 把 HD2DURP 风格的后处理参数写到 `Camera3D`：Gaussian DOF（`Camera3D.setDepthOfField`）
+与 Bloom。DOF 在最终 HDR resolve 中读取 GBuffer 硬件深度；因此角色必须用 cutout
+深度写入（Sprite3D 默认已开启）。
+
+```squirrel
+local look = hd2d.newMiniatureLook(); // 或 hd2d.newLook()
+look.setFocusDistance(18.0);
+look.setFocusRange(12.0);
+look.setMaxBlur(6.0);
+look.apply(camera);
+look.applyPixelSampler(gfx, hero.getTexture());
+```
+
+也可用 `camera.setDepthOfField(focusDistance, maxBlurPx, focusRange)` /
+`camera.setBloom(intensity, threshold)` 直接配置。
+
 ## 模块方法与对象
 
-- `hd2d.getName()`、`hd2d.newTileMap3D()`、`hd2d.newSprite(gfx)`
+- `hd2d.getName()`、`hd2d.newTileMap3D()`、`hd2d.newSprite(gfx)`、`hd2d.newLook()`、`hd2d.newMiniatureLook()`
 - `TileMap3D`：`setSideDepth`/`getSideDepth`、`setHeightScale`/`getHeightScale`、`setWallUV`、`setTint`、`buildMesh`、`buildRenderable`、`getTileCount`
-- `Sprite3D`：`setTexture`/`getTexture`、`setFrame`、`setFlipX`/`setFlipY`、`setFrameGrid`、`getFrameGridColumns`/`getFrameGridRows`、`setFrameIndex`/`getFrameIndex`/`getFrameCount`、`play`/`stop`/`isPlaying`/`update`、`setPosition`/`getPositionX`/`getPositionY`/`getPositionZ`、`setSize`/`getWidth`/`getHeight`、`setTint`、`setVisible`/`getVisible`
+- `Sprite3D`：`setTexture`/`getTexture`、`setFrame`、`setFlipX`/`setFlipY`、`setFrameGrid`、`getFrameGridColumns`/`getFrameGridRows`、`setFrameIndex`/`getFrameIndex`/`getFrameCount`、`play`/`stop`/`isPlaying`/`update`、`setPosition`/`getPositionX`/`getPositionY`/`getPositionZ`、`setSize`/`getWidth`/`getHeight`、`setTint`、`setVisible`/`getVisible`、`setAlphaCutoff`/`getAlphaCutoff`、`setDepthWrite`/`getDepthWrite`、`setDoubleSided`/`getDoubleSided`、`setBillboardMode`/`getBillboardMode`
+- `Hd2dLook`：`setFocusDistance`/`getFocusDistance`、`setMaxBlur`/`getMaxBlur`、`setFocusRange`/`getFocusRange`、`setBloomIntensity`/`getBloomIntensity`、`setBloomThreshold`/`getBloomThreshold`、`apply`、`applyPixelSampler`

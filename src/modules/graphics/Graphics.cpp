@@ -1,5 +1,6 @@
 #include "graphics/Graphics.h"
 #include "graphics/Bloom.h"
+#include "graphics/DepthOfField.h"
 #include "graphics/Exposure.h"
 #include "graphics/DepthPyramid.h"
 #include "common/Capability.h"
@@ -22,6 +23,7 @@
 #include "graphics/CanvasScriptBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
+#include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
 #include "graphics/MapFog.h"
@@ -418,6 +420,10 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("setBloom", &Camera3D::setBloom);
     cam.addFunc("getBloomIntensity", &Camera3D::getBloomIntensity);
     cam.addFunc("getBloomThreshold", &Camera3D::getBloomThreshold);
+    cam.addFunc("setDepthOfField", &Camera3D::setDepthOfField);
+    cam.addFunc("getDofFocusDistance", &Camera3D::getDofFocusDistance);
+    cam.addFunc("getDofMaxBlur", &Camera3D::getDofMaxBlur);
+    cam.addFunc("getDofFocusRange", &Camera3D::getDofFocusRange);
     cam.addFunc("setEnvProbe", &Camera3D::setEnvProbe);
     cam.addFunc("clearEnvProbe", &Camera3D::clearEnvProbe);
     cam.addFunc("hasEnvProbe", &Camera3D::hasEnvProbe);
@@ -1183,6 +1189,11 @@ Bloom* Graphics::pipelineBloom() {
     return pipelineBloom_.get();
 }
 
+DepthOfField* Graphics::pipelineDepthOfField() {
+    if (!pipelineDof_) pipelineDof_ = std::make_unique<DepthOfField>(this);
+    return pipelineDof_.get();
+}
+
 Exposure* Graphics::pipelineExposure() {
     if (!pipelineExposure_) pipelineExposure_ = std::make_unique<Exposure>(this);
     return pipelineExposure_.get();
@@ -1217,6 +1228,18 @@ Texture* Graphics::prepareFinalSceneTexture(Texture *scene, Texture *motion) {
         }
         aa->applyTo(this, scene, spatialAAResolve_);
         resolved = spatialAAResolve_->getTexture();
+    }
+    if (getSceneDofMaxBlur() > 0.f && renderControl_) {
+        GBuffer *gb = renderControl_->getGBuffer();
+        if (gb && gb->isValid()) {
+            Texture *depth = getBackendName() == "webgpu" ? gb->getDepthTexture()
+                                                          : gb->getHwDepthTexture();
+            if (depth) {
+                resolved = pipelineDepthOfField()->apply(
+                    resolved, depth, getSceneDofFocusDistance(), getSceneDofMaxBlur(),
+                    getSceneDofFocusRange(), getSceneDofNearZ(), getSceneDofFarZ());
+            }
+        }
     }
     Texture *meterSource = resolved;
     resolved = pipelineBloom()->apply(resolved, getSceneBloomIntensity(),

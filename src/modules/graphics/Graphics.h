@@ -43,6 +43,7 @@ struct ShaderResourceInputs;
 class AmbientOcclusion;
 class AntiAliasing;
 class Bloom;
+class DepthOfField;
 class Exposure;
 class DepthPyramid;
 class Camera3D;
@@ -1217,6 +1218,21 @@ public:
     virtual float getSceneBloomIntensity() const = 0;
     /** @brief Current linear HDR bloom threshold. */
     virtual float getSceneBloomThreshold() const = 0;
+    /**
+     * @brief Configure final-scene Gaussian depth-of-field.
+     * @param focusDistance View-space focus plane.
+     * @param maxBlurPx Max blur radius in texels; <= 0 disables.
+     * @param focusRange Distance from focus where blur reaches the max.
+     * @param nearZ Camera near clip used to linearize hardware depth.
+     * @param farZ Camera far clip used to linearize hardware depth.
+     */
+    virtual void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange,
+                                      float nearZ, float farZ) = 0;
+    virtual float getSceneDofFocusDistance() const = 0;
+    virtual float getSceneDofMaxBlur() const = 0;
+    virtual float getSceneDofFocusRange() const = 0;
+    virtual float getSceneDofNearZ() const = 0;
+    virtual float getSceneDofFarZ() const = 0;
 
     /** @brief Upload CSM constants for subsequent default mesh draws (active=false disables). */
     virtual void setMesh3DShadows(const ShadowUpload &upload) = 0;
@@ -1724,13 +1740,16 @@ public:
     /** @brief Pipeline-owned linear-HDR bloom pyramid, created on first use.
      * @lifetime Returned effect remains valid until Graphics shutdown. */
     Bloom *pipelineBloom();
+    /** @brief Pipeline-owned Gaussian depth-of-field, created on first use.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
+    DepthOfField *pipelineDepthOfField();
     /** @brief Pipeline-owned GPU exposure metering and eye adaptation.
      * @lifetime Returned effect remains valid until Graphics shutdown. */
     Exposure *pipelineExposure();
     /** @brief Pipeline-owned shared min/max depth hierarchy for screen-space effects.
      * @lifetime Returned effect remains valid until Graphics shutdown. */
     DepthPyramid *pipelineDepthPyramid();
-    /** @brief Build the shared linear-HDR AA, bloom, and exposure result for final ACES.
+    /** @brief Build the shared linear-HDR AA, DOF, bloom, and exposure result for final ACES.
      * @lifetime Returned texture is Graphics-owned and valid for the current target allocation. */
     Texture *prepareFinalSceneTexture(Texture *scene, Texture *motion = nullptr);
     /** @brief Return a reusable HDR target for composing screen-space lighting.
@@ -1910,6 +1929,7 @@ protected:
     std::unique_ptr<ScreenSpaceReflection> pipelineSSR_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
     std::unique_ptr<Bloom> pipelineBloom_;
+    std::unique_ptr<DepthOfField> pipelineDof_;
     std::unique_ptr<Exposure> pipelineExposure_;
     std::unique_ptr<DepthPyramid> pipelineDepthPyramid_;
     Canvas *spatialAAResolve_ = nullptr;
