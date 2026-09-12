@@ -237,3 +237,104 @@ TEST_CASE("actionTimelineEditor.sharesDeepClipboardAcrossDocumentsAndPastesTrack
     CHECK(!destination.pasteToTrack(id("combat-track:alternate"), eve::Duration::zero()).ok());
     CHECK_EQ(destination.target().timeline().toValue().value().toJson().value(), before);
 }
+
+TEST_CASE("actionTimelineDocuments.openSaveReconcileAndProtectDirtyTabs") {
+    eve::editor::MemoryAtomicDocumentStore       store;
+    eve::editor::DocumentService                 documents(&store);
+    eve::editor::ActionTimelineDocumentWorkspace workspace(documents);
+
+    auto first = workspace.open({eve::editor::DocumentKind::Timeline, eve::editor::AssetGuid("light-attack")},
+                                "Light Attack", "content://Actions/LightAttack.action", timelineFixture());
+    REQUIRE(first.ok());
+    auto secondTimeline     = timelineFixture();
+    secondTimeline.actionId = id("combat:heavy-attack");
+    auto second = workspace.open({eve::editor::DocumentKind::Timeline, eve::editor::AssetGuid("heavy-attack")},
+                                 "Heavy Attack", "content://Actions/HeavyAttack.action", secondTimeline);
+    REQUIRE(second.ok());
+    CHECK_EQ(workspace.activeDocument(), second.value());
+    REQUIRE_EQ(workspace.tabs().value().size(), 2U);
+
+    auto* editor = workspace.activeEditor();
+    REQUIRE(editor != nullptr);
+    REQUIRE(editor->renameTrack(id("combat-track:gameplay"), "Heavy Gameplay").ok());
+    auto dirtyTabs = workspace.tabs();
+    REQUIRE(dirtyTabs.ok());
+    CHECK(dirtyTabs.value()[1].dirty);
+    auto protectedClose = workspace.close(second.value(), eve::editor::ActionTimelineCloseMode::ProtectDirty);
+    CHECK(!protectedClose.ok());
+    CHECK_EQ(protectedClose.code(), eve::editor::EditorStatus::Conflict);
+
+    auto saved = workspace.save(second.value());
+    REQUIRE(saved.ok());
+    CHECK(!saved.value().dirty());
+    CHECK(!workspace.tabs().value()[1].dirty);
+
+    eve::editor::DocumentService external(&store);
+    auto externalOpened = external.open(
+        {eve::editor::DocumentKind::Timeline, eve::editor::AssetGuid("heavy-attack")}, "Heavy Attack",
+        "content://Actions/HeavyAttack.action");
+    REQUIRE(externalOpened.ok());
+    auto externallyEdited = secondTimeline;
+    externallyEdited.tracks[0].label = "External Gameplay";
+    auto externalValue = externallyEdited.toValue();
+    REQUIRE(externalValue.ok());
+    REQUIRE(external.edit(externalOpened.value().id, eve::editor::toEditorValue(externalValue.value())).ok());
+    auto externalTicket = external.requestSave(externalOpened.value().id);
+    REQUIRE(externalTicket.ok());
+    REQUIRE(external.executeSave(externalTicket.value()).ok());
+
+    auto reconciled = workspace.reconcile(second.value());
+    REQUIRE(reconciled.ok());
+    REQUIRE(workspace.activeEditor() != nullptr);
+    CHECK_EQ(workspace.activeEditor()->target().timeline().tracks[0].label, "External Gameplay");
+    CHECK(!workspace.activeEditor()->canUndo());
+
+    auto externalSnapshot = external.snapshot(externalOpened.value().id);
+    REQUIRE(externalSnapshot.ok());
+    eve::editor::EditorValue invalid(eve::editor::EditorValue::Object{{"schema", "not-an-action-timeline"}});
+    REQUIRE(external.edit(externalOpened.value().id, invalid, externalSnapshot.value().revision.edit).ok());
+    externalTicket = external.requestSave(externalOpened.value().id);
+    REQUIRE(externalTicket.ok());
+    REQUIRE(external.executeSave(externalTicket.value()).ok());
+    auto invalidExternal = workspace.reconcile(second.value());
+    CHECK(!invalidExternal.ok());
+    CHECK_EQ(invalidExternal.code(), eve::editor::EditorStatus::Conflict);
+    CHECK_EQ(workspace.activeEditor()->target().timeline().tracks[0].label, "External Gameplay");
+    CHECK_EQ(documents.content(second.value()).value(), workspace.activeEditor()->target().snapshotValue());
+
+    externallyEdited.tracks[0].label = "External Recovered";
+    externalValue = externallyEdited.toValue();
+    REQUIRE(externalValue.ok());
+    externalSnapshot = external.snapshot(externalOpened.value().id);
+    REQUIRE(externalSnapshot.ok());
+    REQUIRE(external.edit(externalOpened.value().id, eve::editor::toEditorValue(externalValue.value()),
+                          externalSnapshot.value().revision.edit)
+                .ok());
+    externalTicket = external.requestSave(externalOpened.value().id);
+    REQUIRE(externalTicket.ok());
+    REQUIRE(external.executeSave(externalTicket.value()).ok());
+    REQUIRE(workspace.reconcile(second.value()).ok());
+    CHECK_EQ(workspace.activeEditor()->target().timeline().tracks[0].label, "External Recovered");
+
+    REQUIRE(workspace.activeEditor()->renameTrack(id("combat-track:gameplay"), "Unsaved Local").ok());
+    externallyEdited.tracks[0].label = "External Again";
+    externalValue = externallyEdited.toValue();
+    REQUIRE(externalValue.ok());
+    externalSnapshot = external.snapshot(externalOpened.value().id);
+    REQUIRE(externalSnapshot.ok());
+    REQUIRE(external.edit(externalOpened.value().id, eve::editor::toEditorValue(externalValue.value()),
+                          externalSnapshot.value().revision.edit)
+                .ok());
+    externalTicket = external.requestSave(externalOpened.value().id);
+    REQUIRE(externalTicket.ok());
+    REQUIRE(external.executeSave(externalTicket.value()).ok());
+    auto conflict = workspace.reconcile(second.value());
+    CHECK(!conflict.ok());
+    CHECK_EQ(conflict.code(), eve::editor::EditorStatus::Conflict);
+    CHECK_EQ(workspace.activeEditor()->target().timeline().tracks[0].label, "Unsaved Local");
+
+    REQUIRE(workspace.close(second.value(), eve::editor::ActionTimelineCloseMode::Discard).ok());
+    CHECK_EQ(workspace.activeDocument(), first.value());
+    REQUIRE(workspace.close(first.value(), eve::editor::ActionTimelineCloseMode::ProtectDirty).ok());
+    CHECK(workspace.activeDocument().empty());
+}

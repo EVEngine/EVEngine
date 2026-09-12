@@ -346,6 +346,21 @@ EditorResult<void> ActionTimelineEditor::rejected(std::string rule, std::string 
     return editorError(EditorStatus::Rejected, std::move(rule), std::move(message));
 }
 
+EditorResult<void> ActionTimelineEditor::reloadDocument(const EditorValue& snapshot) {
+    if (transactions_.active())
+        return rejected("editor.action.timeline.reload-active-transaction",
+                        "Cannot reload a Montage document during an active transaction");
+    auto loaded = target_.loadSnapshot(snapshot);
+    if (!loaded.ok()) return loaded;
+    transactions_.clear();
+    selection_.clear();
+    previewTime_    = Duration::zero();
+    playing_        = false;
+    previewStarted_ = false;
+    previewEvents_.clear();
+    return eve::editing::applied<void>();
+}
+
 EditorResult<void> ActionTimelineEditor::configureWorkspace(EditorWorkspace& workspace) const {
     EditorWorkspace candidate = workspace;
     struct Panel {
@@ -1079,6 +1094,167 @@ EditorResult<std::size_t> ActionTimelineEditor::applyPreviewPlan(ActionTimelineP
     previewStarted_ = true;
     if (plan.reachesEnd) playing_ = false;
     return eve::editing::applied<std::size_t>(previewEvents_.size());
+}
+
+ActionTimelineDocumentWorkspace::ActionTimelineDocumentWorkspace(DocumentService& documents) : documents_(&documents) {}
+
+EditorResult<action::ActionTimeline> ActionTimelineDocumentWorkspace::decode(const EditorValue& content) {
+    auto timeline = action::ActionTimeline::fromValue(toPresentationValue(content));
+    if (!timeline)
+        return eve::editing::failed<action::ActionTimeline>(EditorStatus::Rejected,
+                                                            RuleId("editor.action.document.invalid-content"),
+                                                            commonMessage(timeline.status(),
+                                                                          "Montage document content is invalid"));
+    return eve::editing::applied<action::ActionTimeline>(std::move(timeline).takeValue());
+}
+
+ActionTimelineDocumentWorkspace::Tab* ActionTimelineDocumentWorkspace::find(const DocumentId& document) {
+    const auto found = std::find_if(tabs_.begin(), tabs_.end(),
+                                    [&](const Tab& tab) { return tab.document == document; });
+    return found == tabs_.end() ? nullptr : &*found;
+}
+
+const ActionTimelineDocumentWorkspace::Tab* ActionTimelineDocumentWorkspace::find(const DocumentId& document) const {
+    const auto found = std::find_if(tabs_.begin(), tabs_.end(),
+                                    [&](const Tab& tab) { return tab.document == document; });
+    return found == tabs_.end() ? nullptr : &*found;
+}
+
+EditorResult<DocumentId> ActionTimelineDocumentWorkspace::open(DocumentKey key, std::string title,
+                                                                std::string resourceUri,
+                                                                action::ActionTimeline initialTimeline) {
+    if (key.kind != DocumentKind::Timeline)
+        return eve::editing::failed<DocumentId>(EditorStatus::Rejected,
+                                                RuleId("editor.action.document.kind"),
+                                                "Montage workspace only opens Timeline documents");
+    auto valid = initialTimeline.validate();
+    if (!valid)
+        return eve::editing::failed<DocumentId>(EditorStatus::Rejected,
+                                                RuleId("editor.action.document.initial-invalid"),
+                                                commonMessage(valid.status(), "Initial Montage timeline is invalid"));
+    auto initial = initialTimeline.toValue();
+    if (!initial)
+        return eve::editing::failed<DocumentId>(EditorStatus::Rejected,
+                                                RuleId("editor.action.document.initial-encode"),
+                                                "Initial Montage timeline could not be encoded");
+    auto opened = documents_->open(std::move(key), std::move(title), std::move(resourceUri),
+                                   toEditorValue(initial.value()));
+    if (!opened.ok()) return EditorResult<DocumentId>::failure(opened.status());
+    if (find(opened.value().id)) {
+        activeDocument_ = opened.value().id;
+        return eve::editing::applied<DocumentId>(activeDocument_);
+    }
+    auto content = documents_->content(opened.value().id);
+    if (!content.ok()) return EditorResult<DocumentId>::failure(content.status());
+    auto timeline = decode(content.value());
+    if (!timeline.ok()) return EditorResult<DocumentId>::failure(timeline.status());
+
+    Tab tab;
+    tab.document = opened.value().id;
+    tab.editor = std::make_unique<ActionTimelineEditor>(tab.document.value(), std::move(timeline).takeValue(), clipboard_);
+    tab.synchronizedEditorRevision = tab.editor->target().revision();
+    tab.savedEditorRevision        = tab.editor->target().revision();
+    activeDocument_                = tab.document;
+    tabs_.push_back(std::move(tab));
+    return eve::editing::applied<DocumentId>(activeDocument_);
+}
+
+EditorResult<void> ActionTimelineDocumentWorkspace::activate(const DocumentId& document) {
+    if (!find(document))
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.action.document.not-open"),
+                                          "Montage document tab is not open");
+    activeDocument_ = document;
+    return eve::editing::applied<void>();
+}
+
+EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::synchronize(Tab& tab) {
+    auto snapshot = documents_->snapshot(tab.document);
+    if (!snapshot.ok()) return snapshot;
+    if (tab.editor->target().revision() == tab.synchronizedEditorRevision) return snapshot;
+    auto edited = documents_->edit(tab.document, tab.editor->target().snapshotValue(), snapshot.value().revision.edit);
+    if (edited.ok()) tab.synchronizedEditorRevision = tab.editor->target().revision();
+    return edited;
+}
+
+EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::save(const DocumentId& document) {
+    auto* tab = find(document);
+    if (!tab)
+        return eve::editing::failed<DocumentSnapshot>(EditorStatus::NotFound,
+                                                      RuleId("editor.action.document.not-open"),
+                                                      "Montage document tab is not open");
+    auto synchronized = synchronize(*tab);
+    if (!synchronized.ok()) return synchronized;
+    auto ticket = documents_->requestSave(document);
+    if (!ticket.ok()) return EditorResult<DocumentSnapshot>::failure(ticket.status());
+    auto saved = documents_->executeSave(ticket.value());
+    if (saved.ok()) tab->savedEditorRevision = tab->editor->target().revision();
+    return saved;
+}
+
+EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::reconcile(const DocumentId& document) {
+    auto* tab = find(document);
+    if (!tab)
+        return eve::editing::failed<DocumentSnapshot>(EditorStatus::NotFound,
+                                                      RuleId("editor.action.document.not-open"),
+                                                      "Montage document tab is not open");
+    auto synchronized = synchronize(*tab);
+    if (!synchronized.ok()) return synchronized;
+    auto reconciled = documents_->reconcileExternal(document, [](const EditorValue& content) {
+        auto timeline = decode(content);
+        if (!timeline.ok()) return EditorResult<void>::failure(timeline.status());
+        return eve::editing::applied<void>();
+    });
+    if (!reconciled.ok()) return reconciled;
+    auto content = documents_->content(document);
+    if (!content.ok()) return EditorResult<DocumentSnapshot>::failure(content.status());
+    if (content.value() == tab->editor->target().snapshotValue()) return reconciled;
+    auto loaded = tab->editor->reloadDocument(content.value());
+    if (!loaded.ok()) return EditorResult<DocumentSnapshot>::failure(loaded.status());
+    tab->synchronizedEditorRevision = tab->editor->target().revision();
+    tab->savedEditorRevision        = tab->editor->target().revision();
+    return reconciled;
+}
+
+EditorResult<void> ActionTimelineDocumentWorkspace::close(const DocumentId& document,
+                                                          ActionTimelineCloseMode mode) {
+    const auto found = std::find_if(tabs_.begin(), tabs_.end(),
+                                    [&](const Tab& tab) { return tab.document == document; });
+    if (found == tabs_.end())
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.action.document.not-open"),
+                                          "Montage document tab is not open");
+    auto snapshot = documents_->snapshot(document);
+    if (!snapshot.ok()) return EditorResult<void>::failure(snapshot.status());
+    const bool dirty = found->editor->target().revision() != found->savedEditorRevision || snapshot.value().dirty();
+    if (dirty && mode == ActionTimelineCloseMode::ProtectDirty)
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.action.document.unsaved"),
+                                          "Montage document has unsaved edits");
+    auto closed = documents_->close(document);
+    if (!closed.ok()) return closed;
+    const std::size_t index = static_cast<std::size_t>(std::distance(tabs_.begin(), found));
+    tabs_.erase(found);
+    if (activeDocument_ == document) {
+        activeDocument_ = tabs_.empty() ? DocumentId{} : tabs_[std::min(index, tabs_.size() - 1)].document;
+    }
+    return eve::editing::applied<void>();
+}
+
+EditorResult<std::vector<ActionTimelineTabSnapshot>> ActionTimelineDocumentWorkspace::tabs() const {
+    std::vector<ActionTimelineTabSnapshot> result;
+    result.reserve(tabs_.size());
+    for (const auto& tab : tabs_) {
+        auto snapshot = documents_->snapshot(tab.document);
+        if (!snapshot.ok())
+            return EditorResult<std::vector<ActionTimelineTabSnapshot>>::failure(snapshot.status());
+        result.push_back({snapshot.value(), tab.document == activeDocument_,
+                          snapshot.value().dirty() ||
+                              tab.editor->target().revision() != tab.savedEditorRevision});
+    }
+    return eve::editing::applied<std::vector<ActionTimelineTabSnapshot>>(std::move(result));
+}
+
+ActionTimelineEditor* ActionTimelineDocumentWorkspace::activeEditor() noexcept {
+    auto* tab = find(activeDocument_);
+    return tab ? tab->editor.get() : nullptr;
 }
 
 }  // namespace eve::editor

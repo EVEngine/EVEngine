@@ -8,6 +8,7 @@
 #include "action/ActionTimeline.h"
 #include "action/ActionParameterCurve.h"
 #include "editor/EditorAuthority.h"
+#include "editor/EditorDocumentService.h"
 #include "editor/EditorProperty.h"
 #include "editor/EditorSelection.h"
 #include "editor/EditorTransactionService.h"
@@ -164,6 +165,8 @@ public:
 
     /** @brief Borrow the authoritative target. */
     const ActionTimelineTarget& target() const noexcept { return target_; }
+    /** @brief Atomically replace the document snapshot and clear history, selection and preview transport. */
+    [[nodiscard]] EditorResult<void> reloadDocument(const EditorValue& snapshot);
     /** @brief Atomically install the standard asset/preview/timeline/inspector panel composition. */
     [[nodiscard]] EditorResult<void> configureWorkspace(EditorWorkspace& workspace) const;
     /** @brief Add an empty semantic track. */
@@ -310,6 +313,77 @@ private:
     bool                                     playing_             = false;
     bool                                     previewStarted_      = false;
     std::vector<action::ActionTimelineEvent> previewEvents_;
+};
+
+/** @brief Dirty-document policy applied when closing one Montage tab. */
+enum class ActionTimelineCloseMode : std::uint8_t { ProtectDirty, Discard };
+
+/** @brief Immutable projection of one open Montage document tab. */
+struct ActionTimelineTabSnapshot {
+    DocumentSnapshot document;
+    bool             active = false;
+    bool             dirty  = false;
+};
+
+/**
+ * @brief Multi-document Montage workspace backed by the engine document service.
+ *
+ * This owner-thread-only coordinator owns tab editors and one shared deep-copy
+ * clipboard. The injected DocumentService remains the persistence authority and
+ * must outlive the workspace. Each save publishes the editor's canonical target
+ * snapshot to DocumentService before requesting its revision-qualified CAS save.
+ */
+class ActionTimelineDocumentWorkspace {
+public:
+    /** @brief Bind a non-owning document service that outlives this workspace. */
+    explicit ActionTimelineDocumentWorkspace(DocumentService& documents);
+
+    /**
+     * @brief Open or activate one Montage asset document.
+     * @param key Stable asset key; Timeline is the expected document kind.
+     * @param title User-visible tab title.
+     * @param resourceUri DocumentService resource URI used for persistence.
+     * @param initialTimeline Initial value used only when the store has no document.
+     */
+    [[nodiscard]] EditorResult<DocumentId> open(DocumentKey key, std::string title, std::string resourceUri,
+                                                action::ActionTimeline initialTimeline);
+    /** @brief Activate an already-open tab. */
+    [[nodiscard]] EditorResult<void> activate(const DocumentId& document);
+    /** @brief Save one exact canonical editor revision through DocumentService CAS persistence. */
+    [[nodiscard]] EditorResult<DocumentSnapshot> save(const DocumentId& document);
+    /** @brief Reconcile a tab with external persistence, rejecting dirty conflicts without data loss. */
+    [[nodiscard]] EditorResult<DocumentSnapshot> reconcile(const DocumentId& document);
+    /** @brief Close a tab, rejecting unsaved work unless explicit discard is requested. */
+    [[nodiscard]] EditorResult<void> close(const DocumentId& document, ActionTimelineCloseMode mode);
+
+    /** @brief Ordered immutable tab projections for rendering a document bar. */
+    [[nodiscard]] EditorResult<std::vector<ActionTimelineTabSnapshot>> tabs() const;
+    /**
+     * @brief Borrow the active editor.
+     * @return Pointer owned by this workspace, invalidated by closing that tab.
+     * @lifetime Valid until close() removes the active document tab.
+     */
+    ActionTimelineEditor* activeEditor() noexcept;
+    /** @brief Stable active document identity, or empty when no tab is open. */
+    const DocumentId& activeDocument() const noexcept { return activeDocument_; }
+
+private:
+    struct Tab {
+        DocumentId                            document;
+        std::unique_ptr<ActionTimelineEditor> editor;
+        std::uint64_t                         synchronizedEditorRevision = 0;
+        std::uint64_t                         savedEditorRevision        = 0;
+    };
+
+    Tab*       find(const DocumentId& document);
+    const Tab* find(const DocumentId& document) const;
+    [[nodiscard]] EditorResult<DocumentSnapshot> synchronize(Tab& tab);
+    [[nodiscard]] static EditorResult<action::ActionTimeline> decode(const EditorValue& content);
+
+    DocumentService*                         documents_ = nullptr;
+    std::shared_ptr<ActionTimelineClipboard> clipboard_ = std::make_shared<ActionTimelineClipboard>();
+    std::vector<Tab>                         tabs_;
+    DocumentId                               activeDocument_;
 };
 
 }  // namespace eve::editor
