@@ -51,7 +51,7 @@ eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
-                   DEPS animation data filesystem graphics ik
+                   DEPS action animation data filesystem graphics ik
                    THIRDPARTY poco
                    GROUP 2d 3d)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
@@ -232,7 +232,7 @@ eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
-                   DEPS animation data filesystem graphics image model3d scene thread
+                   DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
 eve_declare_module(NAME dialogue LAYER 6

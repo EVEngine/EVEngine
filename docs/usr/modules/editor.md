@@ -606,6 +606,10 @@ actionEditor.pointerUp(mouseX);
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());
+
+// SceneLoader 等可选模块注册真实预览层后，seek/update 会原子更新表现实例。
+if (actionEditor.hasPreviewHost())
+    actionEditor.refreshPreview(); // 参数事务提交后刷新当前位置
 ```
 
 工厂与所有可能失败的编辑操作返回通用 Result 表：`ok`、`value`、`status.code`、
@@ -613,6 +617,24 @@ animationPlayer.setTime(actionEditor.getPreviewTime());
 仅可在创建它的线程使用；`configureWorkspace` 不保留传入的 Workspace 指针，`snapshot`
 返回与编辑器生命周期解耦的规范化资产值。完整可运行示例见
 [`examples/combat-action-editor`](../../../examples/combat-action-editor)。
+
+`ActionPreviewFrame` 同时携带当前位置的 active blocks。SceneLoader 存在时，Prefab Spawn 预览层
+会加载真实 `Renderable3D`，但使用与游戏运行时分离的池；准备失败不移动播放头，跳帧离开区间或
+编辑器销毁会回收预览实例。Audio 模块存在时，同一组合机制使用真实 Source 预览单点和区间音频；
+连续播放不会每帧重启，跳转按块内时间 seek，参数刷新失败不会破坏当前试听；Audio State 区块还会从
+真实解码 PCM 绘制有界 min/max 波形，并按 pitch、looping 和区块时长映射。Particles 模块存在时，
+单点和区间 VFX 使用真实 `ParticleEffect`；Seek/Refresh 从稳定 seed 重模拟到裁剪后的块内时间，
+连续 Advance 增量模拟且不重建未变实例。裁剪掉全部预览 provider 时
+`hasPreviewHost()` 返回 false，时间轴编辑和
+确定性事件采样仍可使用。
+
+连续参数自动化使用 `presentation:parameter-curve` NotifyState。payload 的 `target` 是 LogicalId，
+`operation` 可为 `replace`、`add` 或 `multiply`，`keys` 必须包含时间为 0 和 1 的端点，并可为每段选择
+`step`、`linear` 或 `cubic`。原生 Timeline 会绘制曲线和关键点；选中后 Inspector 可修改时间、数值、切线和
+插值。脚本可用 `addParameterKey`、`editParameterKey`、`removeParameterKey` 做可撤销编辑，用
+`getParameterKeyCount/Time/Value/Interpolation` 读取关键帧，并用 `sampleParameterCurve` 取得预览值。
+内建 `audio:master-volume` target 可直接驱动并在区块结束时恢复主音量；其他领域通过
+`IActionParameterSink` 注册自己的稳定 target。
 
 ```squirrel
 local dock = editor.newDock();

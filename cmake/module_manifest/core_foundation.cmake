@@ -145,7 +145,15 @@ eve_declare_module(NAME npc_ai LAYER 1
 eve_declare_module(NAME action LIB EVAction LAYER 1
                    DEPS decision sensing tags transaction
                    GROUP minimal 2d 3d web)
-# L2 -- combat resolution consuming the action protocol
+# L2 -- combat resolution and optional adapters consuming the action protocol
+# Optional persistent GameEventLog adapter for action timeline events.
+eve_declare_module(NAME action_game_event DIR action/game_event LAYER 2
+                   DEPS action game_event
+                   GROUP minimal 2d 3d web)
+# Optional semantic combo-window projection consumed by player, AI, and script input adapters.
+eve_declare_module(NAME action_input DIR action/input LAYER 2
+                   DEPS action
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME combat LIB EVCombat LAYER 2
                    DEPS action attributes tags
                    GROUP minimal 2d 3d web)

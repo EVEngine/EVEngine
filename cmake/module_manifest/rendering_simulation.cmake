@@ -26,7 +26,7 @@ eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SL
                    GROUP 2d 3d web)
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS platform_event graphics scene
+                   DEPS action platform_event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
@@ -72,6 +72,10 @@ eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
                    GROUP 3d web)
+# Optional Action adapter for generation-safe 3D body-pair collision windows.
+eve_declare_module(NAME physics_action DIR physics/action LAYER 5
+                   DEPS action physics
+                   GROUP 3d web)
 eve_declare_module(NAME pixelworld_physics LAYER 5
                    DEPS pixelworld physics
                    GROUP 2d)
@@ -93,7 +97,7 @@ eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    GROUP 2d 3d)
 # L4 -- rendering extensions and simulation (continued)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS data filesystem graphics image model3d
+                   DEPS action data filesystem graphics image model3d
                    THIRDPARTY poco assimp
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight

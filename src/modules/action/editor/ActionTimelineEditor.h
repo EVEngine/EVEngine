@@ -6,17 +6,27 @@
  */
 
 #include "action/ActionTimeline.h"
+#include "action/ActionParameterCurve.h"
 #include "editor/EditorAuthority.h"
+#include "editor/EditorDocumentService.h"
 #include "editor/EditorProperty.h"
 #include "editor/EditorSelection.h"
 #include "editor/EditorTransactionService.h"
 #include "editor/EditorWorkspace.h"
 
+#include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 namespace eve::editor {
+
+/** @brief Exact outer time bounds of the current owning timeline selection. */
+struct TimelineSelectionRange {
+    Duration start = Duration::zero();
+    Duration end   = Duration::zero();
+};
 
 /** @brief Prepared deterministic preview advance that can be validated before presentation side effects. */
 struct ActionTimelinePreviewPlan {
@@ -26,6 +36,36 @@ struct ActionTimelinePreviewPlan {
     bool                                     includeStart = false;
     bool                                     reachesEnd   = false;
     std::vector<action::ActionTimelineEvent> events;
+};
+
+/**
+ * @brief Owning clipboard shared explicitly by one or more action timeline editors.
+ *
+ * The clipboard contains deep value copies only. It has no target or UI lifetime
+ * dependency and may therefore be shared by multiple open documents on one owner
+ * thread. Concurrent access is not supported.
+ */
+class ActionTimelineClipboard {
+public:
+    /** @brief Remove every copied item and track. */
+    void clear() noexcept;
+    /** @brief Whether neither item nor track content is available. */
+    bool empty() const noexcept;
+
+private:
+    friend class ActionTimelineEditor;
+
+    struct Item {
+        enum class Kind : std::uint8_t { AnimationSection, Notify, NotifyState };
+        Kind                           kind = Kind::Notify;
+        LogicalId                      trackId;
+        action::ActionAnimationSection animationSection;
+        action::ActionNotify           notify;
+        action::ActionNotifyState      notifyState;
+    };
+
+    std::vector<Item>                 items_;
+    std::optional<action::ActionTrack> track_;
 };
 
 /**
@@ -92,7 +132,7 @@ public:
     [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    bool matches(const SelectionSnapshot& selection) const;
+    bool                                        matches(const SelectionSnapshot& selection) const;
     [[nodiscard]] EditorResult<DomainOperation> replacement(const action::ActionTimeline& candidate,
                                                             std::string                   property) const;
     [[nodiscard]] EditorResult<void>            assign(action::ActionTimeline candidate);
@@ -114,13 +154,45 @@ class ActionTimelineEditor {
 public:
     /** @brief Construct a self-contained editor for one canonical timeline. */
     ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline);
+    /**
+     * @brief Construct an editor using an explicitly shared owning clipboard.
+     * @param targetId Stable editor target identity.
+     * @param timeline Valid canonical timeline owned by this editor.
+     * @param clipboard Clipboard whose shared ownership is retained; null creates an isolated clipboard.
+     */
+    ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
+                         std::shared_ptr<ActionTimelineClipboard> clipboard);
 
     /** @brief Borrow the authoritative target. */
     const ActionTimelineTarget& target() const noexcept { return target_; }
+    /** @brief Atomically replace the document snapshot and clear history, selection and preview transport. */
+    [[nodiscard]] EditorResult<void> reloadDocument(const EditorValue& snapshot);
     /** @brief Atomically install the standard asset/preview/timeline/inspector panel composition. */
     [[nodiscard]] EditorResult<void> configureWorkspace(EditorWorkspace& workspace) const;
     /** @brief Add an empty semantic track. */
     [[nodiscard]] EditorResult<void> addTrack(action::ActionTrack track);
+    /** @brief Remove one semantic track and all of its items in one undoable transaction. */
+    [[nodiscard]] EditorResult<void> removeTrack(const LogicalId& trackId);
+    /** @brief Rename one track without changing its stable identity. */
+    [[nodiscard]] EditorResult<void> renameTrack(const LogicalId& trackId, std::string label);
+    /** @brief Add one objective animation section to the montage lane. */
+    [[nodiscard]] EditorResult<void> addAnimationSection(action::ActionAnimationSection section);
+    /** @brief Move an animation section while preserving its duration. */
+    [[nodiscard]] EditorResult<void> moveAnimationSection(const LogicalId& sectionId, Duration delta);
+    /** @brief Resize an animation section and its incoming blend window. */
+    [[nodiscard]] EditorResult<void> resizeAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
+                                                            Duration blendIn);
+    /** @brief Atomically edit section timing, blend and animation resource URI. */
+    [[nodiscard]] EditorResult<void> editAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
+                                                          Duration blendIn, std::string animationUri);
+    /** @brief Atomically edit clip-local trim and incoming blend curve. */
+    [[nodiscard]] EditorResult<void> editAnimationSectionSource(const LogicalId& sectionId, Duration sourceStart,
+                                                                Duration                 sourceEnd,
+                                                                action::ActionBlendCurve blendCurve);
+    /** @brief Replace every editable animation-section field in one undo step. */
+    [[nodiscard]] EditorResult<void> editAnimationSectionFull(action::ActionAnimationSection section);
+    /** @brief Remove one animation section from the montage lane. */
+    [[nodiscard]] EditorResult<void> removeAnimationSection(const LogicalId& sectionId);
     /** @brief Add an instantaneous notify to an unlocked track. */
     [[nodiscard]] EditorResult<void> addNotify(const LogicalId& trackId, action::ActionNotify notify);
     /** @brief Add a notify state interval to an unlocked track. */
@@ -131,6 +203,13 @@ public:
     [[nodiscard]] EditorResult<void> resizeState(const LogicalId& itemId, Duration start, Duration end);
     /** @brief Replace one item's type and owning payload through one undoable transaction. */
     [[nodiscard]] EditorResult<void> updateItem(const LogicalId& itemId, LogicalId type, Value::Object payload);
+    /** @brief Insert one normalized key into a parameter curve as an undoable edit. */
+    [[nodiscard]] EditorResult<void> addParameterKey(const LogicalId& itemId, action::ActionParameterKey key);
+    /** @brief Replace one indexed parameter key as an undoable edit. */
+    [[nodiscard]] EditorResult<void> editParameterKey(const LogicalId& itemId, std::size_t index,
+                                                      action::ActionParameterKey key);
+    /** @brief Remove one non-endpoint parameter key as an undoable edit. */
+    [[nodiscard]] EditorResult<void> removeParameterKey(const LogicalId& itemId, std::size_t index);
     /** @brief Atomically replace one item's timing, type and owning payload. */
     [[nodiscard]] EditorResult<void> editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
                                               Value::Object payload);
@@ -138,6 +217,8 @@ public:
     [[nodiscard]] EditorResult<void> removeItem(const LogicalId& itemId);
     /** @brief Mute/unmute one track through an undoable operation. */
     [[nodiscard]] EditorResult<void> setTrackMuted(const LogicalId& trackId, bool muted);
+    /** @brief Lock/unlock one track through an undoable operation. */
+    [[nodiscard]] EditorResult<void> setTrackLocked(const LogicalId& trackId, bool locked);
 
     /** @brief Replace selection with items intersecting a time interval. */
     [[nodiscard]] EditorResult<std::size_t> boxSelect(Duration start, Duration end);
@@ -149,10 +230,29 @@ public:
     std::size_t selectionCount() const noexcept { return selection_.size(); }
     /** @brief Return selected item IDs in lexical order as owning values. */
     [[nodiscard]] std::vector<LogicalId> selectedItemIds() const;
+    /** @brief Return the outer bounds of every selected section, notify and notify-state. */
+    [[nodiscard]] EditorResult<TimelineSelectionRange> selectionRange() const;
+    /** @brief Move the complete selection by one exact delta in a single undoable transaction. */
+    [[nodiscard]] EditorResult<void> moveSelection(Duration delta);
+    /** @brief Align selected item starts to the earliest selected start while preserving item durations. */
+    [[nodiscard]] EditorResult<void> alignSelectionStart();
+    /** @brief Align selected item ends to the latest selected end while preserving item durations. */
+    [[nodiscard]] EditorResult<void> alignSelectionEnd();
+    /**
+     * @brief Proportionally fit the complete selection into exact destination bounds.
+     * @remarks Relative times and section blend windows are rounded to the nearest nanosecond.
+     */
+    [[nodiscard]] EditorResult<void> scaleSelection(Duration start, Duration end);
     /** @brief Copy selected items into an owning editor clipboard. */
     [[nodiscard]] EditorResult<std::size_t> copySelection();
     /** @brief Paste copied items at an exact offset with new stable ids. */
     [[nodiscard]] EditorResult<std::size_t> paste(Duration offset);
+    /** @brief Paste copied notify items into a chosen target track for cross-document workflows. */
+    [[nodiscard]] EditorResult<std::size_t> pasteToTrack(const LogicalId& trackId, Duration offset);
+    /** @brief Deep-copy one complete track into the shared clipboard. */
+    [[nodiscard]] EditorResult<void> copyTrack(const LogicalId& trackId);
+    /** @brief Paste a copied complete track with collision-free track and item ids. */
+    [[nodiscard]] EditorResult<LogicalId> pasteTrack();
     /** @brief Delete every selected item as one transaction. */
     [[nodiscard]] EditorResult<void> deleteSelection();
 
@@ -169,6 +269,18 @@ public:
     void play() noexcept { playing_ = true; }
     /** @brief Pause preview playback. */
     void pause() noexcept { playing_ = false; }
+    /** @brief Pause and return the preview cursor to the first frame. */
+    [[nodiscard]] EditorResult<void> stop();
+    /**
+     * @brief Resolve a signed frame step without mutating transport state.
+     * @param frames Signed number of frames; negative values step backward.
+     * @param frameRate Finite positive frames per second used for deterministic rounding.
+     */
+    [[nodiscard]] EditorResult<Duration> frameStepTarget(std::int64_t frames, double frameRate) const;
+    /** @brief Pause and move by a signed number of frames, clamped to the timeline. */
+    [[nodiscard]] EditorResult<void> stepFrames(std::int64_t frames, double frameRate);
+    /** @brief Pause and move the cursor to the final frame boundary. */
+    [[nodiscard]] EditorResult<void> jumpToEnd();
     /** @brief Seek preview without emitting crossed events. */
     [[nodiscard]] EditorResult<void> seek(Duration time);
     /** @brief Advance preview by injected time and collect crossed events. */
@@ -185,28 +297,93 @@ public:
     const std::vector<action::ActionTimelineEvent>& previewEvents() const noexcept { return previewEvents_; }
 
 private:
-    struct ClipboardItem {
-        LogicalId                 trackId;
-        bool                      state = false;
-        action::ActionNotify      notify;
-        action::ActionNotifyState notifyState;
-    };
-
     [[nodiscard]] EditorResult<void> commit(action::ActionTimeline candidate, std::string label, std::string mergeKey);
     [[nodiscard]] static EditorResult<void> rejected(std::string rule, std::string message);
-    [[nodiscard]] LogicalId                 copiedId(const LogicalId& source);
+    [[nodiscard]] LogicalId copiedId(const LogicalId& source, const action::ActionTimeline& candidate);
+    [[nodiscard]] EditorResult<std::size_t> pasteItems(Duration offset, const LogicalId* destinationTrack);
 
     ActionTimelineTarget                     target_;
     LocalWorldAuthority                      authority_;
     LocalTransactionBackend                  transactions_;
     std::set<std::string>                    selection_;
-    std::vector<ClipboardItem>               clipboard_;
+    std::shared_ptr<ActionTimelineClipboard> clipboard_;
     std::uint64_t                            transactionSequence_ = 0;
     std::uint64_t                            copySequence_        = 0;
     Duration                                 previewTime_         = Duration::zero();
     bool                                     playing_             = false;
     bool                                     previewStarted_      = false;
     std::vector<action::ActionTimelineEvent> previewEvents_;
+};
+
+/** @brief Dirty-document policy applied when closing one Montage tab. */
+enum class ActionTimelineCloseMode : std::uint8_t { ProtectDirty, Discard };
+
+/** @brief Immutable projection of one open Montage document tab. */
+struct ActionTimelineTabSnapshot {
+    DocumentSnapshot document;
+    bool             active = false;
+    bool             dirty  = false;
+};
+
+/**
+ * @brief Multi-document Montage workspace backed by the engine document service.
+ *
+ * This owner-thread-only coordinator owns tab editors and one shared deep-copy
+ * clipboard. The injected DocumentService remains the persistence authority and
+ * must outlive the workspace. Each save publishes the editor's canonical target
+ * snapshot to DocumentService before requesting its revision-qualified CAS save.
+ */
+class ActionTimelineDocumentWorkspace {
+public:
+    /** @brief Bind a non-owning document service that outlives this workspace. */
+    explicit ActionTimelineDocumentWorkspace(DocumentService& documents);
+
+    /**
+     * @brief Open or activate one Montage asset document.
+     * @param key Stable asset key; Timeline is the expected document kind.
+     * @param title User-visible tab title.
+     * @param resourceUri DocumentService resource URI used for persistence.
+     * @param initialTimeline Initial value used only when the store has no document.
+     */
+    [[nodiscard]] EditorResult<DocumentId> open(DocumentKey key, std::string title, std::string resourceUri,
+                                                action::ActionTimeline initialTimeline);
+    /** @brief Activate an already-open tab. */
+    [[nodiscard]] EditorResult<void> activate(const DocumentId& document);
+    /** @brief Save one exact canonical editor revision through DocumentService CAS persistence. */
+    [[nodiscard]] EditorResult<DocumentSnapshot> save(const DocumentId& document);
+    /** @brief Reconcile a tab with external persistence, rejecting dirty conflicts without data loss. */
+    [[nodiscard]] EditorResult<DocumentSnapshot> reconcile(const DocumentId& document);
+    /** @brief Close a tab, rejecting unsaved work unless explicit discard is requested. */
+    [[nodiscard]] EditorResult<void> close(const DocumentId& document, ActionTimelineCloseMode mode);
+
+    /** @brief Ordered immutable tab projections for rendering a document bar. */
+    [[nodiscard]] EditorResult<std::vector<ActionTimelineTabSnapshot>> tabs() const;
+    /**
+     * @brief Borrow the active editor.
+     * @return Pointer owned by this workspace, invalidated by closing that tab.
+     * @lifetime Valid until close() removes the active document tab.
+     */
+    ActionTimelineEditor* activeEditor() noexcept;
+    /** @brief Stable active document identity, or empty when no tab is open. */
+    const DocumentId& activeDocument() const noexcept { return activeDocument_; }
+
+private:
+    struct Tab {
+        DocumentId                            document;
+        std::unique_ptr<ActionTimelineEditor> editor;
+        std::uint64_t                         synchronizedEditorRevision = 0;
+        std::uint64_t                         savedEditorRevision        = 0;
+    };
+
+    Tab*       find(const DocumentId& document);
+    const Tab* find(const DocumentId& document) const;
+    [[nodiscard]] EditorResult<DocumentSnapshot> synchronize(Tab& tab);
+    [[nodiscard]] static EditorResult<action::ActionTimeline> decode(const EditorValue& content);
+
+    DocumentService*                         documents_ = nullptr;
+    std::shared_ptr<ActionTimelineClipboard> clipboard_ = std::make_shared<ActionTimelineClipboard>();
+    std::vector<Tab>                         tabs_;
+    DocumentId                               activeDocument_;
 };
 
 }  // namespace eve::editor

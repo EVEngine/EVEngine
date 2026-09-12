@@ -109,7 +109,7 @@ eve::action::ActionTimeline lightAttackTimeline(float clipDuration) {
     presentation.notifies.push_back({id("kaykit-notify:impact-camera"),
                                      id("presentation:camera"),
                                      seconds(clipDuration * 0.46),
-                                     {{"cue", eve::Value("combat.light-impact")}}});
+                                     {{"cue", eve::Value("combat:light-impact")}}});
 
     eve::action::ActionTrack movement;
     movement.id    = id("kaykit-track:movement");

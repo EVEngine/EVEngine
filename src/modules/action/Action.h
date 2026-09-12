@@ -183,6 +183,8 @@ struct ActionAdvance {
     Duration totalElapsed = Duration::zero();
     /** @brief Owning timeline boundaries crossed by this advance. */
     std::vector<ActionTimelineEvent> timelineEvents;
+    /** @brief Owning samples of timeline states active after this advance. */
+    std::vector<ActionActiveBlock> activeBlocks;
 };
 
 /**

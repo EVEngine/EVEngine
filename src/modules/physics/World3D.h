@@ -19,6 +19,10 @@
 
 namespace eve::physics {
 
+namespace action_adapter {
+class ActionCollisionIgnoreState;
+}
+
 class Body3D;
 class Shape3D;
 class Joint3D;
@@ -873,6 +877,7 @@ public:
     void emitContactEvents();
 
 private:
+    friend class action_adapter::ActionCollisionIgnoreState;
     friend class Body3D;
     friend class Joint3D;
     friend class Shape3D;

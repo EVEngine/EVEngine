@@ -53,6 +53,32 @@ Module_IMPL(Camera, new Camera());
 
 CameraController::CameraController() = default;
 
+CameraController::~CameraController() { cap::removeListener<action::IActionCameraCueSink>(this); }
+
+bool CameraController::getActionCuesEnabled() const {
+    for (std::size_t index = 0; index < cap::listenerCount<action::IActionCameraCueSink>(); ++index)
+        if (cap::listenerAt<action::IActionCameraCueSink>(index) == this) return true;
+    return false;
+}
+
+void CameraController::setActionCuesEnabled(bool enabled) {
+    const bool current = getActionCuesEnabled();
+    if (enabled && !current)
+        cap::addListener<action::IActionCameraCueSink>(this);
+    else if (!enabled && current)
+        cap::removeListener<action::IActionCameraCueSink>(this);
+}
+
+bool CameraController::supports(const LogicalId&) const noexcept { return getActionCuesEnabled(); }
+
+Result<void> CameraController::trigger(const action::ActionCameraCueBinding& binding,
+                                       const action::ActionNotifyContext&) {
+    addImpulse(static_cast<float>(binding.positionAmplitude), static_cast<float>(binding.rotationAmplitude),
+               static_cast<float>(binding.duration.seconds()), binding.seed);
+    addFovImpulse(static_cast<float>(binding.fovAmplitude), static_cast<float>(binding.duration.seconds()));
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 void CameraController::setCamera(graphics::Camera3D* cam) { cam_ = cam; }
 
 graphics::Camera3D* CameraController::getCamera() const { return cam_; }
@@ -799,6 +825,8 @@ void Camera::expose(ssq::Table& table) {
 
     cc.addFunc("setCamera", &CameraController::setCamera);
     cc.addFunc("getCamera", &CameraController::getCamera);
+    cc.addFunc("setActionCuesEnabled", &CameraController::setActionCuesEnabled);
+    cc.addFunc("getActionCuesEnabled", &CameraController::getActionCuesEnabled);
 
     cc.addFunc("setTarget", &CameraController::setTarget);
     cc.addFunc("setTargetNode", &CameraController::setTargetNode);

@@ -154,6 +154,8 @@ TEST_CASE("actionPreviewController.routesPresentationAndStateBoundaryCues") {
     REQUIRE(sink.presented.has_value());
     CHECK(static_cast<int>(sink.presented->reason) == static_cast<int>(eve::action::ActionPreviewReason::Advance));
     REQUIRE_EQ(sink.presented->cues.size(), 4u);
+    REQUIRE_EQ(sink.presented->activeBlocks.size(), 1u);
+    CHECK_EQ(sink.presented->activeBlocks.front().itemId, id("combat-state:hitbox"));
     CHECK(static_cast<int>(sink.presented->cues[0].kind) ==
           static_cast<int>(eve::action::ActionPreviewCueKind::StateEnter));
     CHECK(static_cast<int>(sink.presented->cues[1].kind) == static_cast<int>(eve::action::ActionPreviewCueKind::Vfx));
@@ -213,4 +215,31 @@ TEST_CASE("actionPreviewController.seekValidatesBeforePreparing") {
     CHECK_EQ(editor.previewTime(), eve::Duration::fromNanoseconds(60));
     REQUIRE(sink.presented.has_value());
     CHECK(sink.presented->cues.empty());
+    CHECK(sink.presented->activeBlocks.empty());
+}
+
+TEST_CASE("actionPreviewController.stepsFramesAndStopsAtomically") {
+    eve::editor::ActionTimelineEditor    editor("asset.combat.preview", timelineFixture());
+    RecordingSink                        sink;
+    eve::editor::ActionPreviewController preview(editor, sink);
+
+    REQUIRE(preview.stepFrames(1, 20'000'000.0).ok());
+    CHECK_EQ(editor.previewTime(), eve::Duration::fromNanoseconds(50));
+    CHECK(!editor.playing());
+    REQUIRE(preview.stepFrames(-1, 20'000'000.0).ok());
+    CHECK_EQ(editor.previewTime(), eve::Duration::zero());
+    REQUIRE(preview.jumpToEnd().ok());
+    CHECK_EQ(editor.previewTime(), eve::Duration::fromNanoseconds(100));
+
+    editor.play();
+    sink.rejectPrepare = true;
+    auto rejected = preview.stop();
+    CHECK(!rejected.ok());
+    CHECK_EQ(editor.previewTime(), eve::Duration::fromNanoseconds(100));
+    CHECK(editor.playing());
+    sink.rejectPrepare = false;
+    REQUIRE(preview.stop().ok());
+    CHECK_EQ(editor.previewTime(), eve::Duration::zero());
+    CHECK(!editor.playing());
+    CHECK(!preview.stepFrames(1, 0.0).ok());
 }

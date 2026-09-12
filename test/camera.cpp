@@ -203,6 +203,37 @@ TEST_CASE("camera.impulseExpires") {
     CHECK(near(cam->data()->eyeX, 0.f, 0.05f));
 }
 
+TEST_CASE("camera.actionCueRegistrationDrivesRealControllerImpulse") {
+    CameraController cc;
+    Camera3D* cam = Camera3D::createCamera();
+    cc.setCamera(cam);
+    cc.setTarget(0.f, 0.f, 0.f);
+    cc.setOffset(0.f, 0.f, 5.f);
+    cc.snap();
+    CHECK(!cc.getActionCuesEnabled());
+    cc.setActionCuesEnabled(true);
+    CHECK(cc.getActionCuesEnabled());
+
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionTimelineEvent event{
+        eve::action::ActionTimelineEventKind::Notify,
+        *eve::LogicalId::parse("camera-track:main"),
+        *eve::LogicalId::parse("camera-cue:impact"),
+        *eve::LogicalId::parse("presentation:camera"),
+        eve::Duration::zero(),
+        {{"cue", "combat:impact"}, {"positionAmplitude", 1.0}, {"rotationAmplitude", 0.0},
+         {"fovAmplitude", 5.0}, {"durationSeconds", 0.2}, {"seed", 9}}};
+    eve::action::ActionNotifyContext context;
+    context.executionId = eve::action::ActionExecutionId{303};
+    REQUIRE(registry.value().dispatch(event, context).ok());
+    cc.update(0.05f);
+    CHECK(std::fabs(cam->data()->eyeX) > 1e-3f);
+    CHECK(cam->data()->fovYDeg > cc.getFov());
+    cc.setActionCuesEnabled(false);
+    CHECK(!cc.getActionCuesEnabled());
+}
+
 TEST_CASE("camera.timelineCutsAndEmitsMarkers") {
     CameraController cc;
     Camera3D*        cam = Camera3D::createCamera();

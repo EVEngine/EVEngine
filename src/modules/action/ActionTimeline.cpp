@@ -1,6 +1,7 @@
 #include "action/ActionTimeline.h"
 
 #include <algorithm>
+#include <cmath>
 #include <set>
 #include <tuple>
 #include <utility>
@@ -73,6 +74,51 @@ Value encodeState(const ActionNotifyState& state) {
     return Value(std::move(object));
 }
 
+Value encodeAnimationSection(const ActionAnimationSection& section) {
+    Value::Object object;
+    object["id"]            = section.id.format();
+    object["animationUri"]  = section.animationUri;
+    object["startNs"]       = section.start.nanoseconds();
+    object["endNs"]         = section.end.nanoseconds();
+    object["blendInNs"]     = section.blendIn.nanoseconds();
+    object["sourceStartNs"] = section.sourceStart.nanoseconds();
+    object["sourceEndNs"]   = section.sourceEnd.nanoseconds();
+    object["blendCurve"]    = std::string(actionBlendCurveName(section.blendCurve));
+    return Value(std::move(object));
+}
+
+Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const std::string& path,
+                                                      std::int64_t schemaVersion) {
+    if (!value.isObject()) return invalid<ActionAnimationSection>("expected animation section object", path);
+    auto id = logicalIdField(value, "id", path + ".id");
+    if (!id) return Result<ActionAnimationSection>::failure(id.status());
+    auto uri = stringField(value, "animationUri", path + ".animationUri");
+    if (!uri) return Result<ActionAnimationSection>::failure(uri.status());
+    auto start = intField(value, "startNs", path + ".startNs");
+    if (!start) return Result<ActionAnimationSection>::failure(start.status());
+    auto end = intField(value, "endNs", path + ".endNs");
+    if (!end) return Result<ActionAnimationSection>::failure(end.status());
+    auto blend = intField(value, "blendInNs", path + ".blendInNs");
+    if (!blend) return Result<ActionAnimationSection>::failure(blend.status());
+    ActionAnimationSection section{std::move(id).takeValue(), std::move(uri).takeValue(),
+                                   Duration::fromNanoseconds(start.value()), Duration::fromNanoseconds(end.value()),
+                                   Duration::fromNanoseconds(blend.value())};
+    if (schemaVersion >= 3) {
+        auto sourceStart = intField(value, "sourceStartNs", path + ".sourceStartNs");
+        if (!sourceStart) return Result<ActionAnimationSection>::failure(sourceStart.status());
+        auto sourceEnd = intField(value, "sourceEndNs", path + ".sourceEndNs");
+        if (!sourceEnd) return Result<ActionAnimationSection>::failure(sourceEnd.status());
+        auto blendCurve = stringField(value, "blendCurve", path + ".blendCurve");
+        if (!blendCurve) return Result<ActionAnimationSection>::failure(blendCurve.status());
+        auto parsedCurve = actionBlendCurveFromName(blendCurve.value());
+        if (!parsedCurve) return invalid<ActionAnimationSection>("unknown animation blend curve", path + ".blendCurve");
+        section.sourceStart = Duration::fromNanoseconds(sourceStart.value());
+        section.sourceEnd   = Duration::fromNanoseconds(sourceEnd.value());
+        section.blendCurve  = *parsedCurve;
+    }
+    return Result<ActionAnimationSection>::success(std::move(section));
+}
+
 Result<ActionNotify> decodeNotify(const Value& value, const std::string& path) {
     if (!value.isObject()) return invalid<ActionNotify>("expected notify object", path);
     auto id = logicalIdField(value, "id", path + ".id");
@@ -111,6 +157,20 @@ bool inWindow(Duration value, Duration previous, Duration current, bool includeP
 
 }  // namespace
 
+std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept {
+    switch (curve) {
+        case ActionBlendCurve::Linear: return "linear";
+        case ActionBlendCurve::EaseInOut: return "ease-in-out";
+    }
+    return "ease-in-out";
+}
+
+std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept {
+    if (name == "linear") return ActionBlendCurve::Linear;
+    if (name == "ease-in-out") return ActionBlendCurve::EaseInOut;
+    return std::nullopt;
+}
+
 std::string_view actionTrackKindName(ActionTrackKind kind) noexcept {
     switch (kind) {
         case ActionTrackKind::Animation: return "animation";
@@ -138,8 +198,40 @@ Result<void> ActionTimeline::validate() const {
         return invalid("unsupported action timeline schema version", "schemaVersion");
     if (!actionId.isValid()) return invalid("action timeline requires a valid action id", "actionId");
     if (duration.nanoseconds() < 0) return invalid("timeline duration must be non-negative", "durationNs");
+    if (!std::isfinite(montage.basePlayRate) || montage.basePlayRate <= 0.0)
+        return invalid("montage base play rate must be positive and finite", "montage.basePlayRate");
+    if (montage.defaultBlendIn < Duration::zero() || montage.defaultBlendOut < Duration::zero() ||
+        montage.blendOutOffset < Duration::zero())
+        return invalid("montage blend durations must be non-negative", "montage");
+    for (std::size_t index = 0; index < splitTimestamps.size(); ++index) {
+        if (splitTimestamps[index] <= Duration::zero() || splitTimestamps[index] >= duration ||
+            (index > 0 && splitTimestamps[index - 1] >= splitTimestamps[index]))
+            return invalid("physical section splits must be strictly ordered inside the timeline",
+                           "splitTimestampsNs[" + std::to_string(index) + "]");
+    }
 
     std::set<std::string> ids;
+    for (std::size_t index = 0; index < animationSections.size(); ++index) {
+        const auto&       section = animationSections[index];
+        const std::string path    = "animationSections[" + std::to_string(index) + "]";
+        if (!section.id.isValid()) return invalid("animation section id is invalid", path + ".id");
+        if (!ids.insert(section.id.format()).second) return invalid("timeline item ids must be unique", path + ".id");
+        if (section.animationUri.empty()) return invalid("animation section requires a URI", path + ".animationUri");
+        if (section.start < Duration::zero() || section.end <= section.start || section.end > duration)
+            return invalid("animation section range is invalid", path);
+        if (section.blendIn < Duration::zero() ||
+            section.blendIn.nanoseconds() > section.end.nanoseconds() - section.start.nanoseconds())
+            return invalid("animation section blend-in is outside its range", path + ".blendInNs");
+        if (section.sourceStart < Duration::zero() || section.sourceEnd < Duration::zero() ||
+            (!section.sourceEnd.isZero() && section.sourceEnd <= section.sourceStart))
+            return invalid("animation section source trim is invalid", path + ".sourceStartNs");
+        if (index > 0) {
+            const auto& previous = animationSections[index - 1];
+            if (previous.start > section.start)
+                return invalid("animation sections must be sorted by start time", path + ".startNs");
+            if (previous.end > section.start) return invalid("animation sections must not overlap", path + ".startNs");
+        }
+    }
     for (std::size_t trackIndex = 0; trackIndex < tracks.size(); ++trackIndex) {
         const auto&       track = tracks[trackIndex];
         const std::string path  = "tracks[" + std::to_string(trackIndex) + "]";
@@ -203,10 +295,42 @@ Result<std::vector<ActionTimelineEvent>> ActionTimeline::sample(Duration previou
     return Result<std::vector<ActionTimelineEvent>>::success(std::move(out));
 }
 
+Result<std::vector<ActionActiveBlock>> ActionTimeline::activeBlocks(Duration time) const {
+    auto valid = validate();
+    if (!valid) return Result<std::vector<ActionActiveBlock>>::failure(valid.status());
+    if (time < Duration::zero() || time > duration)
+        return invalid<std::vector<ActionActiveBlock>>("active-block sample is outside the timeline", "time");
+
+    std::vector<ActionActiveBlock> out;
+    for (const auto& track : tracks) {
+        if (track.muted) continue;
+        for (const auto& state : track.states) {
+            if (time < state.start || time >= state.end) continue;
+            out.push_back({track.id,
+                           state.id,
+                           state.type,
+                           Duration::fromNanoseconds(time.nanoseconds() - state.start.nanoseconds()),
+                           Duration::fromNanoseconds(state.end.nanoseconds() - state.start.nanoseconds()),
+                           state.payload});
+        }
+    }
+    std::stable_sort(out.begin(), out.end(), [](const auto& left, const auto& right) {
+        if (left.trackId != right.trackId) return left.trackId.format() < right.trackId.format();
+        return left.itemId.format() < right.itemId.format();
+    });
+    return Result<std::vector<ActionActiveBlock>>::success(std::move(out));
+}
+
 Result<Value> ActionTimeline::toValue() const {
     auto valid = validate();
     if (!valid) return Result<Value>::failure(valid.status());
     Value::Array encodedTracks;
+    Value::Array encodedSections;
+    Value::Array encodedSplits;
+    encodedSections.reserve(animationSections.size());
+    for (const auto& section : animationSections) encodedSections.push_back(encodeAnimationSection(section));
+    encodedSplits.reserve(splitTimestamps.size());
+    for (const Duration split : splitTimestamps) encodedSplits.emplace_back(split.nanoseconds());
     encodedTracks.reserve(tracks.size());
     for (const auto& track : tracks) {
         Value::Array notifies;
@@ -224,13 +348,25 @@ Result<Value> ActionTimeline::toValue() const {
         encodedTracks.emplace_back(std::move(object));
     }
     Value::Object root;
-    root["schema"]        = std::string(kActionTimelineSchemaId);
-    root["schemaVersion"] = static_cast<std::int64_t>(schemaVersion.value());
-    root["actionId"]      = actionId.format();
-    root["durationNs"]    = duration.nanoseconds();
-    root["animationUri"]  = animationUri;
-    root["tracks"]        = Value(std::move(encodedTracks));
-    root["metadata"]      = Value(metadata);
+    root["schema"]            = std::string(kActionTimelineSchemaId);
+    root["schemaVersion"]     = static_cast<std::int64_t>(schemaVersion.value());
+    root["actionId"]          = actionId.format();
+    root["durationNs"]        = duration.nanoseconds();
+    root["animationUri"]      = animationSections.empty() ? animationUri : animationSections.front().animationUri;
+    root["animationSections"] = Value(std::move(encodedSections));
+    root["splitTimestampsNs"] = Value(std::move(encodedSplits));
+    root["montage"]           = Value::Object{{"basePlayRate", montage.basePlayRate},
+                                              {"looping", montage.looping},
+                                              {"footIk", montage.footIk},
+                                              {"animationLayer", static_cast<std::int64_t>(montage.animationLayer)},
+                                              {"defaultBlendInNs", montage.defaultBlendIn.nanoseconds()},
+                                              {"defaultBlendOutNs", montage.defaultBlendOut.nanoseconds()},
+                                              {"blendOutOffsetNs", montage.blendOutOffset.nanoseconds()},
+                                              {"rootMotionHorizontal", montage.rootMotionHorizontal},
+                                              {"rootMotionVertical", montage.rootMotionVertical},
+                                              {"rootMotionRotation", montage.rootMotionRotation}};
+    root["tracks"]            = Value(std::move(encodedTracks));
+    root["metadata"]          = Value(metadata);
     return Result<Value>::success(Value(std::move(root)));
 }
 
@@ -255,12 +391,74 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
         return invalid<ActionTimeline>("expected metadata object", "metadata");
 
     ActionTimeline candidate;
-    candidate.schemaVersion = SchemaVersion(static_cast<std::uint64_t>(version.value()));
+    if (version.value() < 1 || version.value() > static_cast<std::int64_t>(kActionTimelineSchemaVersion))
+        return invalid<ActionTimeline>("unsupported action timeline schema version", "schemaVersion");
+    candidate.schemaVersion = SchemaVersion(kActionTimelineSchemaVersion);
     candidate.actionId      = std::move(actionId).takeValue();
     candidate.duration      = Duration::fromNanoseconds(duration.value());
     candidate.animationUri  = std::move(animationUri).takeValue();
     candidate.metadata      = *metadataValue->getIf<Value::Object>();
-    const auto& tracks      = *tracksValue->getIf<Value::Array>();
+    if (version.value() == 1) {
+        if (!candidate.animationUri.empty() && !candidate.duration.isZero()) {
+            candidate.animationSections.push_back({*LogicalId::fromParts("animation-section", "legacy"),
+                                                   candidate.animationUri, Duration::zero(), candidate.duration,
+                                                   Duration::zero()});
+        }
+    } else {
+        const Value* sectionsValue = field(value, "animationSections");
+        if (!sectionsValue || !sectionsValue->isArray())
+            return invalid<ActionTimeline>("expected animationSections array", "animationSections");
+        const auto& sections = *sectionsValue->getIf<Value::Array>();
+        for (std::size_t index = 0; index < sections.size(); ++index) {
+            auto decoded = decodeAnimationSection(sections[index], "animationSections[" + std::to_string(index) + "]",
+                                                  version.value());
+            if (!decoded) return Result<ActionTimeline>::failure(decoded.status());
+            candidate.animationSections.push_back(std::move(decoded).takeValue());
+        }
+        if (!candidate.animationSections.empty())
+            candidate.animationUri = candidate.animationSections.front().animationUri;
+        if (version.value() >= 3) {
+            const Value* splitsValue = field(value, "splitTimestampsNs");
+            if (!splitsValue || !splitsValue->isArray())
+                return invalid<ActionTimeline>("expected splitTimestampsNs array", "splitTimestampsNs");
+            const auto& splits = *splitsValue->getIf<Value::Array>();
+            for (std::size_t index = 0; index < splits.size(); ++index) {
+                if (!splits[index].isInt64())
+                    return invalid<ActionTimeline>("expected physical section timestamp",
+                                                   "splitTimestampsNs[" + std::to_string(index) + "]");
+                candidate.splitTimestamps.push_back(Duration::fromNanoseconds(splits[index].asInt()));
+            }
+            const Value* montageValue = field(value, "montage");
+            if (!montageValue || !montageValue->isObject())
+                return invalid<ActionTimeline>("expected montage settings object", "montage");
+            const Value* basePlayRate   = field(*montageValue, "basePlayRate");
+            auto         looping        = boolField(*montageValue, "looping", "montage.looping");
+            auto         footIk         = boolField(*montageValue, "footIk", "montage.footIk");
+            auto         layer          = intField(*montageValue, "animationLayer", "montage.animationLayer");
+            auto         blendIn        = intField(*montageValue, "defaultBlendInNs", "montage.defaultBlendInNs");
+            auto         blendOut       = intField(*montageValue, "defaultBlendOutNs", "montage.defaultBlendOutNs");
+            auto         blendOutOffset = intField(*montageValue, "blendOutOffsetNs", "montage.blendOutOffsetNs");
+            auto rootHorizontal = boolField(*montageValue, "rootMotionHorizontal", "montage.rootMotionHorizontal");
+            auto rootVertical   = boolField(*montageValue, "rootMotionVertical", "montage.rootMotionVertical");
+            auto rootRotation   = boolField(*montageValue, "rootMotionRotation", "montage.rootMotionRotation");
+            if (!basePlayRate || (!basePlayRate->isDouble() && !basePlayRate->isInt64()) || !looping || !footIk ||
+                !layer || !blendIn || !blendOut || !blendOutOffset || !rootHorizontal || !rootVertical ||
+                !rootRotation || layer.value() < 0)
+                return invalid<ActionTimeline>("montage settings are invalid", "montage");
+            candidate.montage.basePlayRate =
+                basePlayRate->isDouble() ? basePlayRate->asDouble() : static_cast<double>(basePlayRate->asInt());
+            candidate.montage.looping              = looping.value();
+            candidate.montage.footIk               = footIk.value();
+            candidate.montage.animationLayer       = static_cast<std::uint32_t>(layer.value());
+            candidate.montage.defaultBlendIn       = Duration::fromNanoseconds(blendIn.value());
+            candidate.montage.defaultBlendOut      = Duration::fromNanoseconds(blendOut.value());
+            candidate.montage.blendOutOffset       = Duration::fromNanoseconds(blendOutOffset.value());
+            candidate.montage.rootMotionHorizontal = rootHorizontal.value();
+            candidate.montage.rootMotionVertical   = rootVertical.value();
+            candidate.montage.rootMotionRotation   = rootRotation.value();
+        }
+    }
+    const auto& tracks = *tracksValue->getIf<Value::Array>();
     for (std::size_t trackIndex = 0; trackIndex < tracks.size(); ++trackIndex) {
         const Value&      trackValue = tracks[trackIndex];
         const std::string path       = "tracks[" + std::to_string(trackIndex) + "]";
@@ -305,6 +503,14 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
     auto valid = candidate.validate();
     if (!valid) return Result<ActionTimeline>::failure(valid.status());
     return Result<ActionTimeline>::success(std::move(candidate));
+}
+
+Result<std::pair<Duration, Duration>> ActionTimeline::sectionRange(std::size_t index) const {
+    if (index >= sectionCount())
+        return invalid<std::pair<Duration, Duration>>("physical section index is outside the timeline", "index");
+    const Duration start = index == 0 ? Duration::zero() : splitTimestamps[index - 1];
+    const Duration end   = index < splitTimestamps.size() ? splitTimestamps[index] : duration;
+    return Result<std::pair<Duration, Duration>>::success({start, end});
 }
 
 }  // namespace eve::action

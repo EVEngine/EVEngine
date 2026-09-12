@@ -142,6 +142,11 @@ std::vector<DocumentSnapshot> DocumentService::documents() const {
 }
 
 EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document) {
+    return reconcileExternal(document, {});
+}
+
+EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document,
+                                                                   ContentValidator validator) {
     auto found = open_.find(document);
     if (found == open_.end()) return error(EditorStatus::NotFound, "editor.document.not-open", "Document is not open");
 
@@ -182,6 +187,20 @@ EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const Document
             "Document changed on disk while the session has unsaved edits")};
         return EditorResult<DocumentSnapshot>::failure(
             eve::Status(EditorStatus::Conflict, found->second.snapshot.diagnostics));
+    }
+
+    if (validator) {
+        auto validated = validator(stored.value().content);
+        if (!validated.ok()) {
+            found->second.snapshot.state = DocumentState::Conflict;
+            found->second.snapshot.diagnostics = validated.diagnostics();
+            if (found->second.snapshot.diagnostics.empty())
+                found->second.snapshot.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::InvalidArgument, RuleId("editor.document.external-invalid"),
+                    DiagnosticSeverity::Error, "External document content failed domain validation"));
+            return EditorResult<DocumentSnapshot>::failure(
+                eve::Status(EditorStatus::Conflict, found->second.snapshot.diagnostics));
+        }
     }
 
     found->second.content = stored.value().content;
