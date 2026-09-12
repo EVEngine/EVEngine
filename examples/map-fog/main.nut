@@ -166,13 +166,13 @@ eve_init = function() {
     fog.setCloudTiling(0.55, 0.95);
     fog.setCloudSpeed(0.008, 0.015);
     fog.setCloudMix(0.35);
-    fog.setDistort(0.16);
+    fog.setDistort(0.22);
     fog.setDistortFix(-0.012, 0.008);
     fog.setFogColor(0.92, 0.94, 0.98);
     fog.setFogAlpha(fogAlpha);
     // Soft-stamped mask + UV warp => wispy cloudy unlock rim.
-    fog.setEdgeSoftness(0.16);
-    fog.setShadow(0.026, 0.036, 0.62);
+    fog.setEdgeSoftness(0.14);
+    fog.setShadow(0.034, 0.048, 0.78);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
     // Thickness from lit cloud luminance; mask still owns the hole.

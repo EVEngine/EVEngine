@@ -111,11 +111,9 @@ fn luma(c: vec3<f32>) -> f32 {
   let cloudUv = vec2<f32>(input.uv.x * aspect, input.uv.y);
   let sampleA = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileA, speedA, time, 1.0)).rgb;
   let sampleB = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileB, speedB, time, -1.0)).rgb;
-  let cloudScreen = clamp(vec3<f32>(1.0) - (vec3<f32>(1.0) - sampleA) * (vec3<f32>(1.0) - sampleB), vec3<f32>(0.0), vec3<f32>(1.0));
-  let cloudMul = clamp(sampleA * sampleB * 1.40, vec3<f32>(0.0), vec3<f32>(1.0));
   let cloudBase = mix(sampleA, sampleB, cloudMix);
-  let cloudRich = mix(cloudScreen, cloudMul, 0.38);
-  let cloud = mix(cloudBase, cloudRich, 0.62);
+  let cloudMul = clamp(sampleA * sampleB * 1.25, vec3<f32>(0.0), vec3<f32>(1.0));
+  let cloud = mix(cloudBase, cloudMul, 0.42);
   let noise = luma(cloud);
 
   let warpNoise = luma(mix(
@@ -143,7 +141,8 @@ fn luma(c: vec3<f32>) -> f32 {
     + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(-softRadius, -softRadius) * 0.707).r) * (1.0 / 9.0);
   var fogKeep = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, unlockedSoft);
   let edgeBand = 4.0 * fogKeep * (1.0 - fogKeep);
-  fogKeep = fogKeep * mix(1.0, smoothstep(0.18, 0.68, noise), edgeBand * 1.05);
+  let valley = 1.0 - smoothstep(0.22, 0.58, noise);
+  fogKeep = fogKeep * (1.0 - edgeBand * valley * 0.90);
   let dissolveNoise = luma(textureSample(mainTex, mainSampler,
       cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
   fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
@@ -158,19 +157,18 @@ fn luma(c: vec3<f32>) -> f32 {
       + textureSample(maskTex, maskSampler, sUv - vec2<f32>(softRadius, 0.0)).r
       + textureSample(maskTex, maskSampler, sUv + vec2<f32>(0.0, softRadius)).r
       + textureSample(maskTex, maskSampler, sUv - vec2<f32>(0.0, softRadius)).r) * 0.2;
+    let hole = smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, unlockedSoft);
     var sFog = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, sUnlocked);
-    let sBand = 4.0 * sFog * (1.0 - sFog);
-    sFog = sFog * mix(1.0, smoothstep(0.18, 0.68, noise), sBand * 0.95);
     let sDissolveNoise = luma(textureSample(mainTex, mainSampler,
         (cloudUv + shadowOff * vec2<f32>(aspect, 1.0)) * dissolveScale).rgb);
     sFog = sFog * (1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b));
-    let a = sFog * mix(0.48, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
+    let a = hole * sFog * mix(0.65, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 
-  var col = mix(cloud, fogRgb * cloud, 0.22);
-  col = mix(col, fogRgb, 0.06);
-  col = col + cloud * (density * 0.10);
+  var col = mix(cloud, fogRgb * cloud, 0.15);
+  col = mix(col, fogRgb, 0.04);
+  col = col + cloud * (density * 0.12);
   let blink = selected * selectStrength * selectPulse;
   col = mix(col, col * 1.14 + vec3<f32>(0.12, 0.16, 0.24), clamp(blink, 0.0, 1.0));
   let a = fogKeep * body * fogAlpha * input.color.a;

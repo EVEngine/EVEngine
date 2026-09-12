@@ -53,12 +53,11 @@ void main() {
 
     vec3 sampleA = texture(MainTex, scrollUV(cloudUv, tileA, speedA, time, 1.0)).rgb;
     vec3 sampleB = texture(MainTex, scrollUV(cloudUv, tileB, speedB, time, -1.0)).rgb;
-    // Dual reverse scroll: screen keeps soft bright billows; multiply adds depth.
-    vec3 cloudScreen = clamp(1.0 - (1.0 - sampleA) * (1.0 - sampleB), 0.0, 1.0);
-    vec3 cloudMul = clamp(sampleA * sampleB * 1.40, 0.0, 1.0);
+    // Dual reverse scroll (article): keep color-map structure — average + multiply.
+    // Heavy screen-blend washed lit clouds to flat white on Lavapipe/soft maps.
     vec3 cloudBase = mix(sampleA, sampleB, cloudMix);
-    vec3 cloudRich = mix(cloudScreen, cloudMul, 0.38);
-    vec3 cloud = mix(cloudBase, cloudRich, 0.62);
+    vec3 cloudMul = clamp(sampleA * sampleB * 1.25, 0.0, 1.0);
+    vec3 cloud = mix(cloudBase, cloudMul, 0.42);
     float noise = luma(cloud);
 
     // Low-frequency warp (article: desaturate cloud color map as mask UV noise).
@@ -92,9 +91,10 @@ void main() {
         (1.0 / 9.0);
     float fogKeep = 1.0 - softenEdge(unlockedSoft, edgeSoft);
 
-    // Wispy band: near the unlock rim, carve with cloud shapes (article organic edge).
+    // Wispy band: erode the unlock rim where cloud valleys sit (article organic edge).
     float edgeBand = 4.0 * fogKeep * (1.0 - fogKeep);
-    fogKeep *= mix(1.0, smoothstep(0.18, 0.68, noise), edgeBand * 1.05);
+    float valley = 1.0 - smoothstep(0.22, 0.58, noise);
+    fogKeep *= 1.0 - edgeBand * valley * 0.90;
 
     float dissolveNoise = luma(texture(MainTex,
         cloudUv * dissolveScale + vec2(time * 0.015, -time * 0.02)).rgb);
@@ -105,6 +105,8 @@ void main() {
     float body = mix(0.28, 1.0, density);
 
     if (passMode < 0.5) {
+        // 2D volume cue: darken INSIDE the unlocked hole where the offset mask
+        // still sees fog (previous pass drew under opaque clouds → invisible).
         vec2 sUv = maskUv + shadowOff;
         vec4 sMask = texture(MaskTex, sUv);
         float sUnlocked =
@@ -114,21 +116,19 @@ void main() {
              texture(MaskTex, sUv + vec2(0.0, softRadius)).r +
              texture(MaskTex, sUv - vec2(0.0, softRadius)).r) *
             0.2;
+        float hole = softenEdge(unlockedSoft, edgeSoft);
         float sFog = 1.0 - softenEdge(sUnlocked, edgeSoft);
-        float sBand = 4.0 * sFog * (1.0 - sFog);
-        sFog *= mix(1.0, smoothstep(0.18, 0.68, noise), sBand * 0.95);
         float sDissolveNoise = luma(texture(MainTex, (cloudUv + shadowOff * vec2(aspect, 1.0)) * dissolveScale).rgb);
         sFog *= 1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b);
-        // Soft dark under-cloud (article volume cue) — strong enough to read in the hole.
-        float a = sFog * mix(0.48, 1.0, density) * shadowStrength * fogAlpha * fragColor.a;
+        float a = hole * sFog * mix(0.65, 1.0, density) * shadowStrength * fogAlpha * fragColor.a;
         outColor = vec4(0.0, 0.0, 0.0, a);
         return;
     }
 
     // Painted cloud color dominates; fogRgb is only a light cool wash (not a gray sheet).
-    vec3 col = mix(cloud, fogRgb * cloud, 0.22);
-    col = mix(col, fogRgb, 0.06);
-    col += cloud * (density * 0.10);
+    vec3 col = mix(cloud, fogRgb * cloud, 0.15);
+    col = mix(col, fogRgb, 0.04);
+    col += cloud * (density * 0.12);
     float blink = selected * selectStrength * selectPulse;
     col = mix(col, col * 1.14 + vec3(0.12, 0.16, 0.24), clamp(blink, 0.0, 1.0));
     float a = fogKeep * body * fogAlpha * fragColor.a;
