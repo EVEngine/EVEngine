@@ -1,5 +1,6 @@
 #include "action/ActionNotifyRegistry.h"
 
+#include "action/ActionAudioBlock.h"
 #include "action/ActionPrefabBlock.h"
 
 #include "common/Capability.h"
@@ -119,6 +120,12 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
     if (event.type.format() == "gameplay:prefab-spawn") {
         auto prefab = ActionPrefabSpawnBinding::fromPayload(event.payload);
         if (!prefab) return Result<void>::failure(prefab.status());
+    }
+    if (event.type.format() == "presentation:audio" || event.type.format() == "presentation:audio-state") {
+        const auto shape = event.kind == ActionTimelineEventKind::Notify ? ActionAudioShape::Instant
+                                                                        : ActionAudioShape::State;
+        auto audio = ActionAudioBinding::fromPayload(event.payload, shape);
+        if (!audio) return Result<void>::failure(audio.status());
     }
     return Result<void>::success();
 }

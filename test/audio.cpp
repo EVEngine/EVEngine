@@ -3,8 +3,11 @@
 
 #include "audio/Audio.h"
 #include "audio/Source.h"
+#include "action/ActionAudioBlock.h"
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionPreview.h"
+#include "common/Capability.h"
 #include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
@@ -180,6 +183,65 @@ TEST_CASE("audio.instantActionNotifyRetainsThenDeterministicallyReleasesSource")
     expired.id = trigger.id;
     expired.totalElapsed = eve::Duration::fromNanoseconds(10'000'000'000LL);
     REQUIRE(runtime.apply(expired, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before);
+}
+
+TEST_CASE("audio.actionPreviewRetainsAdvanceSeeksRefreshAndStopsOnExit") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    REQUIRE_EQ(eve::cap::listenerCount<eve::action::IActionPreviewSinkProvider>(), 1u);
+    auto* provider = eve::cap::listenerAt<eve::action::IActionPreviewSinkProvider>(0);
+    REQUIRE(provider != nullptr);
+    auto sink = provider->createActionPreviewSink();
+    REQUIRE(sink.ok());
+    const int before = audio->getSourceCount();
+
+    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
+                               {"volume", 0.35}, {"pitch", 1.25}, {"looping", true}};
+    eve::action::ActionPreviewFrame frame;
+    frame.reason = eve::action::ActionPreviewReason::Seek;
+    frame.activeBlocks.push_back({actionLogicalId("presentation-track:audio"),
+                                  actionLogicalId("presentation-audio:preview"),
+                                  actionLogicalId("presentation:audio-state"),
+                                  eve::Duration::fromNanoseconds(5000000),
+                                  eve::Duration::fromNanoseconds(100000000), payload});
+    REQUIRE(sink.value()->prepare(frame).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+    sink.value()->present(frame);
+
+    frame.reason = eve::action::ActionPreviewReason::Advance;
+    REQUIRE(sink.value()->prepare(frame).ok());
+    sink.value()->present(frame);
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+
+    frame.reason = eve::action::ActionPreviewReason::Refresh;
+    REQUIRE(sink.value()->prepare(frame).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 2);
+    sink.value()->present(frame);
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+
+    auto invalid = frame;
+    invalid.activeBlocks.front().payload["pitch"] = 0.0;
+    CHECK(!sink.value()->prepare(invalid).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+
+    eve::action::ActionPreviewFrame empty;
+    REQUIRE(sink.value()->prepare(empty).ok());
+    sink.value()->present(empty);
+    CHECK_EQ(audio->getSourceCount(), before);
+
+    eve::action::ActionPreviewCue instant;
+    instant.kind = eve::action::ActionPreviewCueKind::Audio;
+    instant.itemId = actionLogicalId("presentation-audio:instant-preview");
+    instant.type = actionLogicalId("presentation:audio");
+    instant.payload = {{"uri", "test/fixtures/resource_formats/tone.wav"}, {"volume", 0.5}};
+    empty.cues.push_back(std::move(instant));
+    REQUIRE(sink.value()->prepare(empty).ok());
+    sink.value()->present(empty);
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+    sink.value().reset();
     CHECK_EQ(audio->getSourceCount(), before);
 }
 

@@ -1,4 +1,6 @@
+#include "action/ActionAudioBlock.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionPreview.h"
 #include "action/ActionSpatialBlock.h"
 #include "audio/Audio.h"
 #include "audio/Source.h"
@@ -9,8 +11,14 @@
 #include "sound/SoundData.h"
 
 #include <algorithm>
+#include <cmath>
+#include <list>
 #include <map>
 #include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <utility>
 #include <vector>
 
 namespace eve::audio {
@@ -52,34 +60,23 @@ public:
             return fail(eve::DiagnosticCode::InvalidArgument, "audio state requires enter or exit", "event.kind");
         if (!instant && active_.contains(key))
             return fail(eve::DiagnosticCode::Conflict, "audio state is already active", "itemId");
-        auto spatial = eve::action::ActionSpatialBinding::fromPayload(event.payload);
-        if (!spatial) return eve::Result<void>::failure(spatial.status());
-        auto pose = resolvePose(spatial.value(), context);
+        const auto shape = instant ? eve::action::ActionAudioShape::Instant : eve::action::ActionAudioShape::State;
+        auto binding = eve::action::ActionAudioBinding::fromPayload(event.payload, shape);
+        if (!binding) return eve::Result<void>::failure(binding.status());
+        auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return eve::Result<void>::failure(pose.status());
-        const auto uri = event.payload.find("uri");
-        if (uri == event.payload.end() || !uri->second.getIf<std::string>())
-            return fail(eve::DiagnosticCode::InvalidArgument, "audio URI must be text", "uri");
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
         if (!audio) return fail(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio");
         try {
-            std::unique_ptr<eve::sound::SoundData> data(
-                eve::sound::Sound::create()->newSoundDataFromFile(*uri->second.getIf<std::string>()));
-            std::unique_ptr<Source> source(audio->newSource(data.get()));
-            if (const auto value = event.payload.find("volume"); value != event.payload.end())
-                if (const auto* number = value->second.getIf<double>()) source->setVolume(static_cast<float>(*number));
-            if (const auto value = event.payload.find("pitch"); value != event.payload.end())
-                if (const auto* number = value->second.getIf<double>()) source->setPitch(static_cast<float>(*number));
-            if (const auto value = event.payload.find("looping"); value != event.payload.end())
-                if (const auto* enabled = value->second.getIf<bool>()) {
-                    if (instant && *enabled)
-                        return fail(eve::DiagnosticCode::InvalidArgument,
-                                    "instant audio cannot loop; use audio-state", "looping");
-                    source->setLooping(*enabled);
-                }
-            applyPosition(*source, spatial.value(), pose.value());
+            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(binding.value().uri);
+            std::unique_ptr<Source> source(audio->newSource(data));
+            source->setVolume(static_cast<float>(binding.value().volume));
+            source->setPitch(static_cast<float>(binding.value().pitch));
+            source->setLooping(binding.value().looping);
+            applyPosition(*source, binding.value().spatial, pose.value());
             source->play();
-            ActiveSource owned{std::move(data), std::move(source),
-                               std::move(spatial).takeValue(), std::move(pose).takeValue()};
+            ActiveSource owned{data, std::move(source),
+                               binding.value().spatial, std::move(pose).takeValue()};
             if (instant) {
                 auto duration = eve::Duration::fromSeconds(owned.source->getDuration() / owned.source->getPitch());
                 if (!duration) return eve::Result<void>::failure(duration.status());
@@ -114,8 +111,9 @@ public:
 
     eve::Result<void> sample(const eve::action::ActionActiveBlock& block,
                              const eve::action::ActionNotifyContext&) const override {
-        auto spatial = eve::action::ActionSpatialBinding::fromPayload(block.payload);
-        if (!spatial) return eve::Result<void>::failure(spatial.status());
+        auto binding = eve::action::ActionAudioBinding::fromPayload(
+            block.payload, eve::action::ActionAudioShape::State);
+        if (!binding) return eve::Result<void>::failure(binding.status());
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
 
@@ -132,7 +130,8 @@ public:
 
 private:
     struct ActiveSource {
-        std::unique_ptr<eve::sound::SoundData> data;
+        // Source borrows this data; the ref keeps it alive across cache unload.
+        eve::ref<eve::sound::SoundData> data;
         std::unique_ptr<Source> source;
         eve::action::ActionSpatialBinding spatial;
         eve::EntitySpatialPose pose;
@@ -199,13 +198,169 @@ private:
     std::vector<TransientSource> transients_;
 };
 
-class AudioActionProvider final : public eve::action::IActionNotifyProvider {
+template <typename T>
+eve::Result<T> previewFailure(eve::DiagnosticCode code, std::string message, std::string path) {
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
+}
+
+class AudioActionPreviewSink final : public eve::action::IActionPreviewSink {
+public:
+    ~AudioActionPreviewSink() override {
+        discardPrepared();
+        stopAll(current_);
+        stopAll(transients_);
+    }
+
+    eve::Result<void> prepare(const eve::action::ActionPreviewFrame& frame) override {
+        discardPrepared();
+        const bool retainContinuous = frame.reason == eve::action::ActionPreviewReason::Advance;
+        for (const auto& block : frame.activeBlocks) {
+            if (block.type.format() != "presentation:audio-state") continue;
+            const std::string key = block.itemId.format();
+            auto binding = eve::action::ActionAudioBinding::fromPayload(
+                block.payload, eve::action::ActionAudioShape::State);
+            if (!binding) return failPrepared(binding.status());
+            const auto current = current_.find(key);
+            if (retainContinuous && current != current_.end() && current->second.payload == block.payload) {
+                preparedRetained_.insert(key);
+                continue;
+            }
+            auto audio = makeAudio(binding.value(), block.localTime);
+            if (!audio) return failPrepared(audio.status());
+            if (audio.value())
+                preparedStates_.emplace(key, PreviewAudio{block.payload, std::move(*audio.value())});
+        }
+        for (const auto& cue : frame.cues) {
+            if (cue.kind != eve::action::ActionPreviewCueKind::Audio ||
+                cue.type.format() != "presentation:audio")
+                continue;
+            auto binding = eve::action::ActionAudioBinding::fromPayload(
+                cue.payload, eve::action::ActionAudioShape::Instant);
+            if (!binding) return failPrepared(binding.status());
+            auto audio = makeAudio(binding.value(), eve::Duration::zero());
+            if (!audio) return failPrepared(audio.status());
+            if (audio.value()) preparedInstants_.push_back(std::move(*audio.value()));
+        }
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    void present(const eve::action::ActionPreviewFrame&) noexcept override {
+        for (auto it = current_.begin(); it != current_.end();) {
+            if (preparedRetained_.contains(it->first)) {
+                ++it;
+                continue;
+            }
+            it->second.audio.source->stop();
+            it = current_.erase(it);
+        }
+        current_.merge(preparedStates_);
+        for (auto& [key, state] : current_) {
+            if (preparedRetained_.contains(key)) continue;
+            state.audio.source->play();
+        }
+        preparedRetained_.clear();
+
+        std::erase_if(transients_, [](const OwnedAudio& audio) { return !audio.source->isPlaying(); });
+        for (auto& audio : preparedInstants_) audio.source->play();
+        transients_.splice(transients_.end(), preparedInstants_);
+    }
+
+    void discardPrepared() noexcept override {
+        preparedStates_.clear();
+        preparedInstants_.clear();
+        preparedRetained_.clear();
+    }
+
+private:
+    struct OwnedAudio {
+        OwnedAudio(eve::sound::SoundData* data, std::unique_ptr<Source> source)
+            : data(data), source(std::move(source)) {}
+
+        // Source borrows this data; the ref keeps it alive across cache unload.
+        eve::ref<eve::sound::SoundData> data;
+        std::unique_ptr<Source>         source;
+    };
+    struct PreviewAudio {
+        eve::Value::Object payload;
+        OwnedAudio         audio;
+    };
+
+    eve::Result<void> failPrepared(const eve::Status& status) {
+        discardPrepared();
+        return eve::Result<void>::failure(status);
+    }
+
+    static eve::Result<std::optional<OwnedAudio>> makeAudio(
+        const eve::action::ActionAudioBinding& binding, eve::Duration localTime) {
+        auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
+        if (!audio)
+            return previewFailure<std::optional<OwnedAudio>>(
+                eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio");
+        try {
+            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(binding.uri);
+            std::unique_ptr<Source> source(audio->newSource(data));
+            OwnedAudio owned(data, std::move(source));
+            owned.source->setVolume(static_cast<float>(binding.volume));
+            owned.source->setPitch(static_cast<float>(binding.pitch));
+            owned.source->setLooping(binding.looping);
+            owned.source->setPosition(static_cast<float>(binding.spatial.positionOffset.x),
+                                      static_cast<float>(binding.spatial.positionOffset.y),
+                                      static_cast<float>(binding.spatial.positionOffset.z));
+            const double duration = owned.source->getDuration();
+            double       mediaTime = localTime.seconds() * binding.pitch;
+            if (duration > 0.0) {
+                if (binding.looping)
+                    mediaTime = std::fmod(mediaTime, duration);
+                else if (mediaTime >= duration)
+                    return eve::Result<std::optional<OwnedAudio>>::success(std::nullopt);
+            }
+            if (mediaTime > 0.0 && !owned.source->seek(mediaTime))
+                return previewFailure<std::optional<OwnedAudio>>(
+                    eve::DiagnosticCode::Unsupported, "Audio preview source does not support seeking", "uri");
+            return eve::Result<std::optional<OwnedAudio>>::success(
+                std::optional<OwnedAudio>(std::move(owned)));
+        } catch (const std::exception& error) {
+            return previewFailure<std::optional<OwnedAudio>>(
+                eve::DiagnosticCode::Failed, error.what(), "uri");
+        }
+    }
+
+    static void stopAll(std::map<std::string, PreviewAudio>& values) noexcept {
+        for (auto& [key, value] : values) {
+            (void)key;
+            value.audio.source->stop();
+        }
+        values.clear();
+    }
+
+    static void stopAll(std::list<OwnedAudio>& values) noexcept {
+        for (auto& value : values) value.source->stop();
+        values.clear();
+    }
+
+    std::map<std::string, PreviewAudio> current_;
+    std::list<OwnedAudio>               transients_;
+    std::map<std::string, PreviewAudio> preparedStates_;
+    std::list<OwnedAudio>               preparedInstants_;
+    std::set<std::string>               preparedRetained_;
+};
+
+class AudioActionProvider final : public eve::action::IActionNotifyProvider,
+                                  public eve::action::IActionPreviewSinkProvider {
 public:
     eve::Result<void> install(eve::action::ActionNotifyRegistry& registry) override {
         auto handler = std::make_shared<AudioActionHandler>();
         auto instant = registry.registerHandler("presentation:audio", handler);
         if (!instant) return instant;
         return registry.registerHandler("presentation:audio-state", std::move(handler));
+    }
+
+    eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>> createActionPreviewSink() override {
+        if (!eve::ModuleManager::getInstance<Audio>("Audio"))
+            return previewFailure<std::unique_ptr<eve::action::IActionPreviewSink>>(
+                eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio");
+        return eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>>::success(
+            std::make_unique<AudioActionPreviewSink>());
     }
 };
 
@@ -216,6 +371,7 @@ void registerAudioCapabilities() {
     static AudioActionProvider actionProvider;
     eve::cap::provide<eve::IAudioQuery>(&impl);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
+    eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
 }
 
 }  // namespace eve::audio

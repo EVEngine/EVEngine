@@ -1,4 +1,5 @@
 #include "action/ActionBlockRuntime.h"
+#include "action/ActionAudioBlock.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionPrefabInstances.h"
@@ -197,6 +198,29 @@ TEST_CASE("actionPrefabBlock.validatesLifecycleDurationAndSpatialContract") {
     rejected = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
     CHECK(!rejected.ok());
     CHECK_EQ(rejected.status().diagnostics().front().path(), "lifecycle");
+}
+
+TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
+    eve::Value::Object payload{{"uri", "asset://audio/sword.wav"},
+                               {"volume", 0.5}, {"pitch", 1.25}, {"looping", true}};
+    auto state = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::State);
+    REQUIRE(state.ok());
+    CHECK_EQ(state.value().uri, "asset://audio/sword.wav");
+    CHECK_EQ(state.value().volume, 0.5);
+    CHECK_EQ(state.value().pitch, 1.25);
+    CHECK(state.value().looping);
+
+    auto instant = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::Instant);
+    CHECK(!instant.ok());
+    CHECK_EQ(instant.status().diagnostics().front().path(), "looping");
+    payload["looping"] = false;
+    payload["pitch"] = 0.0;
+    auto invalidPitch = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::Instant);
+    CHECK(!invalidPitch.ok());
+    CHECK_EQ(invalidPitch.status().diagnostics().front().path(), "pitch");
 }
 
 TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
