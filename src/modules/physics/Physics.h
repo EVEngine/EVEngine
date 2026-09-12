@@ -2,22 +2,21 @@
 
 #include "common/Module.h"
 
+#include <memory>
+
 namespace eve::physics {
 
 class World;
 class World3D;
-class Cloth;
-class Cloth3D;
-class ClothGPU;
+class SoftBody3D;
+class SoftBody3DRenderer;
 class Fluid2D;
 class DistanceField3D;
 
 /**
- * @brief Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive
- * 2D/3D cloth (Verlet, self-collision, fold limit, body collision) and SPH fluid.
+ * @brief Physics module — Box2D (2D) + Box3D (3D) rigid bodies and SPH fluid.
  * Script: `physics <- eve.Physics(); world <- physics.newWorld(0, 900);`
  *         `world3 <- physics.newWorld3D(0, -9.8, 0);`
- *         `cloth3 <- physics.newCloth3D(18, 12, 0.5, 0, 5, 0);`
  */
 class Physics : public Module {
 public:
@@ -70,53 +69,29 @@ public:
                                         float originZ = 0.f, float outsideDistance = 1e6f);
 
     /**
-     * @brief Create a Verlet cloth grid (top row pinned).
-     * @param cols columns (>= 2)
-     * @param rows rows (>= 2)
-     * @param spacing particle spacing in pixels
-     * @param originX top-left X in pixels
-     * @param originY top-left Y in pixels
-     * @return Owning nullable cloth pointer transferred to the caller.
-     * @ownership The caller owns the returned cloth and must delete it after use.
-     * @lifetime Valid until caller destruction; it is not retained by Physics.
-     * @thread Create and use on the owning physics thread.
-     * @reentrancy The factory invokes no callbacks.
+     * @brief Compatibility factory for a volumetric shape-matching soft body.
+     *
+     * The canonical C++ creation API is SoftBody3D::create(), which returns a
+     * checked owning unique_ptr. This adapter exists for the script binding,
+     * whose VM assumes ownership of the returned wrapper.
+     * @return Owning pointer transferred to the script VM/caller.
+     * @ownership The caller owns the returned object and must destroy it.
+     * @lifetime Valid until caller destruction; a borrowed World3D must be cleared first.
+     * @thread Create and use on the owning simulation thread.
+     * @reentrancy No callbacks are invoked.
+     * @throws eve::Exception when dimensions or coordinates are invalid.
      */
-    Cloth *newCloth(int cols, int rows, float spacing, float originX, float originY);
+    SoftBody3D *newSoftBody3D(int cols, int rows, int layers, float spacing,
+                              float originX, float originY, float originZ);
 
     /**
-     * @brief Create a Verlet cloth grid in 3D meter space (+Y up, grid in XZ).
-     * @param cols columns (>= 2), along +X
-     * @param rows rows (>= 2), along +Z
-     * @param spacing particle spacing in meters
-     * @param originX top-left X (meters)
-     * @param originY top-left Y (meters)
-     * @param originZ top-left Z (meters)
-     * @return Owning nullable cloth pointer transferred to the caller.
-     * @ownership The caller owns the returned cloth and must delete it after use.
-     * @lifetime Valid until caller destruction; it is not retained by Physics.
-     * @thread Create and use on the owning physics thread.
-     * @reentrancy The factory invokes no callbacks.
+     * @brief Create a presentation satellite observing a soft-body runtime.
+     * @param body Borrowed nullable runtime; clear it on the renderer before destroying the body.
+     * @return Owning renderer transferred to the script VM/caller.
+     * @ownership The caller owns the renderer; it never owns body or Graphics.
+     * @thread Create and use on the owning render thread.
      */
-    Cloth3D *newCloth3D(int cols, int rows, float spacing, float originX, float originY,
-                        float originZ);
-
-    /**
-     * @brief Create a GPU-accelerated 2D Verlet cloth (compute shader backend).
-     * Same interface as Cloth; requires the Gpgpu module and a compute-capable
-     * Graphics backend (throws otherwise).
-     * @param cols columns (>= 2)
-     * @param rows rows (>= 2)
-     * @param spacing particle spacing in pixels
-     * @param originX top-left X (pixels)
-     * @param originY top-left Y (pixels)
-     * @return Owning nullable GPU cloth pointer transferred to the caller.
-     * @ownership The caller owns the returned cloth; its GPU resources are released on destruction.
-     * @lifetime Valid until caller destruction; it is not retained by Physics.
-     * @thread Create and use on the owning physics/render thread.
-     * @reentrancy The factory invokes no callbacks.
-     */
-    ClothGPU *newClothGPU(int cols, int rows, float spacing, float originX, float originY);
+    SoftBody3DRenderer *newSoftBody3DRenderer(SoftBody3D *body);
 
     /**
      * @brief Creates an interactive 2D particle fluid in pixel space.

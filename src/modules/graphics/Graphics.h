@@ -37,6 +37,7 @@ class Subscription;
 
 namespace eve::graphics {
 struct PbrSurface;
+struct ShaderResourceInputs;
 
 
 class AmbientOcclusion;
@@ -85,8 +86,10 @@ class Quad;
 class RenderControl;
 class Renderable2D;
 class AlphaMask;
+class MapFog;
 class ScreenSpaceReflection;
 class Shader;
+struct MeshShaderRasterState;
 class Texture;
 class Volumetric;
 class Water;
@@ -972,6 +975,33 @@ public:
     virtual void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                                 Shader *shader) = 0;
 
+    /** @brief Draw a checked range from a resource shader's immutable instance matrix buffer.
+     * @ownership Mesh
+     * and Shader remain Graphics-owned; references are borrowed only for this call.
+     * @lifetime GPU copies remain
+     * alive through submission under Graphics resource ownership.
+     * @thread Render thread, inside an open 3D pass;
+     * no script callbacks or reentrancy.
+     * @param first First matrix record; visible to the vertex shader as
+     * gl_InstanceIndex.
+     * @param count Number of records; zero is a validated no-op.
+     * @return Failure before
+     * recording when unsupported, stale, or out of range.
+     */
+    [[nodiscard]] virtual Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
+                                                               const Color &tint, std::uint32_t first,
+                                                               std::uint32_t count) {
+        (void)mesh;
+        (void)shader;
+        (void)model;
+        (void)tint;
+        (void)first;
+        (void)count;
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "Custom mesh instancing is unavailable on this backend",
+                                                       "graphics.instances"));
+    }
+
     /** @brief Optional normal map for the next drawMesh / drawMeshShader (nullptr = flat). */
     virtual void setMesh3DNormalTexture(Texture *normal) = 0;
 
@@ -1155,6 +1185,20 @@ public:
     virtual void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) = 0;
     /** @brief Upload the two dominant local reflection probes for subsequent mesh draws. */
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
+    /** @brief Final display mapping; None preserves linear color before display encoding. */
+    enum class SceneToneMapping { None, Aces };
+    /** @brief Set final scene display mapping on the graphics/render thread.
+     * @details Graphics owns the value
+     * until destruction. No input references or callbacks
+     * are retained. This affects scene presentation, not
+     * linear HDR offscreen textures.
+     * Unsupported backends reject the change and retain their previous mode.
+
+     * * @return Success, InvalidArgument, or Unsupported without partial mutation.
+     */
+    [[nodiscard]] virtual Result<void> setSceneToneMapping(SceneToneMapping mode);
+    /** @brief Return the current final display mapping; graphics/render thread only. */
+    virtual SceneToneMapping getSceneToneMapping() const { return SceneToneMapping::Aces; }
     /** @brief Set linear exposure multiplier used by the final scene tone-map resolve. */
     virtual void setSceneExposure(float exposure) = 0;
     /** @brief Current linear manual exposure multiplier. */
@@ -1445,6 +1489,29 @@ public:
         const std::vector<uint32_t> &fragSpv) = 0;
 
     /**
+     * @brief Replace a mesh program and its immutable set-1 resources atomically.
+     * @param shader Existing
+     * shader owned by this Graphics; borrowed for this call.
+     * @param vertSpv Vertex words; empty retains the
+     * built-in mesh vertex ABI.
+     * @param fragSpv Fragment words using set 0 Frame/albedo and declared set 1
+     * inputs.
+     * @param resources Borrowed image/constant bytes, copied before returning.
+     * @return Success
+     * after publication; failures preserve the old program/resources.
+     * @ownership Graphics owns the shader and
+     * its resources; releaseShader or Graphics
+     * destruction drains in-flight use before releasing them. Inputs
+     * are never retained.
+     * @note Render-thread only, outside submission, not reentrant; invokes no callbacks.
+
+     * * Unsupported backends or missing validation providers return Unsupported unchanged.
+     */
+    [[nodiscard]] virtual Result<void> replaceMeshShaderResources(Shader &shader, const std::vector<uint32_t> &vertSpv,
+                                                                  const std::vector<uint32_t> &fragSpv,
+                                                                  const ShaderResourceInputs  &resources);
+
+    /**
      * @brief Transactionally replace an existing shader with WGSL stages.
      * @param shader Stable graphics-owned shader facade to update.
      * @param vertWgsl Vertex source; empty selects the backend default for the shader kind.
@@ -1496,6 +1563,23 @@ public:
     [[nodiscard]] virtual eve::Result<void> configureMeshShaderSurface(Shader &, BlendMode, bool, bool) {
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Custom mesh surface state is unavailable"));
+    }
+    /**
+     * @brief Transactionally configure an owned ordinary mesh shader's raster state.
+     * @param shader
+     * Graphics-owned shader; borrowed synchronously, ownership unchanged.
+     * @param state Value snapshot copied on
+     * success; never retained by reference.
+     * @return Success, Unsupported, or a validation/build failure leaving
+     * prior state intact.
+     * @details Render thread only, outside submission. Does not invoke callbacks. State
+
+     * * survives program/resource replacement and render-target recreation until shader release.
+     */
+    [[nodiscard]] virtual eve::Result<void> configureMeshShaderRaster(Shader                      &shader,
+                                                                      const MeshShaderRasterState &state) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Custom mesh raster state is unavailable"));
     }
     /**
      * @brief Creates a Mesh3D shader from separate vertex and fragment GLSL sources.
@@ -1610,6 +1694,11 @@ public:
     Outline *newOutline();
     /** @brief Create a script-owned reusable two-texture alpha-mask compositor. */
     AlphaMask *newAlphaMask();
+    /**
+     * @brief Create a script-owned SLG / large-map war-fog overlay (dual cloud + mask).
+     * @lifetime Caller owns the MapFog*; its Shader is owned by Graphics.
+     */
+    MapFog *newMapFog();
 
     /**
      * @brief Screen-space single-bounce GI. Caller owns GlobalIllumination*;

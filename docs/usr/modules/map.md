@@ -164,6 +164,7 @@ fov.setDetectionMargin(0.0);
 fov.compute();
 if (fov.canDetect(id, tx, ty, targetStealth)) { /* 可见且感知足够 */ }
 local tex = fov.buildMaskTexture(gfx); // RGBA8 FoW 遮罩，调用方拥有
+// 大地图云雾呈现见 gfx.newMapFog()（examples/map-fog）：R=解锁、G=选中、B=溶解
 ```
 
 自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；无变更时 `isDirty()` 为 false，`compute` 会跳过。离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。

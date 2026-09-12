@@ -2,12 +2,14 @@
 
 #include "common/ECS.h"
 #include "graphics/Material.h"
+#include "graphics/MeshInstanceRange.h"
 #include "zeroerr/assert.h"
 
-#include <functional>
-#include <glm/mat4x4.hpp>
 #include <array>
 #include <cstdint>
+#include <functional>
+#include <glm/mat4x4.hpp>
+#include <optional>
 #include <string>
 
 namespace eve::graphics {
@@ -173,6 +175,8 @@ public:
         Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
         Texture *heightTexture = nullptr;  // nullptr → no parallax height (R = height)
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
+        /** @brief Optional value-owned instance range; forward custom shader path only. */
+        std::optional<MeshInstanceRange> instances;
         /** @brief Optional packed material; when set, overrides texture/shader/PBR fields below. */
         Material *material = nullptr;
         /**
@@ -261,6 +265,20 @@ public:
     float getYaw();
     void setScale(float sx, float sy, float sz);
     void setMesh(Mesh *mesh);
+    /** @brief Atomically set static instance range and bounds; render/update thread only.
+     * @ownership Metadata is
+     * copied into MeshRenderer; no caller references are retained.
+     * @details Requires one custom-shader mesh
+     * without skinning, LOD, hair, shadow or
+     * occlusion casting. Mutate outside render traversal; no callbacks
+     * are invoked.
+     * @return Validation failure leaves the previous range unchanged. Actual GPU buffer
+     *
+     * length is checked at submission, including after shader resource replacement.
+     */
+    [[nodiscard]] Result<void> setInstanceRange(const MeshInstanceRange &range);
+    /** @brief Remove runtime instance metadata on the update thread; no callbacks. */
+    void clearInstanceRange();
     /** @brief Main (non-part) mesh attached via setMesh; nullptr when unset. */
     Mesh *getMesh();
     void setTexture(Texture *texture);

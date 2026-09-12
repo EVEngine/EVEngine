@@ -114,7 +114,8 @@ Sweep Cast 沿运动方向使用四分之一网格单元的最大步长并对首
 ### 布料（2D，像素空间）
 
 ```squirrel
-local cloth = physics.newCloth(18, 12, 14.0, 48.0, 36.0); // cols, rows, spacing, origin
+local clothModule = eve.Cloth();
+local cloth = clothModule.newCloth(18, 12, 14.0, 48.0, 36.0); // cols, rows, spacing, origin
 cloth.setGravity(0, 980);
 cloth.setBounds(0, 0, 800, 600);
 cloth.setStiffness(0.9);
@@ -131,11 +132,21 @@ cloth.draw(gfx);
 ### 布料 3D（米制空间）
 
 ```squirrel
-local cloth3 = physics.newCloth3D(16, 12, 0.4, -3.0, 3.2, -2.0); // cols, rows, spacing, origin(X,Y,Z)
+local clothModule = eve.Cloth();
+local cloth3 = clothModule.newCloth3D(16, 12, 0.4, -3.0, 3.2, -2.0); // cols, rows, spacing, origin(X,Y,Z)
 cloth3.setGravity(0, -9.8, 0);       // 米 / s²，+Y 向上
 cloth3.setCollideWorld(world3);      // 与 Box3D 非 sensor shape 碰撞
 cloth3.setParticleSize(0.12);        // 自碰撞半径 / 碰撞厚度
 cloth3.setParticleMass(0.1);         // 碰撞动量交换的粒子质量（kg）
+cloth3.setStretchCompliance(0.0001); // XPBD 拉伸柔顺度（m/N，0 为旧 PBD）
+cloth3.setShearCompliance(0.0002);   // XPBD 剪切柔顺度
+cloth3.setBendCompliance(0.001);     // XPBD 距离弯曲柔顺度
+cloth3.setTetherScale(1.0);          // 启用到固定粒子的测地线 tether
+cloth3.setTetherCompliance(0.0001);  // tether XPBD 柔顺度
+// 闭合网格可用 setPressure(1.0) 保持烘焙体积，>1 充气；开放布料会忽略。
+cloth3.setVolumeCompliance(0.00001);
+cloth3.setWindVelocity(4, 0, 1);     // 世界空间空气速度（m/s）
+cloth3.setAerodynamics(1.225, 1.1, 0.2); // 空气密度、阻力系数、升力系数
 cloth3.setMaxFoldAngle(130);         // 相邻三角面最大折叠角（度），默认 120
 cloth3.setSelfCollision(true);
 cloth3.setBounds(-4, -1, -3, 8, 5.5, 6);  // 原点 + 宽高深
@@ -148,16 +159,129 @@ cloth3.update(dt);
 cloth3.draw(gfx);                     // 需要处于 3D 帧内（gfx.render3D 之后）
 ```
 
+`setWindVelocity` + `setAerodynamics` 使用当前变形后三角形的面积、法线和布料相对风速计算双面阻力/升力；因此折叠、转向后的受力会随表面姿态变化。两个系数都设为 `0` 即关闭气动力。`applyForce` 仍是一帧性均匀加速度，适合爆炸/阵风脉冲；持续风应使用新 API。
+
+### ClothModel（C++）
+
+`ClothModel` 是可复用的静态布料资产，`Cloth3D` 是独立的运行时状态。模型负责验证并烘焙粒子、三角形、结构/弯曲距离约束和相邻三角面的折叠关系；它不持有渲染对象、碰撞世界或逐帧位置。规则网格和任意三角网格最终都进入相同运行时路径：
+
+```cpp
+auto modelResult = eve::physics::ClothModel::grid(18, 12, 0.5f, 0.f, 5.f, 0.f);
+if (!modelResult) {
+    // 读取 modelResult.error() 的结构化诊断。
+    return;
+}
+
+auto cloth = physics.createCloth(modelResult.value());
+cloth->setWindVelocity(2.f, 0.f, 1.f);
+cloth->update(dt);
+```
+
+任意网格使用 `ClothModel::fromTriangles(positions, indices, inverseMasses)`；`positions` 是紧密排列的 XYZ，`inverseMasses` 中的 `0` 表示固定粒子。输入索引越界、退化三角形、负质量或非流形边会整体拒绝，不会发布半成品模型。模型可序列化为严格版本化的 `eve.cloth-model/1` Definition，并由 `asset/physics` 的 `EvpackClothModelLoader` 从 `.evpack` 加载；未知字段和未知版本都会拒绝。Squirrel 的规范入口是独立的 `eve.Cloth()` 子模块，`newCloth3D(...)` 在内部走同一个 `ClothModel` 网格烘焙路径。
+
+### Obi Cloth 6.4 核心覆盖边界
+
+以下矩阵按参考包 `ObiCloth_v6.4.unitypackage` 内的 actor、blueprint、constraint batch、attachment 与 renderer 源码核对。这里的“80%”指 15 组核心运行时/资产能力按“完整=1、部分=0.5、缺失=0”计分达到 12/15；不是宣称 API、Unity Inspector 或 Burst/Oni 后端逐项兼容。
+
+| 能力组 | 状态 | EVEngine 对应实现 / 边界 |
+|---|---:|---|
+| Blueprint/任意网格资产 | 完整 | `ClothModel`、`eve.cloth-model/1`、`.evpack` loader、严格验证 |
+| 拉伸/剪切距离约束 | 完整 | 分类型 XPBD compliance，保留零 compliance 旧 PBD 行为 |
+| 弯曲 | 部分 | bend distance + 二面角 fold clamp；尚无 Obi 的 plastic yield/creep |
+| 气动力 | 完整 | 变形三角形面积/法线、双面 drag/lift、相对风速 |
+| Tether | 完整 | 从固定粒子测地烘焙、scale、XPBD compliance |
+| Volume/pressure | 完整 | 封闭流形检测、静止体积、XPBD 保形与充气 |
+| Skin/backstop | 完整 | 动画参考点/法线、skin radius、backstop sphere、compliance |
+| Particle attachment | 部分 | 动态世界目标、软/硬 attachment、更新/解绑；尚无跨 actor/刚体局部锚点对象 |
+| 刚体世界碰撞 | 完整 | `World3D` 非 sensor shape probe、动态体动量交换 |
+| 自碰撞 | 完整 | 粒子空间哈希 + 非相邻三角面厚度约束 |
+| Collision filter | 完整 | cloth category/mask 与 Shape3D category/mask 双向过滤 |
+| 摩擦/回弹 | 完整 | cloth/shape 合并材质、切向速度摩擦、法向回弹 |
+| Runtime tearing | 部分 | 阈值、单步预算、手动撕裂及权威表面拓扑更新；尚无 Obi 式顶点分裂/容量池 |
+| Skinned/proxy renderer | 缺失 | 可逐帧更新 skin reference，但没有独立的 barycentric proxy renderer |
+| GPU backend | 部分 | `supportsFeature` 明示能力；GPU 目前是 2D grid compute，3D 高级约束走 CPU，不静默伪装等价 |
+
+运行时可用 `getBackendName()` 与 `supportsFeature(name)` 做显式后端选择。CPU 稳定 feature 名包括 `arbitrary_topology`、`xpbd_material`、`tether`、`volume_pressure`、`skin_backstop`、`attachment`、`world_collision`、`collision_filter`、`friction`、`self_collision`、`aerodynamics`、`runtime_tearing`。`getTriangleCount`、`getDistanceConstraintCount`、`getTetherConstraintCount`、`getSkinConstraintCount`、`getAttachmentCount` 与 `getTornConstraintCount` 提供编辑器/调试面板所需的只读数据。
+
+高级材质与约束脚本 API：`setStretchCompliance` / `getStretchCompliance`、`setShearCompliance` / `getShearCompliance`、`setBendCompliance` / `getBendCompliance`；`setTetherScale` / `getTetherScale`、`setTetherCompliance` / `getTetherCompliance`；`setPressure` / `getPressure`、`setVolumeCompliance` / `getVolumeCompliance`、`getCurrentVolume`；`setParticleInverseMass` / `getParticleInverseMass`；`setSkinConstraint`、`updateSkinReference`、`clearSkinConstraint`、`hasSkinConstraint`；`attachParticle`、`updateAttachment`、`detachParticle`、`isAttached`；`setCollisionMaterial`、`getCollisionFriction`、`getCollisionRestitution`、`setCollisionFilter`、`getCollisionCategoryBits`、`getCollisionMaskBits`；`setTearThreshold` / `getTearThreshold`、`setMaxTearsPerStep` / `getMaxTearsPerStep`、`tearConstraint`。
+
+模型可通过 `toJson()` / `fromJson()` 保存和恢复，规范标识为 `eve.cloth-model/1`。v1 使用严格未知字段策略：缺少字段、额外字段和未知版本都会被拒绝；约束不作为第二份真相保存，而是在加载并验证粒子与三角拓扑后确定性重建。规则网格额外保存并校验网格元数据，以保持旧求解器的约束顺序和有限迭代行为。
+
 网格位于 XZ 平面、顶行默认钉住；`pin` / `unpin` / `pinTopRow`、`grabAt` / `moveGrab` / `releaseGrab`、`reset`、`setColor` 等与 2D 布料一致。3D 布料的折角约束基于相邻三角面的二面角：折叠超过 `maxFoldAngle` 时会绕共享边旋转两个三角面、把折角精确开回极限值，避免布料折成死褶或扭曲过高。3D 自碰撞除粒子级近邻外还带**三角面级**处理：非相邻三角面保持至少 2×`particleSize` 厚度，顶点穿透三角面会被沿面法线推出，布料不会在粒子间隙中互相穿过。
 
 示例：[`examples/softbody3d/`](../../../examples/softbody3d/)（窗帘 + 平台/球体碰撞 + 自碰撞 + 折角限制）
+
+### 体积软体 3D（形状匹配）
+
+`SoftBody3D` 是真正的体积软体，而不是加厚的布料。规则粒子格的每个体素单元
+构成一个重叠八粒子 shape-matching cluster；相邻 cluster 共享粒子，因此局部体积和
+朝向会恢复，同时仍允许挤压、扭转和回弹。该实现独立编写，只借鉴了 Obi Softbody
+公开展示的组件分层与材料参数概念。
+
+```squirrel
+local body = physics.newSoftBody3D(4, 4, 4, 0.38, 0.9, 2.2, -0.6);
+local renderer = physics.newSoftBody3DRenderer(body);
+body.setGravity(0, -9.8, 0);
+body.setDeformationResistance(0.78); // 0 很软，1 强形状恢复
+body.setIterations(6);
+body.setParticleRadius(0.11);
+body.setPlasticity(0.32, 0.18, 0.25, 0.45); // yield, creep, recovery, max
+body.setCollideWorld(world3);        // 借用 World3D；world 必须活得更久
+body.update(dt);
+renderer.setColor(0.96, 0.36, 0.20, 1.0);
+renderer.draw(gfx);
+```
+
+运行时可用 `getDeformationResistance()`、`getParticleRadius()`、
+`getPlasticYield()`、`getPlasticCreep()`、`getPlasticRecovery()` 和
+`getMaxDeformation()` 回读材料参数；`getCols()`、`getRows()`、`getLayers()`
+描述体积格分辨率。
+
+`getVolumeRatio()` 返回当前 cell 总体积与初始体积之比，可用于测试、调试 UI 和
+破坏判定。C++ 应优先使用 `SoftBody3D::create()` 的
+`Result<std::unique_ptr<SoftBody3D>>`；`Physics::newSoftBody3D()` 是为脚本 VM
+所有权模型保留的兼容工厂。求解由注入的 `dt`/`SimulationStep` 驱动，在同平台同
+设置下提供容差有界确定性，不读取墙钟或随机源。当前版本使用 CPU cluster solver；
+尚未包含任意网格体素化、蒙皮权重烘焙或 GPU backend。
+
+创建配置由 `SoftBody3DDefinition` 统一拥有。其稳定 schema id 为
+`physics:softbody3d`，当前版本为 1；`toValue()` / `fromValue()` 用于持久化边界，
+版本 1 拒绝未知字段和未来版本。由于这是首个发布版本，没有旧版本迁移路径。
+`SoftBody3D::create(definition)` 会先完整验证候选，再一次性创建运行时对象，不会在
+验证失败时发布部分状态。编辑器侧使用
+`physics_editing::softBody3DDefinitionSchema()`，其中包含全部 20 个可编辑字段的
+默认值、数值范围、步长、单位、分类和说明；默认值直接取自
+`SoftBody3DDefinition`，不是第二份配置真源。首次创建时还会幂等注册同版本的 Eve
+Schema，工具可通过 `SchemaRegistry::resolve("physics:softbody3d", 1)` 查询，并用
+注册表执行通用 JSON 校验；聚合粒子数等跨字段约束仍由强类型 `validate()` 负责。
+
+软体实现按 physics 宿主包内 satellite 拆分：`physics/softbody` 只包含 definition、
+固定步长求解和窄碰撞接口；`physics/softbody/graphics` 负责动态表面网格；
+`physics/softbody/editing` 负责属性 schema。通用固定步长协议位于
+`physics/backend`。主 `physics` 模块仅保留 `World3D` 接触适配、脚本绑定和旧工厂，
+因此自定义无渲染组合可以只构建 `EVPhysics_softbody`，不拉入 graphics 或 editing；
+现有预设 `headless` / `server` profile 并不默认启用软体。
+
+颜色、动态 Mesh 缓存和绘制生命周期全部由 `SoftBody3DRenderer` 所有；它只借用
+`SoftBody3D`，销毁软体前应调用 `renderer.setBody(null)`。核心 `SoftBody3D` 的公共头
+不包含或前置声明任何 Graphics/Mesh 类型。`renderer.getBody()` 返回当前借用对象；
+`physics.newSoftBody3DRenderer(body)` 创建由脚本 VM 拥有的 renderer。
+
+真实网格的离线生成入口使用 `SoftBodyModelDefinition`，稳定 schema id 为
+`physics:softbody-model`、版本为 1。它记录 `sourceMesh`、surface/volume 采样模式、
+三种分辨率、各向异性上限和位置平滑率；未知字段、未来版本、空资源引用以及同时关闭
+surface/volume 采样都会被事务性拒绝。该能力统一使用 Model 命名。
+`physics/softbody/cook` 将资产模块的 `CanonicalMeshData` 转为拥有全部数组的 cooked
+`SoftBodyModel`。v1 已支持按源顶点采样、保留三角形表面、生成直接粒子绑定以及基于一环邻域的
+重叠 shape clusters；体素 surface/volume recipe 当前返回明确的 `Unsupported`，不会隐式改用顶点模式。
 
 ### 布料 GPU（2D，compute shader 加速）
 
 `newClothGPU(cols, rows, spacing, originX, originY)` 创建与 `Cloth` 同接口的 GPU 布料：Verlet 积分和距离约束全部跑在 Vulkan compute shader 里（每粒子一个线程 + 双缓冲 Jacobi 约束迭代），每帧回读位置用于绘制。适合大批量粒子：
 
 ```squirrel
-local clothG = physics.newClothGPU(40, 30, 8.0, 40.0, 30.0); // 1200 粒子
+local clothModule = eve.Cloth();
+local clothG = clothModule.newClothGPU(40, 30, 8.0, 40.0, 30.0); // 1200 粒子
 clothG.setGravity(0, 980);
 clothG.setBounds(0, 0, 800, 600);
 clothG.setStiffness(0.9);
@@ -806,7 +930,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 
 ### 可交互布料（2D / 3D）
 
-1. `newCloth(cols, rows, spacing, originX, originY)`（2D 像素）或 `newCloth3D(cols, rows, spacing, originX, originY, originZ)`（3D 米）— 默认钉住顶行。
+1. 通过 `eve.Cloth()` 子模块调用 `newCloth(cols, rows, spacing, originX, originY)`（2D 像素）或 `newCloth3D(cols, rows, spacing, originX, originY, originZ)`（3D 米）— 默认钉住顶行。
 2. `setBounds` 限制摆动范围；`applyForce` 可作风场。
 3. `grabAt` / `moveGrab` / `releaseGrab` 做鼠标拖拽；`pin` / `unpin` 控制固定点。
 4. `setSelfCollision(true)` 开启自碰撞（3D 含三角面级）；`setMaxFoldAngle` / `setFoldStiffness` 控制折角限制（3D 为相邻三角面二面角）。
@@ -842,15 +966,15 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 
 - `applyAngularImpulse()`、`applyForce()`、`applyForceAt()`、`applyLinearImpulse()`、`clear()`、`clearBounds()`、`destroy()`、`destroyBody()`
 - `draw()`、`drawDebug()`、`emit()`、`getAngle()`、`getAngularVelocity()`、`getAngularVelocityX()`、`getAngularVelocityY()`、`getAngularVelocityZ()`、`getBody()`、`getCapacity()`、`getCols()`
-- `getCollideWorld()`、`getDamping()`、`getDensity()`、`getFoldStiffness()`、`getFriction()`、`getGrabIndex()`、`getGravityX()`、`getGravityY()`、`getGravityZ()`、`getId()`、`getIterations()`
+- `getAirDensity()`、`getCollideWorld()`、`getDamping()`、`getDensity()`、`getDragCoefficient()`、`getFoldStiffness()`、`getFriction()`、`getGrabIndex()`、`getGravityX()`、`getGravityY()`、`getGravityZ()`、`getId()`、`getIterations()`、`getLiftCoefficient()`
 - `getLinearVelocityX()`、`getLinearVelocityY()`、`getLinearVelocityZ()`、`getMass()`、`getMeter()`、`getName()`、`getNearPressureStiffness()`、`getParticleCount()`、`getParticleMass()`、`getParticleSize()`、`getParticleVx()`
 - `getMaxFoldAngle()`、`getParticleVy()`、`getParticleVx()`、`getParticleX()`、`getParticleY()`、`getParticleZ()`、`getPressureStiffness()`、`getQueryBodyId()`、`getQueryCount()`、`getRayHitBodyId()`、`getRayHitFraction()`
 - `getRayHitNormalX()`、`getRayHitNormalY()`、`getRayHitNormalZ()`、`getRayHitX()`、`getRayHitY()`、`getRayHitZ()`、`getRestDensity()`、`getRestitution()`、`getRotW()`、`getRotX()`、`getRotY()`、`getRotZ()`、`getRows()`、`getSmoothingRadius()`
-- `getOriginX()`、`getOriginY()`、`getOriginZ()`、`getSelfCollision()`、`getSpacing()`、`getStiffness()`、`getType()`、`getViscosity()`、`getX()`、`getY()`、`getZ()`、`grabAt()`、`hasRayHit()`
+- `getOriginX()`、`getOriginY()`、`getOriginZ()`、`getSelfCollision()`、`getSpacing()`、`getStiffness()`、`getType()`、`getViscosity()`、`getWindVelocityX()`、`getWindVelocityY()`、`getWindVelocityZ()`、`getX()`、`getY()`、`getZ()`、`grabAt()`、`hasRayHit()`
 - `interactAt()`、`isActive()`、`isAwake()`、`isBullet()`、`isFixedRotation()`、`isGrabbing()`、`isPinned()`、`isSensor()`
 - `moveGrab()`、`newBody()`、`newBoxShape()`、`newCapsuleShape()`、`newCircleFixture()`、`newCloth()`、`newCloth3D()`、`newClothGPU()`、`newFluid2D()`、`newRectangleFixture()`、`newSphereShape()`、`newWorld()`、`newWorld3D()`、`pin()`
 - `pinTopRow()`、`queryAABB()`、`rayCast()`、`releaseGrab()`、`reset()`、`setActive()`、`setAngle()`、`setAngularVelocity()`、`setAwake()`
-- `setBounds()`、`setBullet()`、`setCollideWorld()`、`setColor()`、`setDamping()`、`setDensity()`、`setFixedRotation()`、`setFoldStiffness()`、`setFriction()`、`setGravity()`
+- `setAerodynamics()`、`setBounds()`、`setBullet()`、`setCollideWorld()`、`setColor()`、`setDamping()`、`setDensity()`、`setFixedRotation()`、`setFoldStiffness()`、`setFriction()`、`setGravity()`、`setWindVelocity()`
 - `setIterations()`、`setLinearVelocity()`、`setMeter()`、`setMaxFoldAngle()`、`setNearPressureStiffness()`、`setParticleMass()`、`setParticlePosition()`、`setParticleSize()`、`setPosition()`、`setPressureStiffness()`
 - `setRestDensity()`、`setRestitution()`、`setRotation()`、`setSensor()`、`setSmoothingRadius()`、`setStiffness()`、`setType()`、`setViscosity()`、`testPoint()`
 - `setSelfCollision()`、`unpin()`、`update()`、`updateFull()`
