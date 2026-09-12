@@ -66,7 +66,6 @@ function levelGizmoModeLabel() {
 }
 
 function levelPanelToolbar() {
-    ui.beginToolbar("main-toolbar");
     ui.beginRow("file-row", 6.0);
     ui.button("New", "new");
     ui.button("Save", "save");
@@ -91,9 +90,8 @@ function levelPanelToolbar() {
     ui.button(level.mode == "play" ? "Stop (Esc)" : "Play (F5)", "play");
     ui.button("Frame all", "frame");
     ui.button("Focus", "focus");
-    ui.end();
-    ui.spacer("tb-fill");
-    ui.text(level.mode == "play" ? "PLAY" : "EDIT", "mode-badge");
+    ui.spacer("tb-fill", 1.0);
+    ui.badge(level.mode == "play" ? "PLAY" : "EDIT", "mode-badge");
     ui.end();
 }
 
