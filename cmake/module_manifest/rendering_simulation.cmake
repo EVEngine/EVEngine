@@ -26,7 +26,7 @@ eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SL
                    GROUP 2d 3d web)
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS platform_event graphics scene
+                   DEPS action platform_event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics

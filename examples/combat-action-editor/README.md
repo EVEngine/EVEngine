@@ -23,6 +23,8 @@ Controls:
 - The Presentation lane includes a cubic master-volume parameter curve. Its
   sampled shape is drawn inside the block; native inspector/script APIs edit
   its keys through the same undoable timeline transaction.
+- The impact camera cue drives the preview's real `CameraController` with a
+  deterministic position, rotation and FOV impulse.
 - **Undo / Redo** (or Ctrl+Z / Ctrl+Y) operates on the native timeline
   transaction history.
 - Hold the right mouse button over the preview to orbit; use the mouse wheel to

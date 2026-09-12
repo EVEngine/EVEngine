@@ -78,6 +78,19 @@ Rig。`setRigPriority` / `setRigEnabled` 可在游戏状态变化时驱动 Direc
 `addFovImpulse(degrees,duration)` 叠加冲刺/受击常用的 FOV 脉冲。多个 modifier
 可以同时叠加，不会改变 Rig 的基础参数。
 
+动作时间线中的 `presentation:camera` 可直接驱动同一套真实 Impulse。先调用
+`setActionCuesEnabled(true)` 显式把控制器注册为当前动作相机；销毁控制器会自动注销，也可传 `false`
+提前断开。payload 至少包含 LogicalId 格式的 `cue`，并可设置 `positionAmplitude`、
+`rotationAmplitude`、`fovAmplitude`、`durationSeconds` 和确定性 `seed`。未注册控制器时运行时返回
+可观测的 NotFound，不会静默吞掉镜头事件。
+
+```squirrel
+ctrl.setActionCuesEnabled(true);
+// presentation:camera payload 示例：
+// { cue="combat:heavy-impact", positionAmplitude=0.12,
+//   rotationAmplitude=2.5, fovAmplitude=3.0, durationSeconds=0.3, seed=47 }
+```
+
 ## Timeline 与 Event
 
 ```squirrel
@@ -132,6 +145,7 @@ if (marker != "") print(marker + ": " + ctrl.getTimelineEventData() + "\n");
 ### `CameraController`
 
 - 绑定：`setCamera(cam)` / `getCamera()`。
+- Action Cue：`setActionCuesEnabled(enabled)` / `getActionCuesEnabled()`。
 - 跟随目标：`setTarget(x,y,z)` / `setTargetNode(nodeRef)` / `getTargetX()` /
   `getTargetY()` / `getTargetZ()`、`setOffset(x,y,z)`、`setLookAhead(x,y,z)`。
 - 模式：`setMode("follow"|"orbit"|"topdown"|"firstperson"|"cinematic")` / `getMode()`。

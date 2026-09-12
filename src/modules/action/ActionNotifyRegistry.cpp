@@ -1,6 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
 
 #include "action/ActionAudioBlock.h"
+#include "action/ActionCameraBlock.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
 #include "action/ActionVfxBlock.h"
@@ -25,6 +26,24 @@ Result<void> failure(DiagnosticCode code, std::string message, std::string path 
 }
 
 bool validType(std::string_view type) { return LogicalId::parse(type).has_value(); }
+
+class ActionCameraCueHandler final : public IActionNotifyHandler {
+public:
+    Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
+        if (event.kind != ActionTimelineEventKind::Notify)
+            return failure(DiagnosticCode::InvalidArgument, "camera cue must be instantaneous", "event.kind");
+        auto binding = ActionCameraCueBinding::fromPayload(event.payload);
+        if (!binding) return Result<void>::failure(binding.status());
+        std::optional<Result<void>> result;
+        cap::forEachUntil<IActionCameraCueSink>([&](IActionCameraCueSink* sink) {
+            if (!sink->supports(binding.value().cue)) return false;
+            result.emplace(sink->trigger(binding.value(), context));
+            return true;
+        });
+        if (result) return std::move(*result);
+        return failure(DiagnosticCode::NotFound, "no camera sink accepts the action cue", binding.value().cue.format());
+    }
+};
 
 class ActionParameterCurveHandler final : public IActionNotifyHandler {
 public:
@@ -124,6 +143,8 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         auto registered = registry.registerDescriptor(std::move(descriptor));
         if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
     }
+    auto cameraHandler = registry.registerHandler("presentation:camera", std::make_shared<ActionCameraCueHandler>());
+    if (!cameraHandler) return Result<ActionNotifyRegistry>::failure(cameraHandler.status());
     auto parameterHandler = registry.registerHandler(
         "presentation:parameter-curve", std::make_shared<ActionParameterCurveHandler>());
     if (!parameterHandler) return Result<ActionNotifyRegistry>::failure(parameterHandler.status());
@@ -218,6 +239,10 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
     if (event.type.format() == "presentation:parameter-curve") {
         auto curve = ActionParameterCurveBinding::fromPayload(event.payload);
         if (!curve) return Result<void>::failure(curve.status());
+    }
+    if (event.type.format() == "presentation:camera") {
+        auto camera = ActionCameraCueBinding::fromPayload(event.payload);
+        if (!camera) return Result<void>::failure(camera.status());
     }
     return Result<void>::success();
 }

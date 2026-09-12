@@ -1,5 +1,6 @@
 #pragma once
 
+#include "action/ActionCameraBlock.h"
 #include "common/Module.h"
 
 #include <glm/glm.hpp>
@@ -34,10 +35,20 @@ namespace eve::camera {
  * 所有行为都经过统一的指数阻尼平滑（setSmooth，对应"平滑移动"），
  * 也支持 maxSpeed 限速避免抖动，snap() 可立即到位不做平滑。
  */
-class CameraController {
+class CameraController : public action::IActionCameraCueSink {
 public:
     CameraController();
-    ~CameraController() = default;
+    ~CameraController() override;
+
+    /** @brief Opt this controller into or out of action camera-cue dispatch. */
+    void setActionCuesEnabled(bool enabled);
+    /** @brief Return whether this controller is currently registered for action cues. */
+    [[nodiscard]] bool getActionCuesEnabled() const;
+    /** @brief Accept every project-defined camera cue while explicitly enabled. */
+    [[nodiscard]] bool supports(const LogicalId& cue) const noexcept override;
+    /** @brief Convert one action cue into deterministic positional, rotational and FOV impulses. */
+    [[nodiscard]] Result<void> trigger(const action::ActionCameraCueBinding& binding,
+                                       const action::ActionNotifyContext& context) override;
 
     // --- 绑定要驱动的摄像机 ---
     void                setCamera(graphics::Camera3D* cam);

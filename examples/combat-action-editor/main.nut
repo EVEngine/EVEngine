@@ -4,7 +4,7 @@
 const HITBOX_ID = "kaykit-state:hitbox";
 
 persist combatEditor = {
-    workspace = null, timeline = null, camera = null, skeleton = null,
+    workspace = null, timeline = null, camera = null, cameraController = null, skeleton = null,
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -70,7 +70,9 @@ function attackTimeline(duration) {
                 { id="kaykit-notify:swing-vfx", type="presentation:vfx", timeNs=ns(duration * 0.34),
                   payload={ uri="asset://vfx/sword-arc", lifetimeSeconds=0.45 } },
                 { id="kaykit-notify:impact-camera", type="presentation:camera", timeNs=ns(duration * 0.46),
-                  payload={ cue="combat.light-impact" } },
+                  payload={ cue="combat:light-impact", positionAmplitude=0.08,
+                            rotationAmplitude=1.8, fovAmplitude=2.0,
+                            durationSeconds=0.24, seed=47 } },
               ], states=[
                 { id="kaykit-state:volume-curve", type="presentation:parameter-curve",
                   startNs=ns(duration * 0.20), endNs=ns(duration * 0.75),
@@ -168,6 +170,13 @@ function buildCharacterPreview() {
     combatEditor.camera.setEye(3.25, 2.25, 4.25); combatEditor.camera.setTarget(0.1, 0.85, 0.0);
     combatEditor.camera.setUp(0.0, 1.0, 0.0); combatEditor.camera.setFov(40.0);
     combatEditor.camera.setAmbient(0.28, 0.32, 0.38); combatEditor.camera.setActive(true);
+    combatEditor.cameraController = eve.CameraController();
+    combatEditor.cameraController.setCamera(combatEditor.camera);
+    combatEditor.cameraController.setMode("orbit");
+    combatEditor.cameraController.setTarget(0.1, 0.85, 0.0);
+    combatEditor.cameraController.setFov(40.0);
+    combatEditor.cameraController.setSmooth(30.0);
+    combatEditor.cameraController.setActionCuesEnabled(true);
     gfx.setBackgroundColor(0.10, 0.13, 0.19, 1.0);
     combatEditor.keyLight = eve.Light3D(); combatEditor.keyLight.setType("dir");
     combatEditor.keyLight.setDirection(-0.45, 1.0, 0.35);
@@ -398,7 +407,7 @@ function updateTimelinePointer() {
     combatEditor.mouseDown = down;
 }
 
-function updatePreviewCamera() {
+function updatePreviewCamera(dt) {
     ui.select("action.preview");
     local hovered = ui.viewportHovered("combat-preview");
     local x = ui.viewportMouseX("combat-preview"); local y = ui.viewportMouseY("combat-preview");
@@ -414,11 +423,10 @@ function updatePreviewCamera() {
         combatEditor.previewLastX = x; combatEditor.previewLastY = y;
         combatEditor.previewOrbiting = true;
     } else combatEditor.previewOrbiting = false;
-    local planar = combatEditor.previewDistance * cos(combatEditor.previewPitch);
-    combatEditor.camera.setEye(0.1 + planar * sin(combatEditor.previewYaw),
-        0.85 + combatEditor.previewDistance * sin(combatEditor.previewPitch),
-        planar * cos(combatEditor.previewYaw));
-    combatEditor.camera.setTarget(0.1, 0.85, 0.0);
+    combatEditor.cameraController.setRadius(combatEditor.previewDistance);
+    combatEditor.cameraController.setAzimuth(combatEditor.previewYaw * 57.2957795);
+    combatEditor.cameraController.setElevation(combatEditor.previewPitch * 57.2957795);
+    combatEditor.cameraController.update(dt);
 }
 
 function updateKeyboardShortcuts() {
@@ -534,7 +542,7 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
-    handleUiEvents(); updateTimelinePointer(); updateBoneTimelinePointer(); updatePreviewCamera(); updateKeyboardShortcuts();
+    handleUiEvents(); updateTimelinePointer(); updateBoneTimelinePointer(); updatePreviewCamera(dt); updateKeyboardShortcuts();
     requireResult(combatEditor.clipEditor.seekSeconds(combatEditor.timeline.getPreviewTime()), "Sync animation playhead");
     if (combatEditor.timeline.isPlaying()) {
         local advanced = combatEditor.timeline.update(dt);

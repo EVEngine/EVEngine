@@ -1,5 +1,6 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionAudioBlock.h"
+#include "action/ActionCameraBlock.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
@@ -86,6 +87,25 @@ public:
     std::vector<eve::action::ActionParameterSample> samples;
 };
 
+class RecordingCameraSink final : public eve::action::IActionCameraCueSink {
+public:
+    bool supports(const eve::LogicalId& cue) const noexcept override {
+        return cue.format() == "combat:impact";
+    }
+
+    eve::Result<void> trigger(const eve::action::ActionCameraCueBinding& binding,
+                              const eve::action::ActionNotifyContext& context) override {
+        ++calls;
+        last = binding;
+        execution = context.executionId;
+        return eve::Result<void>::success();
+    }
+
+    int calls = 0;
+    eve::action::ActionCameraCueBinding last;
+    eve::action::ActionExecutionId execution;
+};
+
 eve::Value::Object curvePayload() {
     return {{"target", "test:parameter"},
             {"operation", "multiply"},
@@ -119,6 +139,47 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     REQUIRE(prefab.ok());
     CHECK_EQ(prefab.value().displayName, "Spawn Prefab");
     CHECK(static_cast<int>(prefab.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
+}
+
+TEST_CASE("actionCameraCue.validatesAndRoutesToOptionalSink") {
+    eve::Value::Object payload{{"cue", "combat:impact"},
+                               {"positionAmplitude", 0.2},
+                               {"rotationAmplitude", 2.5},
+                               {"fovAmplitude", -1.0},
+                               {"durationSeconds", 0.4},
+                               {"seed", 17}};
+    auto binding = eve::action::ActionCameraCueBinding::fromPayload(payload);
+    REQUIRE(binding.ok());
+    CHECK_EQ(binding.value().cue, id("combat:impact"));
+    CHECK_EQ(binding.value().positionAmplitude, 0.2);
+    CHECK_EQ(binding.value().rotationAmplitude, 2.5);
+    CHECK_EQ(binding.value().fovAmplitude, -1.0);
+    CHECK_EQ(binding.value().duration, eve::Duration::fromNanoseconds(400000000));
+    CHECK_EQ(binding.value().seed, 17u);
+
+    auto invalid = payload;
+    invalid["durationSeconds"] = 0.0;
+    auto rejected = eve::action::ActionCameraCueBinding::fromPayload(invalid);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.status().diagnostics().front().path(), "durationSeconds");
+
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    auto cameraEvent = event(eve::action::ActionTimelineEventKind::Notify, "presentation:camera");
+    cameraEvent.payload = payload;
+    eve::action::ActionNotifyContext context;
+    context.executionId = eve::action::ActionExecutionId{202};
+    auto missing = registry.value().dispatch(cameraEvent, context);
+    CHECK(!missing.ok());
+    CHECK_EQ(missing.status().code(), eve::StatusCode::NotFound);
+
+    RecordingCameraSink sink;
+    eve::cap::addListener<eve::action::IActionCameraCueSink>(&sink);
+    REQUIRE(registry.value().dispatch(cameraEvent, context).ok());
+    REQUIRE_EQ(sink.calls, 1);
+    CHECK_EQ(sink.last.seed, 17u);
+    CHECK_EQ(sink.execution, context.executionId);
+    eve::cap::removeListener<eve::action::IActionCameraCueSink>(&sink);
 }
 
 TEST_CASE("actionParameterCurve.validatesSamplesAndRoutesPairedRuntimeLifecycle") {
