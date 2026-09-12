@@ -4,6 +4,9 @@
 // undo/redo and conflict detection behave exactly as in examples/scene-editor.
 // Play mode (F5) builds a runtime world from the authored data and drives a
 // Motion Matching character; it never mutates authored state.
+//
+// UI is a classic editor workspace (toolbar / outliner / viewport / inspector /
+// asset palette) — see level_ui.nut.
 
 dofile("level_state.nut");
 dofile("level_json.nut");
@@ -123,6 +126,88 @@ function levelPreviewSelection() {
     if (level.selected in level.spawns) spawnApplyTransform(level.spawns[level.selected], preview);
 }
 
+/** @brief Parent-local gizmo point → world, for overlay drawing. */
+function levelGizmoWorldPoint(object, lx, ly, lz) {
+    if (object == null || object.parent == "") return [lx, ly, lz];
+    return scene.localToWorldAt(levelHost(), object.parent, lx, ly, lz);
+}
+
+function levelClearGizmoPrims() {
+    foreach (prim in level.gizmoPrims) {
+        if (prim == null) continue;
+        try {
+            local removed = prim.remove();
+            // Best-effort: a stale proxy after hot-reload is fine to drop.
+            if (removed != null && !removed.ok) {}
+        } catch (error) {}
+    }
+    level.gizmoPrims = [];
+}
+
+/**
+ * @brief Draw the TransformGizmo as world primitives (missing in the old UI —
+ * pick/drag worked but nothing was visible).
+ *
+ * Primitive factories return Result{ok,value}; keep the owned proxy and set
+ * depth to ignore so the gizmo stays readable over terrain.
+ */
+function levelDrawGizmo() {
+    levelClearGizmoPrims();
+    if (level.mode == "play") return;
+    local object = levelObject(level.selected);
+    if (object == null || level.gizmo == null) return;
+    local gizmo = level.gizmo;
+
+    function keep(result) {
+        if (result == null || !result.ok) return;
+        local prim = result.value;
+        local depth = prim.setDepthMode("ignore");
+        if (depth != null && !depth.ok) {}
+        level.gizmoPrims.push(prim);
+    }
+
+    for (local i = 0; i < gizmo.getPartCount(); ++i) {
+        local ox = gizmo.getPartOriginX(i), oy = gizmo.getPartOriginY(i), oz = gizmo.getPartOriginZ(i);
+        local length = gizmo.getPartLength(i);
+        local a = levelGizmoWorldPoint(object, ox, oy, oz);
+        local b = levelGizmoWorldPoint(object,
+            ox + gizmo.getPartDirX(i) * length,
+            oy + gizmo.getPartDirY(i) * length,
+            oz + gizmo.getPartDirZ(i) * length);
+        local kind = gizmo.getPartKind(i);
+        local r = gizmo.getPartColorR(i), g = gizmo.getPartColorG(i), bl = gizmo.getPartColorB(i);
+        if (kind == "axis") {
+            if (gizmo.getMode() == "translate")
+                keep(gfx.newPrimitiveArrow3D(a[0], a[1], a[2], b[0], b[1], b[2],
+                    length * 0.22, length * 0.08, r, g, bl, 1.0, 3.0));
+            else
+                keep(gfx.newPrimitiveLine3D(a[0], a[1], a[2], b[0], b[1], b[2], r, g, bl, 1.0, 3.0));
+        } else if (kind == "center") {
+            local rad = gizmo.getPartRadius(i) * 0.75;
+            keep(gfx.newPrimitiveLine3D(a[0] - rad, a[1], a[2], a[0] + rad, a[1], a[2], r, g, bl, 1.0, 2.0));
+        } else if (kind == "ring") {
+            local normal = [gizmo.getPartDirX(i), gizmo.getPartDirY(i), gizmo.getPartDirZ(i)];
+            local u = fabs(normal[1]) < 0.9 ? [-normal[2], 0.0, normal[0]] : [0.0, normal[2], -normal[1]];
+            local un = sqrt(u[0] * u[0] + u[1] * u[1] + u[2] * u[2]);
+            if (un < 0.0001) continue;
+            for (local k = 0; k < 3; ++k) u[k] /= un;
+            local v = [normal[1] * u[2] - normal[2] * u[1],
+                       normal[2] * u[0] - normal[0] * u[2],
+                       normal[0] * u[1] - normal[1] * u[0]];
+            local points = [], radius = gizmo.getPartRadius(i);
+            for (local k = 0; k < 48; ++k) {
+                local angle = k * 6.28318530718 / 48.0;
+                local p = levelGizmoWorldPoint(object,
+                    ox + radius * (u[0] * cos(angle) + v[0] * sin(angle)),
+                    oy + radius * (u[1] * cos(angle) + v[1] * sin(angle)),
+                    oz + radius * (u[2] * cos(angle) + v[2] * sin(angle)));
+                points.push(p[0]); points.push(p[1]); points.push(p[2]);
+            }
+            keep(gfx.newPrimitivePolyline3D(points, true, r, g, bl, 1.0, 3.0));
+        }
+    }
+}
+
 function levelPointer() {
     local down = mouse.isDown(1);
     local pressed = down && !level.mouseDown;
@@ -130,13 +215,13 @@ function levelPointer() {
     level.mouseDown = down;
 
     local gizmo = level.gizmo;
-    if (ui.wantCaptureMouse()) {
+    local pointer = levelViewportPointer();
+    if (pointer == null) {
         if (gizmo.isDragging()) gizmo.endDrag();
         return;
     }
     local object = levelObject(level.selected);
-    level.camera.screenToRay(mouse.getX(), mouse.getY(),
-        config.width.tofloat(), config.height.tofloat());
+    level.camera.screenToRay(pointer.x, pointer.y, pointer.w, pointer.h);
     local ox = level.camera.getScreenRayOriginX();
     local oy = level.camera.getScreenRayOriginY();
     local oz = level.camera.getScreenRayOriginZ();
@@ -215,9 +300,23 @@ function levelEditInput() {
     if (levelKeyPressed("1")) levelHandleAction("tool:select");
     if (levelKeyPressed("2")) levelHandleAction("tool:whitebox");
     if (levelKeyPressed("3")) levelHandleAction("tool:spawn");
+    if (levelKeyPressed("w") || levelKeyPressed("W")) levelHandleAction("gizmo:translate");
+    if (levelKeyPressed("r") || levelKeyPressed("R")) levelHandleAction("gizmo:rotate");
+    if (levelKeyPressed("t") || levelKeyPressed("T")) levelHandleAction("gizmo:scale");
 
-    local mouseX = mouse.getX(), mouseY = mouse.getY();
-    local orbit = mouse.isDown(2) && !ui.wantCaptureMouse();
+    ui.select("viewport");
+    local hovered = ui.viewportHovered("level-vp");
+    local mouseX = hovered ? ui.viewportMouseX("level-vp") : mouse.getX();
+    local mouseY = hovered ? ui.viewportMouseY("level-vp") : mouse.getY();
+    if (hovered) {
+        local wheel = ui.viewportWheel("level-vp");
+        if (wheel != 0.0) {
+            if (wheel > 0.0) level.distance = levelClamp(level.distance / 1.12, 3.0, 3000.0);
+            else level.distance = levelClamp(level.distance * 1.12, 3.0, 3000.0);
+            levelUpdateOrbitCamera();
+        }
+    }
+    local orbit = hovered && mouse.isDown(2);
     if (orbit && level.orbit) {
         level.yaw += (mouseX - level.lastX) * 0.008;
         level.pitch += (mouseY - level.lastY) * 0.006;
@@ -225,7 +324,7 @@ function levelEditInput() {
         levelUpdateOrbitCamera();
     }
     // Middle-drag pans the focus across the level.
-    local pan = mouse.isDown(3) && !ui.wantCaptureMouse();
+    local pan = hovered && mouse.isDown(3);
     if (pan && level.pan) levelPanCamera(mouseX - level.lastX, mouseY - level.lastY);
     level.orbit = orbit;
     level.pan = pan;
@@ -252,16 +351,13 @@ function levelPlayInput() {
     local play = level.play;
     if (play == null) return;
 
-    // Mouse look. The engine exposes absolute cursor positions and no delta API,
-    // so the delta is tracked here and the panel area is excluded so hovering the
-    // editor UI does not spin the view.
-    local mouseX = mouse.getX(), mouseY = mouse.getY();
+    // Mouse look inside the viewport only, so docking chrome never spins the view.
+    ui.select("viewport");
+    local hovered = ui.viewportHovered("level-vp");
+    local mouseX = hovered ? ui.viewportMouseX("level-vp") : play.lastMouseX;
+    local mouseY = hovered ? ui.viewportMouseY("level-vp") : play.lastMouseY;
     local deltaX = mouseX - play.lastMouseX, deltaY = mouseY - play.lastMouseY;
-    // Absolute cursor polling has no notion of a discontinuity, so a jump larger
-    // than a deliberate flick (leaving/entering the window, alt-tab) is ignored
-    // instead of whipping the view around.
-    if (!ui.wantCaptureMouse() && (deltaX < 200.0 && deltaX > -200.0) &&
-        (deltaY < 200.0 && deltaY > -200.0))
+    if (hovered && (deltaX < 200.0 && deltaX > -200.0) && (deltaY < 200.0 && deltaY > -200.0))
         levelPlayLook(deltaX, deltaY);
     play.lastMouseX = mouseX;
     play.lastMouseY = mouseY;
@@ -270,20 +366,6 @@ function levelPlayInput() {
         play.cameraDistance = levelClamp(play.cameraDistance * 1.15, 2.0, 60.0);
     if (levelKeyPressed("e"))
         play.cameraDistance = levelClamp(play.cameraDistance / 1.15, 2.0, 60.0);
-}
-
-function levelDrawOverlay() {
-    if (level.mode != "play") return;
-    local play = level.play;
-    gfx.drawSolidRect(18.0, 18.0, 470.0, 84.0, 0.02, 0.035, 0.06, 0.88);
-    gfx.drawSolidRect(30.0, 30.0, 20.0, 20.0, 0.20, 0.85, 0.45, 1.0);
-    gfx.drawSolidRect(62.0, 30.0, 390.0, 8.0, 0.18, 0.24, 0.32, 1.0);
-    local speed = sqrt(play.rig.matcher.getDesiredVelocityX() * play.rig.matcher.getDesiredVelocityX() +
-                       play.rig.matcher.getDesiredVelocityZ() * play.rig.matcher.getDesiredVelocityZ());
-    gfx.drawSolidRect(62.0, 30.0, 390.0 * levelClamp(speed / 4.4, 0.0, 1.0), 8.0, 0.25, 0.86, 0.48, 1.0);
-    gfx.drawSolidRect(62.0, 52.0, play.grounded ? 180.0 : 55.0, 8.0,
-        play.grounded ? 0.30 : 0.85, play.grounded ? 0.80 : 0.45, 0.50, 1.0);
-    gfx.drawSolidRect(62.0, 70.0, 120.0 * levelClamp(play.lastCost / 6.0, 0.0, 1.0), 8.0, 0.95, 0.60, 0.20, 1.0);
 }
 
 eve_init = function() {
@@ -300,11 +382,13 @@ eve_init = function() {
     level.gizmo = eve.Editor().newGizmo();
     level.gizmo.setSize(2.4);
     level.gizmo.setSnapTranslate(0.5, 0.5, 0.5);
+    level.gizmo.setMode(level.gizmoMode);
 
-    gfx.setBackgroundColor(0.055, 0.065, 0.085, 1.0);
+    gfx.setBackgroundColor(0.045, 0.052, 0.068, 1.0);
     gfx.setDirectionalLight(-0.42, -1.0, -0.30, 1.25, 1.18, 1.05);
     ui.setTheme("dark");
     levelSetupCamera();
+    levelConfigureWorkspace();
 
     if (terrainBuild(terrainDefaultReference()) == null) throw level.status;
     levelFrameTerrain();
@@ -313,9 +397,11 @@ eve_init = function() {
 
     print("level-designer: terrain " + level.terrain.width + "x" + level.terrain.height +
           " spacing=" + level.terrain.spacingX + " whiteboxRecipes=" + level.recipes.len() + "\n");
-    print("level-designer: 1/2/3 tools | LMB place/select | RMB orbit | MMB pan | Q/E zoom | F focus | F5 play\n");
-    print("level-designer: in play: mouse look | WASD+Shift | Q/E zoom | F1/F2 character/motion | Esc stop\n");
-    level.status = "ready: pick a piece, then click the terrain";
+    print("level-designer: workspace panels=" + level.workspace.getPanelCount() +
+          " (toolbar/outliner/viewport/inspector/palette)\n");
+    print("level-designer: 1/2/3 tools | W/R/T gizmo | LMB place/select | RMB orbit | MMB pan | wheel/Q/E zoom | F focus | F5 play\n");
+    print("level-designer: in play: mouse look (viewport) | WASD+Shift | Q/E zoom | F1/F2 character/motion | Esc stop\n");
+    level.status = "ready: pick Whitebox, choose a piece, click the terrain";
 };
 
 eve_update = function(dt) {
@@ -327,6 +413,8 @@ eve_update = function(dt) {
         levelPlayInput();
         if (level.mode == "play") levelUpdatePlay(dt);
         levelHandleUi();
+        if (level.panelsDirty) levelMountPanels();
+        levelClearGizmoPrims();
         return;
     }
     levelHandleUi();
@@ -335,12 +423,14 @@ eve_update = function(dt) {
     levelPointer();
     whiteboxSyncTransforms();
     spawnSyncTransforms();
+    levelDrawGizmo();
 };
 
 eve_render = function() {
     gfx.clear();
-    gfx.render3D();
-    levelDrawOverlay();
+    ui.select("viewport");
+    local canvas = ui.viewportCanvas("level-vp");
+    if (canvas != null) gfx.renderScene3DToCanvas(canvas, level.camera);
     ui.beginFrameAndRender();
 };
 
@@ -348,6 +438,7 @@ eve_reload <- function() {
     // The level state holds live module handles (session, gizmo, camera, procgen
     // module, camera controller) that a hot-reload snapshot cannot capture, so the
     // designer rebuilds its session from scratch instead of using stale handles.
+    levelClearGizmoPrims();
     level = null;
     eve_init();
     level.status = "hot reloaded";
