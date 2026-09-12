@@ -1,0 +1,243 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/softbody/SoftBody3DDefinition.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_4bb74fb27710831de26933735fff0e3d.html">softbody</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SoftBody3DDefinition.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SoftBody3DDefinition_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SchemaTypes_8h.html">schema/SchemaTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">SoftBody3DDefinition</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7bcd24b2dd24dea12ab43d3add5cb725">   20</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7bcd24b2dd24dea12ab43d3add5cb725">SchemaId</a>      = <span class="stringliteral">&quot;physics:softbody3d&quot;</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#afbf7bc23d08b821f7052e92c051d6ccb">   21</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SchemaVersion</a> = 1;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa23e8cd534d98eb5062bbe429f99a828">   23</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa23e8cd534d98eb5062bbe429f99a828">cols</a> = 4, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a08a9a622d79990bf9ec708f2aa6d6715">rows</a> = 4, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a89d2a085e98539a4715ffab3d817071e">layers</a> = 4;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a5bb7fc83c9444fef0ec1f2ea72bf3686">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a5bb7fc83c9444fef0ec1f2ea72bf3686">spacing</a> = 0.35f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a287005dde2fe63cb2c7b03aee74cf86a">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a287005dde2fe63cb2c7b03aee74cf86a">originX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad578857560851f1633a75f0fd2fcdf97">originY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a50dfa399b998b63d337d764aaeb758f7">originZ</a> = 0.f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab9abcb1bb18d740f934b5f1d3808b0cb">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab9abcb1bb18d740f934b5f1d3808b0cb">gravityX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ac360a4964aa00099f6ffd1bd04108bc1">gravityY</a> = -9.8f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7a1030cd67a4f5ac99acd124040c4fbb">gravityZ</a> = 0.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9ea442dc5d0fda8a988b405595ca6b2c">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9ea442dc5d0fda8a988b405595ca6b2c">deformationResistance</a> = 0.8f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a2f118b9c43b80c8d0044896ffb8f8380">   28</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a2f118b9c43b80c8d0044896ffb8f8380">iterations</a>            = 5;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9a0921bcd3fee63c89f245e6ec243638">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9a0921bcd3fee63c89f245e6ec243638">damping</a> = 0.04f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a97b57ee654f0dd48778f1a3a0e65c444">particleRadius</a> = 0.2f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa8f023c81531b2c585bd20aca2188f91">particleMass</a> = 0.1f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#af95ad41b955fa096ca9cb8e296580349">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ae3a5419d21eac7861d425575889d7eac">plasticYield</a> = 0.f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a445dd64adf89d26943fb19892b751f16">plasticCreep</a> = 0.f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a77ce174821fadb4c848e0fdbdb531375">plasticRecovery</a> = 0.f, <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#af95ad41b955fa096ca9cb8e296580349">maxDeformation</a> = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a52017ad076c982695216bcc627180db2">   31</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a52017ad076c982695216bcc627180db2">selfCollision</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard(<span class="stringliteral">&quot;check soft-body definition validation&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aee7248bb3fe5f22b0d5e731506e01142">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    [[nodiscard(<span class="stringliteral">&quot;check soft-body definition encoding&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Value&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a25bc12088fb3ccffd9146a8ca29b472f">toValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a> <a class="code hl_function" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#adca807b6d4e1322e75410f824b1e0900">schemaDefinition</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard(<span class="stringliteral">&quot;check soft-body schema registration&quot;</span>)]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad68c7c07d7efc5d580f7b86184325740">ensureSchemaRegistered</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    [[nodiscard(<span class="stringliteral">&quot;check soft-body definition decoding&quot;</span>)]]</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;SoftBody3DDefinition&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab57e7636d13db51fefd46daf22facc78">fromValue</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSchemaTypes_8h_html"><div class="ttname"><a href="SchemaTypes_8h.html">SchemaTypes.h</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SchemaVersionTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00035">Climbing.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html">eve::physics::SoftBody3DDefinition</a></div><div class="ttdoc">Versioned, owning creation definition for one volumetric soft body.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00019">SoftBody3DDefinition.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a08a9a622d79990bf9ec708f2aa6d6715"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a08a9a622d79990bf9ec708f2aa6d6715">eve::physics::SoftBody3DDefinition::rows</a></div><div class="ttdeci">int rows</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00023">SoftBody3DDefinition.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a25bc12088fb3ccffd9146a8ca29b472f"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a25bc12088fb3ccffd9146a8ca29b472f">eve::physics::SoftBody3DDefinition::toValue</a></div><div class="ttdeci">eve::Result&lt; eve::Value &gt; toValue() const</div><div class="ttdoc">Encode the complete canonical version-1 value.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8cpp_source.html#l00085">SoftBody3DDefinition.cpp:85</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a287005dde2fe63cb2c7b03aee74cf86a"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a287005dde2fe63cb2c7b03aee74cf86a">eve::physics::SoftBody3DDefinition::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00025">SoftBody3DDefinition.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a2f118b9c43b80c8d0044896ffb8f8380"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a2f118b9c43b80c8d0044896ffb8f8380">eve::physics::SoftBody3DDefinition::iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00028">SoftBody3DDefinition.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a445dd64adf89d26943fb19892b751f16"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a445dd64adf89d26943fb19892b751f16">eve::physics::SoftBody3DDefinition::plasticCreep</a></div><div class="ttdeci">float plasticCreep</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a50dfa399b998b63d337d764aaeb758f7"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a50dfa399b998b63d337d764aaeb758f7">eve::physics::SoftBody3DDefinition::originZ</a></div><div class="ttdeci">float originZ</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00025">SoftBody3DDefinition.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a52017ad076c982695216bcc627180db2"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a52017ad076c982695216bcc627180db2">eve::physics::SoftBody3DDefinition::selfCollision</a></div><div class="ttdeci">bool selfCollision</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00031">SoftBody3DDefinition.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a5bb7fc83c9444fef0ec1f2ea72bf3686"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a5bb7fc83c9444fef0ec1f2ea72bf3686">eve::physics::SoftBody3DDefinition::spacing</a></div><div class="ttdeci">float spacing</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00024">SoftBody3DDefinition.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a77ce174821fadb4c848e0fdbdb531375"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a77ce174821fadb4c848e0fdbdb531375">eve::physics::SoftBody3DDefinition::plasticRecovery</a></div><div class="ttdeci">float plasticRecovery</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a7a1030cd67a4f5ac99acd124040c4fbb"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7a1030cd67a4f5ac99acd124040c4fbb">eve::physics::SoftBody3DDefinition::gravityZ</a></div><div class="ttdeci">float gravityZ</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00026">SoftBody3DDefinition.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a7bcd24b2dd24dea12ab43d3add5cb725"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7bcd24b2dd24dea12ab43d3add5cb725">eve::physics::SoftBody3DDefinition::SchemaId</a></div><div class="ttdeci">static constexpr std::string_view SchemaId</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00020">SoftBody3DDefinition.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a89d2a085e98539a4715ffab3d817071e"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a89d2a085e98539a4715ffab3d817071e">eve::physics::SoftBody3DDefinition::layers</a></div><div class="ttdeci">int layers</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00023">SoftBody3DDefinition.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a97b57ee654f0dd48778f1a3a0e65c444"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a97b57ee654f0dd48778f1a3a0e65c444">eve::physics::SoftBody3DDefinition::particleRadius</a></div><div class="ttdeci">float particleRadius</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00029">SoftBody3DDefinition.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a9a0921bcd3fee63c89f245e6ec243638"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9a0921bcd3fee63c89f245e6ec243638">eve::physics::SoftBody3DDefinition::damping</a></div><div class="ttdeci">float damping</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00029">SoftBody3DDefinition.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a9ea442dc5d0fda8a988b405595ca6b2c"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9ea442dc5d0fda8a988b405595ca6b2c">eve::physics::SoftBody3DDefinition::deformationResistance</a></div><div class="ttdeci">float deformationResistance</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00027">SoftBody3DDefinition.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_aa23e8cd534d98eb5062bbe429f99a828"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa23e8cd534d98eb5062bbe429f99a828">eve::physics::SoftBody3DDefinition::cols</a></div><div class="ttdeci">int cols</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00023">SoftBody3DDefinition.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_aa8f023c81531b2c585bd20aca2188f91"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa8f023c81531b2c585bd20aca2188f91">eve::physics::SoftBody3DDefinition::particleMass</a></div><div class="ttdeci">float particleMass</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00029">SoftBody3DDefinition.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ab57e7636d13db51fefd46daf22facc78"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab57e7636d13db51fefd46daf22facc78">eve::physics::SoftBody3DDefinition::fromValue</a></div><div class="ttdeci">static eve::Result&lt; SoftBody3DDefinition &gt; fromValue(const eve::Value &amp;value)</div><div class="ttdoc">Decode and validate version 1 transactionally without partial publication.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8cpp_source.html#l00190">SoftBody3DDefinition.cpp:190</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ab9abcb1bb18d740f934b5f1d3808b0cb"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab9abcb1bb18d740f934b5f1d3808b0cb">eve::physics::SoftBody3DDefinition::gravityX</a></div><div class="ttdeci">float gravityX</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00026">SoftBody3DDefinition.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ac360a4964aa00099f6ffd1bd04108bc1"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ac360a4964aa00099f6ffd1bd04108bc1">eve::physics::SoftBody3DDefinition::gravityY</a></div><div class="ttdeci">float gravityY</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00026">SoftBody3DDefinition.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ad578857560851f1633a75f0fd2fcdf97"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad578857560851f1633a75f0fd2fcdf97">eve::physics::SoftBody3DDefinition::originY</a></div><div class="ttdeci">float originY</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00025">SoftBody3DDefinition.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ad68c7c07d7efc5d580f7b86184325740"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad68c7c07d7efc5d580f7b86184325740">eve::physics::SoftBody3DDefinition::ensureSchemaRegistered</a></div><div class="ttdeci">static eve::Result&lt; void &gt; ensureSchemaRegistered()</div><div class="ttdoc">Idempotently register version 1 in the process schema registry.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8cpp_source.html#l00182">SoftBody3DDefinition.cpp:182</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_adca807b6d4e1322e75410f824b1e0900"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#adca807b6d4e1322e75410f824b1e0900">eve::physics::SoftBody3DDefinition::schemaDefinition</a></div><div class="ttdeci">static eve::schema::SchemaDefinition schemaDefinition()</div><div class="ttdoc">Build the runtime/tooling schema whose constraints mirror validate().</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8cpp_source.html#l00114">SoftBody3DDefinition.cpp:114</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ae3a5419d21eac7861d425575889d7eac"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ae3a5419d21eac7861d425575889d7eac">eve::physics::SoftBody3DDefinition::plasticYield</a></div><div class="ttdeci">float plasticYield</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_aee7248bb3fe5f22b0d5e731506e01142"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aee7248bb3fe5f22b0d5e731506e01142">eve::physics::SoftBody3DDefinition::validate</a></div><div class="ttdeci">eve::Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate all fields and the aggregate one-million-particle limit.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8cpp_source.html#l00058">SoftBody3DDefinition.cpp:58</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_af95ad41b955fa096ca9cb8e296580349"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#af95ad41b955fa096ca9cb8e296580349">eve::physics::SoftBody3DDefinition::maxDeformation</a></div><div class="ttdeci">float maxDeformation</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1schema_1_1SchemaDefinition_html"><div class="ttname"><a href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a></div><div class="ttdoc">Versioned runtime schema for a JSON object.</div><div class="ttdef"><b>Definition</b> <a href="SchemaTypes_8h_source.html#l00093">SchemaTypes.h:93</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

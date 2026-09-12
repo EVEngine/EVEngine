@@ -1,0 +1,260 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsShaderSurface.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GraphicsShaderSurface.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GraphicsShaderSurface_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="vulkan_2Graphics_8h.html">graphics/vulkan/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="GraphicsInternal_8h.html">graphics/vulkan/GraphicsInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac68ad2c935321dfe78cd300b07f7f5c0">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac68ad2c935321dfe78cd300b07f7f5c0">Graphics::configureMeshShaderSurface</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>, <span class="keywordtype">bool</span> depthWrite,</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>                                                       <span class="keywordtype">bool</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">return</span> rebuildMeshShaderSurface(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>, depthWrite, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshRasterState());</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ae75b8af30e53fc5f6a44b4a03760bbf2">   11</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ae75b8af30e53fc5f6a44b4a03760bbf2">Graphics::configureMeshShaderRaster</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1MeshShaderRasterState.html">MeshShaderRasterState</a>&amp; state) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="namespaceeve_1_1graphics.html#a8466cfe03c95c2965c8def29d3a65643">validateMeshShaderRasterState</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> rebuildMeshShaderSurface(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshBlend, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshDepthWrite, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshDoubleSided, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> Graphics::rebuildMeshShaderSurface(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>, <span class="keywordtype">bool</span> depthWrite, <span class="keywordtype">bool</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                                     <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1MeshShaderRasterState.html">MeshShaderRasterState</a>&amp; raster) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">auto</span> found = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                              [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>) { return g-&gt;owner == &amp;shader; });</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (found == ownedGpuShaders.end() || !(*found)-&gt;isMesh3D || (*found)-&gt;isHair3D || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.isXray() ||</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        swapchainPassOpen || offscreen3DPassOpen)</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Expected an owned mesh shader outside frame submission&quot;</span>));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; current = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshRasterState();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshBlend == <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a> &amp;&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshDepthWrite == depthWrite &amp;&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshDoubleSided == <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a> &amp;&amp;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        current.depthCompare == raster.<a class="code hl_variable" href="structeve_1_1graphics_1_1MeshShaderRasterState.html#a7e7e59c5fdf4bdadd5936b4350e777a1">depthCompare</a> &amp;&amp; current.depthBiasConstant == raster.<a class="code hl_variable" href="structeve_1_1graphics_1_1MeshShaderRasterState.html#ad88a10862576835790814b5e076eb11d">depthBiasConstant</a> &amp;&amp;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        current.depthBiasSlope == raster.<a class="code hl_variable" href="structeve_1_1graphics_1_1MeshShaderRasterState.html#af14f6b3582b4aff781a0744d6342a965">depthBiasSlope</a> &amp;&amp; current.colorWriteMask == raster.<a class="code hl_variable" href="structeve_1_1graphics_1_1MeshShaderRasterState.html#a6c22f0a86b577150211e92a83e0ac600">colorWriteMask</a>)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">auto</span>&amp;                       gpu = **found;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::array&lt;vk::Pipeline, 3&gt; prepared{};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        prepared[0] =</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            createMesh3DStylePipeline(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.vertexSpirv(), <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.fragmentSpirv(), gpu.pipelineLayout,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                                      activeScenePass(), activeSceneSamples(), <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>, depthWrite, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>, raster);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        prepared[1] = createMesh3DStylePipeline(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.vertexSpirv(), <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.fragmentSpirv(), gpu.pipelineLayout,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                                offscreen3DRenderPass, vk::SampleCountFlagBits::e1, <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>, depthWrite,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>, raster);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        prepared[2] = createMesh3DStylePipeline(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.vertexSpirv(), <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.fragmentSpirv(), gpu.pipelineLayout,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                                hdrOffscreen3DRenderPass, vk::SampleCountFlagBits::e1, <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                depthWrite, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>, raster);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">waitForSharedGpuResources</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> pipeline : prepared)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            if (pipeline) device-&gt;destroyPipeline(pipeline);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, e.what()));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> pipeline : {gpu.mesh3dPipeline, gpu.mesh3dOffscreenPipeline, gpu.mesh3dHdrOffscreenPipeline})</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> (pipeline) device-&gt;destroyPipeline(pipeline);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    gpu.mesh3dPipeline             = prepared[0];</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    gpu.mesh3dOffscreenPipeline    = prepared[1];</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    gpu.mesh3dHdrOffscreenPipeline = prepared[2];</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshBlend               = <a class="code hl_variable" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshDepthWrite          = depthWrite;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshDoubleSided         = <a class="code hl_variable" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.meshRaster_             = raster;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    lastMesh3dPipeline             = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}  <span class="comment">// namespace eve::graphics::vulkan</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html"><div class="ttname"><a href="GraphicsInternal_8h.html">GraphicsInternal.h</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_a9ac2274b5c433a584adfb0f337eab980"><div class="ttname"><a href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a></div><div class="ttdeci">float blend</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00036">HexTerrain.cpp:36</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00550">McpServer.cpp:550</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a792e1d28c18ee6a846936726a800c988"><div class="ttname"><a href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a></div><div class="ttdeci">bool doubleSided</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00125">ModelRenderer.cpp:125</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00551">RenderSystem3D.cpp:551</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00035">Shader.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a550f581f81038f420c7895742faae96e"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">eve::graphics::vulkan::Graphics::waitForSharedGpuResources</a></div><div class="ttdeci">void waitForSharedGpuResources()</div><div class="ttdoc">Block until all in-flight GPU work (all frames) has completed.</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8cpp_source.html#l00761">Graphics.cpp:761</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_ac68ad2c935321dfe78cd300b07f7f5c0"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac68ad2c935321dfe78cd300b07f7f5c0">eve::graphics::vulkan::Graphics::configureMeshShaderSurface</a></div><div class="ttdeci">eve::Result&lt; void &gt; configureMeshShaderSurface(Shader &amp;shader, BlendMode blend, bool depthWrite, bool doubleSided) override</div><div class="ttdoc">Prepare a custom mesh shader's blend, depth and culling state.</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderSurface_8cpp_source.html#l00007">GraphicsShaderSurface.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_ae75b8af30e53fc5f6a44b4a03760bbf2"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ae75b8af30e53fc5f6a44b4a03760bbf2">eve::graphics::vulkan::Graphics::configureMeshShaderRaster</a></div><div class="ttdeci">eve::Result&lt; void &gt; configureMeshShaderRaster(Shader &amp;shader, const MeshShaderRasterState &amp;state) override</div><div class="ttdoc">Transactionally configure an owned ordinary mesh shader's raster state.</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderSurface_8cpp_source.html#l00011">GraphicsShaderSurface.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1vulkan_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></div><div class="ttdef"><b>Definition</b> <a href="VulkanSequence_8h_source.html#l00009">VulkanSequence.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a8466cfe03c95c2965c8def29d3a65643"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a8466cfe03c95c2965c8def29d3a65643">eve::graphics::validateMeshShaderRasterState</a></div><div class="ttdeci">Result&lt; void &gt; validateMeshShaderRasterState(const MeshShaderRasterState &amp;state)</div><div class="ttdoc">Validate a borrowed value without touching graphics state; safe on any thread.</div><div class="ttdef"><b>Definition</b> <a href="MeshShaderRasterState_8cpp_source.html#l00005">MeshShaderRasterState.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::BlendMode</a></div><div class="ttdeci">BlendMode</div><div class="ttdoc">Render-neutral 2D blend mode shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00011">RenderTypes.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1MeshShaderRasterState_html"><div class="ttname"><a href="structeve_1_1graphics_1_1MeshShaderRasterState.html">eve::graphics::MeshShaderRasterState</a></div><div class="ttdoc">Value snapshot of custom mesh rasterization state, independent of blending/culling.</div><div class="ttdef"><b>Definition</b> <a href="MeshShaderRasterState_8h_source.html#l00013">MeshShaderRasterState.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1MeshShaderRasterState_html_a6c22f0a86b577150211e92a83e0ac600"><div class="ttname"><a href="structeve_1_1graphics_1_1MeshShaderRasterState.html#a6c22f0a86b577150211e92a83e0ac600">eve::graphics::MeshShaderRasterState::colorWriteMask</a></div><div class="ttdeci">std::uint8_t colorWriteMask</div><div class="ttdef"><b>Definition</b> <a href="MeshShaderRasterState_8h_source.html#l00017">MeshShaderRasterState.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1MeshShaderRasterState_html_a7e7e59c5fdf4bdadd5936b4350e777a1"><div class="ttname"><a href="structeve_1_1graphics_1_1MeshShaderRasterState.html#a7e7e59c5fdf4bdadd5936b4350e777a1">eve::graphics::MeshShaderRasterState::depthCompare</a></div><div class="ttdeci">MeshDepthCompare depthCompare</div><div class="ttdef"><b>Definition</b> <a href="MeshShaderRasterState_8h_source.html#l00014">MeshShaderRasterState.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1MeshShaderRasterState_html_ad88a10862576835790814b5e076eb11d"><div class="ttname"><a href="structeve_1_1graphics_1_1MeshShaderRasterState.html#ad88a10862576835790814b5e076eb11d">eve::graphics::MeshShaderRasterState::depthBiasConstant</a></div><div class="ttdeci">float depthBiasConstant</div><div class="ttdef"><b>Definition</b> <a href="MeshShaderRasterState_8h_source.html#l00015">MeshShaderRasterState.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1MeshShaderRasterState_html_af14f6b3582b4aff781a0744d6342a965"><div class="ttname"><a href="structeve_1_1graphics_1_1MeshShaderRasterState.html#af14f6b3582b4aff781a0744d6342a965">eve::graphics::MeshShaderRasterState::depthBiasSlope</a></div><div class="ttdeci">float depthBiasSlope</div><div class="ttdef"><b>Definition</b> <a href="MeshShaderRasterState_8h_source.html#l00016">MeshShaderRasterState.h:16</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8h_html"><div class="ttname"><a href="vulkan_2Graphics_8h.html">Graphics.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

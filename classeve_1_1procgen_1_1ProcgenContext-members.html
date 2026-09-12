@@ -1,0 +1,208 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">ProcgenContext</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::ProcgenContext 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a3b5485cf3434f64bea539c646faf2282">abort</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a3735488368e054c5f8e06afb576bd7c8">beginTrace</a>(const std::string &amp;stageName, int inputCount)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a58b5d53e92a03ad8a97e76a0407019d7">cacheStage</a>(const std::string &amp;stageName, const std::string &amp;cacheKey, PointSet *points)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#abebc8ceed9d2ff80ddf80730131274a6">captureDebug</a>(const std::string &amp;stageName, PointSet *points)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a1f0310262cea0cf6b821931a417a6562">endTrace</a>(int outputCount)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#aab8b814c43dbead15f1954decf45a68a">fail</a>(const std::string &amp;error)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#af34bd808712f726162a79084a1cc61ca">getBuildKey</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#ae3a100a1095c19068f5937daa13b9b3f">getDebugStage</a>(const std::string &amp;stageName) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#ab353e917fb8bf704bf43ddf9e5592e6d">getDebugStageCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#adb9e7ab5c1121a9c5f5a4c92a54a09ee">getDebugStageName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#ad166c865f1cfb0a118c0fe70267c96f6">getError</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a53c545147d8d86cc7f5f5b4b2700d645">getName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a55cb26c106fd06b25dd25474a446a71e">getOpenTraceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#aed1240d36cbf524c49e538b7c2fd38ae">getOutput</a>(const std::string &amp;outputName) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a36855befc5cee593a11320f8abe2eaf9">getOutputCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#ad39c5f15c3c9dc379b1dee1259376173">getOutputName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a8df8fa4a602978d4a97689e9c50b2658">getSeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a0004b988bd3a584b3a8a91a7a8f545fa">getStageCacheHitCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#add6c4a7906fdd01d4baae9e998200220">getStageCacheMissCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#aa5cb0e97c176f9f0a99bfe74a25a39a2">getTraceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#aca28994987f3c38bef7e4703016f31c2">getTraceInputCount</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a981da966579c80467c16018c6ca63a44">getTraceMilliseconds</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#adf49ab303e0c14db3211448d2ca819d9">getTraceName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a91c66ecead08cfb70d13b5be380ecbf0">getTraceOutputCount</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#accc57fea731b7fb6fdfcaeb973368821">hasFailed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#af799b10144d837ae4d4e9cc0a542cc35">hasOutput</a>(const std::string &amp;outputName) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a69f75c61b9430a3c10a46f3795c291de">isActive</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a71ba9c9aa878a2e4ac2a5f2cc3925192">isCacheHit</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a7aa57056cc280bc42ccfb7d86fbda393">Procgen</a></td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#aa145480598215daf761c4a2d877081bd">ProcgenContext</a>(std::string systemName, uint32_t seed, std::string buildKey={}, bool cacheHit=false)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a10678bed340ef1541c653d1efe18c844">publish</a>(const std::string &amp;outputName, PointSet *points)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a1f4bdae1c5b97885f8e488552cdd84ef">reuseStage</a>(const std::string &amp;stageName, const std::string &amp;cacheKey)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a4c88d04f6d817ee3c30577965e79dbe4">seedFor</a>(const std::string &amp;scope) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html#a092ad9fe0f5b96e4f5f90c85c5569380">trace</a>(const std::string &amp;stageName, int inputCount, int outputCount, float milliseconds)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">eve::procgen::ProcgenContext</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

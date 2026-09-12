@@ -1,0 +1,280 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/scene/editor/SceneEditorSession.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_ec6971fd057795f74726f2442b6b5463.html">scene</a></li><li class="navelem"><a class="el" href="dir_36fdbd2b382354b0511fb28a7218f1be.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneEditorSession.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneEditorSession_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ScenePhysicsPlacement_8h.html">scene/editor/ScenePhysicsPlacement.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1scene__editing.html">eve::scene_editing</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span><a class="code hl_typedef" href="namespaceeve_1_1editor.html#a441ab447497e4c6a0704d83ff6db2ae0">SceneTargetBase</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1scene__editor.html">eve::scene_editor</a> {</div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a>(std::string targetId);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a>(std::unique_ptr&lt;scene_editing::SceneTargetBase&gt; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#aedf9d448dd4c91d3c4163d103169550c">   28</a></span>    <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#aedf9d448dd4c91d3c4163d103169550c">~SceneEditorSession</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ad07b7a160d8a96013a4a3149215473c1">   29</a></span>    <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ad07b7a160d8a96013a4a3149215473c1">SceneEditorSession</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a17bc31722d39ec01b34a528a1d576d01">   30</a></span>    <a class="code hl_class" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a>&amp; <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a17bc31722d39ec01b34a528a1d576d01">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a6326ecf8eca05f3572e4fa1e28a59f32">execute</a>(std::string command, <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a3246f5a551477c000813e73b1b734aaa">restrictCommands</a>(<span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; <a class="code hl_variable" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a34ceacf83222c4a413742cbadbddce92">undo</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a145c3f9900c64d104b4602f7389013f5">redo</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a754d7558333ab7d3c6aa84821639fc3f">snapshot</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    [[nodiscard]] std::string <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a82c9732c1aa897638565f624f5327f93">saveJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a6ebaa298788f16398edee36a527458a3">restoreJson</a>(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    [[nodiscard]] <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a7bc6371235b91ca8d07e925cf47fef54">revision</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#af6b54d23feadd68b1d18a24e57390d8e">cachePhysicsPlacementHull</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::ObjectId</a>&amp; <span class="keywordtype">object</span>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                                                  std::vector&lt;float&gt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>, <span class="keywordtype">int</span> maxVertices = 64);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a153b6fe8eabede507998efb928c910fd">cachePhysicsPlacementCompound</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::ObjectId</a>&amp;              <span class="keywordtype">object</span>,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                                                      std::string                           resourceKey,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                                      std::vector&lt;PhysicsPlacementCollider&gt; colliders);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a21b20ebf26565c4636df1e4c6316e4c8">removePhysicsPlacementHull</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::ObjectId</a>&amp; <span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]] std::string <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a378ce764f60bb633cff43787ee890991">savePhysicsPlacementColliderCacheJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ac032655baaa099d3c802d7401a27ff97">restorePhysicsPlacementColliderCacheJson</a>(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a8f53d57fc6df7ac578295faab961db4d">beginPhysicsPlacement</a>(<a class="code hl_struct" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a> <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;PhysicsPlacementFrame&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a795cc505869a9f53e570a190c9cff031">updatePhysicsPlacement</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                                                                <span class="keywordtype">double</span> fixedDelta = 1.0 / 60.0);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;PhysicsPlacementFrame&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a243edb1bcffedf39f970c21f7782e0ab">updatePhysicsPlacementPose</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                                                    <span class="keywordtype">double</span> rotationX, <span class="keywordtype">double</span> rotationY,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                                                                    <span class="keywordtype">double</span> rotationZ,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                                                                    <span class="keywordtype">double</span> fixedDelta = 1.0 / 60.0);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;PhysicsPlacementFrame&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#af0d79bdbc19975c2e2cc7426837683d8">updatePhysicsPlacementTransform</a>(</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">double</span> rotationX, <span class="keywordtype">double</span> rotationY, <span class="keywordtype">double</span> rotationZ, <span class="keywordtype">double</span> scaleX,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordtype">double</span> scaleY, <span class="keywordtype">double</span> scaleZ, <span class="keywordtype">double</span> fixedDelta = 1.0 / 60.0);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;PhysicsPlacementFrame&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a1c55468de4c03c82efd2679b3d9d3f37">alignPhysicsPlacementToSurface</a>(<span class="keywordtype">double</span> fromX, <span class="keywordtype">double</span> fromY,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                                                                                        <span class="keywordtype">double</span> fromZ, <span class="keywordtype">double</span> toX,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                                                                                        <span class="keywordtype">double</span> toY, <span class="keywordtype">double</span> toZ,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                                                                        <span class="keywordtype">double</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>     = 0.0,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                                                                        <span class="keywordtype">double</span> fixedDelta = 1.0 / 60.0);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a3f5e942b456cc5c349e68736a817840f">commitPhysicsPlacement</a>();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#acea9df59dfb8c0a30fda9a269b2baf1b">cancelPhysicsPlacement</a>();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ac24a836b40824bcee8729ee74d846e48">physicsPlacementActive</a>() const noexcept;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>private:</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    struct <a class="code hl_struct" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_struct" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html">Impl</a>&gt; impl_;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>}  <span class="comment">// namespace eve::scene_editor</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_aa50532026e25d28aec12f8f0f8b0ebf5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a></div><div class="ttdeci">Value::Object payload</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00024">ActionTimelineWidget.cpp:24</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aEditorTransactionConsumer_8cpp_html_a91dfb623dcffda243afe1b1a57887e90"><div class="ttname"><a href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; IEditCommand &gt; &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00081">EditorTransactionConsumer.cpp:81</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a31e26c1cfba73f1354aeb3c17673c0a1"><div class="ttname"><a href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a></div><div class="ttdeci">std::vector&lt; Point &gt; vertices</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00046">PlacementSystem.cpp:46</a></div></div>
+<div class="ttc" id="aScenePhysicsPlacement_8h_html"><div class="ttname"><a href="ScenePhysicsPlacement_8h.html">ScenePhysicsPlacement.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html">eve::scene_editor::SceneEditorSession</a></div><div class="ttdoc">Composable scene command/history host with no UI or renderer dependency. Owns its target,...</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8h_source.html#l00022">SceneEditorSession.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a145c3f9900c64d104b4602f7389013f5"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a145c3f9900c64d104b4602f7389013f5">eve::scene_editor::SceneEditorSession::redo</a></div><div class="ttdeci">editing::Result&lt; editing::TransactionReceipt &gt; redo()</div><div class="ttdoc">Reapply the last undone scene transaction.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00323">SceneEditorSession.cpp:323</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a153b6fe8eabede507998efb928c910fd"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a153b6fe8eabede507998efb928c910fd">eve::scene_editor::SceneEditorSession::cachePhysicsPlacementCompound</a></div><div class="ttdeci">editing::Result&lt; void &gt; cachePhysicsPlacementCompound(const editing::ObjectId &amp;object, std::string resourceKey, std::vector&lt; PhysicsPlacementCollider &gt; colliders)</div><div class="ttdoc">Replace one object's generated compound collider cache entry.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00346">SceneEditorSession.cpp:346</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a17bc31722d39ec01b34a528a1d576d01"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a17bc31722d39ec01b34a528a1d576d01">eve::scene_editor::SceneEditorSession::operator=</a></div><div class="ttdeci">SceneEditorSession &amp; operator=(const SceneEditorSession &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a1c55468de4c03c82efd2679b3d9d3f37"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a1c55468de4c03c82efd2679b3d9d3f37">eve::scene_editor::SceneEditorSession::alignPhysicsPlacementToSurface</a></div><div class="ttdeci">editing::Result&lt; PhysicsPlacementFrame &gt; alignPhysicsPlacementToSurface(double fromX, double fromY, double fromZ, double toX, double toY, double toZ, double offset=0.0, double fixedDelta=1.0/60.0)</div><div class="ttdoc">Align the active selection to a non-selected preview surface and advance one step.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00539">SceneEditorSession.cpp:539</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a21b20ebf26565c4636df1e4c6316e4c8"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a21b20ebf26565c4636df1e4c6316e4c8">eve::scene_editor::SceneEditorSession::removePhysicsPlacementHull</a></div><div class="ttdeci">editing::Result&lt; void &gt; removePhysicsPlacementHull(const editing::ObjectId &amp;object)</div><div class="ttdoc">Remove one cached automatic placement hull; missing entries return NoOp.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00375">SceneEditorSession.cpp:375</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a243edb1bcffedf39f970c21f7782e0ab"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a243edb1bcffedf39f970c21f7782e0ab">eve::scene_editor::SceneEditorSession::updatePhysicsPlacementPose</a></div><div class="ttdeci">editing::Result&lt; PhysicsPlacementFrame &gt; updatePhysicsPlacementPose(double x, double y, double z, double rotationX, double rotationY, double rotationZ, double fixedDelta=1.0/60.0)</div><div class="ttdoc">Move and rotate the preview handle, then advance one fixed simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00502">SceneEditorSession.cpp:502</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a3246f5a551477c000813e73b1b734aaa"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a3246f5a551477c000813e73b1b734aaa">eve::scene_editor::SceneEditorSession::restrictCommands</a></div><div class="ttdeci">editing::Result&lt; void &gt; restrictCommands(const std::vector&lt; std::string &gt; &amp;commands)</div><div class="ttdoc">Restrict future commands to a host allow-list; empty denies all. Existing history remains undoable.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00309">SceneEditorSession.cpp:309</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a34ceacf83222c4a413742cbadbddce92"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a34ceacf83222c4a413742cbadbddce92">eve::scene_editor::SceneEditorSession::undo</a></div><div class="ttdeci">editing::Result&lt; editing::TransactionReceipt &gt; undo()</div><div class="ttdoc">Undo the last scene transaction; failures preserve history.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00320">SceneEditorSession.cpp:320</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a378ce764f60bb633cff43787ee890991"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a378ce764f60bb633cff43787ee890991">eve::scene_editor::SceneEditorSession::savePhysicsPlacementColliderCacheJson</a></div><div class="ttdeci">std::string savePhysicsPlacementColliderCacheJson() const</div><div class="ttdoc">Encode schema-2 generated collider cache; host owns file I/O and the returned string.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00387">SceneEditorSession.cpp:387</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a3f5e942b456cc5c349e68736a817840f"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a3f5e942b456cc5c349e68736a817840f">eve::scene_editor::SceneEditorSession::commitPhysicsPlacement</a></div><div class="ttdeci">editing::Result&lt; editing::TransactionReceipt &gt; commitPhysicsPlacement()</div><div class="ttdoc">Atomically publish selected preview transforms as one undoable transaction.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00554">SceneEditorSession.cpp:554</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a6326ecf8eca05f3572e4fa1e28a59f32"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a6326ecf8eca05f3572e4fa1e28a59f32">eve::scene_editor::SceneEditorSession::execute</a></div><div class="ttdeci">editing::Result&lt; editing::TransactionReceipt &gt; execute(std::string command, editing::Value payload)</div><div class="ttdoc">Execute a registered scene command through revision checks and one reversible transaction.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00296">SceneEditorSession.cpp:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a6ebaa298788f16398edee36a527458a3"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a6ebaa298788f16398edee36a527458a3">eve::scene_editor::SceneEditorSession::restoreJson</a></div><div class="ttdeci">editing::Result&lt; editing::TransactionReceipt &gt; restoreJson(const std::string &amp;json)</div><div class="ttdoc">Parse and restore schema-1 JSON as an undoable transaction; invalid input changes nothing.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00622">SceneEditorSession.cpp:622</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a754d7558333ab7d3c6aa84821639fc3f"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a754d7558333ab7d3c6aa84821639fc3f">eve::scene_editor::SceneEditorSession::snapshot</a></div><div class="ttdeci">editing::Value snapshot() const</div><div class="ttdoc">Copy the versioned hierarchy/TRS snapshot; caller owns the returned tree.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00326">SceneEditorSession.cpp:326</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a795cc505869a9f53e570a190c9cff031"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a795cc505869a9f53e570a190c9cff031">eve::scene_editor::SceneEditorSession::updatePhysicsPlacement</a></div><div class="ttdeci">editing::Result&lt; PhysicsPlacementFrame &gt; updatePhysicsPlacement(double x, double y, double z, double fixedDelta=1.0/60.0)</div><div class="ttdoc">Move the preview handle and advance one fixed simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00487">SceneEditorSession.cpp:487</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a7bc6371235b91ca8d07e925cf47fef54"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a7bc6371235b91ca8d07e925cf47fef54">eve::scene_editor::SceneEditorSession::revision</a></div><div class="ttdeci">editing::Revision revision() const</div><div class="ttdoc">Return the current monotonic target revision.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00328">SceneEditorSession.cpp:328</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a82c9732c1aa897638565f624f5327f93"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a82c9732c1aa897638565f624f5327f93">eve::scene_editor::SceneEditorSession::saveJson</a></div><div class="ttdeci">std::string saveJson() const</div><div class="ttdoc">Encode snapshot deterministically; file I/O and paths belong to the host.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00327">SceneEditorSession.cpp:327</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_a8f53d57fc6df7ac578295faab961db4d"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a8f53d57fc6df7ac578295faab961db4d">eve::scene_editor::SceneEditorSession::beginPhysicsPlacement</a></div><div class="ttdeci">editing::Result&lt; void &gt; beginPhysicsPlacement(PhysicsPlacementRequest request)</div><div class="ttdoc">Begin an isolated Box3D placement preview using current scene transforms.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00449">SceneEditorSession.cpp:449</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_ac032655baaa099d3c802d7401a27ff97"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ac032655baaa099d3c802d7401a27ff97">eve::scene_editor::SceneEditorSession::restorePhysicsPlacementColliderCacheJson</a></div><div class="ttdeci">editing::Result&lt; void &gt; restorePhysicsPlacementColliderCacheJson(const std::string &amp;json)</div><div class="ttdoc">Atomically replace generated collider cache from schema-2 JSON.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00411">SceneEditorSession.cpp:411</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_ac24a836b40824bcee8729ee74d846e48"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ac24a836b40824bcee8729ee74d846e48">eve::scene_editor::SceneEditorSession::physicsPlacementActive</a></div><div class="ttdeci">bool physicsPlacementActive() const noexcept</div><div class="ttdoc">Report whether this session owns an active placement preview.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00621">SceneEditorSession.cpp:621</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_acea9df59dfb8c0a30fda9a269b2baf1b"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#acea9df59dfb8c0a30fda9a269b2baf1b">eve::scene_editor::SceneEditorSession::cancelPhysicsPlacement</a></div><div class="ttdeci">editing::Result&lt; void &gt; cancelPhysicsPlacement()</div><div class="ttdoc">Discard the isolated preview without changing scene state.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00610">SceneEditorSession.cpp:610</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_ad07b7a160d8a96013a4a3149215473c1"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ad07b7a160d8a96013a4a3149215473c1">eve::scene_editor::SceneEditorSession::SceneEditorSession</a></div><div class="ttdeci">SceneEditorSession(const SceneEditorSession &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_aedf9d448dd4c91d3c4163d103169550c"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#aedf9d448dd4c91d3c4163d103169550c">eve::scene_editor::SceneEditorSession::~SceneEditorSession</a></div><div class="ttdeci">~SceneEditorSession()</div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_af0d79bdbc19975c2e2cc7426837683d8"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#af0d79bdbc19975c2e2cc7426837683d8">eve::scene_editor::SceneEditorSession::updatePhysicsPlacementTransform</a></div><div class="ttdeci">editing::Result&lt; PhysicsPlacementFrame &gt; updatePhysicsPlacementTransform(double x, double y, double z, double rotationX, double rotationY, double rotationZ, double scaleX, double scaleY, double scaleZ, double fixedDelta=1.0/60.0)</div><div class="ttdoc">Move, rotate and scale the preview handle, then advance one fixed simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00519">SceneEditorSession.cpp:519</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene__editor_1_1SceneEditorSession_html_af6b54d23feadd68b1d18a24e57390d8e"><div class="ttname"><a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#af6b54d23feadd68b1d18a24e57390d8e">eve::scene_editor::SceneEditorSession::cachePhysicsPlacementHull</a></div><div class="ttdeci">editing::Result&lt; void &gt; cachePhysicsPlacementHull(const editing::ObjectId &amp;object, std::vector&lt; float &gt; vertices, int maxVertices=64)</div><div class="ttdoc">Cache backend-neutral local-space mesh points for later automatic convex placement.</div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00330">SceneEditorSession.cpp:330</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a441ab447497e4c6a0704d83ff6db2ae0"><div class="ttname"><a href="namespaceeve_1_1editor.html#a441ab447497e4c6a0704d83ff6db2ae0">eve::editor::SceneTargetBase</a></div><div class="ttdeci">scene_editing::SceneTargetBase SceneTargetBase</div><div class="ttdef"><b>Definition</b> <a href="EditorSceneTarget_8h_source.html#l00016">EditorSceneTarget.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene__editing_html"><div class="ttname"><a href="namespaceeve_1_1scene__editing.html">eve::scene_editing</a></div><div class="ttdef"><b>Definition</b> <a href="SceneComponentPayload_8cpp_source.html#l00005">SceneComponentPayload.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene__editor_html"><div class="ttname"><a href="namespaceeve_1_1scene__editor.html">eve::scene_editor</a></div><div class="ttdef"><b>Definition</b> <a href="SceneEditorModule_8cpp_source.html#l00016">SceneEditorModule.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1scene__editor_1_1PhysicsPlacementRequest_html"><div class="ttname"><a href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">eve::scene_editor::PhysicsPlacementRequest</a></div><div class="ttdoc">Owning request used to construct one isolated placement candidate.</div><div class="ttdef"><b>Definition</b> <a href="ScenePhysicsPlacement_8h_source.html#l00108">ScenePhysicsPlacement.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl_html"><div class="ttname"><a href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html">eve::scene_editor::SceneEditorSession::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="SceneEditorSession_8cpp_source.html#l00269">SceneEditorSession.cpp:269</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

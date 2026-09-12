@@ -1,0 +1,640 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hd2d::Hd2dLook类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hd2d.html">hd2d</a></li><li class="navelem"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html">Hd2dLook</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1hd2d_1_1Hd2dLook-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hd2d::Hd2dLook类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>HD-2D presentation look inspired by HD2DURP (DOF + bloom + pixel sampling).  
+ <a href="classeve_1_1hd2d_1_1Hd2dLook.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Hd2d_8h_source.html">Hd2d.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a40af1431d2023a9f58d148c2b9222b83" id="r_a40af1431d2023a9f58d148c2b9222b83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a40af1431d2023a9f58d148c2b9222b83">Hd2dLook</a> ()=default</td></tr>
+<tr class="separator:a40af1431d2023a9f58d148c2b9222b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cdad695e1626a19b744f6ea456c34c2" id="r_a4cdad695e1626a19b744f6ea456c34c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a4cdad695e1626a19b744f6ea456c34c2">setFocusDistance</a> (float distance)</td></tr>
+<tr class="memdesc:a4cdad695e1626a19b744f6ea456c34c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">View-space focus plane distance (default 18).  <br /></td></tr>
+<tr class="separator:a4cdad695e1626a19b744f6ea456c34c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf611dcf0bb122a5a5b58eeb9c993f63" id="r_aaf611dcf0bb122a5a5b58eeb9c993f63"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#aaf611dcf0bb122a5a5b58eeb9c993f63">getFocusDistance</a> () const</td></tr>
+<tr class="separator:aaf611dcf0bb122a5a5b58eeb9c993f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1546db9b6ae875de040f9c7fc2e52915" id="r_a1546db9b6ae875de040f9c7fc2e52915"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a1546db9b6ae875de040f9c7fc2e52915">setMaxBlur</a> (float blurPx)</td></tr>
+<tr class="memdesc:a1546db9b6ae875de040f9c7fc2e52915"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max Gaussian blur radius in texels; 0 disables DOF (default 5).  <br /></td></tr>
+<tr class="separator:a1546db9b6ae875de040f9c7fc2e52915"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13083d94c09e183ce3b1f3177954816a" id="r_a13083d94c09e183ce3b1f3177954816a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a13083d94c09e183ce3b1f3177954816a">getMaxBlur</a> () const</td></tr>
+<tr class="separator:a13083d94c09e183ce3b1f3177954816a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3078da8cbf7aadcb78200efc90f0c0e1" id="r_a3078da8cbf7aadcb78200efc90f0c0e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a3078da8cbf7aadcb78200efc90f0c0e1">setFocusRange</a> (float <a class="el" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>)</td></tr>
+<tr class="memdesc:a3078da8cbf7aadcb78200efc90f0c0e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance from focus where blur reaches the max (default 14).  <br /></td></tr>
+<tr class="separator:a3078da8cbf7aadcb78200efc90f0c0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0315a749174e667f59642d93773210a4" id="r_a0315a749174e667f59642d93773210a4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a0315a749174e667f59642d93773210a4">getFocusRange</a> () const</td></tr>
+<tr class="separator:a0315a749174e667f59642d93773210a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af617b7bf7705169385c7e7485d9c6df6" id="r_af617b7bf7705169385c7e7485d9c6df6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#af617b7bf7705169385c7e7485d9c6df6">setBloomIntensity</a> (float intensity)</td></tr>
+<tr class="memdesc:af617b7bf7705169385c7e7485d9c6df6"><td class="mdescLeft">&#160;</td><td class="mdescRight">HDR bloom intensity (default 0.35).  <br /></td></tr>
+<tr class="separator:af617b7bf7705169385c7e7485d9c6df6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f54ddb2e87db6e71cc65663af98e841" id="r_a8f54ddb2e87db6e71cc65663af98e841"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a8f54ddb2e87db6e71cc65663af98e841">getBloomIntensity</a> () const</td></tr>
+<tr class="separator:a8f54ddb2e87db6e71cc65663af98e841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340f5f1f1f8acb03a3f2081c2c7d16d8" id="r_a340f5f1f1f8acb03a3f2081c2c7d16d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a340f5f1f1f8acb03a3f2081c2c7d16d8">setBloomThreshold</a> (float threshold)</td></tr>
+<tr class="memdesc:a340f5f1f1f8acb03a3f2081c2c7d16d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">HDR bloom threshold (default 1.2).  <br /></td></tr>
+<tr class="separator:a340f5f1f1f8acb03a3f2081c2c7d16d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a479c899703d8d954048c82a95314f224" id="r_a479c899703d8d954048c82a95314f224"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a479c899703d8d954048c82a95314f224">getBloomThreshold</a> () const</td></tr>
+<tr class="separator:a479c899703d8d954048c82a95314f224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f7aa773be13eade7708fe2272a3516a" id="r_a3f7aa773be13eade7708fe2272a3516a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a3f7aa773be13eade7708fe2272a3516a">apply</a> (<a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *camera) const</td></tr>
+<tr class="memdesc:a3f7aa773be13eade7708fe2272a3516a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write DOF + bloom onto a Camera3D (render-thread).  <br /></td></tr>
+<tr class="separator:a3f7aa773be13eade7708fe2272a3516a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2d96c86abac22e675297e8fcade67a4" id="r_ad2d96c86abac22e675297e8fcade67a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#ad2d96c86abac22e675297e8fcade67a4">applyPixelSampler</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture) const</td></tr>
+<tr class="memdesc:ad2d96c86abac22e675297e8fcade67a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-filter a texture for crisp pixel art (nearest / no mip).  <br /></td></tr>
+<tr class="separator:ad2d96c86abac22e675297e8fcade67a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a86852e5bc3d8b0fe99a70c102dd703ed" id="r_a86852e5bc3d8b0fe99a70c102dd703ed"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html">Hd2dLook</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a86852e5bc3d8b0fe99a70c102dd703ed">miniature</a> ()</td></tr>
+<tr class="memdesc:a86852e5bc3d8b0fe99a70c102dd703ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong miniature preset matching HD2DURP-style shallow DOF.  <br /></td></tr>
+<tr class="separator:a86852e5bc3d8b0fe99a70c102dd703ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ac875cb7e600fc342b4e559db494eec" id="r_a6ac875cb7e600fc342b4e559db494eec"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html">Hd2dLook</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html#a6ac875cb7e600fc342b4e559db494eec">soft</a> ()</td></tr>
+<tr class="memdesc:a6ac875cb7e600fc342b4e559db494eec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mild look with light bloom and modest DOF.  <br /></td></tr>
+<tr class="separator:a6ac875cb7e600fc342b4e559db494eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>HD-2D presentation look inspired by HD2DURP (DOF + bloom + pixel sampling). </p>
+<p>Applies camera post settings for the miniature look and nearest-neighbor filtering on sprite/terrain atlases. Depth-of-field needs <a class="el" href="classeve_1_1hd2d_1_1Sprite3D.html" title="Camera-facing 2D sprite billboard rendered inside the 3D scene.">Sprite3D</a> masked cutout / DopFix depth writes so the focus plane can resolve. </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00270">270</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a40af1431d2023a9f58d148c2b9222b83" name="a40af1431d2023a9f58d148c2b9222b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40af1431d2023a9f58d148c2b9222b83">&#9670;&#160;</a></span>Hd2dLook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hd2d::Hd2dLook::Hd2dLook </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3f7aa773be13eade7708fe2272a3516a" name="a3f7aa773be13eade7708fe2272a3516a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f7aa773be13eade7708fe2272a3516a">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write DOF + bloom onto a Camera3D (render-thread). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">camera</td><td>Non-null active scene camera. @ownership <code>camera</code> is borrowed; <a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html" title="HD-2D presentation look inspired by HD2DURP (DOF + bloom + pixel sampling).">Hd2dLook</a> does not retain it. @lifetime <code>camera</code> must remain valid only for this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsPbr_8cpp_source.html#l00018">camera</a>.</p>
+
+</div>
+</div>
+<a id="ad2d96c86abac22e675297e8fcade67a4" name="ad2d96c86abac22e675297e8fcade67a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2d96c86abac22e675297e8fcade67a4">&#9670;&#160;</a></span>applyPixelSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::applyPixelSampler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Point-filter a texture for crisp pixel art (nearest / no mip). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Active Graphics. </td></tr>
+    <tr><td class="paramname">texture</td><td>Atlas or sprite sheet. @ownership <code>gfx</code> and <code>texture</code> are borrowed; <a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html" title="HD-2D presentation look inspired by HD2DURP (DOF + bloom + pixel sampling).">Hd2dLook</a> does not retain them. @lifetime Both arguments must remain valid only for this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l01530">eve::graphics::Graphics::setTextureSampler()</a>.</p>
+
+</div>
+</div>
+<a id="a8f54ddb2e87db6e71cc65663af98e841" name="a8f54ddb2e87db6e71cc65663af98e841"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f54ddb2e87db6e71cc65663af98e841">&#9670;&#160;</a></span>getBloomIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Hd2dLook::getBloomIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00285">285</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a479c899703d8d954048c82a95314f224" name="a479c899703d8d954048c82a95314f224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a479c899703d8d954048c82a95314f224">&#9670;&#160;</a></span>getBloomThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Hd2dLook::getBloomThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00288">288</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf611dcf0bb122a5a5b58eeb9c993f63" name="aaf611dcf0bb122a5a5b58eeb9c993f63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf611dcf0bb122a5a5b58eeb9c993f63">&#9670;&#160;</a></span>getFocusDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Hd2dLook::getFocusDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00276">276</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0315a749174e667f59642d93773210a4" name="a0315a749174e667f59642d93773210a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0315a749174e667f59642d93773210a4">&#9670;&#160;</a></span>getFocusRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Hd2dLook::getFocusRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00282">282</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13083d94c09e183ce3b1f3177954816a" name="a13083d94c09e183ce3b1f3177954816a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13083d94c09e183ce3b1f3177954816a">&#9670;&#160;</a></span>getMaxBlur()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d::Hd2dLook::getMaxBlur </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2d_8h_source.html">Hd2d.h</a> 第 <a class="el" href="Hd2d_8h_source.html#l00279">279</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86852e5bc3d8b0fe99a70c102dd703ed" name="a86852e5bc3d8b0fe99a70c102dd703ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86852e5bc3d8b0fe99a70c102dd703ed">&#9670;&#160;</a></span>miniature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html">Hd2dLook</a> eve::hd2d::Hd2dLook::miniature </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Strong miniature preset matching HD2DURP-style shallow DOF. </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2d_8cpp_source.html#l00027">eve::hd2d::Hd2D::newMiniatureLook()</a>.</p>
+
+</div>
+</div>
+<a id="af617b7bf7705169385c7e7485d9c6df6" name="af617b7bf7705169385c7e7485d9c6df6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af617b7bf7705169385c7e7485d9c6df6">&#9670;&#160;</a></span>setBloomIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::setBloomIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>HDR bloom intensity (default 0.35). </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a340f5f1f1f8acb03a3f2081c2c7d16d8" name="a340f5f1f1f8acb03a3f2081c2c7d16d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a340f5f1f1f8acb03a3f2081c2c7d16d8">&#9670;&#160;</a></span>setBloomThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::setBloomThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>HDR bloom threshold (default 1.2). </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cdad695e1626a19b744f6ea456c34c2" name="a4cdad695e1626a19b744f6ea456c34c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cdad695e1626a19b744f6ea456c34c2">&#9670;&#160;</a></span>setFocusDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::setFocusDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>View-space focus plane distance (default 18). </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3078da8cbf7aadcb78200efc90f0c0e1" name="a3078da8cbf7aadcb78200efc90f0c0e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3078da8cbf7aadcb78200efc90f0c0e1">&#9670;&#160;</a></span>setFocusRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::setFocusRange </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>range</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance from focus where blur reaches the max (default 14). </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>.</p>
+
+</div>
+</div>
+<a id="a1546db9b6ae875de040f9c7fc2e52915" name="a1546db9b6ae875de040f9c7fc2e52915"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1546db9b6ae875de040f9c7fc2e52915">&#9670;&#160;</a></span>setMaxBlur()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hd2d::Hd2dLook::setMaxBlur </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blurPx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Max Gaussian blur radius in texels; 0 disables DOF (default 5). </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ac875cb7e600fc342b4e559db494eec" name="a6ac875cb7e600fc342b4e559db494eec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac875cb7e600fc342b4e559db494eec">&#9670;&#160;</a></span>soft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hd2d_1_1Hd2dLook.html">Hd2dLook</a> eve::hd2d::Hd2dLook::soft </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mild look with light bloom and modest DOF. </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a> 第 <a class="el" href="Hd2dLook_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hd2d/<a class="el" href="Hd2d_8h_source.html">Hd2d.h</a></li>
+<li>src/modules/hd2d/<a class="el" href="Hd2dLook_8cpp_source.html">Hd2dLook.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

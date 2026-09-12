@@ -1,0 +1,428 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::transaction::ITransactionParticipant类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1transaction.html">transaction</a></li><li class="navelem"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">ITransactionParticipant</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1transaction_1_1ITransactionParticipant-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::transaction::ITransactionParticipant类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Synchronous participant contract for one coordinator transaction.  
+ <a href="classeve_1_1transaction_1_1ITransactionParticipant.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Transaction_8h_source.html">Transaction.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::transaction::ITransactionParticipant 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1transaction_1_1ITransactionParticipant.png" usemap="#eve::transaction::ITransactionParticipant_map" alt=""/>
+  <map id="eve::transaction::ITransactionParticipant_map" name="eve::transaction::ITransactionParticipant_map">
+<area href="classeve_1_1card_1_1CardPlayParticipant.html" title="Transaction participant that publishes one CardData play." alt="eve::card::CardPlayParticipant" shape="rect" coords="0,56,279,80"/>
+<area href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html" title="Transaction participant that delegates an atomic state mutation." alt="eve::dialogue::DialogueStateMutationParticipant" shape="rect" coords="289,56,568,80"/>
+<area href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html" title="Transaction participant that atomically applies one StatePatch batch." alt="eve::statepatch::StoreTransactionParticipant" shape="rect" coords="578,56,857,80"/>
+<area href="classeve_1_1transaction_1_1ResourceDebitParticipant.html" title="Adapts IResourceAccount debit semantics to Coordinator." alt="eve::transaction::ResourceDebitParticipant" shape="rect" coords="867,56,1146,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1a1fa7c45593e1328ea96f2000a484e0" id="r_a1a1fa7c45593e1328ea96f2000a484e0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a1a1fa7c45593e1328ea96f2000a484e0">~ITransactionParticipant</a> ()=default</td></tr>
+<tr class="separator:a1a1fa7c45593e1328ea96f2000a484e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab85f89782b7849b61416502d8bb0f84d" id="r_ab85f89782b7849b61416502d8bb0f84d"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#ab85f89782b7849b61416502d8bb0f84d">name</a> () const noexcept</td></tr>
+<tr class="memdesc:ab85f89782b7849b61416502d8bb0f84d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable diagnostic name for this participant.  <br /></td></tr>
+<tr class="separator:ab85f89782b7849b61416502d8bb0f84d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ef50c2784bbc7ae1f2de588ee0b5a0" id="r_a73ef50c2784bbc7ae1f2de588ee0b5a0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a73ef50c2784bbc7ae1f2de588ee0b5a0">prepare</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context)=0</td></tr>
+<tr class="memdesc:a73ef50c2784bbc7ae1f2de588ee0b5a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and stage local changes for the transaction.  <br /></td></tr>
+<tr class="separator:a73ef50c2784bbc7ae1f2de588ee0b5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb456dad34179ed35c22e804d4afe41b" id="r_adb456dad34179ed35c22e804d4afe41b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#adb456dad34179ed35c22e804d4afe41b">commit</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context)=0</td></tr>
+<tr class="memdesc:adb456dad34179ed35c22e804d4afe41b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish this participant's staged changes.  <br /></td></tr>
+<tr class="separator:adb456dad34179ed35c22e804d4afe41b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90133c7cb99511eb1bf20acbbfb6da46" id="r_a90133c7cb99511eb1bf20acbbfb6da46"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a90133c7cb99511eb1bf20acbbfb6da46">rollback</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context)=0</td></tr>
+<tr class="memdesc:a90133c7cb99511eb1bf20acbbfb6da46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard a prepared but not committed stage.  <br /></td></tr>
+<tr class="separator:a90133c7cb99511eb1bf20acbbfb6da46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f85eeb8dcd2e3e22504b7e5d19b0ff" id="r_a29f85eeb8dcd2e3e22504b7e5d19b0ff"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a29f85eeb8dcd2e3e22504b7e5d19b0ff">compensate</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context)=0</td></tr>
+<tr class="memdesc:a29f85eeb8dcd2e3e22504b7e5d19b0ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo an already committed external effect by compensation.  <br /></td></tr>
+<tr class="separator:a29f85eeb8dcd2e3e22504b7e5d19b0ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Synchronous participant contract for one coordinator transaction. </p>
+<p><code>prepare</code> must validate and stage local changes without exposing them to other systems. A successful <code>commit</code> makes that participant's staged state observable. <code>rollback</code> releases a prepared but uncommitted stage. It must not be used to undo an already committed external effect; that operation is <code>compensate</code>. A participant that cannot compensate must return <code>Unsupported</code> explicitly, allowing the coordinator to report a partial commit instead of silently claiming atomicity.</p>
+<p>The coordinator does not own or retain participants. They, their backing stores, and any input objects must outlive the synchronous <code>execute</code> call. Implementations must not invoke unknown callbacks or scripts while holding a lock, and must leave their own state unchanged when a lifecycle method returns a failure <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Transaction_8h_source.html">Transaction.h</a> 第 <a class="el" href="Transaction_8h_source.html#l00119">119</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1a1fa7c45593e1328ea96f2000a484e0" name="a1a1fa7c45593e1328ea96f2000a484e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1fa7c45593e1328ea96f2000a484e0">&#9670;&#160;</a></span>~ITransactionParticipant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::transaction::ITransactionParticipant::~ITransactionParticipant </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="adb456dad34179ed35c22e804d4afe41b" name="adb456dad34179ed35c22e804d4afe41b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb456dad34179ed35c22e804d4afe41b">&#9670;&#160;</a></span>commit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::ITransactionParticipant::commit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Publish this participant's staged changes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when the participant is committed, otherwise diagnostics. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayParticipant.html#a83b163ad859707cd965bb3a5cdafcdf2">eve::card::CardPlayParticipant</a>, <a class="el" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ac251affb010b8656f0b64da54642e237">eve::dialogue::DialogueStateMutationParticipant</a>, <a class="el" href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html#ae79a03923143403ca7a344de54159ac0">eve::statepatch::StoreTransactionParticipant</a> , 以及 <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a33d1c23fdc77ab9c3b1d554ed011255f">eve::transaction::ResourceDebitParticipant</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a29f85eeb8dcd2e3e22504b7e5d19b0ff" name="a29f85eeb8dcd2e3e22504b7e5d19b0ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f85eeb8dcd2e3e22504b7e5d19b0ff">&#9670;&#160;</a></span>compensate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::ITransactionParticipant::compensate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Undo an already committed external effect by compensation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when compensation completes, <code>Unsupported</code> when impossible, or another failure with diagnostics. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayParticipant.html#ab08c18ebd7389dd393c8cdbe6b24fd40">eve::card::CardPlayParticipant</a>, <a class="el" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ab67032d7f1860d9e56effe1c943f5841">eve::dialogue::DialogueStateMutationParticipant</a>, <a class="el" href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html#a709c76507eadf18351f05f5f1a4068b0">eve::statepatch::StoreTransactionParticipant</a> , 以及 <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a66001fc91aa55e4621c9442b23bad65f">eve::transaction::ResourceDebitParticipant</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab85f89782b7849b61416502d8bb0f84d" name="ab85f89782b7849b61416502d8bb0f84d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab85f89782b7849b61416502d8bb0f84d">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string_view eve::transaction::ITransactionParticipant::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable diagnostic name for this participant. </p>
+<dl class="section return"><dt>返回</dt><dd>A non-owning name valid for the duration of a coordinator call. </dd></dl>
+
+<p>被 <a class="el" href="classeve_1_1card_1_1CardPlayParticipant.html#afde6828fb47f373735565feceb6ffed2">eve::card::CardPlayParticipant</a>, <a class="el" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06a22867b3273d3f199312f0c70990d1">eve::dialogue::DialogueStateMutationParticipant</a>, <a class="el" href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html#a16628123a461380797881435d0d8d6b9">eve::statepatch::StoreTransactionParticipant</a> , 以及 <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">eve::transaction::ResourceDebitParticipant</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="Transaction_8h_source.html">Transaction.h</a> 第 <a class="el" href="Transaction_8h_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73ef50c2784bbc7ae1f2de588ee0b5a0" name="a73ef50c2784bbc7ae1f2de588ee0b5a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73ef50c2784bbc7ae1f2de588ee0b5a0">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::ITransactionParticipant::prepare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate and stage local changes for the transaction. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when this participant is prepared, otherwise diagnostics. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayParticipant.html#a9c8011afb47cc3c6bbb8cb8c0bc68a2f">eve::card::CardPlayParticipant</a>, <a class="el" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ad408945b11bdec67a6bba62242397033">eve::dialogue::DialogueStateMutationParticipant</a>, <a class="el" href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html#abf62a9c5634ba8f571d79ea3595f47ab">eve::statepatch::StoreTransactionParticipant</a> , 以及 <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0046fe274db3497147f041f27ed3af2a">eve::transaction::ResourceDebitParticipant</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a90133c7cb99511eb1bf20acbbfb6da46" name="a90133c7cb99511eb1bf20acbbfb6da46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90133c7cb99511eb1bf20acbbfb6da46">&#9670;&#160;</a></span>rollback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::ITransactionParticipant::rollback </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discard a prepared but not committed stage. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when provisional state is discarded, otherwise diagnostics. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayParticipant.html#a5cf53693d59f8a1e8f68c6c49cddbe2e">eve::card::CardPlayParticipant</a>, <a class="el" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ac5b43f84e4d8e2fc16022e08430007bc">eve::dialogue::DialogueStateMutationParticipant</a>, <a class="el" href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html#a48547c567eb4da53915166879a0b8131">eve::statepatch::StoreTransactionParticipant</a> , 以及 <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#aed2e5edb44b60f0ba726a82d75ffd2d4">eve::transaction::ResourceDebitParticipant</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/transaction/<a class="el" href="Transaction_8h_source.html">Transaction.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

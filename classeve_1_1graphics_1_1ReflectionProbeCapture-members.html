@@ -1,0 +1,244 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">ReflectionProbeCapture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::ReflectionProbeCapture 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a1fc19f950dec03782ee4bb0170193138">applyConfiguredToCamera</a>(Camera3D *camera, int slot)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa079380711fc825df1e9dd16d95951d0">applyToCamera</a>(Camera3D *camera, int slot, float extentX, float extentY, float extentZ, float intensity=1.f, float blendDistance=1.f, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac435d5018876a48fa1369fe492266dcf">configure</a>(float x, float y, float z, int resolution=128, float nearZ=0.1f, float farZ=100.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a8f9f1eb022f439cc7af714e7cf27ebb2">configureInfluence</a>(float extentX, float extentY, float extentZ, float intensity=1.f, float blendDistance=1.f, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af57d6b748b4a6879272eab7d9c758bd5">filterAndPublish</a>(int sampleCount=64)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ae414d6e5b5ff3b0966f73a47e4b13f9a">getActiveCubemap</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad0cefb7e53e6a443d256351590baf391">getAdaptiveFaceBudget</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac0da67de5db517fad1d0bf5d803a62d6">getAdaptiveFilterSamples</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ae5f4ff0f7e023d6168b8d4e2db5a63ca">getCaptureClusteredLighting</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0648dc8220b3314878cd1a7706fd979b">getCaptureFarDistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6837d2271180009e79274a5bf2dc6361">getCaptureLodDistanceScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab95ca15b66053cf4dccc2823349af9bf">getCaptureMask</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7085afdf13bcfdb71384f15536bd3a7a">getCaptureTransparent</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac2071bf999efe095d10d2e6a7cee817c">getCenterX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ea38c7abb32c0a735446824dda953e4">getCenterY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a99a9b1c97b6ed180cce2b057a313a911">getCenterZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#abea42adc5c4163b6cfb2b4757d3d2a74">getEnvironmentLighting</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ade8a4b475d52a8b54b5536cd8a313fb6">getEnvironmentLightingIntensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3d8761835849f5c90fb72b8149713650">getFaceCanvas</a>(int face) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a4cbde5c23b8b31e0ff44d23425001a85">getGpuBudgetMs</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad684e937d141d1b9fed460d504ad8c87">getInfluenceBlendDistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a21c7da5b001929fe10fb02d87f413828">getInfluenceExtentX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a03558af46a0d57912cee1b944a495567">getInfluenceExtentY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a66e5c6cbddae50ccda84f9e9aa0d1759">getInfluenceExtentZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a754b1ceb70d4f8ff4464301ed2ae8ea5">getInfluenceIntensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a58865b4c48371a946e18dcf5e956d01f">getInfluencePriority</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aedc83a441fd372974596963eaf9d294f">getLastCapturedFaceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a760e6d3ee4fd50503f9aac01e244ad51">getLastFilterSampleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af220eacbc129d63a22d731fb014b299b">getPendingFaceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3daf46fa238a3dbd85690a9e8380bca9">getPublishedRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3a110014123871d0f9878b11e0cc05ed">getRefreshInterval</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5945be8b5366273e111f41d51bef74f7">getResolution</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a47facf4cacc40e841a1c2d3e59524f4f">getRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0e8fba3d3d388e8ab83776b129272ad3">getSkyB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af84586ca4c69d1023a8841ae0c49c59c">getSkyFaceColor</a>(int face, int component) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab762f923d3dbf29c78f4d9b9a33265f6">getSkyFaceTexture</a>(int face) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a96931d9672c0f483917307e5b5c8648e">getSkyFaceTextureScale</a>(int face) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a236deae9743609b02d95bd32eeca05cb">getSkyG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab940d4cb17fb9aafad2a9c07b5b806ff">getSkyIntensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7bf561f01689ef3eb79680af55cb405a">getSkyR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a22a8c4018831020d6a9a642b46501a93">getSmoothedGpuDurationMs</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5081f1e0530ff2484a64c0f1dd916d71">getStagedRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#acb035b0315a784e601365e518675f969">getStagingCubemap</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5b1aad8863d1e8ba5998e2e67ffe2544">getTotalCapturedFaceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a287e0a8081b485e56ea66e7f8f40cab9">getUpdateMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6b7026c9317ce35ced0027f832b65c30">isCaptureComplete</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5870ed6424e38cc73f7ad94d0e0e4a1f">isCapturePending</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7f31d010c75b864159ba4b5de25a2dda">isRecaptureQueued</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a95e855b329ccf1c6a6d2f223c38cf480">queueCapture</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7766222b5cec7e331a720753079cd637">ReflectionProbeCapture</a>(Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a4544a67d25a41b051d75ea8a50ed2f10">ReflectionProbeRegistry</a></td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">reportGpuDurationMs</a>(float milliseconds)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5324411d3e4ee59318fbdcb8de9b707b">setCaptureClusteredLighting</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac27fbf96562a1cf31f38df69b2628450">setCaptureLodDistanceScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa9f511c60c864674ff68daf87f016750">setCaptureMask</a>(int mask)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#afb980e12d1cb82e38198f4f3c38f481d">setCaptureTransparent</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ac8246d12b4f8ff26f3b93597c39733">setEnvironmentLighting</a>(Texture *environment, float intensity=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a10d1f4e6159b54ee37170073758a0340">setGpuBudgetMs</a>(float milliseconds)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3dd70e537c6b1a60024396a7ea945785">setRefreshInterval</a>(int frames)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad85e3af550296ce4168764342eac682b">setSkyColor</a>(float r, float g, float b, float intensity=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a97a18284b016974910eb562e16f5c03c">setSkyFaceColor</a>(int face, float r, float g, float b)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a87d3d577c0ac3bd2637e54966b1ca2fb">setSkyFaceTexture</a>(int face, Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6f283e7e59f060d518d60736e8a4823d">setSkyFaceTextureScale</a>(int face, float scale)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9a0b01dd566061e7fbc8ac0612ff294c">setUpdateMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac536b3e241fd826d51bef122641f266c">stageCapturedFaces</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2c70c1115877cb207d969e5a02b7679a">tick</a>(int faceBudget=1, int filterSamples=64)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a28ef0f3215e476687c6ce9883c826007">tickAdaptive</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a958a78a35d9934caa1dd886c9ca2f285">update</a>(int faceBudget=1)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a12d4c4bfa8eac466b0e1965b80afb280">~ReflectionProbeCapture</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

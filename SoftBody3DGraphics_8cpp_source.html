@@ -1,0 +1,307 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/softbody/graphics/SoftBody3DGraphics.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_4bb74fb27710831de26933735fff0e3d.html">softbody</a></li><li class="navelem"><a class="el" href="dir_8d1e799a6f755a031902ba570cb65d07.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SoftBody3DGraphics.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SoftBody3DGraphics_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="SoftBody3DRenderer_8h.html">physics/softbody/graphics/SoftBody3DRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SoftBody3D_8h.html">physics/softbody/SoftBody3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1SoftBody3DRenderer.html#a78cc51736e4539f25c8235eea9769ec3">   15</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3DRenderer.html#a78cc51736e4539f25c8235eea9769ec3">SoftBody3DRenderer::setBody</a>(<a class="code hl_class" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a>* <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    body_            = <a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    mesh_            = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    meshVertexCount_ = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    meshIndexCount_  = 0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1SoftBody3DRenderer.html#ae749cda4e9ff978c64cb66292b6b62c6">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3DRenderer.html#ae749cda4e9ff978c64cb66292b6b62c6">SoftBody3DRenderer::setColor</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    colorR_ = std::clamp(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    colorG_ = std::clamp(<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    colorB_ = std::clamp(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    colorA_ = std::clamp(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1SoftBody3DRenderer.html#a40da0c1e91ed04ae2de141d11db37a81">   29</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3DRenderer.html#a40da0c1e91ed04ae2de141d11db37a81">SoftBody3DRenderer::draw</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* graphics) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!graphics || !body_ || body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a01c3840ecf37b013d19b4183b7664aef">isDestroyed</a>()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::vector&lt;float&gt;    <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::vector&lt;float&gt;    <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::vector&lt;float&gt;    <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a0663d99c77a36169f8f7a53a39dcc19c">getParticleCount</a>()) * 18);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a0663d99c77a36169f8f7a53a39dcc19c">getParticleCount</a>()) * 18);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a0663d99c77a36169f8f7a53a39dcc19c">getParticleCount</a>()) * 12);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">auto</span> addQuad = [&amp;](<span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">const</span> glm::vec3 pa(body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">getParticleX</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">getParticleY</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">getParticleZ</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>));</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> glm::vec3 pb(body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">getParticleX</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">getParticleY</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">getParticleZ</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>));</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">const</span> glm::vec3 pc(body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">getParticleX</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">getParticleY</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">getParticleZ</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>));</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>      = glm::normalize(glm::cross(pb - pa, pc - pa));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">const</span> uint32_t  base        = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.size() / 3);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">const</span> <span class="keywordtype">int</span>       <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[4] = {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>     tex[8]      = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 4; ++i) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[i];</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.insert(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.end(),</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                             {body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">getParticleX</a>(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">getParticleY</a>(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>), body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">getParticleZ</a>(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)});</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>.insert(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>.end(), {<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.x, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.y, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.z});</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>.insert(<a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>.end(), {tex[i * 2], tex[i * 2 + 1]});</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.insert(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.end(), {base, base + 1, base + 2, base, base + 2, base + 3});</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    };</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> cols = body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#af585e0fedce279182f0afb9e3369f530">getCols</a>(), <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> = body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#ad4e166aab378232aad03620e9deee5ce">getRows</a>(), layers = body_-&gt;<a class="code hl_function" href="classeve_1_1physics_1_1SoftBody3D.html#a87e75eecfbfe8693f6f8be79412db079">getLayers</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">auto</span> indexOf = [=](<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) { <span class="keywordflow">return</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> * <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> + <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) * cols + <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>; };</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1 &lt; layers; ++<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1 &lt; <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            addQuad(indexOf(0, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), indexOf(0, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1), indexOf(0, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1), indexOf(0, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            addQuad(indexOf(cols - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1), indexOf(cols - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), indexOf(cols - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>),</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    indexOf(cols - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1 &lt; layers; ++<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1 &lt; cols; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            addQuad(indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, 0, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, 0, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, 0, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, 0, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            addQuad(indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1),</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1 &lt; <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1 &lt; cols; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            addQuad(indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, 0), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, 0), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, 0), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, 0));</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            addQuad(indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, layers - 1), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, layers - 1),</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, layers - 1), indexOf(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 1, layers - 1));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.size() / 3);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>  = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (!mesh_ || meshVertexCount_ != <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a> || meshIndexCount_ != <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        mesh_ = graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">newMeshFromArrays</a>(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.data(), <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>.data(), <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>.data(), <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.data(),</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                            <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        meshVertexCount_ = <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        meshIndexCount_  = <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">updateMeshVertices</a>(mesh_, <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.data(), <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>.data(), <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>.data(), <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, <span class="keyword">nullptr</span>, 0);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (mesh_) graphics-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a39dc078edf0474abe3bc94e517802934">drawMesh</a>(mesh_, glm::mat4(1.f), <span class="keyword">nullptr</span>, <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>(colorR_, colorG_, colorB_, colorA_));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aCastleMesh_8cpp_html_a9272fcc3fe7f225339248d1fae889f26"><div class="ttname"><a href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a></div><div class="ttdeci">float uv</div><div class="ttdef"><b>Definition</b> <a href="CastleMesh_8cpp_source.html#l00016">CastleMesh.cpp:16</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7b19ff7daa03f593e552608463f5c9ca"><div class="ttname"><a href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a></div><div class="ttdeci">std::uint32_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00021">GltfImporter.cpp:21</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ad2ae269d4b0d530bbbcc259246388784"><div class="ttname"><a href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a></div><div class="ttdeci">std::uint32_t indexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00022">GltfImporter.cpp:22</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00019">HeightmapMesh.cpp:19</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_a6db4bdf89d5601f8d599c1cd882137ce"><div class="ttname"><a href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a></div><div class="ttdeci">std::vector&lt; float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00017">HeightmapMesh.cpp:17</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_af3fd42b7427cb742f96e7ec3244fb7cf"><div class="ttname"><a href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00016">HeightmapMesh.cpp:16</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00118">ModelRenderer.cpp:118</a></div></div>
+<div class="ttc" id="aOnnxLstm_8cpp_html_ad161320eba27a8b966baac47bee35c46"><div class="ttname"><a href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a></div><div class="ttdeci">size_t rows</div><div class="ttdef"><b>Definition</b> <a href="OnnxLstm_8cpp_source.html#l00029">OnnxLstm.cpp:29</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a31e26c1cfba73f1354aeb3c17673c0a1"><div class="ttname"><a href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a></div><div class="ttdeci">std::vector&lt; Point &gt; vertices</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00046">PlacementSystem.cpp:46</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aSoftBody3DRenderer_8h_html"><div class="ttname"><a href="SoftBody3DRenderer_8h.html">SoftBody3DRenderer.h</a></div></div>
+<div class="ttc" id="aSoftBody3D_8h_html"><div class="ttname"><a href="SoftBody3D_8h.html">SoftBody3D.h</a></div></div>
+<div class="ttc" id="aUnityImporter_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="UnityImporter_8cpp_source.html#l00229">UnityImporter.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00107">Graphics.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a39dc078edf0474abe3bc94e517802934"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a39dc078edf0474abe3bc94e517802934">eve::graphics::Graphics::drawMesh</a></div><div class="ttdeci">virtual void drawMesh(Mesh *mesh, const glm::mat4 &amp;model, Texture *texture, const Color &amp;tint)=0</div><div class="ttdoc">Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass).</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a806f6e983bb35678a2130ac2a5c68edd"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics::updateMeshVertices</a></div><div class="ttdeci">virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div><div class="ttdoc">In-place update of a mesh's vertex/index data (CPU -&gt; host-visible VBO). Mirrors bakeMeshMorph: the u...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ad2394ae661385736c667a98446a5b9b4"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays</a></div><div class="ttdeci">virtual Mesh * newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div><div class="ttdoc">Upload a triangle mesh from packed CPU arrays. Owned by Graphics. posXYZ required (vertexCount*3)....</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3DRenderer_html_a40da0c1e91ed04ae2de141d11db37a81"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3DRenderer.html#a40da0c1e91ed04ae2de141d11db37a81">eve::physics::SoftBody3DRenderer::draw</a></div><div class="ttdeci">void draw(graphics::Graphics *graphics)</div><div class="ttdoc">Update the surface cache and draw it in the current 3D frame.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DGraphics_8cpp_source.html#l00029">SoftBody3DGraphics.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3DRenderer_html_a78cc51736e4539f25c8235eea9769ec3"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3DRenderer.html#a78cc51736e4539f25c8235eea9769ec3">eve::physics::SoftBody3DRenderer::setBody</a></div><div class="ttdeci">void setBody(SoftBody3D *body)</div><div class="ttdoc">Replace the borrowed runtime; null disables drawing.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DGraphics_8cpp_source.html#l00015">SoftBody3DGraphics.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3DRenderer_html_ae749cda4e9ff978c64cb66292b6b62c6"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3DRenderer.html#ae749cda4e9ff978c64cb66292b6b62c6">eve::physics::SoftBody3DRenderer::setColor</a></div><div class="ttdeci">void setColor(float r, float g, float b, float a)</div><div class="ttdoc">Set the clamped RGBA presentation color.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DGraphics_8cpp_source.html#l00022">SoftBody3DGraphics.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></div><div class="ttdoc">Volumetric particle soft body using overlapping shape-matching clusters.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8h_source.html#l00025">SoftBody3D.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_a01c3840ecf37b013d19b4183b7664aef"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#a01c3840ecf37b013d19b4183b7664aef">eve::physics::SoftBody3D::isDestroyed</a></div><div class="ttdeci">bool isDestroyed() const noexcept</div><div class="ttdoc">Whether destroy() has disabled this runtime instance.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8h_source.html#l00130">SoftBody3D.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_a0663d99c77a36169f8f7a53a39dcc19c"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#a0663d99c77a36169f8f7a53a39dcc19c">eve::physics::SoftBody3D::getParticleCount</a></div><div class="ttdeci">int getParticleCount() const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8h_source.html#l00135">SoftBody3D.h:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_a327ef52a033981e9774d405411bb82f5"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">eve::physics::SoftBody3D::getParticleZ</a></div><div class="ttdeci">float getParticleZ(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8cpp_source.html#l00228">SoftBody3D.cpp:228</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_a87e75eecfbfe8693f6f8be79412db079"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#a87e75eecfbfe8693f6f8be79412db079">eve::physics::SoftBody3D::getLayers</a></div><div class="ttdeci">int getLayers() const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8cpp_source.html#l00149">SoftBody3D.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_ad4e166aab378232aad03620e9deee5ce"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#ad4e166aab378232aad03620e9deee5ce">eve::physics::SoftBody3D::getRows</a></div><div class="ttdeci">int getRows() const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8h_source.html#l00133">SoftBody3D.h:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_adf852e9b1893fa9b92929e0aec9a0de1"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">eve::physics::SoftBody3D::getParticleX</a></div><div class="ttdeci">float getParticleX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8cpp_source.html#l00220">SoftBody3D.cpp:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_ae5978118f94ef3f7acb90ce848bb959b"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">eve::physics::SoftBody3D::getParticleY</a></div><div class="ttdeci">float getParticleY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8cpp_source.html#l00224">SoftBody3D.cpp:224</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1SoftBody3D_html_af585e0fedce279182f0afb9e3369f530"><div class="ttname"><a href="classeve_1_1physics_1_1SoftBody3D.html#af585e0fedce279182f0afb9e3369f530">eve::physics::SoftBody3D::getCols</a></div><div class="ttdeci">int getCols() const</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3D_8h_source.html#l00132">SoftBody3D.h:132</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00035">Climbing.h:35</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

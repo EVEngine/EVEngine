@@ -1,0 +1,448 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::OnnxCompute类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1tensor_1_1OnnxCompute-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::OnnxCompute类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GPU execution boundary for native ONNX; retains no model and retains compiled resources for the lifetime of the provider.  
+ <a href="classeve_1_1tensor_1_1OnnxCompute.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a453ad53f66c109b0d7e11e5ea83cc184" id="r_a453ad53f66c109b0d7e11e5ea83cc184"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#a453ad53f66c109b0d7e11e5ea83cc184">~OnnxCompute</a> ()=default</td></tr>
+<tr class="memdesc:a453ad53f66c109b0d7e11e5ea83cc184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release device resources after all synchronous calls have returned.  <br /></td></tr>
+<tr class="separator:a453ad53f66c109b0d7e11e5ea83cc184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74483aa20b12eb2d83990fb4502ec7e" id="r_ab74483aa20b12eb2d83990fb4502ec7e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#ab74483aa20b12eb2d83990fb4502ec7e">dispatch</a> (const <a class="el" href="structeve_1_1tensor_1_1OnnxKernel.html">OnnxKernel</a> &amp;kernel)=0</td></tr>
+<tr class="memdesc:ab74483aa20b12eb2d83990fb4502ec7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only synchronous host-byte entry point; engine dispatch delegates to enqueue.  <br /></td></tr>
+<tr class="separator:ab74483aa20b12eb2d83990fb4502ec7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac25beb5c7fe7cbea5775402401b167ab" id="r_ac25beb5c7fe7cbea5775402401b167ab"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#ac25beb5c7fe7cbea5775402401b167ab">enqueue</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::span&lt; const <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> &gt; <a class="el" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, size_t outputBytes, uint32_t workItems)</td></tr>
+<tr class="memdesc:ac25beb5c7fe7cbea5775402401b167ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a kernel using immutable host/device buffers; no readback is required.  <br /></td></tr>
+<tr class="separator:ac25beb5c7fe7cbea5775402401b167ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa227ddeb2989a5b21fa9bdfdba8e9fd7" id="r_aa227ddeb2989a5b21fa9bdfdba8e9fd7"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1tensor_1_1OnnxTransferStats.html">OnnxTransferStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#aa227ddeb2989a5b21fa9bdfdba8e9fd7">transferStats</a> () const</td></tr>
+<tr class="memdesc:aa227ddeb2989a5b21fa9bdfdba8e9fd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable transfer counters for the current or most recent run.  <br /></td></tr>
+<tr class="separator:aa227ddeb2989a5b21fa9bdfdba8e9fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:aae85005093b6121926c74ccdd59d3aea" id="r_aae85005093b6121926c74ccdd59d3aea"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#aae85005093b6121926c74ccdd59d3aea">beginRun</a> () noexcept</td></tr>
+<tr class="memdesc:aae85005093b6121926c74ccdd59d3aea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a synchronous run cache scope; invoked only by <a class="el" href="classeve_1_1tensor_1_1OnnxModel.html" title="Native ONNX import and CPU/GPU execution using tensor kernels, without ONNX Runtime.">OnnxModel</a> on the device thread.  <br /></td></tr>
+<tr class="separator:aae85005093b6121926c74ccdd59d3aea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed919e2975a3db8fe1550bcd184f0c57" id="r_aed919e2975a3db8fe1550bcd184f0c57"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#aed919e2975a3db8fe1550bcd184f0c57">endRun</a> () noexcept</td></tr>
+<tr class="memdesc:aed919e2975a3db8fe1550bcd184f0c57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retire temporary activations/recordings; compiled resources may survive for later calls.  <br /></td></tr>
+<tr class="separator:aed919e2975a3db8fe1550bcd184f0c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a4ea1b6878a5ba5c8bc893a72b995c6ac" id="r_a4ea1b6878a5ba5c8bc893a72b995c6ac"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#a4ea1b6878a5ba5c8bc893a72b995c6ac">OnnxModel</a></td></tr>
+<tr class="separator:a4ea1b6878a5ba5c8bc893a72b995c6ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GPU execution boundary for native ONNX; retains no model and retains compiled resources for the lifetime of the provider. </p>
+<dl class="section note"><dt>注解</dt><dd>Use on the device's owning thread, without concurrent calls or reentrancy. dispatch completes GPU work before returning host bytes; enqueue may defer completion. Errors never trigger CPU execution. Integer kernels require exact int32 results. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a> 第 <a class="el" href="OnnxCompute_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a453ad53f66c109b0d7e11e5ea83cc184" name="a453ad53f66c109b0d7e11e5ea83cc184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a453ad53f66c109b0d7e11e5ea83cc184">&#9670;&#160;</a></span>~OnnxCompute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::tensor::OnnxCompute::~OnnxCompute </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release device resources after all synchronous calls have returned. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aae85005093b6121926c74ccdd59d3aea" name="aae85005093b6121926c74ccdd59d3aea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae85005093b6121926c74ccdd59d3aea">&#9670;&#160;</a></span>beginRun()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::tensor::OnnxCompute::beginRun </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start a synchronous run cache scope; invoked only by <a class="el" href="classeve_1_1tensor_1_1OnnxModel.html" title="Native ONNX import and CPU/GPU execution using tensor kernels, without ONNX Runtime.">OnnxModel</a> on the device thread. </p>
+
+<p class="definition">在文件 <a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a> 第 <a class="el" href="OnnxCompute_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab74483aa20b12eb2d83990fb4502ec7e" name="ab74483aa20b12eb2d83990fb4502ec7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab74483aa20b12eb2d83990fb4502ec7e">&#9670;&#160;</a></span>dispatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt; eve::tensor::OnnxCompute::dispatch </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1OnnxKernel.html">OnnxKernel</a> &amp;&#160;</td>
+          <td class="paramname"><em>kernel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility-only synchronous host-byte entry point; engine dispatch delegates to enqueue. </p>
+<dl class="section note"><dt>注解</dt><dd>GLSL 450, local_size_x=64; inputs occupy bindings 0..N-1, output N. </dd></dl>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxCompute_8h_source.html#l00037">enqueue()</a>.</p>
+
+</div>
+</div>
+<a id="aed919e2975a3db8fe1550bcd184f0c57" name="aed919e2975a3db8fe1550bcd184f0c57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed919e2975a3db8fe1550bcd184f0c57">&#9670;&#160;</a></span>endRun()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::tensor::OnnxCompute::endRun </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retire temporary activations/recordings; compiled resources may survive for later calls. </p>
+
+<p class="definition">在文件 <a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a> 第 <a class="el" href="OnnxCompute_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxModel_8cpp_source.html#l00031">eve::tensor::OnnxModel::runGpu()</a>.</p>
+
+</div>
+</div>
+<a id="ac25beb5c7fe7cbea5775402401b167ab" name="ac25beb5c7fe7cbea5775402401b167ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac25beb5c7fe7cbea5775402401b167ab">&#9670;&#160;</a></span>enqueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> &gt; eve::tensor::OnnxCompute::enqueue </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> &gt;&#160;</td>
+          <td class="paramname"><em>inputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>outputBytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>workItems</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue a kernel using immutable host/device buffers; no readback is required. </p>
+<dl class="section note"><dt>注解</dt><dd>Default provider executes synchronously through dispatch. Engine provider records a resident graph segment inside runGpu, completing it at a host-read or resource-budget boundary. Inputs are retained until completion; returned device storage expires when runGpu ends. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a> 第 <a class="el" href="OnnxCompute_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html#ab74483aa20b12eb2d83990fb4502ec7e">dispatch()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">inputs</a>, <a class="el" href="OnnxCompute_8h_source.html#l00014">eve::tensor::OnnxKernel::inputs</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aa227ddeb2989a5b21fa9bdfdba8e9fd7" name="aa227ddeb2989a5b21fa9bdfdba8e9fd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa227ddeb2989a5b21fa9bdfdba8e9fd7">&#9670;&#160;</a></span>transferStats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1tensor_1_1OnnxTransferStats.html">OnnxTransferStats</a> eve::tensor::OnnxCompute::transferStats </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable transfer counters for the current or most recent run. </p>
+
+<p class="definition">在文件 <a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a> 第 <a class="el" href="OnnxCompute_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a4ea1b6878a5ba5c8bc893a72b995c6ac" name="a4ea1b6878a5ba5c8bc893a72b995c6ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ea1b6878a5ba5c8bc893a72b995c6ac">&#9670;&#160;</a></span>OnnxModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1tensor_1_1OnnxModel.html">OnnxModel</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a> 第 <a class="el" href="OnnxCompute_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/tensor/<a class="el" href="OnnxCompute_8h_source.html">OnnxCompute.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

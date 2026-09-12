@@ -1,0 +1,2077 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::SoftBody3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1SoftBody3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::SoftBody3D类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Volumetric particle soft body using overlapping shape-matching clusters.  
+ <a href="classeve_1_1physics_1_1SoftBody3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::SoftBody3D 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1SoftBody3D.png" usemap="#eve::physics::SoftBody3D_map" alt=""/>
+  <map id="eve::physics::SoftBody3D_map" name="eve::physics::SoftBody3D_map">
+<area href="classeve_1_1physics_1_1ISimulationBackend.html" title="Minimal observable contract for physics simulation providers." alt="eve::physics::ISimulationBackend" shape="rect" coords="0,0,197,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5970b7e12bfac5df7068200ade59f7ff" id="r_a5970b7e12bfac5df7068200ade59f7ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a5970b7e12bfac5df7068200ade59f7ff">~SoftBody3D</a> () override</td></tr>
+<tr class="separator:a5970b7e12bfac5df7068200ade59f7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac109648c15c08d4339f2001e26ccce1f" id="r_ac109648c15c08d4339f2001e26ccce1f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac109648c15c08d4339f2001e26ccce1f">SoftBody3D</a> (const <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &amp;)=delete</td></tr>
+<tr class="separator:ac109648c15c08d4339f2001e26ccce1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a963dc0fccb955b6af0a7068f00effa48" id="r_a963dc0fccb955b6af0a7068f00effa48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a963dc0fccb955b6af0a7068f00effa48">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a963dc0fccb955b6af0a7068f00effa48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24be8c8eb62f52101f06d4d19bd59274" id="r_a24be8c8eb62f52101f06d4d19bd59274"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a24be8c8eb62f52101f06d4d19bd59274">update</a> (float dt)</td></tr>
+<tr class="memdesc:a24be8c8eb62f52101f06d4d19bd59274"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances using a legacy variable timestep clamped to 50 ms.  <br /></td></tr>
+<tr class="separator:a24be8c8eb62f52101f06d4d19bd59274"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52b0b586390c24df2370bb29fb9c7b87" id="r_a52b0b586390c24df2370bb29fb9c7b87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a52b0b586390c24df2370bb29fb9c7b87">step</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;step, const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;settings) override</td></tr>
+<tr class="memdesc:a52b0b586390c24df2370bb29fb9c7b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances through the checked fixed-step backend contract.  <br /></td></tr>
+<tr class="separator:a52b0b586390c24df2370bb29fb9c7b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3227ee8f753dcc016e4c8972ca12987e" id="r_a3227ee8f753dcc016e4c8972ca12987e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a3227ee8f753dcc016e4c8972ca12987e">observation</a> () const noexcept override</td></tr>
+<tr class="memdesc:a3227ee8f753dcc016e4c8972ca12987e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns completed fixed-step metadata by value.  <br /></td></tr>
+<tr class="separator:a3227ee8f753dcc016e4c8972ca12987e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a013c3107c9d550a94bb1d3de376e62d9" id="r_a013c3107c9d550a94bb1d3de376e62d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a013c3107c9d550a94bb1d3de376e62d9">kind</a> () const noexcept override</td></tr>
+<tr class="memdesc:a013c3107c9d550a94bb1d3de376e62d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the built-in CPU implementation.  <br /></td></tr>
+<tr class="separator:a013c3107c9d550a94bb1d3de376e62d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0439a9c54c983f0299b9696c75c284cc" id="r_a0439a9c54c983f0299b9696c75c284cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a0439a9c54c983f0299b9696c75c284cc">determinism</a> () const noexcept override</td></tr>
+<tr class="memdesc:a0439a9c54c983f0299b9696c75c284cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Results are repeatable within documented floating-point tolerance.  <br /></td></tr>
+<tr class="separator:a0439a9c54c983f0299b9696c75c284cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65e066cbb5103a8ba50b0b672bcdd06" id="r_ac65e066cbb5103a8ba50b0b672bcdd06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac65e066cbb5103a8ba50b0b672bcdd06">restoreObservation</a> (const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;<a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a3227ee8f753dcc016e4c8972ca12987e">observation</a>) override</td></tr>
+<tr class="memdesc:ac65e066cbb5103a8ba50b0b672bcdd06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores checked progress metadata; particle state is unchanged.  <br /></td></tr>
+<tr class="separator:ac65e066cbb5103a8ba50b0b672bcdd06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9233ff60562224c2fd3f38941a526aea" id="r_a9233ff60562224c2fd3f38941a526aea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a9233ff60562224c2fd3f38941a526aea">setGravity</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a9233ff60562224c2fd3f38941a526aea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af554d3af305b85d93e468e8659238111" id="r_af554d3af305b85d93e468e8659238111"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af554d3af305b85d93e468e8659238111">getGravityX</a> () const</td></tr>
+<tr class="separator:af554d3af305b85d93e468e8659238111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18c05ab7d9ac0f5a83c1ae71e9b68828" id="r_a18c05ab7d9ac0f5a83c1ae71e9b68828"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a18c05ab7d9ac0f5a83c1ae71e9b68828">getGravityY</a> () const</td></tr>
+<tr class="separator:a18c05ab7d9ac0f5a83c1ae71e9b68828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29adff2358dc2721820ebd90f11c9fa6" id="r_a29adff2358dc2721820ebd90f11c9fa6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a29adff2358dc2721820ebd90f11c9fa6">getGravityZ</a> () const</td></tr>
+<tr class="separator:a29adff2358dc2721820ebd90f11c9fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46fbad461bffb61a9dee1d9ece584fc9" id="r_a46fbad461bffb61a9dee1d9ece584fc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a46fbad461bffb61a9dee1d9ece584fc9">setDeformationResistance</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a46fbad461bffb61a9dee1d9ece584fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c5fa3b1915d7cf3fb75bf5a46a33140" id="r_a9c5fa3b1915d7cf3fb75bf5a46a33140"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a9c5fa3b1915d7cf3fb75bf5a46a33140">getDeformationResistance</a> () const</td></tr>
+<tr class="separator:a9c5fa3b1915d7cf3fb75bf5a46a33140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33cf0f7f27d2357a390ba7f41b557a5f" id="r_a33cf0f7f27d2357a390ba7f41b557a5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a33cf0f7f27d2357a390ba7f41b557a5f">setIterations</a> (int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a33cf0f7f27d2357a390ba7f41b557a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cb492a8da63fc4f0e7791b86bc2a284" id="r_a7cb492a8da63fc4f0e7791b86bc2a284"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a7cb492a8da63fc4f0e7791b86bc2a284">getIterations</a> () const</td></tr>
+<tr class="separator:a7cb492a8da63fc4f0e7791b86bc2a284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad742a9622f6c74dbf02e493061c796e2" id="r_ad742a9622f6c74dbf02e493061c796e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad742a9622f6c74dbf02e493061c796e2">setDamping</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ad742a9622f6c74dbf02e493061c796e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac14262b9cd90e821c20f1c1e634262a3" id="r_ac14262b9cd90e821c20f1c1e634262a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac14262b9cd90e821c20f1c1e634262a3">getDamping</a> () const</td></tr>
+<tr class="separator:ac14262b9cd90e821c20f1c1e634262a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4a60c1016b758738af1e40f370808c" id="r_acd4a60c1016b758738af1e40f370808c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#acd4a60c1016b758738af1e40f370808c">setParticleRadius</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:acd4a60c1016b758738af1e40f370808c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb5dc2e91d7b21d9bdbe0c7da0491c47" id="r_afb5dc2e91d7b21d9bdbe0c7da0491c47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#afb5dc2e91d7b21d9bdbe0c7da0491c47">getParticleRadius</a> () const</td></tr>
+<tr class="separator:afb5dc2e91d7b21d9bdbe0c7da0491c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15103ba7b3cc36f8627377e94aeb0385" id="r_a15103ba7b3cc36f8627377e94aeb0385"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a15103ba7b3cc36f8627377e94aeb0385">setParticleMass</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a15103ba7b3cc36f8627377e94aeb0385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce44bc1f2f06c3b75c61086dadce014" id="r_a1ce44bc1f2f06c3b75c61086dadce014"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a1ce44bc1f2f06c3b75c61086dadce014">getParticleMass</a> () const</td></tr>
+<tr class="separator:a1ce44bc1f2f06c3b75c61086dadce014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94e03555a2cefe7ae82f7287c650cd34" id="r_a94e03555a2cefe7ae82f7287c650cd34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a94e03555a2cefe7ae82f7287c650cd34">setPlasticity</a> (float yield, float creep, float recovery, float maxDeformation)</td></tr>
+<tr class="separator:a94e03555a2cefe7ae82f7287c650cd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a35854ccf62afbf82113020ab0324b" id="r_a76a35854ccf62afbf82113020ab0324b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a76a35854ccf62afbf82113020ab0324b">getPlasticYield</a> () const</td></tr>
+<tr class="separator:a76a35854ccf62afbf82113020ab0324b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52368ba857762d8656a4ab7c148c2d3e" id="r_a52368ba857762d8656a4ab7c148c2d3e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a52368ba857762d8656a4ab7c148c2d3e">getPlasticCreep</a> () const</td></tr>
+<tr class="separator:a52368ba857762d8656a4ab7c148c2d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4299736bc57848acd3eaf7fd448e324" id="r_ac4299736bc57848acd3eaf7fd448e324"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac4299736bc57848acd3eaf7fd448e324">getPlasticRecovery</a> () const</td></tr>
+<tr class="separator:ac4299736bc57848acd3eaf7fd448e324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61849084e021f09b81983b3875b65709" id="r_a61849084e021f09b81983b3875b65709"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a61849084e021f09b81983b3875b65709">getMaxDeformation</a> () const</td></tr>
+<tr class="separator:a61849084e021f09b81983b3875b65709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9417395f0ca3e7ba52925183e5c9e8e" id="r_af9417395f0ca3e7ba52925183e5c9e8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af9417395f0ca3e7ba52925183e5c9e8e">setSelfCollision</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:af9417395f0ca3e7ba52925183e5c9e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a49e0804ee0073b055003445cb73c1" id="r_a39a49e0804ee0073b055003445cb73c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a39a49e0804ee0073b055003445cb73c1">getSelfCollision</a> () const</td></tr>
+<tr class="separator:a39a49e0804ee0073b055003445cb73c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f8ebf6bc65754777100eef9d4a88441" id="r_a2f8ebf6bc65754777100eef9d4a88441"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a2f8ebf6bc65754777100eef9d4a88441">setBounds</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>)</td></tr>
+<tr class="separator:a2f8ebf6bc65754777100eef9d4a88441"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3bae4296db28632fec3a068bc768c38" id="r_ad3bae4296db28632fec3a068bc768c38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad3bae4296db28632fec3a068bc768c38">clearBounds</a> ()</td></tr>
+<tr class="separator:ad3bae4296db28632fec3a068bc768c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ece5e6c0127946ccef15f21a480eff" id="r_a14ece5e6c0127946ccef15f21a480eff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a14ece5e6c0127946ccef15f21a480eff">pin</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a14ece5e6c0127946ccef15f21a480eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedd0299a9884d9117a2dd4908037139b" id="r_aedd0299a9884d9117a2dd4908037139b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aedd0299a9884d9117a2dd4908037139b">unpin</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:aedd0299a9884d9117a2dd4908037139b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad939ea4811e9da4c84971ca0e6f3862a" id="r_ad939ea4811e9da4c84971ca0e6f3862a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad939ea4811e9da4c84971ca0e6f3862a">isPinned</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad939ea4811e9da4c84971ca0e6f3862a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed127cfa448d8ebe045b6f9fc5ef61d0" id="r_aed127cfa448d8ebe045b6f9fc5ef61d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aed127cfa448d8ebe045b6f9fc5ef61d0">grabAt</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:aed127cfa448d8ebe045b6f9fc5ef61d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7780e85935926200e1609592fff18582" id="r_a7780e85935926200e1609592fff18582"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a7780e85935926200e1609592fff18582">moveGrab</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a7780e85935926200e1609592fff18582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2189eae4068756ab1edf2d43943a6037" id="r_a2189eae4068756ab1edf2d43943a6037"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a2189eae4068756ab1edf2d43943a6037">releaseGrab</a> ()</td></tr>
+<tr class="separator:a2189eae4068756ab1edf2d43943a6037"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb7964c926343ede1255b1ad69066ff" id="r_aabb7964c926343ede1255b1ad69066ff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aabb7964c926343ede1255b1ad69066ff">isGrabbing</a> () const</td></tr>
+<tr class="separator:aabb7964c926343ede1255b1ad69066ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacd9cce4af6038e4619beba002afcaab" id="r_aacd9cce4af6038e4619beba002afcaab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aacd9cce4af6038e4619beba002afcaab">getGrabIndex</a> () const</td></tr>
+<tr class="separator:aacd9cce4af6038e4619beba002afcaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b070cff8eac4dbe9bf9e095d0567308" id="r_a0b070cff8eac4dbe9bf9e095d0567308"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a0b070cff8eac4dbe9bf9e095d0567308">applyForce</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a0b070cff8eac4dbe9bf9e095d0567308"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa85871108a5e1d9ab9636ccbfca8683" id="r_aaa85871108a5e1d9ab9636ccbfca8683"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aaa85871108a5e1d9ab9636ccbfca8683">interactAt</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float strength)</td></tr>
+<tr class="separator:aaa85871108a5e1d9ab9636ccbfca8683"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51f72dccc89bcd21bb9d843b95d76c0c" id="r_a51f72dccc89bcd21bb9d843b95d76c0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a51f72dccc89bcd21bb9d843b95d76c0c">setCollideWorld</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a51f72dccc89bcd21bb9d843b95d76c0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrows a rigid-body world used for particle contacts.  <br /></td></tr>
+<tr class="separator:a51f72dccc89bcd21bb9d843b95d76c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04529cfd87f9265979357bb89186c65f" id="r_a04529cfd87f9265979357bb89186c65f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a04529cfd87f9265979357bb89186c65f">getCollideWorld</a> () const</td></tr>
+<tr class="separator:a04529cfd87f9265979357bb89186c65f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cc8e485c2a6e8aa465ca6fe67fb7864" id="r_a2cc8e485c2a6e8aa465ca6fe67fb7864"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a2cc8e485c2a6e8aa465ca6fe67fb7864">setCollisionWorld</a> (<a class="el" href="classeve_1_1physics_1_1softbody_1_1ISoftBodyCollisionWorld.html">softbody::ISoftBodyCollisionWorld</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a2cc8e485c2a6e8aa465ca6fe67fb7864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a backend-neutral borrowed collision provider. @lifetime The provider must outlive this object or be cleared before destruction.  <br /></td></tr>
+<tr class="separator:a2cc8e485c2a6e8aa465ca6fe67fb7864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed0fd230e61e55f4cdbf1e19712e527" id="r_aaed0fd230e61e55f4cdbf1e19712e527"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aaed0fd230e61e55f4cdbf1e19712e527">reset</a> ()</td></tr>
+<tr class="separator:aaed0fd230e61e55f4cdbf1e19712e527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79ba203833aa5da9fc569e99097a5c1" id="r_af79ba203833aa5da9fc569e99097a5c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af79ba203833aa5da9fc569e99097a5c1">destroy</a> ()</td></tr>
+<tr class="separator:af79ba203833aa5da9fc569e99097a5c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01c3840ecf37b013d19b4183b7664aef" id="r_a01c3840ecf37b013d19b4183b7664aef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a01c3840ecf37b013d19b4183b7664aef">isDestroyed</a> () const noexcept</td></tr>
+<tr class="memdesc:a01c3840ecf37b013d19b4183b7664aef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af79ba203833aa5da9fc569e99097a5c1">destroy()</a> has disabled this runtime instance.  <br /></td></tr>
+<tr class="separator:a01c3840ecf37b013d19b4183b7664aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af585e0fedce279182f0afb9e3369f530" id="r_af585e0fedce279182f0afb9e3369f530"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af585e0fedce279182f0afb9e3369f530">getCols</a> () const</td></tr>
+<tr class="separator:af585e0fedce279182f0afb9e3369f530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e166aab378232aad03620e9deee5ce" id="r_ad4e166aab378232aad03620e9deee5ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad4e166aab378232aad03620e9deee5ce">getRows</a> () const</td></tr>
+<tr class="separator:ad4e166aab378232aad03620e9deee5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87e75eecfbfe8693f6f8be79412db079" id="r_a87e75eecfbfe8693f6f8be79412db079"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a87e75eecfbfe8693f6f8be79412db079">getLayers</a> () const</td></tr>
+<tr class="separator:a87e75eecfbfe8693f6f8be79412db079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0663d99c77a36169f8f7a53a39dcc19c" id="r_a0663d99c77a36169f8f7a53a39dcc19c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a0663d99c77a36169f8f7a53a39dcc19c">getParticleCount</a> () const</td></tr>
+<tr class="separator:a0663d99c77a36169f8f7a53a39dcc19c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf852e9b1893fa9b92929e0aec9a0de1" id="r_adf852e9b1893fa9b92929e0aec9a0de1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">getParticleX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:adf852e9b1893fa9b92929e0aec9a0de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5978118f94ef3f7acb90ce848bb959b" id="r_ae5978118f94ef3f7acb90ce848bb959b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">getParticleY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae5978118f94ef3f7acb90ce848bb959b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a327ef52a033981e9774d405411bb82f5" id="r_a327ef52a033981e9774d405411bb82f5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">getParticleZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a327ef52a033981e9774d405411bb82f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9851b281381450a73a834f7ffba96335" id="r_a9851b281381450a73a834f7ffba96335"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a9851b281381450a73a834f7ffba96335">setParticlePosition</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a9851b281381450a73a834f7ffba96335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d29633aeb5da3c0c33bb9506224a44b" id="r_a6d29633aeb5da3c0c33bb9506224a44b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a6d29633aeb5da3c0c33bb9506224a44b">getVolumeRatio</a> () const</td></tr>
+<tr class="memdesc:a6d29633aeb5da3c0c33bb9506224a44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns current cell volume divided by undeformed rest volume.  <br /></td></tr>
+<tr class="separator:a6d29633aeb5da3c0c33bb9506224a44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1physics_1_1ISimulationBackend')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td></tr>
+<tr class="memitem:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend" id="r_a247d718f8968b22c8b1ee121d2790f7e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a> ()=default</td></tr>
+<tr class="memdesc:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the backend; borrowed domain state is not destroyed.  <br /></td></tr>
+<tr class="separator:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa17e2cb154dd69ee6c41ff6f20d17dba" id="r_aa17e2cb154dd69ee6c41ff6f20d17dba"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aa17e2cb154dd69ee6c41ff6f20d17dba">create</a> (const <a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">SoftBody3DDefinition</a> &amp;definition)</td></tr>
+<tr class="memdesc:aa17e2cb154dd69ee6c41ff6f20d17dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a soft body from the canonical versioned definition.  <br /></td></tr>
+<tr class="separator:aa17e2cb154dd69ee6c41ff6f20d17dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03ed4f281a02cddd6ea4712a3b3da2f" id="r_af03ed4f281a02cddd6ea4712a3b3da2f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af03ed4f281a02cddd6ea4712a3b3da2f">create</a> (int cols, int <a class="el" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>, int layers, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, float originX, float originY, float originZ)</td></tr>
+<tr class="memdesc:af03ed4f281a02cddd6ea4712a3b3da2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a validated volumetric soft body.  <br /></td></tr>
+<tr class="separator:af03ed4f281a02cddd6ea4712a3b3da2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Volumetric particle soft body using overlapping shape-matching clusters. </p>
+<p>Particles form a regular 3D lattice in meter space (+Y up). Every lattice cell is an overlapping eight-particle cluster, which preserves local volume and orientation while allowing elastic and optional plastic deformation. The object is simulation-thread affine and owns all particle/constraint state. A <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> supplied through <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a51f72dccc89bcd21bb9d843b95d76c0c" title="Borrows a rigid-body world used for particle contacts.">setCollideWorld()</a> is borrowed and must outlive this object or be cleared before world destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5970b7e12bfac5df7068200ade59f7ff" name="a5970b7e12bfac5df7068200ade59f7ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5970b7e12bfac5df7068200ade59f7ff">&#9670;&#160;</a></span>~SoftBody3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::SoftBody3D::~SoftBody3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SoftBody3D_8cpp_source.html#l00107">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="ac109648c15c08d4339f2001e26ccce1f" name="ac109648c15c08d4339f2001e26ccce1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac109648c15c08d4339f2001e26ccce1f">&#9670;&#160;</a></span>SoftBody3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::SoftBody3D::SoftBody3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0b070cff8eac4dbe9bf9e095d0567308" name="a0b070cff8eac4dbe9bf9e095d0567308"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b070cff8eac4dbe9bf9e095d0567308">&#9670;&#160;</a></span>applyForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::applyForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ad3bae4296db28632fec3a068bc768c38" name="ad3bae4296db28632fec3a068bc768c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3bae4296db28632fec3a068bc768c38">&#9670;&#160;</a></span>clearBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::clearBounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa17e2cb154dd69ee6c41ff6f20d17dba" name="aa17e2cb154dd69ee6c41ff6f20d17dba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa17e2cb154dd69ee6c41ff6f20d17dba">&#9670;&#160;</a></span>create() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &gt; &gt; eve::physics::SoftBody3D::create </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">SoftBody3DDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a soft body from the canonical versioned definition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td>Validated owning creation data copied into runtime state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning object, or a structured validation diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00182">eve::physics::SoftBody3DDefinition::ensureSchemaRegistered()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Physics_8cpp_source.html#l00051">eve::physics::Physics::newSoftBody3D()</a>.</p>
+
+</div>
+</div>
+<a id="af03ed4f281a02cddd6ea4712a3b3da2f" name="af03ed4f281a02cddd6ea4712a3b3da2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af03ed4f281a02cddd6ea4712a3b3da2f">&#9670;&#160;</a></span>create() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &gt; &gt; eve::physics::SoftBody3D::create </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a validated volumetric soft body. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cols</td><td>Particle columns along +X, at least 2. </td></tr>
+    <tr><td class="paramname">rows</td><td>Particle rows along +Y, at least 2. </td></tr>
+    <tr><td class="paramname">layers</td><td>Particle layers along +Z, at least 2. </td></tr>
+    <tr><td class="paramname">spacing</td><td>Rest spacing in meters, greater than zero. </td></tr>
+    <tr><td class="paramname">originX</td><td>Minimum rest X coordinate. </td></tr>
+    <tr><td class="paramname">originY</td><td>Minimum rest Y coordinate. </td></tr>
+    <tr><td class="paramname">originZ</td><td>Minimum rest Z coordinate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning object or InvalidArgument diagnostic; no state is published on failure. @thread Call and use the result on the owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SoftBody3D_8cpp_source.html#l00039">create()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">rows</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3D_8cpp_source.html#l00039">create()</a>.</p>
+
+</div>
+</div>
+<a id="af79ba203833aa5da9fc569e99097a5c1" name="af79ba203833aa5da9fc569e99097a5c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af79ba203833aa5da9fc569e99097a5c1">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3D_8cpp_source.html#l00105">~SoftBody3D()</a>.</p>
+
+</div>
+</div>
+<a id="a0439a9c54c983f0299b9696c75c284cc" name="a0439a9c54c983f0299b9696c75c284cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0439a9c54c983f0299b9696c75c284cc">&#9670;&#160;</a></span>determinism()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> eve::physics::SoftBody3D::determinism </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Results are repeatable within documented floating-point tolerance. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::ToleranceBounded</a>.</p>
+
+</div>
+</div>
+<a id="a04529cfd87f9265979357bb89186c65f" name="a04529cfd87f9265979357bb89186c65f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04529cfd87f9265979357bb89186c65f">&#9670;&#160;</a></span>getCollideWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> * eve::physics::SoftBody3D::getCollideWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DWorldBridge_8cpp_source.html">SoftBody3DWorldBridge.cpp</a> 第 <a class="el" href="SoftBody3DWorldBridge_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af585e0fedce279182f0afb9e3369f530" name="af585e0fedce279182f0afb9e3369f530"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af585e0fedce279182f0afb9e3369f530">&#9670;&#160;</a></span>getCols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::getCols </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="ac14262b9cd90e821c20f1c1e634262a3" name="ac14262b9cd90e821c20f1c1e634262a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac14262b9cd90e821c20f1c1e634262a3">&#9670;&#160;</a></span>getDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c5fa3b1915d7cf3fb75bf5a46a33140" name="a9c5fa3b1915d7cf3fb75bf5a46a33140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c5fa3b1915d7cf3fb75bf5a46a33140">&#9670;&#160;</a></span>getDeformationResistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getDeformationResistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacd9cce4af6038e4619beba002afcaab" name="aacd9cce4af6038e4619beba002afcaab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacd9cce4af6038e4619beba002afcaab">&#9670;&#160;</a></span>getGrabIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::getGrabIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af554d3af305b85d93e468e8659238111" name="af554d3af305b85d93e468e8659238111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af554d3af305b85d93e468e8659238111">&#9670;&#160;</a></span>getGravityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getGravityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18c05ab7d9ac0f5a83c1ae71e9b68828" name="a18c05ab7d9ac0f5a83c1ae71e9b68828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18c05ab7d9ac0f5a83c1ae71e9b68828">&#9670;&#160;</a></span>getGravityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getGravityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29adff2358dc2721820ebd90f11c9fa6" name="a29adff2358dc2721820ebd90f11c9fa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29adff2358dc2721820ebd90f11c9fa6">&#9670;&#160;</a></span>getGravityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getGravityZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7cb492a8da63fc4f0e7791b86bc2a284" name="a7cb492a8da63fc4f0e7791b86bc2a284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cb492a8da63fc4f0e7791b86bc2a284">&#9670;&#160;</a></span>getIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::getIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87e75eecfbfe8693f6f8be79412db079" name="a87e75eecfbfe8693f6f8be79412db079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87e75eecfbfe8693f6f8be79412db079">&#9670;&#160;</a></span>getLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::getLayers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a61849084e021f09b81983b3875b65709" name="a61849084e021f09b81983b3875b65709"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61849084e021f09b81983b3875b65709">&#9670;&#160;</a></span>getMaxDeformation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getMaxDeformation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0663d99c77a36169f8f7a53a39dcc19c" name="a0663d99c77a36169f8f7a53a39dcc19c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0663d99c77a36169f8f7a53a39dcc19c">&#9670;&#160;</a></span>getParticleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::getParticleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a> , 以及 <a class="el" href="SoftBody3D_8cpp_source.html#l00175">grabAt()</a>.</p>
+
+</div>
+</div>
+<a id="a1ce44bc1f2f06c3b75c61086dadce014" name="a1ce44bc1f2f06c3b75c61086dadce014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce44bc1f2f06c3b75c61086dadce014">&#9670;&#160;</a></span>getParticleMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getParticleMass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb5dc2e91d7b21d9bdbe0c7da0491c47" name="afb5dc2e91d7b21d9bdbe0c7da0491c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb5dc2e91d7b21d9bdbe0c7da0491c47">&#9670;&#160;</a></span>getParticleRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getParticleRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf852e9b1893fa9b92929e0aec9a0de1" name="adf852e9b1893fa9b92929e0aec9a0de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf852e9b1893fa9b92929e0aec9a0de1">&#9670;&#160;</a></span>getParticleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getParticleX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="ae5978118f94ef3f7acb90ce848bb959b" name="ae5978118f94ef3f7acb90ce848bb959b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5978118f94ef3f7acb90ce848bb959b">&#9670;&#160;</a></span>getParticleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getParticleY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a327ef52a033981e9774d405411bb82f5" name="a327ef52a033981e9774d405411bb82f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a327ef52a033981e9774d405411bb82f5">&#9670;&#160;</a></span>getParticleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getParticleZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a52368ba857762d8656a4ab7c148c2d3e" name="a52368ba857762d8656a4ab7c148c2d3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52368ba857762d8656a4ab7c148c2d3e">&#9670;&#160;</a></span>getPlasticCreep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getPlasticCreep </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac4299736bc57848acd3eaf7fd448e324" name="ac4299736bc57848acd3eaf7fd448e324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4299736bc57848acd3eaf7fd448e324">&#9670;&#160;</a></span>getPlasticRecovery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getPlasticRecovery </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76a35854ccf62afbf82113020ab0324b" name="a76a35854ccf62afbf82113020ab0324b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a35854ccf62afbf82113020ab0324b">&#9670;&#160;</a></span>getPlasticYield()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getPlasticYield </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4e166aab378232aad03620e9deee5ce" name="ad4e166aab378232aad03620e9deee5ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4e166aab378232aad03620e9deee5ce">&#9670;&#160;</a></span>getRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::getRows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a39a49e0804ee0073b055003445cb73c1" name="a39a49e0804ee0073b055003445cb73c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39a49e0804ee0073b055003445cb73c1">&#9670;&#160;</a></span>getSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::SoftBody3D::getSelfCollision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6d29633aeb5da3c0c33bb9506224a44b" name="a6d29633aeb5da3c0c33bb9506224a44b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d29633aeb5da3c0c33bb9506224a44b">&#9670;&#160;</a></span>getVolumeRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3D::getVolumeRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns current cell volume divided by undeformed rest volume. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="aed127cfa448d8ebe045b6f9fc5ef61d0" name="aed127cfa448d8ebe045b6f9fc5ef61d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed127cfa448d8ebe045b6f9fc5ef61d0">&#9670;&#160;</a></span>grabAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3D::grabAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SoftBody3D_8h_source.html#l00135">getParticleCount()</a>, <a class="el" href="SoftBody3D_8cpp_source.html#l00194">moveGrab()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aaa85871108a5e1d9ab9636ccbfca8683" name="aaa85871108a5e1d9ab9636ccbfca8683"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa85871108a5e1d9ab9636ccbfca8683">&#9670;&#160;</a></span>interactAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::interactAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a01c3840ecf37b013d19b4183b7664aef" name="a01c3840ecf37b013d19b4183b7664aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01c3840ecf37b013d19b4183b7664aef">&#9670;&#160;</a></span>isDestroyed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::SoftBody3D::isDestroyed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af79ba203833aa5da9fc569e99097a5c1">destroy()</a> has disabled this runtime instance. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DGraphics_8cpp_source.html#l00029">eve::physics::SoftBody3DRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="aabb7964c926343ede1255b1ad69066ff" name="aabb7964c926343ede1255b1ad69066ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb7964c926343ede1255b1ad69066ff">&#9670;&#160;</a></span>isGrabbing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::SoftBody3D::isGrabbing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad939ea4811e9da4c84971ca0e6f3862a" name="ad939ea4811e9da4c84971ca0e6f3862a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad939ea4811e9da4c84971ca0e6f3862a">&#9670;&#160;</a></span>isPinned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::SoftBody3D::isPinned </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a013c3107c9d550a94bb1d3de376e62d9" name="a013c3107c9d550a94bb1d3de376e62d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a013c3107c9d550a94bb1d3de376e62d9">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> eve::physics::SoftBody3D::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Identifies the built-in CPU implementation. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::Cpu</a>.</p>
+
+</div>
+</div>
+<a id="a7780e85935926200e1609592fff18582" name="a7780e85935926200e1609592fff18582"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7780e85935926200e1609592fff18582">&#9670;&#160;</a></span>moveGrab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::moveGrab </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3D_8cpp_source.html#l00175">grabAt()</a>.</p>
+
+</div>
+</div>
+<a id="a3227ee8f753dcc016e4c8972ca12987e" name="a3227ee8f753dcc016e4c8972ca12987e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3227ee8f753dcc016e4c8972ca12987e">&#9670;&#160;</a></span>observation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> eve::physics::SoftBody3D::observation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns completed fixed-step metadata by value. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3D_8cpp_source.html#l00442">restoreObservation()</a>.</p>
+
+</div>
+</div>
+<a id="a963dc0fccb955b6af0a7068f00effa48" name="a963dc0fccb955b6af0a7068f00effa48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a963dc0fccb955b6af0a7068f00effa48">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &amp; eve::physics::SoftBody3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14ece5e6c0127946ccef15f21a480eff" name="a14ece5e6c0127946ccef15f21a480eff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14ece5e6c0127946ccef15f21a480eff">&#9670;&#160;</a></span>pin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::pin </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a2189eae4068756ab1edf2d43943a6037" name="a2189eae4068756ab1edf2d43943a6037"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2189eae4068756ab1edf2d43943a6037">&#9670;&#160;</a></span>releaseGrab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::releaseGrab </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaed0fd230e61e55f4cdbf1e19712e527" name="aaed0fd230e61e55f4cdbf1e19712e527"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaed0fd230e61e55f4cdbf1e19712e527">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="ac65e066cbb5103a8ba50b0b672bcdd06" name="ac65e066cbb5103a8ba50b0b672bcdd06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65e066cbb5103a8ba50b0b672bcdd06">&#9670;&#160;</a></span>restoreObservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::SoftBody3D::restoreObservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>observation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restores checked progress metadata; particle state is unchanged. </p>
+
+<p>重载 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">eve::physics::ISimulationBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SoftBody3D_8h_source.html#l00062">observation()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="a2f8ebf6bc65754777100eef9d4a88441" name="a2f8ebf6bc65754777100eef9d4a88441"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f8ebf6bc65754777100eef9d4a88441">&#9670;&#160;</a></span>setBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setBounds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a51f72dccc89bcd21bb9d843b95d76c0c" name="a51f72dccc89bcd21bb9d843b95d76c0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51f72dccc89bcd21bb9d843b95d76c0c">&#9670;&#160;</a></span>setCollideWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setCollideWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrows a rigid-body world used for particle contacts. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Nullable observer; pass null to disable world collision. @ownership The soft body never owns the world. @lifetime The world must outlive this object or be cleared before destruction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DWorldBridge_8cpp_source.html">SoftBody3DWorldBridge.cpp</a> 第 <a class="el" href="SoftBody3DWorldBridge_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a2cc8e485c2a6e8aa465ca6fe67fb7864" name="a2cc8e485c2a6e8aa465ca6fe67fb7864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cc8e485c2a6e8aa465ca6fe67fb7864">&#9670;&#160;</a></span>setCollisionWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setCollisionWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1softbody_1_1ISoftBodyCollisionWorld.html">softbody::ISoftBodyCollisionWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set a backend-neutral borrowed collision provider. @lifetime The provider must outlive this object or be cleared before destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="ad742a9622f6c74dbf02e493061c796e2" name="ad742a9622f6c74dbf02e493061c796e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad742a9622f6c74dbf02e493061c796e2">&#9670;&#160;</a></span>setDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setDamping </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a46fbad461bffb61a9dee1d9ece584fc9" name="a46fbad461bffb61a9dee1d9ece584fc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46fbad461bffb61a9dee1d9ece584fc9">&#9670;&#160;</a></span>setDeformationResistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setDeformationResistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a9233ff60562224c2fd3f38941a526aea" name="a9233ff60562224c2fd3f38941a526aea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9233ff60562224c2fd3f38941a526aea">&#9670;&#160;</a></span>setGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a33cf0f7f27d2357a390ba7f41b557a5f" name="a33cf0f7f27d2357a390ba7f41b557a5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33cf0f7f27d2357a390ba7f41b557a5f">&#9670;&#160;</a></span>setIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setIterations </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a15103ba7b3cc36f8627377e94aeb0385" name="a15103ba7b3cc36f8627377e94aeb0385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15103ba7b3cc36f8627377e94aeb0385">&#9670;&#160;</a></span>setParticleMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setParticleMass </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a9851b281381450a73a834f7ffba96335" name="a9851b281381450a73a834f7ffba96335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9851b281381450a73a834f7ffba96335">&#9670;&#160;</a></span>setParticlePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setParticlePosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="acd4a60c1016b758738af1e40f370808c" name="acd4a60c1016b758738af1e40f370808c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd4a60c1016b758738af1e40f370808c">&#9670;&#160;</a></span>setParticleRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setParticleRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a94e03555a2cefe7ae82f7287c650cd34" name="a94e03555a2cefe7ae82f7287c650cd34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94e03555a2cefe7ae82f7287c650cd34">&#9670;&#160;</a></span>setPlasticity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setPlasticity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yield</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>creep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>recovery</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDeformation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af9417395f0ca3e7ba52925183e5c9e8e" name="af9417395f0ca3e7ba52925183e5c9e8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9417395f0ca3e7ba52925183e5c9e8e">&#9670;&#160;</a></span>setSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::setSelfCollision </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a> 第 <a class="el" href="SoftBody3D_8h_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a52b0b586390c24df2370bb29fb9c7b87" name="a52b0b586390c24df2370bb29fb9c7b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52b0b586390c24df2370bb29fb9c7b87">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::SoftBody3D::step </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advances through the checked fixed-step backend contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Time_8h_source.html#l00157">eve::SimulationStep::delta</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="SimulationBackend_8h_source.html#l00109">eve::physics::SimulationSettings::subStepCount</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="aedd0299a9884d9117a2dd4908037139b" name="aedd0299a9884d9117a2dd4908037139b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedd0299a9884d9117a2dd4908037139b">&#9670;&#160;</a></span>unpin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::unpin </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a24be8c8eb62f52101f06d4d19bd59274" name="a24be8c8eb62f52101f06d4d19bd59274"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24be8c8eb62f52101f06d4d19bd59274">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::SoftBody3D::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances using a legacy variable timestep clamped to 50 ms. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a> 第 <a class="el" href="SoftBody3D_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/softbody/<a class="el" href="SoftBody3D_8h_source.html">SoftBody3D.h</a></li>
+<li>src/modules/physics/softbody/<a class="el" href="SoftBody3D_8cpp_source.html">SoftBody3D.cpp</a></li>
+<li>src/modules/physics/<a class="el" href="SoftBody3DWorldBridge_8cpp_source.html">SoftBody3DWorldBridge.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

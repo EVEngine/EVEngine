@@ -1,0 +1,451 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::FootIKDebugFoot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html">FootIKDebugFoot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1animation_1_1FootIKDebugFoot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::FootIKDebugFoot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Immutable model-space state for one foot in a tooling snapshot.  
+ <a href="structeve_1_1animation_1_1FootIKDebugFoot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a55933fab5ff0bdffc051b82c6a3d0f53" id="r_a55933fab5ff0bdffc051b82c6a3d0f53"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a55933fab5ff0bdffc051b82c6a3d0f53">configured</a> =false</td></tr>
+<tr class="separator:a55933fab5ff0bdffc051b82c6a3d0f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab01a8f97b2b07c37b528fa2737300763" id="r_ab01a8f97b2b07c37b528fa2737300763"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#ab01a8f97b2b07c37b528fa2737300763">contact</a> =false</td></tr>
+<tr class="separator:ab01a8f97b2b07c37b528fa2737300763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3001b4ad1b69501a52f3e5c7eafa063f" id="r_a3001b4ad1b69501a52f3e5c7eafa063f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a3001b4ad1b69501a52f3e5c7eafa063f">locked</a> =false</td></tr>
+<tr class="separator:a3001b4ad1b69501a52f3e5c7eafa063f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7a30867c1089176dc65f0cf271df668" id="r_ae7a30867c1089176dc65f0cf271df668"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#ae7a30867c1089176dc65f0cf271df668">toeConfigured</a> =false</td></tr>
+<tr class="separator:ae7a30867c1089176dc65f0cf271df668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b1f64bb10984522acb658bcacc766a8" id="r_a4b1f64bb10984522acb658bcacc766a8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a4b1f64bb10984522acb658bcacc766a8">x</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4b1f64bb10984522acb658bcacc766a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4fdc72ccdc28a7f7dcd617afa35a577" id="r_ab4fdc72ccdc28a7f7dcd617afa35a577"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#ab4fdc72ccdc28a7f7dcd617afa35a577">y</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab4fdc72ccdc28a7f7dcd617afa35a577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c3281a51575815b9deb48883647debc" id="r_a0c3281a51575815b9deb48883647debc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a0c3281a51575815b9deb48883647debc">z</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0c3281a51575815b9deb48883647debc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2d1540b47114e1b2a568168f3e11fa0" id="r_ad2d1540b47114e1b2a568168f3e11fa0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#ad2d1540b47114e1b2a568168f3e11fa0">nx</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad2d1540b47114e1b2a568168f3e11fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d861ca8c1be9af7cff12f7ec58f320d" id="r_a6d861ca8c1be9af7cff12f7ec58f320d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a6d861ca8c1be9af7cff12f7ec58f320d">ny</a> =1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6d861ca8c1be9af7cff12f7ec58f320d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c69a5c55abf1fc9f5070cb88af1369c" id="r_a0c69a5c55abf1fc9f5070cb88af1369c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a0c69a5c55abf1fc9f5070cb88af1369c">nz</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0c69a5c55abf1fc9f5070cb88af1369c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb7daab3b532ba4aa92e1607d982cdd" id="r_a8cb7daab3b532ba4aa92e1607d982cdd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a8cb7daab3b532ba4aa92e1607d982cdd">toeX</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8cb7daab3b532ba4aa92e1607d982cdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83461f170c9187d31b64a1fadabcbc50" id="r_a83461f170c9187d31b64a1fadabcbc50"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a83461f170c9187d31b64a1fadabcbc50">toeY</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a83461f170c9187d31b64a1fadabcbc50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dcb43cd8658019ec3bef60ef2bad743" id="r_a0dcb43cd8658019ec3bef60ef2bad743"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKDebugFoot.html#a0dcb43cd8658019ec3bef60ef2bad743">toeZ</a> =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0dcb43cd8658019ec3bef60ef2bad743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Immutable model-space state for one foot in a tooling snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a55933fab5ff0bdffc051b82c6a3d0f53" name="a55933fab5ff0bdffc051b82c6a3d0f53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55933fab5ff0bdffc051b82c6a3d0f53">&#9670;&#160;</a></span>configured</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKDebugFoot::configured =false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ab01a8f97b2b07c37b528fa2737300763" name="ab01a8f97b2b07c37b528fa2737300763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab01a8f97b2b07c37b528fa2737300763">&#9670;&#160;</a></span>contact</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKDebugFoot::contact =false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a3001b4ad1b69501a52f3e5c7eafa063f" name="a3001b4ad1b69501a52f3e5c7eafa063f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3001b4ad1b69501a52f3e5c7eafa063f">&#9670;&#160;</a></span>locked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKDebugFoot::locked =false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ad2d1540b47114e1b2a568168f3e11fa0" name="ad2d1540b47114e1b2a568168f3e11fa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2d1540b47114e1b2a568168f3e11fa0">&#9670;&#160;</a></span>nx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::nx =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a6d861ca8c1be9af7cff12f7ec58f320d" name="a6d861ca8c1be9af7cff12f7ec58f320d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d861ca8c1be9af7cff12f7ec58f320d">&#9670;&#160;</a></span>ny</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::ny =1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a0c69a5c55abf1fc9f5070cb88af1369c" name="a0c69a5c55abf1fc9f5070cb88af1369c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c69a5c55abf1fc9f5070cb88af1369c">&#9670;&#160;</a></span>nz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::nz =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ae7a30867c1089176dc65f0cf271df668" name="ae7a30867c1089176dc65f0cf271df668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7a30867c1089176dc65f0cf271df668">&#9670;&#160;</a></span>toeConfigured</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKDebugFoot::toeConfigured =false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a8cb7daab3b532ba4aa92e1607d982cdd" name="a8cb7daab3b532ba4aa92e1607d982cdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb7daab3b532ba4aa92e1607d982cdd">&#9670;&#160;</a></span>toeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::toeX =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a83461f170c9187d31b64a1fadabcbc50" name="a83461f170c9187d31b64a1fadabcbc50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83461f170c9187d31b64a1fadabcbc50">&#9670;&#160;</a></span>toeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::toeY =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a0dcb43cd8658019ec3bef60ef2bad743" name="a0dcb43cd8658019ec3bef60ef2bad743"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dcb43cd8658019ec3bef60ef2bad743">&#9670;&#160;</a></span>toeZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::toeZ =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a4b1f64bb10984522acb658bcacc766a8" name="a4b1f64bb10984522acb658bcacc766a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b1f64bb10984522acb658bcacc766a8">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::x =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ab4fdc72ccdc28a7f7dcd617afa35a577" name="ab4fdc72ccdc28a7f7dcd617afa35a577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4fdc72ccdc28a7f7dcd617afa35a577">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::y =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a0c3281a51575815b9deb48883647debc" name="a0c3281a51575815b9deb48883647debc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c3281a51575815b9deb48883647debc">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKDebugFoot::z =0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">eve::animation::FootIKSolver::debugSnapshot()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

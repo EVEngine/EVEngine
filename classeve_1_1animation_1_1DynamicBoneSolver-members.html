@@ -1,0 +1,224 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::DynamicBoneSolver 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a3be4e4fb319c9467ef9b96778f240ae8">addBoneColliderCapsule</a>(int boneIndex, float startX, float startY, float startZ, float endX, float endY, float endZ, float radius)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#adb40cd29a3ba8841b4a157d42a77ac39">addBoneColliderSphere</a>(int boneIndex, float offsetX, float offsetY, float offsetZ, float radius)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0b55981d9f5758141b1beff444a995ff">addChain</a>(int rootBone, int endBone, float stiffness, float damping, float inertia, float gravityScale=1.f, float radius=0.f, int iterations=4)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#af65f51d62a095e06b30ea485c82b99ef">addChainByName</a>(const std::string &amp;rootBone, const std::string &amp;endBone, float stiffness, float damping, float inertia, float gravityScale=1.f, float radius=0.f, int iterations=4)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a6427b816131ef9f67e2d910712e83539">addColliderCapsule</a>(float startX, float startY, float startZ, float endX, float endY, float endZ, float radius)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a40f1b602e0a90e3826ac5b9bf7765840">addColliderSphere</a>(float centerX, float centerY, float centerZ, float radius)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a4c2d92960768025534b1f305a8672bd5">clearChainEnd</a>(int chainIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aef0d2c7ba99a5f151e98f3bb11ec34ab">clearChains</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a5a1e12e4ee07868b70cddab01f91795f">clearColliders</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a5fe5453c58062c80caf908329ead6eaa">debugSnapshot</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0d3b7885f9bbe7591936a5947f12cecb">DynamicBoneSolver</a>(AnimSkeleton *skeleton)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ad997c9627df4a537cee0755d1f2aae2a">DynamicBoneSolver</a>(const DynamicBoneSolver &amp;)=default</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#acc5e8c0b72ddc77c83c6d36b9362c4cb">getChainCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aebc17c0e804e6fd42766640fac64dd1d">getColliderCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a43b63114f15d1984a0f1a0216ae700be">getForceField</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a1f02250ebc5ebe758414ceb60fad6422">getGlobalGravityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a85347dd311ee070f158a125de4c94057">getGlobalGravityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ae1c277155317ae834e149a16320aa996">getGlobalGravityZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a6859ca5390c9f692d6454976b62caa13">getLastUpdateStats</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a62564598b56f287dfdb5bcc8e05d5ae2">getObjectMoveResponse</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a6ab5b2b61b2225a64a8f925e07d9da4f">getSkeleton</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a59dc017cdf4baa9afd6d79ee7e66b626">getTeleportThreshold</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0d0180e5a4f8049aaeabd7930a6083b1">getUpdateRate</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a24bdd86bb112af9427ef9aeb0bf206d6">getWeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ab248974c7d9d98dd73d5cab738d3e9f9">isChainEnabled</a>(int chainIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aa1ca279f3bdeada5f8d8046dbaa38459">isChainSleeping</a>(int chainIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0994815bce962020afef0c40f84d1463">operator=</a>(const DynamicBoneSolver &amp;)=default</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aaa5b32afc662075c47f71a841eea102a">removeCollider</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a8a37f879286185c7dc271c8e5c98c2c2">reset</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ac64eafb7d534701125dcc51e7f1be152">setChainEnabled</a>(int chainIndex, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ac581546dbc5b3357ab6f629c3ac6fbcc">setChainEndLength</a>(int chainIndex, float length)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a7b03e410e8de0d915f3173b02f21bf63">setChainEndOffset</a>(int chainIndex, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#afef41457f58e820d426e87bb00db5e35">setChainFreezeAxis</a>(int chainIndex, int axis)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0ac04a22d8f47c3ef4e081f5e2c967f4">setChainParticleParameters</a>(int chainIndex, int particleIndex, float stiffness, float damping, float inertia, float gravityScale, float radius)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#abd329be45f0f81d4bfd7c21dfc6125e0">setChainSelfCollision</a>(int chainIndex, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a8735294a8dadfa74b9357a0b2cf84bd7">setColliderEnabled</a>(int index, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0a4de5f9e3c821c951a01a6b88e50545">setColliderInside</a>(int index, bool inside)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a25ac7a5316aa9ce134e94f29b7333bf6">setColliderRadius</a>(int index, float radius)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a3103ffab64f79e7aa984e8cbb2c20614">setDistanceLimit</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ac123ea6205bcd4e3c6df96e25c20ddc7">setDistanceReference</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aa7c6e50648491ff02e37818bbe24f7e8">setExternalForce</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a39a102ff6d57b5e509f6e49419699ad8">setForceField</a>(const DynamicBoneForceField *forceField)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aa8b05e80b62b68ba9e1c8a24653ca4be">setGlobalGravity</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a088d1190925e58f9f3ed4ed12b1ac655">setObjectMoveResponse</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#af36fcbcd0c0ab455673b058fc5c95bd5">setSkeleton</a>(AnimSkeleton *skeleton)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a75857fc8dc638147f6640afc6ee7dda1">setTeleportThreshold</a>(float distance)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a78011e5ff89338c6ad96912b0958819b">setUpdateRate</a>(float updatesPerSecond)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a324a8c4d0e819191e8b8bdf0e779e27e">setWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a7ffbeb75fc3cd0c3730104852a3a282c">update</a>(AnimPose *pose, float dt)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a7da5805c0884259780da5b624cefcedd">~DynamicBoneSolver</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">eve::animation::DynamicBoneSolver</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

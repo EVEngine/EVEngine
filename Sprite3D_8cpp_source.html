@@ -1,0 +1,613 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/hd2d/Sprite3D.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_2d9ba4d8b4a2c2b7251e0777c40733f2.html">hd2d</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Sprite3D.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Sprite3D_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Hd2d_8h.html">hd2d/Hd2d.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Material_8h.html">graphics/Material.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="RenderSystem3D_8h.html">graphics/RenderSystem3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Texture_8h.html">graphics/Texture.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;glm/gtx/euler_angles.hpp&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1hd2d.html">eve::hd2d</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">// Unit quad in the XY plane, normal -Z, full 0..1 UV. Spans [-0.5,0.5] so the</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// Renderable3D scale maps it to the requested world-space size.</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">const</span> std::vector&lt;float&gt; kQuadPos = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                     0.5f,  0.5f,  0.f, -0.5f, 0.5f, 0.f};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">const</span> std::vector&lt;float&gt; kQuadNrm = {0.f, 0.f, -1.f, 0.f, 0.f, -1.f,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                     0.f, 0.f, -1.f, 0.f, 0.f, -1.f};</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">const</span> std::vector&lt;uint32_t&gt; kQuadIdx = {0, 2, 1, 0, 3, 2};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">const</span> std::vector&lt;float&gt; kQuadUv = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">// Sprite3D</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#afeac823910d3c55c932c44340c0b2a91">Sprite3D::Sprite3D</a>() = <span class="keywordflow">default</span>;</div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a87e9ea7a19db72fd1555bde41e64a9f9">   40</a></span><a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a87e9ea7a19db72fd1555bde41e64a9f9">Sprite3D::~Sprite3D</a>() {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (renderable_) renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">setVisible</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keywordtype">void</span> Sprite3D::buildQuad(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (!gfx) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D: null graphics&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    gfx_ = gfx;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    quad_ = gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">newMeshFromArrays</a>(kQuadPos.data(), kQuadNrm.data(), kQuadUv.data(),</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                   <span class="keywordtype">int</span>(kQuadPos.size() / 3), kQuadIdx.data(),</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                   <span class="keywordtype">int</span>(kQuadIdx.size()));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!quad_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D: quad mesh creation failed&quot;</span>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    renderable_ = graphics::Renderable3D::create();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (!renderable_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D: Renderable3D create failed&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#abc86f6b6f8376704aa3f9c8841db7102">setMesh</a>(quad_);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">auto</span> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a> = gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a836108a531ec76202df054c3c09b8cc3">newMaterial</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Material.html#a85640119f8756270c1dc4d56fd314870">setSurfaceMode</a>(<span class="stringliteral">&quot;masked&quot;</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setReceiveLight(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setAlbedoTexture(texture_);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setTint(tintR_, tintG_, tintB_, tintA_);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setAlphaCutoff(alphaCutoff_);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setDepthWrite(depthWrite_);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setDoubleSided(doubleSided_);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a90de07aa2615339ee659e419328d20a3">setMaterial</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// 2D sprites are self-lit (HD-2D characters), not shaded by 3D lights.</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a76e64ebd083e06c41eeef5222dd461ff">setReceiveLight</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">setScale</a>(width_, height_, 1.f);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">setPosition</a>(x_, y_, z_);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a598a470b765a59f8aab7849833f6257c">setTint</a>(tintR_, tintG_, tintB_, tintA_);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">setVisible</a>(visible_);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    updateFrameUv();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keywordtype">void</span> Sprite3D::syncMaterial() {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">if</span> (!renderable_ || !renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#ae3582a1ba998fd8a26f64a648cf34a82">getMaterial</a>()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">auto</span> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a> = renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#ae3582a1ba998fd8a26f64a648cf34a82">getMaterial</a>();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Material.html#a85640119f8756270c1dc4d56fd314870">setSurfaceMode</a>(<span class="stringliteral">&quot;masked&quot;</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setAlphaCutoff(alphaCutoff_);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setDepthWrite(depthWrite_);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setDoubleSided(doubleSided_);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setTint(tintR_, tintG_, tintB_, tintA_);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>-&gt;setAlbedoTexture(texture_);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="keywordtype">void</span> Sprite3D::updateFrameUv() {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (!gfx_ || !quad_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::vector&lt;float&gt; <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>(8);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 4; ++i) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="comment">// The visible front is -Z, so local +X is the viewer&#39;s left.</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = (i == 0 || i == 3) ? u1_ : u0_;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="comment">// Image row zero is at the top; the first two vertices are the feet.</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = (i &lt; 2) ? v1_ : v0_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">if</span> (flipX_) <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = (u0_ + u1_) - <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">if</span> (flipY_) <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = (v0_ + v1_) - <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>[size_t(i) * 2u] = <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>[size_t(i) * 2u + 1u] = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a> = kQuadPos;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 4; ++i) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="comment">// Local +X projects left on the visible -Z face.</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[size_t(i) * 3u] += pivotX_ - 0.5f;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[size_t(i) * 3u + 1u] += pivotY_ - 0.5f;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">updateMeshVertices</a>(quad_, <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.data(), kQuadNrm.data(), <a class="code hl_variable" href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a>.data(), <span class="keywordtype">int</span>(kQuadPos.size() / 3), <span class="keyword">nullptr</span>, 0);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ad738597b49e536d6dfb43503dd33105c">  106</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ad738597b49e536d6dfb43503dd33105c">Sprite3D::setTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    texture_ = texture;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (renderable_) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a6a440beae3071df7416b975048137657">setTexture</a>(texture);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        syncMaterial();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aac4aa09d3672da2fc7fa7f9c728197cf">  113</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *<a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aac4aa09d3672da2fc7fa7f9c728197cf">Sprite3D::getTexture</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> texture_; }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="}">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aca9625e922da658d2586e95df06fed4f">  115</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aca9625e922da658d2586e95df06fed4f">Sprite3D::setFrame</a>(<span class="keywordtype">float</span> u0, <span class="keywordtype">float</span> v0, <span class="keywordtype">float</span> u1, <span class="keywordtype">float</span> v1) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    u0_ = u0;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    v0_ = v0;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    u1_ = u1;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    v1_ = v1;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    updateFrameUv();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00122" data-start="{" data-end="}">
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a99ee1586fa9ff27973add60a91dd0aef">  122</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a99ee1586fa9ff27973add60a91dd0aef">Sprite3D::getFrame</a>(<span class="keywordtype">float</span> &amp;u0, <span class="keywordtype">float</span> &amp;v0, <span class="keywordtype">float</span> &amp;u1, <span class="keywordtype">float</span> &amp;v1)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    u0 = u0_;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    v0 = v0_;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    u1 = u1_;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    v1 = v1_;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="}">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a306e80b77e1fc3d83892ad955c13b842">  128</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a306e80b77e1fc3d83892ad955c13b842">Sprite3D::setFlipX</a>(<span class="keywordtype">bool</span> flip) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    flipX_ = flip;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    updateFrameUv();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ad5f1a9ea8b6132e71463718dab6a1487">  132</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ad5f1a9ea8b6132e71463718dab6a1487">Sprite3D::setFlipY</a>(<span class="keywordtype">bool</span> flip) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    flipY_ = flip;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    updateFrameUv();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
+</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ad1be52e8738bfff033f33a5623b6c39a">  137</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ad1be52e8738bfff033f33a5623b6c39a">Sprite3D::setFrameGrid</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a> &lt;= 0 || rows &lt;= 0 || columns &gt; std::numeric_limits&lt;int&gt;::max() / <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>)</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D.setFrameGrid: columns and rows must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    gridCols_ = <a class="code hl_variable" href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    gridRows_ = <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa049cb6b4b9db03729489f8be6deb4e0">stop</a>();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    frameIndex_ = std::min(frameIndex_, gridCols_ * gridRows_ - 1);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">setFrameIndex</a>(frameIndex_);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a0fcf4d4ee3054ed1b118a7d9580bd880">  146</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a0fcf4d4ee3054ed1b118a7d9580bd880">Sprite3D::getFrameGridColumns</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> gridCols_; }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#adec0c82ec1ab6f97bd3a18e55d047e79">  147</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#adec0c82ec1ab6f97bd3a18e55d047e79">Sprite3D::getFrameGridRows</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> gridRows_; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a9999342ce4417fa6822142b609574fcd">  148</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a9999342ce4417fa6822142b609574fcd">Sprite3D::getFrameCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> gridCols_ * gridRows_; }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">  150</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">Sprite3D::setFrameIndex</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    frameIndex_ = std::max(0, std::min(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, gridCols_ * gridRows_ - 1));</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = frameIndex_ % gridCols_;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = frameIndex_ / gridCols_;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> u0 = float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) / float(gridCols_);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> u1 = float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> + 1) / float(gridCols_);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> v0 = float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) / float(gridRows_);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> v1 = float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> + 1) / float(gridRows_);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aca9625e922da658d2586e95df06fed4f">setFrame</a>(u0, v0, u1, v1);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a3c1021159bcb681a992c821ddc4e5d01">  160</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a3c1021159bcb681a992c821ddc4e5d01">Sprite3D::getFrameIndex</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> frameIndex_; }</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="foldopen" id="foldopen00162" data-start="{" data-end="}">
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a6884516f08b47d403f246af6bb9594c7">  162</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a6884516f08b47d403f246af6bb9594c7">Sprite3D::play</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, <span class="keywordtype">float</span> fps) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> &lt; 0 || end &lt; start || end &gt;= gridCols_ * gridRows_)</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D.play: frame range [%d,%d] out of grid&quot;</span>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">if</span> (!std::isfinite(fps) || fps &lt;= 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D.play: fps must be finite and &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    anim_ = {<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, fps, 0.f, <span class="keyword">true</span>};</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">setFrameIndex</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>}</div>
+</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aa049cb6b4b9db03729489f8be6deb4e0">  169</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa049cb6b4b9db03729489f8be6deb4e0">Sprite3D::stop</a>() { anim_.playing = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a20138e8eaf8666cd0fb17b7425893c3a">  170</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a20138e8eaf8666cd0fb17b7425893c3a">Sprite3D::isPlaying</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> anim_.playing; }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a56804972a75b416fad8501ae660cbe04">  172</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a56804972a75b416fad8501ae660cbe04">Sprite3D::update</a>(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">if</span> (anim_.playing &amp;&amp; std::isfinite(dt) &amp;&amp; dt &gt; 0.f) {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> span = anim_.end - anim_.start + 1;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="comment">// Reduce in floating point before converting to int. A long suspension</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="comment">// or a large finite dt must never overflow the integral frame counter.</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> frames = double(anim_.clock) + double(dt) * double(anim_.fps);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> whole  = std::floor(frames);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        anim_.clock         = float(frames - whole);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">if</span> (whole &gt;= 1.0) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>  = int(std::fmod(whole, <span class="keywordtype">double</span>(span)));</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> = std::clamp(frameIndex_ - anim_.start, 0, span - 1);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">setFrameIndex</a>(anim_.start + <span class="keywordtype">int</span>((int64_t(<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>) + <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>) % span));</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        }</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    orientToCamera();</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>}</div>
+</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="foldopen" id="foldopen00189" data-start="{" data-end="}">
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a798db7dfcfd960f469d2b9d6ec6c7a31">  189</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a798db7dfcfd960f469d2b9d6ec6c7a31">Sprite3D::setCamera</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *camera) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    camera_ = <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a5530019dde76167267ba1979c964b4b0">camera</a>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    orientToCamera();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>}</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="keywordtype">void</span> Sprite3D::orientToCamera() {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">if</span> (!renderable_ || !camera_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cam = *camera_-&gt;data();</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>(cam.eyeX, cam.eyeY, cam.eyeZ);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    glm::vec3       forward = glm::vec3(cam.targetX, cam.targetY, cam.targetZ) - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     length2 = glm::dot(forward, forward);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">if</span> (!std::isfinite(length2) || length2 &lt; 1e-12f) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    forward /= std::sqrt(length2);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    glm::mat4 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>(1.f);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">if</span> (yawBillboard_) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// Cylindrical (Y-up) billboard: face the camera on XZ only.</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        glm::vec3 flat(-forward.x, 0.f, -forward.z);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> flatLen2 = glm::dot(flat, flat);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">if</span> (!std::isfinite(flatLen2) || flatLen2 &lt; 1e-12f) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        flat /= std::sqrt(flatLen2);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a> = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), flat));</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>[0] = glm::vec4(-<a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>, 0.f);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>[1] = glm::vec4(0.f, 1.f, 0.f, 0.f);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>[2] = glm::vec4(flat, 0.f);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        glm::vec3   <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>        = glm::cross(forward, glm::vec3(cam.upX, cam.upY, cam.upZ));</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> rightLength2 = glm::dot(<a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>, <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">if</span> (!std::isfinite(rightLength2) || rightLength2 &lt; 1e-12f) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a> /= std::sqrt(rightLength2);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="comment">// Use the camera basis, not eye-to-sprite: all sprites remain parallel to</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="comment">// the image plane, including off-center sprites and rolled cameras.</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>[0] = glm::vec4(-<a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>, 0.f);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>[1] = glm::vec4(glm::cross(<a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>, forward), 0.f);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>[2] = glm::vec4(forward, 0.f);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    }</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordtype">float</span> yaw, pitch, roll;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    glm::extractEulerAngleYXZ(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>, yaw, pitch, roll);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a2adef4427f9f2570307f69b707e599af">setRotation</a>(yaw, pitch, roll);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>}</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="foldopen" id="foldopen00230" data-start="{" data-end="}">
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ad621747d66bc57fe544d06bcbff38a96">  230</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ad621747d66bc57fe544d06bcbff38a96">Sprite3D::setPivot</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>((std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) &amp;&amp; std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)), <span class="stringliteral">&quot;Sprite3D pivot must be finite&quot;</span>);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    pivotX_ = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    pivotY_ = <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    updateFrameUv();</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>}</div>
+</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="foldopen" id="foldopen00237" data-start="{" data-end="}">
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a31aa91de805f0f25668776f8718ab640">  237</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a31aa91de805f0f25668776f8718ab640">Sprite3D::setPosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) {</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    x_ = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    y_ = <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    z_ = <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordflow">if</span> (renderable_) {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">setPosition</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        orientToCamera();</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>}</div>
+</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aaa34d711dfbd13edb5bc467c96760ff0">  246</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aaa34d711dfbd13edb5bc467c96760ff0">Sprite3D::getPositionX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> x_; }</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a296dbf2029714c8aaa63e49b5a604a2a">  247</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a296dbf2029714c8aaa63e49b5a604a2a">Sprite3D::getPositionY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> y_; }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a35d30e2280bfeb75d21751027d5a5bcf">  248</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a35d30e2280bfeb75d21751027d5a5bcf">Sprite3D::getPositionZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> z_; }</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="foldopen" id="foldopen00250" data-start="{" data-end="}">
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a8f2d693b210093c6c98a4c08bb6f1bfe">  250</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a8f2d693b210093c6c98a4c08bb6f1bfe">Sprite3D::setSize</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> &lt;= 0.f || <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> &lt;= 0.f)</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D.setSize: width and height must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    width_ = <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    height_ = <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordflow">if</span> (renderable_) renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">setScale</a>(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, 1.f);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>}</div>
+</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ab607e817ad394dd728f728f4ebb0fbe0">  257</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ab607e817ad394dd728f728f4ebb0fbe0">Sprite3D::getWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a28379860f4a541fb9888fffe2a7f9b51">  258</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a28379860f4a541fb9888fffe2a7f9b51">Sprite3D::getHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="foldopen" id="foldopen00260" data-start="{" data-end="}">
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aaafbb5c5adb98aa7235637e5fcbab5f4">  260</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aaafbb5c5adb98aa7235637e5fcbab5f4">Sprite3D::setTint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) {</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    tintR_ = std::max(0.f, std::min(1.f, <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>));</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    tintG_ = std::max(0.f, std::min(1.f, <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>));</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    tintB_ = std::max(0.f, std::min(1.f, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>));</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    tintA_ = std::max(0.f, std::min(1.f, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>));</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordflow">if</span> (renderable_) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a598a470b765a59f8aab7849833f6257c">setTint</a>(tintR_, tintG_, tintB_, tintA_);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        syncMaterial();</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00270" data-start="{" data-end="}">
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#aa1876e21d4c5a588403799fc2358a5fd">  270</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#aa1876e21d4c5a588403799fc2358a5fd">Sprite3D::setVisible</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>) {</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    visible_ = <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keywordflow">if</span> (renderable_) renderable_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">setVisible</a>(<a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>}</div>
+</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ae38c3d9218d8c15d9550702ccf54ff15">  274</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ae38c3d9218d8c15d9550702ccf54ff15">Sprite3D::getVisible</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> visible_; }</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="foldopen" id="foldopen00276" data-start="{" data-end="}">
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#afbe86e15e2a7a7779059e7239e4fc8c2">  276</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#afbe86e15e2a7a7779059e7239e4fc8c2">Sprite3D::setAlphaCutoff</a>(<span class="keywordtype">float</span> cutoff) {</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordflow">if</span> (!std::isfinite(cutoff)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D.setAlphaCutoff: cutoff must be finite&quot;</span>);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    alphaCutoff_ = std::max(0.f, std::min(1.f, cutoff));</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    syncMaterial();</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>}</div>
+</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ade79bcae4f245eaf30200cf36d6cb88e">  281</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ade79bcae4f245eaf30200cf36d6cb88e">Sprite3D::getAlphaCutoff</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> alphaCutoff_; }</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
+<div class="foldopen" id="foldopen00283" data-start="{" data-end="}">
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#abf96ea026c61d59fa9447bd110a05a0e">  283</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#abf96ea026c61d59fa9447bd110a05a0e">Sprite3D::setDepthWrite</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    depthWrite_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    syncMaterial();</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>}</div>
+</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a192522f0396ac091b8f4700bb5b1e299">  287</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a192522f0396ac091b8f4700bb5b1e299">Sprite3D::getDepthWrite</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> depthWrite_; }</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="foldopen" id="foldopen00289" data-start="{" data-end="}">
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ae7c92eafa537f7e3f93243bc8649729e">  289</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ae7c92eafa537f7e3f93243bc8649729e">Sprite3D::setDoubleSided</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    doubleSided_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    syncMaterial();</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>}</div>
+</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a17b0bda458328b855cf7dd8be47c841f">  293</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a17b0bda458328b855cf7dd8be47c841f">Sprite3D::getDoubleSided</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> doubleSided_; }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
+<div class="foldopen" id="foldopen00295" data-start="{" data-end="}">
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#ac91829695623366d8f902993ef7433ee">  295</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#ac91829695623366d8f902993ef7433ee">Sprite3D::setBillboardMode</a>(<span class="keyword">const</span> std::string &amp;mode) {</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;yaw&quot;</span> || mode == <span class="stringliteral">&quot;cylindrical&quot;</span> || mode == <span class="stringliteral">&quot;y&quot;</span>) {</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        yawBillboard_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;screen&quot;</span> || mode == <span class="stringliteral">&quot;camera&quot;</span> || mode.empty()) {</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        yawBillboard_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Sprite3D.setBillboardMode: expected &#39;screen&#39; or &#39;yaw&#39;&quot;</span>);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    }</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    orientToCamera();</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>}</div>
+</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno"><a class="line" href="classeve_1_1hd2d_1_1Sprite3D.html#a5eb42ae1a471eb70cbd6ec70db200943">  305</a></span>std::string <a class="code hl_function" href="classeve_1_1hd2d_1_1Sprite3D.html#a5eb42ae1a471eb70cbd6ec70db200943">Sprite3D::getBillboardMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> yawBillboard_ ? <span class="stringliteral">&quot;yaw&quot;</span> : <span class="stringliteral">&quot;screen&quot;</span>; }</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>}  <span class="comment">// namespace eve::hd2d</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_aea3f8f4629b6e05814f9228e022d10fd"><div class="ttname"><a href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a></div><div class="ttdeci">#define EV_PARAM_CHECK(cond,...)</div><div class="ttdoc">Validate a function parameter / public API precondition.</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00030">Assert.h:30</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aCastleMesh_8cpp_html_a9272fcc3fe7f225339248d1fae889f26"><div class="ttname"><a href="CastleMesh_8cpp.html#a9272fcc3fe7f225339248d1fae889f26">uv</a></div><div class="ttdeci">float uv</div><div class="ttdef"><b>Definition</b> <a href="CastleMesh_8cpp_source.html#l00016">CastleMesh.cpp:16</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGraphicsPbr_8cpp_html_a5530019dde76167267ba1979c964b4b0"><div class="ttname"><a href="GraphicsPbr_8cpp.html#a5530019dde76167267ba1979c964b4b0">camera</a></div><div class="ttdeci">glm::vec4 camera</div><div class="ttdef"><b>Definition</b> <a href="GraphicsPbr_8cpp_source.html#l00018">GraphicsPbr.cpp:18</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aHd2d_8h_html"><div class="ttname"><a href="Hd2d_8h.html">Hd2d.h</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_af3fd42b7427cb742f96e7ec3244fb7cf"><div class="ttname"><a href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00016">HeightmapMesh.cpp:16</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a5faf4c8191089dab5dd408537f699845"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a></div><div class="ttdeci">std::array&lt; float, 4 &gt; rotation</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00017">LegacyAnimationImporter.cpp:17</a></div></div>
+<div class="ttc" id="aMaterial_8h_html"><div class="ttname"><a href="Material_8h.html">Material.h</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aOnnxLstm_8cpp_html_ad161320eba27a8b966baac47bee35c46"><div class="ttname"><a href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a></div><div class="ttdeci">size_t rows</div><div class="ttdef"><b>Definition</b> <a href="OnnxLstm_8cpp_source.html#l00029">OnnxLstm.cpp:29</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ab4ae7205573977222eadd0795db193e2"><div class="ttname"><a href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a></div><div class="ttdeci">int steps</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00112">PrototypeKit.cpp:112</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a420d8d8ece65c00c51be184d896cdca9"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a></div><div class="ttdeci">glm::vec3 eye</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00499">RenderSystem3D.cpp:499</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00550">RenderSystem3D.cpp:550</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8h_html"><div class="ttname"><a href="RenderSystem3D_8h.html">RenderSystem3D.h</a></div></div>
+<div class="ttc" id="aTexture_8h_html"><div class="ttname"><a href="Texture_8h.html">Texture.h</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a341d2f00089fffc71eb6dbfd29f56c89"><div class="ttname"><a href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a></div><div class="ttdeci">int columns</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00132">TileConfig.cpp:132</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00920">TileConfig.cpp:920</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a6202f38a97a1c9eb0142baeb338cf1f1"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a></div><div class="ttdeci">float right</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00016">WorldAnchorProjection.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html">eve::graphics::Camera3D</a></div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00023">RenderSystem3D.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00107">Graphics.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a806f6e983bb35678a2130ac2a5c68edd"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics::updateMeshVertices</a></div><div class="ttdeci">virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div><div class="ttdoc">In-place update of a mesh's vertex/index data (CPU -&gt; host-visible VBO). Mirrors bakeMeshMorph: the u...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a836108a531ec76202df054c3c09b8cc3"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a836108a531ec76202df054c3c09b8cc3">eve::graphics::Graphics::newMaterial</a></div><div class="ttdeci">Material * newMaterial()</div><div class="ttdoc">Create a Material asset (shading model + textures + PBR knobs). Caller owns Material*; not tracked by...</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00243">Graphics.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ad2394ae661385736c667a98446a5b9b4"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays</a></div><div class="ttdeci">virtual Mesh * newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div><div class="ttdoc">Upload a triangle mesh from packed CPU arrays. Owned by Graphics. posXYZ required (vertexCount*3)....</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Material_html_a85640119f8756270c1dc4d56fd314870"><div class="ttname"><a href="classeve_1_1graphics_1_1Material.html#a85640119f8756270c1dc4d56fd314870">eve::graphics::Material::setSurfaceMode</a></div><div class="ttdeci">void setSurfaceMode(const std::string &amp;mode)</div><div class="ttdoc">Set &quot;opaque&quot;, &quot;masked&quot;, or &quot;transparent&quot; surface classification.</div><div class="ttdef"><b>Definition</b> <a href="Material_8cpp_source.html#l00101">Material.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a2adef4427f9f2570307f69b707e599af"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a2adef4427f9f2570307f69b707e599af">eve::graphics::Renderable3D::setRotation</a></div><div class="ttdeci">void setRotation(float yaw, float pitch, float roll)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00016">Renderable3D.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a598a470b765a59f8aab7849833f6257c"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a598a470b765a59f8aab7849833f6257c">eve::graphics::Renderable3D::setTint</a></div><div class="ttdeci">void setTint(float r, float g, float b, float a=1.f)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00125">Renderable3D.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a6a440beae3071df7416b975048137657"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a6a440beae3071df7416b975048137657">eve::graphics::Renderable3D::setTexture</a></div><div class="ttdeci">void setTexture(Texture *texture)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00038">Renderable3D.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a76e64ebd083e06c41eeef5222dd461ff"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a76e64ebd083e06c41eeef5222dd461ff">eve::graphics::Renderable3D::setReceiveLight</a></div><div class="ttdeci">void setReceiveLight(bool receive)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00174">Renderable3D.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a90de07aa2615339ee659e419328d20a3"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a90de07aa2615339ee659e419328d20a3">eve::graphics::Renderable3D::setMaterial</a></div><div class="ttdeci">void setMaterial(Material *material)</div><div class="ttdoc">Attach a Material that packages shading method + surface params.</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00046">Renderable3D.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_aadbf8d0baf588bcbbe039409b04e71c0"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">eve::graphics::Renderable3D::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00009">Renderable3D.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_abc86f6b6f8376704aa3f9c8841db7102"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#abc86f6b6f8376704aa3f9c8841db7102">eve::graphics::Renderable3D::setMesh</a></div><div class="ttdeci">void setMesh(Mesh *mesh)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00034">Renderable3D.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_ae3582a1ba998fd8a26f64a648cf34a82"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#ae3582a1ba998fd8a26f64a648cf34a82">eve::graphics::Renderable3D::getMaterial</a></div><div class="ttdeci">Material * getMaterial()</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00048">Renderable3D.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_aed2524d98e20423f87442da12abf8fef"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">eve::graphics::Renderable3D::setScale</a></div><div class="ttdeci">void setScale(float sx, float sy, float sz)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00027">Renderable3D.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_af03a073a6efe8f600cc5f5990cda7426"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">eve::graphics::Renderable3D::setVisible</a></div><div class="ttdeci">void setVisible(bool visible)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00166">Renderable3D.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a0fcf4d4ee3054ed1b118a7d9580bd880"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a0fcf4d4ee3054ed1b118a7d9580bd880">eve::hd2d::Sprite3D::getFrameGridColumns</a></div><div class="ttdeci">int getFrameGridColumns() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00146">Sprite3D.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a17b0bda458328b855cf7dd8be47c841f"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a17b0bda458328b855cf7dd8be47c841f">eve::hd2d::Sprite3D::getDoubleSided</a></div><div class="ttdeci">bool getDoubleSided() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00293">Sprite3D.cpp:293</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a192522f0396ac091b8f4700bb5b1e299"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a192522f0396ac091b8f4700bb5b1e299">eve::hd2d::Sprite3D::getDepthWrite</a></div><div class="ttdeci">bool getDepthWrite() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00287">Sprite3D.cpp:287</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a20138e8eaf8666cd0fb17b7425893c3a"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a20138e8eaf8666cd0fb17b7425893c3a">eve::hd2d::Sprite3D::isPlaying</a></div><div class="ttdeci">bool isPlaying() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00170">Sprite3D.cpp:170</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a28379860f4a541fb9888fffe2a7f9b51"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a28379860f4a541fb9888fffe2a7f9b51">eve::hd2d::Sprite3D::getHeight</a></div><div class="ttdeci">float getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00258">Sprite3D.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a296dbf2029714c8aaa63e49b5a604a2a"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a296dbf2029714c8aaa63e49b5a604a2a">eve::hd2d::Sprite3D::getPositionY</a></div><div class="ttdeci">float getPositionY() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00247">Sprite3D.cpp:247</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a306e80b77e1fc3d83892ad955c13b842"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a306e80b77e1fc3d83892ad955c13b842">eve::hd2d::Sprite3D::setFlipX</a></div><div class="ttdeci">void setFlipX(bool flip)</div><div class="ttdoc">Flip the sampled frame horizontally / vertically.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00128">Sprite3D.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a31aa91de805f0f25668776f8718ab640"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a31aa91de805f0f25668776f8718ab640">eve::hd2d::Sprite3D::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y, float z)</div><div class="ttdoc">World position of the pivot (center by default).</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00237">Sprite3D.cpp:237</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a35d30e2280bfeb75d21751027d5a5bcf"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a35d30e2280bfeb75d21751027d5a5bcf">eve::hd2d::Sprite3D::getPositionZ</a></div><div class="ttdeci">float getPositionZ() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00248">Sprite3D.cpp:248</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a3c1021159bcb681a992c821ddc4e5d01"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a3c1021159bcb681a992c821ddc4e5d01">eve::hd2d::Sprite3D::getFrameIndex</a></div><div class="ttdeci">int getFrameIndex() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00160">Sprite3D.cpp:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a56804972a75b416fad8501ae660cbe04"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a56804972a75b416fad8501ae660cbe04">eve::hd2d::Sprite3D::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Advance the animation clock and re-orient the billboard toward the attached camera....</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00172">Sprite3D.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a5eb42ae1a471eb70cbd6ec70db200943"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a5eb42ae1a471eb70cbd6ec70db200943">eve::hd2d::Sprite3D::getBillboardMode</a></div><div class="ttdeci">std::string getBillboardMode() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00305">Sprite3D.cpp:305</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a6884516f08b47d403f246af6bb9594c7"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a6884516f08b47d403f246af6bb9594c7">eve::hd2d::Sprite3D::play</a></div><div class="ttdeci">void play(int start, int end, float fps)</div><div class="ttdoc">Run a frame animation.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00162">Sprite3D.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a798db7dfcfd960f469d2b9d6ec6c7a31"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a798db7dfcfd960f469d2b9d6ec6c7a31">eve::hd2d::Sprite3D::setCamera</a></div><div class="ttdeci">void setCamera(graphics::Camera3D *camera)</div><div class="ttdoc">Borrow the camera used for screen alignment, including pitch/roll.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00189">Sprite3D.cpp:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a87e9ea7a19db72fd1555bde41e64a9f9"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a87e9ea7a19db72fd1555bde41e64a9f9">eve::hd2d::Sprite3D::~Sprite3D</a></div><div class="ttdeci">~Sprite3D()</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00040">Sprite3D.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a8f2d693b210093c6c98a4c08bb6f1bfe"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a8f2d693b210093c6c98a4c08bb6f1bfe">eve::hd2d::Sprite3D::setSize</a></div><div class="ttdeci">void setSize(float width, float height)</div><div class="ttdoc">Billboard size in world units.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00250">Sprite3D.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a9999342ce4417fa6822142b609574fcd"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a9999342ce4417fa6822142b609574fcd">eve::hd2d::Sprite3D::getFrameCount</a></div><div class="ttdeci">int getFrameCount() const</div><div class="ttdoc">Total grid frames.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00148">Sprite3D.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_a99ee1586fa9ff27973add60a91dd0aef"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#a99ee1586fa9ff27973add60a91dd0aef">eve::hd2d::Sprite3D::getFrame</a></div><div class="ttdeci">void getFrame(float &amp;u0, float &amp;v0, float &amp;u1, float &amp;v1) const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00122">Sprite3D.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aa049cb6b4b9db03729489f8be6deb4e0"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aa049cb6b4b9db03729489f8be6deb4e0">eve::hd2d::Sprite3D::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00169">Sprite3D.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aa1876e21d4c5a588403799fc2358a5fd"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aa1876e21d4c5a588403799fc2358a5fd">eve::hd2d::Sprite3D::setVisible</a></div><div class="ttdeci">void setVisible(bool visible)</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00270">Sprite3D.cpp:270</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aa46c889b28eb7ace01386b9f2a7c4c00"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aa46c889b28eb7ace01386b9f2a7c4c00">eve::hd2d::Sprite3D::setFrameIndex</a></div><div class="ttdeci">void setFrameIndex(int index)</div><div class="ttdoc">Jump to a grid frame index, clamped within the grid.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00150">Sprite3D.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aaa34d711dfbd13edb5bc467c96760ff0"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aaa34d711dfbd13edb5bc467c96760ff0">eve::hd2d::Sprite3D::getPositionX</a></div><div class="ttdeci">float getPositionX() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00246">Sprite3D.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aaafbb5c5adb98aa7235637e5fcbab5f4"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aaafbb5c5adb98aa7235637e5fcbab5f4">eve::hd2d::Sprite3D::setTint</a></div><div class="ttdeci">void setTint(float r, float g, float b, float a=1.f)</div><div class="ttdoc">Color multiplier (alpha participates in cutout discards).</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00260">Sprite3D.cpp:260</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aac4aa09d3672da2fc7fa7f9c728197cf"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aac4aa09d3672da2fc7fa7f9c728197cf">eve::hd2d::Sprite3D::getTexture</a></div><div class="ttdeci">graphics::Texture * getTexture() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00113">Sprite3D.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ab607e817ad394dd728f728f4ebb0fbe0"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ab607e817ad394dd728f728f4ebb0fbe0">eve::hd2d::Sprite3D::getWidth</a></div><div class="ttdeci">float getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00257">Sprite3D.cpp:257</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_abf96ea026c61d59fa9447bd110a05a0e"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#abf96ea026c61d59fa9447bd110a05a0e">eve::hd2d::Sprite3D::setDepthWrite</a></div><div class="ttdeci">void setDepthWrite(bool enabled)</div><div class="ttdoc">Whether opaque/cutout texels write depth (required for DOF focus). Default true — matches HD2DURP Dop...</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00283">Sprite3D.cpp:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ac91829695623366d8f902993ef7433ee"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ac91829695623366d8f902993ef7433ee">eve::hd2d::Sprite3D::setBillboardMode</a></div><div class="ttdeci">void setBillboardMode(const std::string &amp;mode)</div><div class="ttdoc">Billboard orientation mode.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00295">Sprite3D.cpp:295</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_aca9625e922da658d2586e95df06fed4f"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#aca9625e922da658d2586e95df06fed4f">eve::hd2d::Sprite3D::setFrame</a></div><div class="ttdeci">void setFrame(float u0, float v0, float u1, float v1)</div><div class="ttdoc">Direct atlas sub-rect frame selection (0..1 UV).</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00115">Sprite3D.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ad1be52e8738bfff033f33a5623b6c39a"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ad1be52e8738bfff033f33a5623b6c39a">eve::hd2d::Sprite3D::setFrameGrid</a></div><div class="ttdeci">void setFrameGrid(int columns, int rows)</div><div class="ttdoc">Configure a sprite-sheet grid (frame 0 = top-left); stops the previous clip.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00137">Sprite3D.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ad5f1a9ea8b6132e71463718dab6a1487"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ad5f1a9ea8b6132e71463718dab6a1487">eve::hd2d::Sprite3D::setFlipY</a></div><div class="ttdeci">void setFlipY(bool flip)</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00132">Sprite3D.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ad621747d66bc57fe544d06bcbff38a96"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ad621747d66bc57fe544d06bcbff38a96">eve::hd2d::Sprite3D::setPivot</a></div><div class="ttdeci">void setPivot(float x, float y)</div><div class="ttdoc">Set the image-space pivot; (0,0) is visible top-left, (1,1) bottom-right.</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00230">Sprite3D.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ad738597b49e536d6dfb43503dd33105c"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ad738597b49e536d6dfb43503dd33105c">eve::hd2d::Sprite3D::setTexture</a></div><div class="ttdeci">void setTexture(graphics::Texture *texture)</div><div class="ttdoc">Albedo texture (a sprite frame / sheet / animation image).</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00106">Sprite3D.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ade79bcae4f245eaf30200cf36d6cb88e"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ade79bcae4f245eaf30200cf36d6cb88e">eve::hd2d::Sprite3D::getAlphaCutoff</a></div><div class="ttdeci">float getAlphaCutoff() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00281">Sprite3D.cpp:281</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_adec0c82ec1ab6f97bd3a18e55d047e79"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#adec0c82ec1ab6f97bd3a18e55d047e79">eve::hd2d::Sprite3D::getFrameGridRows</a></div><div class="ttdeci">int getFrameGridRows() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00147">Sprite3D.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ae38c3d9218d8c15d9550702ccf54ff15"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ae38c3d9218d8c15d9550702ccf54ff15">eve::hd2d::Sprite3D::getVisible</a></div><div class="ttdeci">bool getVisible() const</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00274">Sprite3D.cpp:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_ae7c92eafa537f7e3f93243bc8649729e"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#ae7c92eafa537f7e3f93243bc8649729e">eve::hd2d::Sprite3D::setDoubleSided</a></div><div class="ttdeci">void setDoubleSided(bool enabled)</div><div class="ttdoc">Render both faces of the billboard quad (default true).</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00289">Sprite3D.cpp:289</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_afbe86e15e2a7a7779059e7239e4fc8c2"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#afbe86e15e2a7a7779059e7239e4fc8c2">eve::hd2d::Sprite3D::setAlphaCutoff</a></div><div class="ttdeci">void setAlphaCutoff(float cutoff)</div><div class="ttdoc">Alpha cutout threshold for the masked material (DopFix-style depth write).</div><div class="ttdef"><b>Definition</b> <a href="Sprite3D_8cpp_source.html#l00276">Sprite3D.cpp:276</a></div></div>
+<div class="ttc" id="aclasseve_1_1hd2d_1_1Sprite3D_html_afeac823910d3c55c932c44340c0b2a91"><div class="ttname"><a href="classeve_1_1hd2d_1_1Sprite3D.html#afeac823910d3c55c932c44340c0b2a91">eve::hd2d::Sprite3D::Sprite3D</a></div><div class="ttdeci">Sprite3D()</div></div>
+<div class="ttc" id="anamespaceeve_1_1hd2d_html"><div class="ttname"><a href="namespaceeve_1_1hd2d.html">eve::hd2d</a></div><div class="ttdef"><b>Definition</b> <a href="Hd2dTarget_8h_source.html#l00013">Hd2dTarget.h:13</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

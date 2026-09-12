@@ -1,0 +1,892 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tensor/OnnxGpgpu.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_782bbf0976eacdfd5fcf4a27f0d60777.html">tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">OnnxGpgpu.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &quot;<a class="el" href="Subscription_8h_source.html">common/Subscription.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ComputeShader_8h_source.html">gpgpu/ComputeShader.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Gpgpu_8h_source.html">gpgpu/Gpgpu.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="GpuBuffer_8h_source.html">gpgpu/GpuBuffer.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Sequence_8h_source.html">gpgpu/Sequence.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Graphics_8h_source.html">graphics/Graphics.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="OnnxCompiler_8h_source.html">tensor/OnnxCompiler.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="OnnxCompute_8h_source.html">tensor/OnnxCompute.h</a>&quot;</code><br />
+</div>
+<p><a href="OnnxGpgpu_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor" id="r_namespaceeve_1_1tensor"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html">eve::tensor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:af451711e072d62c59e68c7aa177260dc" id="r_af451711e072d62c59e68c7aa177260dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#af451711e072d62c59e68c7aa177260dc">eve::tensor::createOnnxGpuCompute</a> (uint32_t <a class="el" href="OnnxGpgpu_8cpp.html#aeb3af44ba4e89ea4a26b4b994c7cb43b">compilerWorkers</a>=4)</td></tr>
+<tr class="memdesc:af451711e072d62c59e68c7aa177260dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a reusable GPU session for the active engine Gpgpu Vulkan device, or an error.  <br /></td></tr>
+<tr class="separator:af451711e072d62c59e68c7aa177260dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a03c996f9fcf0e10baeb3e700be0c409a" name="a03c996f9fcf0e10baeb3e700be0c409a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c996f9fcf0e10baeb3e700be0c409a">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool active = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d095b18a511fad82d8b1b6ce426a72f" name="a7d095b18a511fad82d8b1b6ce426a72f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d095b18a511fad82d8b1b6ce426a72f">&#9670;&#160;</a></span>allocatedBytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t allocatedBytes = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a352317df577ad2f8f1ee1faccde06594" name="a352317df577ad2f8f1ee1faccde06594"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a352317df577ad2f8f1ee1faccde06594">&#9670;&#160;</a></span>allocationMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double allocationMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b96f0049cce744b59366d192b92f638" name="a3b96f0049cce744b59366d192b92f638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b96f0049cce744b59366d192b92f638">&#9670;&#160;</a></span>bindings</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;DeviceBytes&gt; &gt; bindings</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00178">eve::particles::applyConfigDocument()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00174">eve::dialogue::DialogueFlow::DialogueFlow()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00438">eve::graphics::vulkan::Graphics::filterHDRReflectionCubemap()</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00055">eve::asset_scene::EvpackSceneTemplateLoader::load()</a>, <a class="el" href="UnityCollection_8cpp_source.html#l00089">eve::asset_import::prepareUnityCollection()</a>, <a class="el" href="ConversationText_8cpp_source.html#l00058">eve::dialogue::ConversationTextRenderer::render()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00076">eve::graphics::vulkan::Graphics::replaceMeshShaderResources()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00970">eve::dev::LanguageServer::semanticTokens()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00558">eve::dialogue::DialogueFlow::start()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00536">eve::dialogue::DialogueFlow::startChecked()</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00013">eve::gpgpu::vulkanNewShaderFromSpirv()</a>.</p>
+
+</div>
+</div>
+<a id="a90fb29238b3761db70cfbff3bc865e75" name="a90fb29238b3761db70cfbff3bc865e75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90fb29238b3761db70cfbff3bc865e75">&#9670;&#160;</a></span>buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;gpgpu::GpuBuffer&gt; buffer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="tensor_2GpuBackend_8cpp_source.html#l00131">eve::tensor::GpuProgram::Impl::alloc()</a>, <a class="el" href="EditorHistory_8cpp_source.html#l00106">eve::level_editing::EditorHistory::applyLastToBuffer()</a>, <a class="el" href="EditorHistory_8cpp_source.html#l00092">eve::level_editing::EditorHistory::applyLastToBufferChecked()</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00067">eve::gpgpu::ShaderSystem::attachBuffer()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00057">eve::gpgpu::VulkanComputeShader::bindBuffer()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00056">eve::gpgpu::WebGpuComputeShader::bindBuffer()</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00193">eve::gpgpu::compileComputeGlsl()</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00602">eve::particles::ParticleEmitter::currentSimulationTick()</a>, <a class="el" href="ParticleOffscreenRuntime_8cpp_source.html#l00027">eve::particles_graphics_editing::ParticleEmitterOffscreenPresenter::draw()</a>, <a class="el" href="vulkan_2GraphicsPrimitives_8cpp_source.html#l00009">eve::graphics::vulkan::Graphics::drawPrimitiveScene()</a>, <a class="el" href="Brush_8cpp_source.html#l00201">eve::level_editing::Brush::eraseAt()</a>, <a class="el" href="Exception_8cpp_source.html#l00014">eve::Exception::Exception()</a>, <a class="el" href="Brush_8cpp_source.html#l00207">eve::level_editing::Brush::floodFill()</a>, <a class="el" href="ParticleEffect_8cpp_source.html#l00110">eve::particles::ParticleEffect::fromText()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01209">eve::particles::ParticleEmitter::getConfigReloadObservation()</a>, <a class="el" href="Filesystem_8cpp_source.html#l00293">eve::filesystem::Filesystem::getExecutablePath()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l01198">eve::graphics::vulkan::Graphics::gpuDrivenCullBegin()</a>, <a class="el" href="PlayTrace_8cpp_source.html#l00150">eve::dev::PlayTraceBuffer::instance()</a>, <a class="el" href="Particles_8cpp_source.html#l00050">eve::particles::Particles::newEmitterFromFile()</a>, <a class="el" href="LevelEditorModule_8cpp_source.html#l00031">eve::level_editor::LevelEditorModule::newTarget()</a>, <a class="el" href="Brush_8cpp_source.html#l00192">eve::level_editing::Brush::paintAt()</a>, <a class="el" href="Brush_8cpp_source.html#l00243">eve::level_editing::Brush::paintLine()</a>, <a class="el" href="Brush_8cpp_source.html#l00250">eve::level_editing::Brush::paintRect()</a>, <a class="el" href="UnityNativeMesh_8cpp_source.html#l00046">eve::asset_import::prepareUnityNativeMesh()</a>, <a class="el" href="Brush_8cpp_source.html#l00257">eve::level_editing::Brush::previewAt()</a>, <a class="el" href="Brush_8cpp_source.html#l00283">eve::level_editing::Brush::previewLine()</a>, <a class="el" href="Brush_8cpp_source.html#l00290">eve::level_editing::Brush::previewRect()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00076">eve::graphics::vulkan::Graphics::replaceMeshShaderResources()</a>, <a class="el" href="ClimbingECS_8h_source.html#l00180">eve::climbing::ClimbingProbeSystem::step()</a>, <a class="el" href="Value_8cpp_source.html#l00163">eve::Value::toString()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00392">eve::gpgpu::webgpuSequenceRecordUpload()</a>.</p>
+
+</div>
+</div>
+<a id="ab22d9189a7c61cc0b7e6affb6abfbf10" name="ab22d9189a7c61cc0b7e6affb6abfbf10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab22d9189a7c61cc0b7e6affb6abfbf10">&#9670;&#160;</a></span>cachedBytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t cachedBytes = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad721fc6ca6a3d6ba3bc506576622aab0" name="ad721fc6ca6a3d6ba3bc506576622aab0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad721fc6ca6a3d6ba3bc506576622aab0">&#9670;&#160;</a></span>capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t capacity = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a351ff726500ec438818639856370bdb9" name="a351ff726500ec438818639856370bdb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a351ff726500ec438818639856370bdb9">&#9670;&#160;</a></span>compilation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vulkan_2Graphics_8cpp.html#ae43eb6b6a1ed27483e62b9c2ff9bfd74">std::future</a>&lt;onnx_detail::CompiledProgram&gt; compilation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b9936a2e89872d392c97c266284c08c" name="a0b9936a2e89872d392c97c266284c08c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b9936a2e89872d392c97c266284c08c">&#9670;&#160;</a></span>compiledShaders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t compiledShaders = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a590f530c59473dd9135ce1b17237fbcf" name="a590f530c59473dd9135ce1b17237fbcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590f530c59473dd9135ce1b17237fbcf">&#9670;&#160;</a></span>compiler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">onnx_detail::CompilerQueue compiler</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">eve::script::ScriptCompiler::compileBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="aeb3af44ba4e89ea4a26b4b994c7cb43b" name="aeb3af44ba4e89ea4a26b4b994c7cb43b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb3af44ba4e89ea4a26b4b994c7cb43b">&#9670;&#160;</a></span>compilerWorkers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t compilerWorkers = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00347">eve::tensor::createOnnxGpuCompute()</a>.</p>
+
+</div>
+</div>
+<a id="a9d495d255d8d63ebfeef31ab8fd8f6c9" name="a9d495d255d8d63ebfeef31ab8fd8f6c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d495d255d8d63ebfeef31ab8fd8f6c9">&#9670;&#160;</a></span>compileTaskMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double compileTaskMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adbb83e8516e6d3feca32c57bfd557a76" name="adbb83e8516e6d3feca32c57bfd557a76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbb83e8516e6d3feca32c57bfd557a76">&#9670;&#160;</a></span>compileWaitMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double compileWaitMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aedcbd51ef8dfd1729cca2571a5c03b2d" name="aedcbd51ef8dfd1729cca2571a5c03b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedcbd51ef8dfd1729cca2571a5c03b2d">&#9670;&#160;</a></span>dispatches</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;PendingDispatch&gt; dispatches</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5036023c0fc86093d68e3fe2544c492e" name="a5036023c0fc86093d68e3fe2544c492e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5036023c0fc86093d68e3fe2544c492e">&#9670;&#160;</a></span>dispatchRecordMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double dispatchRecordMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d1c4feed1318aeb0b96f657d87cd1ab" name="a7d1c4feed1318aeb0b96f657d87cd1ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d1c4feed1318aeb0b96f657d87cd1ab">&#9670;&#160;</a></span>epoch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t epoch = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00126">eve::ResourceManager::request()</a>, <a class="el" href="Agent_8cpp_source.html#l00144">eve::agent::run()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00075">eve::ResourceManager::runLoadJob()</a>.</p>
+
+</div>
+</div>
+<a id="ab7bdd204f0f9ed24e2635080834bafbd" name="ab7bdd204f0f9ed24e2635080834bafbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7bdd204f0f9ed24e2635080834bafbd">&#9670;&#160;</a></span>freeBuffers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::multimap&lt;size_t, std::unique_ptr&lt;gpgpu::GpuBuffer&gt; &gt; freeBuffers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b967b1604fa104ab290c01193f8f3d9" name="a0b967b1604fa104ab290c01193f8f3d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b967b1604fa104ab290c01193f8f3d9">&#9670;&#160;</a></span>gp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gpgpu::Gpgpu&amp; gp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00347">eve::tensor::createOnnxGpuCompute()</a>, <a class="el" href="Run_8cpp_source.html#l00358">eve::cmd::Cmdline::Run()</a> , 以及 <a class="el" href="tensor_2GpuBackend_8cpp_source.html#l00176">eve::tensor::GpuProgram::tryBuild()</a>.</p>
+
+</div>
+</div>
+<a id="a00921b24efd4597f8c48e380e195a80c" name="a00921b24efd4597f8c48e380e195a80c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00921b24efd4597f8c48e380e195a80c">&#9670;&#160;</a></span>groups</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t groups</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01087">eve::procgen::Procgen::completeCellCleanupAtomic()</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00134">eve::gpgpu::ShaderSystem::dispatch()</a>, <a class="el" href="vulkan_2GraphicsPrimitives_8cpp_source.html#l00009">eve::graphics::vulkan::Graphics::drawPrimitiveScene()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">eve::tensor::onnx_detail::executeNeural()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l01401">eve::graphics::vulkan::Graphics::gpuDrivenCullEmit()</a>, <a class="el" href="tensor_2GpuBackend_8cpp_source.html#l00336">eve::tensor::gpuReduce()</a>, <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>, <a class="el" href="Quant_8h_source.html#l00216">eve::tensor::q::quantize()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03217">eve::rts::SupplyConvoySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00607">eve::rts::TacticsSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02492">eve::rts::InfrastructureSystem::step()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l05238">eve::rts::ReinforcementProductionPolicySystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="ae23cea5216999b002573a874a948a686" name="ae23cea5216999b002573a874a948a686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae23cea5216999b002573a874a948a686">&#9670;&#160;</a></span>milliseconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double&amp; milliseconds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03575">eve::graphics::webgpu::Graphics::end3DFrameToCanvas()</a>, <a class="el" href="ProcgenSystem_8cpp_source.html#l00144">eve::procgen::ProcgenContext::endTrace()</a>, <a class="el" href="Identity_8cpp_source.html#l00089">eve::generateUuidV7()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00334">eve::graphics::ReflectionProbeCapture::reportGpuDurationMs()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00156">eve::procgen::RuntimeGeneration::setFrameTimeBudget()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00329">eve::graphics::ReflectionProbeCapture::setGpuBudgetMs()</a>, <a class="el" href="StandardAbilities_8cpp_source.html#l00083">eve::combat::standardCombatAbilities()</a> , 以及 <a class="el" href="ProcgenSystem_8cpp_source.html#l00126">eve::procgen::ProcgenContext::trace()</a>.</p>
+
+</div>
+</div>
+<a id="a87c70b779350e322294a6b5d4ae983d7" name="a87c70b779350e322294a6b5d4ae983d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87c70b779350e322294a6b5d4ae983d7">&#9670;&#160;</a></span>pending</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;DeviceBytes&gt; &gt; pending</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36c6d412edaa169bfb5bea808cd73bc6" name="a36c6d412edaa169bfb5bea808cd73bc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36c6d412edaa169bfb5bea808cd73bc6">&#9670;&#160;</a></span>persistentUploads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::shared_ptr&lt;const std::vector&lt;uint8_t&gt; &gt;, std::shared_ptr&lt;DeviceBytes&gt;, std::owner_less&lt;std::shared_ptr&lt;const std::vector&lt;uint8_t&gt; &gt; &gt; &gt; persistentUploads</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5818e0dbd9cd398806d221cf78170187" name="a5818e0dbd9cd398806d221cf78170187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5818e0dbd9cd398806d221cf78170187">&#9670;&#160;</a></span>pipelineMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double pipelineMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae80529b765e9766a164de2d1fdfa0a23" name="ae80529b765e9766a164de2d1fdfa0a23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae80529b765e9766a164de2d1fdfa0a23">&#9670;&#160;</a></span>program</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ShaderEntry* program</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab57ef30f94fcf6670be4b9b6fafdc4a2" name="ab57ef30f94fcf6670be4b9b6fafdc4a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab57ef30f94fcf6670be4b9b6fafdc4a2">&#9670;&#160;</a></span>queued</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t queued = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Vehicle_8cpp_source.html#l00310">eve::vehicle::Vehicle::attack()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00300">eve::vehicle::Vehicle::attackMove()</a>, <a class="el" href="MaterialGraph_8cpp_source.html#l00067">eve::material_editing::MaterialEditorService::compileAsync()</a>, <a class="el" href="RTS_8cpp_source.html#l01899">eve::rts::RTS::configureScriptWorld()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00329">eve::vehicle::Vehicle::hold()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00290">eve::vehicle::Vehicle::moveTo()</a>, <a class="el" href="Source_8cpp_source.html#l00286">eve::audio::Source::pump()</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="BattleTactics_8cpp_source.html#l00146">eve::rpg::BattleTacticsCatalogue::queueAction()</a>, <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00048">eve::graphics::ReflectionProbeRegistry::queueCapture()</a>, <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l05214">eve::rts::ReinforcementProductionPolicySystem::request()</a>, <a class="el" href="Graphics_8cpp_source.html#l01430">eve::graphics::Graphics::requestFileImageDecode()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00412">eve::orders::CommandQueue::snapshot()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02078">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02268">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l05356">eve::rts::BuildingProductionSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02135">eve::rts::MiningSystem::step()</a>, <a class="el" href="Source_8cpp_source.html#l00140">eve::audio::Source::stop()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00321">eve::vehicle::Vehicle::stop()</a>, <a class="el" href="BattleControl_8cpp_source.html#l00148">eve::rpg::BattleControl::submitGameplay()</a> , 以及 <a class="el" href="Event_8cpp_source.html#l00056">eve::platform_event::sdl::Event::wait()</a>.</p>
+
+</div>
+</div>
+<a id="a897ae0e95891d5e215089115ea7bc738" name="a897ae0e95891d5e215089115ea7bc738"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a897ae0e95891d5e215089115ea7bc738">&#9670;&#160;</a></span>readbackMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double readbackMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2176bcdc827f88a010b2837fd5351119" name="a2176bcdc827f88a010b2837fd5351119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2176bcdc827f88a010b2837fd5351119">&#9670;&#160;</a></span>resources</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::weak_ptr&lt;DeviceBytes&gt; &gt; resources</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01460">eve::graphics::Graphics::ensureFileTexturesReady()</a>, <a class="el" href="Tactics_8cpp_source.html#l00462">eve::tactics::Tactics::newUnit()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00055">eve::graphics::vulkan::MeshShaderResourcesDeleter::operator()()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00076">eve::graphics::vulkan::Graphics::replaceMeshShaderResources()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00387">eve::graphics::GraphicsArtifactProvider::restoreState()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00355">eve::graphics::GraphicsArtifactProvider::snapshotState()</a> , 以及 <a class="el" href="RTSMatch_8cpp_source.html#l00142">eve::rts::MatchSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a5eba2d76729e7e0f2dd73c037fa54f02" name="a5eba2d76729e7e0f2dd73c037fa54f02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eba2d76729e7e0f2dd73c037fa54f02">&#9670;&#160;</a></span>retired</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool retired = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a44260daa4d99c43fcd192f493566a5a3" name="a44260daa4d99c43fcd192f493566a5a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44260daa4d99c43fcd192f493566a5a3">&#9670;&#160;</a></span>run</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;Run&gt; run</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00343">eve::tensor::onnx_detail::evaluate()</a>, <a class="el" href="Run_8cpp_source.html#l00330">eve::cmd::RunArgs::parse()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00315">eve::cmd::RunArgs::setup()</a>.</p>
+
+</div>
+</div>
+<a id="ac98a13023de54e01aa103efe550e5e8d" name="ac98a13023de54e01aa103efe550e5e8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac98a13023de54e01aa103efe550e5e8d">&#9670;&#160;</a></span>sequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;gpgpu::Sequence&gt; sequence</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorEventTimeline_8cpp_source.html#l00052">eve::editor::EditorEventTimeline::append()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00197">eve::pixelworld_streaming::decodeChunkBatchArchive()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00271">eve::climbing::decodeClimbingPredictionRequest()</a>, <a class="el" href="vulkan_2GraphicsPrimitives_8cpp_source.html#l00009">eve::graphics::vulkan::Graphics::drawPrimitiveScene()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00301">eve::game_event::GameEventLog::find()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00308">eve::game_event::GameEventLog::find()</a>, <a class="el" href="RTS_8cpp_source.html#l01417">eve::rts::RTS::inspectFrameEvents()</a>, <a class="el" href="SceneComponentPayload_8cpp_source.html#l00256">eve::scene_editing::makeSceneComponentSelection()</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00150">eve::gpgpu::ShaderSystem::recordDispatch()</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00472">eve::graphics::resolvePrimitiveStrokes3D()</a>, <a class="el" href="Production_8cpp_source.html#l00527">eve::production::WorkQueue::restore()</a>, <a class="el" href="Definitions_8cpp_source.html#l00454">eve::definitions::DefinitionRegistry::restoreJson()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">eve::policyregistry::PolicyRegistry::restoreJson()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00431">eve::level_editing::LevelFormatRegistry::save()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00250">eve::game_event::EventConsumer::seek()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00255">eve::game_event::EventConsumer::seek()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00141">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::swap()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00384">eve::gpgpu::webgpuSequenceBegin()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00377">eve::gpgpu::webgpuSequenceDestroy()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00528">eve::gpgpu::webgpuSequencePoll()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00382">eve::gpgpu::webgpuSequenceReady()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00419">eve::gpgpu::webgpuSequenceRecordDispatch()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00407">eve::gpgpu::webgpuSequenceRecordDownload()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00392">eve::gpgpu::webgpuSequenceRecordUpload()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00557">eve::gpgpu::webgpuSequenceStatus()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00561">eve::gpgpu::webgpuSequenceSubmit()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00435">eve::gpgpu::webgpuSequenceSubmitAsync()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00541">eve::gpgpu::webgpuSequenceWait()</a> , 以及 <a class="el" href="Filesystem_8cpp_source.html#l00088">eve::filesystem::Filesystem::writeTextAtomic()</a>.</p>
+
+</div>
+</div>
+<a id="a066d99cfb847e0fbf8e8d4e6eaed8a78" name="a066d99cfb847e0fbf8e8d4e6eaed8a78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a066d99cfb847e0fbf8e8d4e6eaed8a78">&#9670;&#160;</a></span>shader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;gpgpu::ComputeShader&gt; shader</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d7204d5fc6a3f60f4fba14ea2a72653" name="a2d7204d5fc6a3f60f4fba14ea2a72653"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d7204d5fc6a3f60f4fba14ea2a72653">&#9670;&#160;</a></span>shaderMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double shaderMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad9abff3743c844d8ded577435e027f4" name="aad9abff3743c844d8ded577435e027f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad9abff3743c844d8ded577435e027f4">&#9670;&#160;</a></span>shaders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, ShaderEntry&gt; shaders</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshVfxPackage_8cpp_source.html#l00009">eve::asset_stylize::prepareMeshVfxPackage()</a>.</p>
+
+</div>
+</div>
+<a id="a854352f53b148adc24983a58a1866d66" name="a854352f53b148adc24983a58a1866d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a854352f53b148adc24983a58a1866d66">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t size = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38bed1b8687528cf4e3c7953cf734715" name="a38bed1b8687528cf4e3c7953cf734715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38bed1b8687528cf4e3c7953cf734715">&#9670;&#160;</a></span>start</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Clock::time_point start = Clock::now()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28eecb3c17b547a5826a3dc03e09d2cc" name="a28eecb3c17b547a5826a3dc03e09d2cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28eecb3c17b547a5826a3dc03e09d2cc">&#9670;&#160;</a></span>started</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Clock::time_point started = Clock::now()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a880e0b3e657e02fc555ef2b0da783a2b" name="a880e0b3e657e02fc555ef2b0da783a2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a880e0b3e657e02fc555ef2b0da783a2b">&#9670;&#160;</a></span>stats</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">OnnxTransferStats stats</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">eve::card::CardDefinitionRuntime::applyTo()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00124">eve::card::CardData::describe()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>, <a class="el" href="Particles_8cpp_source.html#l00134">eve::particles::Particles::getLastBudgetSkippedEmitters()</a>, <a class="el" href="ParticleSystem_8cpp_source.html#l00554">eve::particles::ParticleRenderSystem::render()</a>, <a class="el" href="ParticleSystem_8cpp_source.html#l00332">eve::particles::runParticleSimulation()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00272">eve::voxel::VoxelWorld::streamAround()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00034">eve::procgen::TerrainStreamingCache::streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="afd20bf6d87694323ad8f28546847eed7" name="afd20bf6d87694323ad8f28546847eed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd20bf6d87694323ad8f28546847eed7">&#9670;&#160;</a></span>uncommittedUploads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;const std::vector&lt;uint8_t&gt; &gt; &gt; uncommittedUploads</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee75acb3134a3ba11f3bbba3b9ea3280" name="aee75acb3134a3ba11f3bbba3b9ea3280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee75acb3134a3ba11f3bbba3b9ea3280">&#9670;&#160;</a></span>uploadRecordMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double uploadRecordMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89432055bc08c32162756c1fc47539ff" name="a89432055bc08c32162756c1fc47539ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89432055bc08c32162756c1fc47539ff">&#9670;&#160;</a></span>uploads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::shared_ptr&lt;const std::vector&lt;uint8_t&gt; &gt;, std::shared_ptr&lt;DeviceBytes&gt;, std::owner_less&lt;std::shared_ptr&lt;const std::vector&lt;uint8_t&gt; &gt; &gt; &gt; uploads</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00059">eve::pixelworld_graphics::PixelWorldAtlasRenderer::sync()</a>.</p>
+
+</div>
+</div>
+<a id="a7feeea47d7acafb10e4e8653f06e16a8" name="a7feeea47d7acafb10e4e8653f06e16a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7feeea47d7acafb10e4e8653f06e16a8">&#9670;&#160;</a></span>waitMs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double waitMs = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpgpu_8cpp_source.html">OnnxGpgpu.cpp</a> 第 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

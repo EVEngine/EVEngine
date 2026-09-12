@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Value.html">Value</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::Value 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1Value.html">eve::Value</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Array</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a9c57d4d355c2dfbfa60bbbc31ea9d293">array</a>(Array value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#ac1359f87b1ca45916e113de85cd837e8">arraySize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ad1c168147f2abc635ef8bda108facd97">asBool</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a6730c964483eb68ba1f12a1d00a50569">asDouble</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a85b14bca711dd856ddbb4097c79b91ee">asInt</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a1663c1302f82e823987ce46415e156ae">asString</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ae35dcd440478baa4a941f6210d88a5b5">at</a>(std::size_t index)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a1077f113357a3ab798c401470f21d69d">at</a>(std::size_t index) const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ad11bd41ece0923964c95be3c150d8e11">boolean</a>(bool value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#afd64facea7492338bd76d36768d7c788">find</a>(const std::string &amp;key) noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#aa67d22670b49f30330b3baa622a06618">find</a>(const std::string &amp;key) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">fromJson</a>(std::string_view json)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ad40218aab1f03170b5739b0bc7b1bd3a">getIf</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#affc25ae3af38a1d0cf62cb0f1187f557">getIf</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ab85179eae1aaa4bb534b580597d6b09f">integer</a>(std::int64_t value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a33a12500934e07c540012c03c9c4da61">isArray</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ad894653c6c0d7110a090407b351c65bd">isBool</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#afb2463ddc9b05ba7a873e395584742c7">isDouble</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a17bebc17412f4a0a118e952fa9723af3">isInt64</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#acf548a17814ead4723572a22b30a23d8">isNull</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a2e084c8120767fa62a4c2b46bb9d5d2d">isNumeric</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#ada425d4505031bff67bc1ff521e964ff">isObject</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a704fd440c6dd096b0dc8f52405154c3e">isString</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a342f35c2d09d7787e2e00f88fb0b08f8">keys</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a2bebd5ee7017d578def6d4dbf3b9062d">kind</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a5884848f9bbeef51ccebb6adfd753e1e">Kind</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a221f200edc14fd33b298458daf8f339f">null</a>()</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a6f597ed6bb1be0252be80f5e13f0140d">number</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ad1eaf6378250c014b7f48c2c47a56f74">object</a>(Object value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Object</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#af3370969f5fb93f10a578f9a6041a3df">operator==</a>(const Value &amp;) const =default</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#abfb65c9093741ec2b88944beadcae52f">pushBack</a>(Value value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a6d3dd714c94ba8391f6cc0fec9b5ca6c">set</a>(const std::string &amp;key, Value value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a2abd341ebc70ae5e3083ad80d6b7cbc5">storage</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ab3b5d9619e0186de2c6277cf1dc3a28c">storage</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#acebe0e679b34bcbd7da198f72c4de6db">Storage</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a789703915b7c67032e12b28efba85f93">string</a>(std::string value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a149d94e0856075c5fae2a61c2c0cd38d">toJson</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ab407357c095aa60b08a641edf6dffc61">toString</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#afd55b08e1f4e95e0e7d13325b7e4f4d9">type</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742">Type</a> 枚举名称</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a292b87b59a76767b5d5e4e984050bd59">typeName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a6f653c34a427e16e19bc24ba317314bb">Value</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a04e4b81ef2a3cc6ee8ad5632a9988e0f">Value</a>(std::nullptr_t)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a40356df282cd7f18bff09e837f1a47ed">Value</a>(bool value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a30794fbc535b38b64e11a09962519a48">Value</a>(std::int64_t value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a9ef45ea08e7b8aae66de4716f060a6cd">Value</a>(int value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a57452d8a7b8af83f25c838debf293aa2">Value</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#ae080a31b08a11edfdd8843b58207c89c">Value</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#abdabb1e64d4d57d24377b9209696a218">Value</a>(const char *value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#af7ca07d0a873bbe589372f1d85e857c8">Value</a>(std::string value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Value.html#a2d0802894d559c8a4889aa7cad57000f">Value</a>(Array value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Value.html#a089e22c17ccfa0231a334435c6fc182c">Value</a>(Object value)</td><td class="entry"><a class="el" href="classeve_1_1Value.html">eve::Value</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

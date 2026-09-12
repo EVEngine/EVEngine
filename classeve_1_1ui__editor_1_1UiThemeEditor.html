@@ -1,0 +1,1024 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui_editor::UiThemeEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui__editor.html">ui_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui__editor_1_1UiThemeEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui_editor::UiThemeEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Workspace controller for one authored UI theme catalog.  
+ <a href="classeve_1_1ui__editor_1_1UiThemeEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abd9743601e065ce206f8b2da965c84aa" id="r_abd9743601e065ce206f8b2da965c84aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#abd9743601e065ce206f8b2da965c84aa">UiThemeEditor</a> (std::string targetId)</td></tr>
+<tr class="memdesc:abd9743601e065ce206f8b2da965c84aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a catalog seeded with built-in Dark and Light assets.  <br /></td></tr>
+<tr class="separator:abd9743601e065ce206f8b2da965c84aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5917ecbc3460a9676b6c724dd31954a" id="r_af5917ecbc3460a9676b6c724dd31954a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#af5917ecbc3460a9676b6c724dd31954a">UiThemeEditor</a> (const <a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:af5917ecbc3460a9676b6c724dd31954a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3350889421578633944707aa44f9829d" id="r_a3350889421578633944707aa44f9829d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a3350889421578633944707aa44f9829d">operator=</a> (const <a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a3350889421578633944707aa44f9829d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f8dcb755785b032d9ff605bdb08f0a2" id="r_a3f8dcb755785b032d9ff605bdb08f0a2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html">ui_editing::UiThemeCatalogTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a3f8dcb755785b032d9ff605bdb08f0a2">target</a> () const noexcept</td></tr>
+<tr class="memdesc:a3f8dcb755785b032d9ff605bdb08f0a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative theme catalog.  <br /></td></tr>
+<tr class="separator:a3f8dcb755785b032d9ff605bdb08f0a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a872966b85babbd5af30e355c478d72e4" id="r_a872966b85babbd5af30e355c478d72e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a872966b85babbd5af30e355c478d72e4">configureWorkspace</a> (<a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace) const</td></tr>
+<tr class="memdesc:a872966b85babbd5af30e355c478d72e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install Themes / Preview / Inspector panels.  <br /></td></tr>
+<tr class="separator:a872966b85babbd5af30e355c478d72e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed30722a1a404c86607d76c13fd459c8" id="r_aed30722a1a404c86607d76c13fd459c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#aed30722a1a404c86607d76c13fd459c8">selectTheme</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:aed30722a1a404c86607d76c13fd459c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa758e810938fd39524c4c5a4686044e7" id="r_aa758e810938fd39524c4c5a4686044e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#aa758e810938fd39524c4c5a4686044e7">createFromPreset</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::string preset)</td></tr>
+<tr class="separator:aa758e810938fd39524c4c5a4686044e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3fb0278d30bb07ae6598a4d76b16130" id="r_ae3fb0278d30bb07ae6598a4d76b16130"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#ae3fb0278d30bb07ae6598a4d76b16130">duplicateSelected</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:ae3fb0278d30bb07ae6598a4d76b16130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf4f3f117a48aac6d616f15a81014e9" id="r_a4cf4f3f117a48aac6d616f15a81014e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a4cf4f3f117a48aac6d616f15a81014e9">deleteSelected</a> ()</td></tr>
+<tr class="separator:a4cf4f3f117a48aac6d616f15a81014e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c2b4ba44d39b5b1eec1cdb44685e09" id="r_ab1c2b4ba44d39b5b1eec1cdb44685e09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#ab1c2b4ba44d39b5b1eec1cdb44685e09">setActiveSelected</a> ()</td></tr>
+<tr class="separator:ab1c2b4ba44d39b5b1eec1cdb44685e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35209211f32cc39cf20eb2b625e47124" id="r_a35209211f32cc39cf20eb2b625e47124"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a35209211f32cc39cf20eb2b625e47124">resetSelectedToBase</a> ()</td></tr>
+<tr class="separator:a35209211f32cc39cf20eb2b625e47124"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed97824b3ed43af2541af13360669b4" id="r_aeed97824b3ed43af2541af13360669b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#aeed97824b3ed43af2541af13360669b4">setToken</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">ui_editing::EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:aeed97824b3ed43af2541af13360669b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad134892c7e3cb99c412196fe5c3c47" id="r_a9ad134892c7e3cb99c412196fe5c3c47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a9ad134892c7e3cb99c412196fe5c3c47">undo</a> ()</td></tr>
+<tr class="separator:a9ad134892c7e3cb99c412196fe5c3c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4295bc719ed280a024f1e96aac0db978" id="r_a4295bc719ed280a024f1e96aac0db978"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a4295bc719ed280a024f1e96aac0db978">redo</a> ()</td></tr>
+<tr class="separator:a4295bc719ed280a024f1e96aac0db978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3819b505324300f79444112e8f0a6c03" id="r_a3819b505324300f79444112e8f0a6c03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a3819b505324300f79444112e8f0a6c03">applyPreviewHost</a> (const std::string &amp;hostName)</td></tr>
+<tr class="memdesc:a3819b505324300f79444112e8f0a6c03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the selected theme onto a live UIHost without changing globalTheme.  <br /></td></tr>
+<tr class="separator:a3819b505324300f79444112e8f0a6c03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefb24b2055a58c4d88b5d7c9ebb9b947" id="r_aefb24b2055a58c4d88b5d7c9ebb9b947"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#aefb24b2055a58c4d88b5d7c9ebb9b947">canUndo</a> () const noexcept</td></tr>
+<tr class="separator:aefb24b2055a58c4d88b5d7c9ebb9b947"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98df13ca7de3bae2f6a377228a83f68a" id="r_a98df13ca7de3bae2f6a377228a83f68a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a98df13ca7de3bae2f6a377228a83f68a">canRedo</a> () const noexcept</td></tr>
+<tr class="separator:a98df13ca7de3bae2f6a377228a83f68a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0921249a35d099e6fc78075c670a3f7" id="r_ae0921249a35d099e6fc78075c670a3f7"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#ae0921249a35d099e6fc78075c670a3f7">revision</a> () const noexcept</td></tr>
+<tr class="separator:ae0921249a35d099e6fc78075c670a3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afddea90674a2bde9c788669936eee7f0" id="r_afddea90674a2bde9c788669936eee7f0"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#afddea90674a2bde9c788669936eee7f0">previewRevision</a> () const noexcept</td></tr>
+<tr class="separator:afddea90674a2bde9c788669936eee7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d5de109520342e5d12d376decbd6cab" id="r_a5d5de109520342e5d12d376decbd6cab"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a5d5de109520342e5d12d376decbd6cab">selectedId</a> () const</td></tr>
+<tr class="separator:a5d5de109520342e5d12d376decbd6cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac39dae0f5848d9ae2584e928e6b11210" id="r_ac39dae0f5848d9ae2584e928e6b11210"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#ac39dae0f5848d9ae2584e928e6b11210">activeId</a> () const</td></tr>
+<tr class="separator:ac39dae0f5848d9ae2584e928e6b11210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0802bbe9586b189c008db5446bf590ca" id="r_a0802bbe9586b189c008db5446bf590ca"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a0802bbe9586b189c008db5446bf590ca">previewRuntimeName</a> () const</td></tr>
+<tr class="separator:a0802bbe9586b189c008db5446bf590ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c26b23873e11ca03dcb6afb279eb72a" id="r_a3c26b23873e11ca03dcb6afb279eb72a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a3c26b23873e11ca03dcb6afb279eb72a">themeCount</a> () const</td></tr>
+<tr class="separator:a3c26b23873e11ca03dcb6afb279eb72a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f34458a556a86e503df45bf8951adf" id="r_a24f34458a556a86e503df45bf8951adf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a24f34458a556a86e503df45bf8951adf">themeId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a24f34458a556a86e503df45bf8951adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a799c75f9c99753c89828132825ee0" id="r_ad8a799c75f9c99753c89828132825ee0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#ad8a799c75f9c99753c89828132825ee0">themeName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad8a799c75f9c99753c89828132825ee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb6817a509a93f9655686309d4e71b7f" id="r_afb6817a509a93f9655686309d4e71b7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#afb6817a509a93f9655686309d4e71b7f">isThemeSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:afb6817a509a93f9655686309d4e71b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938d6139a34277d1ecdfae23692b1353" id="r_a938d6139a34277d1ecdfae23692b1353"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a938d6139a34277d1ecdfae23692b1353">isThemeActive</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a938d6139a34277d1ecdfae23692b1353"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf34e657440316b4e1d621c60990b24c" id="r_adf34e657440316b4e1d621c60990b24c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#adf34e657440316b4e1d621c60990b24c">getColorChannel</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, int channel) const</td></tr>
+<tr class="separator:adf34e657440316b4e1d621c60990b24c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a243f9269f83fbafbbb52a70d052cda" id="r_a7a243f9269f83fbafbbb52a70d052cda"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html#a7a243f9269f83fbafbbb52a70d052cda">getFloat</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const</td></tr>
+<tr class="separator:a7a243f9269f83fbafbbb52a70d052cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Workspace controller for one authored UI theme catalog. </p>
+<p>Owns the catalog, local undo and a revision-bound Theme preview copy. Gallery hosts consume the preview through a host-local Theme override; process globalTheme() changes only after a successful setActive publish.</p>
+<p>@ownership Editor owns the catalog. Preview getters copy values. @threadaffinity Owner thread only. @reentrancy No unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abd9743601e065ce206f8b2da965c84aa" name="abd9743601e065ce206f8b2da965c84aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd9743601e065ce206f8b2da965c84aa">&#9670;&#160;</a></span>UiThemeEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui_editor::UiThemeEditor::UiThemeEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a catalog seeded with built-in Dark and Light assets. </p>
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5917ecbc3460a9676b6c724dd31954a" name="af5917ecbc3460a9676b6c724dd31954a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5917ecbc3460a9676b6c724dd31954a">&#9670;&#160;</a></span>UiThemeEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui_editor::UiThemeEditor::UiThemeEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac39dae0f5848d9ae2584e928e6b11210" name="ac39dae0f5848d9ae2584e928e6b11210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac39dae0f5848d9ae2584e928e6b11210">&#9670;&#160;</a></span>activeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui_editor::UiThemeEditor::activeId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00089">eve::ui_editing::UiThemeCatalogTarget::activeId()</a>.</p>
+
+</div>
+</div>
+<a id="a3819b505324300f79444112e8f0a6c03" name="a3819b505324300f79444112e8f0a6c03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3819b505324300f79444112e8f0a6c03">&#9670;&#160;</a></span>applyPreviewHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::applyPreviewHost </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>hostName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the selected theme onto a live UIHost without changing globalTheme. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hostName</td><td>Retained UI host name (typically the preview panel id). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00146">eve::ui_editing::UiThemePreviewSnapshot::documentRevision</a>, <a class="el" href="UISystem_8cpp_source.html#l01506">eve::ui::UISystem::findHost()</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00221">host</a>, <a class="el" href="UIHost_8cpp_source.html#l00061">eve::ui::UIHost::resolve()</a>, <a class="el" href="UiTheme_8h_source.html#l00070">eve::ui_editing::UiThemeCatalogTarget::revision()</a>, <a class="el" href="UiTheme_8h_source.html#l00145">eve::ui_editing::UiThemePreviewSnapshot::status</a> , 以及 <a class="el" href="UiTheme_8h_source.html#l00148">eve::ui_editing::UiThemePreviewSnapshot::theme</a>.</p>
+
+</div>
+</div>
+<a id="a98df13ca7de3bae2f6a377228a83f68a" name="a98df13ca7de3bae2f6a377228a83f68a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98df13ca7de3bae2f6a377228a83f68a">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui_editor::UiThemeEditor::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00076">eve::editor::LocalTransactionBackend::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="aefb24b2055a58c4d88b5d7c9ebb9b947" name="aefb24b2055a58c4d88b5d7c9ebb9b947"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefb24b2055a58c4d88b5d7c9ebb9b947">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui_editor::UiThemeEditor::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00074">eve::editor::LocalTransactionBackend::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="a872966b85babbd5af30e355c478d72e4" name="a872966b85babbd5af30e355c478d72e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a872966b85babbd5af30e355c478d72e4">&#9670;&#160;</a></span>configureWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::configureWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install Themes / Preview / Inspector panels. </p>
+<dl class="section note"><dt>注解</dt><dd>Does not retain <code>workspace</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">eve::editor::EditorWorkspace::activatePanel()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">eve::editor::EditorWorkspace::setPanelCapability()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">eve::editor::EditorWorkspace::setPanelContext()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="aa758e810938fd39524c4c5a4686044e7" name="aa758e810938fd39524c4c5a4686044e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa758e810938fd39524c4c5a4686044e7">&#9670;&#160;</a></span>createFromPreset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::createFromPreset </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>preset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="UiTheme_8cpp_source.html#l00216">eve::ui_editing::UiThemeCatalogTarget::makeCreateFromPreset()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a4cf4f3f117a48aac6d616f15a81014e9" name="a4cf4f3f117a48aac6d616f15a81014e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf4f3f117a48aac6d616f15a81014e9">&#9670;&#160;</a></span>deleteSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::deleteSelected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00089">eve::ui_editing::UiThemeCatalogTarget::activeId()</a>, <a class="el" href="UiTheme_8cpp_source.html#l00279">eve::ui_editing::UiThemeCatalogTarget::makeDelete()</a> , 以及 <a class="el" href="UiTheme_8h_source.html#l00087">eve::ui_editing::UiThemeCatalogTarget::themes()</a>.</p>
+
+</div>
+</div>
+<a id="ae3fb0278d30bb07ae6598a4d76b16130" name="ae3fb0278d30bb07ae6598a4d76b16130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3fb0278d30bb07ae6598a4d76b16130">&#9670;&#160;</a></span>duplicateSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::duplicateSelected </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8cpp_source.html#l00241">eve::ui_editing::UiThemeCatalogTarget::makeDuplicate()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="adf34e657440316b4e1d621c60990b24c" name="adf34e657440316b4e1d621c60990b24c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf34e657440316b4e1d621c60990b24c">&#9670;&#160;</a></span>getColorChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui_editor::UiThemeEditor::getColorChannel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>channel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="UiThemeProperty_8cpp_source.html#l00036">eve::ui_editing::UiThemeCatalogTarget::read()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00110">eve::editing::PropertyReadResult::value</a>.</p>
+
+</div>
+</div>
+<a id="a7a243f9269f83fbafbbb52a70d052cda" name="a7a243f9269f83fbafbbb52a70d052cda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a243f9269f83fbafbbb52a70d052cda">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui_editor::UiThemeEditor::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="UiThemeProperty_8cpp_source.html#l00036">eve::ui_editing::UiThemeCatalogTarget::read()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00110">eve::editing::PropertyReadResult::value</a>.</p>
+
+</div>
+</div>
+<a id="a938d6139a34277d1ecdfae23692b1353" name="a938d6139a34277d1ecdfae23692b1353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a938d6139a34277d1ecdfae23692b1353">&#9670;&#160;</a></span>isThemeActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui_editor::UiThemeEditor::isThemeActive </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00089">eve::ui_editing::UiThemeCatalogTarget::activeId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="afb6817a509a93f9655686309d4e71b7f" name="afb6817a509a93f9655686309d4e71b7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb6817a509a93f9655686309d4e71b7f">&#9670;&#160;</a></span>isThemeSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui_editor::UiThemeEditor::isThemeSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3350889421578633944707aa44f9829d" name="a3350889421578633944707aa44f9829d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3350889421578633944707aa44f9829d">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a> &amp; eve::ui_editor::UiThemeEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui__editor_1_1UiThemeEditor.html">UiThemeEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afddea90674a2bde9c788669936eee7f0" name="afddea90674a2bde9c788669936eee7f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afddea90674a2bde9c788669936eee7f0">&#9670;&#160;</a></span>previewRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::ui_editor::UiThemeEditor::previewRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00146">eve::ui_editing::UiThemePreviewSnapshot::documentRevision</a>.</p>
+
+</div>
+</div>
+<a id="a0802bbe9586b189c008db5446bf590ca" name="a0802bbe9586b189c008db5446bf590ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0802bbe9586b189c008db5446bf590ca">&#9670;&#160;</a></span>previewRuntimeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui_editor::UiThemeEditor::previewRuntimeName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00149">eve::ui_editing::UiThemePreviewSnapshot::runtimeName</a>.</p>
+
+</div>
+</div>
+<a id="a4295bc719ed280a024f1e96aac0db978" name="a4295bc719ed280a024f1e96aac0db978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4295bc719ed280a024f1e96aac0db978">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::ui_editor::UiThemeEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>.</p>
+
+</div>
+</div>
+<a id="a35209211f32cc39cf20eb2b625e47124" name="a35209211f32cc39cf20eb2b625e47124"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35209211f32cc39cf20eb2b625e47124">&#9670;&#160;</a></span>resetSelectedToBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::resetSelectedToBase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8cpp_source.html#l00304">eve::ui_editing::UiThemeCatalogTarget::makeResetToBase()</a>.</p>
+
+</div>
+</div>
+<a id="ae0921249a35d099e6fc78075c670a3f7" name="ae0921249a35d099e6fc78075c670a3f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0921249a35d099e6fc78075c670a3f7">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::ui_editor::UiThemeEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00070">eve::ui_editing::UiThemeCatalogTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a5d5de109520342e5d12d376decbd6cab" name="a5d5de109520342e5d12d376decbd6cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d5de109520342e5d12d376decbd6cab">&#9670;&#160;</a></span>selectedId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui_editor::UiThemeEditor::selectedId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed30722a1a404c86607d76c13fd459c8" name="aed30722a1a404c86607d76c13fd459c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed30722a1a404c86607d76c13fd459c8">&#9670;&#160;</a></span>selectTheme()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::selectTheme </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="UiTheme_8cpp_source.html#l00148">eve::ui_editing::UiThemeCatalogTarget::theme()</a>.</p>
+
+</div>
+</div>
+<a id="ab1c2b4ba44d39b5b1eec1cdb44685e09" name="ab1c2b4ba44d39b5b1eec1cdb44685e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c2b4ba44d39b5b1eec1cdb44685e09">&#9670;&#160;</a></span>setActiveSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::setActiveSelected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8cpp_source.html#l00295">eve::ui_editing::UiThemeCatalogTarget::makeSetActive()</a> , 以及 <a class="el" href="UiThemePreview_8cpp_source.html#l00040">eve::ui_editing::UiThemeRuntimePublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="aeed97824b3ed43af2541af13360669b4" name="aeed97824b3ed43af2541af13360669b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeed97824b3ed43af2541af13360669b4">&#9670;&#160;</a></span>setToken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; void &gt; eve::ui_editor::UiThemeEditor::setToken </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">ui_editing::EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiThemeProperty_8cpp_source.html#l00050">eve::ui_editing::UiThemeCatalogTarget::makeSet()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a3f8dcb755785b032d9ff605bdb08f0a2" name="a3f8dcb755785b032d9ff605bdb08f0a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f8dcb755785b032d9ff605bdb08f0a2">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html">ui_editing::UiThemeCatalogTarget</a> &amp; eve::ui_editor::UiThemeEditor::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative theme catalog. </p>
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c26b23873e11ca03dcb6afb279eb72a" name="a3c26b23873e11ca03dcb6afb279eb72a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c26b23873e11ca03dcb6afb279eb72a">&#9670;&#160;</a></span>themeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui_editor::UiThemeEditor::themeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a> 第 <a class="el" href="UiThemeEditor_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiTheme_8h_source.html#l00087">eve::ui_editing::UiThemeCatalogTarget::themes()</a>.</p>
+
+</div>
+</div>
+<a id="a24f34458a556a86e503df45bf8951adf" name="a24f34458a556a86e503df45bf8951adf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24f34458a556a86e503df45bf8951adf">&#9670;&#160;</a></span>themeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui_editor::UiThemeEditor::themeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ad8a799c75f9c99753c89828132825ee0" name="ad8a799c75f9c99753c89828132825ee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8a799c75f9c99753c89828132825ee0">&#9670;&#160;</a></span>themeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui_editor::UiThemeEditor::themeName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a9ad134892c7e3cb99c412196fe5c3c47" name="a9ad134892c7e3cb99c412196fe5c3c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad134892c7e3cb99c412196fe5c3c47">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">ui_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::ui_editor::UiThemeEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a> 第 <a class="el" href="UiThemeEditor_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UiTheme_8cpp_source.html#l00148">eve::ui_editing::UiThemeCatalogTarget::theme()</a>, <a class="el" href="UiTheme_8h_source.html#l00087">eve::ui_editing::UiThemeCatalogTarget::themes()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/editor/<a class="el" href="UiThemeEditor_8h_source.html">UiThemeEditor.h</a></li>
+<li>src/modules/ui/editor/<a class="el" href="UiThemeEditor_8cpp_source.html">UiThemeEditor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,689 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::avatar::VrmRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar.html">avatar</a></li><li class="navelem"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html">VrmRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="classeve_1_1avatar_1_1VrmRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::avatar::VrmRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html">Part</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae49dd50121214fd0fd0352ce4dcaf742" id="r_ae49dd50121214fd0fd0352ce4dcaf742"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ae49dd50121214fd0fd0352ce4dcaf742">VrmRuntime</a> ()</td></tr>
+<tr class="separator:ae49dd50121214fd0fd0352ce4dcaf742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5a7a8ffc6af3d9a347b6a5cf98dbdfd" id="r_ae5a7a8ffc6af3d9a347b6a5cf98dbdfd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ae5a7a8ffc6af3d9a347b6a5cf98dbdfd">~VrmRuntime</a> ()</td></tr>
+<tr class="separator:ae5a7a8ffc6af3d9a347b6a5cf98dbdfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63a2052e2b62887406d4fbb64c09f02b" id="r_a63a2052e2b62887406d4fbb64c09f02b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a63a2052e2b62887406d4fbb64c09f02b">animate</a> (<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;avatar, <a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;pose, float dt)</td></tr>
+<tr class="separator:a63a2052e2b62887406d4fbb64c09f02b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6eefb5acb54f198c01b15a7b6950b31" id="r_ac6eefb5acb54f198c01b15a7b6950b31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ac6eefb5acb54f198c01b15a7b6950b31">sync</a> (<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;avatar, const glm::mat4 &amp;<a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">world</a>, bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="separator:ac6eefb5acb54f198c01b15a7b6950b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f427315bd793573dd9e110259eb9bdb" id="r_a8f427315bd793573dd9e110259eb9bdb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a8f427315bd793573dd9e110259eb9bdb">morphs</a> (<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;avatar)</td></tr>
+<tr class="separator:a8f427315bd793573dd9e110259eb9bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a995c038852d27ff9b7f7fba5ce77dd9e" id="r_a995c038852d27ff9b7f7fba5ce77dd9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a995c038852d27ff9b7f7fba5ce77dd9e">gaze</a> (<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;avatar, <a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;pose, const glm::mat4 &amp;<a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">world</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, glm::vec3 <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, float weight)</td></tr>
+<tr class="separator:a995c038852d27ff9b7f7fba5ce77dd9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a048d4538f5a2af2a0ac63dbd3a0ebe63" id="r_a048d4538f5a2af2a0ac63dbd3a0ebe63"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html">VrmRuntime</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a048d4538f5a2af2a0ac63dbd3a0ebe63">prepare</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:a048d4538f5a2af2a0ac63dbd3a0ebe63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:adcb09ee6df59e4947a664baed091885a" id="r_adcb09ee6df59e4947a664baed091885a"><td class="memItemLeft" align="right" valign="top">std::weak_ptr&lt; const void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#adcb09ee6df59e4947a664baed091885a">providerLifetime</a></td></tr>
+<tr class="separator:adcb09ee6df59e4947a664baed091885a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f290fe8835c08c205fc643f7dea03e" id="r_a54f290fe8835c08c205fc643f7dea03e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a54f290fe8835c08c205fc643f7dea03e">document</a></td></tr>
+<tr class="separator:a54f290fe8835c08c205fc643f7dea03e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addf72dc64b8e2a14793ba190dccd95da" id="r_addf72dc64b8e2a14793ba190dccd95da"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#addf72dc64b8e2a14793ba190dccd95da">model</a></td></tr>
+<tr class="separator:addf72dc64b8e2a14793ba190dccd95da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598f287f859b83557c67fd8f11d4b817" id="r_a598f287f859b83557c67fd8f11d4b817"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a598f287f859b83557c67fd8f11d4b817">skeleton</a></td></tr>
+<tr class="separator:a598f287f859b83557c67fd8f11d4b817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae09fd6d84c4e4aef1b125ccbff775ce3" id="r_ae09fd6d84c4e4aef1b125ccbff775ce3"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">animation::AnimPlayer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ae09fd6d84c4e4aef1b125ccbff775ce3">player</a></td></tr>
+<tr class="separator:ae09fd6d84c4e4aef1b125ccbff775ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f59ccf85d4d822e57074a66135adbb8" id="r_a4f59ccf85d4d822e57074a66135adbb8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a4f59ccf85d4d822e57074a66135adbb8">nodeBones</a></td></tr>
+<tr class="separator:a4f59ccf85d4d822e57074a66135adbb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac2aad3df08cfaa2e6b8f08646a3cdb3" id="r_aac2aad3df08cfaa2e6b8f08646a3cdb3"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, std::array&lt; float, 3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#aac2aad3df08cfaa2e6b8f08646a3cdb3">rotations</a></td></tr>
+<tr class="separator:aac2aad3df08cfaa2e6b8f08646a3cdb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ef3ca5c729c3342b47b0dd380300a83" id="r_a9ef3ca5c729c3342b47b0dd380300a83"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html">Part</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a9ef3ca5c729c3342b47b0dd380300a83">parts</a></td></tr>
+<tr class="separator:a9ef3ca5c729c3342b47b0dd380300a83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c0f964fdde4c88aa04aa10704752f5" id="r_a72c0f964fdde4c88aa04aa10704752f5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1avatar_1_1VrmSurface.html">VrmSurface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a72c0f964fdde4c88aa04aa10704752f5">surfaces</a></td></tr>
+<tr class="separator:a72c0f964fdde4c88aa04aa10704752f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91005cbfcd57b2b087a153763f55b4cb" id="r_a91005cbfcd57b2b087a153763f55b4cb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#a91005cbfcd57b2b087a153763f55b4cb">textures</a></td></tr>
+<tr class="separator:a91005cbfcd57b2b087a153763f55b4cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7d0cdb5af84a7a19b6a7bf20a98d5b2" id="r_ac7d0cdb5af84a7a19b6a7bf20a98d5b2"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">world</a> {1}</td></tr>
+<tr class="separator:ac7d0cdb5af84a7a19b6a7bf20a98d5b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adae822d4a31854c1e8e9ea445787b462" id="r_adae822d4a31854c1e8e9ea445787b462"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html#adae822d4a31854c1e8e9ea445787b462">time</a> = 0</td></tr>
+<tr class="separator:adae822d4a31854c1e8e9ea445787b462"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae49dd50121214fd0fd0352ce4dcaf742" name="ae49dd50121214fd0fd0352ce4dcaf742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae49dd50121214fd0fd0352ce4dcaf742">&#9670;&#160;</a></span>VrmRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar::VrmRuntime::VrmRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae5a7a8ffc6af3d9a347b6a5cf98dbdfd" name="ae5a7a8ffc6af3d9a347b6a5cf98dbdfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5a7a8ffc6af3d9a347b6a5cf98dbdfd">&#9670;&#160;</a></span>~VrmRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar::VrmRuntime::~VrmRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8cpp_source.html">VrmRuntime.cpp</a> 第 <a class="el" href="VrmRuntime_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VrmRuntime_8h_source.html#l00053">parts</a>, <a class="el" href="VrmRuntime_8h_source.html#l00039">providerLifetime</a>, <a class="el" href="VrmRuntime_8h_source.html#l00054">surfaces</a> , 以及 <a class="el" href="VrmRuntime_8h_source.html#l00055">textures</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a63a2052e2b62887406d4fbb64c09f02b" name="a63a2052e2b62887406d4fbb64c09f02b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63a2052e2b62887406d4fbb64c09f02b">&#9670;&#160;</a></span>animate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::VrmRuntime::animate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td>
+          <td class="paramname"><em>avatar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8cpp_source.html">VrmRuntime.cpp</a> 第 <a class="el" href="VrmRuntime_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VrmRuntime_8h_source.html#l00053">parts</a>, <a class="el" href="VrmRuntime_8h_source.html#l00039">providerLifetime</a> , 以及 <a class="el" href="VrmRuntime_8h_source.html#l00057">time</a>.</p>
+
+</div>
+</div>
+<a id="a995c038852d27ff9b7f7fba5ce77dd9e" name="a995c038852d27ff9b7f7fba5ce77dd9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a995c038852d27ff9b7f7fba5ce77dd9e">&#9670;&#160;</a></span>gaze()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::VrmRuntime::gaze </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td>
+          <td class="paramname"><em>avatar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmMotion_8cpp_source.html">VrmMotion.cpp</a> 第 <a class="el" href="VrmMotion_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimPose_8cpp_source.html#l00230">eve::animation::AnimPose::computeWorld()</a>, <a class="el" href="VrmRuntime_8h_source.html#l00040">document</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="VrmDocument_8h_source.html#l00059">eve::avatar::VrmLookAt::expression</a>, <a class="el" href="VrmDocument_8h_source.html#l00089">eve::avatar::VrmDocument::expressions</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00503">eve::avatar::AvatarInstance::getParameter()</a>, <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>, <a class="el" href="Climbing_8cpp_source.html#l00077">horizontal</a>, <a class="el" href="VrmDocument_8h_source.html#l00088">eve::avatar::VrmDocument::humanoid</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="AnimPose_8cpp_source.html#l00153">eve::animation::AnimPose::local()</a>, <a class="el" href="VrmDocument_8h_source.html#l00090">eve::avatar::VrmDocument::look</a>, <a class="el" href="VrmRuntime_8h_source.html#l00044">nodeBones</a>, <a class="el" href="VrmDocument_8h_source.html#l00060">eve::avatar::VrmLookAt::offset</a>, <a class="el" href="VrmDocument_8h_source.html#l00059">eve::avatar::VrmLookAt::present</a>, <a class="el" href="VrmRuntime_8h_source.html#l00045">rotations</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a>, <a class="el" href="VrmRuntime_8h_source.html#l00042">skeleton</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="Climbing_8cpp_source.html#l00078">vertical</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00320">eve::animation::AnimPose::world()</a>.</p>
+
+</div>
+</div>
+<a id="a8f427315bd793573dd9e110259eb9bdb" name="a8f427315bd793573dd9e110259eb9bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f427315bd793573dd9e110259eb9bdb">&#9670;&#160;</a></span>morphs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::VrmRuntime::morphs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td>
+          <td class="paramname"><em>avatar</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8cpp_source.html">VrmRuntime.cpp</a> 第 <a class="el" href="VrmRuntime_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="VrmRuntime_8h_source.html#l00040">document</a>, <a class="el" href="VrmDocument_8h_source.html#l00089">eve::avatar::VrmDocument::expressions</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00503">eve::avatar::AvatarInstance::getParameter()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00509">eve::avatar::AvatarInstance::hasParameter()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="VrmRuntime_8h_source.html#l00053">parts</a>, <a class="el" href="VrmRuntime_8h_source.html#l00039">providerLifetime</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="VrmRuntime_8h_source.html#l00054">surfaces</a>, <a class="el" href="VrmRuntime_8h_source.html#l00057">time</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a048d4538f5a2af2a0ac63dbd3a0ebe63" name="a048d4538f5a2af2a0ac63dbd3a0ebe63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a048d4538f5a2af2a0ac63dbd3a0ebe63">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html">VrmRuntime</a> &gt; &gt; eve::avatar::VrmRuntime::prepare </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8cpp_source.html">VrmRuntime.cpp</a> 第 <a class="el" href="VrmRuntime_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VrmSurface_8cpp_source.html#l00023">eve::avatar::buildVrmAtlas()</a>, <a class="el" href="VrmSurface_8cpp_source.html#l00051">eve::avatar::buildVrmSurface()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="EveFileSystem_8cpp_source.html#l00014">file</a>, <a class="el" href="AnimSkin_8cpp_source.html#l00081">eve::animation::AnimSkin::fromModel()</a>, <a class="el" href="AnimImporterModel_8cpp_source.html#l00008">eve::animation::AnimImporter::loadSkeletonFromModel()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="VrmRuntime_8h_source.html#l00049">eve::avatar::VrmRuntime::Part::material</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00550">material</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="VrmRuntime_8h_source.html#l00049">eve::avatar::VrmRuntime::Part::node</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00013">owned</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="VrmDocument_8cpp_source.html#l00227">eve::avatar::parseVrm()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00020">scene</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a>, <a class="el" href="VrmRuntime_8h_source.html#l00049">eve::avatar::VrmRuntime::Part::sourceMesh</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarVroid_8cpp_source.html#l00038">eve::avatar::AvatarInstance::loadVroidModel()</a>.</p>
+
+</div>
+</div>
+<a id="ac6eefb5acb54f198c01b15a7b6950b31" name="ac6eefb5acb54f198c01b15a7b6950b31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6eefb5acb54f198c01b15a7b6950b31">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::VrmRuntime::sync </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td>
+          <td class="paramname"><em>avatar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8cpp_source.html">VrmRuntime.cpp</a> 第 <a class="el" href="VrmRuntime_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="VrmRuntime_8h_source.html#l00044">nodeBones</a>, <a class="el" href="VrmRuntime_8h_source.html#l00053">parts</a>, <a class="el" href="VrmRuntime_8h_source.html#l00043">player</a>, <a class="el" href="VrmRuntime_8h_source.html#l00039">providerLifetime</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a> , 以及 <a class="el" href="VrmRuntime_8h_source.html#l00056">world</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a54f290fe8835c08c205fc643f7dea03e" name="a54f290fe8835c08c205fc643f7dea03e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f290fe8835c08c205fc643f7dea03e">&#9670;&#160;</a></span>document</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a> eve::avatar::VrmRuntime::document</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmMotion_8cpp_source.html#l00032">gaze()</a> , 以及 <a class="el" href="VrmRuntime_8cpp_source.html#l00154">morphs()</a>.</p>
+
+</div>
+</div>
+<a id="addf72dc64b8e2a14793ba190dccd95da" name="addf72dc64b8e2a14793ba190dccd95da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addf72dc64b8e2a14793ba190dccd95da">&#9670;&#160;</a></span>model</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a>&gt; eve::avatar::VrmRuntime::model</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4f59ccf85d4d822e57074a66135adbb8" name="a4f59ccf85d4d822e57074a66135adbb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f59ccf85d4d822e57074a66135adbb8">&#9670;&#160;</a></span>nodeBones</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::avatar::VrmRuntime::nodeBones</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmMotion_8cpp_source.html#l00032">gaze()</a> , 以及 <a class="el" href="VrmRuntime_8cpp_source.html#l00122">sync()</a>.</p>
+
+</div>
+</div>
+<a id="a9ef3ca5c729c3342b47b0dd380300a83" name="a9ef3ca5c729c3342b47b0dd380300a83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ef3ca5c729c3342b47b0dd380300a83">&#9670;&#160;</a></span>parts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html">Part</a>&gt; eve::avatar::VrmRuntime::parts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00146">animate()</a>, <a class="el" href="VrmRuntime_8cpp_source.html#l00154">morphs()</a>, <a class="el" href="VrmRuntime_8cpp_source.html#l00122">sync()</a> , 以及 <a class="el" href="VrmRuntime_8cpp_source.html#l00023">~VrmRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="ae09fd6d84c4e4aef1b125ccbff775ce3" name="ae09fd6d84c4e4aef1b125ccbff775ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae09fd6d84c4e4aef1b125ccbff775ce3">&#9670;&#160;</a></span>player</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">animation::AnimPlayer</a>&gt; eve::avatar::VrmRuntime::player</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00122">sync()</a>.</p>
+
+</div>
+</div>
+<a id="adcb09ee6df59e4947a664baed091885a" name="adcb09ee6df59e4947a664baed091885a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcb09ee6df59e4947a664baed091885a">&#9670;&#160;</a></span>providerLifetime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::weak_ptr&lt;const void&gt; eve::avatar::VrmRuntime::providerLifetime</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00146">animate()</a>, <a class="el" href="VrmRuntime_8cpp_source.html#l00154">morphs()</a>, <a class="el" href="VrmRuntime_8cpp_source.html#l00122">sync()</a> , 以及 <a class="el" href="VrmRuntime_8cpp_source.html#l00023">~VrmRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="aac2aad3df08cfaa2e6b8f08646a3cdb3" name="aac2aad3df08cfaa2e6b8f08646a3cdb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2aad3df08cfaa2e6b8f08646a3cdb3">&#9670;&#160;</a></span>rotations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;int, std::array&lt;float, 3&gt; &gt; eve::avatar::VrmRuntime::rotations</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmMotion_8cpp_source.html#l00032">gaze()</a>.</p>
+
+</div>
+</div>
+<a id="a598f287f859b83557c67fd8f11d4b817" name="a598f287f859b83557c67fd8f11d4b817"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598f287f859b83557c67fd8f11d4b817">&#9670;&#160;</a></span>skeleton</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>&gt; eve::avatar::VrmRuntime::skeleton</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmMotion_8cpp_source.html#l00032">gaze()</a>.</p>
+
+</div>
+</div>
+<a id="a72c0f964fdde4c88aa04aa10704752f5" name="a72c0f964fdde4c88aa04aa10704752f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c0f964fdde4c88aa04aa10704752f5">&#9670;&#160;</a></span>surfaces</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::unique_ptr&lt;<a class="el" href="structeve_1_1avatar_1_1VrmSurface.html">VrmSurface</a>&gt; &gt; eve::avatar::VrmRuntime::surfaces</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00154">morphs()</a> , 以及 <a class="el" href="VrmRuntime_8cpp_source.html#l00023">~VrmRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a91005cbfcd57b2b087a153763f55b4cb" name="a91005cbfcd57b2b087a153763f55b4cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91005cbfcd57b2b087a153763f55b4cb">&#9670;&#160;</a></span>textures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>*&gt; eve::avatar::VrmRuntime::textures</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00023">~VrmRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="adae822d4a31854c1e8e9ea445787b462" name="adae822d4a31854c1e8e9ea445787b462"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adae822d4a31854c1e8e9ea445787b462">&#9670;&#160;</a></span>time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmRuntime::time = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00146">animate()</a> , 以及 <a class="el" href="VrmRuntime_8cpp_source.html#l00154">morphs()</a>.</p>
+
+</div>
+</div>
+<a id="ac7d0cdb5af84a7a19b6a7bf20a98d5b2" name="ac7d0cdb5af84a7a19b6a7bf20a98d5b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">&#9670;&#160;</a></span>world</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::avatar::VrmRuntime::world {1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a> 第 <a class="el" href="VrmRuntime_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00122">sync()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/avatar/<a class="el" href="VrmRuntime_8h_source.html">VrmRuntime.h</a></li>
+<li>src/modules/avatar/<a class="el" href="VrmMotion_8cpp_source.html">VrmMotion.cpp</a></li>
+<li>src/modules/avatar/<a class="el" href="VrmRuntime_8cpp_source.html">VrmRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

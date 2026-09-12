@@ -1,0 +1,353 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::Unit::Worker结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html">Worker</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1Unit_1_1Worker-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::Unit::Worker结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html" title="Worker gathering and delivery state; balances remain owned by the linked economy account.">Worker</a> gathering and delivery state; balances remain owned by the linked economy account.  
+ <a href="structeve_1_1rts_1_1Unit_1_1Worker.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab84df090687bdeefc1ea2d5495848453" id="r_ab84df090687bdeefc1ea2d5495848453"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#ab84df090687bdeefc1ea2d5495848453">resourceType</a></td></tr>
+<tr class="separator:ab84df090687bdeefc1ea2d5495848453"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48fa3adccbc1049efa2e4b7fcf9c43b5" id="r_a48fa3adccbc1049efa2e4b7fcf9c43b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1rts.html#ad52d71acf776c0e19272b9ef3f625121">ResourceNodeLink</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#a48fa3adccbc1049efa2e4b7fcf9c43b5">resourceNode</a></td></tr>
+<tr class="separator:a48fa3adccbc1049efa2e4b7fcf9c43b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade90cf5d7fa95803561c9d0508c36b7a" id="r_ade90cf5d7fa95803561c9d0508c36b7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1rts.html#a771c3418c9b8a957c1ce0c88135c96b8">BuildingLink</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#ade90cf5d7fa95803561c9d0508c36b7a">dropoff</a></td></tr>
+<tr class="separator:ade90cf5d7fa95803561c9d0508c36b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac886084e9132d60147cd14a230b273e7" id="r_ac886084e9132d60147cd14a230b273e7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#ac886084e9132d60147cd14a230b273e7">cargo</a> = 0.0f</td></tr>
+<tr class="separator:ac886084e9132d60147cd14a230b273e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad36e75442510f6c3cff0de30525d5797" id="r_ad36e75442510f6c3cff0de30525d5797"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#ad36e75442510f6c3cff0de30525d5797">capacity</a> = 0.0f</td></tr>
+<tr class="separator:ad36e75442510f6c3cff0de30525d5797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad90c59c59f35e77014925d177f303997" id="r_ad90c59c59f35e77014925d177f303997"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#ad90c59c59f35e77014925d177f303997">gatherRate</a> = 0.0f</td></tr>
+<tr class="separator:ad90c59c59f35e77014925d177f303997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56a188764b6bf40f778cf7ab75b9878f" id="r_a56a188764b6bf40f778cf7ab75b9878f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#a56a188764b6bf40f778cf7ab75b9878f">buildRate</a> = 1.0f</td></tr>
+<tr class="separator:a56a188764b6bf40f778cf7ab75b9878f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a285d27abffaa41e22bd51e61612769e9" id="r_a285d27abffaa41e22bd51e61612769e9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#a285d27abffaa41e22bd51e61612769e9">repairRate</a> = 0.0f</td></tr>
+<tr class="separator:a285d27abffaa41e22bd51e61612769e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3895185579c0b44587ab05e360d81ace" id="r_a3895185579c0b44587ab05e360d81ace"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html#a3895185579c0b44587ab05e360d81ace">autoAssign</a> = false</td></tr>
+<tr class="separator:a3895185579c0b44587ab05e360d81ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="structeve_1_1rts_1_1Unit_1_1Worker.html" title="Worker gathering and delivery state; balances remain owned by the linked economy account.">Worker</a> gathering and delivery state; balances remain owned by the linked economy account. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00551">551</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a3895185579c0b44587ab05e360d81ace" name="a3895185579c0b44587ab05e360d81ace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3895185579c0b44587ab05e360d81ace">&#9670;&#160;</a></span>autoAssign</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Unit::Worker::autoAssign = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00560">560</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56a188764b6bf40f778cf7ab75b9878f" name="a56a188764b6bf40f778cf7ab75b9878f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56a188764b6bf40f778cf7ab75b9878f">&#9670;&#160;</a></span>buildRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Worker::buildRate = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00558">558</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad36e75442510f6c3cff0de30525d5797" name="ad36e75442510f6c3cff0de30525d5797"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad36e75442510f6c3cff0de30525d5797">&#9670;&#160;</a></span>capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Worker::capacity = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00556">556</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac886084e9132d60147cd14a230b273e7" name="ac886084e9132d60147cd14a230b273e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac886084e9132d60147cd14a230b273e7">&#9670;&#160;</a></span>cargo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Worker::cargo = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00555">555</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade90cf5d7fa95803561c9d0508c36b7a" name="ade90cf5d7fa95803561c9d0508c36b7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade90cf5d7fa95803561c9d0508c36b7a">&#9670;&#160;</a></span>dropoff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1rts.html#a771c3418c9b8a957c1ce0c88135c96b8">BuildingLink</a> eve::rts::Unit::Worker::dropoff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00554">554</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad90c59c59f35e77014925d177f303997" name="ad90c59c59f35e77014925d177f303997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90c59c59f35e77014925d177f303997">&#9670;&#160;</a></span>gatherRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Worker::gatherRate = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00557">557</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a285d27abffaa41e22bd51e61612769e9" name="a285d27abffaa41e22bd51e61612769e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a285d27abffaa41e22bd51e61612769e9">&#9670;&#160;</a></span>repairRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Unit::Worker::repairRate = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00559">559</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48fa3adccbc1049efa2e4b7fcf9c43b5" name="a48fa3adccbc1049efa2e4b7fcf9c43b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48fa3adccbc1049efa2e4b7fcf9c43b5">&#9670;&#160;</a></span>resourceNode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1rts.html#ad52d71acf776c0e19272b9ef3f625121">ResourceNodeLink</a> eve::rts::Unit::Worker::resourceNode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00553">553</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab84df090687bdeefc1ea2d5495848453" name="ab84df090687bdeefc1ea2d5495848453"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab84df090687bdeefc1ea2d5495848453">&#9670;&#160;</a></span>resourceType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::Unit::Worker::resourceType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00552">552</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

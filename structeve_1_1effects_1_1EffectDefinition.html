@@ -1,0 +1,428 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::effects::EffectDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1effects.html">effects</a></li><li class="navelem"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html">EffectDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1effects_1_1EffectDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::effects::EffectDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Immutable-by-convention template used to create effect instances.  
+ <a href="structeve_1_1effects_1_1EffectDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acf38b7618e652513931d023708e06fc6" id="r_acf38b7618e652513931d023708e06fc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#acf38b7618e652513931d023708e06fc6">validate</a> () const</td></tr>
+<tr class="memdesc:acf38b7618e652513931d023708e06fc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates definition fields without changing any state.  <br /></td></tr>
+<tr class="separator:acf38b7618e652513931d023708e06fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a7f3bd8344fcc62a973794b58c50bd5e2" id="r_a7f3bd8344fcc62a973794b58c50bd5e2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a7f3bd8344fcc62a973794b58c50bd5e2">id</a></td></tr>
+<tr class="separator:a7f3bd8344fcc62a973794b58c50bd5e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac32d9d201864cfd876a5654f8ea20ebd" id="r_ac32d9d201864cfd876a5654f8ea20ebd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#ac32d9d201864cfd876a5654f8ea20ebd">stackKey</a></td></tr>
+<tr class="separator:ac32d9d201864cfd876a5654f8ea20ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa43aea8dae26ec493120f4aeb252388a" id="r_aa43aea8dae26ec493120f4aeb252388a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#aa43aea8dae26ec493120f4aeb252388a">priority</a> = 0</td></tr>
+<tr class="separator:aa43aea8dae26ec493120f4aeb252388a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16a6c0ac6315a22f78d7e72618e48b7f" id="r_a16a6c0ac6315a22f78d7e72618e48b7f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a16a6c0ac6315a22f78d7e72618e48b7f">duration</a> = 0.0</td></tr>
+<tr class="separator:a16a6c0ac6315a22f78d7e72618e48b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2ad908d92557983cd792000b029f50f" id="r_ab2ad908d92557983cd792000b029f50f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#ab2ad908d92557983cd792000b029f50f">period</a> = 0.0</td></tr>
+<tr class="memdesc:ab2ad908d92557983cd792000b029f50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Period in seconds for domain executor settlement; zero disables periodic ticks.  <br /></td></tr>
+<tr class="separator:ab2ad908d92557983cd792000b029f50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cd71a74b100ef1eae4803b9464fb457" id="r_a0cd71a74b100ef1eae4803b9464fb457"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a0cd71a74b100ef1eae4803b9464fb457">magnitude</a> = 0.0</td></tr>
+<tr class="separator:a0cd71a74b100ef1eae4803b9464fb457"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a8ae422da317705c087180388f5e130" id="r_a0a8ae422da317705c087180388f5e130"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a0a8ae422da317705c087180388f5e130">stackCount</a> = 1</td></tr>
+<tr class="separator:a0a8ae422da317705c087180388f5e130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8be57b0635eb8df258312fda84731e26" id="r_a8be57b0635eb8df258312fda84731e26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1effects_1_1EffectPolicy.html">EffectPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a8be57b0635eb8df258312fda84731e26">policy</a></td></tr>
+<tr class="separator:a8be57b0635eb8df258312fda84731e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06ff127fff1ec1da455f538af8ffb55a" id="r_a06ff127fff1ec1da455f538af8ffb55a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1effects_1_1EffectPayload.html">EffectPayload</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a06ff127fff1ec1da455f538af8ffb55a">payload</a></td></tr>
+<tr class="separator:a06ff127fff1ec1da455f538af8ffb55a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4349efca4c4a4c9f67638fd20b43db60" id="r_a4349efca4c4a4c9f67638fd20b43db60"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectDefinition.html#a4349efca4c4a4c9f67638fd20b43db60">tags</a></td></tr>
+<tr class="separator:a4349efca4c4a4c9f67638fd20b43db60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Immutable-by-convention template used to create effect instances. </p>
+<p>The container copies the definition data it needs at apply time. It never retains the caller's reference, so a definition may be stack-owned or reloaded after the call. The payload is descriptive data only; applying a definition does not mutate gameplay attributes. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00098">98</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="acf38b7618e652513931d023708e06fc6" name="acf38b7618e652513931d023708e06fc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf38b7618e652513931d023708e06fc6">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::effects::EffectDefinition::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates definition fields without changing any state. </p>
+<dl class="section return"><dt>返回</dt><dd>Success when the definition can be applied, otherwise a structured rejection diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a> 第 <a class="el" href="EffectTypes_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectTypes_8h_source.html#l00102">duration</a>, <a class="el" href="EffectTypes_8h_source.html#l00105">magnitude</a>, <a class="el" href="EffectTypes_8h_source.html#l00057">eve::effects::EffectPolicy::maxStacks</a>, <a class="el" href="EffectTypes_8h_source.html#l00056">eve::effects::EffectPolicy::overflow</a>, <a class="el" href="EffectTypes_8h_source.html#l00104">period</a>, <a class="el" href="EffectTypes_8h_source.html#l00107">policy</a>, <a class="el" href="namespaceeve_1_1effects.html#a57d88872cda516c33342a1b1cd94bbf0ad98ac12774fca5c3cbaffe276840c55f">eve::effects::Reject</a>, <a class="el" href="namespaceeve_1_1effects.html#abcc23f6d83c7f64aec1044765da823a6a5d5b78699e57104f2fa03bbdf7b9197b">eve::effects::Set</a>, <a class="el" href="EffectTypes_8h_source.html#l00053">eve::effects::EffectPolicy::stackCount</a>, <a class="el" href="EffectTypes_8h_source.html#l00106">stackCount</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a> , 以及 <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a16a6c0ac6315a22f78d7e72618e48b7f" name="a16a6c0ac6315a22f78d7e72618e48b7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16a6c0ac6315a22f78d7e72618e48b7f">&#9670;&#160;</a></span>duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectDefinition::duration = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a> , 以及 <a class="el" href="EffectTypes_8cpp_source.html#l00067">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7f3bd8344fcc62a973794b58c50bd5e2" name="a7f3bd8344fcc62a973794b58c50bd5e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f3bd8344fcc62a973794b58c50bd5e2">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectDefinition::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a> , 以及 <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a0cd71a74b100ef1eae4803b9464fb457" name="a0cd71a74b100ef1eae4803b9464fb457"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd71a74b100ef1eae4803b9464fb457">&#9670;&#160;</a></span>magnitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectDefinition::magnitude = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a> , 以及 <a class="el" href="EffectTypes_8cpp_source.html#l00067">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a06ff127fff1ec1da455f538af8ffb55a" name="a06ff127fff1ec1da455f538af8ffb55a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06ff127fff1ec1da455f538af8ffb55a">&#9670;&#160;</a></span>payload</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1effects_1_1EffectPayload.html">EffectPayload</a> eve::effects::EffectDefinition::payload</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<a id="ab2ad908d92557983cd792000b029f50f" name="ab2ad908d92557983cd792000b029f50f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2ad908d92557983cd792000b029f50f">&#9670;&#160;</a></span>period</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectDefinition::period = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Period in seconds for domain executor settlement; zero disables periodic ticks. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a> , 以及 <a class="el" href="EffectTypes_8cpp_source.html#l00067">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a8be57b0635eb8df258312fda84731e26" name="a8be57b0635eb8df258312fda84731e26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8be57b0635eb8df258312fda84731e26">&#9670;&#160;</a></span>policy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1effects_1_1EffectPolicy.html">EffectPolicy</a> eve::effects::EffectDefinition::policy</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a> , 以及 <a class="el" href="EffectTypes_8cpp_source.html#l00067">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aa43aea8dae26ec493120f4aeb252388a" name="aa43aea8dae26ec493120f4aeb252388a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa43aea8dae26ec493120f4aeb252388a">&#9670;&#160;</a></span>priority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::effects::EffectDefinition::priority = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a8ae422da317705c087180388f5e130" name="a0a8ae422da317705c087180388f5e130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a8ae422da317705c087180388f5e130">&#9670;&#160;</a></span>stackCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::effects::EffectDefinition::stackCount = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectTypes_8cpp_source.html#l00067">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ac32d9d201864cfd876a5654f8ea20ebd" name="ac32d9d201864cfd876a5654f8ea20ebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac32d9d201864cfd876a5654f8ea20ebd">&#9670;&#160;</a></span>stackKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectDefinition::stackKey</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a> , 以及 <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a4349efca4c4a4c9f67638fd20b43db60" name="a4349efca4c4a4c9f67638fd20b43db60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4349efca4c4a4c9f67638fd20b43db60">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::effects::EffectDefinition::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a> , 以及 <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/effects/<a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a></li>
+<li>src/modules/effects/<a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

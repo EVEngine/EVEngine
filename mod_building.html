@@ -1,0 +1,466 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 建筑放置模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">建筑放置模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>建筑放置 — <code>building</code></h1>
+<p>面向策略 / RTS / 经营模拟（ETS）的建筑放置框架：数据驱动定义、格子占用世界、鬼影预览、 可插拔校验与吸附规则。设计见 建筑放置系统设计。</p>
+<p>可运行示例：<a href="../../../examples/building/"><code>examples/building</code></a>（<code>make building</code>）。</p>
+<h2>离散楼层</h2>
+<p><code>PlacementWorld</code> 把 <code>level</code> 作为 cell/edge 权威地址的一部分。使用 <code>setActiveLevel(level)</code> 选择当前编辑层，使用 <code>setFloorHeight(height)</code> 设置楼层间沿网格 平面法向的距离。原有放置与占用 API 操作活动层；<code>getOccupantAtLevel</code>、 <code>getAnyOccupantAtLevel</code>、<code>getEdgeOccupantAtLevel</code> 可在不切换活动层时显式查询。不同层可占用 同一格或同一边，同层仍会冲突，edge 拓扑也只在本层连接。BuildingFX 使用 <code>level * floorHeight + elevation</code> 投影最终高度。</p>
+<p>BuildingFX 可用 <code>setLevelVisibilityMode(world, mode)</code> 控制楼层显示：<code>all</code> 显示全部， <code>active</code> 仅显示活动层，<code>active_and_below</code> 显示活动层及以下。切换 <code>world.setActiveLevel(...)</code> 后调用 <code>sync(world)</code> 即会原地刷新现有视觉的可见性。</p>
+<p>结构定义可设置 <code>structuralRole</code>（例如 <code>floor</code>、<code>wall</code>、<code>ceiling</code>、<code>roof</code>、<code>stair</code>）。 当 <code>supportMode</code> 为 <code>cell_below</code> 时，定义的每个占地格都必须在下一层找到支撑实例；可用 <code>supportTag</code> 进一步限定支撑类型。缺少支撑时预览和放置返回稳定原因 <code>support_missing</code>。 普通拆除或移动仍被上层实例依赖的支撑体会被拒绝，原因为 <code>support_in_use</code>；脚本可用 <code>getBuildingSupportCount/getBuildingSupportAt/getBuildingDependentCount</code> 查询关系，或调用 <code>removeBuildingCascade</code> 按依赖优先顺序拆除整个结构子树。C++ 应使用返回 owning receipt 的 <code>removeBuildingCascadeResult</code>。定义热重载或外部恢复后，应调用 <code>rebuildStructuralLinksResult</code> 原子验证并重建派生链接。</p>
+<h2>入口</h2>
+<div class="fragment"><div class="line">building &lt;- eve.Building();</div>
+<div class="line">building.registerBuildingsFromJson(jsonText);</div>
+<div class="line">local world = building.newWorld(64, 64, 32.0); // 宽、高、格子像素/世界单位</div>
+<div class="line">local ghost = building.newGhost();</div>
+</div><!-- fragment --><h2>最小示例</h2>
+<div class="fragment"><div class="line">building &lt;- eve.Building();</div>
+<div class="line">building.registerBuildingsFromJson(@&quot;</div>
+<div class="line">[</div>
+<div class="line">  {\&quot;id\&quot;:\&quot;house\&quot;,\&quot;displayName\&quot;:\&quot;House\&quot;,\&quot;footprintW\&quot;:2,\&quot;footprintH\&quot;:2,</div>
+<div class="line">   \&quot;tags\&quot;:[\&quot;house\&quot;],\&quot;cost\&quot;:{\&quot;wood\&quot;:20}},</div>
+<div class="line">  {\&quot;id\&quot;:\&quot;road\&quot;,\&quot;footprintW\&quot;:1,\&quot;footprintH\&quot;:1,\&quot;tags\&quot;:[\&quot;road\&quot;]}</div>
+<div class="line">]</div>
+<div class="line">&quot;);</div>
+<div class="line"> </div>
+<div class="line">world &lt;- building.newWorld(32, 32, 32.0);</div>
+<div class="line">world.setId(&quot;town&quot;);</div>
+<div class="line">world.fillTerrain(1);</div>
+<div class="line"> </div>
+<div class="line">ghost &lt;- building.newGhost();</div>
+<div class="line">ghost.setBuildingId(&quot;house&quot;);</div>
+<div class="line">ghost.setFromWorld(world, mouseX, mouseY); // 按定义 snapMode 吸附</div>
+<div class="line">if (ghost.validate(world)) {</div>
+<div class="line">    local id = world.placeGhost(ghost);</div>
+<div class="line">    print(&quot;placed &quot; + id + &quot;\n&quot;);</div>
+<div class="line">} else {</div>
+<div class="line">    print(&quot;cannot place: &quot; + ghost.getReason() + &quot;\n&quot;);</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>任务导向示例</h2>
+<h3>1. 沿道路摆摊（邻接标签）</h3>
+<p>定义里设 <code>"requireAdjacentTag":"road"</code>，先铺 <code>road</code>，再放摊位；失败原因为 <code>adjacency_tag</code>。</p>
+<h3>2. 码头只能建在水域</h3>
+<p>地形语义由 <code>world.setTerrain(x,y,semantic)</code> 写入；定义 <code>"requireTerrain":[2]</code>。 陆地格会得到 <code>terrain_mismatch</code>。</p>
+<h3>3. 自定义“金币不足”校验（C++）</h3>
+<div class="fragment"><div class="line">PlacementSystem::registerValidateRule(<span class="stringliteral">&quot;needGold&quot;</span>,</div>
+<div class="line">    [](<span class="keyword">const</span> PlacementWorld&amp;, <span class="keyword">const</span> PlacementQuery&amp;, std::string* reason) {</div>
+<div class="line">        <span class="keywordflow">if</span> (playerGold &lt; 10) { <span class="keywordflow">if</span> (reason) *reason = <span class="stringliteral">&quot;not_enough_gold&quot;</span>; <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">    });</div>
+</div><!-- fragment --><p>建筑定义 <code>"validateRule":"needGold"</code>；脚本侧只需选用该规则名。</p>
+<h2>API 快查</h2>
+<h3><code>Building</code>（模块）</h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>registerBuildingsFromJson(json)</code>   </td><td class="markdownTableBodyNone">批量注册定义，返回成功数    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>clearBuildingDefinitions()</code>   </td><td class="markdownTableBodyNone">清空定义表    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getBuildingDefinitionCount()</code> / <code>hasBuildingDefinition(id)</code>   </td><td class="markdownTableBodyNone">查询    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>getBuildingDisplayName</code> / <code>Category</code> / <code>FootprintW</code> / <code>FootprintH</code>   </td><td class="markdownTableBodyNone">定义字段    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getBuildingSnapMode</code> / <code>RotationMode</code> / <code>ValidateRule</code>   </td><td class="markdownTableBodyNone">策略名    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>buildingHasTag</code> / <code>getBuildingExtra</code> / <code>getBuildingCost</code>   </td><td class="markdownTableBodyNone">标签与扩展    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newWorld(w,h,cellSize)</code> / <code>newGhost()</code>   </td><td class="markdownTableBodyNone">工厂    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>hasValidateRule</code> / <code>hasSnapRule</code>   </td><td class="markdownTableBodyNone">内置+已注册规则    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>clearChangeEvents</code> / <code>getChangeEvent*</code>   </td><td class="markdownTableBodyNone">变更事件 poll   </td></tr>
+</table>
+<h3><code>PlacementWorld</code></h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setOrigin</code> / <code>setCellSize</code> / <code>worldToCell*</code> / <code>cellToWorld*</code>   </td><td class="markdownTableBodyNone">坐标    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>fillTerrain</code> / <code>setTerrain</code> / <code>getTerrain</code>   </td><td class="markdownTableBodyNone">地形语义    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>canPlace</code> / <code>canPlaceReason</code> / <code>placeAt</code> / <code>placeAtWorld</code> / <code>placeGhost</code>   </td><td class="markdownTableBodyNone">放置    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>removeBuilding</code> / <code>moveBuilding</code> / <code>clearBuildings</code>   </td><td class="markdownTableBodyNone">拆除与移动    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getOccupant</code> / <code>isCellEmpty</code> / <code>getBuilding*</code>   </td><td class="markdownTableBodyNone">查询   </td></tr>
+</table>
+<h3><code>Ghost</code></h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setBuildingId</code> / <code>setCell</code> / <code>setFromWorld</code> / <code>setRotationDeg</code> / <code>rotateBy</code>   </td><td class="markdownTableBodyNone">姿态    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>validate(world)</code> / <code>isValid</code> / <code>getReason</code>   </td><td class="markdownTableBodyNone">校验结果   </td></tr>
+</table>
+<h2>生命周期注意</h2>
+<ul>
+<li>将 <code>PlacementWorld</code> / <code>Ghost</code> 保存在全局或实体组件中；不要每帧 <code>newWorld</code>。</li>
+<li>变更事件不会自动清空；批量操作后调用 <code>clearChangeEvents</code> 或按帧 poll。</li>
+<li>自定义 validate/snap/hook 只能在 C++ 注册；脚本通过字符串策略名选用。</li>
+<li>模块**不**扣资源、不画鬼影；<code>cost</code> 仅作数据提示，由游戏在 hook 或脚本中处理。</li>
+</ul>
+<h2>多样式网格 / 3D / Tilemap（2026-08-18 起）</h2>
+<p>坐标换算统一走 <code>grid</code> 模块（纯数学），<code>PlacementWorld</code> 缺省为正交 2D，旧脚本零改动。</p>
+<h3>网格布局</h3>
+<div class="fragment"><div class="line">world.setGridLayout(&quot;isometric&quot;);          // rectangle | hexagon | isometric | staggered | isometric-z-as-y</div>
+<div class="line">world.setGridPlane(&quot;xz&quot;);                  // xy（默认）| xz（3D：第二轴 -&gt; 世界 Z）</div>
+<div class="line">world.setCellGap(2.0, 2.0);</div>
+<div class="line">world.setStagger(&quot;y&quot;, &quot;odd&quot;);</div>
+<div class="line">world.setHexSideLength(14.0);</div>
+</div><!-- fragment --><h3>绑定 Tilemap（复用投影 + GID 地形）</h3>
+<div class="fragment"><div class="line">world.bindTileLayer(layer);                // 同时复用 layer 的 orientation/stagger/hex</div>
+<div class="line">world.setTerrainGid(2, 2);                 // GID 2 -&gt; 地形语义 2（水域）</div>
+<div class="line">world.setTerrainGidMapJson(&quot;{\&quot;1\&quot;:1,\&quot;2\&quot;:2}&quot;);  // 或整表</div>
+</div><!-- fragment --><p>绑定后 <code>getTerrain</code> 从 GID 懒解析；<code>setTerrain</code> 手动覆盖优先。</p>
+<h3>3D 放置（XZ 平面 + 表面接口）</h3>
+<div class="fragment"><div class="line">world.setGridPlane(&quot;xz&quot;);</div>
+<div class="line">ghost.setFromSurface(world, &quot;plane&quot;, hitX, hitZ);   // 内置平面表面；高度 setPlaneSurfaceHeight</div>
+<div class="line">ghost.setFromWorld3D(world, worldX, worldY, worldZ); // 直接喂真实世界坐标</div>
+<div class="line">world.placeAtWorld3D(&quot;house&quot;, x, y, z, rot);</div>
+</div><!-- fragment --><p>物理射线由游戏在 C++ 侧实现 Provider；引擎内置 <code>plane</code>、不可变规则高度场 <code>HeightfieldSurface</code>，以及不可变静态三角网格 <code>StaticMeshSurface</code>。</p>
+<p>新实现应优先使用 <code>PlacementSystem::registerSurfaceProvider</code>。Provider 返回受检查的 <code>Result&lt;PlacementHit&gt;</code>；命中除世界坐标外还包含归一化法线、正交切线框架、稳定 <code>surfaceId</code>、<code>surfaceRevision</code>、primitive id 与表面标签。<code>registerSurface</code> 保留为 兼容适配层，只能用 <code>bool</code> 表达“命中/未命中”。非法坐标或零法线会被结构化拒绝。</p>
+<p>C++ 高度场使用行主序样本，支持独立原点、XY 间距、高度缩放/偏移及稳定版本：</p>
+<div class="fragment"><div class="line">HeightfieldSurface::Config config;</div>
+<div class="line">config.width = <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>;</div>
+<div class="line">config.height = <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>;</div>
+<div class="line">config.spacingX = cellWidth;</div>
+<div class="line">config.spacingY = cellDepth;</div>
+<div class="line">config.surfaceId = <span class="stringliteral">&quot;terrain.chunk.0&quot;</span>;</div>
+<div class="line">config.surfaceRevision = terrainRevision;</div>
+<div class="line"><span class="keyword">auto</span> surface = HeightfieldSurface::create(config, std::move(rowMajorHeights));</div>
+<div class="line"><span class="keywordflow">if</span> (surface.ok()) {</div>
+<div class="line">    <span class="keyword">auto</span> registered = PlacementSystem::registerHeightfieldSurface(</div>
+<div class="line">        <span class="stringliteral">&quot;terrain&quot;</span>, std::move(surface).takeValue());</div>
+<div class="line">    <span class="comment">// registered 必须检查；unregisterSurface(&quot;terrain&quot;) 释放 registry 所持引用。</span></div>
+<div class="line">}</div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+</div><!-- fragment --><p>采样范围包含最外圈顶点，范围外返回 <code>NotFound</code>。内部使用双线性高度；先以中心差分 （边界为单边差分）得到顶点梯度，再双线性插值梯度，因此共享片边界上的法线和切线 连续。XZ 网格把高度映射到 world Y，XY 网格映射到 world Z。对象构造完成后不可变，可 并发采样；注册、替换和注销仍限定调用线程且不得与 采样并发。修改地形时应构造新对象、递增 <code>surfaceRevision</code> 后原子替换注册项。</p>
+<p>静态网格使用拥有所有权的世界空间 XYZ 顶点、三角形索引和可选逐顶点法线，在创建时 构建确定性的 median-split BVH：</p>
+<div class="fragment"><div class="line">StaticMeshSurface::Config config;</div>
+<div class="line">config.surfaceId = <span class="stringliteral">&quot;terrain.mesh.0&quot;</span>;</div>
+<div class="line">config.surfaceRevision = meshRevision;</div>
+<div class="line">config.hitSelection = StaticMeshSurface::HitSelection::Highest;</div>
+<div class="line"><span class="keyword">auto</span> surface = StaticMeshSurface::create(</div>
+<div class="line">    config, std::move(packedWorldPositions), std::move(triangleIndices),</div>
+<div class="line">    std::move(optionalPackedWorldNormals));</div>
+<div class="line"><span class="keywordflow">if</span> (surface.ok()) {</div>
+<div class="line">    <span class="keyword">auto</span> registered = PlacementSystem::registerStaticMeshSurface(</div>
+<div class="line">        <span class="stringliteral">&quot;terrain-mesh&quot;</span>, std::move(surface).takeValue());</div>
+<div class="line">    <span class="comment">// registered 必须检查。</span></div>
+<div class="line">}</div>
+</div><!-- fragment --><p>查询仍采用网格平面坐标而非相机射线：XZ 网格沿世界 Y 投影，XY 网格沿世界 Z 投影； 与投影方向平行、在平面上退化的三角面不会命中。重叠层可确定性选择 <code>Highest</code>、 <code>Lowest</code> 或离 <code>referenceHeight</code> 最近的面，相同高度/距离以源三角形序号决胜；该序号写入 <code>primitiveId</code>。法线优先重心插值逐顶点法线，否则使用几何法线，并可统一朝向网格 up。 对象构造后不可变且可并发采样，注册表持有快照至替换或注销。动态物理体、相机射线和 任意方向墙面拾取仍应使用自定义 <code>registerSurfaceProvider</code>。</p>
+<p>通过表面放置后，Ghost 与 <code>PlacedBuilding</code> 会保留表面身份、revision 和局部法线。 脚本可用 <code>ghost.getSurfaceId/getSurfaceRevision/getSurfaceNormal*</code>，以及 <code>world.getBuildingSurfaceId/getBuildingSurfaceRevision/getBuildingSurfaceNormal*</code> 查询。 这些值是放置时快照；provider revision 变化后的已放置实例自动重投影尚未提供，当前 不会静默移动已经放置的建筑。</p>
+<p>多格建筑通过 <code>sampleSurfacePatch</code> 覆盖旋转后的实际占地掩码。定义可配置：</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;id&quot;: &quot;hill-house&quot;,</div>
+<div class="line">  &quot;footprintW&quot;: 2,</div>
+<div class="line">  &quot;footprintH&quot;: 2,</div>
+<div class="line">  &quot;maxSurfaceSlopeDegrees&quot;: 25.0,</div>
+<div class="line">  &quot;maxSurfaceHeightDelta&quot;: 0.4</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>默认规则会以 <code>surface_slope</code> 或 <code>surface_height_delta</code> 拒绝超过限制的 Ghost；跨 <code>surfaceId</code> 或 revision 的 footprint 会在采样阶段返回 Conflict。旋转带表面附着的 Ghost 后，下一次 <code>validate</code> 会自动按新 footprint 重采样。3D <code>buildingfx</code> 使用表面 tangent/normal/bitangent 对齐建筑、Ghost 与占地光标，并保留 <code>free</code> snap 的精确锚点。</p>
+<h3>通道（同格叠放）</h3>
+<p>定义 <code>"channel":"floor"</code> / <code>"channel":"furniture"</code>，同一格允许跨通道建筑并存； <code>getOccupantInChannel(channel, x, y)</code> / <code>isCellEmptyInChannel</code> 按通道查询。</p>
+<h3>边对象（墙、围栏、门）</h3>
+<p>边对象使用独立于格子 footprint 的占用域，因此墙不会错误占用相邻房间的地板格：</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;id&quot;: &quot;stone-wall&quot;,</div>
+<div class="line">  &quot;placementKind&quot;: &quot;edge&quot;,</div>
+<div class="line">  &quot;connectionGroup&quot;: &quot;stone-wall-network&quot;,</div>
+<div class="line">  &quot;channel&quot;: &quot;walls&quot;,</div>
+<div class="line">  &quot;renderMode&quot;: &quot;3d&quot;,</div>
+<div class="line">  &quot;visual3d&quot;: {&quot;height&quot;:&quot;3.0&quot;, &quot;thickness&quot;:&quot;0.25&quot;}</div>
+<div class="line">}</div>
+</div><!-- fragment --><div class="fragment"><div class="line">session.startPlacement(world, &quot;stone-wall&quot;);</div>
+<div class="line">session.updateEdge(world, cellX, cellY, &quot;north&quot;); // north | east | south | west</div>
+<div class="line">if (session.isValid()) session.execute();</div>
+</div><!-- fragment --><p><code>north/south</code> 和 <code>east/west</code> 会规范化为唯一物理边，例如 <code>(x,y,north)</code> 与 <code>(x,y-1,south)</code> 指向同一占用。<code>world.getEdgeConnectionMask(instanceId)</code> 返回同一 <code>connectionGroup</code> 的六位邻接信息：沿边起点/终点延伸，以及两个端点各自的两条垂直 分支。BuildingFX 使用边中点、长度和 <code>thickness</code> 生成视觉。</p>
+<p>连续墙线通过会话原子提交：</p>
+<div class="fragment"><div class="line">local status = session.executeEdgeLine(startVertexX, startVertexY, endVertexX, endVertexY);</div>
+<div class="line">for (local i = 0; i &lt; session.getLastPlacedCount(); ++i)</div>
+<div class="line">    print(session.getLastPlacedId(i) + &quot;\n&quot;);</div>
+</div><!-- fragment --><p>端点必须形成非空水平线或垂直线。系统会先验证全部单位边；任意一段越界或被占用时， 不会创建实例、写占用或发送部分事件。成功后每段仍拥有独立 instance id。</p>
+<p>带转角的正交路径也可以作为一次手势提交：</p>
+<div class="fragment"><div class="line">session.beginEdgePath(startVertexX, startVertexY);</div>
+<div class="line">session.appendEdgePathVertex(turnVertexX, turnVertexY);</div>
+<div class="line">session.appendEdgePathVertex(endVertexX, endVertexY);</div>
+<div class="line">local status = session.executeEdgePath();</div>
+</div><!-- fragment --><p>每个相邻顶点必须形成非空水平或垂直段，同一路径不能重复经过同一物理边。系统在写入前 预检整条路径，失败时不会留下半条墙；成功 id 按路径方向排序，BuildingFX 会根据现有边 拓扑自动选择转角视觉。<code>building_editing::BuildingTarget::makeEdgePath</code> 将同一路径编码为一个 可撤销/重做的原子批次。</p>
+<p>三次 Bezier 曲线使用四个逻辑网格控制点和固定细分数：</p>
+<div class="fragment"><div class="line">session.beginEdgeCurve(1.0, 1.0);</div>
+<div class="line">session.appendEdgeCurveControlPoint(1.0, 6.0);</div>
+<div class="line">session.appendEdgeCurveControlPoint(7.0, 6.0);</div>
+<div class="line">session.appendEdgeCurveControlPoint(7.0, 1.0);</div>
+<div class="line">local status = session.executeEdgeCurve(24);</div>
+</div><!-- fragment --><p>细分数范围为 2–4096。采样点以固定公式舍入到逻辑顶点，再以确定性 Manhattan 步进连接， 同样走整条路径的重复边、边界和占用预检。相同控制点与细分数会得到相同单位边序列，适合 重放、撤销和联网命令。曲线若自交并重复经过同一物理边会整体拒绝。当前 BuildingFX 将结果 显示为拓扑正确的单位边组合。成功提交还会在 <code>PlacementWorld</code> 创建一个权威曲线组，保存 强类型组 id、四个控制点、细分数和有序成员 id；clone/swap 会完整保留该状态。移动、替换或 删除任一成员会原子解散整个组并清除其余成员链接，防止旧控制点继续驱动视觉；普通单位边 仍然保留。单实例 restore 不会凭不完整快照重建曲线组；<code>building_editing</code> schema v8 使用 组级 codec 同时保存组身份、控制点、细分数和有序实例快照，撤销删除整组，重做在独立候选 世界中按原 ID 全量预检后原子恢复。任一成员冲突都会拒绝整个恢复且不改变目标世界。</p>
+<p>编辑器可在每次控制点拖动时调用 <code>previewEdgeCubicBezier</code> 获得带 world revision 的不可变 草稿，内容包括四个控制点、确定性采样顶点、规范边序列和结构化诊断。<code>edgeCubicBezierGizmo</code> 把相同草稿投影为 UI 中立的四个球形手柄、虚线控制多边形和红/绿采样路径；视口只负责绘制 与拖拽，不拥有曲线事实。编辑已有曲线时传入任一成员 id，预览会在候选世界中临时排除原组。 拖拽结束后使用 <code>makeUpdateEdgeCubicBezier</code> 生成一个 <code>building.edge-curve.replace.v1</code> 原子事务： 组 id 保持稳定，新旧边集合整体替换，撤销恢复完整旧控制点和成员集合。</p>
+<p>首次创建贴地曲线使用 <code>makeEdgeCubicBezierOnSurface</code>；它先生成同一离散边候选，再完整采样 命名 surface provider，最后把边实例和表面帧编码进同一个 <code>building.edge-curve.set.v1</code> 操作。 <code>previewEdgeCubicBezier</code> 与 <code>edgeCubicBezierGizmo</code> 的可选 <code>surfaceName</code> 参数沿用相同采样规则。 成功 draft 携带 provider、surface identity/revision 和拥有型世界坐标/法线样本；gizmo 的控制柄、 控制多边形和解析曲线路径会投射到表面。采样失败时 draft 返回 Rejected 和结构化诊断，路径使用 红色回退投影，且不会产生可提交操作。</p>
+<p><code>BuildingEdgeCurveDragSession</code> 把视口射线适配为上述 draft/事务协议：按最近命中的球形控制柄 开始拖动，在相机朝向的拖动平面上投影后转换回连续逻辑网格坐标，每次移动都重新生成 surface-aware preview 与 gizmo。鼠标释放时仅为最后一个有效 draft 生成 <code>building.edge-curve.replace.v1</code>；视口仍通过编辑 authority 预检和提交该操作。会话记录开始时的 target revision，拖动期间若世界被其他编辑修改，则返回 Conflict、取消手势且不覆盖并发修改。 输入层不被保留，target 由调用方拥有并必须活得比拖拽会话更久。</p>
+<p><code>building_editor::BuildingEdgeCurveTool</code> 已把该协议接入通用 <code>EditorSession</code>。宿主实现 <code>IBuildingViewportAdapter</code>，同步提供屏幕指针到世界射线以及世界点到 overlay 坐标的投影；工具 在 Pointer Down 命中控制柄后请求捕获，Move 只更新拥有型 preview，Pointer Up 才通过借用的 <code>IEditAuthority</code> 预检并提交一个操作。Cancel、未命中、投影失败和 revision conflict 均不改变 世界。工具把四个控制柄与控制线/曲线路径输出到 <code>IEditorOverlay</code>，并保存最后一次结构化诊断和 <code>TransactionReceipt</code>。提交后会采用 receipt 中的新曲线成员 id 和最新控制点，因此同一选择可 继续拖动；更换 viewport 或 authority 会先取消未提交手势，避免跨宿主提交。</p>
+<p>自定义表面曲线使用 <code>placeEdgeCubicBezierOnSurface</code>。系统先完成整条离散边预检，再沿解析 Bezier 等距参数采样 <code>subdivisions+1</code> 个表面帧；所有命中必须具有相同 <code>surfaceId</code> 和 <code>surfaceRevision</code>，否则不写入任何边。成功后曲线组拥有 provider 名、表面身份/修订以及每个 样本的世界坐标和法线，因此渲染、快照、撤销和重放不依赖提供者继续存在。编辑控制点时会 重新调用原 provider，只有新样本全部连续有效时才替换旧组。</p>
+<p>运行时脚本可在同一个 <code>PlacementSession</code> 中完成对应提交，无需绕过会话状态：</p>
+<div class="fragment"><div class="line">session.beginEdgeCurve(1.0, 1.0);</div>
+<div class="line">session.appendEdgeCurveControlPoint(1.0, 6.0);</div>
+<div class="line">session.appendEdgeCurveControlPoint(7.0, 6.0);</div>
+<div class="line">session.appendEdgeCurveControlPoint(7.0, 1.0);</div>
+<div class="line">local status = session.executeEdgeCurveOnSurface(24, &quot;terrain.main&quot;);</div>
+</div><!-- fragment --><p>该入口与平面曲线共享控制点、原子占用预检和 <code>lastPlacedIds</code>；仅在完整表面采样与边提交均 成功后清空控制点。失败会保留控制点，调用方可修改 provider、细分数或控制点后再次预览。</p>
+<p>BuildingFX 会把连接掩码归类为 <code>isolated</code>、<code>end</code>、<code>straight</code>、<code>corner</code>、<code>tee</code>、 <code>cross</code>。视觉表可用 <code>variant.&lt;类型&gt;.&lt;字段&gt;</code> 覆盖基础值，例如：</p>
+<div class="fragment"><div class="line">&quot;visual3d&quot;: {</div>
+<div class="line">  &quot;mesh&quot;:&quot;models/wall.glb#main&quot;,</div>
+<div class="line">  &quot;height&quot;:&quot;3&quot;, &quot;thickness&quot;:&quot;0.25&quot;, &quot;colorR&quot;:&quot;0.6&quot;,</div>
+<div class="line">  &quot;variant.end.mesh&quot;:&quot;models/wall-end.glb#main&quot;,</div>
+<div class="line">  &quot;variant.corner.mesh&quot;:&quot;models/wall-corner.glb#main&quot;,</div>
+<div class="line">  &quot;variant.corner.mask.34.mesh&quot;:&quot;models/wall-corner-34.glb#main&quot;,</div>
+<div class="line">  &quot;variant.end.rotationDeg&quot;:&quot;15&quot;,</div>
+<div class="line">  &quot;variant.corner.mirrorZ&quot;:&quot;true&quot;,</div>
+<div class="line">  &quot;variant.corner.thickness&quot;:&quot;0.4&quot;,</div>
+<div class="line">  &quot;variant.tee.colorR&quot;:&quot;0.9&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>字段解析顺序是精确 mask、拓扑类型、基础字段；因此特殊连接形态可以使用独立资源，未提供 精确资源时仍能回退到类型或基础资源。宿主 C++ 通过 <code>setMeshResolver</code> 把稳定资源 id 映射到 provider-owned <code>graphics::Mesh*</code>。邻接墙增删后下一次 <code>BuildingFx.sync</code> 会重新分类并刷新资源、 旋转、镜像、尺寸和颜色。<code>getVisualVariant/Resource/FallbackReason</code> 可用于调试；fallback 原因 为 <code>primitive_default</code>、<code>resolver_unavailable</code> 或 <code>resource_unresolved</code>。</p>
+<h3>角点对象（柱、连接节点）</h3>
+<p><code>placementKind:"corner"</code> 使用网格顶点而不是格子或边。顶点坐标范围包含最外侧边界， 例如 <code>8×8</code> 世界的合法范围为 <code>(0..8, 0..8)</code>：</p>
+<div class="fragment"><div class="line">local id = world.placeCorner(&quot;wood-post&quot;, 4, 3);</div>
+<div class="line">local occupant = world.getCornerOccupant(&quot;posts&quot;, 4, 3);</div>
+</div><!-- fragment --><p>corner 与 cell/edge 独立占用，同一坐标可同时存在地板、墙和柱。跨层柱可设置 <code>supportMode:"corner_below"</code>，并通过 <code>supportTag</code> 限定下层柱类型。C++ 应优先调用返回 结构化结果和 owning snapshot 的 <code>placeCornerResult</code>。Ghost 使用 <code>setCorner(world,x,y)</code>， PlacementSession 使用 <code>updateCorner(world,x,y)</code>；放置、查询、移动、拆除、替换和结构级联均 保持 corner 域。<code>building_editing</code> v3 快照保存独立 <code>cornerX/cornerY</code>，撤销与重做不会把柱子 错误恢复成 cell 对象；旧 v1/v2 操作仍可读取。</p>
+<p>BuildingFX 在顶点锚点生成 corner 视觉。3D 可用 <code>visual3d.width/depth/height</code>，2D 可用 <code>visual2d.width/height</code>；未配置宽深时使用 <code>size</code>，再回退到较短格边的 20。Ghost 和占地 光标使用同一尺寸规则。</p>
+<h3>自由对象</h3>
+<p><code>placementKind:"free"</code> 保存未吸附的世界平面坐标，适用于家具、植被与装饰物。定义通过 <code>freeRadiusCells</code> 声明圆形碰撞 footprint（单位为较短格边，默认 <code>0.25</code>）。同时提供正数 <code>freeFootprintWidthCells</code> 与 <code>freeFootprintHeightCells</code> 时改用随自由旋转姿态变化的 OBB； 宽度沿网格局部 X、长度沿网格局部 Y。<code>freeFootprintVertices</code> 可进一步提供以锚点为原点的 凸多边形局部 x/y 坐标对（单位仍为格）；它的优先级高于 OBB。数组必须包含 3–64 个顶点、 保持一致绕序且不能为凹多边形，否则注册时清除该多边形并回退 OBB/圆形。仅同楼层、同 channel 的 free 对象彼此阻挡，cell/edge/corner 占用保持独立：</p>
+<div class="fragment"><div class="line">[</div>
+<div class="line">  {&quot;id&quot;:&quot;tree&quot;,&quot;placementKind&quot;:&quot;free&quot;,&quot;snapMode&quot;:&quot;free&quot;,&quot;rotationMode&quot;:&quot;free&quot;,</div>
+<div class="line">   &quot;channel&quot;:&quot;decor&quot;,&quot;freeRadiusCells&quot;:0.3,&quot;renderMode&quot;:&quot;3d&quot;},</div>
+<div class="line">  {&quot;id&quot;:&quot;bench&quot;,&quot;placementKind&quot;:&quot;free&quot;,&quot;snapMode&quot;:&quot;free&quot;,&quot;rotationMode&quot;:&quot;free&quot;,</div>
+<div class="line">   &quot;channel&quot;:&quot;decor&quot;,&quot;freeFootprintWidthCells&quot;:2.0,&quot;freeFootprintHeightCells&quot;:0.5},</div>
+<div class="line">  {&quot;id&quot;:&quot;diamond-table&quot;,&quot;placementKind&quot;:&quot;free&quot;,&quot;snapMode&quot;:&quot;free&quot;,&quot;rotationMode&quot;:&quot;free&quot;,</div>
+<div class="line">   &quot;channel&quot;:&quot;decor&quot;,&quot;freeFootprintVertices&quot;:[-1,0, 0,-0.4, 1,0, 0,0.4]}</div>
+<div class="line">]</div>
+</div><!-- fragment --><div class="fragment"><div class="line">session.startPlacement(world, &quot;tree&quot;);</div>
+<div class="line">session.updateFree(world, 12.25, 17.75, 0.5);</div>
+<div class="line">local id = session.execute();</div>
+</div><!-- fragment --><p><code>placeFree/canPlaceFree/getFreeOccupant</code> 提供直接脚本访问；碰撞返回稳定原因 <code>free_overlap</code>。圆形、OBB、凸多边形之间的任意组合均使用实际旋转姿态检测；点选也使用 同一权威 footprint。移动保持精确小数坐标、elevation 与自由旋转。BuildingFX 的宽深未 显式配置时回退为圆形直径或多边形局部包围尺寸。<code>building_editing</code> v6 快照保存 <code>freeRadius</code>、<code>freeHalfWidth</code>、<code>freeHalfHeight</code> 与 <code>freeFootprintVertices</code>，并通过 <code>makeMoveFree</code> 构造不经过格子吸附的可逆移动。<code>setFromSurface</code> 对 free 定义保留精确命中、 surface identity/revision、法线、切线和采样统计，并在提交前应用坡度与高度差限制； BuildingFX 使用同一表面框架对齐视觉。free 对象也可通过表面 Ghost 在不同自定义表面间 原子移动；成功时位置与完整表面附件进入同一收据/事件，限制校验失败则不改变实例。 OBB/凸多边形的表面 Patch 会采样中心和全部旋转顶点，跨 surface identity/revision 会拒绝 提交。provider revision 主动变化后的已放置实例重采样，以及凹多边形/多轮廓 footprint 留待后续增强。</p>
+<p>移动与替换也通过同一个会话原子提交。先把鬼影更新到目标姿态，再执行移动；替换使用 会话当前选择的建筑定义，并保持原 instance id、属性、驻军和表面附件：</p>
+<div class="fragment"><div class="line">session.startPlacement(world, &quot;wood-chair&quot;);</div>
+<div class="line">session.updateFromWorld(world, targetX, targetY);</div>
+<div class="line">if (session.executeMove(existingId) == 0)</div>
+<div class="line">    print(&quot;move committed\n&quot;);</div>
+<div class="line"> </div>
+<div class="line">session.startPlacement(world, &quot;stone-chair&quot;);</div>
+<div class="line">if (session.executeReplace(existingId) == 0)</div>
+<div class="line">    print(&quot;replace rejected\n&quot;);</div>
+</div><!-- fragment --><p><code>executeMove</code> 和 <code>executeReplace</code> 返回命名状态（<code>Committed</code> 为 0，<code>Rejected</code> 为 1）， 成功后 <code>getLastEditedId()</code> 返回受影响实例。移动支持 cell、edge 与 corner 鬼影；替换要求新旧定义 属于同一 placement domain。冲突、越界、未知定义或跨 domain 替换均在写入前拒绝，不发送 部分事件。C++ 应优先使用 <code>moveBuildingResult</code>、<code>moveEdgeResult</code> 和 <code>replaceBuildingResult</code> 获取结构化诊断及 before/after receipt。</p>
+<p>矩形与圆形笔刷先预览、再原子提交：</p>
+<div class="fragment"><div class="line">session.startPlacement(world, &quot;floor&quot;);</div>
+<div class="line">session.previewRectangle(2, 3, 6, 7); // 或 previewBrush(cx, cy, radius)</div>
+<div class="line">fx.updateAreaPreview(world, session);</div>
+<div class="line">fx.setGridVisible(world, true);        // drawGrid2D/drawGrid3D 显示绿/红热图</div>
+<div class="line"> </div>
+<div class="line">if (session.executeRectangle(2, 3, 6, 7) == 0) {</div>
+<div class="line">    for (local i = 0; i &lt; session.getLastPlacedCount(); ++i)</div>
+<div class="line">        print(session.getLastPlacedId(i) + &quot;\n&quot;);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>预览按行主序返回每个锚点，<code>getAreaPreviewAccepted/Reason</code> 可显示具体冲突。圆形笔刷使用 包含边界的欧氏格距。区域内任一锚点非法或候选 footprint 互相覆盖时，执行会整体拒绝； 不会产生部分建筑。BuildingFX 的 2D/3D 热图直接复制会话预检结果，绿色表示可提交，红色 表示占用、越界、地形或区域内部冲突。</p>
+<p>C++ 编辑工具应通过 <code>building_editing::BuildingPlacementTarget::makeRectangle</code> 或 <code>makeBrush</code> 生成一个 <code>DomainOperation</code>，再交给 <code>LocalWorldAuthority</code>。整个矩形或笔刷只有一个 revision、 一个 transaction receipt 和一个撤销记录；撤销会删除该手势创建的全部精确 instance id。 如果提交前出现新的占用冲突，staging candidate 会整体丢弃，权威世界与 Building 事件队列不变。</p>
+<p>需要由同一个工具栏切换多种绘制方式时，使用统一 Placement Pattern 协议。当前内置 <code>edge_line</code>、<code>edge_path</code>、<code>edge_cubic_bezier</code>、<code>rectangle_fill</code>、<code>rectangle_outline</code> 和 <code>circle_brush</code> 六种模式；它们共享 owning request、非变异 preview、结构化失败和一次性原子 placement receipt。旧的 <code>executeEdgeLine</code>、<code>executeEdgePath</code>、<code>executeEdgeCurve</code>、矩形和 刷子入口仍保留，但现在都投影到相同权威执行路径。</p>
+<div class="fragment"><div class="line">session.startPlacement(world, &quot;floor&quot;);</div>
+<div class="line">session.beginPattern(&quot;rectangle_outline&quot;);</div>
+<div class="line">session.appendPatternPoint(2, 2);</div>
+<div class="line">session.appendPatternPoint(8, 6);</div>
+<div class="line">if (session.previewPattern() == 0) {</div>
+<div class="line">    fx.updateAreaPreview(world, session);</div>
+<div class="line">    session.executePattern();</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>区域 preview 可继续通过 BuildingFX 热图显示；通用 UI 可读取 <code>getPatternPreviewCount/X/Y/Axis/Accepted/Reason</code>，无需理解每种模式的内部结果类型。矩形边框 按行主序生成唯一周长锚点，单行或单列不会重复。离散边和区域坐标必须是有限整数；Bezier 控制点保持连续逻辑坐标。只有 Bezier 当前接受 <code>setPatternSurface</code>，其他模式传入 surface 会以 结构化 InvalidArgument 拒绝。</p>
+<h3>视觉双形态与渲染桥（<code>eve.BuildingFx</code>）</h3>
+<div class="fragment"><div class="line">fx &lt;- eve.BuildingFx();</div>
+<div class="line">fx.attach(world);</div>
+<div class="line">fx.sync(world);                        // 按定义 renderMode/visual2d/visual3d 生成/同步/销毁视觉</div>
+<div class="line">fx.updateGhost(world, ghost);          // 每帧：鬼影 + 占地光标（绿/红）</div>
+<div class="line">fx.setGridVisible(world, true);</div>
+<div class="line">fx.drawGrid2D(world, gfx);             // 2D 网格叠加（渲染循环中调用）</div>
+<div class="line">fx.drawGrid3D(world, gfx, 0.01);       // 3D 平面线框</div>
+</div><!-- fragment --><h3>放置会话（<code>eve.Building.newSession</code>）</h3>
+<div class="fragment"><div class="line">session &lt;- building.newSession();</div>
+<div class="line">session.startPlacement(world, &quot;house&quot;);</div>
+<div class="line">session.updateFromSurface(world, &quot;plane&quot;, hitX, hitZ);  // 或 updateFromWorld / updateFromWorld3D</div>
+<div class="line">session.setMode(&quot;remove&quot;);</div>
+<div class="line">session.execute();                     // place 放置 / remove 拆除</div>
+</div><!-- fragment --><h3>新增脚本 API 索引</h3>
+<p>以下名称是上述多层、表面、边/角/free 域、区域工具和统一 Pattern 协议的脚本绑定索引：</p>
+<ul>
+<li>世界查询与校验：<code>canPlaceCorner</code>、<code>canPlaceCornerReason</code>、<code>canPlaceEdge</code>、 <code>canPlaceEdgeReason</code>、<code>canPlaceFreeReason</code>、<code>canRemoveBuildingReason</code>、<code>isCornerEmpty</code>、 <code>isEdgeEmpty</code>、<code>getCornerOccupantAtLevel</code>、<code>getFreeOccupantAtLevel</code>。</li>
+<li>层与实例元数据：<code>getActiveLevel</code>、<code>getFloorHeight</code>、<code>getBuildingLevel</code>、 <code>getBuildingPlacementKind</code>、<code>getBuildingConnectionGroup</code>、<code>getEdgeAxis</code>、 <code>getEdgeVariant</code>、<code>getEdgePathVertexCount</code>、<code>getEdgeCurveControlPointCount</code>。</li>
+<li>已提交表面帧：<code>getBuildingSurfaceNormalX</code>、<code>getBuildingSurfaceNormalY</code>、 <code>getBuildingSurfaceNormalZ</code>。</li>
+<li>Ghost 域与表面 patch：<code>setEdge</code>、<code>setFree</code>、<code>getPlacementKind</code>、 <code>getSurfaceSampleCount</code>、<code>getSurfaceMaxSlopeDegrees</code>、<code>getSurfaceHeightDelta</code>、 <code>getSurfaceNormalX</code>、<code>getSurfaceNormalY</code>、<code>getSurfaceNormalZ</code>、<code>getSurfaceTangentX</code>、 <code>getSurfaceTangentY</code>、<code>getSurfaceTangentZ</code>。</li>
+<li>区域工具：<code>executeBrush</code>、<code>getAreaPreviewCount</code>、<code>getAreaPreviewCellX</code>、 <code>getAreaPreviewCellY</code>、<code>getAreaPreviewReason</code>。</li>
+<li>Pattern 配置与预览：<code>getPatternKind</code>、<code>getPatternPointCount</code>、<code>setPatternRadius</code>、 <code>setPatternSubdivisions</code>、<code>getPatternPreviewX</code>、<code>getPatternPreviewY</code>、 <code>getPatternPreviewAxis</code>、<code>getPatternPreviewAccepted</code>、<code>getPatternPreviewReason</code>。 </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

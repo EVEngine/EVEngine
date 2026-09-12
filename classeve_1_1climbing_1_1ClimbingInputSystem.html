@@ -1,0 +1,554 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingInputSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html">ClimbingInputSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1climbing_1_1ClimbingInputSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingInputSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Input-phase operations over a <a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html" title="Hot authoritative intent component; contains no device or callback pointers.">ClimbingIntent</a> component.  
+ <a href="classeve_1_1climbing_1_1ClimbingInputSystem.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ClimbingInput_8h_source.html">ClimbingInput.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a798542b057cbe420a13e7e0b53c9f534" id="r_a798542b057cbe420a13e7e0b53c9f534"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a798542b057cbe420a13e7e0b53c9f534">submit</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;intent, <a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> pressedTick, std::uint64_t bufferTicks)</td></tr>
+<tr class="memdesc:a798542b057cbe420a13e7e0b53c9f534"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue one edge command with expiry derived from an exact tick budget.  <br /></td></tr>
+<tr class="separator:a798542b057cbe420a13e7e0b53c9f534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a341bba3f5d5f57ca2eda4f2db79ad16f" id="r_a341bba3f5d5f57ca2eda4f2db79ad16f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a341bba3f5d5f57ca2eda4f2db79ad16f">submit</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;intent, <a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> pressedTick, const <a class="el" href="structeve_1_1climbing_1_1ClimbingProfileDefinition.html">ClimbingProfileDefinition</a> &amp;profile)</td></tr>
+<tr class="memdesc:a341bba3f5d5f57ca2eda4f2db79ad16f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue one edge command using the authoritative profile input window.  <br /></td></tr>
+<tr class="separator:a341bba3f5d5f57ca2eda4f2db79ad16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a113bb2fb80c0866d1ad5a5feb8436dbe" id="r_a113bb2fb80c0866d1ad5a5feb8436dbe"><td class="memItemLeft" align="right" valign="top">static std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a113bb2fb80c0866d1ad5a5feb8436dbe">prune</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;intent, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> currentTick) noexcept</td></tr>
+<tr class="memdesc:a113bb2fb80c0866d1ad5a5feb8436dbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove expired and already-consumed records; returns the number removed.  <br /></td></tr>
+<tr class="separator:a113bb2fb80c0866d1ad5a5feb8436dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1cd7dd550cda7077060b357e9e21234" id="r_ac1cd7dd550cda7077060b357e9e21234"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::optional&lt; <a class="el" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#ac1cd7dd550cda7077060b357e9e21234">consume</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;intent, <a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> currentTick, <a class="el" href="namespaceeve_1_1climbing.html#a0c90e23dd460d557efb3ac463500332f">ClimbingExecutionId</a> executionId)</td></tr>
+<tr class="memdesc:ac1cd7dd550cda7077060b357e9e21234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically mark the oldest eligible command consumed by one committed execution.  <br /></td></tr>
+<tr class="separator:ac1cd7dd550cda7077060b357e9e21234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace7edbddbadbbd33bac689c3d4ec280a" id="r_ace7edbddbadbbd33bac689c3d4ec280a"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; <a class="el" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#ace7edbddbadbbd33bac689c3d4ec280a">peek</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;intent, <a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a> command, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> currentTick) noexcept</td></tr>
+<tr class="memdesc:ace7edbddbadbbd33bac689c3d4ec280a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe the oldest eligible command without consuming or pruning intent.  <br /></td></tr>
+<tr class="separator:ace7edbddbadbbd33bac689c3d4ec280a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e5f67d7c6cee3bf7654c63cf3c9e151" id="r_a6e5f67d7c6cee3bf7654c63cf3c9e151"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ad">ClimbingCoyoteState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a6e5f67d7c6cee3bf7654c63cf3c9e151">coyoteWindowState</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> currentTick, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> lastGroundedTick, std::uint64_t coyoteTicks) noexcept</td></tr>
+<tr class="memdesc:a6e5f67d7c6cee3bf7654c63cf3c9e151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a grounded grace window without reading wall clock.  <br /></td></tr>
+<tr class="separator:a6e5f67d7c6cee3bf7654c63cf3c9e151"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a409ab49657952ff3feb88e98c54df4f1" id="r_a409ab49657952ff3feb88e98c54df4f1"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingInputSystem.html#a409ab49657952ff3feb88e98c54df4f1">MaxBufferedCommands</a> = 16</td></tr>
+<tr class="memdesc:a409ab49657952ff3feb88e98c54df4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard safety bound preventing an untrusted producer from growing intent indefinitely.  <br /></td></tr>
+<tr class="separator:a409ab49657952ff3feb88e98c54df4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Input-phase operations over a <a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html" title="Hot authoritative intent component; contains no device or callback pointers.">ClimbingIntent</a> component. </p>
+<p>Structural mutation: none. Read service: injected SimulationTick only. The system invokes no callbacks and produces bit-exact results for the same command stream. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8h_source.html">ClimbingInput.h</a> 第 <a class="el" href="ClimbingInput_8h_source.html#l00049">49</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac1cd7dd550cda7077060b357e9e21234" name="ac1cd7dd550cda7077060b357e9e21234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1cd7dd550cda7077060b357e9e21234">&#9670;&#160;</a></span>consume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::optional&lt; <a class="el" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a> &gt; &gt; eve::climbing::ClimbingInputSystem::consume </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;&#160;</td>
+          <td class="paramname"><em>intent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>currentTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a0c90e23dd460d557efb3ac463500332f">ClimbingExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically mark the oldest eligible command consumed by one committed execution. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning consumed record, or a successful empty optional when no eligible command exists. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a> 第 <a class="el" href="ClimbingInput_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ClimbingInput_8h_source.html#l00040">eve::climbing::ClimbingIntent::commands</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="ClimbingInput_8cpp_source.html#l00048">prune()</a> , 以及 <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingSelection_8cpp_source.html#l00188">eve::climbing::ClimbingSelectionSystem::tryStart()</a> , 以及 <a class="el" href="ClimbingServices_8cpp_source.html#l00026">eve::climbing::ClimbingServiceSelectionSystem::tryStart()</a>.</p>
+
+</div>
+</div>
+<a id="a6e5f67d7c6cee3bf7654c63cf3c9e151" name="a6e5f67d7c6cee3bf7654c63cf3c9e151"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e5f67d7c6cee3bf7654c63cf3c9e151">&#9670;&#160;</a></span>coyoteWindowState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ad">ClimbingCoyoteState</a> eve::climbing::ClimbingInputSystem::coyoteWindowState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>currentTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>lastGroundedTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>coyoteTicks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluate a grounded grace window without reading wall clock. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a> 第 <a class="el" href="ClimbingInput_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ada4358876405775b10c44268aeeeec5f50">eve::climbing::Eligible</a> , 以及 <a class="el" href="namespaceeve_1_1climbing.html#a09080ee9f179ce130fde20d7ade864ada76fbf0ccd7fcd64879c2ff2119dc15a4">eve::climbing::Outside</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingSelection_8cpp_source.html#l00188">eve::climbing::ClimbingSelectionSystem::tryStart()</a> , 以及 <a class="el" href="ClimbingServices_8cpp_source.html#l00026">eve::climbing::ClimbingServiceSelectionSystem::tryStart()</a>.</p>
+
+</div>
+</div>
+<a id="ace7edbddbadbbd33bac689c3d4ec280a" name="ace7edbddbadbbd33bac689c3d4ec280a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace7edbddbadbbd33bac689c3d4ec280a">&#9670;&#160;</a></span>peek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1climbing_1_1BufferedClimbingCommand.html">BufferedClimbingCommand</a> &gt; eve::climbing::ClimbingInputSystem::peek </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;&#160;</td>
+          <td class="paramname"><em>intent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>currentTick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe the oldest eligible command without consuming or pruning intent. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a> 第 <a class="el" href="ClimbingInput_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingECS_8h_source.html#l00227">eve::climbing::ClimbingEcsSelectionSystem::step()</a>, <a class="el" href="ClimbingSelection_8cpp_source.html#l00188">eve::climbing::ClimbingSelectionSystem::tryStart()</a> , 以及 <a class="el" href="ClimbingServices_8cpp_source.html#l00026">eve::climbing::ClimbingServiceSelectionSystem::tryStart()</a>.</p>
+
+</div>
+</div>
+<a id="a113bb2fb80c0866d1ad5a5feb8436dbe" name="a113bb2fb80c0866d1ad5a5feb8436dbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a113bb2fb80c0866d1ad5a5feb8436dbe">&#9670;&#160;</a></span>prune()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::climbing::ClimbingInputSystem::prune </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;&#160;</td>
+          <td class="paramname"><em>intent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>currentTick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove expired and already-consumed records; returns the number removed. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a> 第 <a class="el" href="ClimbingInput_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingInput_8cpp_source.html#l00056">consume()</a> , 以及 <a class="el" href="ClimbingInput_8cpp_source.html#l00023">submit()</a>.</p>
+
+</div>
+</div>
+<a id="a341bba3f5d5f57ca2eda4f2db79ad16f" name="a341bba3f5d5f57ca2eda4f2db79ad16f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a341bba3f5d5f57ca2eda4f2db79ad16f">&#9670;&#160;</a></span>submit() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingInputSystem::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;&#160;</td>
+          <td class="paramname"><em>intent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>pressedTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingProfileDefinition.html">ClimbingProfileDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>profile</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue one edge command using the authoritative profile input window. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a> 第 <a class="el" href="ClimbingInput_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00233">eve::climbing::ClimbingProfileDefinition::inputBufferTicks</a> , 以及 <a class="el" href="ClimbingInput_8cpp_source.html#l00023">submit()</a>.</p>
+
+</div>
+</div>
+<a id="a798542b057cbe420a13e7e0b53c9f534" name="a798542b057cbe420a13e7e0b53c9f534"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a798542b057cbe420a13e7e0b53c9f534">&#9670;&#160;</a></span>submit() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingInputSystem::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingIntent.html">ClimbingIntent</a> &amp;&#160;</td>
+          <td class="paramname"><em>intent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a9bbcccc9cd470c93e0033fff6a897205">ClimbingCommand</a>&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>pressedTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>bufferTicks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue one edge command with expiry derived from an exact tick budget. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a> 第 <a class="el" href="ClimbingInput_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ClimbingInput_8h_source.html#l00040">eve::climbing::ClimbingIntent::commands</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ClimbingInput_8h_source.html#l00052">MaxBufferedCommands</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ClimbingInput_8cpp_source.html#l00048">prune()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::ClimbingExecutionIdTag &gt;::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingInput_8cpp_source.html#l00042">submit()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a409ab49657952ff3feb88e98c54df4f1" name="a409ab49657952ff3feb88e98c54df4f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a409ab49657952ff3feb88e98c54df4f1">&#9670;&#160;</a></span>MaxBufferedCommands</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t eve::climbing::ClimbingInputSystem::MaxBufferedCommands = 16</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hard safety bound preventing an untrusted producer from growing intent indefinitely. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingInput_8h_source.html">ClimbingInput.h</a> 第 <a class="el" href="ClimbingInput_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingInput_8cpp_source.html#l00023">submit()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="ClimbingInput_8h_source.html">ClimbingInput.h</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingInput_8cpp_source.html">ClimbingInput.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1282 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::MapFog类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1MapFog-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::MapFog类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>SLG / large-map war-fog overlay driven by a dual-scrolling cloud texture and an RGBA mask bridge (R unlock, G select, B dissolve).  
+ <a href="classeve_1_1graphics_1_1MapFog.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MapFog_8h_source.html">MapFog.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af1374f3fa90008feb081a2388273860d" id="r_af1374f3fa90008feb081a2388273860d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#af1374f3fa90008feb081a2388273860d">MapFog</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *graphics)</td></tr>
+<tr class="memdesc:af1374f3fa90008feb081a2388273860d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a fog overlay renderer backed by the supplied graphics device.  <br /></td></tr>
+<tr class="separator:af1374f3fa90008feb081a2388273860d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27bda3ac2f2b83322b2920fef6d73e6b" id="r_a27bda3ac2f2b83322b2920fef6d73e6b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a27bda3ac2f2b83322b2920fef6d73e6b">~MapFog</a> ()</td></tr>
+<tr class="separator:a27bda3ac2f2b83322b2920fef6d73e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a706aabca59930efe1eaadc69985dd006" id="r_a706aabca59930efe1eaadc69985dd006"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a706aabca59930efe1eaadc69985dd006">MapFog</a> (const <a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a> &amp;)=delete</td></tr>
+<tr class="separator:a706aabca59930efe1eaadc69985dd006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16fa516074f837ac33ea41db41cda647" id="r_a16fa516074f837ac33ea41db41cda647"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a16fa516074f837ac33ea41db41cda647">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a> &amp;)=delete</td></tr>
+<tr class="separator:a16fa516074f837ac33ea41db41cda647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeab2f70e98f4fb35ae40a8230c629b14" id="r_aeab2f70e98f4fb35ae40a8230c629b14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aeab2f70e98f4fb35ae40a8230c629b14">update</a> (float dt)</td></tr>
+<tr class="memdesc:aeab2f70e98f4fb35ae40a8230c629b14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance dual-scroll / blink timers.  <br /></td></tr>
+<tr class="separator:aeab2f70e98f4fb35ae40a8230c629b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a923a199ffb52d2e60c76bee8d7ce46a4" id="r_a923a199ffb52d2e60c76bee8d7ce46a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a923a199ffb52d2e60c76bee8d7ce46a4">setTime</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>)</td></tr>
+<tr class="memdesc:a923a199ffb52d2e60c76bee8d7ce46a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override the animated time used by cloud scroll (seconds).  <br /></td></tr>
+<tr class="separator:a923a199ffb52d2e60c76bee8d7ce46a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea2cfd8485d1ea32f2e145556dd5a627" id="r_aea2cfd8485d1ea32f2e145556dd5a627"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aea2cfd8485d1ea32f2e145556dd5a627">getTime</a> () const</td></tr>
+<tr class="memdesc:aea2cfd8485d1ea32f2e145556dd5a627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current animation time in seconds.  <br /></td></tr>
+<tr class="separator:aea2cfd8485d1ea32f2e145556dd5a627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3f4185e4b979210529d1f6d271f9b31" id="r_ab3f4185e4b979210529d1f6d271f9b31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#ab3f4185e4b979210529d1f6d271f9b31">setCloudTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *cloud)</td></tr>
+<tr class="memdesc:ab3f4185e4b979210529d1f6d271f9b31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set or replace the repeating cloud/color texture.  <br /></td></tr>
+<tr class="separator:ab3f4185e4b979210529d1f6d271f9b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd968489b707317a8a5876e23e6443e6" id="r_afd968489b707317a8a5876e23e6443e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#afd968489b707317a8a5876e23e6443e6">getCloudTexture</a> ()</td></tr>
+<tr class="memdesc:afd968489b707317a8a5876e23e6443e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the active cloud texture (never null after first ensureCloudTexture). @ownership Borrowed; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns the texture storage. @lifetime Remains valid until <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> releases the texture or shutdown.  <br /></td></tr>
+<tr class="separator:afd968489b707317a8a5876e23e6443e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a658b07bb0b439f7ffeb3bdcee13b19a2" id="r_a658b07bb0b439f7ffeb3bdcee13b19a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a658b07bb0b439f7ffeb3bdcee13b19a2">setMaskTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>)</td></tr>
+<tr class="memdesc:a658b07bb0b439f7ffeb3bdcee13b19a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the RGBA mask bridge texture.  <br /></td></tr>
+<tr class="separator:a658b07bb0b439f7ffeb3bdcee13b19a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee99f04a3543e03bb52807c8bb18701c" id="r_aee99f04a3543e03bb52807c8bb18701c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aee99f04a3543e03bb52807c8bb18701c">getMaskTexture</a> () const</td></tr>
+<tr class="memdesc:aee99f04a3543e03bb52807c8bb18701c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current mask texture, or null if unset. @ownership Borrowed; ownership stays with the provider that created the texture. @lifetime Valid until the provider releases the texture or this <a class="el" href="classeve_1_1graphics_1_1MapFog.html" title="SLG / large-map war-fog overlay driven by a dual-scrolling cloud texture and an RGBA mask bridge (R u...">MapFog</a> is destroyed.  <br /></td></tr>
+<tr class="separator:aee99f04a3543e03bb52807c8bb18701c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d4b71669237a6f463300c21ba4da14a" id="r_a3d4b71669237a6f463300c21ba4da14a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a3d4b71669237a6f463300c21ba4da14a">setCloudTiling</a> (float tileA, float tileB)</td></tr>
+<tr class="memdesc:a3d4b71669237a6f463300c21ba4da14a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dual-layer cloud tiling (layer A / B).  <br /></td></tr>
+<tr class="separator:a3d4b71669237a6f463300c21ba4da14a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad25ac13e3870d8de7813d8a92888ed11" id="r_ad25ac13e3870d8de7813d8a92888ed11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#ad25ac13e3870d8de7813d8a92888ed11">setCloudSpeed</a> (float speedA, float speedB)</td></tr>
+<tr class="memdesc:ad25ac13e3870d8de7813d8a92888ed11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dual-layer scroll speeds in UV units per second.  <br /></td></tr>
+<tr class="separator:ad25ac13e3870d8de7813d8a92888ed11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac66ce1057490619d1efbeedb84d0b33b" id="r_ac66ce1057490619d1efbeedb84d0b33b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#ac66ce1057490619d1efbeedb84d0b33b">setDistort</a> (float amount)</td></tr>
+<tr class="memdesc:ac66ce1057490619d1efbeedb84d0b33b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask-UV distortion amount from desaturated cloud noise.  <br /></td></tr>
+<tr class="separator:ac66ce1057490619d1efbeedb84d0b33b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27f768b8ba1795f149835592d60200a" id="r_aa27f768b8ba1795f149835592d60200a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aa27f768b8ba1795f149835592d60200a">setDistortFix</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="memdesc:aa27f768b8ba1795f149835592d60200a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Correct additive UV drift introduced by distortion.  <br /></td></tr>
+<tr class="separator:aa27f768b8ba1795f149835592d60200a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851e146b0b24137006070eafc8b8b8e0" id="r_a851e146b0b24137006070eafc8b8b8e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a851e146b0b24137006070eafc8b8b8e0">setFogColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:a851e146b0b24137006070eafc8b8b8e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fog tint RGB in 0..1.  <br /></td></tr>
+<tr class="separator:a851e146b0b24137006070eafc8b8b8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca40fc213e3942c61018a0f77f16cacf" id="r_aca40fc213e3942c61018a0f77f16cacf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aca40fc213e3942c61018a0f77f16cacf">setFogAlpha</a> (float alpha)</td></tr>
+<tr class="memdesc:aca40fc213e3942c61018a0f77f16cacf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overall fog opacity in 0..1.  <br /></td></tr>
+<tr class="separator:aca40fc213e3942c61018a0f77f16cacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1808c40b5f050cb1c533446f0e7507e1" id="r_a1808c40b5f050cb1c533446f0e7507e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a1808c40b5f050cb1c533446f0e7507e1">setEdgeSoftness</a> (float softness)</td></tr>
+<tr class="memdesc:a1808c40b5f050cb1c533446f0e7507e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft edge half-width around the mask R threshold.  <br /></td></tr>
+<tr class="separator:a1808c40b5f050cb1c533446f0e7507e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a27fbcaf13351ab30bd223950548590" id="r_a0a27fbcaf13351ab30bd223950548590"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a0a27fbcaf13351ab30bd223950548590">setShadowEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a0a27fbcaf13351ab30bd223950548590"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the pre-pass cloud shadow (must draw before the main pass).  <br /></td></tr>
+<tr class="separator:a0a27fbcaf13351ab30bd223950548590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af95fe486b95677ab3b3409115ccf7ed7" id="r_af95fe486b95677ab3b3409115ccf7ed7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#af95fe486b95677ab3b3409115ccf7ed7">setShadow</a> (float <a class="el" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a>, float <a class="el" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a>, float strength)</td></tr>
+<tr class="memdesc:af95fe486b95677ab3b3409115ccf7ed7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shadow UV offset and strength.  <br /></td></tr>
+<tr class="separator:af95fe486b95677ab3b3409115ccf7ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaabb70b317b1fa51e5ed688d4c19aab" id="r_acaabb70b317b1fa51e5ed688d4c19aab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#acaabb70b317b1fa51e5ed688d4c19aab">setSelectStrength</a> (float strength)</td></tr>
+<tr class="memdesc:acaabb70b317b1fa51e5ed688d4c19aab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selection blink amplitude for mask G.  <br /></td></tr>
+<tr class="separator:acaabb70b317b1fa51e5ed688d4c19aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afec0a243695485e3424ae32418362adb" id="r_afec0a243695485e3424ae32418362adb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#afec0a243695485e3424ae32418362adb">setDissolveScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:afec0a243695485e3424ae32418362adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dissolve noise tiling scale.  <br /></td></tr>
+<tr class="separator:afec0a243695485e3424ae32418362adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38f985fccc9ec650a883b52dbd5a3f85" id="r_a38f985fccc9ec650a883b52dbd5a3f85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a38f985fccc9ec650a883b52dbd5a3f85">setCloudMix</a> (float mix)</td></tr>
+<tr class="memdesc:a38f985fccc9ec650a883b52dbd5a3f85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mix weight between the two scrolling cloud samples (0..1).  <br /></td></tr>
+<tr class="separator:a38f985fccc9ec650a883b52dbd5a3f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec7e546b8bdfa456b3084c8c0864aeb1" id="r_aec7e546b8bdfa456b3084c8c0864aeb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aec7e546b8bdfa456b3084c8c0864aeb1">setCloudDensity</a> (float contrast, float bias)</td></tr>
+<tr class="memdesc:aec7e546b8bdfa456b3084c8c0864aeb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape cloud alpha: contrast (soft→hard) and bias (coverage).  <br /></td></tr>
+<tr class="separator:aec7e546b8bdfa456b3084c8c0864aeb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dcf8d3ef4d43bba556136dfc13ed854" id="r_a1dcf8d3ef4d43bba556136dfc13ed854"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a1dcf8d3ef4d43bba556136dfc13ed854">getCloudTileA</a> () const</td></tr>
+<tr class="separator:a1dcf8d3ef4d43bba556136dfc13ed854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa40486e4a4d12467d2b3988b775090e0" id="r_aa40486e4a4d12467d2b3988b775090e0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aa40486e4a4d12467d2b3988b775090e0">getCloudTileB</a> () const</td></tr>
+<tr class="separator:aa40486e4a4d12467d2b3988b775090e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2de91efbc15aeea50f5a943f69eee08b" id="r_a2de91efbc15aeea50f5a943f69eee08b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a2de91efbc15aeea50f5a943f69eee08b">getCloudSpeedA</a> () const</td></tr>
+<tr class="separator:a2de91efbc15aeea50f5a943f69eee08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a246ae4d34c4e5d57faec7de5239a7371" id="r_a246ae4d34c4e5d57faec7de5239a7371"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a246ae4d34c4e5d57faec7de5239a7371">getCloudSpeedB</a> () const</td></tr>
+<tr class="separator:a246ae4d34c4e5d57faec7de5239a7371"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafdc7c5ed874427bef372915f8dfb027" id="r_aafdc7c5ed874427bef372915f8dfb027"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#aafdc7c5ed874427bef372915f8dfb027">getDistort</a> () const</td></tr>
+<tr class="separator:aafdc7c5ed874427bef372915f8dfb027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6734ad7393d5198452f02692929000cc" id="r_a6734ad7393d5198452f02692929000cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a6734ad7393d5198452f02692929000cc">getFogAlpha</a> () const</td></tr>
+<tr class="separator:a6734ad7393d5198452f02692929000cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c933d22f19d1d9d4617d550e9b988bd" id="r_a5c933d22f19d1d9d4617d550e9b988bd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a5c933d22f19d1d9d4617d550e9b988bd">getEdgeSoftness</a> () const</td></tr>
+<tr class="separator:a5c933d22f19d1d9d4617d550e9b988bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6332083512d386ad9ecc03ee6ce599ce" id="r_a6332083512d386ad9ecc03ee6ce599ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a6332083512d386ad9ecc03ee6ce599ce">getShadowEnabled</a> () const</td></tr>
+<tr class="separator:a6332083512d386ad9ecc03ee6ce599ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13cc5f2c35623be81b0968f2171b0fd" id="r_ae13cc5f2c35623be81b0968f2171b0fd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#ae13cc5f2c35623be81b0968f2171b0fd">getSelectStrength</a> () const</td></tr>
+<tr class="separator:ae13cc5f2c35623be81b0968f2171b0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a280ebaab6c43ecd034446c08bfd3e59b" id="r_a280ebaab6c43ecd034446c08bfd3e59b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a280ebaab6c43ecd034446c08bfd3e59b">draw</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:a280ebaab6c43ecd034446c08bfd3e59b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw fog over a destination rectangle (shadow pass then main pass).  <br /></td></tr>
+<tr class="separator:a280ebaab6c43ecd034446c08bfd3e59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67dd105be28fe5dad2f8e4c1cdd40504" id="r_a67dd105be28fe5dad2f8e4c1cdd40504"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1MapFog.html#a67dd105be28fe5dad2f8e4c1cdd40504">makeCloudTexture</a> (int <a class="el" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>=128)</td></tr>
+<tr class="memdesc:a67dd105be28fe5dad2f8e4c1cdd40504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a seamless procedural cloud noise texture owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>.  <br /></td></tr>
+<tr class="separator:a67dd105be28fe5dad2f8e4c1cdd40504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>SLG / large-map war-fog overlay driven by a dual-scrolling cloud texture and an RGBA mask bridge (R unlock, G select, B dissolve). </p>
+<p>Presentation only: gameplay unlock state should live in <a class="el" href="classeve_1_1map_1_1Fov.html" title="Dynamic field-of-view / fog-of-war facade. Phase A: 2D shadowcast + multi-revealer + explored memory....">map::Fov</a> / game data; upload that state into the mask R channel and call <a class="el" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw()</a> after the map. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af1374f3fa90008feb081a2388273860d" name="af1374f3fa90008feb081a2388273860d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1374f3fa90008feb081a2388273860d">&#9670;&#160;</a></span>MapFog() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::MapFog::MapFog </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a fog overlay renderer backed by the supplied graphics device. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00030">eve::graphics::Shader::declareFloat()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a11112fd49bc952f7c50a710e5abad6c7">eve::graphics::Graphics::getBackendName()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab5cd1bae3097d42ba5fb9b798ce321c0">eve::graphics::Graphics::newShaderFromSpv()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a31d03936b778979af34ce8b3019b4d1d">eve::graphics::Graphics::newShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a27bda3ac2f2b83322b2920fef6d73e6b" name="a27bda3ac2f2b83322b2920fef6d73e6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27bda3ac2f2b83322b2920fef6d73e6b">&#9670;&#160;</a></span>~MapFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::MapFog::~MapFog </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a706aabca59930efe1eaadc69985dd006" name="a706aabca59930efe1eaadc69985dd006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a706aabca59930efe1eaadc69985dd006">&#9670;&#160;</a></span>MapFog() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::MapFog::MapFog </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a280ebaab6c43ecd034446c08bfd3e59b" name="a280ebaab6c43ecd034446c08bfd3e59b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a280ebaab6c43ecd034446c08bfd3e59b">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::draw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw fog over a destination rectangle (shadow pass then main pass). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>Destination left edge. </td></tr>
+    <tr><td class="paramname">y</td><td>Destination top edge. </td></tr>
+    <tr><td class="paramname">width</td><td>Destination width. </td></tr>
+    <tr><td class="paramname">height</td><td>Destination height. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#afdea8a5360160828274df8778f69fca1">eve::graphics::Graphics::drawTexturedRectShaderDepth()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a2de91efbc15aeea50f5a943f69eee08b" name="a2de91efbc15aeea50f5a943f69eee08b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2de91efbc15aeea50f5a943f69eee08b">&#9670;&#160;</a></span>getCloudSpeedA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getCloudSpeedA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a246ae4d34c4e5d57faec7de5239a7371" name="a246ae4d34c4e5d57faec7de5239a7371"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a246ae4d34c4e5d57faec7de5239a7371">&#9670;&#160;</a></span>getCloudSpeedB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getCloudSpeedB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd968489b707317a8a5876e23e6443e6" name="afd968489b707317a8a5876e23e6443e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd968489b707317a8a5876e23e6443e6">&#9670;&#160;</a></span>getCloudTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::MapFog::getCloudTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the active cloud texture (never null after first ensureCloudTexture). @ownership Borrowed; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns the texture storage. @lifetime Remains valid until <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> releases the texture or shutdown. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1dcf8d3ef4d43bba556136dfc13ed854" name="a1dcf8d3ef4d43bba556136dfc13ed854"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dcf8d3ef4d43bba556136dfc13ed854">&#9670;&#160;</a></span>getCloudTileA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getCloudTileA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa40486e4a4d12467d2b3988b775090e0" name="aa40486e4a4d12467d2b3988b775090e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa40486e4a4d12467d2b3988b775090e0">&#9670;&#160;</a></span>getCloudTileB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getCloudTileB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafdc7c5ed874427bef372915f8dfb027" name="aafdc7c5ed874427bef372915f8dfb027"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafdc7c5ed874427bef372915f8dfb027">&#9670;&#160;</a></span>getDistort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getDistort </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c933d22f19d1d9d4617d550e9b988bd" name="a5c933d22f19d1d9d4617d550e9b988bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c933d22f19d1d9d4617d550e9b988bd">&#9670;&#160;</a></span>getEdgeSoftness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getEdgeSoftness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6734ad7393d5198452f02692929000cc" name="a6734ad7393d5198452f02692929000cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6734ad7393d5198452f02692929000cc">&#9670;&#160;</a></span>getFogAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getFogAlpha </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee99f04a3543e03bb52807c8bb18701c" name="aee99f04a3543e03bb52807c8bb18701c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee99f04a3543e03bb52807c8bb18701c">&#9670;&#160;</a></span>getMaskTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::MapFog::getMaskTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current mask texture, or null if unset. @ownership Borrowed; ownership stays with the provider that created the texture. @lifetime Valid until the provider releases the texture or this <a class="el" href="classeve_1_1graphics_1_1MapFog.html" title="SLG / large-map war-fog overlay driven by a dual-scrolling cloud texture and an RGBA mask bridge (R u...">MapFog</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae13cc5f2c35623be81b0968f2171b0fd" name="ae13cc5f2c35623be81b0968f2171b0fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae13cc5f2c35623be81b0968f2171b0fd">&#9670;&#160;</a></span>getSelectStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getSelectStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6332083512d386ad9ecc03ee6ce599ce" name="a6332083512d386ad9ecc03ee6ce599ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6332083512d386ad9ecc03ee6ce599ce">&#9670;&#160;</a></span>getShadowEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::MapFog::getShadowEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aea2cfd8485d1ea32f2e145556dd5a627" name="aea2cfd8485d1ea32f2e145556dd5a627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea2cfd8485d1ea32f2e145556dd5a627">&#9670;&#160;</a></span>getTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::MapFog::getTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current animation time in seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8h_source.html">MapFog.h</a> 第 <a class="el" href="MapFog_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67dd105be28fe5dad2f8e4c1cdd40504" name="a67dd105be28fe5dad2f8e4c1cdd40504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67dd105be28fe5dad2f8e4c1cdd40504">&#9670;&#160;</a></span>makeCloudTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::MapFog::makeCloudTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em> = <code>128</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a seamless procedural cloud noise texture owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>Edge length in pixels (clamped to [16, 512]). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed Graphics-owned texture, or null on failure. @ownership <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns the returned texture; the caller must not delete it. @lifetime Remains valid until <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> releases the texture or shutdown. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00049">soft</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a16fa516074f837ac33ea41db41cda647" name="a16fa516074f837ac33ea41db41cda647"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16fa516074f837ac33ea41db41cda647">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a> &amp; eve::graphics::MapFog::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1MapFog.html">MapFog</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec7e546b8bdfa456b3084c8c0864aeb1" name="aec7e546b8bdfa456b3084c8c0864aeb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec7e546b8bdfa456b3084c8c0864aeb1">&#9670;&#160;</a></span>setCloudDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setCloudDensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>contrast</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bias</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shape cloud alpha: contrast (soft→hard) and bias (coverage). </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38f985fccc9ec650a883b52dbd5a3f85" name="a38f985fccc9ec650a883b52dbd5a3f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38f985fccc9ec650a883b52dbd5a3f85">&#9670;&#160;</a></span>setCloudMix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setCloudMix </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mix weight between the two scrolling cloud samples (0..1). </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad25ac13e3870d8de7813d8a92888ed11" name="ad25ac13e3870d8de7813d8a92888ed11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad25ac13e3870d8de7813d8a92888ed11">&#9670;&#160;</a></span>setCloudSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setCloudSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speedA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speedB</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dual-layer scroll speeds in UV units per second. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3f4185e4b979210529d1f6d271f9b31" name="ab3f4185e4b979210529d1f6d271f9b31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3f4185e4b979210529d1f6d271f9b31">&#9670;&#160;</a></span>setCloudTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setCloudTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>cloud</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set or replace the repeating cloud/color texture. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cloud</td><td>Borrowed Graphics-owned texture; null falls back to a built-in noise cloud. @ownership Does not take ownership of <code>cloud</code>; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> retains texture ownership. @lifetime <code>cloud</code> must outlive subsequent <a class="el" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw()</a> calls that use it. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d4b71669237a6f463300c21ba4da14a" name="a3d4b71669237a6f463300c21ba4da14a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d4b71669237a6f463300c21ba4da14a">&#9670;&#160;</a></span>setCloudTiling()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setCloudTiling </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileB</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dual-layer cloud tiling (layer A / B). </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afec0a243695485e3424ae32418362adb" name="afec0a243695485e3424ae32418362adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afec0a243695485e3424ae32418362adb">&#9670;&#160;</a></span>setDissolveScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setDissolveScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dissolve noise tiling scale. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="ac66ce1057490619d1efbeedb84d0b33b" name="ac66ce1057490619d1efbeedb84d0b33b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac66ce1057490619d1efbeedb84d0b33b">&#9670;&#160;</a></span>setDistort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setDistort </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mask-UV distortion amount from desaturated cloud noise. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa27f768b8ba1795f149835592d60200a" name="aa27f768b8ba1795f149835592d60200a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa27f768b8ba1795f149835592d60200a">&#9670;&#160;</a></span>setDistortFix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setDistortFix </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Correct additive UV drift introduced by distortion. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a1808c40b5f050cb1c533446f0e7507e1" name="a1808c40b5f050cb1c533446f0e7507e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1808c40b5f050cb1c533446f0e7507e1">&#9670;&#160;</a></span>setEdgeSoftness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setEdgeSoftness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>softness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Soft edge half-width around the mask R threshold. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca40fc213e3942c61018a0f77f16cacf" name="aca40fc213e3942c61018a0f77f16cacf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca40fc213e3942c61018a0f77f16cacf">&#9670;&#160;</a></span>setFogAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setFogAlpha </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overall fog opacity in 0..1. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a851e146b0b24137006070eafc8b8b8e0" name="a851e146b0b24137006070eafc8b8b8e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a851e146b0b24137006070eafc8b8b8e0">&#9670;&#160;</a></span>setFogColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setFogColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fog tint RGB in 0..1. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a658b07bb0b439f7ffeb3bdcee13b19a2" name="a658b07bb0b439f7ffeb3bdcee13b19a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a658b07bb0b439f7ffeb3bdcee13b19a2">&#9670;&#160;</a></span>setMaskTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setMaskTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the RGBA mask bridge texture. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mask</td><td>Borrowed texture; R=unlocked, G=selected, B=dissolve threshold. @ownership Does not take ownership of <code>mask</code>; the caller/Graphics retains it. @lifetime <code>mask</code> must outlive subsequent <a class="el" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw()</a> calls that use it. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>.</p>
+
+</div>
+</div>
+<a id="acaabb70b317b1fa51e5ed688d4c19aab" name="acaabb70b317b1fa51e5ed688d4c19aab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaabb70b317b1fa51e5ed688d4c19aab">&#9670;&#160;</a></span>setSelectStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setSelectStrength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selection blink amplitude for mask G. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af95fe486b95677ab3b3409115ccf7ed7" name="af95fe486b95677ab3b3409115ccf7ed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af95fe486b95677ab3b3409115ccf7ed7">&#9670;&#160;</a></span>setShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setShadow </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shadow UV offset and strength. </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00918">offsetY</a>.</p>
+
+</div>
+</div>
+<a id="a0a27fbcaf13351ab30bd223950548590" name="a0a27fbcaf13351ab30bd223950548590"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a27fbcaf13351ab30bd223950548590">&#9670;&#160;</a></span>setShadowEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setShadowEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable the pre-pass cloud shadow (must draw before the main pass). </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a923a199ffb52d2e60c76bee8d7ce46a4" name="a923a199ffb52d2e60c76bee8d7ce46a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a923a199ffb52d2e60c76bee8d7ce46a4">&#9670;&#160;</a></span>setTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::setTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override the animated time used by cloud scroll (seconds). </p>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>.</p>
+
+</div>
+</div>
+<a id="aeab2f70e98f4fb35ae40a8230c629b14" name="aeab2f70e98f4fb35ae40a8230c629b14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeab2f70e98f4fb35ae40a8230c629b14">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::MapFog::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance dual-scroll / blink timers. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Seconds since last frame. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a> 第 <a class="el" href="MapFog_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="MapFog_8h_source.html">MapFog.h</a></li>
+<li>src/modules/graphics/<a class="el" href="MapFog_8cpp_source.html">MapFog.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

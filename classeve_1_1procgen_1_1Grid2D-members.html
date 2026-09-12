@@ -1,0 +1,205 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::Grid2D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#af786e4f65c78d3a35988fbeb0cb6f383">addAssetObject</a>(const std::string &amp;name, const std::string &amp;role, const std::string &amp;asset, float x, float y, float width, float height, float rotationDegrees, int flags)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a7ec1b28e837225461d1274d9294d7b8e">addObject</a>(const std::string &amp;name, const std::string &amp;type, float x, float y, float width, float height, int gid)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a954c8d660ad047b1ce7d1cb86825523d">addObjectAt</a>(const std::string &amp;name, const std::string &amp;type, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#afbc00133ce0ed3fb6ee97806e25e05b9">cells</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a0d6b41ac15110dcae7c9e0931ed8596f">cells</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a38502d8ec400df5315353c6b54787155">clearObjects</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a25975247c1e1d2933c4850473520a57e">detail</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a131318d24e07a860db869b75ffd8c7fa">detail</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a66f1422005532c0740f0b57e9afbd652">fill</a>(int semantic)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a83e14ac97e99fd3b7090fcaa31ac65a3">getCell</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a5428c08580eb0c2d8abb3abc4dac28ae">getDetail</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ae880b566dc208d04cff40a85457b3a37">getHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#af3aef4604c7eba458e78b0ac85a8051a">getMeta</a>(const std::string &amp;key, const std::string &amp;defaultValue) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a14cf4802bec728432f582e9bd53633d0">getObjectAsset</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#aad83b6467a7f95215c6c3ec16a35e9b9">getObjectCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a87aed6c6b409fa5ac54953e8f7d328e6">getObjectFlags</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ab445b71420371dd48dd6bd1418d047e1">getObjectGid</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ac7bc4dc81e4e98d8f7e35bb448c4398d">getObjectHeight</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#acc63cae68b00102201dbf4e8428efd71">getObjectName</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a5ea782d00701e2d23ed169d3790c52ed">getObjectRotation</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a381ad0d74a9434213885020a1d45cd79">getObjectType</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a438c7f8750e97896d2f9a32bfd918d0e">getObjectWidth</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a89c486e4a1de76b0e7439ffa73796cea">getObjectX</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a58ebfb9ac6ff218e9001fc47d7a082b2">getObjectY</a>(int i) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a404bc4ec817697872ab2205696e838e8">getWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#aaad724d89076c5a9d04da71a5009dd8f">metadata</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a12f74365bde1e82426f4cf732f48d813">objects</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a55fd7106f49eaf5789a76aaf3b3ab0d5">resize</a>(int width, int height)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(int x, int y, int semantic)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a379cb742e5800a3d4eb7663e83f8caa9">setDetail</a>(int x, int y, int value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a>(const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

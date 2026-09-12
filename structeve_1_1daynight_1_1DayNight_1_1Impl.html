@@ -1,0 +1,731 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::daynight::DayNight::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1daynight.html">daynight</a></li><li class="navelem"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a></li><li class="navelem"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1daynight_1_1DayNight_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::daynight::DayNight::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl_1_1Fly.html">Fly</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8532e13ef0109b1a8a4b2fc68eab737b" id="r_a8532e13ef0109b1a8a4b2fc68eab737b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a8532e13ef0109b1a8a4b2fc68eab737b">gfx</a> = nullptr</td></tr>
+<tr class="separator:a8532e13ef0109b1a8a4b2fc68eab737b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ebef7e71d43271abbd70ea2580ad1b9" id="r_a6ebef7e71d43271abbd70ea2580ad1b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a6ebef7e71d43271abbd70ea2580ad1b9">built</a> = false</td></tr>
+<tr class="separator:a6ebef7e71d43271abbd70ea2580ad1b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a799316c1bf6f8d450654fcdadd81ebf1" id="r_a799316c1bf6f8d450654fcdadd81ebf1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a799316c1bf6f8d450654fcdadd81ebf1">timeOfDay</a> = 9.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a799316c1bf6f8d450654fcdadd81ebf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4b825dae0bab58068bade0b193677d3" id="r_ac4b825dae0bab58068bade0b193677d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#ac4b825dae0bab58068bade0b193677d3">speed</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac4b825dae0bab58068bade0b193677d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d986f68f8bc4e1cb7b665bcd5f89bb7" id="r_a1d986f68f8bc4e1cb7b665bcd5f89bb7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a1d986f68f8bc4e1cb7b665bcd5f89bb7">paused</a> = false</td></tr>
+<tr class="separator:a1d986f68f8bc4e1cb7b665bcd5f89bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a0f602192491fa4c675fd0732d195dc" id="r_a5a0f602192491fa4c675fd0732d195dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a5a0f602192491fa4c675fd0732d195dc">elevDeg</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5a0f602192491fa4c675fd0732d195dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a080587907d80ecebfa87bffe6deb2ddb" id="r_a080587907d80ecebfa87bffe6deb2ddb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a080587907d80ecebfa87bffe6deb2ddb">azimDeg</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a080587907d80ecebfa87bffe6deb2ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad94a2b3620a5a8860eff502a0f81d7eb" id="r_ad94a2b3620a5a8860eff502a0f81d7eb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#ad94a2b3620a5a8860eff502a0f81d7eb">sunDir</a> [3] = {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:ad94a2b3620a5a8860eff502a0f81d7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51365dc968b9e1efaecb83a64b2ac7bf" id="r_a51365dc968b9e1efaecb83a64b2ac7bf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a51365dc968b9e1efaecb83a64b2ac7bf">sunEnergy</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a51365dc968b9e1efaecb83a64b2ac7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af795158223940a42cbe1bce198133a8f" id="r_af795158223940a42cbe1bce198133a8f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#af795158223940a42cbe1bce198133a8f">turbidity</a> = 2.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af795158223940a42cbe1bce198133a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12f4c9b7b033d2ae9608ccfccb8a887" id="r_ae12f4c9b7b033d2ae9608ccfccb8a887"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#ae12f4c9b7b033d2ae9608ccfccb8a887">skyExposure</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae12f4c9b7b033d2ae9608ccfccb8a887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638b9d5370c2c154888bfa07075a4406" id="r_a638b9d5370c2c154888bfa07075a4406"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a638b9d5370c2c154888bfa07075a4406">mieStrength</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a638b9d5370c2c154888bfa07075a4406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6324b174a4671d9966d5585016ae1ed5" id="r_a6324b174a4671d9966d5585016ae1ed5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a6324b174a4671d9966d5585016ae1ed5">weatherCloudiness</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6324b174a4671d9966d5585016ae1ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843e917a95467ca66a41949e4343358e" id="r_a843e917a95467ca66a41949e4343358e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a843e917a95467ca66a41949e4343358e">weatherFlash</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a843e917a95467ca66a41949e4343358e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a951002713ffd5e058a63a7c54b34fc79" id="r_a951002713ffd5e058a63a7c54b34fc79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a951002713ffd5e058a63a7c54b34fc79">skyboxEnabled</a> = true</td></tr>
+<tr class="separator:a951002713ffd5e058a63a7c54b34fc79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab816b8e249e5c0a4e05026ede911e021" id="r_ab816b8e249e5c0a4e05026ede911e021"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#ab816b8e249e5c0a4e05026ede911e021">skyCube</a> = nullptr</td></tr>
+<tr class="separator:ab816b8e249e5c0a4e05026ede911e021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7dbe02a4d995a1ec58df15cd79bc0f6" id="r_ad7dbe02a4d995a1ec58df15cd79bc0f6"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#ad7dbe02a4d995a1ec58df15cd79bc0f6">skyFaces</a> {}</td></tr>
+<tr class="separator:ad7dbe02a4d995a1ec58df15cd79bc0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2441d31151b83abb9a9b0701921fa470" id="r_a2441d31151b83abb9a9b0701921fa470"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a2441d31151b83abb9a9b0701921fa470">skyFaceCenterLuminance</a> {}</td></tr>
+<tr class="separator:a2441d31151b83abb9a9b0701921fa470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abac5253e133a49d5455afff660ef185a" id="r_abac5253e133a49d5455afff660ef185a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#abac5253e133a49d5455afff660ef185a">lastSkyBucket</a> = -1</td></tr>
+<tr class="separator:abac5253e133a49d5455afff660ef185a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a375050d1e112eb2e0c10c78c7c08b30a" id="r_a375050d1e112eb2e0c10c78c7c08b30a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a375050d1e112eb2e0c10c78c7c08b30a">nightLight</a> [4] = {true, true, false, true}</td></tr>
+<tr class="separator:a375050d1e112eb2e0c10c78c7c08b30a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af375846ba28e7640e141f8cfb1fc69d8" id="r_af375846ba28e7640e141f8cfb1fc69d8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#af375846ba28e7640e141f8cfb1fc69d8">fireX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af375846ba28e7640e141f8cfb1fc69d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fd5366629818bd0dc1dc80d27a818a9" id="r_a6fd5366629818bd0dc1dc80d27a818a9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a6fd5366629818bd0dc1dc80d27a818a9">fireY</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6fd5366629818bd0dc1dc80d27a818a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a866412af4f10793c1156d62bfb854dcb" id="r_a866412af4f10793c1156d62bfb854dcb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a866412af4f10793c1156d62bfb854dcb">fireZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a866412af4f10793c1156d62bfb854dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a576559554a677a337f09d93cd10f738f" id="r_a576559554a677a337f09d93cd10f738f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl_1_1Fly.html">Fly</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a576559554a677a337f09d93cd10f738f">flies</a></td></tr>
+<tr class="separator:a576559554a677a337f09d93cd10f738f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d02f9cdbb724688495ed7debd3b4324" id="r_a6d02f9cdbb724688495ed7debd3b4324"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a6d02f9cdbb724688495ed7debd3b4324">moonLight</a> = nullptr</td></tr>
+<tr class="separator:a6d02f9cdbb724688495ed7debd3b4324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76956efd54d7b5670f961ffa5df853dd" id="r_a76956efd54d7b5670f961ffa5df853dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a76956efd54d7b5670f961ffa5df853dd">fireLight</a> = nullptr</td></tr>
+<tr class="separator:a76956efd54d7b5670f961ffa5df853dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a79e13f9a47f8e3ed2f33d6827e4186" id="r_a0a79e13f9a47f8e3ed2f33d6827e4186"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html#a0a79e13f9a47f8e3ed2f33d6827e4186">flyLights</a></td></tr>
+<tr class="separator:a0a79e13f9a47f8e3ed2f33d6827e4186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00199">199</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a080587907d80ecebfa87bffe6deb2ddb" name="a080587907d80ecebfa87bffe6deb2ddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a080587907d80ecebfa87bffe6deb2ddb">&#9670;&#160;</a></span>azimDeg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::azimDeg = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00265">eve::daynight::DayNight::getSunAzimuth()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a6ebef7e71d43271abbd70ea2580ad1b9" name="a6ebef7e71d43271abbd70ea2580ad1b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ebef7e71d43271abbd70ea2580ad1b9">&#9670;&#160;</a></span>built</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::Impl::built = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00437">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a5a0f602192491fa4c675fd0732d195dc" name="a5a0f602192491fa4c675fd0732d195dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a0f602192491fa4c675fd0732d195dc">&#9670;&#160;</a></span>elevDeg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::elevDeg = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00264">eve::daynight::DayNight::getSunElevation()</a>, <a class="el" href="DayNight_8cpp_source.html#l00262">eve::daynight::DayNight::isNight()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a76956efd54d7b5670f961ffa5df853dd" name="a76956efd54d7b5670f961ffa5df853dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76956efd54d7b5670f961ffa5df853dd">&#9670;&#160;</a></span>fireLight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a>* eve::daynight::DayNight::Impl::fireLight = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a>, <a class="el" href="DayNight_8cpp_source.html#l00428">eve::daynight::DayNight::setFirePosition()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="af375846ba28e7640e141f8cfb1fc69d8" name="af375846ba28e7640e141f8cfb1fc69d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af375846ba28e7640e141f8cfb1fc69d8">&#9670;&#160;</a></span>fireX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::fireX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00428">eve::daynight::DayNight::setFirePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a6fd5366629818bd0dc1dc80d27a818a9" name="a6fd5366629818bd0dc1dc80d27a818a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fd5366629818bd0dc1dc80d27a818a9">&#9670;&#160;</a></span>fireY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::fireY = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00428">eve::daynight::DayNight::setFirePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a866412af4f10793c1156d62bfb854dcb" name="a866412af4f10793c1156d62bfb854dcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a866412af4f10793c1156d62bfb854dcb">&#9670;&#160;</a></span>fireZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::fireZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00428">eve::daynight::DayNight::setFirePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a576559554a677a337f09d93cd10f738f" name="a576559554a677a337f09d93cd10f738f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a576559554a677a337f09d93cd10f738f">&#9670;&#160;</a></span>flies</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl_1_1Fly.html">Fly</a>&gt; eve::daynight::DayNight::Impl::flies</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00437">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00452">eve::daynight::DayNight::clearFireflies()</a>, <a class="el" href="DayNight_8cpp_source.html#l00456">eve::daynight::DayNight::getFireflyCount()</a>, <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0a79e13f9a47f8e3ed2f33d6827e4186" name="a0a79e13f9a47f8e3ed2f33d6827e4186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a79e13f9a47f8e3ed2f33d6827e4186">&#9670;&#160;</a></span>flyLights</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a> *&gt; eve::daynight::DayNight::Impl::flyLights</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00437">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00452">eve::daynight::DayNight::clearFireflies()</a>, <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a8532e13ef0109b1a8a4b2fc68eab737b" name="a8532e13ef0109b1a8a4b2fc68eab737b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8532e13ef0109b1a8a4b2fc68eab737b">&#9670;&#160;</a></span>gfx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* eve::daynight::DayNight::Impl::gfx = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="abac5253e133a49d5455afff660ef185a" name="abac5253e133a49d5455afff660ef185a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abac5253e133a49d5455afff660ef185a">&#9670;&#160;</a></span>lastSkyBucket</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::daynight::DayNight::Impl::lastSkyBucket = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00292">eve::daynight::DayNight::setMieStrength()</a>, <a class="el" href="DayNight_8cpp_source.html#l00403">eve::daynight::DayNight::setSkyboxEnabled()</a>, <a class="el" href="DayNight_8cpp_source.html#l00287">eve::daynight::DayNight::setSkyExposure()</a>, <a class="el" href="DayNight_8cpp_source.html#l00282">eve::daynight::DayNight::setTurbidity()</a>, <a class="el" href="DayNight_8cpp_source.html#l00329">eve::daynight::DayNight::setWeatherInfluence()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a638b9d5370c2c154888bfa07075a4406" name="a638b9d5370c2c154888bfa07075a4406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638b9d5370c2c154888bfa07075a4406">&#9670;&#160;</a></span>mieStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::mieStrength = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00296">eve::daynight::DayNight::getMieStrength()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00278">eve::daynight::DayNight::getSunB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00274">eve::daynight::DayNight::getSunG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00270">eve::daynight::DayNight::getSunR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00292">eve::daynight::DayNight::setMieStrength()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a6d02f9cdbb724688495ed7debd3b4324" name="a6d02f9cdbb724688495ed7debd3b4324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d02f9cdbb724688495ed7debd3b4324">&#9670;&#160;</a></span>moonLight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a>* eve::daynight::DayNight::Impl::moonLight = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00462">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a375050d1e112eb2e0c10c78c7c08b30a" name="a375050d1e112eb2e0c10c78c7c08b30a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a375050d1e112eb2e0c10c78c7c08b30a">&#9670;&#160;</a></span>nightLight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::Impl::nightLight[4] = {true, true, false, true}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00323">eve::daynight::DayNight::getAmbientBrightness()</a>, <a class="el" href="DayNight_8cpp_source.html#l00421">eve::daynight::DayNight::isNightLight()</a>, <a class="el" href="DayNight_8cpp_source.html#l00413">eve::daynight::DayNight::setNightLight()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a1d986f68f8bc4e1cb7b665bcd5f89bb7" name="a1d986f68f8bc4e1cb7b665bcd5f89bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d986f68f8bc4e1cb7b665bcd5f89bb7">&#9670;&#160;</a></span>paused</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::Impl::paused = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00260">eve::daynight::DayNight::isPaused()</a>, <a class="el" href="DayNight_8cpp_source.html#l00259">eve::daynight::DayNight::setPaused()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a951002713ffd5e058a63a7c54b34fc79" name="a951002713ffd5e058a63a7c54b34fc79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a951002713ffd5e058a63a7c54b34fc79">&#9670;&#160;</a></span>skyboxEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::Impl::skyboxEnabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00407">eve::daynight::DayNight::isSkyboxEnabled()</a>, <a class="el" href="DayNight_8cpp_source.html#l00403">eve::daynight::DayNight::setSkyboxEnabled()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="ab816b8e249e5c0a4e05026ede911e021" name="ab816b8e249e5c0a4e05026ede911e021"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab816b8e249e5c0a4e05026ede911e021">&#9670;&#160;</a></span>skyCube</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>* eve::daynight::DayNight::Impl::skyCube = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="ae12f4c9b7b033d2ae9608ccfccb8a887" name="ae12f4c9b7b033d2ae9608ccfccb8a887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12f4c9b7b033d2ae9608ccfccb8a887">&#9670;&#160;</a></span>skyExposure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::skyExposure = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00291">eve::daynight::DayNight::getSkyExposure()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00287">eve::daynight::DayNight::setSkyExposure()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a2441d31151b83abb9a9b0701921fa470" name="a2441d31151b83abb9a9b0701921fa470"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2441d31151b83abb9a9b0701921fa470">&#9670;&#160;</a></span>skyFaceCenterLuminance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 6&gt; eve::daynight::DayNight::Impl::skyFaceCenterLuminance {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="ad7dbe02a4d995a1ec58df15cd79bc0f6" name="ad7dbe02a4d995a1ec58df15cd79bc0f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7dbe02a4d995a1ec58df15cd79bc0f6">&#9670;&#160;</a></span>skyFaces</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *, 6&gt; eve::daynight::DayNight::Impl::skyFaces {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="ac4b825dae0bab58068bade0b193677d3" name="ac4b825dae0bab58068bade0b193677d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4b825dae0bab58068bade0b193677d3">&#9670;&#160;</a></span>speed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::speed = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00258">eve::daynight::DayNight::getSpeed()</a>, <a class="el" href="DayNight_8cpp_source.html#l00257">eve::daynight::DayNight::setSpeed()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="ad94a2b3620a5a8860eff502a0f81d7eb" name="ad94a2b3620a5a8860eff502a0f81d7eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad94a2b3620a5a8860eff502a0f81d7eb">&#9670;&#160;</a></span>sunDir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::sunDir[3] = {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00278">eve::daynight::DayNight::getSunB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00266">eve::daynight::DayNight::getSunDirX()</a>, <a class="el" href="DayNight_8cpp_source.html#l00267">eve::daynight::DayNight::getSunDirY()</a>, <a class="el" href="DayNight_8cpp_source.html#l00268">eve::daynight::DayNight::getSunDirZ()</a>, <a class="el" href="DayNight_8cpp_source.html#l00274">eve::daynight::DayNight::getSunG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00270">eve::daynight::DayNight::getSunR()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a51365dc968b9e1efaecb83a64b2ac7bf" name="a51365dc968b9e1efaecb83a64b2ac7bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51365dc968b9e1efaecb83a64b2ac7bf">&#9670;&#160;</a></span>sunEnergy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::sunEnergy = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">eve::daynight::DayNight::applyAtmosphere()</a>, <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00346">eve::daynight::DayNight::getAmbientB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00323">eve::daynight::DayNight::getAmbientBrightness()</a>, <a class="el" href="DayNight_8cpp_source.html#l00342">eve::daynight::DayNight::getAmbientG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00278">eve::daynight::DayNight::getSunB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00274">eve::daynight::DayNight::getSunG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00269">eve::daynight::DayNight::getSunIntensity()</a>, <a class="el" href="DayNight_8cpp_source.html#l00270">eve::daynight::DayNight::getSunR()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a799316c1bf6f8d450654fcdadd81ebf1" name="a799316c1bf6f8d450654fcdadd81ebf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a799316c1bf6f8d450654fcdadd81ebf1">&#9670;&#160;</a></span>timeOfDay</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::timeOfDay = 9.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">eve::daynight::DayNight::applyAtmosphere()</a>, <a class="el" href="DayNight_8cpp_source.html#l00255">eve::daynight::DayNight::getTimeOfDay()</a>, <a class="el" href="DayNight_8cpp_source.html#l00250">eve::daynight::DayNight::setTimeOfDay()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="af795158223940a42cbe1bce198133a8f" name="af795158223940a42cbe1bce198133a8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af795158223940a42cbe1bce198133a8f">&#9670;&#160;</a></span>turbidity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::turbidity = 2.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00278">eve::daynight::DayNight::getSunB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00274">eve::daynight::DayNight::getSunG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00270">eve::daynight::DayNight::getSunR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00286">eve::daynight::DayNight::getTurbidity()</a>, <a class="el" href="DayNight_8cpp_source.html#l00282">eve::daynight::DayNight::setTurbidity()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a6324b174a4671d9966d5585016ae1ed5" name="a6324b174a4671d9966d5585016ae1ed5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6324b174a4671d9966d5585016ae1ed5">&#9670;&#160;</a></span>weatherCloudiness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::weatherCloudiness = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00323">eve::daynight::DayNight::getAmbientBrightness()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00278">eve::daynight::DayNight::getSunB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00274">eve::daynight::DayNight::getSunG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00270">eve::daynight::DayNight::getSunR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00336">eve::daynight::DayNight::getWeatherCloudiness()</a>, <a class="el" href="DayNight_8cpp_source.html#l00329">eve::daynight::DayNight::setWeatherInfluence()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a843e917a95467ca66a41949e4343358e" name="a843e917a95467ca66a41949e4343358e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a843e917a95467ca66a41949e4343358e">&#9670;&#160;</a></span>weatherFlash</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::Impl::weatherFlash = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">eve::daynight::DayNight::applyAtmosphere()</a>, <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>, <a class="el" href="DayNight_8cpp_source.html#l00323">eve::daynight::DayNight::getAmbientBrightness()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00337">eve::daynight::DayNight::getWeatherFlash()</a>, <a class="el" href="DayNight_8cpp_source.html#l00329">eve::daynight::DayNight::setWeatherInfluence()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/daynight/<a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

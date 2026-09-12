@@ -1,0 +1,823 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::SoftBody3DDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">SoftBody3DDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1SoftBody3DDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::SoftBody3DDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Versioned, owning creation definition for one volumetric soft body.  
+ <a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aee7248bb3fe5f22b0d5e731506e01142" id="r_aee7248bb3fe5f22b0d5e731506e01142"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aee7248bb3fe5f22b0d5e731506e01142">validate</a> () const</td></tr>
+<tr class="memdesc:aee7248bb3fe5f22b0d5e731506e01142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate all fields and the aggregate one-million-particle limit.  <br /></td></tr>
+<tr class="separator:aee7248bb3fe5f22b0d5e731506e01142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25bc12088fb3ccffd9146a8ca29b472f" id="r_a25bc12088fb3ccffd9146a8ca29b472f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a25bc12088fb3ccffd9146a8ca29b472f">toValue</a> () const</td></tr>
+<tr class="memdesc:a25bc12088fb3ccffd9146a8ca29b472f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the complete canonical version-1 value.  <br /></td></tr>
+<tr class="separator:a25bc12088fb3ccffd9146a8ca29b472f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:adca807b6d4e1322e75410f824b1e0900" id="r_adca807b6d4e1322e75410f824b1e0900"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#adca807b6d4e1322e75410f824b1e0900">schemaDefinition</a> ()</td></tr>
+<tr class="memdesc:adca807b6d4e1322e75410f824b1e0900"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the runtime/tooling schema whose constraints mirror <a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aee7248bb3fe5f22b0d5e731506e01142" title="Validate all fields and the aggregate one-million-particle limit.">validate()</a>.  <br /></td></tr>
+<tr class="separator:adca807b6d4e1322e75410f824b1e0900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad68c7c07d7efc5d580f7b86184325740" id="r_ad68c7c07d7efc5d580f7b86184325740"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad68c7c07d7efc5d580f7b86184325740">ensureSchemaRegistered</a> ()</td></tr>
+<tr class="memdesc:ad68c7c07d7efc5d580f7b86184325740"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idempotently register version 1 in the process schema registry.  <br /></td></tr>
+<tr class="separator:ad68c7c07d7efc5d580f7b86184325740"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab57e7636d13db51fefd46daf22facc78" id="r_ab57e7636d13db51fefd46daf22facc78"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">SoftBody3DDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab57e7636d13db51fefd46daf22facc78">fromValue</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ab57e7636d13db51fefd46daf22facc78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and validate version 1 transactionally without partial publication.  <br /></td></tr>
+<tr class="separator:ab57e7636d13db51fefd46daf22facc78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aa23e8cd534d98eb5062bbe429f99a828" id="r_aa23e8cd534d98eb5062bbe429f99a828"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa23e8cd534d98eb5062bbe429f99a828">cols</a> = 4</td></tr>
+<tr class="separator:aa23e8cd534d98eb5062bbe429f99a828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08a9a622d79990bf9ec708f2aa6d6715" id="r_a08a9a622d79990bf9ec708f2aa6d6715"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a08a9a622d79990bf9ec708f2aa6d6715">rows</a> = 4</td></tr>
+<tr class="separator:a08a9a622d79990bf9ec708f2aa6d6715"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89d2a085e98539a4715ffab3d817071e" id="r_a89d2a085e98539a4715ffab3d817071e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a89d2a085e98539a4715ffab3d817071e">layers</a> = 4</td></tr>
+<tr class="separator:a89d2a085e98539a4715ffab3d817071e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bb7fc83c9444fef0ec1f2ea72bf3686" id="r_a5bb7fc83c9444fef0ec1f2ea72bf3686"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a5bb7fc83c9444fef0ec1f2ea72bf3686">spacing</a> = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5bb7fc83c9444fef0ec1f2ea72bf3686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a287005dde2fe63cb2c7b03aee74cf86a" id="r_a287005dde2fe63cb2c7b03aee74cf86a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a287005dde2fe63cb2c7b03aee74cf86a">originX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a287005dde2fe63cb2c7b03aee74cf86a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad578857560851f1633a75f0fd2fcdf97" id="r_ad578857560851f1633a75f0fd2fcdf97"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad578857560851f1633a75f0fd2fcdf97">originY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad578857560851f1633a75f0fd2fcdf97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50dfa399b998b63d337d764aaeb758f7" id="r_a50dfa399b998b63d337d764aaeb758f7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a50dfa399b998b63d337d764aaeb758f7">originZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a50dfa399b998b63d337d764aaeb758f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9abcb1bb18d740f934b5f1d3808b0cb" id="r_ab9abcb1bb18d740f934b5f1d3808b0cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab9abcb1bb18d740f934b5f1d3808b0cb">gravityX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab9abcb1bb18d740f934b5f1d3808b0cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac360a4964aa00099f6ffd1bd04108bc1" id="r_ac360a4964aa00099f6ffd1bd04108bc1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ac360a4964aa00099f6ffd1bd04108bc1">gravityY</a> = -9.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac360a4964aa00099f6ffd1bd04108bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a1030cd67a4f5ac99acd124040c4fbb" id="r_a7a1030cd67a4f5ac99acd124040c4fbb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7a1030cd67a4f5ac99acd124040c4fbb">gravityZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7a1030cd67a4f5ac99acd124040c4fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ea442dc5d0fda8a988b405595ca6b2c" id="r_a9ea442dc5d0fda8a988b405595ca6b2c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9ea442dc5d0fda8a988b405595ca6b2c">deformationResistance</a> = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9ea442dc5d0fda8a988b405595ca6b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f118b9c43b80c8d0044896ffb8f8380" id="r_a2f118b9c43b80c8d0044896ffb8f8380"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a2f118b9c43b80c8d0044896ffb8f8380">iterations</a> = 5</td></tr>
+<tr class="separator:a2f118b9c43b80c8d0044896ffb8f8380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0921bcd3fee63c89f245e6ec243638" id="r_a9a0921bcd3fee63c89f245e6ec243638"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9a0921bcd3fee63c89f245e6ec243638">damping</a> = 0.04<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9a0921bcd3fee63c89f245e6ec243638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97b57ee654f0dd48778f1a3a0e65c444" id="r_a97b57ee654f0dd48778f1a3a0e65c444"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a97b57ee654f0dd48778f1a3a0e65c444">particleRadius</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a97b57ee654f0dd48778f1a3a0e65c444"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8f023c81531b2c585bd20aca2188f91" id="r_aa8f023c81531b2c585bd20aca2188f91"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa8f023c81531b2c585bd20aca2188f91">particleMass</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa8f023c81531b2c585bd20aca2188f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3a5419d21eac7861d425575889d7eac" id="r_ae3a5419d21eac7861d425575889d7eac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ae3a5419d21eac7861d425575889d7eac">plasticYield</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae3a5419d21eac7861d425575889d7eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a445dd64adf89d26943fb19892b751f16" id="r_a445dd64adf89d26943fb19892b751f16"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a445dd64adf89d26943fb19892b751f16">plasticCreep</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a445dd64adf89d26943fb19892b751f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ce174821fadb4c848e0fdbdb531375" id="r_a77ce174821fadb4c848e0fdbdb531375"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a77ce174821fadb4c848e0fdbdb531375">plasticRecovery</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a77ce174821fadb4c848e0fdbdb531375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af95ad41b955fa096ca9cb8e296580349" id="r_af95ad41b955fa096ca9cb8e296580349"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#af95ad41b955fa096ca9cb8e296580349">maxDeformation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af95ad41b955fa096ca9cb8e296580349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52017ad076c982695216bcc627180db2" id="r_a52017ad076c982695216bcc627180db2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a52017ad076c982695216bcc627180db2">selfCollision</a> = false</td></tr>
+<tr class="separator:a52017ad076c982695216bcc627180db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a7bcd24b2dd24dea12ab43d3add5cb725" id="r_a7bcd24b2dd24dea12ab43d3add5cb725"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7bcd24b2dd24dea12ab43d3add5cb725">SchemaId</a> = &quot;physics:softbody3d&quot;</td></tr>
+<tr class="separator:a7bcd24b2dd24dea12ab43d3add5cb725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbf7bc23d08b821f7052e92c051d6ccb" id="r_afbf7bc23d08b821f7052e92c051d6ccb"><td class="memItemLeft" align="right" valign="top">static constexpr std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#afbf7bc23d08b821f7052e92c051d6ccb">SchemaVersion</a> = 1</td></tr>
+<tr class="separator:afbf7bc23d08b821f7052e92c051d6ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Versioned, owning creation definition for one volumetric soft body. </p>
+<p>This is the canonical source for runtime creation, serialization and editor defaults. Version 1 rejects unknown fields and unsupported versions; there is no older released version requiring migration. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ad68c7c07d7efc5d580f7b86184325740" name="ad68c7c07d7efc5d580f7b86184325740"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad68c7c07d7efc5d580f7b86184325740">&#9670;&#160;</a></span>ensureSchemaRegistered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::SoftBody3DDefinition::ensureSchemaRegistered </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Idempotently register version 1 in the process schema registry. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8cpp_source.html">SoftBody3DDefinition.cpp</a> 第 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00869">eve::schema::SchemaRegistry::registerVersioned()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">eve::schema::SchemaRegistry::resolve()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00020">SchemaId</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3D_8cpp_source.html#l00052">eve::physics::SoftBody3D::create()</a>.</p>
+
+</div>
+</div>
+<a id="ab57e7636d13db51fefd46daf22facc78" name="ab57e7636d13db51fefd46daf22facc78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab57e7636d13db51fefd46daf22facc78">&#9670;&#160;</a></span>fromValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">SoftBody3DDefinition</a> &gt; eve::physics::SoftBody3DDefinition::fromValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode and validate version 1 transactionally without partial publication. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8cpp_source.html">SoftBody3DDefinition.cpp</a> 第 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">cols</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">damping</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00027">deformationResistance</a>, <a class="el" href="SoftBody3DDefinition_8cpp.html#a3d8b1182b732568b0e9d5408cffdd223">EVE_SOFTBODY_READ</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00145">fields</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityZ</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00028">iterations</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">layers</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">maxDeformation</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originZ</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleMass</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleRadius</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticCreep</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticRecovery</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticYield</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">rows</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00020">SchemaId</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00031">selfCollision</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00024">spacing</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="adca807b6d4e1322e75410f824b1e0900" name="adca807b6d4e1322e75410f824b1e0900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca807b6d4e1322e75410f824b1e0900">&#9670;&#160;</a></span>schemaDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a> eve::physics::SoftBody3DDefinition::schemaDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the runtime/tooling schema whose constraints mirror <a class="el" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aee7248bb3fe5f22b0d5e731506e01142" title="Validate all fields and the aggregate one-million-particle limit.">validate()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8cpp_source.html">SoftBody3DDefinition.cpp</a> 第 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaTypes_8h_source.html#l00098">eve::schema::SchemaDefinition::additionalProperties</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">cols</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">damping</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00027">deformationResistance</a>, <a class="el" href="SchemaTypes_8h_source.html#l00097">eve::schema::SchemaDefinition::description</a>, <a class="el" href="SchemaTypes_8h_source.html#l00099">eve::schema::SchemaDefinition::fields</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityZ</a>, <a class="el" href="SchemaTypes_8h_source.html#l00094">eve::schema::SchemaDefinition::id</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00028">iterations</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">layers</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">maxDeformation</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00025">minimum</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="SchemaTypes_8h_source.html#l00078">eve::schema::FieldDefinition::name</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originZ</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleMass</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleRadius</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticCreep</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticRecovery</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticYield</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">rows</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00020">SchemaId</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00021">SchemaVersion</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00031">selfCollision</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00024">spacing</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>, <a class="el" href="SchemaTypes_8h_source.html#l00096">eve::schema::SchemaDefinition::title</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="SchemaTypes_8h_source.html#l00095">eve::schema::SchemaDefinition::version</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00182">ensureSchemaRegistered()</a>.</p>
+
+</div>
+</div>
+<a id="a25bc12088fb3ccffd9146a8ca29b472f" name="a25bc12088fb3ccffd9146a8ca29b472f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25bc12088fb3ccffd9146a8ca29b472f">&#9670;&#160;</a></span>toValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::physics::SoftBody3DDefinition::toValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode the complete canonical version-1 value. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8cpp_source.html">SoftBody3DDefinition.cpp</a> 第 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">cols</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">damping</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00027">deformationResistance</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityZ</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00028">iterations</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">layers</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">maxDeformation</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originZ</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleMass</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleRadius</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticCreep</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticRecovery</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticYield</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">rows</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00020">SchemaId</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00021">SchemaVersion</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00031">selfCollision</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00024">spacing</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aee7248bb3fe5f22b0d5e731506e01142" name="aee7248bb3fe5f22b0d5e731506e01142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee7248bb3fe5f22b0d5e731506e01142">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::SoftBody3DDefinition::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate all fields and the aggregate one-million-particle limit. </p>
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8cpp_source.html">SoftBody3DDefinition.cpp</a> 第 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">cols</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">damping</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00027">deformationResistance</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">gravityZ</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">layers</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">maxDeformation</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originX</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originY</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">originZ</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleMass</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">particleRadius</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticCreep</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticRecovery</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">plasticYield</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">rows</a>, <a class="el" href="SoftBody3DDefinition_8h_source.html#l00024">spacing</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aa23e8cd534d98eb5062bbe429f99a828" name="aa23e8cd534d98eb5062bbe429f99a828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa23e8cd534d98eb5062bbe429f99a828">&#9670;&#160;</a></span>cols</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3DDefinition::cols = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a9a0921bcd3fee63c89f245e6ec243638" name="a9a0921bcd3fee63c89f245e6ec243638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0921bcd3fee63c89f245e6ec243638">&#9670;&#160;</a></span>damping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::damping = 0.04<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a9ea442dc5d0fda8a988b405595ca6b2c" name="a9ea442dc5d0fda8a988b405595ca6b2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ea442dc5d0fda8a988b405595ca6b2c">&#9670;&#160;</a></span>deformationResistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::deformationResistance = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ab9abcb1bb18d740f934b5f1d3808b0cb" name="ab9abcb1bb18d740f934b5f1d3808b0cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9abcb1bb18d740f934b5f1d3808b0cb">&#9670;&#160;</a></span>gravityX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::gravityX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ac360a4964aa00099f6ffd1bd04108bc1" name="ac360a4964aa00099f6ffd1bd04108bc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac360a4964aa00099f6ffd1bd04108bc1">&#9670;&#160;</a></span>gravityY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::gravityY = -9.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7a1030cd67a4f5ac99acd124040c4fbb" name="a7a1030cd67a4f5ac99acd124040c4fbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1030cd67a4f5ac99acd124040c4fbb">&#9670;&#160;</a></span>gravityZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::gravityZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a2f118b9c43b80c8d0044896ffb8f8380" name="a2f118b9c43b80c8d0044896ffb8f8380"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f118b9c43b80c8d0044896ffb8f8380">&#9670;&#160;</a></span>iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3DDefinition::iterations = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a89d2a085e98539a4715ffab3d817071e" name="a89d2a085e98539a4715ffab3d817071e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89d2a085e98539a4715ffab3d817071e">&#9670;&#160;</a></span>layers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3DDefinition::layers = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="af95ad41b955fa096ca9cb8e296580349" name="af95ad41b955fa096ca9cb8e296580349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af95ad41b955fa096ca9cb8e296580349">&#9670;&#160;</a></span>maxDeformation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::maxDeformation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a287005dde2fe63cb2c7b03aee74cf86a" name="a287005dde2fe63cb2c7b03aee74cf86a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a287005dde2fe63cb2c7b03aee74cf86a">&#9670;&#160;</a></span>originX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::originX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad578857560851f1633a75f0fd2fcdf97" name="ad578857560851f1633a75f0fd2fcdf97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad578857560851f1633a75f0fd2fcdf97">&#9670;&#160;</a></span>originY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::originY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a50dfa399b998b63d337d764aaeb758f7" name="a50dfa399b998b63d337d764aaeb758f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50dfa399b998b63d337d764aaeb758f7">&#9670;&#160;</a></span>originZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::originZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aa8f023c81531b2c585bd20aca2188f91" name="aa8f023c81531b2c585bd20aca2188f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8f023c81531b2c585bd20aca2188f91">&#9670;&#160;</a></span>particleMass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::particleMass = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a97b57ee654f0dd48778f1a3a0e65c444" name="a97b57ee654f0dd48778f1a3a0e65c444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97b57ee654f0dd48778f1a3a0e65c444">&#9670;&#160;</a></span>particleRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::particleRadius = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a445dd64adf89d26943fb19892b751f16" name="a445dd64adf89d26943fb19892b751f16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a445dd64adf89d26943fb19892b751f16">&#9670;&#160;</a></span>plasticCreep</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::plasticCreep = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a77ce174821fadb4c848e0fdbdb531375" name="a77ce174821fadb4c848e0fdbdb531375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ce174821fadb4c848e0fdbdb531375">&#9670;&#160;</a></span>plasticRecovery</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::plasticRecovery = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae3a5419d21eac7861d425575889d7eac" name="ae3a5419d21eac7861d425575889d7eac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3a5419d21eac7861d425575889d7eac">&#9670;&#160;</a></span>plasticYield</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::plasticYield = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a08a9a622d79990bf9ec708f2aa6d6715" name="a08a9a622d79990bf9ec708f2aa6d6715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08a9a622d79990bf9ec708f2aa6d6715">&#9670;&#160;</a></span>rows</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::SoftBody3DDefinition::rows = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7bcd24b2dd24dea12ab43d3add5cb725" name="a7bcd24b2dd24dea12ab43d3add5cb725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bcd24b2dd24dea12ab43d3add5cb725">&#9670;&#160;</a></span>SchemaId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::SoftBody3DDefinition::SchemaId = &quot;physics:softbody3d&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00182">ensureSchemaRegistered()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="afbf7bc23d08b821f7052e92c051d6ccb" name="afbf7bc23d08b821f7052e92c051d6ccb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbf7bc23d08b821f7052e92c051d6ccb">&#9670;&#160;</a></span>SchemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint32_t eve::physics::SoftBody3DDefinition::SchemaVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a52017ad076c982695216bcc627180db2" name="a52017ad076c982695216bcc627180db2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52017ad076c982695216bcc627180db2">&#9670;&#160;</a></span>selfCollision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::SoftBody3DDefinition::selfCollision = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a5bb7fc83c9444fef0ec1f2ea72bf3686" name="a5bb7fc83c9444fef0ec1f2ea72bf3686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bb7fc83c9444fef0ec1f2ea72bf3686">&#9670;&#160;</a></span>spacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::SoftBody3DDefinition::spacing = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a> 第 <a class="el" href="SoftBody3DDefinition_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00190">fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00114">schemaDefinition()</a>, <a class="el" href="SoftBody3DSchema_8cpp_source.html#l00035">eve::physics_editing::softBody3DDefinitionSchema()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00085">toValue()</a> , 以及 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00058">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/softbody/<a class="el" href="SoftBody3DDefinition_8h_source.html">SoftBody3DDefinition.h</a></li>
+<li>src/modules/physics/softbody/<a class="el" href="SoftBody3DDefinition_8cpp_source.html">SoftBody3DDefinition.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

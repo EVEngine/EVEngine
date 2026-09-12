@@ -1,0 +1,262 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/import/UnitySource.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_5a462b2626f54b4e1f382bc8b7e5a769.html">import</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UnitySource.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UnitySource_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="AssetImporter_8h.html">asset/import/AssetImporter.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__import.html">eve::asset_import</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset__import.html#a43e494d7d6d0504139d5acd57b0a3e22">   10</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1asset__import.html#a43e494d7d6d0504139d5acd57b0a3e22">UnitySourceFiles</a> = std::map&lt;std::string, std::vector&lt;std::uint8_t&gt;&gt;;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7">   13</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7">UnitySourceKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ab0f2b97dc5d2b76b26e040408bb1d8af">Folder</a>,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7afc149351d98dcbf17361c6a449e6355e">Prefab</a>,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a9ead0d38e06ec253ca0ecbf6ea56e59b">Scene</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7aa559b87068921eec05086ce5485e9784">Model</a>,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206">Material</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7abe53a0541a6d36f6ecb879fa2c584b08">Image</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad6b6b668dbca9d4fe774bb654226ebe3">Animation</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ab22f0418e8ac915eb66f829d262d14a2">Audio</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a194f5394ae2e9c74dc3c441b92862d1d">Font</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7aa88a92f4a0e793589f2341851a15c660">Shader</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7af907e651164789346ae0a1e257c462d8">Script</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7af6068daa29dbb05a7ead1e3b5a48bbee">Data</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a6311ae17c1ee52b36e68aaf4ad066387">Other</a>,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceReference.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceReference.html">UnitySourceReference</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceReference.html#a4089f4776a5d66d94770c9f1f8a26fa9">   31</a></span>    std::string  <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceReference.html#a4089f4776a5d66d94770c9f1f8a26fa9">guid</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceReference.html#ac5b4dfc55251380d76f0a2f5f4d5b1e0">   32</a></span>    std::int64_t <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceReference.html#ac5b4dfc55251380d76f0a2f5f4d5b1e0">fileId</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a74d61bb3a5c5766f11e70c307dc71238">   37</a></span>    std::string                       <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a74d61bb3a5c5766f11e70c307dc71238">path</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#ad76bbafb82153a71af39fcac5d582c50">   38</a></span>    std::string                       <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#ad76bbafb82153a71af39fcac5d582c50">guid</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a5f09d2f6b41447307153178d41f2c940">   39</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7">UnitySourceKind</a>                   <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a5f09d2f6b41447307153178d41f2c940">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a6311ae17c1ee52b36e68aaf4ad066387">UnitySourceKind::Other</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a7e6aa9b511c4398f04cf41f1904c9f04">   40</a></span>    std::string                       <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a7e6aa9b511c4398f04cf41f1904c9f04">importer</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a9d07c1bb1e68a93895b66cd883cb75d8">   41</a></span>    std::vector&lt;UnitySourceReference&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a9d07c1bb1e68a93895b66cd883cb75d8">references</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceIndex.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceIndex.html">UnitySourceIndex</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceIndex.html#af9c3f215d6f4399110bb5fe41c48c057">   46</a></span>    std::vector&lt;UnitySourceAsset&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceIndex.html#af9c3f215d6f4399110bb5fe41c48c057">assets</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnitySourceIndex.html#a46cec5ac36b8a888c43c74a36ee1db91">   47</a></span>    std::vector&lt;ImportFinding&gt;    <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnitySourceIndex.html#a46cec5ac36b8a888c43c74a36ee1db91">findings</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;UnitySourceFiles&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a97cbac5d94796bab7ae7a4dcaab2101c">readUnityPackage</a>(std::span&lt;const std::uint8_t&gt; <a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a>&amp;      limits = {});</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;UnitySourceIndex&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a04a53214e0de69ddf5a377479f9f6446">indexUnitySources</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1asset__import.html#a43e494d7d6d0504139d5acd57b0a3e22">UnitySourceFiles</a>&amp;  files,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                                         <span class="keyword">const</span> AssetImportLimits&amp; limits = {});</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}  <span class="comment">// namespace eve::asset_import</span></div>
+<div class="ttc" id="aAssetImporter_8h_html"><div class="ttname"><a href="AssetImporter_8h.html">AssetImporter.h</a></div><div class="ttdoc">Tool-side image and glTF importers producing canonical .eva candidates.</div></div>
+<div class="ttc" id="aPreparedFile_8cpp_html_abd334a1a9ee04d4f3f143e881f9cdb3f"><div class="ttname"><a href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a></div><div class="ttdeci">std::shared_ptr&lt; const FileData &gt; bytes</div><div class="ttdef"><b>Definition</b> <a href="PreparedFile_8cpp_source.html#l00017">PreparedFile.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html"><div class="ttname"><a href="namespaceeve_1_1asset__import.html">eve::asset_import</a></div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00012">AssetImporter.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a04a53214e0de69ddf5a377479f9f6446"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a04a53214e0de69ddf5a377479f9f6446">eve::asset_import::indexUnitySources</a></div><div class="ttdeci">Result&lt; UnitySourceIndex &gt; indexUnitySources(const UnitySourceFiles &amp;files, const AssetImportLimits &amp;limits)</div><div class="ttdoc">Validate project paths and .meta identities and index serialized GUID/fileID references.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8cpp_source.html#l00115">UnitySource.cpp:115</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a43e494d7d6d0504139d5acd57b0a3e22"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a43e494d7d6d0504139d5acd57b0a3e22">eve::asset_import::UnitySourceFiles</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::uint8_t &gt; &gt; UnitySourceFiles</div><div class="ttdoc">Owning project-relative source bytes, including the original .meta files.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00010">UnitySource.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7">eve::asset_import::UnitySourceKind</a></div><div class="ttdeci">UnitySourceKind</div><div class="ttdoc">Source category; classification does not imply runtime conversion support.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00013">UnitySource.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7a194f5394ae2e9c74dc3c441b92862d1d"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a194f5394ae2e9c74dc3c441b92862d1d">eve::asset_import::UnitySourceKind::Font</a></div><div class="ttdeci">@ Font</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7a6311ae17c1ee52b36e68aaf4ad066387"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a6311ae17c1ee52b36e68aaf4ad066387">eve::asset_import::UnitySourceKind::Other</a></div><div class="ttdeci">@ Other</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7a9ead0d38e06ec253ca0ecbf6ea56e59b"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7a9ead0d38e06ec253ca0ecbf6ea56e59b">eve::asset_import::UnitySourceKind::Scene</a></div><div class="ttdeci">@ Scene</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7aa559b87068921eec05086ce5485e9784"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7aa559b87068921eec05086ce5485e9784">eve::asset_import::UnitySourceKind::Model</a></div><div class="ttdeci">@ Model</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7aa88a92f4a0e793589f2341851a15c660">eve::asset_import::UnitySourceKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7ab0f2b97dc5d2b76b26e040408bb1d8af"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ab0f2b97dc5d2b76b26e040408bb1d8af">eve::asset_import::UnitySourceKind::Folder</a></div><div class="ttdeci">@ Folder</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7ab22f0418e8ac915eb66f829d262d14a2"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ab22f0418e8ac915eb66f829d262d14a2">eve::asset_import::UnitySourceKind::Audio</a></div><div class="ttdeci">@ Audio</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7abe53a0541a6d36f6ecb879fa2c584b08"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7abe53a0541a6d36f6ecb879fa2c584b08">eve::asset_import::UnitySourceKind::Image</a></div><div class="ttdeci">@ Image</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7ad6b6b668dbca9d4fe774bb654226ebe3"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad6b6b668dbca9d4fe774bb654226ebe3">eve::asset_import::UnitySourceKind::Animation</a></div><div class="ttdeci">@ Animation</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206">eve::asset_import::UnitySourceKind::Material</a></div><div class="ttdeci">@ Material</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7af6068daa29dbb05a7ead1e3b5a48bbee"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7af6068daa29dbb05a7ead1e3b5a48bbee">eve::asset_import::UnitySourceKind::Data</a></div><div class="ttdeci">@ Data</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7af907e651164789346ae0a1e257c462d8"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7af907e651164789346ae0a1e257c462d8">eve::asset_import::UnitySourceKind::Script</a></div><div class="ttdeci">@ Script</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7afc149351d98dcbf17361c6a449e6355e"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7afc149351d98dcbf17361c6a449e6355e">eve::asset_import::UnitySourceKind::Prefab</a></div><div class="ttdeci">@ Prefab</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a97cbac5d94796bab7ae7a4dcaab2101c"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a97cbac5d94796bab7ae7a4dcaab2101c">eve::asset_import::readUnityPackage</a></div><div class="ttdeci">Result&lt; UnitySourceFiles &gt; readUnityPackage(std::span&lt; const std::uint8_t &gt; bytes, const AssetImportLimits &amp;limits)</div><div class="ttdoc">Decode a gzip/tar .unitypackage into project-relative source bytes without extraction.</div><div class="ttdef"><b>Definition</b> <a href="UnityPackage_8cpp_source.html#l00200">UnityPackage.cpp:200</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1AssetImportLimits_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1AssetImportLimits.html">eve::asset_import::AssetImportLimits</a></div><div class="ttdoc">Parser and allocation budgets applied to untrusted importer inputs.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00015">AssetImporter.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html">eve::asset_import::UnitySourceAsset</a></div><div class="ttdoc">Immutable-by-convention owning source index entry; no borrowed source addresses.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00036">UnitySource.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html_a5f09d2f6b41447307153178d41f2c940"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a5f09d2f6b41447307153178d41f2c940">eve::asset_import::UnitySourceAsset::kind</a></div><div class="ttdeci">UnitySourceKind kind</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00039">UnitySource.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html_a74d61bb3a5c5766f11e70c307dc71238"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a74d61bb3a5c5766f11e70c307dc71238">eve::asset_import::UnitySourceAsset::path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00037">UnitySource.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html_a7e6aa9b511c4398f04cf41f1904c9f04"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a7e6aa9b511c4398f04cf41f1904c9f04">eve::asset_import::UnitySourceAsset::importer</a></div><div class="ttdeci">std::string importer</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00040">UnitySource.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html_a9d07c1bb1e68a93895b66cd883cb75d8"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html#a9d07c1bb1e68a93895b66cd883cb75d8">eve::asset_import::UnitySourceAsset::references</a></div><div class="ttdeci">std::vector&lt; UnitySourceReference &gt; references</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00041">UnitySource.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html_ad76bbafb82153a71af39fcac5d582c50"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html#ad76bbafb82153a71af39fcac5d582c50">eve::asset_import::UnitySourceAsset::guid</a></div><div class="ttdeci">std::string guid</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00038">UnitySource.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceIndex_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceIndex.html">eve::asset_import::UnitySourceIndex</a></div><div class="ttdoc">Owning deterministic index sorted by path, plus missing-reference diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00045">UnitySource.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceIndex_html_a46cec5ac36b8a888c43c74a36ee1db91"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceIndex.html#a46cec5ac36b8a888c43c74a36ee1db91">eve::asset_import::UnitySourceIndex::findings</a></div><div class="ttdeci">std::vector&lt; ImportFinding &gt; findings</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00047">UnitySource.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceIndex_html_af9c3f215d6f4399110bb5fe41c48c057"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceIndex.html#af9c3f215d6f4399110bb5fe41c48c057">eve::asset_import::UnitySourceIndex::assets</a></div><div class="ttdeci">std::vector&lt; UnitySourceAsset &gt; assets</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00046">UnitySource.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceReference_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceReference.html">eve::asset_import::UnitySourceReference</a></div><div class="ttdoc">External serialized object identity. fileId is signed, as in Unity serialization.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00030">UnitySource.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceReference_html_a4089f4776a5d66d94770c9f1f8a26fa9"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceReference.html#a4089f4776a5d66d94770c9f1f8a26fa9">eve::asset_import::UnitySourceReference::guid</a></div><div class="ttdeci">std::string guid</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00031">UnitySource.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceReference_html_ac5b4dfc55251380d76f0a2f5f4d5b1e0"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceReference.html#ac5b4dfc55251380d76f0a2f5f4d5b1e0">eve::asset_import::UnitySourceReference::fileId</a></div><div class="ttdeci">std::int64_t fileId</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00032">UnitySource.h:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu::BindGroupLayoutBuilder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu::BindGroupLayoutBuilder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Fluent builder for wgpu::BindGroupLayout.  
+ <a href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac984f05d156ba6207fa0dfabfdac965f" id="r_ac984f05d156ba6207fa0dfabfdac965f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#ac984f05d156ba6207fa0dfabfdac965f">BindGroupLayoutBuilder</a> ()=default</td></tr>
+<tr class="memdesc:ac984f05d156ba6207fa0dfabfdac965f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default: empty layout with no entries.  <br /></td></tr>
+<tr class="separator:ac984f05d156ba6207fa0dfabfdac965f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a927edd983b31e3d266dafd2382c0e287" id="r_a927edd983b31e3d266dafd2382c0e287"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#a927edd983b31e3d266dafd2382c0e287">buffer</a> (uint32_t binding, wgpu::ShaderStage visibility, wgpu::BufferBindingType <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, bool dynamicOffset, uint64_t minBindingSize)</td></tr>
+<tr class="memdesc:a927edd983b31e3d266dafd2382c0e287"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a buffer binding (uniform / storage / read-only storage).  <br /></td></tr>
+<tr class="separator:a927edd983b31e3d266dafd2382c0e287"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a090e4785098de8a6674987011e2ce165" id="r_a090e4785098de8a6674987011e2ce165"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#a090e4785098de8a6674987011e2ce165">texture</a> (uint32_t binding, wgpu::ShaderStage visibility, wgpu::TextureSampleType sampleType, wgpu::TextureViewDimension dim, bool multisampled=false)</td></tr>
+<tr class="memdesc:a090e4785098de8a6674987011e2ce165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a sampled-texture binding.  <br /></td></tr>
+<tr class="separator:a090e4785098de8a6674987011e2ce165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0614bf7a32e7723e399205e4bcb86b" id="r_add0614bf7a32e7723e399205e4bcb86b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#add0614bf7a32e7723e399205e4bcb86b">sampler</a> (uint32_t binding, wgpu::ShaderStage visibility, wgpu::SamplerBindingType <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:add0614bf7a32e7723e399205e4bcb86b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a sampler binding (filtering or comparison).  <br /></td></tr>
+<tr class="separator:add0614bf7a32e7723e399205e4bcb86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf49ecc08ae8b23860944b1e56c0c28" id="r_accf49ecc08ae8b23860944b1e56c0c28"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#accf49ecc08ae8b23860944b1e56c0c28">entryCount</a> () const</td></tr>
+<tr class="memdesc:accf49ecc08ae8b23860944b1e56c0c28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of entries accumulated so far.  <br /></td></tr>
+<tr class="separator:accf49ecc08ae8b23860944b1e56c0c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e6ff8ab7042c3e25d35b78e645700e9" id="r_a9e6ff8ab7042c3e25d35b78e645700e9"><td class="memItemLeft" align="right" valign="top">wgpu::BindGroupLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html#a9e6ff8ab7042c3e25d35b78e645700e9">build</a> (const wgpu::Device &amp;<a class="el" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>, const char *label) const</td></tr>
+<tr class="memdesc:a9e6ff8ab7042c3e25d35b78e645700e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the bind group layout. Throws on null device.  <br /></td></tr>
+<tr class="separator:a9e6ff8ab7042c3e25d35b78e645700e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Fluent builder for wgpu::BindGroupLayout. </p>
+<p>Builds the C++ wrapper descriptor directly (whose zero-init already matches the WebGPU defaults) instead of a hand-written WGPUBindGroupLayoutEntry array</p><ul>
+<li>reinterpret_cast. Mirrors vk-bootstrap's DescriptorSetBuilder. </li>
+</ul>
+
+<p class="definition">在文件 <a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a> 第 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac984f05d156ba6207fa0dfabfdac965f" name="ac984f05d156ba6207fa0dfabfdac965f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac984f05d156ba6207fa0dfabfdac965f">&#9670;&#160;</a></span>BindGroupLayoutBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::webgpu::BindGroupLayoutBuilder::BindGroupLayoutBuilder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default: empty layout with no entries. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a927edd983b31e3d266dafd2382c0e287" name="a927edd983b31e3d266dafd2382c0e287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a927edd983b31e3d266dafd2382c0e287">&#9670;&#160;</a></span>buffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a> &amp; eve::graphics::webgpu::BindGroupLayoutBuilder::buffer </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::ShaderStage&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::BufferBindingType&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>dynamicOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>minBindingSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append a buffer binding (uniform / storage / read-only storage). </p>
+
+<p class="definition">在文件 <a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a> 第 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00022">buffer()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00022">buffer()</a>.</p>
+
+</div>
+</div>
+<a id="a9e6ff8ab7042c3e25d35b78e645700e9" name="a9e6ff8ab7042c3e25d35b78e645700e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e6ff8ab7042c3e25d35b78e645700e9">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::BindGroupLayout eve::graphics::webgpu::BindGroupLayoutBuilder::build </td>
+          <td>(</td>
+          <td class="paramtype">const wgpu::Device &amp;&#160;</td>
+          <td class="paramname"><em>device</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>label</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the bind group layout. Throws on null device. </p>
+
+<p class="definition">在文件 <a class="el" href="BindGroupLayoutBuilder_8cpp_source.html">BindGroupLayoutBuilder.cpp</a> 第 <a class="el" href="BindGroupLayoutBuilder_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>.</p>
+
+</div>
+</div>
+<a id="accf49ecc08ae8b23860944b1e56c0c28" name="accf49ecc08ae8b23860944b1e56c0c28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf49ecc08ae8b23860944b1e56c0c28">&#9670;&#160;</a></span>entryCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::webgpu::BindGroupLayoutBuilder::entryCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of entries accumulated so far. </p>
+
+<p class="definition">在文件 <a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a> 第 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add0614bf7a32e7723e399205e4bcb86b" name="add0614bf7a32e7723e399205e4bcb86b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0614bf7a32e7723e399205e4bcb86b">&#9670;&#160;</a></span>sampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a> &amp; eve::graphics::webgpu::BindGroupLayoutBuilder::sampler </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::ShaderStage&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::SamplerBindingType&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append a sampler binding (filtering or comparison). </p>
+
+<p class="definition">在文件 <a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a> 第 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00046">sampler()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00046">sampler()</a>.</p>
+
+</div>
+</div>
+<a id="a090e4785098de8a6674987011e2ce165" name="a090e4785098de8a6674987011e2ce165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a090e4785098de8a6674987011e2ce165">&#9670;&#160;</a></span>texture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1BindGroupLayoutBuilder.html">BindGroupLayoutBuilder</a> &amp; eve::graphics::webgpu::BindGroupLayoutBuilder::texture </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::ShaderStage&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::TextureSampleType&#160;</td>
+          <td class="paramname"><em>sampleType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::TextureViewDimension&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>multisampled</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append a sampled-texture binding. </p>
+
+<p class="definition">在文件 <a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a> 第 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00034">texture()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BindGroupLayoutBuilder_8h_source.html#l00034">texture()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/webgpu/<a class="el" href="BindGroupLayoutBuilder_8h_source.html">BindGroupLayoutBuilder.h</a></li>
+<li>src/modules/graphics/webgpu/<a class="el" href="BindGroupLayoutBuilder_8cpp_source.html">BindGroupLayoutBuilder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

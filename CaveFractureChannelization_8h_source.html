@@ -1,0 +1,216 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveFractureChannelization.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveFractureChannelization.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveFractureChannelization_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="foldopen" id="foldopen00006" data-start="{" data-end="};">
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html">    6</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html">CaveFractureChannelizationInput</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a999e8ecacda02a2896f0f35687903474">    7</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a999e8ecacda02a2896f0f35687903474">primaryMask</a>                 = 0.f;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a98733311aa8db06099b57243e5c92d63">    8</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a98733311aa8db06099b57243e5c92d63">secondaryMask</a>               = 0.f;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a92fe8d686f213bfecd0e75e1e26b2de6">    9</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a92fe8d686f213bfecd0e75e1e26b2de6">primaryApertureMultiplier</a>   = 1.f;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a9d155256bc5daa337f2a2a4b484ee673">   10</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a9d155256bc5daa337f2a2a4b484ee673">secondaryApertureMultiplier</a> = 1.f;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a7f577883e2bcf940cd4d819f4e943eef">   11</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a7f577883e2bcf940cd4d819f4e943eef">hydraulicIntensity</a>          = 1.f;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a80f0f475886227758369141e0432fadb">   12</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a80f0f475886227758369141e0432fadb">distanceFromInlet</a>           = 0.f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a01c80b65c078552c5e2d994cfed24698">   13</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a01c80b65c078552c5e2d994cfed24698">reactantPenetration</a>         = 1.f;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>};</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html">CaveFractureChannelizationSample</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#ace78a234c7576232aba30721d3b10053">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#ace78a234c7576232aba30721d3b10053">erosion</a>                   = 0.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a72c9915578fcd2667fd1a6eae4a2f751">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a72c9915578fcd2667fd1a6eae4a2f751">flowConcentration</a>         = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a0e777633528d1e259c837ce6095738c1">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a0e777633528d1e259c837ce6095738c1">intersectionAmplification</a> = 0.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a5ff630bf766f7761928bdf33d7b80512">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a5ff630bf766f7761928bdf33d7b80512">reactantAccess</a>            = 0.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>};</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>[[nodiscard]] <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html">CaveFractureChannelizationSample</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#af96eed67b0be66fb0b098ec1169f280b">sampleCaveFractureChannelization</a>(</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html">CaveFractureChannelizationInput</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_af96eed67b0be66fb0b098ec1169f280b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#af96eed67b0be66fb0b098ec1169f280b">eve::procgen::sampleCaveFractureChannelization</a></div><div class="ttdeci">CaveFractureChannelizationSample sampleCaveFractureChannelization(const CaveFractureChannelizationInput &amp;input)</div><div class="ttdoc">Approximate fracture aperture-flow-dissolution feedback at one cave-wall sample.</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8cpp_source.html#l00016">CaveFractureChannelization.cpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html">eve::procgen::CaveFractureChannelizationInput</a></div><div class="ttdoc">Inputs for aperture-driven reactive channelization within a cave fracture network.</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00006">CaveFractureChannelization.h:6</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a01c80b65c078552c5e2d994cfed24698"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a01c80b65c078552c5e2d994cfed24698">eve::procgen::CaveFractureChannelizationInput::reactantPenetration</a></div><div class="ttdeci">float reactantPenetration</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00013">CaveFractureChannelization.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a7f577883e2bcf940cd4d819f4e943eef"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a7f577883e2bcf940cd4d819f4e943eef">eve::procgen::CaveFractureChannelizationInput::hydraulicIntensity</a></div><div class="ttdeci">float hydraulicIntensity</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00011">CaveFractureChannelization.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a80f0f475886227758369141e0432fadb"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a80f0f475886227758369141e0432fadb">eve::procgen::CaveFractureChannelizationInput::distanceFromInlet</a></div><div class="ttdeci">float distanceFromInlet</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00012">CaveFractureChannelization.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a92fe8d686f213bfecd0e75e1e26b2de6"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a92fe8d686f213bfecd0e75e1e26b2de6">eve::procgen::CaveFractureChannelizationInput::primaryApertureMultiplier</a></div><div class="ttdeci">float primaryApertureMultiplier</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00009">CaveFractureChannelization.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a98733311aa8db06099b57243e5c92d63"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a98733311aa8db06099b57243e5c92d63">eve::procgen::CaveFractureChannelizationInput::secondaryMask</a></div><div class="ttdeci">float secondaryMask</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00008">CaveFractureChannelization.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a999e8ecacda02a2896f0f35687903474"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a999e8ecacda02a2896f0f35687903474">eve::procgen::CaveFractureChannelizationInput::primaryMask</a></div><div class="ttdeci">float primaryMask</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00007">CaveFractureChannelization.h:7</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationInput_html_a9d155256bc5daa337f2a2a4b484ee673"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationInput.html#a9d155256bc5daa337f2a2a4b484ee673">eve::procgen::CaveFractureChannelizationInput::secondaryApertureMultiplier</a></div><div class="ttdeci">float secondaryApertureMultiplier</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00010">CaveFractureChannelization.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html">eve::procgen::CaveFractureChannelizationSample</a></div><div class="ttdoc">Observable local state of aperture-flow-dissolution feedback.</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00017">CaveFractureChannelization.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationSample_html_a0e777633528d1e259c837ce6095738c1"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a0e777633528d1e259c837ce6095738c1">eve::procgen::CaveFractureChannelizationSample::intersectionAmplification</a></div><div class="ttdeci">float intersectionAmplification</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00020">CaveFractureChannelization.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationSample_html_a5ff630bf766f7761928bdf33d7b80512"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a5ff630bf766f7761928bdf33d7b80512">eve::procgen::CaveFractureChannelizationSample::reactantAccess</a></div><div class="ttdeci">float reactantAccess</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00021">CaveFractureChannelization.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationSample_html_a72c9915578fcd2667fd1a6eae4a2f751"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#a72c9915578fcd2667fd1a6eae4a2f751">eve::procgen::CaveFractureChannelizationSample::flowConcentration</a></div><div class="ttdeci">float flowConcentration</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00019">CaveFractureChannelization.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveFractureChannelizationSample_html_ace78a234c7576232aba30721d3b10053"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveFractureChannelizationSample.html#ace78a234c7576232aba30721d3b10053">eve::procgen::CaveFractureChannelizationSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CaveFractureChannelization_8h_source.html#l00018">CaveFractureChannelization.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

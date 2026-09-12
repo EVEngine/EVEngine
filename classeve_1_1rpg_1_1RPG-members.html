@@ -1,0 +1,291 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1RPG.html">RPG</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::rpg::RPG 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ae9877ce3299e40b090873e7ff33a8400">buyFromShop</a>(GameState *gameState, inventory::Bag *bag, const std::string &amp;currencyId, const std::string &amp;itemId, int quantity, double unitPrice)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4f3592b5ccda560113560f504ed127e7">buyShopOffer</a>(GameState *gameState, inventory::Bag *bag, const std::string &amp;currencyId, const std::string &amp;offerId, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a08466eb8cb522366ce677088da0176a4">claimQuestRewards</a>(Tracker *tracker, GameState *gameState, inventory::Bag *bag, const std::string &amp;questId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a1b4956f547ea7ec438c9575c64a7eeb5">clearAllItemStats</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a08d917b47ab0e6448c49953e83dc2096">clearBattleTactics</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a7487fa10ccdcc1fdfd0db5e666914ea6">clearClassDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ac23da4a99cc34f19161dcb307b4ab896">clearEffectDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a15c4b5e376b577b5947bf3ef711d4d89">clearEncounters</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a2f48011a3ae4630ced22a252a4ab0886">clearItemStats</a>(const std::string &amp;itemId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aa146d9300cf408e7fa2e48b8d13d10aa">clearLootTables</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a6e03897db24db30cabb09f909e550300">clearQuestDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a67ed18c190647e3608109ac0ddeb7354">clearSettlementPipeline</a>(const std::string &amp;pipeline)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a6e19ac1a4b23fdad1828462631b281d7">clearShopOffers</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#adc1a97f1da7b36964290cfb26088bbe6">clearSkillDamage</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a0bdd9bb5c13d83f2c7d0cbd285f67447">clearSkillDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a204bc532308b55fe443a8a25e1af9849">clearStoryEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a21ea7d11d5af2cb117ba4d6a0fe54bad">clearTraitDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8461d8efa331c392d22d69f23d76f366">collectWorldLoot</a>(Tracker *tracker, GameState *gameState, inventory::Bag *bag, const WorldLootRequest &amp;request)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad5d26519034cd61c6ad06e85852ab33a">getCastEventCaster</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a56bd9d68403ee9a4e03c733bb5136af5">getCastEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad9a7d74121432afb7005a395f30023d9">getCastEventSkillId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4ab39d29cf390cd31c63edafa01d7f43">getCastEventTarget</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4cbf7778c5b782254eefdab6b4139f42">getClassDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a0159f618ad941e1b77bf7c1255cb4b9e">getEffectDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a49b4ef3bfe0e671bb6676ecfabcf5bcc">getEncounterDisplayName</a>(const std::string &amp;encounterId) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ac25b171e5cb30af43d8c66eadb3072b7">getEncounterMaxHp</a>(const std::string &amp;encounterId) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a06081c38d19c592ef38ff3abe5b09de3">getEncounterMemberCount</a>(const std::string &amp;encounterId) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aafb0c4ebbe0ee482be4f4bab188170aa">getEncounterMemberDisplayName</a>(const std::string &amp;encounterId, int memberIndex) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8979e28afe832adbb934cfc7b7f42714">getEncounterMemberMaxHp</a>(const std::string &amp;encounterId, int memberIndex) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a39d20a38fe7584445f4e4d5a8691dc62">getItemStatCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5c407e980f5ad7d33593b0a1ae7f1164">getLevelUpEventActor</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4992364318bcd4a589ad83366374668a">getLevelUpEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad4838cacced2fc6db75a76833ee7447f">getLevelUpEventNewLevel</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aa88aa234c475b4f93f709ce0ff0e0fcf">getLevelUpEventPreviousLevel</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#af8ae993a0b03a68ece67f8bbec669933">getLootTableCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad36c15371e050d9c76cd38ab6f0196fe">getQuestDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4d3b79bb1dc27e14b42c1634f11033dd">getSettlementStageCount</a>(const std::string &amp;pipeline)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a2f064645a57706c86c73de671c4ad5de">getShopOfferBuyPrice</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a870bafe4d36f388ee1ffdd78e11d13f4">getShopOfferCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4c6d5098921516b081629dbe7dba829e">getShopOfferDescription</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a9eecdf0a4158d27350735f8c8b20a58b">getShopOfferId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5c67b84f188e4aa11b4439e10746430d">getShopOfferItemId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a363738f512f290d098322e81b16a1ad2">getShopOfferName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aff8b9967be74f2e679e28d8d3ce676bd">getShopOfferSellPrice</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a21560905d61038a372f25c3775c54168">getSkillDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a537fa8511b1829f1ce9519487729be36">getStatusChangeEventAction</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a2c5563035257c9ec6abf13e8da0e8f9a">getStatusChangeEventActor</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8c53663d1140121986aba0d58e68fb62">getStatusChangeEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a0f1e21f5756f123539c6fd7e18716d0b">getStatusChangeEventEffectId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4c3f0cf124f9cf8ec89334200a4e1b9b">getStatusChangeEventInstanceId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a6806bb0a9d51b3e31e93e4c8d95d1221">getStatusChangeEventReason</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a6fcd9e86835223ddf40a29a5c9f4650d">getStatusChangeEventSource</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad771361210334768b2c1f2d2ce8adff8">getStatusChangeEventStacks</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#acc1e87013f24a0cfb28e141424ad89dd">getStoryEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a1db9af946e13b5d9035ea964c2f1a53b">getTickEventActor</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a73781655e30862d3aeb04d7d9a8be1ad">getTickEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad74c484c69ced7258c62f8116ae4b058">getTickEventEffectId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a3a25ea150f27a02fc691c87e1e0ff494">getTickEventInstanceId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aa2b07e25f487da59894d85a82c95381c">getTickEventSource</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a9a3ebd896fa34a00ebe5e7f345f25897">getTickEventStacks</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a1f7b1138cd1199ee62ed4b48821b3d12">getTraitDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a551016fba44ec3bd08097fd6eca987bc">getVitalsEventAction</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8c7497ed65020cb2df7f5474f9204a80">getVitalsEventActor</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a424c0e47e50263396301f5515b8084f0">getVitalsEventAmount</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a2d27596fb22b3ac236ac035d0ee3e95a">getVitalsEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a4bea4f017af2f2f26003bc9baf0c6929">getVitalsEventCurrent</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a7f5a371843b2688ab5d28cd7f9b5b701">getVitalsEventMax</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a89aa8c78c30a94bcc11c45c0267bef57">getVitalsEventResource</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a2dedf9fa36becee80974807ec55a2e0b">getVitalsEventSource</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ad4a4207861269becbebedaa3db0dc5ab">globalGameState</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aeda95bca95a19311a8399b6ac61f06d8">hasEncounter</a>(const std::string &amp;encounterId) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#af8e9bfb78d60ff897cfb21ae080bc276">hasQuestDefinition</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a063bf861309f2af1f65848a3499f3f2e">hasSettlementStage</a>(const std::string &amp;pipeline, const std::string &amp;stage)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#add7d5b811ed899a98ee85b0941577ec6">hasShopOffer</a>(const std::string &amp;offerId) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#aa7f081622848b97a9ed67a4187a10663">hasStoryEvent</a>(const std::string &amp;eventId) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a275ee4e34b7064612c094300c4995f27">Module_REG</a>(RPG)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a72c0c877c386fb6df1428e3aa9c81e20">newActor</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a228cade50ecd7b15e27a2435c5fca0ae">newBattle</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#affeb5bd5183e9c6642af53df6d7af4eb">newBattleControl</a>(Battle *battle, SubjectRef instance)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5b88d50c8c8602bfb72f384baed103e4">newEncounterActor</a>(const std::string &amp;encounterId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ac7c5c10782d53f9de7f454774dd9e4fc">newEncounterMemberActor</a>(const std::string &amp;encounterId, int memberIndex)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8dbaadba616906c2c52d4393ae7177c8">newGameState</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#abc78217c542a2a3186034fbfa66c72f2">newParty</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8f5132a561f0b5545a27a19a5f3be998">newProductControl</a>(SubjectRef instance, GameState *gameState, Tracker *tracker, inventory::Bag *bag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5866ff8acc0e188854cb59175dad22f0">newSettlementContext</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a577b27eddf5577ecaa0998773a7cccac">newStoryEventSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a60e641287e434b2eea4faf6211e96cfe">newTracker</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5c0787f2e4bc5f8777f57af5d98b79f1">newWorldState</a>(GameState *gameState)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a0eb10253452d10df835d527611d82560">queueBattleTactic</a>(Battle *battle, RPGActor *actor, const std::string &amp;tacticsId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a923871a24ecc4a75f5bab8f1495992b4">registerClassesFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5109bd8c26b92d2b437309a4a95b0969">registerEffectsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a72d09dcd6974ba0076154c859baa6968">registerItemStatsFromJson</a>(const std::string &amp;itemId, const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5f980fe83db1a6f1ac7ea70bfd7137cd">registerLootTablesFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a6f145f4bcdfe23d2a006fac27e190860">registerQuestsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a2090b5af8e2d3c30cadaa89ef580b210">registerSkillDamage</a>(const std::string &amp;skillId, const std::string &amp;damageType, const std::string &amp;formula, const std::string &amp;element, double critChance, int hitChance)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a35abf885a3d1e0d3dcc48058eaaf3542">registerSkillsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a67ca7497167d4567a44a46e486ff1ab4">registerTraitsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ac6069b2db734a6588926a1700edfe192">removeSettlementStage</a>(const std::string &amp;pipeline, const std::string &amp;stage)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a3fd489a382d3826de7cee3c0eca7650c">replaceBattleTacticsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a1f8ab5290a3517d97458817bb402ecf1">replaceEncountersFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a9ebf21fa1c275b17c2837707380c7736">replaceQuestsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a124fbe063d14db1753eda74466fa3430">replaceShopOffersFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a8cd9f4dfd11b2604c90b43ad0cab9c22">replaceStoryEventsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a0142cd198afb1a6f4a4e8c52de4c9b1e">rollLoot</a>(const std::string &amp;tableId, inventory::Bag *bag, int seed)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a048179ed8c52fa92a17f83886b4f9181">RPG</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a1e79ee58249f57abdbd278fe7aaac4af">runSettlement</a>(const std::string &amp;pipeline, SettlementContext *ctx)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ab856a92440652ff2013952fac7e91cc8">sellShopOffer</a>(GameState *gameState, inventory::Bag *bag, const std::string &amp;currencyId, const std::string &amp;offerId, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a26dcf150270c58290929ac89da853515">sellToShop</a>(GameState *gameState, inventory::Bag *bag, const std::string &amp;currencyId, const std::string &amp;itemId, int quantity, double unitPrice)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a1c43391ff5e2717c78d025816e08ae60">setSettlementStageEnabled</a>(const std::string &amp;pipeline, const std::string &amp;stage, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a47b6fddd296becf69eb6518a34378ef7">setSettlementStagePriority</a>(const std::string &amp;pipeline, const std::string &amp;stage, int priority)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#acb3a54e53b799fef4f9619923998c546">settleBattleVictory</a>(RPGActor *actor, Tracker *tracker, GameState *gameState, const BattleVictoryRequest &amp;request)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#ab5c8fa7513c6dccf80597b68e31061ef">settleEncounterVictory</a>(RPGActor *actor, Tracker *tracker, GameState *gameState, const std::string &amp;encounterId, const std::string &amp;mapId, const std::string &amp;objectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a0368f772791a2836063832c8936f6aa4">syncEquipModifiers</a>(RPGActor *actor, inventory::EquipmentSet *equip)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#af100e51893ecb07140f89541ac94cb95">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html#a5e6b449cffcc65977f2b4453a25f4b02">~RPG</a>() override=default</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPG.html">eve::rpg::RPG</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

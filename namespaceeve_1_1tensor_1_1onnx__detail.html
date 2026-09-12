@@ -1,0 +1,1598 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::onnx_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html">onnx_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::onnx_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Attribute.html">Attribute</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1onnx__detail_1_1ByteStorage.html">ByteStorage</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1CompiledProgram.html">CompiledProgram</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1onnx__detail_1_1CompilerQueue.html">CompilerQueue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Failure.html">Failure</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Input.html">Input</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">ModelData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:afba6c3de7e9f73e8c5d649b106fb0442" id="r_afba6c3de7e9f73e8c5d649b106fb0442"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#afba6c3de7e9f73e8c5d649b106fb0442">isSupported</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;<a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:afba6c3de7e9f73e8c5d649b106fb0442"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01a154320006bcbf3562d2d6af2e656c" id="r_a01a154320006bcbf3562d2d6af2e656c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a01a154320006bcbf3562d2d6af2e656c">execute</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;<a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;in, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *<a class="el" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>)</td></tr>
+<tr class="separator:a01a154320006bcbf3562d2d6af2e656c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e16311c359c7dd096319168ca23a080" id="r_a1e16311c359c7dd096319168ca23a080"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a1e16311c359c7dd096319168ca23a080">gpuMatmul</a> (<a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, <a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, size_t <a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, size_t k, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, int <a class="el" href="CaveMesh_8cpp.html#a7ddaee9a723179884042cbfef87900bd">az</a>, std::span&lt; const int32_t &gt; <a class="el" href="CaveMesh_8cpp.html#a30130acffcc4a04bff5c8ca2279395d8">bz</a>)</td></tr>
+<tr class="separator:a1e16311c359c7dd096319168ca23a080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadc3355a122f5559d7b9d8a19e1e5ff1" id="r_aadc3355a122f5559d7b9d8a19e1e5ff1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#aadc3355a122f5559d7b9d8a19e1e5ff1">gpuConv</a> (<a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, <a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a> <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a> <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, const <a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">affine::ConvShape</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, int xz, std::span&lt; const int32_t &gt; <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>)</td></tr>
+<tr class="separator:aadc3355a122f5559d7b9d8a19e1e5ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afde3cefa77f2fa31069ee97c2d5d5d83" id="r_afde3cefa77f2fa31069ee97c2d5d5d83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#afde3cefa77f2fa31069ee97c2d5d5d83">enqueueInteger</a> (<a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, std::span&lt; const int32_t &gt; <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, size_t <a class="el" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>, size_t terms)</td></tr>
+<tr class="separator:afde3cefa77f2fa31069ee97c2d5d5d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bd1d14b3dfea70fb5c81b8c6540e0cf" id="r_a2bd1d14b3dfea70fb5c81b8c6540e0cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a2bd1d14b3dfea70fb5c81b8c6540e0cf">gpuMatmulResident</a> (<a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, bool as, bool bs, size_t <a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, size_t k, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, int <a class="el" href="CaveMesh_8cpp.html#a7ddaee9a723179884042cbfef87900bd">az</a>, std::span&lt; const int32_t &gt; <a class="el" href="CaveMesh_8cpp.html#a30130acffcc4a04bff5c8ca2279395d8">bz</a>, size_t bOffset)</td></tr>
+<tr class="separator:a2bd1d14b3dfea70fb5c81b8c6540e0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2a910c3cef39367e7090e365182008b" id="r_ac2a910c3cef39367e7090e365182008b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#ac2a910c3cef39367e7090e365182008b">gpuConvResident</a> (<a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, bool xs, bool ws, const <a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">affine::ConvShape</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, int xz, std::span&lt; const int32_t &gt; <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>)</td></tr>
+<tr class="separator:ac2a910c3cef39367e7090e365182008b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88eb135ddc6fc433503bad36b07e083c" id="r_a88eb135ddc6fc433503bad36b07e083c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a88eb135ddc6fc433503bad36b07e083c">executeIndex</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;<a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;in)</td></tr>
+<tr class="separator:a88eb135ddc6fc433503bad36b07e083c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3f3f8ef2858efe7ee193c018f600794" id="r_ac3f3f8ef2858efe7ee193c018f600794"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#ac3f3f8ef2858efe7ee193c018f600794">elementSize</a> (<a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842">OnnxElement</a> e)</td></tr>
+<tr class="separator:ac3f3f8ef2858efe7ee193c018f600794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa417a7430ac8756934e2d51c3d234dc9" id="r_aa417a7430ac8756934e2d51c3d234dc9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#aa417a7430ac8756934e2d51c3d234dc9">count</a> (const std::vector&lt; int64_t &gt; &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>)</td></tr>
+<tr class="separator:aa417a7430ac8756934e2d51c3d234dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba2938fd2cd8bfb1db8d2f2ae522845f" id="r_aba2938fd2cd8bfb1db8d2f2ae522845f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#aba2938fd2cd8bfb1db8d2f2ae522845f">validate</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:aba2938fd2cd8bfb1db8d2f2ae522845f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af04bcfcc53f897e7cdbfaa0a7a36a824" id="r_af04bcfcc53f897e7cdbfaa0a7a36a824"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:af04bcfcc53f897e7cdbfaa0a7a36a824"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#af04bcfcc53f897e7cdbfaa0a7a36a824">read</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, size_t i)</td></tr>
+<tr class="separator:af04bcfcc53f897e7cdbfaa0a7a36a824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6afb0e255697d7d38ffc203d72e5c7e4" id="r_a6afb0e255697d7d38ffc203d72e5c7e4"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a6afb0e255697d7d38ffc203d72e5c7e4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a6afb0e255697d7d38ffc203d72e5c7e4">make</a> (<a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842">OnnxElement</a> e, std::vector&lt; int64_t &gt; <a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>, const std::vector&lt; T &gt; &amp;<a class="el" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>)</td></tr>
+<tr class="separator:a6afb0e255697d7d38ffc203d72e5c7e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20a99926defd1c5bfc3378b1dda518ac" id="r_a20a99926defd1c5bfc3378b1dda518ac"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a20a99926defd1c5bfc3378b1dda518ac">integer</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, size_t i=0)</td></tr>
+<tr class="separator:a20a99926defd1c5bfc3378b1dda518ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98254bb2fc89ff4e8c86531885191757" id="r_a98254bb2fc89ff4e8c86531885191757"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a98254bb2fc89ff4e8c86531885191757">floats</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a98254bb2fc89ff4e8c86531885191757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35ed08384f3c3ec3528d8516e1b5b092" id="r_a35ed08384f3c3ec3528d8516e1b5b092"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a35ed08384f3c3ec3528d8516e1b5b092">ints</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a35ed08384f3c3ec3528d8516e1b5b092"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a405509eef39091993d11805c34cf6fc0" id="r_a405509eef39091993d11805c34cf6fc0"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a405509eef39091993d11805c34cf6fc0">attr</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;<a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, const char *<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, int64_t fallback)</td></tr>
+<tr class="separator:a405509eef39091993d11805c34cf6fc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e91dfa9932668095c617056d81270a" id="r_a51e91dfa9932668095c617056d81270a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a51e91dfa9932668095c617056d81270a">attrs</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;<a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, const char *<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::vector&lt; int64_t &gt; fallback)</td></tr>
+<tr class="separator:a51e91dfa9932668095c617056d81270a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a2bf856374fbc2a62919fbf316837a8" id="r_a1a2bf856374fbc2a62919fbf316837a8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a1a2bf856374fbc2a62919fbf316837a8">required</a> (const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;in, size_t i)</td></tr>
+<tr class="separator:a1a2bf856374fbc2a62919fbf316837a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87ce5c72ca28414593bc3a93b4fc4c0a" id="r_a87ce5c72ca28414593bc3a93b4fc4c0a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a87ce5c72ca28414593bc3a93b4fc4c0a">axis</a> (int64_t <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, size_t rank)</td></tr>
+<tr class="separator:a87ce5c72ca28414593bc3a93b4fc4c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad793c5173e4d20eebac5bfd95513ef5a" id="r_ad793c5173e4d20eebac5bfd95513ef5a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#ad793c5173e4d20eebac5bfd95513ef5a">broadcast</a> (const std::vector&lt; int64_t &gt; &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const std::vector&lt; int64_t &gt; &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:ad793c5173e4d20eebac5bfd95513ef5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b1d94e4a600223b1cc0732ab359f22a" id="r_a4b1d94e4a600223b1cc0732ab359f22a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a4b1d94e4a600223b1cc0732ab359f22a">broadcastIndex</a> (size_t i, const std::vector&lt; int64_t &gt; &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>, const std::vector&lt; int64_t &gt; &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="separator:a4b1d94e4a600223b1cc0732ab359f22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed31f2427ccfac7aae4ea9da9ab3f137" id="r_aed31f2427ccfac7aae4ea9da9ab3f137"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#aed31f2427ccfac7aae4ea9da9ab3f137">executeShape</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;)</td></tr>
+<tr class="separator:aed31f2427ccfac7aae4ea9da9ab3f137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2cbfb19d6823e83f269dbc7ec461d4f" id="r_aa2cbfb19d6823e83f269dbc7ec461d4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#aa2cbfb19d6823e83f269dbc7ec461d4f">dispatchFloat</a> (<a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;, const std::vector&lt; int64_t &gt; &amp;, const std::string &amp;, size_t work=0)</td></tr>
+<tr class="separator:aa2cbfb19d6823e83f269dbc7ec461d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30c1a8b853821afaf785bd4a193906ca" id="r_a30c1a8b853821afaf785bd4a193906ca"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a30c1a8b853821afaf785bd4a193906ca">executeMisc</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *)</td></tr>
+<tr class="separator:a30c1a8b853821afaf785bd4a193906ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6aa85b3353c968cc871f926a9fa8e0e0" id="r_a6aa85b3353c968cc871f926a9fa8e0e0"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a6aa85b3353c968cc871f926a9fa8e0e0">executeNeural</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *)</td></tr>
+<tr class="separator:a6aa85b3353c968cc871f926a9fa8e0e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a420f1e151cdc0b747cee32ec60c28468" id="r_a420f1e151cdc0b747cee32ec60c28468"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a420f1e151cdc0b747cee32ec60c28468">executeNumeric</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *)</td></tr>
+<tr class="separator:a420f1e151cdc0b747cee32ec60c28468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9974fe853d528f69cb6a79b9e9e725c" id="r_aa9974fe853d528f69cb6a79b9e9e725c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1OnnxNamedTensor.html">OnnxNamedTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#aa9974fe853d528f69cb6a79b9e9e725c">evaluate</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">ModelData</a> &amp;, std::span&lt; const <a class="el" href="structeve_1_1tensor_1_1OnnxNamedTensor.html">OnnxNamedTensor</a> &gt;, const std::vector&lt; std::string &gt; &amp;, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *, <a class="el" href="structeve_1_1tensor_1_1OnnxRunOptions.html">OnnxRunOptions</a> <a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="separator:aa9974fe853d528f69cb6a79b9e9e725c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac600f199697b72485ff45085c92a4bd3" id="r_ac600f199697b72485ff45085c92a4bd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">ModelData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#ac600f199697b72485ff45085c92a4bd3">parse</a> (std::span&lt; const uint8_t &gt; <a class="el" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>)</td></tr>
+<tr class="separator:ac600f199697b72485ff45085c92a4bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61d2a219a1a84bb45b09d4d4c86f962e" id="r_a61d2a219a1a84bb45b09d4d4c86f962e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a61d2a219a1a84bb45b09d4d4c86f962e">executeQuant</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;node, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;<a class="el" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *<a class="el" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>=nullptr)</td></tr>
+<tr class="separator:a61d2a219a1a84bb45b09d4d4c86f962e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac872398ceccfaef4283f1b5b86e2ab12" id="r_ac872398ceccfaef4283f1b5b86e2ab12"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1onnx__detail.html#ac872398ceccfaef4283f1b5b86e2ab12">executeQuantLstm</a> (const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;node, const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;<a class="el" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *<a class="el" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>=nullptr)</td></tr>
+<tr class="separator:ac872398ceccfaef4283f1b5b86e2ab12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a405509eef39091993d11805c34cf6fc0" name="a405509eef39091993d11805c34cf6fc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a405509eef39091993d11805c34cf6fc0">&#9670;&#160;</a></span>attr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::tensor::onnx_detail::attr </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00078">executeQuantLstm()</a> , 以及 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>.</p>
+
+</div>
+</div>
+<a id="a51e91dfa9932668095c617056d81270a" name="a51e91dfa9932668095c617056d81270a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51e91dfa9932668095c617056d81270a">&#9670;&#160;</a></span>attrs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int64_t &gt; eve::tensor::onnx_detail::attrs </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt;&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a> , 以及 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>.</p>
+
+</div>
+</div>
+<a id="a87ce5c72ca28414593bc3a93b4fc4c0a" name="a87ce5c72ca28414593bc3a93b4fc4c0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87ce5c72ca28414593bc3a93b4fc4c0a">&#9670;&#160;</a></span>axis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::onnx_detail::axis </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a> , 以及 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>.</p>
+
+</div>
+</div>
+<a id="ad793c5173e4d20eebac5bfd95513ef5a" name="ad793c5173e4d20eebac5bfd95513ef5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad793c5173e4d20eebac5bfd95513ef5a">&#9670;&#160;</a></span>broadcast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int64_t &gt; eve::tensor::onnx_detail::broadcast </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxShapeOps_8cpp_source.html">OnnxShapeOps.cpp</a> 第 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a> , 以及 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>.</p>
+
+</div>
+</div>
+<a id="a4b1d94e4a600223b1cc0732ab359f22a" name="a4b1d94e4a600223b1cc0732ab359f22a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b1d94e4a600223b1cc0732ab359f22a">&#9670;&#160;</a></span>broadcastIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::tensor::onnx_detail::broadcastIndex </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxShapeOps_8cpp_source.html">OnnxShapeOps.cpp</a> 第 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a> , 以及 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a> , 以及 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>.</p>
+
+</div>
+</div>
+<a id="aa417a7430ac8756934e2d51c3d234dc9" name="aa417a7430ac8756934e2d51c3d234dc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa417a7430ac8756934e2d51c3d234dc9">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::tensor::onnx_detail::count </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shape</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00008">broadcast()</a>, <a class="el" href="OnnxCompiler_8h_source.html#l00039">eve::tensor::onnx_detail::CompilerQueue::CompilerQueue()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">dispatchFloat()</a>, <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00078">executeQuantLstm()</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a> , 以及 <a class="el" href="OnnxInternal_8h_source.html#l00066">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aa2cbfb19d6823e83f269dbc7ec461d4f" name="aa2cbfb19d6823e83f269dbc7ec461d4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2cbfb19d6823e83f269dbc7ec461d4f">&#9670;&#160;</a></span>dispatchFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> eve::tensor::onnx_detail::dispatchFloat </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;&#160;</td>
+          <td class="paramname"><em>compute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>work</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxNumeric_8cpp_source.html">OnnxNumeric.cpp</a> 第 <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00229">body</a>, <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">inputs</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="OnnxCompute_8h_source.html#l00015">eve::tensor::OnnxKernel::outputBytes</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="OnnxCompute_8h_source.html#l00013">eve::tensor::OnnxKernel::source</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="OnnxCompute_8h_source.html#l00016">eve::tensor::OnnxKernel::workItems</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a> , 以及 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>.</p>
+
+</div>
+</div>
+<a id="ac3f3f8ef2858efe7ee193c018f600794" name="ac3f3f8ef2858efe7ee193c018f600794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3f3f8ef2858efe7ee193c018f600794">&#9670;&#160;</a></span>elementSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::tensor::onnx_detail::elementSize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842">OnnxElement</a>&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac26f15e86e3de4c398a8273272aba034">eve::tensor::Bool</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842afbde23b11d7e59af7828e81144c8b487">eve::tensor::Int64</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ab31df9c476d20e85ff898121efe11b5a">eve::tensor::UInt8</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a> , 以及 <a class="el" href="OnnxInternal_8h_source.html#l00066">validate()</a>.</p>
+
+</div>
+</div>
+<a id="afde3cefa77f2fa31069ee97c2d5d5d83" name="afde3cefa77f2fa31069ee97c2d5d5d83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afde3cefa77f2fa31069ee97c2d5d5d83">&#9670;&#160;</a></span>enqueueInteger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> eve::tensor::onnx_detail::enqueueInteger </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>terms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpuKernels_8cpp_source.html">OnnxGpuKernels.cpp</a> 第 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00221">host</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">inputs</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00075">gpuConvResident()</a> , 以及 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00064">gpuMatmulResident()</a>.</p>
+
+</div>
+</div>
+<a id="aa9974fe853d528f69cb6a79b9e9e725c" name="aa9974fe853d528f69cb6a79b9e9e725c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9974fe853d528f69cb6a79b9e9e725c">&#9670;&#160;</a></span>evaluate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1OnnxNamedTensor.html">OnnxNamedTensor</a> &gt; eve::tensor::onnx_detail::evaluate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">ModelData</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1tensor_1_1OnnxNamedTensor.html">OnnxNamedTensor</a> &gt;&#160;</td>
+          <td class="paramname"><em>feeds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>requested</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxRunOptions.html">OnnxRunOptions</a>&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxRuntime_8cpp_source.html">OnnxRuntime.cpp</a> 第 <a class="el" href="OnnxRuntime_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">inputs</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00025">run</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a01a154320006bcbf3562d2d6af2e656c" name="a01a154320006bcbf3562d2d6af2e656c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01a154320006bcbf3562d2d6af2e656c">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::execute </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxExecute_8cpp_source.html">OnnxExecute.cpp</a> 第 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a1e34af023adeb7d5f484f8eb4b9826b6">eve::tensor::Abs</a>, <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00108">attrs()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00116">axis()</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac26f15e86e3de4c398a8273272aba034">eve::tensor::Bool</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67affca562be079b9e4e41ea9d6a86c582b">eve::tensor::Cos</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">dispatchFloat()</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="OnnxInternal_8h_source.html#l00045">elementSize()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00078">executeQuantLstm()</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67acad39a154bffb61175f674d6eefaf6d0">eve::tensor::Exp</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842afbde23b11d7e59af7828e81144c8b487">eve::tensor::Int64</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ace0be71e33226e4c1db2bcea5959f16b">eve::tensor::Log</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67afb278fa5defd7e699fcbc930c3e76ccd">eve::tensor::Neg</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a7bfde445daa113a9903d4eaa43b41e2b">eve::tensor::Relu</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00071">eve::tensor::onnx_detail::RuntimeTensor::shape</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a21eebb164e4b8b9bcf64fdb4d8d5dff4">eve::tensor::Sigmoid</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0986d137604183312e6d3599578bc6cd">eve::tensor::Sin</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00163">eve::tensor::kernels::softmax()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aae77f3ad25595e35b327334d89410054">eve::tensor::Sqrt</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67acc132a41cab5676334f353a22a0aa5c5">eve::tensor::Tanh</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a88eb135ddc6fc433503bad36b07e083c" name="a88eb135ddc6fc433503bad36b07e083c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88eb135ddc6fc433503bad36b07e083c">&#9670;&#160;</a></span>executeIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; &gt; eve::tensor::onnx_detail::executeIndex </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxIndexOps_8cpp_source.html">OnnxIndexOps.cpp</a> 第 <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00116">axis()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="OnnxInternal_8h_source.html#l00045">elementSize()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842afbde23b11d7e59af7828e81144c8b487">eve::tensor::Int64</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="a30c1a8b853821afaf785bd4a193906ca" name="a30c1a8b853821afaf785bd4a193906ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30c1a8b853821afaf785bd4a193906ca">&#9670;&#160;</a></span>executeMisc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::executeMisc </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxMisc_8cpp_source.html">OnnxMisc.cpp</a> 第 <a class="el" href="OnnxMisc_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00116">axis()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">dispatchFloat()</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="OnnxInternal_8h_source.html#l00045">elementSize()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="a6aa85b3353c968cc871f926a9fa8e0e0" name="a6aa85b3353c968cc871f926a9fa8e0e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6aa85b3353c968cc871f926a9fa8e0e0">&#9670;&#160;</a></span>executeNeural()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::executeNeural </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxNeural_8cpp_source.html">OnnxNeural.cpp</a> 第 <a class="el" href="OnnxNeural_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00108">attrs()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">dispatchFloat()</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00039">groups</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00027">scales</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00071">eve::tensor::onnx_detail::RuntimeTensor::shape</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="a420f1e151cdc0b747cee32ec60c28468" name="a420f1e151cdc0b747cee32ec60c28468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a420f1e151cdc0b747cee32ec60c28468">&#9670;&#160;</a></span>executeNumeric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::executeNumeric </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxNumeric_8cpp_source.html">OnnxNumeric.cpp</a> 第 <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00108">attrs()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00116">axis()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00229">body</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00008">broadcast()</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00018">broadcastIndex()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="GltfAnimation_8cpp_source.html#l00016">code</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">dispatchFloat()</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="a61d2a219a1a84bb45b09d4d4c86f962e" name="a61d2a219a1a84bb45b09d4d4c86f962e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61d2a219a1a84bb45b09d4d4c86f962e">&#9670;&#160;</a></span>executeQuant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::executeQuant </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxQuant_8cpp_source.html">OnnxQuant.cpp</a> 第 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00108">attrs()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00116">axis()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="AffineQuant_8h_source.html#l00063">eve::tensor::affine::ConvShape::batch</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00038">eve::tensor::onnx_detail::ByteStorage::buffer()</a>, <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00072">eve::tensor::onnx_detail::RuntimeTensor::bytes</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="TileConfig_8cpp_source.html#l00132">columns</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00138">eve::tensor::affine::conv()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00060">eve::tensor::affine::dequantize()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">dispatchFloat()</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00042">eve::tensor::affine::dynamicQuantize()</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00075">gpuConvResident()</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00064">gpuMatmulResident()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">inputs</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00076">eve::tensor::affine::matmul()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="PointGraph_8cpp_source.html#l00025">params</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00028">eve::tensor::affine::quantize()</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">rows</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00027">scales</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00071">eve::tensor::onnx_detail::RuntimeTensor::shape</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00056">stats</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ab31df9c476d20e85ff898121efe11b5a">eve::tensor::UInt8</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00102">eve::tensor::affine::detail::validateConv()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a> , 以及 <a class="el" href="OnnxLstm_8cpp_source.html#l00028">zeros</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="ac872398ceccfaef4283f1b5b86e2ab12" name="ac872398ceccfaef4283f1b5b86e2ab12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac872398ceccfaef4283f1b5b86e2ab12">&#9670;&#160;</a></span>executeQuantLstm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::executeQuantLstm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxLstm_8cpp_source.html">OnnxLstm.cpp</a> 第 <a class="el" href="OnnxLstm_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00042">eve::tensor::affine::dynamicQuantize()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00093">floats()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">gates</a>, <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00122">projected</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00173">qx</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="aed31f2427ccfac7aae4ea9da9ab3f137" name="aed31f2427ccfac7aae4ea9da9ab3f137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed31f2427ccfac7aae4ea9da9ab3f137">&#9670;&#160;</a></span>executeShape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &gt; eve::tensor::onnx_detail::executeShape </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxShapeOps_8cpp_source.html">OnnxShapeOps.cpp</a> 第 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="OnnxInternal_8h_source.html#l00104">attr()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00116">axis()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac26f15e86e3de4c398a8273272aba034">eve::tensor::Bool</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00008">broadcast()</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00018">broadcastIndex()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxByteStorage_8h_source.html#l00070">eve::tensor::onnx_detail::RuntimeTensor::element</a>, <a class="el" href="OnnxInternal_8h_source.html#l00045">elementSize()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842afbde23b11d7e59af7828e81144c8b487">eve::tensor::Int64</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>.</p>
+
+</div>
+</div>
+<a id="a98254bb2fc89ff4e8c86531885191757" name="a98254bb2fc89ff4e8c86531885191757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98254bb2fc89ff4e8c86531885191757">&#9670;&#160;</a></span>floats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::tensor::onnx_detail::floats </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a> , 以及 <a class="el" href="OnnxLstm_8cpp_source.html#l00078">executeQuantLstm()</a>.</p>
+
+</div>
+</div>
+<a id="aadc3355a122f5559d7b9d8a19e1e5ff1" name="aadc3355a122f5559d7b9d8a19e1e5ff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadc3355a122f5559d7b9d8a19e1e5ff1">&#9670;&#160;</a></span>gpuConv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int32_t &gt; eve::tensor::onnx_detail::gpuConv </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a>&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a>&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">affine::ConvShape</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>xz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>wz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpuKernels_8cpp_source.html">OnnxGpuKernels.cpp</a> 第 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00075">gpuConvResident()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AffineQuant_8cpp_source.html#l00138">eve::tensor::affine::conv()</a>.</p>
+
+</div>
+</div>
+<a id="ac2a910c3cef39367e7090e365182008b" name="ac2a910c3cef39367e7090e365182008b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2a910c3cef39367e7090e365182008b">&#9670;&#160;</a></span>gpuConvResident()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> eve::tensor::onnx_detail::gpuConvResident </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>xs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ws</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">affine::ConvShape</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>xz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>wz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpuKernels_8cpp_source.html">OnnxGpuKernels.cpp</a> 第 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00052">enqueueInteger()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a> , 以及 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00046">gpuConv()</a>.</p>
+
+</div>
+</div>
+<a id="a1e16311c359c7dd096319168ca23a080" name="a1e16311c359c7dd096319168ca23a080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e16311c359c7dd096319168ca23a080">&#9670;&#160;</a></span>gpuMatmul()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int32_t &gt; eve::tensor::onnx_detail::gpuMatmul </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">affine::ByteView</a>&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>bz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpuKernels_8cpp_source.html">OnnxGpuKernels.cpp</a> 第 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">az</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00064">gpuMatmulResident()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AffineQuant_8cpp_source.html#l00076">eve::tensor::affine::matmul()</a>.</p>
+
+</div>
+</div>
+<a id="a2bd1d14b3dfea70fb5c81b8c6540e0cf" name="a2bd1d14b3dfea70fb5c81b8c6540e0cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bd1d14b3dfea70fb5c81b8c6540e0cf">&#9670;&#160;</a></span>gpuMatmulResident()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a> eve::tensor::onnx_detail::gpuMatmulResident </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1OnnxBuffer.html">OnnxBuffer</a>&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>as</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>bOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxGpuKernels_8cpp_source.html">OnnxGpuKernels.cpp</a> 第 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">az</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00052">enqueueInteger()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a> , 以及 <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00040">gpuMatmul()</a>.</p>
+
+</div>
+</div>
+<a id="a20a99926defd1c5bfc3378b1dda518ac" name="a20a99926defd1c5bfc3378b1dda518ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20a99926defd1c5bfc3378b1dda518ac">&#9670;&#160;</a></span>integer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::tensor::onnx_detail::integer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac26f15e86e3de4c398a8273272aba034">eve::tensor::Bool</a>, <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842afbde23b11d7e59af7828e81144c8b487">eve::tensor::Int64</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842a7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>, <a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842ab31df9c476d20e85ff898121efe11b5a">eve::tensor::UInt8</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>, <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a> , 以及 <a class="el" href="OnnxInternal_8h_source.html#l00099">ints()</a>.</p>
+
+</div>
+</div>
+<a id="a35ed08384f3c3ec3528d8516e1b5b092" name="a35ed08384f3c3ec3528d8516e1b5b092"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35ed08384f3c3ec3528d8516e1b5b092">&#9670;&#160;</a></span>ints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int64_t &gt; eve::tensor::onnx_detail::ints </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00082">integer()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00078">executeQuantLstm()</a> , 以及 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>.</p>
+
+</div>
+</div>
+<a id="afba6c3de7e9f73e8c5d649b106fb0442" name="afba6c3de7e9f73e8c5d649b106fb0442"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afba6c3de7e9f73e8c5d649b106fb0442">&#9670;&#160;</a></span>isSupported()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::onnx_detail::isSupported </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxExecute_8cpp_source.html">OnnxExecute.cpp</a> 第 <a class="el" href="OnnxExecute_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00025">minimum</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxReader_8cpp_source.html#l00316">parse()</a>.</p>
+
+</div>
+</div>
+<a id="a6afb0e255697d7d38ffc203d72e5c7e4" name="a6afb0e255697d7d38ffc203d72e5c7e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6afb0e255697d7d38ffc203d72e5c7e4">&#9670;&#160;</a></span>make()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> eve::tensor::onnx_detail::make </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a16818fbefd6d999f42c427943372c842">OnnxElement</a>&#160;</td>
+          <td class="paramname"><em>e</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt;&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>values</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="OnnxInternal_8h_source.html#l00066">validate()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxExecute_8cpp_source.html#l00207">execute()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00007">executeMisc()</a>, <a class="el" href="OnnxNeural_8cpp_source.html#l00007">executeNeural()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">executeQuant()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00078">executeQuantLstm()</a> , 以及 <a class="el" href="OnnxShapeOps_8cpp_source.html#l00031">executeShape()</a>.</p>
+
+</div>
+</div>
+<a id="ac600f199697b72485ff45085c92a4bd3" name="ac600f199697b72485ff45085c92a4bd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac600f199697b72485ff45085c92a4bd3">&#9670;&#160;</a></span>parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">ModelData</a> eve::tensor::onnx_detail::parse </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxReader_8cpp_source.html">OnnxReader.cpp</a> 第 <a class="el" href="OnnxReader_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="OnnxExecute_8cpp_source.html#l00011">isSupported()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="SceneLink_8cpp_source.html#l00012">ops</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00010">wire</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxModel_8cpp_source.html#l00013">eve::tensor::OnnxModel::load()</a>.</p>
+
+</div>
+</div>
+<a id="af04bcfcc53f897e7cdbfaa0a7a36a824" name="af04bcfcc53f897e7cdbfaa0a7a36a824"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af04bcfcc53f897e7cdbfaa0a7a36a824">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T eve::tensor::onnx_detail::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a1a2bf856374fbc2a62919fbf316837a8" name="a1a2bf856374fbc2a62919fbf316837a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2bf856374fbc2a62919fbf316837a8">&#9670;&#160;</a></span>required()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp; eve::tensor::onnx_detail::required </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba2938fd2cd8bfb1db8d2f2ae522845f" name="aba2938fd2cd8bfb1db8d2f2ae522845f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba2938fd2cd8bfb1db8d2f2ae522845f">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::onnx_detail::validate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1onnx__detail_1_1RuntimeTensor.html">RuntimeTensor</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OnnxInternal_8h_source.html">OnnxInternal.h</a> 第 <a class="el" href="OnnxInternal_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxInternal_8h_source.html#l00056">count()</a>, <a class="el" href="OnnxInternal_8h_source.html#l00045">elementSize()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxInternal_8h_source.html#l00076">make()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

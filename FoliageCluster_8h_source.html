@@ -1,0 +1,231 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/FoliageCluster.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FoliageCluster.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FoliageCluster_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1FoliageClusterDesc.html">FoliageClusterDesc</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a4112a89a65d58adc0628aa4da30ea4bc">   26</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a4112a89a65d58adc0628aa4da30ea4bc">seed</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab5078c778b9b82f22a365558c7926f59">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab5078c778b9b82f22a365558c7926f59">centerX</a> = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a6e462a9cfc3a5ff10dd479183195d922">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a6e462a9cfc3a5ff10dd479183195d922">centerY</a> = 0.f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a80b66afbdbb4389d9f6e6321a1a9297c">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a80b66afbdbb4389d9f6e6321a1a9297c">centerZ</a> = 0.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ae16cb7674d8830e9d039572802cb5186">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ae16cb7674d8830e9d039572802cb5186">radius</a> = 1.f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a46b5c5b81631b0406760dd30fac4ea8c">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a46b5c5b81631b0406760dd30fac4ea8c">leafSize</a> = 0.2f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aace26b170a47bf3e923ebc0ccac80dc3">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aace26b170a47bf3e923ebc0ccac80dc3">leafSpacing</a> = 0.9f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac31b89b4c3a222a604dfc870a5165b5c">   44</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac31b89b4c3a222a604dfc870a5165b5c">planes</a> = 9;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a92d28eef195a0436a94f9f5bb724afae">   49</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a92d28eef195a0436a94f9f5bb724afae">capPlanes</a> = 2;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a424cb7261a0309722cb16157ed8ffe61">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a424cb7261a0309722cb16157ed8ffe61">tiltDegrees</a> = 26.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab34832cdd35d57dbb0f753d8cc258365">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab34832cdd35d57dbb0f753d8cc258365">planeOffset</a> = 0.18f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a646df49d003c1c7c57f56e91622928d5">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a646df49d003c1c7c57f56e91622928d5">planeScaleVariation</a> = 0.14f;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a1995358aca4bfc188e7cad0b6a9f7d26">   57</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a1995358aca4bfc188e7cad0b6a9f7d26">leafJitter</a> = 0.16f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a5b468fda7ed838b488f3f8d3530caad5">   59</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a5b468fda7ed838b488f3f8d3530caad5">leafScaleVariation</a> = 0.25f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac394829b988d17114fab8fa12f0e7059">   65</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac394829b988d17114fab8fa12f0e7059">maxLeavesPerPlane</a> = 24;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aefc452771193be9647a6c00c0bc806bb">   67</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aefc452771193be9647a6c00c0bc806bb">normalRounding</a> = 1.f;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a851647416867ad1988bee2926359663a">   69</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a851647416867ad1988bee2926359663a">uvMin</a> = 0.55f;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a42b7ae10a4095f2ba255c826665b3ac2">   71</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a42b7ae10a4095f2ba255c826665b3ac2">uvMax</a> = 1.f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a7de225c3a79c36d1cf1ab9ff3e8af7eb">   77</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a7de225c3a79c36d1cf1ab9ff3e8af7eb">doubleSided</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a116339739c061662c0c9ae8ff4a19d3b">addFoliageCluster</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1FoliageClusterDesc.html">FoliageClusterDesc</a> &amp;<a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aEvpackSceneTemplateLoader_8cpp_html_a756a08fb035410e457b83b4e5c1ce433"><div class="ttname"><a href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a></div><div class="ttdeci">scene::NodeDesc desc</div><div class="ttdef"><b>Definition</b> <a href="EvpackSceneTemplateLoader_8cpp_source.html#l00050">EvpackSceneTemplateLoader.cpp:50</a></div></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html">eve::procgen::MeshBuild</a></div><div class="ttdoc">CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8h_source.html#l00017">MeshBuild.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a116339739c061662c0c9ae8ff4a19d3b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a116339739c061662c0c9ae8ff4a19d3b">eve::procgen::addFoliageCluster</a></div><div class="ttdeci">int addFoliageCluster(MeshBuild &amp;out, const FoliageClusterDesc &amp;desc)</div><div class="ttdoc">Append one blue-noise leaf cluster to a mesh.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8cpp_source.html#l00127">FoliageCluster.cpp:127</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html">eve::procgen::FoliageClusterDesc</a></div><div class="ttdoc">Recipe for one stylized leaf cluster (&quot;foliage card bundle&quot;).</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00024">FoliageCluster.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a1995358aca4bfc188e7cad0b6a9f7d26"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a1995358aca4bfc188e7cad0b6a9f7d26">eve::procgen::FoliageClusterDesc::leafJitter</a></div><div class="ttdeci">float leafJitter</div><div class="ttdoc">Per-leaf offset along the plane normal, in radius units; clamped to 0..0.5.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00057">FoliageCluster.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a4112a89a65d58adc0628aa4da30ea4bc"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a4112a89a65d58adc0628aa4da30ea4bc">eve::procgen::FoliageClusterDesc::seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdoc">RNG stream seed; the same seed and inputs reproduce the same leaves.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00026">FoliageCluster.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a424cb7261a0309722cb16157ed8ffe61"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a424cb7261a0309722cb16157ed8ffe61">eve::procgen::FoliageClusterDesc::tiltDegrees</a></div><div class="ttdeci">float tiltDegrees</div><div class="ttdoc">Maximum ring-plane tilt away from vertical, in degrees; clamped to 0..80.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00051">FoliageCluster.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a42b7ae10a4095f2ba255c826665b3ac2"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a42b7ae10a4095f2ba255c826665b3ac2">eve::procgen::FoliageClusterDesc::uvMax</a></div><div class="ttdeci">float uvMax</div><div class="ttdoc">End of the foliage band in the shared tree/bush atlas, on U.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00071">FoliageCluster.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a46b5c5b81631b0406760dd30fac4ea8c"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a46b5c5b81631b0406760dd30fac4ea8c">eve::procgen::FoliageClusterDesc::leafSize</a></div><div class="ttdeci">float leafSize</div><div class="ttdoc">Leaf length in world units; clamped to at least 1e-3.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00036">FoliageCluster.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a5b468fda7ed838b488f3f8d3530caad5"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a5b468fda7ed838b488f3f8d3530caad5">eve::procgen::FoliageClusterDesc::leafScaleVariation</a></div><div class="ttdeci">float leafScaleVariation</div><div class="ttdoc">Leaf size variation as a fraction of leafSize; clamped to 0..0.6.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00059">FoliageCluster.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a646df49d003c1c7c57f56e91622928d5"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a646df49d003c1c7c57f56e91622928d5">eve::procgen::FoliageClusterDesc::planeScaleVariation</a></div><div class="ttdeci">float planeScaleVariation</div><div class="ttdoc">Per-plane radius variation; clamped to 0..0.6.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00055">FoliageCluster.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a6e462a9cfc3a5ff10dd479183195d922"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a6e462a9cfc3a5ff10dd479183195d922">eve::procgen::FoliageClusterDesc::centerY</a></div><div class="ttdeci">float centerY</div><div class="ttdoc">Cluster centre on Y, in world units.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00030">FoliageCluster.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a7de225c3a79c36d1cf1ab9ff3e8af7eb"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a7de225c3a79c36d1cf1ab9ff3e8af7eb">eve::procgen::FoliageClusterDesc::doubleSided</a></div><div class="ttdeci">bool doubleSided</div><div class="ttdoc">Emit both windings per leaf. The engine's mesh3d pipelines cull back faces unless a Material opts int...</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00077">FoliageCluster.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a80b66afbdbb4389d9f6e6321a1a9297c"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a80b66afbdbb4389d9f6e6321a1a9297c">eve::procgen::FoliageClusterDesc::centerZ</a></div><div class="ttdeci">float centerZ</div><div class="ttdoc">Cluster centre on Z, in world units.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00032">FoliageCluster.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a851647416867ad1988bee2926359663a"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a851647416867ad1988bee2926359663a">eve::procgen::FoliageClusterDesc::uvMin</a></div><div class="ttdeci">float uvMin</div><div class="ttdoc">Start of the foliage band in the shared tree/bush atlas, on U.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00069">FoliageCluster.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_a92d28eef195a0436a94f9f5bb724afae"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a92d28eef195a0436a94f9f5bb724afae">eve::procgen::FoliageClusterDesc::capPlanes</a></div><div class="ttdeci">int capPlanes</div><div class="ttdoc">Near-horizontal planes that close the cluster's top and bottom. A pure ring of vertical planes leaves...</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00049">FoliageCluster.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_aace26b170a47bf3e923ebc0ccac80dc3"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aace26b170a47bf3e923ebc0ccac80dc3">eve::procgen::FoliageClusterDesc::leafSpacing</a></div><div class="ttdeci">float leafSpacing</div><div class="ttdoc">Blue-noise centre distance, in leafSize units. Larger values spread the leaves out (sparser,...</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00042">FoliageCluster.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_ab34832cdd35d57dbb0f753d8cc258365"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab34832cdd35d57dbb0f753d8cc258365">eve::procgen::FoliageClusterDesc::planeOffset</a></div><div class="ttdeci">float planeOffset</div><div class="ttdoc">Per-plane translation inside the cluster, in radius units; clamped to 0..0.6.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00053">FoliageCluster.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_ab5078c778b9b82f22a365558c7926f59"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab5078c778b9b82f22a365558c7926f59">eve::procgen::FoliageClusterDesc::centerX</a></div><div class="ttdeci">float centerX</div><div class="ttdoc">Cluster centre on X, in world units.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00028">FoliageCluster.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_ac31b89b4c3a222a604dfc870a5165b5c"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac31b89b4c3a222a604dfc870a5165b5c">eve::procgen::FoliageClusterDesc::planes</a></div><div class="ttdeci">int planes</div><div class="ttdoc">Leaf planes rotated around the cluster's Y axis; clamped to 1..24.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00044">FoliageCluster.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_ac394829b988d17114fab8fa12f0e7059"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac394829b988d17114fab8fa12f0e7059">eve::procgen::FoliageClusterDesc::maxLeavesPerPlane</a></div><div class="ttdeci">int maxLeavesPerPlane</div><div class="ttdoc">Hard cap on leaves per plane; clamped to 1..256. When it binds, the sampler widens the blue-noise dis...</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00065">FoliageCluster.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_ae16cb7674d8830e9d039572802cb5186"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ae16cb7674d8830e9d039572802cb5186">eve::procgen::FoliageClusterDesc::radius</a></div><div class="ttdeci">float radius</div><div class="ttdoc">Cluster radius in world units; clamped to at least 1e-3.</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00034">FoliageCluster.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1FoliageClusterDesc_html_aefc452771193be9647a6c00c0bc806bb"><div class="ttname"><a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aefc452771193be9647a6c00c0bc806bb">eve::procgen::FoliageClusterDesc::normalRounding</a></div><div class="ttdeci">float normalRounding</div><div class="ttdoc">Blend from the flat plane normal (0) to the cluster sphere normal (1).</div><div class="ttdef"><b>Definition</b> <a href="FoliageCluster_8h_source.html#l00067">FoliageCluster.h:67</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

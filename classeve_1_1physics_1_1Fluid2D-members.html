@@ -1,0 +1,214 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::Fluid2D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6633f0d5204b0ab5a041bf1028dc6954">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#af63c4d62ef53a1fa5471430ee1874c62">clearBounds</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a7debc715c7a6963a0dc0dc30216e5172">destroy</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ac7f5779e74c2889e42c4bcd9f3669ce6">draw</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6b391669e06df9f55fe2ebb971829075">emit</a>(float x, float y, int count, float vx=0.f, float vy=0.f)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a0cd06a8fca8dedbeadaaf3dd85347e46">Fluid2D</a>(int capacity=512)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a0bc13768cf5eb04717c3f80844d3d355">Fluid2D</a>(const Fluid2D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#aa2b4b2752228d974b7aa8aa30abd8c67">getCapacity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a230e405980dada010dd8a03442b8d30d">getColorA</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#aafa7c24ca53df3f1d0ce14fdba127c26">getColorB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a823d51d34de9224bd855a12b8cfbb4d8">getColorG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6064ff5a4e1ca4ca8abd3007ca272cce">getColorR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a3b55345cb0aae202d949b8ac4e1d0137">getGravityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a1e9bf13703255047b7d3e86087206997">getGravityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a25e67f8ce5fdbbdd1a24ccd4b3c8974e">getIterations</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a114b04cd83952c0670c48e6d98d55af3">getNearPressureStiffness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a554896c3d45d98929484fcf3bc341b08">getParticleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#adb8f28e940a7fa111122fbac6b88f36e">getParticleSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#addd888fc05b131d63eb6c25095447e5e">getParticleVx</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a18e4b76a8ff5c5b977abf05730e4315c">getParticleVy</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#afc027da438d36d899ae86789538aa2c8">getParticleX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ab1d5180f1d675f616841a70d6648debe">getParticleY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#afa4b0c5a55471bcc060102cc55e776a6">getPressureStiffness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a377a71b1c272fd3df208f620026359eb">getRestDensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a7794dd6051520b610f2f2ddf7353cd6d">getSmoothingRadius</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae5d86ba87f9c3e7a84ecda8bc4145039">getViscosity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae9eff6ad0549846a76687cb3cf0e9e4d">interactAt</a>(float x, float y, float radius, float strength)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a8a09552fb7f75cb7a75349de9e7fc80e">operator=</a>(const Fluid2D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a49b334b830650a5cab863997ad997672">setBounds</a>(float x, float y, float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae8f37911d6c8bfba40797e31c456303c">setColor</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a6465e2d36501c37fe2a7565c590b40c6">setGravity</a>(float gx, float gy)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a30f81ed150249a0dc5937b24c1abb2c9">setIterations</a>(int iterations)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#adeeb3f93c61d656c840aee12459a0efc">setNearPressureStiffness</a>(float k)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ac21e565b01a827bee82ae304f3009e10">setParticleSize</a>(float size)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#aad5d254f9f7ea4f1c65e9ee27adf3525">setPressureStiffness</a>(float k)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a598e44a06f4ec4bcefe08b1ba4374b98">setRestDensity</a>(float density)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ac51b0990481f398c35047c178f454618">setSmoothingRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a05ec00b0adcd3f35c11305d1e0418067">setViscosity</a>(float viscosity)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#a2054493498f03c0507da32133467417a">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ab4fdb7aad7967d2e844b3b6b48dcc481">~Fluid2D</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

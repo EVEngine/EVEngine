@@ -1,0 +1,225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/filesystem/PreparedFile.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_afee26140d46546965aad89686474471.html">filesystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">PreparedFile.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="PreparedFile_8h_source.html">filesystem/PreparedFile.h</a>&quot;</code><br />
+<code>#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</code><br />
+<code>#include &quot;<a class="el" href="AsyncWork_8h_source.html">common/AsyncWork.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Capability_8h_source.html">common/Capability.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Exception_8h_source.html">common/Exception.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Resource_8h_source.html">common/Resource.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelBinding_8h_source.html">common/SquirrelBinding.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="FileData_8h_source.html">filesystem/FileData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Filesystem_8h_source.html">filesystem/Filesystem.h</a>&quot;</code><br />
+</div>
+<p><a href="PreparedFile_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1filesystem" id="r_namespaceeve_1_1filesystem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1filesystem.html">eve::filesystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:adbad6a7bff6223069c9be44fe56f4830" id="r_adbad6a7bff6223069c9be44fe56f4830"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1filesystem.html#adbad6a7bff6223069c9be44fe56f4830">eve::filesystem::requestPreparedFile</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:adbad6a7bff6223069c9be44fe56f4830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue immutable file bytes in the canonical <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> cache.  <br /></td></tr>
+<tr class="separator:adbad6a7bff6223069c9be44fe56f4830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349560518ef763645db17f85bb5b3723" id="r_a349560518ef763645db17f85bb5b3723"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::shared_ptr&lt; const <a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1filesystem.html#a349560518ef763645db17f85bb5b3723">eve::filesystem::readPreparedFile</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, size_t <a class="el" href="TreeMesh_8cpp.html#a093d9695bc7f56e2e457d8ccf15652c1">limit</a>)</td></tr>
+<tr class="memdesc:a349560518ef763645db17f85bb5b3723"><td class="mdescLeft">&#160;</td><td class="mdescRight">Join a queued read or synchronously read an immutable file snapshot.  <br /></td></tr>
+<tr class="separator:a349560518ef763645db17f85bb5b3723"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36b50efdf90e930b569149686d08d8db" id="r_a36b50efdf90e930b569149686d08d8db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1filesystem.html#a36b50efdf90e930b569149686d08d8db">eve::filesystem::exposePreparedFileBindings</a> (ssq::Class &amp;<a class="el" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>)</td></tr>
+<tr class="memdesc:a36b50efdf90e930b569149686d08d8db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install game-thread script submission bindings; retains no class borrow.  <br /></td></tr>
+<tr class="separator:a36b50efdf90e930b569149686d08d8db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="abd334a1a9ee04d4f3f143e881f9cdb3f" name="abd334a1a9ee04d4f3f143e881f9cdb3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd334a1a9ee04d4f3f143e881f9cdb3f">&#9670;&#160;</a></span>bytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;const FileData&gt; bytes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PreparedFile_8cpp_source.html">PreparedFile.cpp</a> 第 <a class="el" href="PreparedFile_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FrameArena_8cpp_source.html#l00050">eve::graphics::vulkan::FrameArena::alloc()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00342">eve::audio_editor::AudioSourceEditor::attachLiveAudition()</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00096">eve::procgen::TerrainAsset::bake()</a>, <a class="el" href="Model3D_8cpp_source.html#l00181">eve::model3d::Model3D::bakeModel()</a>, <a class="el" href="Procgen_8cpp_source.html#l02405">eve::procgen::Procgen::bakeTerrainAsset()</a>, <a class="el" href="UnityRenderBindings_8cpp_source.html#l00135">eve::asset_import::bindUnityRenderers()</a>, <a class="el" href="Evpack_8cpp_source.html#l00253">eve::asset::buildEvpack()</a>, <a class="el" href="CubemapPrefilter_8h_source.html#l00140">eve::graphics::buildGgxCubemapMipChain()</a>, <a class="el" href="VrmSurface_8cpp_source.html#l00023">eve::avatar::buildVrmAtlas()</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00193">eve::gpgpu::compileComputeGlsl()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00517">eve::graphics::webgpu::Graphics::debugGpuDrivenVgGpuVisibleCount()</a>, <a class="el" href="CanonicalMesh_8cpp_source.html#l00027">eve::asset::decodeCanonicalMesh()</a>, <a class="el" href="RuntimeDefinition_8cpp_source.html#l00235">eve::asset::decodeRuntimeDefinition()</a>, <a class="el" href="TerrainFile_8cpp_source.html#l00132">eve::procgen::decodeTerrainFile()</a>, <a class="el" href="Quant_8h_source.html#l00204">eve::tensor::q::dequantizeAll()</a>, <a class="el" href="Quant_8h_source.html#l00174">eve::tensor::q::dequantValue()</a>, <a class="el" href="Container_8h_source.html#l00237">eve::container::deterministicContainerEventId()</a>, <a class="el" href="OnnxNumeric_8cpp_source.html#l00033">eve::tensor::onnx_detail::dispatchFloat()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00508">eve::graphics::vulkan::Graphics::drawVoxelFaceInstances()</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00042">eve::tensor::affine::dynamicQuantize()</a>, <a class="el" href="OnnxCompute_8h_source.html#l00037">eve::tensor::OnnxCompute::enqueue()</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00052">eve::tensor::onnx_detail::enqueueInteger()</a>, <a class="el" href="FrameArena_8cpp_source.html#l00028">eve::graphics::vulkan::FrameArena::ensure()</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00045">eve::gpgpu::ShaderSystem::ensureBuffer()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00343">eve::tensor::onnx_detail::evaluate()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>, <a class="el" href="network_2Channel_8cpp_source.html#l00065">eve::network::Channel::feed()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00224">eve::procgen_editing::TextureRecipePreviewRuntime::generate()</a>, <a class="el" href="Identity_8cpp_source.html#l00089">eve::generateUuidV7()</a>, <a class="el" href="ModelData_8cpp_source.html#l00429">eve::model3d::ModelData::getEmbeddedTextureImageData()</a>, <a class="el" href="Animation_8cpp_source.html#l00206">eve::animation::Animation::getSpriteSequenceCacheBytes()</a>, <a class="el" href="UnitySource_8cpp_source.html#l00115">eve::asset_import::indexUnitySources()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00021">eve::asset_import::gltf::little32()</a>, <a class="el" href="OnnxModel_8cpp_source.html#l00013">eve::tensor::OnnxModel::load()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00155">eve::voxel::VoxelWorld::loadTerrainAsset()</a>, <a class="el" href="TerrainFile_8cpp_source.html#l00153">eve::procgen::loadTerrainFile()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00485">eve::voxel::VoxelWorld::loadWorld()</a>, <a class="el" href="Network_8cpp_source.html#l00131">eve::network::Network::makeReader()</a>, <a class="el" href="UnitySource_8cpp_source.html#l00010">eve::asset_import::unity_detail::metaScalar()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00146">eve::graphics::vulkan::Graphics::newCubemap()</a>, <a class="el" href="font_2Font_8cpp_source.html#l00025">eve::font::Font::newFontData()</a>, <a class="el" href="Network_8cpp_source.html#l00136">eve::network::Network::newReader()</a>, <a class="el" href="Sound_8cpp_source.html#l00220">eve::sound::Sound::newSoundDataEmpty()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00091">eve::graphics::vulkan::Graphics::newTexture()</a>, <a class="el" href="NetHost_8cpp_source.html#l00043">eve::network::NetHost::onDatagram()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00333">eve::network::UdpLink::onDatagram()</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00316">eve::tensor::onnx_detail::parse()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00033">eve::asset_import::gltf::parseDocument()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00509">eve::asset::parseEvaArchive()</a>, <a class="el" href="VrmDocument_8cpp_source.html#l00227">eve::avatar::parseVrm()</a>, <a class="el" href="MeshVfxPackage_8cpp_source.html#l00009">eve::asset_stylize::prepareMeshVfxPackage()</a>, <a class="el" href="ShaderImporter_8cpp_source.html#l00006">eve::asset_import::prepareShaderImport()</a>, <a class="el" href="UnityCollection_8cpp_source.html#l00089">eve::asset_import::prepareUnityCollection()</a>, <a class="el" href="UnityFbx_8cpp_source.html#l00136">eve::asset_import::prepareUnityFbx()</a>, <a class="el" href="UnityRenderBindings_8cpp_source.html#l00047">eve::asset_import::prepareUnityMaterial()</a>, <a class="el" href="UnityNativeMesh_8cpp_source.html#l00046">eve::asset_import::prepareUnityNativeMesh()</a>, <a class="el" href="UnitySpriteAnimation_8cpp_source.html#l00079">eve::asset_import::prepareUnitySpriteAnimation()</a>, <a class="el" href="UnrealImporter_8cpp_source.html#l00126">eve::asset_import::prepareUnrealM4Import()</a>, <a class="el" href="AssetPackageStore_8cpp_source.html#l00167">eve::asset::AtomicAssetPackageStore::publishEvpack()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00026">eve::asset_import::gltf::put32()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00030">eve::asset_import::gltf::putFloat()</a>, <a class="el" href="EvpackResourceReader_8cpp_source.html#l00015">eve::asset::EvpackResourceReader::read()</a>, <a class="el" href="ResourceReader_8cpp_source.html#l00027">eve::filesystem::ResourceReader::read()</a>, <a class="el" href="EvpackRange_8cpp_source.html#l00045">eve::asset::FileEvpackRangeSource::read()</a>, <a class="el" href="EvpackRange_8cpp_source.html#l00107">eve::asset::EvpackRangeMount::readChunk()</a>, <a class="el" href="PreparedFile_8cpp_source.html#l00059">eve::filesystem::readPreparedFile()</a>, <a class="el" href="ShaderScriptBindings_8cpp_source.html#l00035">eve::graphics::detail::readShaderStageFile()</a>, <a class="el" href="Filesystem_8cpp_source.html#l00187">eve::filesystem::Filesystem::readText()</a>, <a class="el" href="UnityPackage_8cpp_source.html#l00200">eve::asset_import::readUnityPackage()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01563">eve::pixelworld::PixelWorld::restoreSnapshot()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00170">eve::pixelworld::PixelWorldControlService::restoreSnapshot()</a>, <a class="el" href="Run_8cpp_source.html#l00358">eve::cmd::Cmdline::Run()</a>, <a class="el" href="OnnxModel_8cpp_source.html#l00031">eve::tensor::OnnxModel::runGpu()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00479">eve::voxel::VoxelWorld::saveWorld()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00072">eve::editor::HostProfile::setMaxPayloadBytes()</a>, <a class="el" href="ImportCommon_8h_source.html#l00017">eve::asset_import::detail::sha256()</a>, <a class="el" href="ShaderResources_8cpp_source.html#l00079">eve::graphics::shaderInstanceMatrixCount()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00052">eve::graphics::vulkan::uploadTextureForAllShaderStages()</a> , 以及 <a class="el" href="SpriteStackTarget_8cpp_source.html#l00206">eve::spritestack_editing::SpriteStackDocumentTarget::validate()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

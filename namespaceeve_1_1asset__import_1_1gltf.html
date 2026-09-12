@@ -1,0 +1,854 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_import::gltf 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__import.html">asset_import</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html">gltf</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_import::gltf 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed validated accessor; its source document/resources must outlive synchronous reads.  <a href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Document.html">Document</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning parsed document; keep alive while resolved buffer spans are used.  <a href="structeve_1_1asset__import_1_1gltf_1_1Document.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aaf5ede4798c31af9e7bb96bd643366cf" id="r_aaf5ede4798c31af9e7bb96bd643366cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#aaf5ede4798c31af9e7bb96bd643366cf">appendAnimation</a> (const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;root, const std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &amp;buffers, <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="memdesc:aaf5ede4798c31af9e7bb96bd643366cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append owning canonical skeleton, skin and clip assets to an unpublished candidate.  <br /></td></tr>
+<tr class="separator:aaf5ede4798c31af9e7bb96bd643366cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9c73ec91d6137d41ad728f1ee890e46" id="r_ad9c73ec91d6137d41ad728f1ee890e46"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#ad9c73ec91d6137d41ad728f1ee890e46">member</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ad9c73ec91d6137d41ad728f1ee890e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find an internal JSON field. @ownership Borrowed, nullable observer of object-owned storage. @lifetime Valid only until the object is mutated or destroyed; never retained by the importer.  <br /></td></tr>
+<tr class="separator:ad9c73ec91d6137d41ad728f1ee890e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75990de58ffddf4a0b58ec7f2b235112" id="r_a75990de58ffddf4a0b58ec7f2b235112"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a75990de58ffddf4a0b58ec7f2b235112">unsignedValue</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> *<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, std::string <a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, bool <a class="el" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a>=true, std::uint64_t fallback=0)</td></tr>
+<tr class="memdesc:a75990de58ffddf4a0b58ec7f2b235112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate an optional integer field. @ownership Borrowed nullable field owned by the input document. @lifetime Must remain valid for this call only; no pointer is retained.  <br /></td></tr>
+<tr class="separator:a75990de58ffddf4a0b58ec7f2b235112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa843dbc8c60242ed745a5182bc0678" id="r_a7fa843dbc8c60242ed745a5182bc0678"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a7fa843dbc8c60242ed745a5182bc0678">little32</a> (std::span&lt; const std::uint8_t &gt; <a class="el" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>, std::size_t <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>)</td></tr>
+<tr class="memdesc:a7fa843dbc8c60242ed745a5182bc0678"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a uint32 after the caller has bounded the byte range.  <br /></td></tr>
+<tr class="separator:a7fa843dbc8c60242ed745a5182bc0678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4791f921e1407a5f256762c852f9c1ed" id="r_a4791f921e1407a5f256762c852f9c1ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a4791f921e1407a5f256762c852f9c1ed">put32</a> (std::vector&lt; std::uint8_t &gt; &amp;<a class="el" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>, std::uint32_t <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a4791f921e1407a5f256762c852f9c1ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append little-endian uint32 to owned storage.  <br /></td></tr>
+<tr class="separator:a4791f921e1407a5f256762c852f9c1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0bcfe9c0d43f27ca6a0bc2dcd0da9e0" id="r_af0bcfe9c0d43f27ca6a0bc2dcd0da9e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#af0bcfe9c0d43f27ca6a0bc2dcd0da9e0">putFloat</a> (std::vector&lt; std::uint8_t &gt; &amp;<a class="el" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:af0bcfe9c0d43f27ca6a0bc2dcd0da9e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append IEEE FLOAT to owned storage.  <br /></td></tr>
+<tr class="separator:af0bcfe9c0d43f27ca6a0bc2dcd0da9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa236b4de4743c7843ed3d1270ecf28dc" id="r_aa236b4de4743c7843ed3d1270ecf28dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Document.html">Document</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#aa236b4de4743c7843ed3d1270ecf28dc">parseDocument</a> (const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:aa236b4de4743c7843ed3d1270ecf28dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a bounded document into an owning result.  <br /></td></tr>
+<tr class="separator:aa236b4de4743c7843ed3d1270ecf28dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adff5a502f697fd57cf25baba2748f0ec" id="r_adff5a502f697fd57cf25baba2748f0ec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#adff5a502f697fd57cf25baba2748f0ec">safeUri</a> (std::string_view uri, const <a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a> &amp;limits)</td></tr>
+<tr class="separator:adff5a502f697fd57cf25baba2748f0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4abb4767dddf02f7cd7b4482795f4755" id="r_a4abb4767dddf02f7cd7b4482795f4755"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a4abb4767dddf02f7cd7b4482795f4755">resolveBuffers</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;root, const <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Document.html">Document</a> &amp;document, const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a4abb4767dddf02f7cd7b4482795f4755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve immutable spans borrowed from document/request; both must outlive their use.  <br /></td></tr>
+<tr class="separator:a4abb4767dddf02f7cd7b4482795f4755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced8a2894fbe0e87b76772f716327d7d" id="r_aced8a2894fbe0e87b76772f716327d7d"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#aced8a2894fbe0e87b76772f716327d7d">componentSize</a> (std::uint32_t <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:aced8a2894fbe0e87b76772f716327d7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return encoded component byte size, or zero for an unknown type.  <br /></td></tr>
+<tr class="separator:aced8a2894fbe0e87b76772f716327d7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0360290a86ad88a08099800e5c5649a4" id="r_a0360290a86ad88a08099800e5c5649a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a0360290a86ad88a08099800e5c5649a4">accessorAt</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;root, const std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &amp;buffers, std::uint64_t accessorIndex, const <a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a> &amp;limits)</td></tr>
+<tr class="memdesc:a0360290a86ad88a08099800e5c5649a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate an accessor retaining only buffer spans borrowed for this import.  <br /></td></tr>
+<tr class="separator:a0360290a86ad88a08099800e5c5649a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a172a15ecd815976c8e69829a70998a18" id="r_a172a15ecd815976c8e69829a70998a18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a172a15ecd815976c8e69829a70998a18">readFloat</a> (const <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a> &amp;accessor, std::uint32_t element, std::uint32_t component)</td></tr>
+<tr class="memdesc:a172a15ecd815976c8e69829a70998a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one bounded finite FLOAT component.  <br /></td></tr>
+<tr class="separator:a172a15ecd815976c8e69829a70998a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa682c295993ab2783ab8b07473c96c7b" id="r_aa682c295993ab2783ab8b07473c96c7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#aa682c295993ab2783ab8b07473c96c7b">readIndex</a> (const <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a> &amp;accessor, std::uint32_t element)</td></tr>
+<tr class="memdesc:aa682c295993ab2783ab8b07473c96c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one bounded unsigned scalar index.  <br /></td></tr>
+<tr class="separator:aa682c295993ab2783ab8b07473c96c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08c39a60a5214e7618f4f0e1ad128c89" id="r_a08c39a60a5214e7618f4f0e1ad128c89"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a08c39a60a5214e7618f4f0e1ad128c89">supportsMaterialExtension</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a08c39a60a5214e7618f4f0e1ad128c89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this adapter translates the named standard material/texture extension.  <br /></td></tr>
+<tr class="separator:a08c39a60a5214e7618f4f0e1ad128c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa714a7279f5d5e791278ba5ca175b6fd" id="r_aa714a7279f5d5e791278ba5ca175b6fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#aa714a7279f5d5e791278ba5ca175b6fd">appendMaterials</a> (const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;root, const std::vector&lt; std::span&lt; const uint8_t &gt; &gt; &amp;buffers, <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="separator:aa714a7279f5d5e791278ba5ca175b6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a881b99c16f605568bbfddd2a3cc8e7cd" id="r_a881b99c16f605568bbfddd2a3cc8e7cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a881b99c16f605568bbfddd2a3cc8e7cd">appendMaterials</a> (const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;root, const std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &amp;buffers, <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="memdesc:a881b99c16f605568bbfddd2a3cc8e7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append owned material/image assets and required bindings to an unpublished candidate.  <br /></td></tr>
+<tr class="separator:a881b99c16f605568bbfddd2a3cc8e7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a0360290a86ad88a08099800e5c5649a4" name="a0360290a86ad88a08099800e5c5649a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0360290a86ad88a08099800e5c5649a4">&#9670;&#160;</a></span>accessorAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a> &gt; eve::asset_import::gltf::accessorAt </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>accessorIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate an accessor retaining only buffer spans borrowed for this import. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00132">componentSize()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="AssetImporter_8h_source.html#l00020">eve::asset_import::AssetImportLimits::maximumIndicesPerPrimitive</a>, <a class="el" href="AssetImporter_8h_source.html#l00019">eve::asset_import::AssetImportLimits::maximumVerticesPerPrimitive</a>, <a class="el" href="UiThemeTokens_8cpp_source.html#l00022">member</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00013">unsignedValue()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00500">view</a>.</p>
+
+</div>
+</div>
+<a id="aaf5ede4798c31af9e7bb96bd643366cf" name="aaf5ede4798c31af9e7bb96bd643366cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf5ede4798c31af9e7bb96bd643366cf">&#9670;&#160;</a></span>appendAnimation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_import::gltf::appendAnimation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append owning canonical skeleton, skin and clip assets to an unpublished candidate. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Borrowed input, valid for this synchronous call. </td></tr>
+    <tr><td class="paramname">root</td><td>Borrowed parsed document, unchanged during this call. </td></tr>
+    <tr><td class="paramname">buffers</td><td>Borrowed decoded buffers, valid for this call only. </td></tr>
+    <tr><td class="paramname">output</td><td>Unpublished candidate; discard it on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Structured admission failure or success. No callbacks, IO or retained borrows. @thread Worker-safe with exclusive access to output. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GltfAnimation_8cpp_source.html">GltfAnimation.cpp</a> 第 <a class="el" href="GltfAnimation_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00160">eve::asset_import::prepareGltfImport()</a>.</p>
+
+</div>
+</div>
+<a id="a881b99c16f605568bbfddd2a3cc8e7cd" name="a881b99c16f605568bbfddd2a3cc8e7cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a881b99c16f605568bbfddd2a3cc8e7cd">&#9670;&#160;</a></span>appendMaterials() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_import::gltf::appendMaterials </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append owned material/image assets and required bindings to an unpublished candidate. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Borrowed source, valid for this synchronous call. </td></tr>
+    <tr><td class="paramname">root</td><td>Borrowed immutable JSON document. </td></tr>
+    <tr><td class="paramname">buffers</td><td>Borrowed source buffers, never retained. </td></tr>
+    <tr><td class="paramname">output</td><td>Exclusively owned unpublished candidate; discard on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Checked admission result. Worker-safe; no IO or callbacks. </dd></dl>
+
+</div>
+</div>
+<a id="aa714a7279f5d5e791278ba5ca175b6fd" name="aa714a7279f5d5e791278ba5ca175b6fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa714a7279f5d5e791278ba5ca175b6fd">&#9670;&#160;</a></span>appendMaterials() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_import::gltf::appendMaterials </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::span&lt; const uint8_t &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GltfMaterials_8cpp_source.html">GltfMaterials.cpp</a> 第 <a class="el" href="GltfMaterials_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00160">eve::asset_import::prepareGltfImport()</a>.</p>
+
+</div>
+</div>
+<a id="aced8a2894fbe0e87b76772f716327d7d" name="aced8a2894fbe0e87b76772f716327d7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced8a2894fbe0e87b76772f716327d7d">&#9670;&#160;</a></span>componentSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::asset_import::gltf::componentSize </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return encoded component byte size, or zero for an unknown type. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfDecode_8cpp_source.html#l00139">accessorAt()</a>.</p>
+
+</div>
+</div>
+<a id="a7fa843dbc8c60242ed745a5182bc0678" name="a7fa843dbc8c60242ed745a5182bc0678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fa843dbc8c60242ed745a5182bc0678">&#9670;&#160;</a></span>little32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::asset_import::gltf::little32 </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>offset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a uint32 after the caller has bounded the byte range. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfDecode_8cpp_source.html#l00033">parseDocument()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00201">readFloat()</a> , 以及 <a class="el" href="GltfDecode_8cpp_source.html#l00212">readIndex()</a>.</p>
+
+</div>
+</div>
+<a id="ad9c73ec91d6137d41ad728f1ee890e46" name="ad9c73ec91d6137d41ad728f1ee890e46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9c73ec91d6137d41ad728f1ee890e46">&#9670;&#160;</a></span>member()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">Value</a> * eve::asset_import::gltf::member </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find an internal JSON field. @ownership Borrowed, nullable observer of object-owned storage. @lifetime Valid only until the object is mutated or destroyed; never retained by the importer. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00124">eve::Value::find()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aa236b4de4743c7843ed3d1270ecf28dc" name="aa236b4de4743c7843ed3d1270ecf28dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa236b4de4743c7843ed3d1270ecf28dc">&#9670;&#160;</a></span>parseDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Document.html">Document</a> &gt; eve::asset_import::gltf::parseDocument </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a bounded document into an owning result. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00021">little32()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00160">eve::asset_import::prepareGltfImport()</a>.</p>
+
+</div>
+</div>
+<a id="a4791f921e1407a5f256762c852f9c1ed" name="a4791f921e1407a5f256762c852f9c1ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4791f921e1407a5f256762c852f9c1ed">&#9670;&#160;</a></span>put32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::asset_import::gltf::put32 </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append little-endian uint32 to owned storage. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">eve::asset_import::prepareLegacyAnimationImport()</a> , 以及 <a class="el" href="GltfDecode_8cpp_source.html#l00030">putFloat()</a>.</p>
+
+</div>
+</div>
+<a id="af0bcfe9c0d43f27ca6a0bc2dcd0da9e0" name="af0bcfe9c0d43f27ca6a0bc2dcd0da9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0bcfe9c0d43f27ca6a0bc2dcd0da9e0">&#9670;&#160;</a></span>putFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::asset_import::gltf::putFloat </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append IEEE FLOAT to owned storage. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00026">put32()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainImporter_8cpp_source.html#l00049">eve::asset_import::prepareCanonicalTerrainImport()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">eve::asset_import::prepareLegacyAnimationImport()</a>.</p>
+
+</div>
+</div>
+<a id="a172a15ecd815976c8e69829a70998a18" name="a172a15ecd815976c8e69829a70998a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a172a15ecd815976c8e69829a70998a18">&#9670;&#160;</a></span>readFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt; eve::asset_import::gltf::readFloat </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a> &amp;&#160;</td>
+          <td class="paramname"><em>accessor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>element</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>component</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read one bounded finite FLOAT component. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfDecode_8h_source.html#l00014">eve::asset_import::gltf::Accessor::buffer</a>, <a class="el" href="GltfDecode_8h_source.html#l00016">eve::asset_import::gltf::Accessor::components</a>, <a class="el" href="GltfDecode_8h_source.html#l00016">eve::asset_import::gltf::Accessor::componentType</a>, <a class="el" href="GltfDecode_8h_source.html#l00016">eve::asset_import::gltf::Accessor::count</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00021">little32()</a>, <a class="el" href="GltfDecode_8h_source.html#l00017">eve::asset_import::gltf::Accessor::normalized</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="GltfDecode_8h_source.html#l00015">eve::asset_import::gltf::Accessor::offset</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GltfDecode_8h_source.html#l00015">eve::asset_import::gltf::Accessor::stride</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa682c295993ab2783ab8b07473c96c7b" name="aa682c295993ab2783ab8b07473c96c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa682c295993ab2783ab8b07473c96c7b">&#9670;&#160;</a></span>readIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint32_t &gt; eve::asset_import::gltf::readIndex </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Accessor.html">Accessor</a> &amp;&#160;</td>
+          <td class="paramname"><em>accessor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>element</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read one bounded unsigned scalar index. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfDecode_8h_source.html#l00014">eve::asset_import::gltf::Accessor::buffer</a>, <a class="el" href="GltfDecode_8h_source.html#l00016">eve::asset_import::gltf::Accessor::components</a>, <a class="el" href="GltfDecode_8h_source.html#l00016">eve::asset_import::gltf::Accessor::componentType</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00021">little32()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="GltfDecode_8h_source.html#l00015">eve::asset_import::gltf::Accessor::offset</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GltfDecode_8h_source.html#l00015">eve::asset_import::gltf::Accessor::stride</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a4abb4767dddf02f7cd7b4482795f4755" name="a4abb4767dddf02f7cd7b4482795f4755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4abb4767dddf02f7cd7b4482795f4755">&#9670;&#160;</a></span>resolveBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::span&lt; const std::uint8_t &gt; &gt; &gt; eve::asset_import::gltf::resolveBuffers </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1gltf_1_1Document.html">Document</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1GltfImportRequest.html">GltfImportRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve immutable spans borrowed from document/request; both must outlive their use. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="GltfDecode_8h_source.html#l00010">eve::asset_import::gltf::Document::binaryChunk</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="ImportCommon_8h_source.html#l00013">eve::asset_import::detail::failure()</a>, <a class="el" href="UnitySourceInternal_8h_source.html#l00044">eve::asset_import::unity_detail::failure()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="UiThemeTokens_8cpp_source.html#l00022">member</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00069">safeUri()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00013">unsignedValue()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00160">eve::asset_import::prepareGltfImport()</a>.</p>
+
+</div>
+</div>
+<a id="adff5a502f697fd57cf25baba2748f0ec" name="adff5a502f697fd57cf25baba2748f0ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adff5a502f697fd57cf25baba2748f0ec">&#9670;&#160;</a></span>safeUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_import::gltf::safeUri </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AssetImporter_8h_source.html#l00021">eve::asset_import::AssetImportLimits::maximumStringBytes</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfDecode_8cpp_source.html#l00083">resolveBuffers()</a>.</p>
+
+</div>
+</div>
+<a id="a08c39a60a5214e7618f4f0e1ad128c89" name="a08c39a60a5214e7618f4f0e1ad128c89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08c39a60a5214e7618f4f0e1ad128c89">&#9670;&#160;</a></span>supportsMaterialExtension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_import::gltf::supportsMaterialExtension </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether this adapter translates the named standard material/texture extension. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfMaterials_8cpp_source.html">GltfMaterials.cpp</a> 第 <a class="el" href="GltfMaterials_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00160">eve::asset_import::prepareGltfImport()</a>.</p>
+
+</div>
+</div>
+<a id="a75990de58ffddf4a0b58ec7f2b235112" name="a75990de58ffddf4a0b58ec7f2b235112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75990de58ffddf4a0b58ec7f2b235112">&#9670;&#160;</a></span>unsignedValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint64_t &gt; eve::asset_import::gltf::unsignedValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> *&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>required</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate an optional integer field. @ownership Borrowed nullable field owned by the input document. @lifetime Must remain valid for this call only; no pointer is retained. </p>
+
+<p class="definition">在文件 <a class="el" href="GltfDecode_8cpp_source.html">GltfDecode.cpp</a> 第 <a class="el" href="GltfDecode_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfDecode_8cpp_source.html#l00139">accessorAt()</a> , 以及 <a class="el" href="GltfDecode_8cpp_source.html#l00083">resolveBuffers()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,3010 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Rope3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">Rope3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1Rope3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Rope3D类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Renderer-independent particle rope with XPBD stretch and bend constraints.  
+ <a href="classeve_1_1physics_1_1Rope3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Rope3D_8h_source.html">Rope3D.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::Rope3D 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1Rope3D.png" usemap="#eve::physics::Rope3D_map" alt=""/>
+  <map id="eve::physics::Rope3D_map" name="eve::physics::Rope3D_map">
+<area href="classeve_1_1physics_1_1ISimulationBackend.html" title="Minimal observable contract for physics simulation providers." alt="eve::physics::ISimulationBackend" shape="rect" coords="0,0,197,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1Rope3D_1_1Vec3.html">Vec3</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact solver vector exposed only as a value type.  <a href="structeve_1_1physics_1_1Rope3D_1_1Vec3.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab6d68c001562240e8d4cfbb97ae077f5" id="r_ab6d68c001562240e8d4cfbb97ae077f5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ab6d68c001562240e8d4cfbb97ae077f5">Rope3D</a> (int particleCount, float startX, float startY, float startZ, float endX, float endY, float endZ)</td></tr>
+<tr class="memdesc:ab6d68c001562240e8d4cfbb97ae077f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a straight rope including both endpoints.  <br /></td></tr>
+<tr class="separator:ab6d68c001562240e8d4cfbb97ae077f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13cae59e2cb343630a66111e697f2ee0" id="r_a13cae59e2cb343630a66111e697f2ee0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a13cae59e2cb343630a66111e697f2ee0">update</a> (float dt)</td></tr>
+<tr class="memdesc:a13cae59e2cb343630a66111e697f2ee0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances using a compatibility-generated monotonic fixed tick.  <br /></td></tr>
+<tr class="separator:a13cae59e2cb343630a66111e697f2ee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae76215fad033a6ddb83b5f75d00baa43" id="r_ae76215fad033a6ddb83b5f75d00baa43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae76215fad033a6ddb83b5f75d00baa43">step</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;step, const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;settings) override</td></tr>
+<tr class="memdesc:ae76215fad033a6ddb83b5f75d00baa43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the rope atomically under the shared simulation contract.  <br /></td></tr>
+<tr class="separator:ae76215fad033a6ddb83b5f75d00baa43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46fcf9be389bf6280bb4984bfcc6fd1b" id="r_a46fcf9be389bf6280bb4984bfcc6fd1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a46fcf9be389bf6280bb4984bfcc6fd1b">observation</a> () const noexcept override</td></tr>
+<tr class="memdesc:a46fcf9be389bf6280bb4984bfcc6fd1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns completed-step observables by value.  <br /></td></tr>
+<tr class="separator:a46fcf9be389bf6280bb4984bfcc6fd1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74596310eb2308f22471dd0c28eab643" id="r_a74596310eb2308f22471dd0c28eab643"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a74596310eb2308f22471dd0c28eab643">kind</a> () const noexcept override</td></tr>
+<tr class="memdesc:a74596310eb2308f22471dd0c28eab643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies the provider family.  <br /></td></tr>
+<tr class="separator:a74596310eb2308f22471dd0c28eab643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec9408c893f6d0c61c69ae4ab635b43" id="r_a6ec9408c893f6d0c61c69ae4ab635b43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6ec9408c893f6d0c61c69ae4ab635b43">determinism</a> () const noexcept override</td></tr>
+<tr class="memdesc:a6ec9408c893f6d0c61c69ae4ab635b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the provider's replay/determinism guarantee.  <br /></td></tr>
+<tr class="separator:a6ec9408c893f6d0c61c69ae4ab635b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c40c0aaeae6efa7e365e108894e23e8" id="r_a0c40c0aaeae6efa7e365e108894e23e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a0c40c0aaeae6efa7e365e108894e23e8">restoreObservation</a> (const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;<a class="el" href="classeve_1_1physics_1_1Rope3D.html#a46fcf9be389bf6280bb4984bfcc6fd1b">observation</a>) override</td></tr>
+<tr class="memdesc:a0c40c0aaeae6efa7e365e108894e23e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores progress metadata after the owner restores its state.  <br /></td></tr>
+<tr class="separator:a0c40c0aaeae6efa7e365e108894e23e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af82863362bd6ae2a525428b784c5fb9f" id="r_af82863362bd6ae2a525428b784c5fb9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af82863362bd6ae2a525428b784c5fb9f">setGravity</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:af82863362bd6ae2a525428b784c5fb9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets uniform acceleration in meters per second squared.  <br /></td></tr>
+<tr class="separator:af82863362bd6ae2a525428b784c5fb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbde74acc22435df6f0d47885b69756a" id="r_abbde74acc22435df6f0d47885b69756a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#abbde74acc22435df6f0d47885b69756a">getGravityX</a> () const</td></tr>
+<tr class="separator:abbde74acc22435df6f0d47885b69756a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bc9254f359b76b31a8795c6e2f1a56c" id="r_a1bc9254f359b76b31a8795c6e2f1a56c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a1bc9254f359b76b31a8795c6e2f1a56c">getGravityY</a> () const</td></tr>
+<tr class="separator:a1bc9254f359b76b31a8795c6e2f1a56c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab7e3b173f56dee06e5aedcd27c27332" id="r_aab7e3b173f56dee06e5aedcd27c27332"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aab7e3b173f56dee06e5aedcd27c27332">getGravityZ</a> () const</td></tr>
+<tr class="separator:aab7e3b173f56dee06e5aedcd27c27332"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6653a88db79dac695f1ad992e57897f2" id="r_a6653a88db79dac695f1ad992e57897f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6653a88db79dac695f1ad992e57897f2">setStretchCompliance</a> (float compliance)</td></tr>
+<tr class="memdesc:a6653a88db79dac695f1ad992e57897f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets stretch compliance in inverse newtons; zero is inextensible.  <br /></td></tr>
+<tr class="separator:a6653a88db79dac695f1ad992e57897f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cd4d379d441e7533da1e616a000f931" id="r_a3cd4d379d441e7533da1e616a000f931"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a3cd4d379d441e7533da1e616a000f931">getStretchCompliance</a> () const noexcept</td></tr>
+<tr class="separator:a3cd4d379d441e7533da1e616a000f931"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba5f194c28e3ef69b56d5c9661054e5" id="r_a4ba5f194c28e3ef69b56d5c9661054e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4ba5f194c28e3ef69b56d5c9661054e5">setDistanceConstraintsEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a4ba5f194c28e3ef69b56d5c9661054e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables structural distance constraints without changing topology.  <br /></td></tr>
+<tr class="separator:a4ba5f194c28e3ef69b56d5c9661054e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa359184bb355f6681f6c37430d5878ae" id="r_aa359184bb355f6681f6c37430d5878ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa359184bb355f6681f6c37430d5878ae">getDistanceConstraintsEnabled</a> () const</td></tr>
+<tr class="separator:aa359184bb355f6681f6c37430d5878ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38511f8cc126507a55de18b794934ebd" id="r_a38511f8cc126507a55de18b794934ebd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a38511f8cc126507a55de18b794934ebd">setBendCompliance</a> (float compliance)</td></tr>
+<tr class="memdesc:a38511f8cc126507a55de18b794934ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets bend compliance; larger values make the rope easier to bend.  <br /></td></tr>
+<tr class="separator:a38511f8cc126507a55de18b794934ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa593e937ce88f89c76ad7b776160758f" id="r_aa593e937ce88f89c76ad7b776160758f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa593e937ce88f89c76ad7b776160758f">getBendCompliance</a> () const noexcept</td></tr>
+<tr class="separator:aa593e937ce88f89c76ad7b776160758f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae14a464f4baf92e01a90dc951462fc85" id="r_ae14a464f4baf92e01a90dc951462fc85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae14a464f4baf92e01a90dc951462fc85">setBendConstraintsEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ae14a464f4baf92e01a90dc951462fc85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables bend constraints independently from stretch constraints.  <br /></td></tr>
+<tr class="separator:ae14a464f4baf92e01a90dc951462fc85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2093099e36dbb957af3936dc994b5863" id="r_a2093099e36dbb957af3936dc994b5863"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a2093099e36dbb957af3936dc994b5863">getBendConstraintsEnabled</a> () const</td></tr>
+<tr class="separator:a2093099e36dbb957af3936dc994b5863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d2984187690188c0fdd9687563437d" id="r_a57d2984187690188c0fdd9687563437d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a57d2984187690188c0fdd9687563437d">setMaxBending</a> (float fraction)</td></tr>
+<tr class="memdesc:a57d2984187690188c0fdd9687563437d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets fractional bend slack in [0,0.5] before bend resistance activates.  <br /></td></tr>
+<tr class="separator:a57d2984187690188c0fdd9687563437d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5d8eb4028efd7331be4612118af2106" id="r_ad5d8eb4028efd7331be4612118af2106"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ad5d8eb4028efd7331be4612118af2106">getMaxBending</a> () const</td></tr>
+<tr class="separator:ad5d8eb4028efd7331be4612118af2106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f9f81f657058da09749db9684149cf6" id="r_a8f9f81f657058da09749db9684149cf6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8f9f81f657058da09749db9684149cf6">setPlasticity</a> (float yield, float creep)</td></tr>
+<tr class="memdesc:a8f9f81f657058da09749db9684149cf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures local permanent bend absorption; zero creep disables plasticity.  <br /></td></tr>
+<tr class="separator:a8f9f81f657058da09749db9684149cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0995a01ec26bdf89b756f1878a05e6" id="r_a9a0995a01ec26bdf89b756f1878a05e6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a9a0995a01ec26bdf89b756f1878a05e6">getPlasticYield</a> () const</td></tr>
+<tr class="separator:a9a0995a01ec26bdf89b756f1878a05e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad439367cd58c32d724193dfe821e6174" id="r_ad439367cd58c32d724193dfe821e6174"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ad439367cd58c32d724193dfe821e6174">getPlasticCreep</a> () const</td></tr>
+<tr class="separator:ad439367cd58c32d724193dfe821e6174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a59197bf1b1f1ca8836664a7aae5b6" id="r_a37a59197bf1b1f1ca8836664a7aae5b6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a37a59197bf1b1f1ca8836664a7aae5b6">getBendPlasticity</a> (int bendIndex) const</td></tr>
+<tr class="memdesc:a37a59197bf1b1f1ca8836664a7aae5b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns absorbed local bend fraction, or zero for an invalid bend index.  <br /></td></tr>
+<tr class="separator:a37a59197bf1b1f1ca8836664a7aae5b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80028eaffff378df6d5e0da4c40d219e" id="r_a80028eaffff378df6d5e0da4c40d219e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a80028eaffff378df6d5e0da4c40d219e">setMaxCompression</a> (float fraction)</td></tr>
+<tr class="memdesc:a80028eaffff378df6d5e0da4c40d219e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the maximum fractional compression in [0,1].  <br /></td></tr>
+<tr class="separator:a80028eaffff378df6d5e0da4c40d219e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a399088920a04e7dc11553251656cc1a5" id="r_a399088920a04e7dc11553251656cc1a5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a399088920a04e7dc11553251656cc1a5">getMaxCompression</a> () const noexcept</td></tr>
+<tr class="separator:a399088920a04e7dc11553251656cc1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fc7a83216e0fb29ec2731f12949ab2d" id="r_a3fc7a83216e0fb29ec2731f12949ab2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a3fc7a83216e0fb29ec2731f12949ab2d">setDamping</a> (float damping)</td></tr>
+<tr class="memdesc:a3fc7a83216e0fb29ec2731f12949ab2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets Verlet velocity damping in [0,1].  <br /></td></tr>
+<tr class="separator:a3fc7a83216e0fb29ec2731f12949ab2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dd7ffb0823a8c047f69542a7e9d211b" id="r_a4dd7ffb0823a8c047f69542a7e9d211b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4dd7ffb0823a8c047f69542a7e9d211b">getDamping</a> () const</td></tr>
+<tr class="separator:a4dd7ffb0823a8c047f69542a7e9d211b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b372bc1ce994b83627d4918c4415792" id="r_a5b372bc1ce994b83627d4918c4415792"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a5b372bc1ce994b83627d4918c4415792">setParticleMass</a> (float mass)</td></tr>
+<tr class="memdesc:a5b372bc1ce994b83627d4918c4415792"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets each particle's mass in kilograms.  <br /></td></tr>
+<tr class="separator:a5b372bc1ce994b83627d4918c4415792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0036ecb1845d8d3f73bdf1016073fc4a" id="r_a0036ecb1845d8d3f73bdf1016073fc4a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a0036ecb1845d8d3f73bdf1016073fc4a">getParticleMass</a> () const</td></tr>
+<tr class="separator:a0036ecb1845d8d3f73bdf1016073fc4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5afeb09c5188a27c4468b0ffa4a3d3b" id="r_af5afeb09c5188a27c4468b0ffa4a3d3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af5afeb09c5188a27c4468b0ffa4a3d3b">setRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:af5afeb09c5188a27c4468b0ffa4a3d3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets collision radius in meters.  <br /></td></tr>
+<tr class="separator:af5afeb09c5188a27c4468b0ffa4a3d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab726af2653e87bf31502d10e25dc115c" id="r_ab726af2653e87bf31502d10e25dc115c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ab726af2653e87bf31502d10e25dc115c">getRadius</a> () const</td></tr>
+<tr class="separator:ab726af2653e87bf31502d10e25dc115c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a2ae8424abbc86c6fe2eca893bcc354" id="r_a1a2ae8424abbc86c6fe2eca893bcc354"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a1a2ae8424abbc86c6fe2eca893bcc354">setSelfCollision</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a1a2ae8424abbc86c6fe2eca893bcc354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables non-neighbour particle self collision.  <br /></td></tr>
+<tr class="separator:a1a2ae8424abbc86c6fe2eca893bcc354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43c1f3955b218e0413cf2b3ab4768ac9" id="r_a43c1f3955b218e0413cf2b3ab4768ac9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a43c1f3955b218e0413cf2b3ab4768ac9">getSelfCollision</a> () const</td></tr>
+<tr class="separator:a43c1f3955b218e0413cf2b3ab4768ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa25855053279972fc183072a69ec7ab3" id="r_aa25855053279972fc183072a69ec7ab3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa25855053279972fc183072a69ec7ab3">setBounds</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>)</td></tr>
+<tr class="memdesc:aa25855053279972fc183072a69ec7ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constrains particles to an axis-aligned box (origin plus positive extents).  <br /></td></tr>
+<tr class="separator:aa25855053279972fc183072a69ec7ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceb08b7145bd8b9f60e787507a9f62ec" id="r_aceb08b7145bd8b9f60e787507a9f62ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aceb08b7145bd8b9f60e787507a9f62ec">clearBounds</a> ()</td></tr>
+<tr class="memdesc:aceb08b7145bd8b9f60e787507a9f62ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables the axis-aligned collision box.  <br /></td></tr>
+<tr class="separator:aceb08b7145bd8b9f60e787507a9f62ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93647690348a7b29d963f8d033596365" id="r_a93647690348a7b29d963f8d033596365"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a93647690348a7b29d963f8d033596365">setCollisionFriction</a> (float friction)</td></tr>
+<tr class="memdesc:a93647690348a7b29d963f8d033596365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets tangential contact damping in [0,1].  <br /></td></tr>
+<tr class="separator:a93647690348a7b29d963f8d033596365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc59356471e845afb26555d88f6ecd9" id="r_a0cc59356471e845afb26555d88f6ecd9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a0cc59356471e845afb26555d88f6ecd9">getCollisionFriction</a> () const</td></tr>
+<tr class="separator:a0cc59356471e845afb26555d88f6ecd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21902fb9fa76bfd9842fd593ae5cd325" id="r_a21902fb9fa76bfd9842fd593ae5cd325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a21902fb9fa76bfd9842fd593ae5cd325">addSphereCollider</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a21902fb9fa76bfd9842fd593ae5cd325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a sphere collider owned by this rope.  <br /></td></tr>
+<tr class="separator:a21902fb9fa76bfd9842fd593ae5cd325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac50f179d9fe1694b6b70e22879b07aaa" id="r_ac50f179d9fe1694b6b70e22879b07aaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ac50f179d9fe1694b6b70e22879b07aaa">addPlaneCollider</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, float <a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, float <a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>)</td></tr>
+<tr class="memdesc:ac50f179d9fe1694b6b70e22879b07aaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a one-sided plane collider using a normalized outward normal.  <br /></td></tr>
+<tr class="separator:ac50f179d9fe1694b6b70e22879b07aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac29379b338e5267d744eb3c0ba4b8da9" id="r_ac29379b338e5267d744eb3c0ba4b8da9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00">RopeColliderChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ac29379b338e5267d744eb3c0ba4b8da9">moveSphereCollider</a> (<a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a> <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ac29379b338e5267d744eb3c0ba4b8da9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a previously created sphere without changing its radius.  <br /></td></tr>
+<tr class="separator:ac29379b338e5267d744eb3c0ba4b8da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a905a339740e5544aa55812ecf0f01e2c" id="r_a905a339740e5544aa55812ecf0f01e2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00">RopeColliderChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a905a339740e5544aa55812ecf0f01e2c">removeCollider</a> (<a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a> <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a905a339740e5544aa55812ecf0f01e2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a rope-owned analytic collider.  <br /></td></tr>
+<tr class="separator:a905a339740e5544aa55812ecf0f01e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6357088e007d15eb79f3ed0555ec1350" id="r_a6357088e007d15eb79f3ed0555ec1350"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6357088e007d15eb79f3ed0555ec1350">clearColliders</a> ()</td></tr>
+<tr class="memdesc:a6357088e007d15eb79f3ed0555ec1350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every rope-owned analytic collider.  <br /></td></tr>
+<tr class="separator:a6357088e007d15eb79f3ed0555ec1350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40ef0e5d2c0b54d439bd7ce9162edfe6" id="r_a40ef0e5d2c0b54d439bd7ce9162edfe6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a40ef0e5d2c0b54d439bd7ce9162edfe6">setCollideWorld</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a40ef0e5d2c0b54d439bd7ce9162edfe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches a borrowed rigid-body world for mesh/shape collision and reaction impulses.  <br /></td></tr>
+<tr class="separator:a40ef0e5d2c0b54d439bd7ce9162edfe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affd12b773503c1af0c8a5f6bb8a5ecdc" id="r_affd12b773503c1af0c8a5f6bb8a5ecdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#affd12b773503c1af0c8a5f6bb8a5ecdc">getCollideWorld</a> () const</td></tr>
+<tr class="memdesc:affd12b773503c1af0c8a5f6bb8a5ecdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the borrowed rigid-body collision world, or null.  <br /></td></tr>
+<tr class="separator:affd12b773503c1af0c8a5f6bb8a5ecdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b19f397eec466ffd5d167d4245a91fc" id="r_a5b19f397eec466ffd5d167d4245a91fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a5b19f397eec466ffd5d167d4245a91fc">setCollideSdf</a> (<a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a> *field)</td></tr>
+<tr class="memdesc:a5b19f397eec466ffd5d167d4245a91fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches a borrowed signed-distance field for static environment collision.  <br /></td></tr>
+<tr class="separator:a5b19f397eec466ffd5d167d4245a91fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1a38fecf2fe7d88cfeb15788f5c45cb" id="r_aa1a38fecf2fe7d88cfeb15788f5c45cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa1a38fecf2fe7d88cfeb15788f5c45cb">getCollideSdf</a> () const</td></tr>
+<tr class="memdesc:aa1a38fecf2fe7d88cfeb15788f5c45cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the borrowed signed-distance collision field, or null.  <br /></td></tr>
+<tr class="separator:aa1a38fecf2fe7d88cfeb15788f5c45cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a555bac1dd8fe0d5191b48f4be360f394" id="r_a555bac1dd8fe0d5191b48f4be360f394"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a555bac1dd8fe0d5191b48f4be360f394">setContinuousCollision</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a555bac1dd8fe0d5191b48f4be360f394"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables swept-sphere continuous collision against <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> and SDF geometry.  <br /></td></tr>
+<tr class="separator:a555bac1dd8fe0d5191b48f4be360f394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae325bb3b5c1538193efb9c81feed8d27" id="r_ae325bb3b5c1538193efb9c81feed8d27"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae325bb3b5c1538193efb9c81feed8d27">getContinuousCollision</a> () const</td></tr>
+<tr class="memdesc:ae325bb3b5c1538193efb9c81feed8d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports whether continuous collision is enabled.  <br /></td></tr>
+<tr class="separator:ae325bb3b5c1538193efb9c81feed8d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834ea5550425f2a4e71a3fa49b35ed87" id="r_a834ea5550425f2a4e71a3fa49b35ed87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a834ea5550425f2a4e71a3fa49b35ed87">setCollisionRestitution</a> (float restitution)</td></tr>
+<tr class="memdesc:a834ea5550425f2a4e71a3fa49b35ed87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets particle/world normal restitution in [0,1].  <br /></td></tr>
+<tr class="separator:a834ea5550425f2a4e71a3fa49b35ed87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b4d8e8c23b6ad32ad3a3bc9417a6112" id="r_a4b4d8e8c23b6ad32ad3a3bc9417a6112"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4b4d8e8c23b6ad32ad3a3bc9417a6112">getCollisionRestitution</a> () const</td></tr>
+<tr class="memdesc:a4b4d8e8c23b6ad32ad3a3bc9417a6112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns particle/world normal restitution.  <br /></td></tr>
+<tr class="separator:a4b4d8e8c23b6ad32ad3a3bc9417a6112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52362ba37c77eb9c969ae0eca86475a7" id="r_a52362ba37c77eb9c969ae0eca86475a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a52362ba37c77eb9c969ae0eca86475a7">pin</a> (int particleIndex)</td></tr>
+<tr class="memdesc:a52362ba37c77eb9c969ae0eca86475a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pins a particle at its current position.  <br /></td></tr>
+<tr class="separator:a52362ba37c77eb9c969ae0eca86475a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6574b847c68329a971652715aa5505c8" id="r_a6574b847c68329a971652715aa5505c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6574b847c68329a971652715aa5505c8">attach</a> (int particleIndex, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a6574b847c68329a971652715aa5505c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pins a particle at an explicit animated target.  <br /></td></tr>
+<tr class="separator:a6574b847c68329a971652715aa5505c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e66eec067fc2ce97c81a4070cce8bd9" id="r_a6e66eec067fc2ce97c81a4070cce8bd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6e66eec067fc2ce97c81a4070cce8bd9">moveAttachment</a> (int particleIndex, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a6e66eec067fc2ce97c81a4070cce8bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves an existing attachment target.  <br /></td></tr>
+<tr class="separator:a6e66eec067fc2ce97c81a4070cce8bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeadb2ee40b3fd159ddc966488c7e6d56" id="r_aeadb2ee40b3fd159ddc966488c7e6d56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aeadb2ee40b3fd159ddc966488c7e6d56">detach</a> (int particleIndex)</td></tr>
+<tr class="memdesc:aeadb2ee40b3fd159ddc966488c7e6d56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases a pinned particle.  <br /></td></tr>
+<tr class="separator:aeadb2ee40b3fd159ddc966488c7e6d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfd4680bfe1505e9dd824dc67fadcfbe" id="r_adfd4680bfe1505e9dd824dc67fadcfbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#adfd4680bfe1505e9dd824dc67fadcfbe">isAttached</a> (int particleIndex) const</td></tr>
+<tr class="separator:adfd4680bfe1505e9dd824dc67fadcfbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cd1bfb4fc75ae12870375a8071d8542" id="r_a3cd1bfb4fc75ae12870375a8071d8542"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a3cd1bfb4fc75ae12870375a8071d8542">applyForce</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a3cd1bfb4fc75ae12870375a8071d8542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a one-frame acceleration to every free particle.  <br /></td></tr>
+<tr class="separator:a3cd1bfb4fc75ae12870375a8071d8542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3bacabc38259ddd2114307c88d89f80" id="r_ad3bacabc38259ddd2114307c88d89f80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ad3bacabc38259ddd2114307c88d89f80">setRestLength</a> (float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>)</td></tr>
+<tr class="memdesc:ad3bacabc38259ddd2114307c88d89f80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scales all active element rest lengths, supporting reel/winch behavior.  <br /></td></tr>
+<tr class="separator:ad3bacabc38259ddd2114307c88d89f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a908e52726417841077c09da7f16b4b50" id="r_a908e52726417841077c09da7f16b4b50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a908e52726417841077c09da7f16b4b50">changeLength</a> (float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>, float particleSpacing, bool fromEnd=true)</td></tr>
+<tr class="memdesc:a908e52726417841077c09da7f16b4b50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes material length at one endpoint by adding/removing particles near the requested spacing.  <br /></td></tr>
+<tr class="separator:a908e52726417841077c09da7f16b4b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855af3d22193f749902ff37208ce13f9" id="r_a855af3d22193f749902ff37208ce13f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a855af3d22193f749902ff37208ce13f9">getRestLength</a> () const</td></tr>
+<tr class="separator:a855af3d22193f749902ff37208ce13f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cddd11c5324881415981f4d72bd5985" id="r_a8cddd11c5324881415981f4d72bd5985"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8cddd11c5324881415981f4d72bd5985">calculateLength</a> () const</td></tr>
+<tr class="separator:a8cddd11c5324881415981f4d72bd5985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14933b67400d573befb8603f64b36e0b" id="r_a14933b67400d573befb8603f64b36e0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a14933b67400d573befb8603f64b36e0b">cut</a> (int elementIndex)</td></tr>
+<tr class="memdesc:a14933b67400d573befb8603f64b36e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deactivates one structural element and splits the simulated chain.  <br /></td></tr>
+<tr class="separator:a14933b67400d573befb8603f64b36e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4cc5f68c9a61ae60c302dbb8c25091c" id="r_af4cc5f68c9a61ae60c302dbb8c25091c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af4cc5f68c9a61ae60c302dbb8c25091c">repair</a> (int elementIndex)</td></tr>
+<tr class="memdesc:af4cc5f68c9a61ae60c302dbb8c25091c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-enables a cut element using its current endpoint distance.  <br /></td></tr>
+<tr class="separator:af4cc5f68c9a61ae60c302dbb8c25091c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a430fe25504a7de7e2b8d9e437897b460" id="r_a430fe25504a7de7e2b8d9e437897b460"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a430fe25504a7de7e2b8d9e437897b460">isElementActive</a> (int elementIndex) const</td></tr>
+<tr class="separator:a430fe25504a7de7e2b8d9e437897b460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacff9cc6dd52359168ea387e2aff70b5" id="r_aacff9cc6dd52359168ea387e2aff70b5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aacff9cc6dd52359168ea387e2aff70b5">getElementForce</a> (int elementIndex) const</td></tr>
+<tr class="separator:aacff9cc6dd52359168ea387e2aff70b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4326e6d540bcdf3659031e217b58bdb" id="r_af4326e6d540bcdf3659031e217b58bdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af4326e6d540bcdf3659031e217b58bdb">setElementTearResistance</a> (int elementIndex, float multiplier)</td></tr>
+<tr class="memdesc:af4326e6d540bcdf3659031e217b58bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a positive per-element multiplier for the global tearing threshold.  <br /></td></tr>
+<tr class="separator:af4326e6d540bcdf3659031e217b58bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae88565795f7d1a894fea71eba8bc9106" id="r_ae88565795f7d1a894fea71eba8bc9106"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae88565795f7d1a894fea71eba8bc9106">setTearing</a> (float resistance, int maxTearsPerStep)</td></tr>
+<tr class="memdesc:ae88565795f7d1a894fea71eba8bc9106"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables automatic tearing above a tensile-force threshold in newtons.  <br /></td></tr>
+<tr class="separator:ae88565795f7d1a894fea71eba8bc9106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a697f7eb74278f1824036cf3f6984aeb9" id="r_a697f7eb74278f1824036cf3f6984aeb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a697f7eb74278f1824036cf3f6984aeb9">disableTearing</a> ()</td></tr>
+<tr class="memdesc:a697f7eb74278f1824036cf3f6984aeb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables automatic tearing.  <br /></td></tr>
+<tr class="separator:a697f7eb74278f1824036cf3f6984aeb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e9af2dc90e8dc83e725f11e6cb83efb" id="r_a1e9af2dc90e8dc83e725f11e6cb83efb"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a1e9af2dc90e8dc83e725f11e6cb83efb">getTopologyRevision</a> () const</td></tr>
+<tr class="memdesc:a1e9af2dc90e8dc83e725f11e6cb83efb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic revision incremented by cut, repair, resize, and automatic tears.  <br /></td></tr>
+<tr class="separator:a1e9af2dc90e8dc83e725f11e6cb83efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b61a6918eff60b1e6d85f7c9c714aba" id="r_a4b61a6918eff60b1e6d85f7c9c714aba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4b61a6918eff60b1e6d85f7c9c714aba">getLastTornElementCount</a> () const</td></tr>
+<tr class="memdesc:a4b61a6918eff60b1e6d85f7c9c714aba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of elements automatically torn by the most recent update/step.  <br /></td></tr>
+<tr class="separator:a4b61a6918eff60b1e6d85f7c9c714aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32c7aa60b23c84a99fc3cfe5fa32aded" id="r_a32c7aa60b23c84a99fc3cfe5fa32aded"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a32c7aa60b23c84a99fc3cfe5fa32aded">getLastTornElement</a> (int eventIndex) const</td></tr>
+<tr class="memdesc:a32c7aa60b23c84a99fc3cfe5fa32aded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a torn element index, or -1 for an invalid event index.  <br /></td></tr>
+<tr class="separator:a32c7aa60b23c84a99fc3cfe5fa32aded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7325617f9d5077508211a477b8e90423" id="r_a7325617f9d5077508211a477b8e90423"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a7325617f9d5077508211a477b8e90423">getParticleCount</a> () const</td></tr>
+<tr class="separator:a7325617f9d5077508211a477b8e90423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac581e9bc60a1f476085aaa1ba417367a" id="r_ac581e9bc60a1f476085aaa1ba417367a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ac581e9bc60a1f476085aaa1ba417367a">getElementCount</a> () const</td></tr>
+<tr class="separator:ac581e9bc60a1f476085aaa1ba417367a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa36e965d5772379a83e75aa4f93d39ee" id="r_aa36e965d5772379a83e75aa4f93d39ee"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa36e965d5772379a83e75aa4f93d39ee">getParticleX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa36e965d5772379a83e75aa4f93d39ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8da099cafc5d7b3d0b5489cd7d0d5bc" id="r_ae8da099cafc5d7b3d0b5489cd7d0d5bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae8da099cafc5d7b3d0b5489cd7d0d5bc">getParticleY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae8da099cafc5d7b3d0b5489cd7d0d5bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dcc6f8d39dcad01876f9df799e480ec" id="r_a6dcc6f8d39dcad01876f9df799e480ec"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6dcc6f8d39dcad01876f9df799e480ec">getParticleZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a6dcc6f8d39dcad01876f9df799e480ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b59f8cfc891930d9a7d5ee898dd0583" id="r_a8b59f8cfc891930d9a7d5ee898dd0583"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8b59f8cfc891930d9a7d5ee898dd0583">getParticleVelocityX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float dt) const</td></tr>
+<tr class="separator:a8b59f8cfc891930d9a7d5ee898dd0583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32286a9a4d9096a70e9c101cf7055bc6" id="r_a32286a9a4d9096a70e9c101cf7055bc6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a32286a9a4d9096a70e9c101cf7055bc6">getParticleVelocityY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float dt) const</td></tr>
+<tr class="separator:a32286a9a4d9096a70e9c101cf7055bc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90f6d15f774344f2f027943dfe17529b" id="r_a90f6d15f774344f2f027943dfe17529b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a90f6d15f774344f2f027943dfe17529b">getParticleVelocityZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float dt) const</td></tr>
+<tr class="separator:a90f6d15f774344f2f027943dfe17529b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd0d4afb261e35edbd46ea79d098a2c" id="r_a6cd0d4afb261e35edbd46ea79d098a2c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6cd0d4afb261e35edbd46ea79d098a2c">getSampleX</a> (float <a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">mu</a>) const</td></tr>
+<tr class="memdesc:a6cd0d4afb261e35edbd46ea79d098a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples current rope position by normalized active material length.  <br /></td></tr>
+<tr class="separator:a6cd0d4afb261e35edbd46ea79d098a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58de67de2452abe0db86546153838432" id="r_a58de67de2452abe0db86546153838432"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a58de67de2452abe0db86546153838432">getSampleY</a> (float <a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">mu</a>) const</td></tr>
+<tr class="separator:a58de67de2452abe0db86546153838432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d1cb263300245abee0163dcb2197aa6" id="r_a8d1cb263300245abee0163dcb2197aa6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8d1cb263300245abee0163dcb2197aa6">getSampleZ</a> (float <a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">mu</a>) const</td></tr>
+<tr class="separator:a8d1cb263300245abee0163dcb2197aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a265fcfc4ee37cd5a928b59ec8703d1e8" id="r_a265fcfc4ee37cd5a928b59ec8703d1e8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a265fcfc4ee37cd5a928b59ec8703d1e8">getSampleTangentX</a> (float <a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">mu</a>) const</td></tr>
+<tr class="memdesc:a265fcfc4ee37cd5a928b59ec8703d1e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples a normalized current tangent by active material length.  <br /></td></tr>
+<tr class="separator:a265fcfc4ee37cd5a928b59ec8703d1e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67fdbf10810fd90c2479299cd0e0c736" id="r_a67fdbf10810fd90c2479299cd0e0c736"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a67fdbf10810fd90c2479299cd0e0c736">getSampleTangentY</a> (float <a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">mu</a>) const</td></tr>
+<tr class="separator:a67fdbf10810fd90c2479299cd0e0c736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35a4a61cf8402d787e5468066d3782dd" id="r_a35a4a61cf8402d787e5468066d3782dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a35a4a61cf8402d787e5468066d3782dd">getSampleTangentZ</a> (float <a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">mu</a>) const</td></tr>
+<tr class="separator:a35a4a61cf8402d787e5468066d3782dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1physics_1_1ISimulationBackend')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td></tr>
+<tr class="memitem:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend" id="r_a247d718f8968b22c8b1ee121d2790f7e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a> ()=default</td></tr>
+<tr class="memdesc:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the backend; borrowed domain state is not destroyed.  <br /></td></tr>
+<tr class="separator:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Renderer-independent particle rope with XPBD stretch and bend constraints. </p>
+<p>The rope owns an ordered particle chain and its structural elements. All coordinates are meters in a +Y-up space. The instance is simulation-thread affine; it invokes no callbacks and owns no graphics or rigid-body resources. Floating-point replay is tolerance-bounded for identical fixed steps and inputs. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00034">34</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab6d68c001562240e8d4cfbb97ae077f5" name="ab6d68c001562240e8d4cfbb97ae077f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d68c001562240e8d4cfbb97ae077f5">&#9670;&#160;</a></span>Rope3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Rope3D::Rope3D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a straight rope including both endpoints. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">particleCount</td><td>Number of particles, at least two. </td></tr>
+    <tr><td class="paramname">startX</td><td>Start point X in meters. </td></tr>
+    <tr><td class="paramname">startY</td><td>Start point Y in meters. </td></tr>
+    <tr><td class="paramname">startZ</td><td>Start point Z in meters. </td></tr>
+    <tr><td class="paramname">endX</td><td>End point X in meters. </td></tr>
+    <tr><td class="paramname">endY</td><td>End point Y in meters. </td></tr>
+    <tr><td class="paramname">endZ</td><td>End point Z in meters. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html">eve::Exception</a></td><td>when inputs are invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac50f179d9fe1694b6b70e22879b07aaa" name="ac50f179d9fe1694b6b70e22879b07aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac50f179d9fe1694b6b70e22879b07aaa">&#9670;&#160;</a></span>addPlaneCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a> &gt; eve::physics::Rope3D::addPlaneCollider </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ny</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a one-sided plane collider using a normalized outward normal. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a> 第 <a class="el" href="Rope3DCollision_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00118">normal</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a21902fb9fa76bfd9842fd593ae5cd325" name="a21902fb9fa76bfd9842fd593ae5cd325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21902fb9fa76bfd9842fd593ae5cd325">&#9670;&#160;</a></span>addSphereCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a> &gt; eve::physics::Rope3D::addSphereCollider </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a sphere collider owned by this rope. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a> 第 <a class="el" href="Rope3DCollision_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a3cd1bfb4fc75ae12870375a8071d8542" name="a3cd1bfb4fc75ae12870375a8071d8542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cd1bfb4fc75ae12870375a8071d8542">&#9670;&#160;</a></span>applyForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::applyForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a one-frame acceleration to every free particle. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a6574b847c68329a971652715aa5505c8" name="a6574b847c68329a971652715aa5505c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6574b847c68329a971652715aa5505c8">&#9670;&#160;</a></span>attach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::attach </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pins a particle at an explicit animated target. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Rope3D_8cpp_source.html#l00186">moveAttachment()</a> , 以及 <a class="el" href="Rope3D_8cpp_source.html#l00167">pin()</a>.</p>
+
+</div>
+</div>
+<a id="a8cddd11c5324881415981f4d72bd5985" name="a8cddd11c5324881415981f4d72bd5985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cddd11c5324881415981f4d72bd5985">&#9670;&#160;</a></span>calculateLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::calculateLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+</div>
+</div>
+<a id="a908e52726417841077c09da7f16b4b50" name="a908e52726417841077c09da7f16b4b50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a908e52726417841077c09da7f16b4b50">&#9670;&#160;</a></span>changeLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::changeLength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>particleSpacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fromEnd</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes material length at one endpoint by adding/removing particles near the requested spacing. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">length</td><td>Positive target rest length. </td></tr>
+    <tr><td class="paramname">particleSpacing</td><td>Positive preferred spacing for inserted particles. </td></tr>
+    <tr><td class="paramname">fromEnd</td><td>True edits the last endpoint; false edits the first. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Whether topology or material length changed. Torn ropes are rejected. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Rope3DTopology_8cpp_source.html">Rope3DTopology.cpp</a> 第 <a class="el" href="Rope3DTopology_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Rope3D_8h_source.html#l00202">getParticleCount()</a>, <a class="el" href="Rope3D_8cpp_source.html#l00223">getRestLength()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00265">heading</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="aceb08b7145bd8b9f60e787507a9f62ec" name="aceb08b7145bd8b9f60e787507a9f62ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceb08b7145bd8b9f60e787507a9f62ec">&#9670;&#160;</a></span>clearBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::clearBounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Disables the axis-aligned collision box. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6357088e007d15eb79f3ed0555ec1350" name="a6357088e007d15eb79f3ed0555ec1350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6357088e007d15eb79f3ed0555ec1350">&#9670;&#160;</a></span>clearColliders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::clearColliders </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes every rope-owned analytic collider. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00130">130</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14933b67400d573befb8603f64b36e0b" name="a14933b67400d573befb8603f64b36e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14933b67400d573befb8603f64b36e0b">&#9670;&#160;</a></span>cut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::cut </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elementIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deactivates one structural element and splits the simulated chain. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="aeadb2ee40b3fd159ddc966488c7e6d56" name="aeadb2ee40b3fd159ddc966488c7e6d56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeadb2ee40b3fd159ddc966488c7e6d56">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::detach </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases a pinned particle. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="a6ec9408c893f6d0c61c69ae4ab635b43" name="a6ec9408c893f6d0c61c69ae4ab635b43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec9408c893f6d0c61c69ae4ab635b43">&#9670;&#160;</a></span>determinism()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> eve::physics::Rope3D::determinism </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the provider's replay/determinism guarantee. </p>
+<dl class="section return"><dt>返回</dt><dd>The declared determinism level. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::ToleranceBounded</a>.</p>
+
+</div>
+</div>
+<a id="a697f7eb74278f1824036cf3f6984aeb9" name="a697f7eb74278f1824036cf3f6984aeb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a697f7eb74278f1824036cf3f6984aeb9">&#9670;&#160;</a></span>disableTearing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::disableTearing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Disables automatic tearing. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00194">194</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa593e937ce88f89c76ad7b776160758f" name="aa593e937ce88f89c76ad7b776160758f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa593e937ce88f89c76ad7b776160758f">&#9670;&#160;</a></span>getBendCompliance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getBendCompliance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2093099e36dbb957af3936dc994b5863" name="a2093099e36dbb957af3936dc994b5863"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2093099e36dbb957af3936dc994b5863">&#9670;&#160;</a></span>getBendConstraintsEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Rope3D::getBendConstraintsEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37a59197bf1b1f1ca8836664a7aae5b6" name="a37a59197bf1b1f1ca8836664a7aae5b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a59197bf1b1f1ca8836664a7aae5b6">&#9670;&#160;</a></span>getBendPlasticity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getBendPlasticity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bendIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns absorbed local bend fraction, or zero for an invalid bend index. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa1a38fecf2fe7d88cfeb15788f5c45cb" name="aa1a38fecf2fe7d88cfeb15788f5c45cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1a38fecf2fe7d88cfeb15788f5c45cb">&#9670;&#160;</a></span>getCollideSdf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a> * eve::physics::Rope3D::getCollideSdf </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the borrowed signed-distance collision field, or null. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00138">138</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affd12b773503c1af0c8a5f6bb8a5ecdc" name="affd12b773503c1af0c8a5f6bb8a5ecdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affd12b773503c1af0c8a5f6bb8a5ecdc">&#9670;&#160;</a></span>getCollideWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> * eve::physics::Rope3D::getCollideWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the borrowed rigid-body collision world, or null. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cc59356471e845afb26555d88f6ecd9" name="a0cc59356471e845afb26555d88f6ecd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc59356471e845afb26555d88f6ecd9">&#9670;&#160;</a></span>getCollisionFriction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getCollisionFriction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b4d8e8c23b6ad32ad3a3bc9417a6112" name="a4b4d8e8c23b6ad32ad3a3bc9417a6112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b4d8e8c23b6ad32ad3a3bc9417a6112">&#9670;&#160;</a></span>getCollisionRestitution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getCollisionRestitution </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns particle/world normal restitution. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae325bb3b5c1538193efb9c81feed8d27" name="ae325bb3b5c1538193efb9c81feed8d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae325bb3b5c1538193efb9c81feed8d27">&#9670;&#160;</a></span>getContinuousCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Rope3D::getContinuousCollision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reports whether continuous collision is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00142">142</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4dd7ffb0823a8c047f69542a7e9d211b" name="a4dd7ffb0823a8c047f69542a7e9d211b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dd7ffb0823a8c047f69542a7e9d211b">&#9670;&#160;</a></span>getDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa359184bb355f6681f6c37430d5878ae" name="aa359184bb355f6681f6c37430d5878ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa359184bb355f6681f6c37430d5878ae">&#9670;&#160;</a></span>getDistanceConstraintsEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Rope3D::getDistanceConstraintsEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac581e9bc60a1f476085aaa1ba417367a" name="ac581e9bc60a1f476085aaa1ba417367a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac581e9bc60a1f476085aaa1ba417367a">&#9670;&#160;</a></span>getElementCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Rope3D::getElementCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacff9cc6dd52359168ea387e2aff70b5" name="aacff9cc6dd52359168ea387e2aff70b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacff9cc6dd52359168ea387e2aff70b5">&#9670;&#160;</a></span>getElementForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getElementForce </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elementIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbde74acc22435df6f0d47885b69756a" name="abbde74acc22435df6f0d47885b69756a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbde74acc22435df6f0d47885b69756a">&#9670;&#160;</a></span>getGravityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getGravityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::x</a>.</p>
+
+</div>
+</div>
+<a id="a1bc9254f359b76b31a8795c6e2f1a56c" name="a1bc9254f359b76b31a8795c6e2f1a56c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc9254f359b76b31a8795c6e2f1a56c">&#9670;&#160;</a></span>getGravityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getGravityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::y</a>.</p>
+
+</div>
+</div>
+<a id="aab7e3b173f56dee06e5aedcd27c27332" name="aab7e3b173f56dee06e5aedcd27c27332"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab7e3b173f56dee06e5aedcd27c27332">&#9670;&#160;</a></span>getGravityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getGravityZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::z</a>.</p>
+
+</div>
+</div>
+<a id="a32c7aa60b23c84a99fc3cfe5fa32aded" name="a32c7aa60b23c84a99fc3cfe5fa32aded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32c7aa60b23c84a99fc3cfe5fa32aded">&#9670;&#160;</a></span>getLastTornElement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Rope3D::getLastTornElement </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>eventIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a torn element index, or -1 for an invalid event index. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DTopology_8cpp_source.html">Rope3DTopology.cpp</a> 第 <a class="el" href="Rope3DTopology_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8h_source.html#l00198">getLastTornElementCount()</a>.</p>
+
+</div>
+</div>
+<a id="a4b61a6918eff60b1e6d85f7c9c714aba" name="a4b61a6918eff60b1e6d85f7c9c714aba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b61a6918eff60b1e6d85f7c9c714aba">&#9670;&#160;</a></span>getLastTornElementCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Rope3D::getLastTornElementCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of elements automatically torn by the most recent update/step. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Rope3DTopology_8cpp_source.html#l00111">getLastTornElement()</a>.</p>
+
+</div>
+</div>
+<a id="ad5d8eb4028efd7331be4612118af2106" name="ad5d8eb4028efd7331be4612118af2106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5d8eb4028efd7331be4612118af2106">&#9670;&#160;</a></span>getMaxBending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getMaxBending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a399088920a04e7dc11553251656cc1a5" name="a399088920a04e7dc11553251656cc1a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a399088920a04e7dc11553251656cc1a5">&#9670;&#160;</a></span>getMaxCompression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getMaxCompression </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7325617f9d5077508211a477b8e90423" name="a7325617f9d5077508211a477b8e90423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7325617f9d5077508211a477b8e90423">&#9670;&#160;</a></span>getParticleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Rope3D::getParticleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Rope3DTopology_8cpp_source.html#l00021">changeLength()</a>.</p>
+
+</div>
+</div>
+<a id="a0036ecb1845d8d3f73bdf1016073fc4a" name="a0036ecb1845d8d3f73bdf1016073fc4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0036ecb1845d8d3f73bdf1016073fc4a">&#9670;&#160;</a></span>getParticleMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleMass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b59f8cfc891930d9a7d5ee898dd0583" name="a8b59f8cfc891930d9a7d5ee898dd0583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b59f8cfc891930d9a7d5ee898dd0583">&#9670;&#160;</a></span>getParticleVelocityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleVelocityX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32286a9a4d9096a70e9c101cf7055bc6" name="a32286a9a4d9096a70e9c101cf7055bc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32286a9a4d9096a70e9c101cf7055bc6">&#9670;&#160;</a></span>getParticleVelocityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleVelocityY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90f6d15f774344f2f027943dfe17529b" name="a90f6d15f774344f2f027943dfe17529b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90f6d15f774344f2f027943dfe17529b">&#9670;&#160;</a></span>getParticleVelocityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleVelocityZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa36e965d5772379a83e75aa4f93d39ee" name="aa36e965d5772379a83e75aa4f93d39ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa36e965d5772379a83e75aa4f93d39ee">&#9670;&#160;</a></span>getParticleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8da099cafc5d7b3d0b5489cd7d0d5bc" name="ae8da099cafc5d7b3d0b5489cd7d0d5bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8da099cafc5d7b3d0b5489cd7d0d5bc">&#9670;&#160;</a></span>getParticleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6dcc6f8d39dcad01876f9df799e480ec" name="a6dcc6f8d39dcad01876f9df799e480ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dcc6f8d39dcad01876f9df799e480ec">&#9670;&#160;</a></span>getParticleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getParticleZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad439367cd58c32d724193dfe821e6174" name="ad439367cd58c32d724193dfe821e6174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad439367cd58c32d724193dfe821e6174">&#9670;&#160;</a></span>getPlasticCreep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getPlasticCreep </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a0995a01ec26bdf89b756f1878a05e6" name="a9a0995a01ec26bdf89b756f1878a05e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0995a01ec26bdf89b756f1878a05e6">&#9670;&#160;</a></span>getPlasticYield()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getPlasticYield </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab726af2653e87bf31502d10e25dc115c" name="ab726af2653e87bf31502d10e25dc115c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab726af2653e87bf31502d10e25dc115c">&#9670;&#160;</a></span>getRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a855af3d22193f749902ff37208ce13f9" name="a855af3d22193f749902ff37208ce13f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855af3d22193f749902ff37208ce13f9">&#9670;&#160;</a></span>getRestLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getRestLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Rope3DTopology_8cpp_source.html#l00021">changeLength()</a> , 以及 <a class="el" href="Rope3D_8cpp_source.html#l00209">setRestLength()</a>.</p>
+
+</div>
+</div>
+<a id="a265fcfc4ee37cd5a928b59ec8703d1e8" name="a265fcfc4ee37cd5a928b59ec8703d1e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a265fcfc4ee37cd5a928b59ec8703d1e8">&#9670;&#160;</a></span>getSampleTangentX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getSampleTangentX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Samples a normalized current tangent by active material length. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a> 第 <a class="el" href="Rope3DSampling_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00176">mu</a> , 以及 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::x</a>.</p>
+
+</div>
+</div>
+<a id="a67fdbf10810fd90c2479299cd0e0c736" name="a67fdbf10810fd90c2479299cd0e0c736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67fdbf10810fd90c2479299cd0e0c736">&#9670;&#160;</a></span>getSampleTangentY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getSampleTangentY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a> 第 <a class="el" href="Rope3DSampling_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00176">mu</a> , 以及 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::y</a>.</p>
+
+</div>
+</div>
+<a id="a35a4a61cf8402d787e5468066d3782dd" name="a35a4a61cf8402d787e5468066d3782dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35a4a61cf8402d787e5468066d3782dd">&#9670;&#160;</a></span>getSampleTangentZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getSampleTangentZ </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a> 第 <a class="el" href="Rope3DSampling_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00176">mu</a> , 以及 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::z</a>.</p>
+
+</div>
+</div>
+<a id="a6cd0d4afb261e35edbd46ea79d098a2c" name="a6cd0d4afb261e35edbd46ea79d098a2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cd0d4afb261e35edbd46ea79d098a2c">&#9670;&#160;</a></span>getSampleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getSampleX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Samples current rope position by normalized active material length. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a> 第 <a class="el" href="Rope3DSampling_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00176">mu</a> , 以及 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::x</a>.</p>
+
+</div>
+</div>
+<a id="a58de67de2452abe0db86546153838432" name="a58de67de2452abe0db86546153838432"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58de67de2452abe0db86546153838432">&#9670;&#160;</a></span>getSampleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getSampleY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a> 第 <a class="el" href="Rope3DSampling_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00176">mu</a> , 以及 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::y</a>.</p>
+
+</div>
+</div>
+<a id="a8d1cb263300245abee0163dcb2197aa6" name="a8d1cb263300245abee0163dcb2197aa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d1cb263300245abee0163dcb2197aa6">&#9670;&#160;</a></span>getSampleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getSampleZ </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a> 第 <a class="el" href="Rope3DSampling_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00176">mu</a> , 以及 <a class="el" href="Rope3D_8h_source.html#l00038">eve::physics::Rope3D::Vec3::z</a>.</p>
+
+</div>
+</div>
+<a id="a43c1f3955b218e0413cf2b3ab4768ac9" name="a43c1f3955b218e0413cf2b3ab4768ac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43c1f3955b218e0413cf2b3ab4768ac9">&#9670;&#160;</a></span>getSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Rope3D::getSelfCollision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3cd4d379d441e7533da1e616a000f931" name="a3cd4d379d441e7533da1e616a000f931"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cd4d379d441e7533da1e616a000f931">&#9670;&#160;</a></span>getStretchCompliance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Rope3D::getStretchCompliance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e9af2dc90e8dc83e725f11e6cb83efb" name="a1e9af2dc90e8dc83e725f11e6cb83efb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e9af2dc90e8dc83e725f11e6cb83efb">&#9670;&#160;</a></span>getTopologyRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::physics::Rope3D::getTopologyRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic revision incremented by cut, repair, resize, and automatic tears. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adfd4680bfe1505e9dd824dc67fadcfbe" name="adfd4680bfe1505e9dd824dc67fadcfbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfd4680bfe1505e9dd824dc67fadcfbe">&#9670;&#160;</a></span>isAttached()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Rope3D::isAttached </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a430fe25504a7de7e2b8d9e437897b460" name="a430fe25504a7de7e2b8d9e437897b460"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a430fe25504a7de7e2b8d9e437897b460">&#9670;&#160;</a></span>isElementActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Rope3D::isElementActive </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elementIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00021">active</a>.</p>
+
+</div>
+</div>
+<a id="a74596310eb2308f22471dd0c28eab643" name="a74596310eb2308f22471dd0c28eab643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74596310eb2308f22471dd0c28eab643">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> eve::physics::Rope3D::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Identifies the provider family. </p>
+<dl class="section return"><dt>返回</dt><dd>CPU, GPU, or a named test accelerator. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::Cpu</a>.</p>
+
+</div>
+</div>
+<a id="a6e66eec067fc2ce97c81a4070cce8bd9" name="a6e66eec067fc2ce97c81a4070cce8bd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e66eec067fc2ce97c81a4070cce8bd9">&#9670;&#160;</a></span>moveAttachment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::moveAttachment </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moves an existing attachment target. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8cpp_source.html#l00174">attach()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ac29379b338e5267d744eb3c0ba4b8da9" name="ac29379b338e5267d744eb3c0ba4b8da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac29379b338e5267d744eb3c0ba4b8da9">&#9670;&#160;</a></span>moveSphereCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00">RopeColliderChange</a> &gt; eve::physics::Rope3D::moveSphereCollider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a>&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moves a previously created sphere without changing its radius. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a> 第 <a class="el" href="Rope3DCollision_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a46fcf9be389bf6280bb4984bfcc6fd1b" name="a46fcf9be389bf6280bb4984bfcc6fd1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46fcf9be389bf6280bb4984bfcc6fd1b">&#9670;&#160;</a></span>observation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> eve::physics::Rope3D::observation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns completed-step observables by value. </p>
+<dl class="section return"><dt>返回</dt><dd>A snapshot that remains valid after the backend changes. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Rope3D_8cpp_source.html#l00106">restoreObservation()</a>.</p>
+
+</div>
+</div>
+<a id="a52362ba37c77eb9c969ae0eca86475a7" name="a52362ba37c77eb9c969ae0eca86475a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52362ba37c77eb9c969ae0eca86475a7">&#9670;&#160;</a></span>pin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::pin </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pins a particle at its current position. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8cpp_source.html#l00174">attach()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a905a339740e5544aa55812ecf0f01e2c" name="a905a339740e5544aa55812ecf0f01e2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a905a339740e5544aa55812ecf0f01e2c">&#9670;&#160;</a></span>removeCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00">RopeColliderChange</a> &gt; eve::physics::Rope3D::removeCollider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1RopeColliderId.html">RopeColliderId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a rope-owned analytic collider. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a> 第 <a class="el" href="Rope3DCollision_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad331fb4eaf70bee1e8e724c83ec56e00a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af4cc5f68c9a61ae60c302dbb8c25091c" name="af4cc5f68c9a61ae60c302dbb8c25091c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4cc5f68c9a61ae60c302dbb8c25091c">&#9670;&#160;</a></span>repair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::repair </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elementIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-enables a cut element using its current endpoint distance. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="a0c40c0aaeae6efa7e365e108894e23e8" name="a0c40c0aaeae6efa7e365e108894e23e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c40c0aaeae6efa7e365e108894e23e8">&#9670;&#160;</a></span>restoreObservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::Rope3D::restoreObservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restores progress metadata after the owner restores its state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">observation</td><td>Completed-step observation to install. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when supported, or Unsupported when the backend cannot restore metadata without rebuilding its state. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This operation changes only backend-owned progress metadata; callers must restore the domain state atomically as one unit. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">eve::physics::ISimulationBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rope3D_8h_source.html#l00059">observation()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a38511f8cc126507a55de18b794934ebd" name="a38511f8cc126507a55de18b794934ebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38511f8cc126507a55de18b794934ebd">&#9670;&#160;</a></span>setBendCompliance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setBendCompliance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>compliance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets bend compliance; larger values make the rope easier to bend. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ae14a464f4baf92e01a90dc951462fc85" name="ae14a464f4baf92e01a90dc951462fc85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae14a464f4baf92e01a90dc951462fc85">&#9670;&#160;</a></span>setBendConstraintsEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setBendConstraintsEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables or disables bend constraints independently from stretch constraints. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="aa25855053279972fc183072a69ec7ab3" name="aa25855053279972fc183072a69ec7ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa25855053279972fc183072a69ec7ab3">&#9670;&#160;</a></span>setBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setBounds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constrains particles to an axis-aligned box (origin plus positive extents). </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a5b19f397eec466ffd5d167d4245a91fc" name="a5b19f397eec466ffd5d167d4245a91fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b19f397eec466ffd5d167d4245a91fc">&#9670;&#160;</a></span>setCollideSdf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setCollideSdf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a> *&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attaches a borrowed signed-distance field for static environment collision. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40ef0e5d2c0b54d439bd7ce9162edfe6" name="a40ef0e5d2c0b54d439bd7ce9162edfe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40ef0e5d2c0b54d439bd7ce9162edfe6">&#9670;&#160;</a></span>setCollideWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setCollideWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attaches a borrowed rigid-body world for mesh/shape collision and reaction impulses. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a93647690348a7b29d963f8d033596365" name="a93647690348a7b29d963f8d033596365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93647690348a7b29d963f8d033596365">&#9670;&#160;</a></span>setCollisionFriction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setCollisionFriction </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>friction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets tangential contact damping in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a> 第 <a class="el" href="Rope3DCollision_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a834ea5550425f2a4e71a3fa49b35ed87" name="a834ea5550425f2a4e71a3fa49b35ed87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834ea5550425f2a4e71a3fa49b35ed87">&#9670;&#160;</a></span>setCollisionRestitution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setCollisionRestitution </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>restitution</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets particle/world normal restitution in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a> 第 <a class="el" href="Rope3DCollision_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a555bac1dd8fe0d5191b48f4be360f394" name="a555bac1dd8fe0d5191b48f4be360f394"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555bac1dd8fe0d5191b48f4be360f394">&#9670;&#160;</a></span>setContinuousCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setContinuousCollision </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables swept-sphere continuous collision against <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> and SDF geometry. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a3fc7a83216e0fb29ec2731f12949ab2d" name="a3fc7a83216e0fb29ec2731f12949ab2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc7a83216e0fb29ec2731f12949ab2d">&#9670;&#160;</a></span>setDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setDamping </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets Verlet velocity damping in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a4ba5f194c28e3ef69b56d5c9661054e5" name="a4ba5f194c28e3ef69b56d5c9661054e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba5f194c28e3ef69b56d5c9661054e5">&#9670;&#160;</a></span>setDistanceConstraintsEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setDistanceConstraintsEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables or disables structural distance constraints without changing topology. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="af4326e6d540bcdf3659031e217b58bdb" name="af4326e6d540bcdf3659031e217b58bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4326e6d540bcdf3659031e217b58bdb">&#9670;&#160;</a></span>setElementTearResistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::setElementTearResistance </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elementIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>multiplier</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a positive per-element multiplier for the global tearing threshold. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="af82863362bd6ae2a525428b784c5fb9f" name="af82863362bd6ae2a525428b784c5fb9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af82863362bd6ae2a525428b784c5fb9f">&#9670;&#160;</a></span>setGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets uniform acceleration in meters per second squared. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a57d2984187690188c0fdd9687563437d" name="a57d2984187690188c0fdd9687563437d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57d2984187690188c0fdd9687563437d">&#9670;&#160;</a></span>setMaxBending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setMaxBending </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fraction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets fractional bend slack in [0,0.5] before bend resistance activates. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a80028eaffff378df6d5e0da4c40d219e" name="a80028eaffff378df6d5e0da4c40d219e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80028eaffff378df6d5e0da4c40d219e">&#9670;&#160;</a></span>setMaxCompression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setMaxCompression </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fraction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the maximum fractional compression in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a5b372bc1ce994b83627d4918c4415792" name="a5b372bc1ce994b83627d4918c4415792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b372bc1ce994b83627d4918c4415792">&#9670;&#160;</a></span>setParticleMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setParticleMass </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mass</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets each particle's mass in kilograms. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a8f9f81f657058da09749db9684149cf6" name="a8f9f81f657058da09749db9684149cf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f9f81f657058da09749db9684149cf6">&#9670;&#160;</a></span>setPlasticity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setPlasticity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yield</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>creep</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures local permanent bend absorption; zero creep disables plasticity. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5afeb09c5188a27c4468b0ffa4a3d3b" name="af5afeb09c5188a27c4468b0ffa4a3d3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5afeb09c5188a27c4468b0ffa4a3d3b">&#9670;&#160;</a></span>setRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets collision radius in meters. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ad3bacabc38259ddd2114307c88d89f80" name="ad3bacabc38259ddd2114307c88d89f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3bacabc38259ddd2114307c88d89f80">&#9670;&#160;</a></span>setRestLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72">RopeTopologyChange</a> &gt; eve::physics::Rope3D::setRestLength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scales all active element rest lengths, supporting reel/winch behavior. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a820dbd2b8f606aff866c0bbfb6b737c1">eve::physics::Changed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Rope3D_8cpp_source.html#l00223">getRestLength()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#ad558ca9b5e79f5386b9dc04a1d923d72a5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="a1a2ae8424abbc86c6fe2eca893bcc354" name="a1a2ae8424abbc86c6fe2eca893bcc354"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2ae8424abbc86c6fe2eca893bcc354">&#9670;&#160;</a></span>setSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setSelfCollision </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables non-neighbour particle self collision. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8h_source.html">Rope3D.h</a> 第 <a class="el" href="Rope3D_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a6653a88db79dac695f1ad992e57897f2" name="a6653a88db79dac695f1ad992e57897f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6653a88db79dac695f1ad992e57897f2">&#9670;&#160;</a></span>setStretchCompliance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setStretchCompliance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>compliance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets stretch compliance in inverse newtons; zero is inextensible. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ae88565795f7d1a894fea71eba8bc9106" name="ae88565795f7d1a894fea71eba8bc9106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae88565795f7d1a894fea71eba8bc9106">&#9670;&#160;</a></span>setTearing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::setTearing </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>resistance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxTearsPerStep</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables automatic tearing above a tensile-force threshold in newtons. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae76215fad033a6ddb83b5f75d00baa43" name="ae76215fad033a6ddb83b5f75d00baa43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae76215fad033a6ddb83b5f75d00baa43">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::Rope3D::step </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advances the rope atomically under the shared simulation contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>, <a class="el" href="SimulationBackend_8h_source.html#l00107">eve::physics::SimulationSettings::positionIterations</a>, <a class="el" href="SimulationBackend_8h_source.html#l00109">eve::physics::SimulationSettings::subStepCount</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a13cae59e2cb343630a66111e697f2ee0" name="a13cae59e2cb343630a66111e697f2ee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13cae59e2cb343630a66111e697f2ee0">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Rope3D::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances using a compatibility-generated monotonic fixed tick. </p>
+
+<p class="definition">在文件 <a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a> 第 <a class="el" href="Rope3D_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/rope/<a class="el" href="Rope3D_8h_source.html">Rope3D.h</a></li>
+<li>src/modules/physics/rope/<a class="el" href="Rope3D_8cpp_source.html">Rope3D.cpp</a></li>
+<li>src/modules/physics/rope/<a class="el" href="Rope3DCollision_8cpp_source.html">Rope3DCollision.cpp</a></li>
+<li>src/modules/physics/rope/<a class="el" href="Rope3DSampling_8cpp_source.html">Rope3DSampling.cpp</a></li>
+<li>src/modules/physics/rope/<a class="el" href="Rope3DTopology_8cpp_source.html">Rope3DTopology.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_graphics::EvpackStaticPrefab类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__graphics.html">asset_graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_graphics::EvpackStaticPrefab类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning static-prefab GPU leases and immutable draw transforms; no ECS or Scene mutation. @ownership Mesh/image factories must outlive this object and its explicit release; the factories own GPU allocations. @lifetime Release before backend shutdown/device loss. Reimport builds a separate candidate; swap only after success. @thread Creation, drawing, release and destruction are graphics-thread affine. @reentrancy No scripts or caller callbacks and no locks; do not reenter from backend methods.  
+ <a href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EvpackStaticPrefab_8h_source.html">EvpackStaticPrefab.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1EvpackStaticPrefab_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8e2e5940d1551d487e693f24b8b49018" id="r_a8e2e5940d1551d487e693f24b8b49018"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#a8e2e5940d1551d487e693f24b8b49018">~EvpackStaticPrefab</a> ()</td></tr>
+<tr class="separator:a8e2e5940d1551d487e693f24b8b49018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac33c9a139e143bc7b674891a34274b3d" id="r_ac33c9a139e143bc7b674891a34274b3d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#ac33c9a139e143bc7b674891a34274b3d">EvpackStaticPrefab</a> (const <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &amp;)=delete</td></tr>
+<tr class="separator:ac33c9a139e143bc7b674891a34274b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74166c8249d4eab57fa02d4066dd563f" id="r_a74166c8249d4eab57fa02d4066dd563f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#a74166c8249d4eab57fa02d4066dd563f">operator=</a> (const <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &amp;)=delete</td></tr>
+<tr class="separator:a74166c8249d4eab57fa02d4066dd563f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4f234b14a64d61f69ba8f7943f9ff9" id="r_a0a4f234b14a64d61f69ba8f7943f9ff9"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#a0a4f234b14a64d61f69ba8f7943f9ff9">drawCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a0a4f234b14a64d61f69ba8f7943f9ff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of enabled static renderer bindings prepared for drawing.  <br /></td></tr>
+<tr class="separator:a0a4f234b14a64d61f69ba8f7943f9ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8086be1e7d9be89c708ac27bb12207e8" id="r_a8086be1e7d9be89c708ac27bb12207e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#a8086be1e7d9be89c708ac27bb12207e8">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, const std::array&lt; float, 16 &gt; &amp;transform, const std::array&lt; float, 16 &gt; &amp;cameraView) const</td></tr>
+<tr class="memdesc:a8086be1e7d9be89c708ac27bb12207e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw in an already-open 3D pass using its camera/light state and a column-major instance transform.  <br /></td></tr>
+<tr class="separator:a8086be1e7d9be89c708ac27bb12207e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d7db1c14d06b6147381666e2eb416ef" id="r_a5d7db1c14d06b6147381666e2eb416ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#a5d7db1c14d06b6147381666e2eb416ef">release</a> ()</td></tr>
+<tr class="memdesc:a5d7db1c14d06b6147381666e2eb416ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalidate draw packets and release all leases; failed releases remain owned for retry.  <br /></td></tr>
+<tr class="separator:a5d7db1c14d06b6147381666e2eb416ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a093f41944395c5db583379c96a95708d" id="r_a093f41944395c5db583379c96a95708d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#a093f41944395c5db583379c96a95708d">load</a> (const <a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a> &amp;reader, <a class="el" href="classeve_1_1graphics_1_1IMeshResourceFactory.html">graphics::IMeshResourceFactory</a> &amp;meshes, <a class="el" href="classeve_1_1graphics_1_1IImageResourceFactory.html">graphics::IImageResourceFactory</a> &amp;images, const <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &amp;asset, const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a> &amp;capabilities)</td></tr>
+<tr class="memdesc:a093f41944395c5db583379c96a95708d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate a template and stage its mesh, material and image dependencies; failures release staged uploads.  <br /></td></tr>
+<tr class="separator:a093f41944395c5db583379c96a95708d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning static-prefab GPU leases and immutable draw transforms; no ECS or Scene mutation. @ownership Mesh/image factories must outlive this object and its explicit release; the factories own GPU allocations. @lifetime Release before backend shutdown/device loss. Reimport builds a separate candidate; swap only after success. @thread Creation, drawing, release and destruction are graphics-thread affine. @reentrancy No scripts or caller callbacks and no locks; do not reenter from backend methods. </p>
+
+<p class="definition">在文件 <a class="el" href="EvpackStaticPrefab_8h_source.html">EvpackStaticPrefab.h</a> 第 <a class="el" href="EvpackStaticPrefab_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8e2e5940d1551d487e693f24b8b49018" name="a8e2e5940d1551d487e693f24b8b49018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e2e5940d1551d487e693f24b8b49018">&#9670;&#160;</a></span>~EvpackStaticPrefab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_graphics::EvpackStaticPrefab::~EvpackStaticPrefab </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvpackStaticPrefab_8cpp_source.html">EvpackStaticPrefab.cpp</a> 第 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00050">release()</a>.</p>
+
+</div>
+</div>
+<a id="ac33c9a139e143bc7b674891a34274b3d" name="ac33c9a139e143bc7b674891a34274b3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac33c9a139e143bc7b674891a34274b3d">&#9670;&#160;</a></span>EvpackStaticPrefab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_graphics::EvpackStaticPrefab::EvpackStaticPrefab </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8086be1e7d9be89c708ac27bb12207e8" name="a8086be1e7d9be89c708ac27bb12207e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8086be1e7d9be89c708ac27bb12207e8">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_graphics::EvpackStaticPrefab::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; float, 16 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>transform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; float, 16 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cameraView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw in an already-open 3D pass using its camera/light state and a column-major instance transform. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graphics</td><td>Borrowed backend corresponding to the factories used at load. </td></tr>
+    <tr><td class="paramname">transform</td><td>Finite column-major instance transform; borrowed only during this call. </td></tr>
+    <tr><td class="paramname">cameraView</td><td>Finite right-handed column-major view matrix, borrowed for per-prefab transparent sorting. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success or invalid-transform/released-state error before issuing draws. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Draws opaque PBR first, then transparent submeshes back-to-front by node origin within this prefab; caller orders separate prefab instances for transparency. Sets material state; caller restores any state needed by subsequent custom draws. No shadow pass is submitted. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackStaticPrefab_8cpp_source.html">EvpackStaticPrefab.cpp</a> 第 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a39dc078edf0474abe3bc94e517802934">eve::graphics::Graphics::drawMesh()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa6864311f985d160ad4bd46a9fbe4a4d4">eve::graphics::Masked</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fafaa90538de35640e4b1e31ccf35b6eb5">eve::graphics::Opaque</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#af9c1ca97bea9213efbc805d80eb246bc">eve::graphics::Graphics::setMesh3DHeightTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a2735c2dcecfae69597340587107d8b36">eve::graphics::Graphics::setMesh3DMaterial()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#af93faa3335e8cbadb2d918019b143e5e">eve::graphics::Graphics::setMesh3DNormalTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a70a28d9dd750bb96f072640f4e187183">eve::graphics::Graphics::setMesh3DParallax()</a>, <a class="el" href="Graphics_8h_source.html#l01071">eve::graphics::Graphics::setMesh3DPbrSurface()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab626e95d30b4f3d5cf02318569f0d14b">eve::graphics::Graphics::setMesh3DShadowReceive()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa1030ad3d6e019b2afcd665d5c37842b">eve::graphics::Graphics::setMesh3DSurface()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a59b3e5abff6e1d28b926b81dcafd8b7e">eve::graphics::Graphics::setMesh3DTexCellBomb()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a7a5ea20b3bc59eca7ba1cae41743f10f">eve::graphics::Graphics::setMesh3DVirtualTexture()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa3d971943089a3388c01fb297a32d9ba7">eve::graphics::Transparent</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00500">view</a>.</p>
+
+</div>
+</div>
+<a id="a0a4f234b14a64d61f69ba8f7943f9ff9" name="a0a4f234b14a64d61f69ba8f7943f9ff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a4f234b14a64d61f69ba8f7943f9ff9">&#9670;&#160;</a></span>drawCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::asset_graphics::EvpackStaticPrefab::drawCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of enabled static renderer bindings prepared for drawing. </p>
+
+<p class="definition">在文件 <a class="el" href="EvpackStaticPrefab_8cpp_source.html">EvpackStaticPrefab.cpp</a> 第 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a093f41944395c5db583379c96a95708d" name="a093f41944395c5db583379c96a95708d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a093f41944395c5db583379c96a95708d">&#9670;&#160;</a></span>load()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &gt; &gt; eve::asset_graphics::EvpackStaticPrefab::load </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1IMeshResourceFactory.html">graphics::IMeshResourceFactory</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1IImageResourceFactory.html">graphics::IImageResourceFactory</a> &amp;&#160;</td>
+          <td class="paramname"><em>images</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a> &amp;&#160;</td>
+          <td class="paramname"><em>capabilities</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate a template and stage its mesh, material and image dependencies; failures release staged uploads. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning renderer candidate or structured error; existing renderers are untouched. </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reader</td><td>Borrowed only during load; returned data does not retain the reader or package. </td></tr>
+    <tr><td class="paramname">meshes</td><td>Borrowed backend factory that must outlive the returned object. </td></tr>
+    <tr><td class="paramname">images</td><td>Borrowed backend factory that must outlive the returned object. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackStaticPrefab_8cpp_source.html">EvpackStaticPrefab.cpp</a> 第 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00135">caps</a>, <a class="el" href="NodeDesc_8h_source.html#l00043">eve::scene::NodeDesc::children</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="EvpackImageLoader_8cpp_source.html#l00022">eve::asset_graphics::EvpackImageLoader::load()</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00055">eve::asset_scene::EvpackSceneTemplateLoader::load()</a>, <a class="el" href="EvpackGraphicsLoader_8cpp_source.html#l00011">eve::asset_graphics::EvpackGraphicsLoader::loadMesh()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a>, <a class="el" href="NodeDesc_8h_source.html#l00026">eve::scene::NodeDesc::persistentId</a>, <a class="el" href="NodeDesc_8h_source.html#l00040">eve::scene::NodeDesc::pitch</a>, <a class="el" href="CookedMaterial_8cpp_source.html#l00050">eve::asset_graphics::detail::readCookedMaterial()</a>, <a class="el" href="NodeDesc_8h_source.html#l00040">eve::scene::NodeDesc::roll</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00020">scene</a>, <a class="el" href="NodeDesc_8h_source.html#l00041">eve::scene::NodeDesc::sx</a>, <a class="el" href="NodeDesc_8h_source.html#l00041">eve::scene::NodeDesc::sy</a>, <a class="el" href="NodeDesc_8h_source.html#l00041">eve::scene::NodeDesc::sz</a>, <a class="el" href="NodeDesc_8h_source.html#l00032">eve::scene::NodeDesc::visible</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::x</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::y</a>, <a class="el" href="NodeDesc_8h_source.html#l00040">eve::scene::NodeDesc::yaw</a> , 以及 <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::z</a>.</p>
+
+</div>
+</div>
+<a id="a74166c8249d4eab57fa02d4066dd563f" name="a74166c8249d4eab57fa02d4066dd563f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74166c8249d4eab57fa02d4066dd563f">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &amp; eve::asset_graphics::EvpackStaticPrefab::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5d7db1c14d06b6147381666e2eb416ef" name="a5d7db1c14d06b6147381666e2eb416ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d7db1c14d06b6147381666e2eb416ef">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_graphics::EvpackStaticPrefab::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invalidate draw packets and release all leases; failed releases remain owned for retry. </p>
+<dl class="section return"><dt>返回</dt><dd>Backend failure if any release fails. Destructor retries and reports remaining errors to stderr. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackStaticPrefab_8cpp_source.html">EvpackStaticPrefab.cpp</a> 第 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00045">~EvpackStaticPrefab()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/asset/graphics/<a class="el" href="EvpackStaticPrefab_8h_source.html">EvpackStaticPrefab.h</a></li>
+<li>src/modules/asset/graphics/<a class="el" href="EvpackStaticPrefab_8cpp_source.html">EvpackStaticPrefab.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

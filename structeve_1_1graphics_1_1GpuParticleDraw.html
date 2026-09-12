@@ -1,0 +1,605 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::GpuParticleDraw结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html">GpuParticleDraw</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1GpuParticleDraw-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::GpuParticleDraw结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Parameters for rendering a resident GPU particle emitter.  
+ <a href="structeve_1_1graphics_1_1GpuParticleDraw.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a697856bb2a6eada8d1d986f3c613d623" id="r_a697856bb2a6eada8d1d986f3c613d623"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a697856bb2a6eada8d1d986f3c613d623">texture</a> = nullptr</td></tr>
+<tr class="separator:a697856bb2a6eada8d1d986f3c613d623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33e20aa5d163ad83832297eb8abbf3d3" id="r_a33e20aa5d163ad83832297eb8abbf3d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a33e20aa5d163ad83832297eb8abbf3d3">sceneDepth</a> = nullptr</td></tr>
+<tr class="separator:a33e20aa5d163ad83832297eb8abbf3d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f06dcabd9d7f0c01f3ea1db5a5ba155" id="r_a0f06dcabd9d7f0c01f3ea1db5a5ba155"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a0f06dcabd9d7f0c01f3ea1db5a5ba155">blend</a> = <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a></td></tr>
+<tr class="separator:a0f06dcabd9d7f0c01f3ea1db5a5ba155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43e2441e07fddff05e50a2fafeaa7de9" id="r_a43e2441e07fddff05e50a2fafeaa7de9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a43e2441e07fddff05e50a2fafeaa7de9">viewportWidth</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a43e2441e07fddff05e50a2fafeaa7de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a747cf45c9ba3c6e970914f1abdd7071a" id="r_a747cf45c9ba3c6e970914f1abdd7071a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a747cf45c9ba3c6e970914f1abdd7071a">viewportHeight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a747cf45c9ba3c6e970914f1abdd7071a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65537068f18afe2162ac81ed947290df" id="r_a65537068f18afe2162ac81ed947290df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a65537068f18afe2162ac81ed947290df">cameraX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a65537068f18afe2162ac81ed947290df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7f72adb1a80b13cd17c14e178ed1828" id="r_af7f72adb1a80b13cd17c14e178ed1828"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#af7f72adb1a80b13cd17c14e178ed1828">cameraY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af7f72adb1a80b13cd17c14e178ed1828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1feb0aaf8ba2aeab3a5067974c11bc61" id="r_a1feb0aaf8ba2aeab3a5067974c11bc61"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a1feb0aaf8ba2aeab3a5067974c11bc61">cameraZoom</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1feb0aaf8ba2aeab3a5067974c11bc61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b12d53841aa5572029798ca41615324" id="r_a8b12d53841aa5572029798ca41615324"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8b12d53841aa5572029798ca41615324">cameraEnabled</a> = false</td></tr>
+<tr class="separator:a8b12d53841aa5572029798ca41615324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2987b18c561e79c867ee1990bba45365" id="r_a2987b18c561e79c867ee1990bba45365"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a2987b18c561e79c867ee1990bba45365">particleWidth</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2987b18c561e79c867ee1990bba45365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcbf02ae57bfaae7beaa500a3ea46c03" id="r_afcbf02ae57bfaae7beaa500a3ea46c03"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#afcbf02ae57bfaae7beaa500a3ea46c03">particleHeight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:afcbf02ae57bfaae7beaa500a3ea46c03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d242dd542cdee49aacc41140e62b8b8" id="r_a8d242dd542cdee49aacc41140e62b8b8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8d242dd542cdee49aacc41140e62b8b8">sizeStart</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8d242dd542cdee49aacc41140e62b8b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f0849c2923c1498fdca6138c92544b" id="r_ab5f0849c2923c1498fdca6138c92544b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab5f0849c2923c1498fdca6138c92544b">sizeEnd</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab5f0849c2923c1498fdca6138c92544b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa85ce3f66131c1bce6ca8af980e6ed42" id="r_aa85ce3f66131c1bce6ca8af980e6ed42"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa85ce3f66131c1bce6ca8af980e6ed42">stretchFactor</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa85ce3f66131c1bce6ca8af980e6ed42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54194dbe98563b7fa33ff2f4a1eb0b77" id="r_a54194dbe98563b7fa33ff2f4a1eb0b77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4">GpuParticleFacingMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a54194dbe98563b7fa33ff2f4a1eb0b77">facing</a> = <a class="el" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a917bc8aaac6b32336d617675ea5fbe0f">GpuParticleFacingMode::ParticleRotation</a></td></tr>
+<tr class="separator:a54194dbe98563b7fa33ff2f4a1eb0b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af212cee9c2839f12899000b02d9ffb69" id="r_af212cee9c2839f12899000b02d9ffb69"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#af212cee9c2839f12899000b02d9ffb69">axisRotationRadians</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af212cee9c2839f12899000b02d9ffb69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7476c1b61bf6aa6cde0df7bf4e596416" id="r_a7476c1b61bf6aa6cde0df7bf4e596416"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a7476c1b61bf6aa6cde0df7bf4e596416">softParticles</a> = false</td></tr>
+<tr class="separator:a7476c1b61bf6aa6cde0df7bf4e596416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa43043079c52bf5fb5c31eeeec8e3139" id="r_aa43043079c52bf5fb5c31eeeec8e3139"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa43043079c52bf5fb5c31eeeec8e3139">particleDepth</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa43043079c52bf5fb5c31eeeec8e3139"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79300ea1c81c02481475ef208f712380" id="r_a79300ea1c81c02481475ef208f712380"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a79300ea1c81c02481475ef208f712380">softFadeDistance</a> = 0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a79300ea1c81c02481475ef208f712380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3437541e3721b400bcdf5a174c32d2c3" id="r_a3437541e3721b400bcdf5a174c32d2c3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a3437541e3721b400bcdf5a174c32d2c3">colorStart</a> [4] = {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a3437541e3721b400bcdf5a174c32d2c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a172b5663dc51796933b4c28e05896c7f" id="r_a172b5663dc51796933b4c28e05896c7f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a172b5663dc51796933b4c28e05896c7f">colorEnd</a> [4] = {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a172b5663dc51796933b4c28e05896c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac66de63771d154a42e1cf558395bf1cc" id="r_ac66de63771d154a42e1cf558395bf1cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ac66de63771d154a42e1cf558395bf1cc">hframes</a> = 1</td></tr>
+<tr class="separator:ac66de63771d154a42e1cf558395bf1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab78d6e5000d714b49897d18e86a4540e" id="r_ab78d6e5000d714b49897d18e86a4540e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab78d6e5000d714b49897d18e86a4540e">vframes</a> = 1</td></tr>
+<tr class="separator:ab78d6e5000d714b49897d18e86a4540e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Parameters for rendering a resident GPU particle emitter. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00065">65</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="af212cee9c2839f12899000b02d9ffb69" name="af212cee9c2839f12899000b02d9ffb69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af212cee9c2839f12899000b02d9ffb69">&#9670;&#160;</a></span>axisRotationRadians</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::axisRotationRadians = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f06dcabd9d7f0c01f3ea1db5a5ba155" name="a0f06dcabd9d7f0c01f3ea1db5a5ba155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f06dcabd9d7f0c01f3ea1db5a5ba155">&#9670;&#160;</a></span>blend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> eve::graphics::GpuParticleDraw::blend = <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b12d53841aa5572029798ca41615324" name="a8b12d53841aa5572029798ca41615324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b12d53841aa5572029798ca41615324">&#9670;&#160;</a></span>cameraEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::GpuParticleDraw::cameraEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a65537068f18afe2162ac81ed947290df" name="a65537068f18afe2162ac81ed947290df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65537068f18afe2162ac81ed947290df">&#9670;&#160;</a></span>cameraX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::cameraX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af7f72adb1a80b13cd17c14e178ed1828" name="af7f72adb1a80b13cd17c14e178ed1828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f72adb1a80b13cd17c14e178ed1828">&#9670;&#160;</a></span>cameraY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::cameraY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1feb0aaf8ba2aeab3a5067974c11bc61" name="a1feb0aaf8ba2aeab3a5067974c11bc61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1feb0aaf8ba2aeab3a5067974c11bc61">&#9670;&#160;</a></span>cameraZoom</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::cameraZoom = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a172b5663dc51796933b4c28e05896c7f" name="a172b5663dc51796933b4c28e05896c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a172b5663dc51796933b4c28e05896c7f">&#9670;&#160;</a></span>colorEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::colorEnd[4] = {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3437541e3721b400bcdf5a174c32d2c3" name="a3437541e3721b400bcdf5a174c32d2c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3437541e3721b400bcdf5a174c32d2c3">&#9670;&#160;</a></span>colorStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::colorStart[4] = {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54194dbe98563b7fa33ff2f4a1eb0b77" name="a54194dbe98563b7fa33ff2f4a1eb0b77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54194dbe98563b7fa33ff2f4a1eb0b77">&#9670;&#160;</a></span>facing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4">GpuParticleFacingMode</a> eve::graphics::GpuParticleDraw::facing = <a class="el" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a917bc8aaac6b32336d617675ea5fbe0f">GpuParticleFacingMode::ParticleRotation</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac66de63771d154a42e1cf558395bf1cc" name="ac66de63771d154a42e1cf558395bf1cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac66de63771d154a42e1cf558395bf1cc">&#9670;&#160;</a></span>hframes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::GpuParticleDraw::hframes = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa43043079c52bf5fb5c31eeeec8e3139" name="aa43043079c52bf5fb5c31eeeec8e3139"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa43043079c52bf5fb5c31eeeec8e3139">&#9670;&#160;</a></span>particleDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::particleDepth = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afcbf02ae57bfaae7beaa500a3ea46c03" name="afcbf02ae57bfaae7beaa500a3ea46c03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcbf02ae57bfaae7beaa500a3ea46c03">&#9670;&#160;</a></span>particleHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::particleHeight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2987b18c561e79c867ee1990bba45365" name="a2987b18c561e79c867ee1990bba45365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2987b18c561e79c867ee1990bba45365">&#9670;&#160;</a></span>particleWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::particleWidth = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33e20aa5d163ad83832297eb8abbf3d3" name="a33e20aa5d163ad83832297eb8abbf3d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33e20aa5d163ad83832297eb8abbf3d3">&#9670;&#160;</a></span>sceneDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::GpuParticleDraw::sceneDepth = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5f0849c2923c1498fdca6138c92544b" name="ab5f0849c2923c1498fdca6138c92544b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f0849c2923c1498fdca6138c92544b">&#9670;&#160;</a></span>sizeEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::sizeEnd = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d242dd542cdee49aacc41140e62b8b8" name="a8d242dd542cdee49aacc41140e62b8b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d242dd542cdee49aacc41140e62b8b8">&#9670;&#160;</a></span>sizeStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::sizeStart = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79300ea1c81c02481475ef208f712380" name="a79300ea1c81c02481475ef208f712380"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79300ea1c81c02481475ef208f712380">&#9670;&#160;</a></span>softFadeDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::softFadeDistance = 0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7476c1b61bf6aa6cde0df7bf4e596416" name="a7476c1b61bf6aa6cde0df7bf4e596416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7476c1b61bf6aa6cde0df7bf4e596416">&#9670;&#160;</a></span>softParticles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::GpuParticleDraw::softParticles = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa85ce3f66131c1bce6ca8af980e6ed42" name="aa85ce3f66131c1bce6ca8af980e6ed42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa85ce3f66131c1bce6ca8af980e6ed42">&#9670;&#160;</a></span>stretchFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::stretchFactor = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a697856bb2a6eada8d1d986f3c613d623" name="a697856bb2a6eada8d1d986f3c613d623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a697856bb2a6eada8d1d986f3c613d623">&#9670;&#160;</a></span>texture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::GpuParticleDraw::texture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab78d6e5000d714b49897d18e86a4540e" name="ab78d6e5000d714b49897d18e86a4540e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab78d6e5000d714b49897d18e86a4540e">&#9670;&#160;</a></span>vframes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::GpuParticleDraw::vframes = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a747cf45c9ba3c6e970914f1abdd7071a" name="a747cf45c9ba3c6e970914f1abdd7071a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a747cf45c9ba3c6e970914f1abdd7071a">&#9670;&#160;</a></span>viewportHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::viewportHeight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43e2441e07fddff05e50a2fafeaa7de9" name="a43e2441e07fddff05e50a2fafeaa7de9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e2441e07fddff05e50a2fafeaa7de9">&#9670;&#160;</a></span>viewportWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GpuParticleDraw::viewportWidth = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

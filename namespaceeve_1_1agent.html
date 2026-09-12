@@ -1,0 +1,860 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::agent 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1agent.html">agent</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::agent 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1agent_1_1detail" id="r_namespaceeve_1_1agent_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1agent_1_1Agent.html">Agent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Squirrel entry eve.Agent(): owner-thread synchronous training, inference and replay.  <a href="classeve_1_1agent_1_1Agent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1agent_1_1AgentTensor.html">AgentTensor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manager-owned optional tensor backend. Owner thread only; revokes before destruction.  <a href="classeve_1_1agent_1_1AgentTensor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1agent_1_1Config.html">Config</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded search configuration; seed streams for environment, search and learning are separate.  <a href="structeve_1_1agent_1_1Config.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1agent_1_1IEnvironment.html">IEnvironment</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter for a resettable game, simulation, UI or other decision-making environment. @ownership The caller owns the environment and all domain state. The runner borrows it only for the synchronous call; no references escape. @thread Call on the domain owner thread. Callbacks may call unrelated services, but must not reenter or destroy this environment. The runner holds no locks.  <a href="classeve_1_1agent_1_1IEnvironment.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1agent_1_1IGpuPolicyBackend.html">IGpuPolicyBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional GPU policy service, registered independently of eager tensor CPU. @ownership Same synchronous borrowing contract as <a class="el" href="classeve_1_1agent_1_1IPolicyBackend.html" title="Optional inference service. Providers own their registration and revoke before destruction....">IPolicyBackend</a>; revoke before destruction. @thread Device owner thread only. No callbacks, reentry or device teardown during a call.  <a href="classeve_1_1agent_1_1IGpuPolicyBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1agent_1_1IPolicyBackend.html">IPolicyBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional inference service. Providers own their registration and revoke before destruction. @thread Owner thread only; no reentry, provider unload or external callbacks during inference. @ownership Inputs are borrowed only for the call. Outputs own all data. Core resolves the capability anew for each inference; it never retains a provider across environment callbacks.  <a href="classeve_1_1agent_1_1IPolicyBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1agent_1_1Observation.html">Observation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning state projection; action IDs index a fixed domain action catalogue.  <a href="structeve_1_1agent_1_1Observation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning version-1 portable network weights; import validates the entire value before use.  <a href="structeve_1_1agent_1_1Policy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1agent_1_1Report.html">Report</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning search result; reward, coverage and failures remain separate evidence.  <a href="structeve_1_1agent_1_1Report.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-memory versioned replay evidence, independent of learned model state.  <a href="structeve_1_1agent_1_1Trace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1agent_1_1TraceStep.html">TraceStep</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning executed action and resulting observation; no domain pointers are retained.  <a href="structeve_1_1agent_1_1TraceStep.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:acf1ce2bc9cb0844526ac3259cb6c0bb7" id="r_acf1ce2bc9cb0844526ac3259cb6c0bb7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7">Outcome</a> { <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7a5bda814c4aedb126839228f1a3d92f09">Running</a>
+, <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7a505a83f220c02df2f85c3810cd9ceb38">Success</a>
+, <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7ae139a585510a502bbf1841cf589f5086">Failure</a>
+ }</td></tr>
+<tr class="memdesc:acf1ce2bc9cb0844526ac3259cb6c0bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain outcome, independent of reward and infrastructure errors.  <a href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7">更多...</a><br /></td></tr>
+<tr class="separator:acf1ce2bc9cb0844526ac3259cb6c0bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74d53f5f9c42f8ed969c2a2fbfbff0e" id="r_ab74d53f5f9c42f8ed969c2a2fbfbff0e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0e">Strategy</a> { <a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0ea64663f4646781c9c0110838b905daa23">Random</a>
+, <a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0eacc1c7ed158bad4fa9d79790599f5d258">EvolutionLearning</a>
+ }</td></tr>
+<tr class="memdesc:ab74d53f5f9c42f8ed969c2a2fbfbff0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit algorithm choice, also used for equal-budget random baselines.  <a href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0e">更多...</a><br /></td></tr>
+<tr class="separator:ab74d53f5f9c42f8ed969c2a2fbfbff0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb85db5e785458ceccf983243b4741b9" id="r_afb85db5e785458ceccf983243b4741b9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">Backend</a> { <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a>
+, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9af20fc369b14cb5d40e695dab98bcb742">Tensor</a>
+, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38">Gpu</a>
+ }</td></tr>
+<tr class="memdesc:afb85db5e785458ceccf983243b4741b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit backend; Tensor is eager CPU, Gpu accelerates inference and SGD via agent_tensor.  <a href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">更多...</a><br /></td></tr>
+<tr class="separator:afb85db5e785458ceccf983243b4741b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a7c56f7008b39daffa05df09a4ff912a1" id="r_a7c56f7008b39daffa05df09a4ff912a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a7c56f7008b39daffa05df09a4ff912a1">validatePolicy</a> (const <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a7c56f7008b39daffa05df09a4ff912a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate the complete owning policy before inference/import, with no mutation or callbacks.  <br /></td></tr>
+<tr class="separator:a7c56f7008b39daffa05df09a4ff912a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ff3f21303c4738c5a3cf484abe9c559" id="r_a8ff3f21303c4738c5a3cf484abe9c559"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a8ff3f21303c4738c5a3cf484abe9c559">backendName</a> (<a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">Backend</a> backend)</td></tr>
+<tr class="memdesc:a8ff3f21303c4738c5a3cf484abe9c559"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning backend label, or Unsupported if Tensor is unavailable; owner thread only.  <br /></td></tr>
+<tr class="separator:a8ff3f21303c4738c5a3cf484abe9c559"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd87d09cd2b433e40cbd36445d7ffb78" id="r_afd87d09cd2b433e40cbd36445d7ffb78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#afd87d09cd2b433e40cbd36445d7ffb78">infer</a> (const <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>, const <a class="el" href="structeve_1_1agent_1_1Observation.html">Observation</a> &amp;observation, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">Backend</a> backend=<a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e">Backend::Cpu</a>)</td></tr>
+<tr class="memdesc:afd87d09cd2b433e40cbd36445d7ffb78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute masked action probabilities with validated version-1 owning weights.  <br /></td></tr>
+<tr class="separator:afd87d09cd2b433e40cbd36445d7ffb78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46a0dface07daf1a09d78d321043143e" id="r_a46a0dface07daf1a09d78d321043143e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Report.html">Report</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a46a0dface07daf1a09d78d321043143e">run</a> (const <a class="el" href="structeve_1_1agent_1_1Config.html">Config</a> &amp;config, <a class="el" href="classeve_1_1agent_1_1IEnvironment.html">IEnvironment</a> &amp;environment)</td></tr>
+<tr class="memdesc:a46a0dface07daf1a09d78d321043143e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run bounded evolutionary rollout search and elite policy distillation.  <br /></td></tr>
+<tr class="separator:a46a0dface07daf1a09d78d321043143e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9a90b1020e0cb15d18c2e09d60474a" id="r_ace9a90b1020e0cb15d18c2e09d60474a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#ace9a90b1020e0cb15d18c2e09d60474a">replay</a> (const <a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a> &amp;<a class="el" href="Agent_8cpp.html#ae975eceec8a4bdcc279a02759aada6b7">trace</a>, <a class="el" href="classeve_1_1agent_1_1IEnvironment.html">IEnvironment</a> &amp;environment, double absoluteTolerance=1e-6)</td></tr>
+<tr class="memdesc:ace9a90b1020e0cb15d18c2e09d60474a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset and replay actual actions, checking all observations and failure evidence.  <br /></td></tr>
+<tr class="separator:ace9a90b1020e0cb15d18c2e09d60474a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abddfe60878da07420b8ddc778498ffc4" id="r_abddfe60878da07420b8ddc778498ffc4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#abddfe60878da07420b8ddc778498ffc4">Module_IMPL</a> (<a class="el" href="classeve_1_1agent_1_1Agent.html">Agent</a>, new <a class="el" href="classeve_1_1agent_1_1Agent.html">Agent</a>())</td></tr>
+<tr class="separator:abddfe60878da07420b8ddc778498ffc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a417a76bcb661f5d268c1f506eaf96a14" id="r_a417a76bcb661f5d268c1f506eaf96a14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Config.html">Config</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a417a76bcb661f5d268c1f506eaf96a14">decodeConfig</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a417a76bcb661f5d268c1f506eaf96a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode strict script/JSON configuration; unknown keys rejected, no mutations or callbacks.  <br /></td></tr>
+<tr class="separator:a417a76bcb661f5d268c1f506eaf96a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76559958e3d4dba7b12739cb5339af7c" id="r_a76559958e3d4dba7b12739cb5339af7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Observation.html">Observation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a76559958e3d4dba7b12739cb5339af7c">decodeObservation</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a76559958e3d4dba7b12739cb5339af7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode owning observation data, rejecting malformed values; dimensions are checked by run/infer.  <br /></td></tr>
+<tr class="separator:a76559958e3d4dba7b12739cb5339af7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad491a4ce51bca8d200d3b1435ed22284" id="r_ad491a4ce51bca8d200d3b1435ed22284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#ad491a4ce51bca8d200d3b1435ed22284">decodePolicy</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ad491a4ce51bca8d200d3b1435ed22284"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and validate version-1 owning policy; unknown keys/versions rejected atomically.  <br /></td></tr>
+<tr class="separator:ad491a4ce51bca8d200d3b1435ed22284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eeeec1c5a62027c0d2000157651438f" id="r_a0eeeec1c5a62027c0d2000157651438f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a0eeeec1c5a62027c0d2000157651438f">decodeTrace</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a0eeeec1c5a62027c0d2000157651438f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode version-1 owning replay data; run-time consistency is checked before replay reset.  <br /></td></tr>
+<tr class="separator:a0eeeec1c5a62027c0d2000157651438f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9f112de03fa4f1bf7eddf0e59abf5ed" id="r_ae9f112de03fa4f1bf7eddf0e59abf5ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#ae9f112de03fa4f1bf7eddf0e59abf5ed">encodePolicy</a> (const <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:ae9f112de03fa4f1bf7eddf0e59abf5ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a runner-produced policy into owning versioned data; no references retained.  <br /></td></tr>
+<tr class="separator:ae9f112de03fa4f1bf7eddf0e59abf5ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb043e10669c686c5527cde2ba92ef45" id="r_adb043e10669c686c5527cde2ba92ef45"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#adb043e10669c686c5527cde2ba92ef45">encodeTrace</a> (const <a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a> &amp;<a class="el" href="Agent_8cpp.html#ae975eceec8a4bdcc279a02759aada6b7">trace</a>)</td></tr>
+<tr class="memdesc:adb043e10669c686c5527cde2ba92ef45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a runner-produced trace into owning versioned data; seeds use lossless decimal strings.  <br /></td></tr>
+<tr class="separator:adb043e10669c686c5527cde2ba92ef45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a946ee914b2307eb1f978058ef87cddf7" id="r_a946ee914b2307eb1f978058ef87cddf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a946ee914b2307eb1f978058ef87cddf7">encodeReport</a> (const <a class="el" href="structeve_1_1agent_1_1Report.html">Report</a> &amp;report)</td></tr>
+<tr class="memdesc:a946ee914b2307eb1f978058ef87cddf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode runner-produced report, including policy and replayable evidence, as owning data.  <br /></td></tr>
+<tr class="separator:a946ee914b2307eb1f978058ef87cddf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a34d61af578ddbee80c2de51a9c870e" id="r_a7a34d61af578ddbee80c2de51a9c870e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a7a34d61af578ddbee80c2de51a9c870e">Module_IMPL</a> (<a class="el" href="classeve_1_1agent_1_1AgentTensor.html">AgentTensor</a>, new <a class="el" href="classeve_1_1agent_1_1AgentTensor.html">AgentTensor</a>())</td></tr>
+<tr class="separator:a7a34d61af578ddbee80c2de51a9c870e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b73db107ecf6a022a2878d7aa61cbaf" id="r_a3b73db107ecf6a022a2878d7aa61cbaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1agent_1_1IGpuPolicyBackend.html">IGpuPolicyBackend</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#a3b73db107ecf6a022a2878d7aa61cbaf">makeGpuBackend</a> ()</td></tr>
+<tr class="memdesc:a3b73db107ecf6a022a2878d7aa61cbaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an owning GPU provider; compile lazily on the device owner thread.  <br /></td></tr>
+<tr class="separator:a3b73db107ecf6a022a2878d7aa61cbaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed8523de2aa90097ad99f5696ff93fd" id="r_aeed8523de2aa90097ad99f5696ff93fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1agent_1_1IPolicyBackend.html">IPolicyBackend</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1agent.html#aeed8523de2aa90097ad99f5696ff93fd">makeTensorBackend</a> ()</td></tr>
+<tr class="memdesc:aeed8523de2aa90097ad99f5696ff93fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an owning tensor eager CPU inference provider; caller owns registration.  <br /></td></tr>
+<tr class="separator:aeed8523de2aa90097ad99f5696ff93fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="afb85db5e785458ceccf983243b4741b9" name="afb85db5e785458ceccf983243b4741b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb85db5e785458ceccf983243b4741b9">&#9670;&#160;</a></span>Backend</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">eve::agent::Backend</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit backend; Tensor is eager CPU, Gpu accelerates inference and SGD via agent_tensor. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e" name="afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e"></a>Cpu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb85db5e785458ceccf983243b4741b9af20fc369b14cb5d40e695dab98bcb742" name="afb85db5e785458ceccf983243b4741b9af20fc369b14cb5d40e695dab98bcb742"></a>Tensor&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38" name="afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38"></a>Gpu&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Agent_8h_source.html">Agent.h</a> 第 <a class="el" href="Agent_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf1ce2bc9cb0844526ac3259cb6c0bb7" name="acf1ce2bc9cb0844526ac3259cb6c0bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf1ce2bc9cb0844526ac3259cb6c0bb7">&#9670;&#160;</a></span>Outcome</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7">eve::agent::Outcome</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Domain outcome, independent of reward and infrastructure errors. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acf1ce2bc9cb0844526ac3259cb6c0bb7a5bda814c4aedb126839228f1a3d92f09" name="acf1ce2bc9cb0844526ac3259cb6c0bb7a5bda814c4aedb126839228f1a3d92f09"></a>Running&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acf1ce2bc9cb0844526ac3259cb6c0bb7a505a83f220c02df2f85c3810cd9ceb38" name="acf1ce2bc9cb0844526ac3259cb6c0bb7a505a83f220c02df2f85c3810cd9ceb38"></a>Success&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acf1ce2bc9cb0844526ac3259cb6c0bb7ae139a585510a502bbf1841cf589f5086" name="acf1ce2bc9cb0844526ac3259cb6c0bb7ae139a585510a502bbf1841cf589f5086"></a>Failure&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Agent_8h_source.html">Agent.h</a> 第 <a class="el" href="Agent_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab74d53f5f9c42f8ed969c2a2fbfbff0e" name="ab74d53f5f9c42f8ed969c2a2fbfbff0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab74d53f5f9c42f8ed969c2a2fbfbff0e">&#9670;&#160;</a></span>Strategy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0e">eve::agent::Strategy</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit algorithm choice, also used for equal-budget random baselines. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab74d53f5f9c42f8ed969c2a2fbfbff0ea64663f4646781c9c0110838b905daa23" name="ab74d53f5f9c42f8ed969c2a2fbfbff0ea64663f4646781c9c0110838b905daa23"></a>Random&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab74d53f5f9c42f8ed969c2a2fbfbff0eacc1c7ed158bad4fa9d79790599f5d258" name="ab74d53f5f9c42f8ed969c2a2fbfbff0eacc1c7ed158bad4fa9d79790599f5d258"></a>EvolutionLearning&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Agent_8h_source.html">Agent.h</a> 第 <a class="el" href="Agent_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a8ff3f21303c4738c5a3cf484abe9c559" name="a8ff3f21303c4738c5a3cf484abe9c559"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ff3f21303c4738c5a3cf484abe9c559">&#9670;&#160;</a></span>backendName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::agent::backendName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">Backend</a>&#160;</td>
+          <td class="paramname"><em>backend</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning backend label, or Unsupported if Tensor is unavailable; owner thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="Agent_8cpp_source.html">Agent.cpp</a> 第 <a class="el" href="Agent_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38">Gpu</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9af20fc369b14cb5d40e695dab98bcb742">Tensor</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Agent_8cpp_source.html#l00117">infer()</a> , 以及 <a class="el" href="Agent_8cpp_source.html#l00144">run()</a>.</p>
+
+</div>
+</div>
+<a id="a417a76bcb661f5d268c1f506eaf96a14" name="a417a76bcb661f5d268c1f506eaf96a14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a417a76bcb661f5d268c1f506eaf96a14">&#9670;&#160;</a></span>decodeConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Config.html">Config</a> &gt; eve::agent::decodeConfig </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode strict script/JSON configuration; unknown keys rejected, no mutations or callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38">Gpu</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0ea64663f4646781c9c0110838b905daa23">Random</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9af20fc369b14cb5d40e695dab98bcb742">Tensor</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a76559958e3d4dba7b12739cb5339af7c" name="a76559958e3d4dba7b12739cb5339af7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76559958e3d4dba7b12739cb5339af7c">&#9670;&#160;</a></span>decodeObservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Observation.html">Observation</a> &gt; eve::agent::decodeObservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode owning observation data, rejecting malformed values; dimensions are checked by run/infer. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ad491a4ce51bca8d200d3b1435ed22284" name="ad491a4ce51bca8d200d3b1435ed22284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad491a4ce51bca8d200d3b1435ed22284">&#9670;&#160;</a></span>decodePolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &gt; eve::agent::decodePolicy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode and validate version-1 owning policy; unknown keys/versions rejected atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="Agent_8h_source.html#l00098">eve::agent::Policy::schemaId</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>, <a class="el" href="Agent_8cpp_source.html#l00089">validatePolicy()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a0eeeec1c5a62027c0d2000157651438f" name="a0eeeec1c5a62027c0d2000157651438f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eeeec1c5a62027c0d2000157651438f">&#9670;&#160;</a></span>decodeTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a> &gt; eve::agent::decodeTrace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode version-1 owning replay data; run-time consistency is checked before replay reset. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="Agent_8h_source.html#l00088">eve::agent::Trace::schemaId</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ae9f112de03fa4f1bf7eddf0e59abf5ed" name="ae9f112de03fa4f1bf7eddf0e59abf5ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9f112de03fa4f1bf7eddf0e59abf5ed">&#9670;&#160;</a></span>encodePolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::agent::encodePolicy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode a runner-produced policy into owning versioned data; no references retained. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8h_source.html#l00114">eve::Value::object()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Codec_8cpp_source.html#l00247">encodeReport()</a>.</p>
+
+</div>
+</div>
+<a id="a946ee914b2307eb1f978058ef87cddf7" name="a946ee914b2307eb1f978058ef87cddf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a946ee914b2307eb1f978058ef87cddf7">&#9670;&#160;</a></span>encodeReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::agent::encodeReport </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Report.html">Report</a> &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode runner-produced report, including policy and replayable evidence, as owning data. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Codec_8cpp_source.html#l00225">encodePolicy()</a>, <a class="el" href="Codec_8cpp_source.html#l00247">encodeReport()</a>, <a class="el" href="Codec_8cpp_source.html#l00235">encodeTrace()</a>, <a class="el" href="UnityPrefabExpansion_8cpp_source.html#l00038">findings</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Codec_8cpp_source.html#l00247">encodeReport()</a>.</p>
+
+</div>
+</div>
+<a id="adb043e10669c686c5527cde2ba92ef45" name="adb043e10669c686c5527cde2ba92ef45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb043e10669c686c5527cde2ba92ef45">&#9670;&#160;</a></span>encodeTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::agent::encodeTrace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a> &amp;&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode a runner-produced trace into owning versioned data; seeds use lossless decimal strings. </p>
+
+<p class="definition">在文件 <a class="el" href="Codec_8cpp_source.html">Codec.cpp</a> 第 <a class="el" href="Codec_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8h_source.html#l00114">eve::Value::object()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Codec_8cpp_source.html#l00247">encodeReport()</a>.</p>
+
+</div>
+</div>
+<a id="afd87d09cd2b433e40cbd36445d7ffb78" name="afd87d09cd2b433e40cbd36445d7ffb78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd87d09cd2b433e40cbd36445d7ffb78">&#9670;&#160;</a></span>infer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; double &gt; &gt; eve::agent::infer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &amp;&#160;</td>
+          <td class="paramname"><em>policy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Observation.html">Observation</a> &amp;&#160;</td>
+          <td class="paramname"><em>observation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9">Backend</a>&#160;</td>
+          <td class="paramname"><em>backend</em> = <code><a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e">Backend::Cpu</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute masked action probabilities with validated version-1 owning weights. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">policy</td><td>Borrowed only during this call; unknown versions/shapes/NaNs are rejected. </td></tr>
+    <tr><td class="paramname">observation</td><td>Borrowed state with nonempty legal mask and normalized finite features. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning probabilities indexed by action ID (illegal actions have zero probability). </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">backend</td><td>CPU, eager Tensor or GPU; missing provider/device returns Unsupported. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>No retained references; CPU is pure, Tensor calls are owner-thread affine. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Agent_8cpp_source.html">Agent.cpp</a> 第 <a class="el" href="Agent_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Agent_8cpp_source.html#l00100">backendName()</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a>, <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>, <a class="el" href="classeve_1_1agent_1_1IPolicyBackend.html#a07036ca0977d5b892471d54566e27d5c">eve::agent::IPolicyBackend::evaluate()</a>, <a class="el" href="Learning_8h_source.html#l00054">eve::agent::detail::forward()</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38">Gpu</a>, <a class="el" href="Agent_8h_source.html#l00017">eve::agent::Observation::legalActions</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="Agent_8cpp_source.html#l00089">validatePolicy()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a3b73db107ecf6a022a2878d7aa61cbaf" name="a3b73db107ecf6a022a2878d7aa61cbaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b73db107ecf6a022a2878d7aa61cbaf">&#9670;&#160;</a></span>makeGpuBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1agent_1_1IGpuPolicyBackend.html">IGpuPolicyBackend</a> &gt; &gt; eve::agent::makeGpuBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an owning GPU provider; compile lazily on the device owner thread. </p>
+<dl class="section return"><dt>返回</dt><dd>GPU-only provider; execution returns an error when the device or graph is unsupported. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Revoke and destroy before Graphics device teardown. No device or caller data is owned by registration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="agent_2tensor_2GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="agent_2tensor_2GpuBackend_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AgentTensor_8cpp_source.html#l00013">eve::agent::AgentTensor::AgentTensor()</a>.</p>
+
+</div>
+</div>
+<a id="aeed8523de2aa90097ad99f5696ff93fd" name="aeed8523de2aa90097ad99f5696ff93fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeed8523de2aa90097ad99f5696ff93fd">&#9670;&#160;</a></span>makeTensorBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1agent_1_1IPolicyBackend.html">IPolicyBackend</a> &gt; &gt; eve::agent::makeTensorBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an owning tensor eager CPU inference provider; caller owns registration. </p>
+<dl class="section return"><dt>返回</dt><dd>Unique CPU-only provider; inputs/outputs follow <a class="el" href="classeve_1_1agent_1_1IPolicyBackend.html" title="Optional inference service. Providers own their registration and revoke before destruction....">IPolicyBackend</a>. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Owner-thread execution, no callbacks; caller must revoke before destroying. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TensorBackend_8cpp_source.html">TensorBackend.cpp</a> 第 <a class="el" href="TensorBackend_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AgentTensor_8cpp_source.html#l00013">eve::agent::AgentTensor::AgentTensor()</a>.</p>
+
+</div>
+</div>
+<a id="abddfe60878da07420b8ddc778498ffc4" name="abddfe60878da07420b8ddc778498ffc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abddfe60878da07420b8ddc778498ffc4">&#9670;&#160;</a></span>Module_IMPL() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::agent::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1agent_1_1Agent.html">Agent</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Agent</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7a34d61af578ddbee80c2de51a9c870e" name="a7a34d61af578ddbee80c2de51a9c870e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a34d61af578ddbee80c2de51a9c870e">&#9670;&#160;</a></span>Module_IMPL() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::agent::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1agent_1_1AgentTensor.html">AgentTensor</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>AgentTensor</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ace9a90b1020e0cb15d18c2e09d60474a" name="ace9a90b1020e0cb15d18c2e09d60474a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9a90b1020e0cb15d18c2e09d60474a">&#9670;&#160;</a></span>replay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::agent::replay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Trace.html">Trace</a> &amp;&#160;</td>
+          <td class="paramname"><em>trace</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1agent_1_1IEnvironment.html">IEnvironment</a> &amp;&#160;</td>
+          <td class="paramname"><em>environment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>absoluteTolerance</em> = <code>1e-6</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset and replay actual actions, checking all observations and failure evidence. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trace</td><td>Version-1 owning evidence from run; independent of training. </td></tr>
+    <tr><td class="paramname">environment</td><td>Borrowed isolated adapter, mutated synchronously on its owner thread. </td></tr>
+    <tr><td class="paramname">absoluteTolerance</td><td>Finite nonnegative feature/reward tolerance; masks, coverage, outcomes and findings must match exactly. Invalid trace is rejected before reset. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Conflict for divergence, or the original adapter failure; no locks/callback retention. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Agent_8cpp_source.html">Agent.cpp</a> 第 <a class="el" href="Agent_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Agent_8h_source.html#l00091">eve::agent::Trace::dt</a>, <a class="el" href="Agent_8h_source.html#l00090">eve::agent::Trace::environmentSeed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Agent_8h_source.html#l00016">eve::agent::Observation::features</a>, <a class="el" href="Agent_8h_source.html#l00092">eve::agent::Trace::initial</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="classeve_1_1agent_1_1IEnvironment.html#ac5ac724abbc5902091286240411a981d">eve::agent::IEnvironment::reset()</a>, <a class="el" href="Agent_8h_source.html#l00019">eve::agent::Observation::reward</a>, <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7a5bda814c4aedb126839228f1a3d92f09">Running</a>, <a class="el" href="Agent_8h_source.html#l00088">eve::agent::Trace::schemaId</a>, <a class="el" href="Agent_8h_source.html#l00089">eve::agent::Trace::schemaVersion</a>, <a class="el" href="classeve_1_1agent_1_1IEnvironment.html#af07f13c60645d04208e93ca52f0814ee">eve::agent::IEnvironment::step()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="Agent_8h_source.html#l00093">eve::agent::Trace::steps</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Agent_8cpp_source.html#l00054">trace</a>.</p>
+
+</div>
+</div>
+<a id="a46a0dface07daf1a09d78d321043143e" name="a46a0dface07daf1a09d78d321043143e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46a0dface07daf1a09d78d321043143e">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1agent_1_1Report.html">Report</a> &gt; eve::agent::run </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Config.html">Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1agent_1_1IEnvironment.html">IEnvironment</a> &amp;&#160;</td>
+          <td class="paramname"><em>environment</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run bounded evolutionary rollout search and elite policy distillation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config</td><td>All budgets, time and RNG streams; invalid/nonfinite inputs are rejected before reset. </td></tr>
+    <tr><td class="paramname">environment</td><td>Borrowed isolated domain adapter, left at its final evaluated state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning evidence, or adapter/validation failure. No partial report is published on error. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Two tanh hidden layers and softmax are trained by explicit backpropagation on elite trajectories. This is evolutionary search, not stationary MCMC. Same build/config/deterministic adapter gives repeatable traces. Floating-point cross-platform equivalence uses replay's explicit tolerance. No global RNG, worker, ECS system or persistent domain link is introduced. Tensor inference requires an explicitly registered provider. Gpu executes forward/backprop/SGD on the device, Cpu/Tensor use CPU SGD. GPU FP32 is tolerance-based, not bitwise equivalent to CPU; stochastic action choices can amplify small numeric differences. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Agent_8cpp_source.html">Agent.cpp</a> 第 <a class="el" href="Agent_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="PlayHost_8cpp_source.html#l00151">action</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Agent_8h_source.html#l00155">eve::agent::Report::backend</a>, <a class="el" href="Agent_8cpp_source.html#l00100">backendName()</a>, <a class="el" href="Agent_8h_source.html#l00147">eve::agent::Report::best</a>, <a class="el" href="Agent_8h_source.html#l00154">eve::agent::Report::bestScore</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">eve::Cancelled</a>, <a class="el" href="Agent_8h_source.html#l00018">eve::agent::Observation::coverage</a>, <a class="el" href="Agent_8h_source.html#l00149">eve::agent::Report::coverage</a>, <a class="el" href="Agent_8h_source.html#l00150">eve::agent::Report::episodes</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00028">epoch</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0eacc1c7ed158bad4fa9d79790599f5d258">EvolutionLearning</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7ae139a585510a502bbf1841cf589f5086">Failure</a>, <a class="el" href="Agent_8h_source.html#l00152">eve::agent::Report::failures</a>, <a class="el" href="Agent_8h_source.html#l00021">eve::agent::Observation::finding</a>, <a class="el" href="Agent_8h_source.html#l00148">eve::agent::Report::findings</a>, <a class="el" href="namespaceeve_1_1agent.html#afb85db5e785458ceccf983243b4741b9a3432ca64f06615abf07ab44c10cada38">Gpu</a>, <a class="el" href="Agent_8h_source.html#l00017">eve::agent::Observation::legalActions</a>, <a class="el" href="Learning_8h_source.html#l00063">eve::agent::detail::makePolicy()</a>, <a class="el" href="UiThemeTokens_8cpp_source.html#l00022">member</a>, <a class="el" href="Agent_8h_source.html#l00020">eve::agent::Observation::outcome</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a>, <a class="el" href="Agent_8h_source.html#l00146">eve::agent::Report::policy</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="namespaceeve_1_1agent.html#ab74d53f5f9c42f8ed969c2a2fbfbff0ea64663f4646781c9c0110838b905daa23">Random</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00139">random</a>, <a class="el" href="classeve_1_1agent_1_1IEnvironment.html#ac5ac724abbc5902091286240411a981d">eve::agent::IEnvironment::reset()</a>, <a class="el" href="Agent_8h_source.html#l00019">eve::agent::Observation::reward</a>, <a class="el" href="namespaceeve_1_1agent.html#acf1ce2bc9cb0844526ac3259cb6c0bb7a5bda814c4aedb126839228f1a3d92f09">Running</a>, <a class="el" href="classeve_1_1agent_1_1IEnvironment.html#af07f13c60645d04208e93ca52f0814ee">eve::agent::IEnvironment::step()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="Agent_8h_source.html#l00151">eve::agent::Report::steps</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="Learning_8h_source.html#l00074">eve::agent::detail::train()</a>, <a class="el" href="Agent_8h_source.html#l00156">eve::agent::Report::trainingBackend</a>, <a class="el" href="Agent_8h_source.html#l00153">eve::agent::Report::trainingSamples</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a> , 以及 <a class="el" href="Agent_8cpp_source.html#l00089">validatePolicy()</a>.</p>
+
+</div>
+</div>
+<a id="a7c56f7008b39daffa05df09a4ff912a1" name="a7c56f7008b39daffa05df09a4ff912a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c56f7008b39daffa05df09a4ff912a1">&#9670;&#160;</a></span>validatePolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::agent::validatePolicy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1agent_1_1Policy.html">Policy</a> &amp;&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate the complete owning policy before inference/import, with no mutation or callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="Agent_8cpp_source.html">Agent.cpp</a> 第 <a class="el" href="Agent_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a> , 以及 <a class="el" href="Learning_8h_source.html#l00028">eve::agent::detail::weightCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Codec_8cpp_source.html#l00189">decodePolicy()</a>, <a class="el" href="Agent_8cpp_source.html#l00117">infer()</a> , 以及 <a class="el" href="Agent_8cpp_source.html#l00144">run()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::decision::EvaluationContext类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1decision.html">decision</a></li><li class="navelem"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html">EvaluationContext</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1decision_1_1EvaluationContext-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::decision::EvaluationContext类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Read-only state boundary used by every condition evaluation.  
+ <a href="classeve_1_1decision_1_1EvaluationContext.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Condition_8h_source.html">Condition.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::decision::EvaluationContext 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1decision_1_1EvaluationContext.png" usemap="#eve::decision::EvaluationContext_map" alt=""/>
+  <map id="eve::decision::EvaluationContext_map" name="eve::decision::EvaluationContext_map">
+<area href="classeve_1_1card_1_1CardPlayConditionContext.html" title="Read-only EvaluationContext backed by one card instance and definition." alt="eve::card::CardPlayConditionContext" shape="rect" coords="0,56,222,80"/>
+<area href="classeve_1_1dialogue_1_1StateEvaluationContext.html" title="Decision EvaluationContext backed by one dialogue subject." alt="eve::dialogue::StateEvaluationContext" shape="rect" coords="232,56,454,80"/>
+<area href="classeve_1_1rpg_1_1SkillConditionContext.html" title="EvaluationContext backed by one borrowed RPG actor and SkillDefinition." alt="eve::rpg::SkillConditionContext" shape="rect" coords="464,56,686,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a66c12e78b05d68830605228701a742a7" id="r_a66c12e78b05d68830605228701a742a7"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a66c12e78b05d68830605228701a742a7">~EvaluationContext</a> ()=default</td></tr>
+<tr class="separator:a66c12e78b05d68830605228701a742a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ea10828f78c7df551bfd893e6aeb09f" id="r_a9ea10828f78c7df551bfd893e6aeb09f"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a9ea10828f78c7df551bfd893e6aeb09f">value</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a9ea10828f78c7df551bfd893e6aeb09f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a named scalar or structured value for Compare nodes.  <br /></td></tr>
+<tr class="separator:a9ea10828f78c7df551bfd893e6aeb09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a010843b2355e1b2696d0d4b7f99a3276" id="r_a010843b2355e1b2696d0d4b7f99a3276"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a010843b2355e1b2696d0d4b7f99a3276">hasTag</a> (std::string_view tag) const =0</td></tr>
+<tr class="memdesc:a010843b2355e1b2696d0d4b7f99a3276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query tag membership; nullopt means the tag source is unavailable.  <br /></td></tr>
+<tr class="separator:a010843b2355e1b2696d0d4b7f99a3276"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a445d12846f6fbaf24f3ae8adf3be9fb4" id="r_a445d12846f6fbaf24f3ae8adf3be9fb4"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a445d12846f6fbaf24f3ae8adf3be9fb4">attribute</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a445d12846f6fbaf24f3ae8adf3be9fb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an attribute value; nullopt means the attribute is absent.  <br /></td></tr>
+<tr class="separator:a445d12846f6fbaf24f3ae8adf3be9fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67024515282363597fea7327fd4336a6" id="r_a67024515282363597fea7327fd4336a6"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a67024515282363597fea7327fd4336a6">resource</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a67024515282363597fea7327fd4336a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a resource amount or resource marker.  <br /></td></tr>
+<tr class="separator:a67024515282363597fea7327fd4336a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54b374ed442f8541e24b9f4391a6da9e" id="r_a54b374ed442f8541e24b9f4391a6da9e"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a54b374ed442f8541e24b9f4391a6da9e">state</a> (std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a54b374ed442f8541e24b9f4391a6da9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a state value for StateEquals nodes.  <br /></td></tr>
+<tr class="separator:a54b374ed442f8541e24b9f4391a6da9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4759d0331baccef6a9b5120e578f1905" id="r_a4759d0331baccef6a9b5120e578f1905"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a4759d0331baccef6a9b5120e578f1905">authority</a> (std::string_view <a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const =0</td></tr>
+<tr class="memdesc:a4759d0331baccef6a9b5120e578f1905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query authority without changing grants, leases, or state.  <br /></td></tr>
+<tr class="separator:a4759d0331baccef6a9b5120e578f1905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4b40a535ed2c9a03bbb93518baaf5b" id="r_a7b4b40a535ed2c9a03bbb93518baaf5b"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">ConditionResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1EvaluationContext.html#a7b4b40a535ed2c9a03bbb93518baaf5b">policy</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;arguments) const =0</td></tr>
+<tr class="memdesc:a7b4b40a535ed2c9a03bbb93518baaf5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a named read-only policy with owned arguments.  <br /></td></tr>
+<tr class="separator:a7b4b40a535ed2c9a03bbb93518baaf5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Read-only state boundary used by every condition evaluation. </p>
+<p>Implementations must not mutate domain state. Methods are synchronous and called on the caller's thread; implementations must not retain the caller's query keys or invoke unknown callbacks while holding a lock. <code>nullopt</code> means the requested capability/value is unavailable, which is distinct from a known false value. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00161">161</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a66c12e78b05d68830605228701a742a7" name="a66c12e78b05d68830605228701a742a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c12e78b05d68830605228701a742a7">&#9670;&#160;</a></span>~EvaluationContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::decision::EvaluationContext::~EvaluationContext </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a445d12846f6fbaf24f3ae8adf3be9fb4" name="a445d12846f6fbaf24f3ae8adf3be9fb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a445d12846f6fbaf24f3ae8adf3be9fb4">&#9670;&#160;</a></span>attribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::decision::EvaluationContext::attribute </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an attribute value; nullopt means the attribute is absent. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#ad6c6dbcbe80dce776b8fcc4751f64005">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#a96fd4d0a4aefbfc3c8a0d7d544e5bfbd">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#ace6d727a2d6fe026967aaac836864ef0">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a4759d0331baccef6a9b5120e578f1905" name="a4759d0331baccef6a9b5120e578f1905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4759d0331baccef6a9b5120e578f1905">&#9670;&#160;</a></span>authority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; bool &gt; eve::decision::EvaluationContext::authority </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>scope</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query authority without changing grants, leases, or state. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#a58d0829f5b785268ea038ef68c55efe6">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#a63530fac042386029cb31d9563dc3b3d">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#aaabe46197fabcf13813c70d4255a3659">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a010843b2355e1b2696d0d4b7f99a3276" name="a010843b2355e1b2696d0d4b7f99a3276"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a010843b2355e1b2696d0d4b7f99a3276">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; bool &gt; eve::decision::EvaluationContext::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query tag membership; nullopt means the tag source is unavailable. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#a4110a3d51ff8b385d8dd198672f9bf27">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#ac578a968938741c7fdbd341fdd94361e">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#a16cda396620efd02c55939791bdb6655">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a7b4b40a535ed2c9a03bbb93518baaf5b" name="a7b4b40a535ed2c9a03bbb93518baaf5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4b40a535ed2c9a03bbb93518baaf5b">&#9670;&#160;</a></span>policy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">ConditionResult</a> &gt; eve::decision::EvaluationContext::policy </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>arguments</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluate a named read-only policy with owned arguments. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#ab9fb8931595ee063229be258332b10a1">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#a3d8fcaf7d7676785a2faf2c2b22c2a40">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#ad367183de77bfe7fa803940efd9b378e">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a67024515282363597fea7327fd4336a6" name="a67024515282363597fea7327fd4336a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67024515282363597fea7327fd4336a6">&#9670;&#160;</a></span>resource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::decision::EvaluationContext::resource </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a resource amount or resource marker. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#a521b8141891c2c28aa744a262da27956">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#a6e8969850cb5679d8bc10a4886a92b3a">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#a6757f4d4cd3c76aa3595c1a2cee27110">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a54b374ed442f8541e24b9f4391a6da9e" name="a54b374ed442f8541e24b9f4391a6da9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54b374ed442f8541e24b9f4391a6da9e">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::decision::EvaluationContext::state </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a state value for StateEquals nodes. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#ad0feac0ce2fff6fb660f94f8362c91b5">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#a714fae236fd113428cd65d0e60fd0ed1">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#a4f0762ece0c3083abb51169ea03baa48">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a9ea10828f78c7df551bfd893e6aeb09f" name="a9ea10828f78c7df551bfd893e6aeb09f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ea10828f78c7df551bfd893e6aeb09f">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::decision::EvaluationContext::value </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a named scalar or structured value for Compare nodes. </p>
+
+<p>在 <a class="el" href="classeve_1_1card_1_1CardPlayConditionContext.html#a77f0a2e733c02fd98728adea28922952">eve::card::CardPlayConditionContext</a>, <a class="el" href="classeve_1_1dialogue_1_1StateEvaluationContext.html#a7d26dad625fd188f42f499e4a08a2f4c">eve::dialogue::StateEvaluationContext</a> , 以及 <a class="el" href="classeve_1_1rpg_1_1SkillConditionContext.html#a412520effcd90596237f0bbb08708f7b">eve::rpg::SkillConditionContext</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/decision/<a class="el" href="Condition_8h_source.html">Condition.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

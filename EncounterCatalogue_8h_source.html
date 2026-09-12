@@ -1,0 +1,262 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/EncounterCatalogue.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EncounterCatalogue.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EncounterCatalogue_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html">EncounterMemberDefinition</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#ad2a20badbe10dd58c56f906817e045b3">   16</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#ad2a20badbe10dd58c56f906817e045b3">id</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#ad693bece1b1d7a2bcb921bca53072a91">   17</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#ad693bece1b1d7a2bcb921bca53072a91">displayName</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a8aa79bfc52e55cdf1ca2801ff157b3e9">   18</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a8aa79bfc52e55cdf1ca2801ff157b3e9">skillId</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a2ef7fd4676ec14f935a44b8927fef850">   19</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a2ef7fd4676ec14f935a44b8927fef850">attack</a> = 0.0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a76ce1d880ec0faabf9153c8efa26d3f8">   20</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a76ce1d880ec0faabf9153c8efa26d3f8">defense</a> = 0.0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a50d470f050cfc9372f5bd23ab3067871">   21</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a50d470f050cfc9372f5bd23ab3067871">maxHp</a> = 1.0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a7923dd4306c14b78a6f7b9d21c225445">   22</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a7923dd4306c14b78a6f7b9d21c225445">speed</a> = 0.0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1EncounterDefinition.html">EncounterDefinition</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a87d7dddd498cf278d4ee6f107d17b10d">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a87d7dddd498cf278d4ee6f107d17b10d">id</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a58218f91a0530273e587886ff00fd381">   28</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a58218f91a0530273e587886ff00fd381">displayName</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a79cb29d517a6aa3e797b314db125b236">   29</a></span>    std::vector&lt;EncounterMemberDefinition&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a79cb29d517a6aa3e797b314db125b236">members</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a5fd007d86b1b3f9143673dfba2390205">   30</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a5fd007d86b1b3f9143673dfba2390205">xpReward</a> = 0.0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#acb6cca84ff838de00165109648c07d00">   31</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#acb6cca84ff838de00165109648c07d00">xpGrowth</a> = 1.2;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a24a6bd046971d3743a1d8d7838ebbb96">   32</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a24a6bd046971d3743a1d8d7838ebbb96">goldReward</a> = 0.0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#ab1e81d46b345aa883b7b7b0630cf9ac1">   33</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#ab1e81d46b345aa883b7b7b0630cf9ac1">requiredQuestId</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a4dc71583063cd80a3a7e51d26f118d3c">   34</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a4dc71583063cd80a3a7e51d26f118d3c">notifyTopic</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a8579554182c47fb74a670f7af9a39fbe">   35</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a8579554182c47fb74a670f7af9a39fbe">notifyTarget</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#ad07fb9d2a71adc704350f568c695e5c0">   36</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#ad07fb9d2a71adc704350f568c695e5c0">notifyAmount</a> = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a1d9e0c3b43e9b4b8a90a7502472db6c9">   37</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a1d9e0c3b43e9b4b8a90a7502472db6c9">defeatCounterId</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#ac980056c7ba1bd69925c4cecdd5e93a9">   38</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#ac980056c7ba1bd69925c4cecdd5e93a9">defeatCounterAmount</a> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#a22aced1de1ca5cb0abf9346460ad2ddc">   39</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#a22aced1de1ca5cb0abf9346460ad2ddc">levelPointAttributeId</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EncounterDefinition.html#abdec25db1ea4c149b8f9183305a1e0b8">   40</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1rpg_1_1EncounterDefinition.html#abdec25db1ea4c149b8f9183305a1e0b8">pointsPerLevel</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1EncounterCatalogue.html">   44</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1EncounterCatalogue.html">EncounterCatalogue</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#aac7e44e68d71f9f2d0278db807f8ad10">replaceFromJsonStrict</a>(<span class="keyword">const</span> std::string &amp;json);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#a02e8b19a111c60c6d77f36550b28f722">clear</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ac02afa8bbbe63e06c1e8cf85a973583d">count</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1EncounterDefinition.html">EncounterDefinition</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ad08eb9cb77f5ee69a127d9b637f55338">find</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#a2b23dfbee9d2cd57cc7459958fb56d2d">memberCount</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ae0ac2b9d4b63536bc503a09dd686e7e0">createActor</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1EncounterCatalogue.html#ab2dd3e5f01463475fa6ed9a4f80e4267">createMemberActor</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keywordtype">int</span> memberIndex);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html">eve::rpg::EncounterCatalogue</a></div><div class="ttdoc">Process-local strict encounter content catalogue.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00044">EncounterCatalogue.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_a02e8b19a111c60c6d77f36550b28f722"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#a02e8b19a111c60c6d77f36550b28f722">eve::rpg::EncounterCatalogue::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00178">EncounterCatalogue.cpp:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_a2b23dfbee9d2cd57cc7459958fb56d2d"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#a2b23dfbee9d2cd57cc7459958fb56d2d">eve::rpg::EncounterCatalogue::memberCount</a></div><div class="ttdeci">static int memberCount(const std::string &amp;id)</div><div class="ttdoc">Return the number of ordered enemy members in an encounter, or zero when unknown.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00186">EncounterCatalogue.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_aac7e44e68d71f9f2d0278db807f8ad10"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#aac7e44e68d71f9f2d0278db807f8ad10">eve::rpg::EncounterCatalogue::replaceFromJsonStrict</a></div><div class="ttdeci">static eve::Result&lt; int &gt; replaceFromJsonStrict(const std::string &amp;json)</div><div class="ttdoc">Validate and atomically replace every encounter definition.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00063">EncounterCatalogue.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_ab2dd3e5f01463475fa6ed9a4f80e4267"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#ab2dd3e5f01463475fa6ed9a4f80e4267">eve::rpg::EncounterCatalogue::createMemberActor</a></div><div class="ttdeci">static RPGActor * createMemberActor(const std::string &amp;id, int memberIndex)</div><div class="ttdoc">Create one indexed member of an encounter composition.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00195">EncounterCatalogue.cpp:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_ac02afa8bbbe63e06c1e8cf85a973583d"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#ac02afa8bbbe63e06c1e8cf85a973583d">eve::rpg::EncounterCatalogue::count</a></div><div class="ttdeci">static int count()</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00179">EncounterCatalogue.cpp:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_ad08eb9cb77f5ee69a127d9b637f55338"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#ad08eb9cb77f5ee69a127d9b637f55338">eve::rpg::EncounterCatalogue::find</a></div><div class="ttdeci">static const EncounterDefinition * find(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00181">EncounterCatalogue.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EncounterCatalogue_html_ae0ac2b9d4b63536bc503a09dd686e7e0"><div class="ttname"><a href="classeve_1_1rpg_1_1EncounterCatalogue.html#ae0ac2b9d4b63536bc503a09dd686e7e0">eve::rpg::EncounterCatalogue::createActor</a></div><div class="ttdeci">static RPGActor * createActor(const std::string &amp;id)</div><div class="ttdoc">Create and initialize an ECS-owned enemy actor from one definition.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8cpp_source.html#l00191">EncounterCatalogue.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html">eve::rpg::EncounterDefinition</a></div><div class="ttdoc">One immutable, fully specified encounter composition and settlement definition.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00026">EncounterCatalogue.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a1d9e0c3b43e9b4b8a90a7502472db6c9"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a1d9e0c3b43e9b4b8a90a7502472db6c9">eve::rpg::EncounterDefinition::defeatCounterId</a></div><div class="ttdeci">std::string defeatCounterId</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00037">EncounterCatalogue.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a22aced1de1ca5cb0abf9346460ad2ddc"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a22aced1de1ca5cb0abf9346460ad2ddc">eve::rpg::EncounterDefinition::levelPointAttributeId</a></div><div class="ttdeci">std::string levelPointAttributeId</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00039">EncounterCatalogue.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a24a6bd046971d3743a1d8d7838ebbb96"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a24a6bd046971d3743a1d8d7838ebbb96">eve::rpg::EncounterDefinition::goldReward</a></div><div class="ttdeci">double goldReward</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00032">EncounterCatalogue.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a4dc71583063cd80a3a7e51d26f118d3c"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a4dc71583063cd80a3a7e51d26f118d3c">eve::rpg::EncounterDefinition::notifyTopic</a></div><div class="ttdeci">std::string notifyTopic</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00034">EncounterCatalogue.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a58218f91a0530273e587886ff00fd381"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a58218f91a0530273e587886ff00fd381">eve::rpg::EncounterDefinition::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00028">EncounterCatalogue.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a5fd007d86b1b3f9143673dfba2390205"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a5fd007d86b1b3f9143673dfba2390205">eve::rpg::EncounterDefinition::xpReward</a></div><div class="ttdeci">double xpReward</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00030">EncounterCatalogue.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a79cb29d517a6aa3e797b314db125b236"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a79cb29d517a6aa3e797b314db125b236">eve::rpg::EncounterDefinition::members</a></div><div class="ttdeci">std::vector&lt; EncounterMemberDefinition &gt; members</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00029">EncounterCatalogue.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a8579554182c47fb74a670f7af9a39fbe"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a8579554182c47fb74a670f7af9a39fbe">eve::rpg::EncounterDefinition::notifyTarget</a></div><div class="ttdeci">std::string notifyTarget</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00035">EncounterCatalogue.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_a87d7dddd498cf278d4ee6f107d17b10d"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#a87d7dddd498cf278d4ee6f107d17b10d">eve::rpg::EncounterDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00027">EncounterCatalogue.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_ab1e81d46b345aa883b7b7b0630cf9ac1"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#ab1e81d46b345aa883b7b7b0630cf9ac1">eve::rpg::EncounterDefinition::requiredQuestId</a></div><div class="ttdeci">std::string requiredQuestId</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00033">EncounterCatalogue.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_abdec25db1ea4c149b8f9183305a1e0b8"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#abdec25db1ea4c149b8f9183305a1e0b8">eve::rpg::EncounterDefinition::pointsPerLevel</a></div><div class="ttdeci">int pointsPerLevel</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00040">EncounterCatalogue.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_ac980056c7ba1bd69925c4cecdd5e93a9"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#ac980056c7ba1bd69925c4cecdd5e93a9">eve::rpg::EncounterDefinition::defeatCounterAmount</a></div><div class="ttdeci">int defeatCounterAmount</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00038">EncounterCatalogue.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_acb6cca84ff838de00165109648c07d00"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#acb6cca84ff838de00165109648c07d00">eve::rpg::EncounterDefinition::xpGrowth</a></div><div class="ttdeci">double xpGrowth</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00031">EncounterCatalogue.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterDefinition_html_ad07fb9d2a71adc704350f568c695e5c0"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterDefinition.html#ad07fb9d2a71adc704350f568c695e5c0">eve::rpg::EncounterDefinition::notifyAmount</a></div><div class="ttdeci">int notifyAmount</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00036">EncounterCatalogue.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html">eve::rpg::EncounterMemberDefinition</a></div><div class="ttdoc">One immutable enemy member inside an encounter composition.</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00015">EncounterCatalogue.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_a2ef7fd4676ec14f935a44b8927fef850"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a2ef7fd4676ec14f935a44b8927fef850">eve::rpg::EncounterMemberDefinition::attack</a></div><div class="ttdeci">double attack</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00019">EncounterCatalogue.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_a50d470f050cfc9372f5bd23ab3067871"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a50d470f050cfc9372f5bd23ab3067871">eve::rpg::EncounterMemberDefinition::maxHp</a></div><div class="ttdeci">double maxHp</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00021">EncounterCatalogue.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_a76ce1d880ec0faabf9153c8efa26d3f8"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a76ce1d880ec0faabf9153c8efa26d3f8">eve::rpg::EncounterMemberDefinition::defense</a></div><div class="ttdeci">double defense</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00020">EncounterCatalogue.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_a7923dd4306c14b78a6f7b9d21c225445"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a7923dd4306c14b78a6f7b9d21c225445">eve::rpg::EncounterMemberDefinition::speed</a></div><div class="ttdeci">double speed</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00022">EncounterCatalogue.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_a8aa79bfc52e55cdf1ca2801ff157b3e9"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#a8aa79bfc52e55cdf1ca2801ff157b3e9">eve::rpg::EncounterMemberDefinition::skillId</a></div><div class="ttdeci">std::string skillId</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00018">EncounterCatalogue.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_ad2a20badbe10dd58c56f906817e045b3"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#ad2a20badbe10dd58c56f906817e045b3">eve::rpg::EncounterMemberDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00016">EncounterCatalogue.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EncounterMemberDefinition_html_ad693bece1b1d7a2bcb921bca53072a91"><div class="ttname"><a href="structeve_1_1rpg_1_1EncounterMemberDefinition.html#ad693bece1b1d7a2bcb921bca53072a91">eve::rpg::EncounterMemberDefinition::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="EncounterCatalogue_8h_source.html#l00017">EncounterCatalogue.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

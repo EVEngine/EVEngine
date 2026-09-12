@@ -1,0 +1,516 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::avatar 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar.html">avatar</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::avatar 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1Avatar.html">Avatar</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1avatar_1_1Avatar.html" title="Avatar module — layered character rendering for VN / portrait use. Script: avatar &lt;- eve....">Avatar</a> module — layered character rendering for VN / portrait use. Script: <code>avatar &lt;- eve.Avatar();</code>  <a href="classeve_1_1avatar_1_1Avatar.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unified avatar instance. Kind is a string: "image" | "live2d" | "vroid". Script-facing API avoids overloads; kind-specific methods no-op / return false when unsupported.  <a href="classeve_1_1avatar_1_1AvatarInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html">ILive2DBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional Live2D runtime backend (Cubism etc.). Registered from C++ / plugins.  <a href="classeve_1_1avatar_1_1ILive2DBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1NullLive2DBackend.html">NullLive2DBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in Live2D placeholder backend (no Cubism SDK). Stores path / parameters / expression / motion so scripts and tests can run without a proprietary runtime. Replace via <a class="el" href="classeve_1_1avatar_1_1Avatar.html#a13659a2c9aafa79897dbda3196fdda35" title="C++ / plugin: replace Live2D backend factory. Pass nullptr to restore the built-in NullLive2DBackend ...">Avatar::registerLive2DBackend</a> (see examples/live2d-backend-plugin).  <a href="classeve_1_1avatar_1_1NullLive2DBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmAtlasRect.html">VrmAtlasRect</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmCollider.html">VrmCollider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node-local sphere/capsule used only by referencing spring groups.  <a href="structeve_1_1avatar_1_1VrmCollider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validated VRM schema data. Unknown optional fields are ignored; unknown versions fail.  <a href="structeve_1_1avatar_1_1VrmDocument.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmExpression.html">VrmExpression</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One expression's indexed morph/material/UV operations.  <a href="structeve_1_1avatar_1_1VrmExpression.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmLookAt.html">VrmLookAt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">VRM gaze maps; angles are degrees, expression outputs are weights.  <a href="structeve_1_1avatar_1_1VrmLookAt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html">VrmMaterial</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear material factors and image references from VRMC_materials_mtoon.  <a href="structeve_1_1avatar_1_1VrmMaterial.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1VrmRuntime.html">VrmRuntime</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmSpring.html">VrmSpring</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered joints and explicit collision membership of one VRM spring.  <a href="structeve_1_1avatar_1_1VrmSpring.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmSurface.html">VrmSurface</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmTexture.html">VrmTexture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning, validated VRM import data; independent of parser and source bytes.  <a href="structeve_1_1avatar_1_1VrmTexture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a412bd60c2643aa15499bb9412e7a56c4" id="r_a412bd60c2643aa15499bb9412e7a56c4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a412bd60c2643aa15499bb9412e7a56c4">Live2DBackendFactory</a> = <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html">ILive2DBackend</a> *(*)()</td></tr>
+<tr class="separator:a412bd60c2643aa15499bb9412e7a56c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a4d1d0aa8055c58b70d6d893ffab68300" id="r_a4d1d0aa8055c58b70d6d893ffab68300"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300">EquipmentVisualChange</a> { <a class="el" href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300a733d43480c8589b1368e5def6b480415">Applied</a>
+, <a class="el" href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300a5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a>
+, <a class="el" href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300a93f07b720ebf7d1246512569761a5804">Removed</a>
+, <a class="el" href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300ad37b1f6c0512e2118cee17fea015b699">Rejected</a>
+ }</td></tr>
+<tr class="memdesc:a4d1d0aa8055c58b70d6d893ffab68300"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outcome of changing or rebuilding the equipment appearance projection.  <a href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300">更多...</a><br /></td></tr>
+<tr class="separator:a4d1d0aa8055c58b70d6d893ffab68300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3180c048f86c432173832f35b3e1658" id="r_ae3180c048f86c432173832f35b3e1658"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#ae3180c048f86c432173832f35b3e1658">SkinnedPartUpdateMode</a> { <a class="el" href="namespaceeve_1_1avatar.html#ae3180c048f86c432173832f35b3e1658a453e6aa38d87b28ccae545967c53004f">Unavailable</a> = 0
+, <a class="el" href="namespaceeve_1_1avatar.html#ae3180c048f86c432173832f35b3e1658a3432ca64f06615abf07ab44c10cada38">Gpu</a> = 1
+, <a class="el" href="namespaceeve_1_1avatar.html#ae3180c048f86c432173832f35b3e1658a54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a> = 2
+ }</td></tr>
+<tr class="memdesc:ae3180c048f86c432173832f35b3e1658"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable backend selected for a shared-pose skinned part.  <a href="namespaceeve_1_1avatar.html#ae3180c048f86c432173832f35b3e1658">更多...</a><br /></td></tr>
+<tr class="separator:ae3180c048f86c432173832f35b3e1658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a382c6a407a8d394a94df5c58ecd0b61d" id="r_a382c6a407a8d394a94df5c58ecd0b61d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a382c6a407a8d394a94df5c58ecd0b61d">Module_IMPL</a> (<a class="el" href="classeve_1_1avatar_1_1Avatar.html">Avatar</a>, new <a class="el" href="classeve_1_1avatar_1_1Avatar.html">Avatar</a>())</td></tr>
+<tr class="separator:a382c6a407a8d394a94df5c58ecd0b61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a993a8e89aec5e8dfcd713c2ff2e5f568" id="r_a993a8e89aec5e8dfcd713c2ff2e5f568"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html">ILive2DBackend</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a993a8e89aec5e8dfcd713c2ff2e5f568">createNullLive2DBackend</a> ()</td></tr>
+<tr class="separator:a993a8e89aec5e8dfcd713c2ff2e5f568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a1551c4c11e533837ca3c7fabc5631d" id="r_a4a1551c4c11e533837ca3c7fabc5631d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a4a1551c4c11e533837ca3c7fabc5631d">parseVrm</a> (std::span&lt; const std::byte &gt; <a class="el" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>)</td></tr>
+<tr class="memdesc:a4a1551c4c11e533837ca3c7fabc5631d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate a self-contained GLB's VRM extension before publishing runtime state.  <br /></td></tr>
+<tr class="separator:a4a1551c4c11e533837ca3c7fabc5631d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7257ce53fa9589969d24c5b1e3828359" id="r_a7257ce53fa9589969d24c5b1e3828359"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a7257ce53fa9589969d24c5b1e3828359">buildVrmAtlas</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, const <a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a> &amp;document, std::vector&lt; <a class="el" href="structeve_1_1avatar_1_1VrmAtlasRect.html">VrmAtlasRect</a> &gt; &amp;rectangles)</td></tr>
+<tr class="memdesc:a7257ce53fa9589969d24c5b1e3828359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare an atlas using the provider's owning resource factory. @ownership Graphics owns the result; caller releases it through that provider after use. @lifetime Valid until explicit release or provider destruction; observe resourceLifetime(). @thread Render thread, no callbacks. Throws before publication on invalid image data.  <br /></td></tr>
+<tr class="separator:a7257ce53fa9589969d24c5b1e3828359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99678be5ce9cd0b047e8650c4b84b392" id="r_a99678be5ce9cd0b047e8650c4b84b392"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="structeve_1_1avatar_1_1VrmSurface.html">VrmSurface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html#a99678be5ce9cd0b047e8650c4b84b392">buildVrmSurface</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;gfx, const <a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html">VrmMaterial</a> &amp;data, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> &amp;atlas, const std::vector&lt; <a class="el" href="structeve_1_1avatar_1_1VrmAtlasRect.html">VrmAtlasRect</a> &gt; &amp;rects)</td></tr>
+<tr class="separator:a99678be5ce9cd0b047e8650c4b84b392"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a412bd60c2643aa15499bb9412e7a56c4" name="a412bd60c2643aa15499bb9412e7a56c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412bd60c2643aa15499bb9412e7a56c4">&#9670;&#160;</a></span>Live2DBackendFactory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1avatar.html#a412bd60c2643aa15499bb9412e7a56c4">eve::avatar::Live2DBackendFactory</a> = typedef <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html">ILive2DBackend</a> *(*)()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a4d1d0aa8055c58b70d6d893ffab68300" name="a4d1d0aa8055c58b70d6d893ffab68300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d1d0aa8055c58b70d6d893ffab68300">&#9670;&#160;</a></span>EquipmentVisualChange</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1avatar.html#a4d1d0aa8055c58b70d6d893ffab68300">eve::avatar::EquipmentVisualChange</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outcome of changing or rebuilding the equipment appearance projection. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a4d1d0aa8055c58b70d6d893ffab68300a733d43480c8589b1368e5def6b480415" name="a4d1d0aa8055c58b70d6d893ffab68300a733d43480c8589b1368e5def6b480415"></a>Applied&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4d1d0aa8055c58b70d6d893ffab68300a5ff3c6978f87d96febfdc8ed3899a97e" name="a4d1d0aa8055c58b70d6d893ffab68300a5ff3c6978f87d96febfdc8ed3899a97e"></a>Unchanged&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4d1d0aa8055c58b70d6d893ffab68300a93f07b720ebf7d1246512569761a5804" name="a4d1d0aa8055c58b70d6d893ffab68300a93f07b720ebf7d1246512569761a5804"></a>Removed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4d1d0aa8055c58b70d6d893ffab68300ad37b1f6c0512e2118cee17fea015b699" name="a4d1d0aa8055c58b70d6d893ffab68300ad37b1f6c0512e2118cee17fea015b699"></a>Rejected&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3180c048f86c432173832f35b3e1658" name="ae3180c048f86c432173832f35b3e1658"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3180c048f86c432173832f35b3e1658">&#9670;&#160;</a></span>SkinnedPartUpdateMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1avatar.html#ae3180c048f86c432173832f35b3e1658">eve::avatar::SkinnedPartUpdateMode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable backend selected for a shared-pose skinned part. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ae3180c048f86c432173832f35b3e1658a453e6aa38d87b28ccae545967c53004f" name="ae3180c048f86c432173832f35b3e1658a453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae3180c048f86c432173832f35b3e1658a3432ca64f06615abf07ab44c10cada38" name="ae3180c048f86c432173832f35b3e1658a3432ca64f06615abf07ab44c10cada38"></a>Gpu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae3180c048f86c432173832f35b3e1658a54c82ef76ecbbd4c2293e09bae01b54e" name="ae3180c048f86c432173832f35b3e1658a54c82ef76ecbbd4c2293e09bae01b54e"></a>Cpu&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a7257ce53fa9589969d24c5b1e3828359" name="a7257ce53fa9589969d24c5b1e3828359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7257ce53fa9589969d24c5b1e3828359">&#9670;&#160;</a></span>buildVrmAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> &amp; eve::avatar::buildVrmAtlas </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1avatar_1_1VrmAtlasRect.html">VrmAtlasRect</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rects</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare an atlas using the provider's owning resource factory. @ownership Graphics owns the result; caller releases it through that provider after use. @lifetime Valid until explicit release or provider destruction; observe resourceLifetime(). @thread Render thread, no callbacks. Throws before publication on invalid image data. </p>
+
+<p class="definition">在文件 <a class="el" href="VrmSurface_8cpp_source.html">VrmSurface.cpp</a> 第 <a class="el" href="VrmSurface_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EveFileSystem_8cpp_source.html#l00014">file</a>, <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="ImageData_8cpp_source.html#l01071">eve::image::ImageData::paste()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00036">eve::avatar::VrmRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a99678be5ce9cd0b047e8650c4b84b392" name="a99678be5ce9cd0b047e8650c4b84b392"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99678be5ce9cd0b047e8650c4b84b392">&#9670;&#160;</a></span>buildVrmSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="structeve_1_1avatar_1_1VrmSurface.html">VrmSurface</a> &gt; eve::avatar::buildVrmSurface </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html">VrmMaterial</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> &amp;&#160;</td>
+          <td class="paramname"><em>atlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1avatar_1_1VrmAtlasRect.html">VrmAtlasRect</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rects</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmSurface_8cpp_source.html">VrmSurface.cpp</a> 第 <a class="el" href="VrmSurface_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Graphics_8h_source.html#l01579">eve::graphics::Graphics::configureMeshShaderSurface()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a11112fd49bc952f7c50a710e5abad6c7">eve::graphics::Graphics::getBackendName()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00550">material</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="GraphicsLifetime_8cpp_source.html#l00027">eve::graphics::Graphics::resourceLifetime()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00036">eve::avatar::VrmRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a993a8e89aec5e8dfcd713c2ff2e5f568" name="a993a8e89aec5e8dfcd713c2ff2e5f568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a993a8e89aec5e8dfcd713c2ff2e5f568">&#9670;&#160;</a></span>createNullLive2DBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html">ILive2DBackend</a> * eve::avatar::createNullLive2DBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Live2DNullBackend_8h_source.html">Live2DNullBackend.h</a> 第 <a class="el" href="Live2DNullBackend_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Avatar_8cpp_source.html#l00165">eve::avatar::Avatar::createLive2DBackend()</a> , 以及 <a class="el" href="Avatar_8cpp_source.html#l00159">eve::avatar::Avatar::registerLive2DBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a382c6a407a8d394a94df5c58ecd0b61d" name="a382c6a407a8d394a94df5c58ecd0b61d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a382c6a407a8d394a94df5c58ecd0b61d">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1Avatar.html">Avatar</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Avatar</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a1551c4c11e533837ca3c7fabc5631d" name="a4a1551c4c11e533837ca3c7fabc5631d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a1551c4c11e533837ca3c7fabc5631d">&#9670;&#160;</a></span>parseVrm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a> &gt; eve::avatar::parseVrm </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::byte &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate a self-contained GLB's VRM extension before publishing runtime state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>Borrowed for this call only; result owns all imported data. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning document or ParseError/UnknownVersion/Unsupported diagnostics. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>Thread independent; no callbacks, filesystem access, or observable mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8cpp_source.html">VrmDocument.cpp</a> 第 <a class="el" href="VrmDocument_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00268">children</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="VrmDocument_8h_source.html#l00084">eve::avatar::VrmDocument::version</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmRuntime_8cpp_source.html#l00036">eve::avatar::VrmRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

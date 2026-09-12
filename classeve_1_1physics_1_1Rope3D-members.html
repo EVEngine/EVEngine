@@ -1,0 +1,261 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">Rope3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::Rope3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ac50f179d9fe1694b6b70e22879b07aaa">addPlaneCollider</a>(float x, float y, float z, float nx, float ny, float nz)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a21902fb9fa76bfd9842fd593ae5cd325">addSphereCollider</a>(float x, float y, float z, float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a3cd1bfb4fc75ae12870375a8071d8542">applyForce</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6574b847c68329a971652715aa5505c8">attach</a>(int particleIndex, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8cddd11c5324881415981f4d72bd5985">calculateLength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a908e52726417841077c09da7f16b4b50">changeLength</a>(float length, float particleSpacing, bool fromEnd=true)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aceb08b7145bd8b9f60e787507a9f62ec">clearBounds</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6357088e007d15eb79f3ed0555ec1350">clearColliders</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a14933b67400d573befb8603f64b36e0b">cut</a>(int elementIndex)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aeadb2ee40b3fd159ddc966488c7e6d56">detach</a>(int particleIndex)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6ec9408c893f6d0c61c69ae4ab635b43">determinism</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a697f7eb74278f1824036cf3f6984aeb9">disableTearing</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa593e937ce88f89c76ad7b776160758f">getBendCompliance</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a2093099e36dbb957af3936dc994b5863">getBendConstraintsEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a37a59197bf1b1f1ca8836664a7aae5b6">getBendPlasticity</a>(int bendIndex) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa1a38fecf2fe7d88cfeb15788f5c45cb">getCollideSdf</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#affd12b773503c1af0c8a5f6bb8a5ecdc">getCollideWorld</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a0cc59356471e845afb26555d88f6ecd9">getCollisionFriction</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4b4d8e8c23b6ad32ad3a3bc9417a6112">getCollisionRestitution</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae325bb3b5c1538193efb9c81feed8d27">getContinuousCollision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4dd7ffb0823a8c047f69542a7e9d211b">getDamping</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa359184bb355f6681f6c37430d5878ae">getDistanceConstraintsEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ac581e9bc60a1f476085aaa1ba417367a">getElementCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aacff9cc6dd52359168ea387e2aff70b5">getElementForce</a>(int elementIndex) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#abbde74acc22435df6f0d47885b69756a">getGravityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a1bc9254f359b76b31a8795c6e2f1a56c">getGravityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aab7e3b173f56dee06e5aedcd27c27332">getGravityZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a32c7aa60b23c84a99fc3cfe5fa32aded">getLastTornElement</a>(int eventIndex) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4b61a6918eff60b1e6d85f7c9c714aba">getLastTornElementCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ad5d8eb4028efd7331be4612118af2106">getMaxBending</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a399088920a04e7dc11553251656cc1a5">getMaxCompression</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a7325617f9d5077508211a477b8e90423">getParticleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a0036ecb1845d8d3f73bdf1016073fc4a">getParticleMass</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8b59f8cfc891930d9a7d5ee898dd0583">getParticleVelocityX</a>(int index, float dt) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a32286a9a4d9096a70e9c101cf7055bc6">getParticleVelocityY</a>(int index, float dt) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a90f6d15f774344f2f027943dfe17529b">getParticleVelocityZ</a>(int index, float dt) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa36e965d5772379a83e75aa4f93d39ee">getParticleX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae8da099cafc5d7b3d0b5489cd7d0d5bc">getParticleY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6dcc6f8d39dcad01876f9df799e480ec">getParticleZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ad439367cd58c32d724193dfe821e6174">getPlasticCreep</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a9a0995a01ec26bdf89b756f1878a05e6">getPlasticYield</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ab726af2653e87bf31502d10e25dc115c">getRadius</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a855af3d22193f749902ff37208ce13f9">getRestLength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a265fcfc4ee37cd5a928b59ec8703d1e8">getSampleTangentX</a>(float mu) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a67fdbf10810fd90c2479299cd0e0c736">getSampleTangentY</a>(float mu) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a35a4a61cf8402d787e5468066d3782dd">getSampleTangentZ</a>(float mu) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6cd0d4afb261e35edbd46ea79d098a2c">getSampleX</a>(float mu) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a58de67de2452abe0db86546153838432">getSampleY</a>(float mu) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8d1cb263300245abee0163dcb2197aa6">getSampleZ</a>(float mu) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a43c1f3955b218e0413cf2b3ab4768ac9">getSelfCollision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a3cd4d379d441e7533da1e616a000f931">getStretchCompliance</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a1e9af2dc90e8dc83e725f11e6cb83efb">getTopologyRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#adfd4680bfe1505e9dd824dc67fadcfbe">isAttached</a>(int particleIndex) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a430fe25504a7de7e2b8d9e437897b460">isElementActive</a>(int elementIndex) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a74596310eb2308f22471dd0c28eab643">kind</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6e66eec067fc2ce97c81a4070cce8bd9">moveAttachment</a>(int particleIndex, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ac29379b338e5267d744eb3c0ba4b8da9">moveSphereCollider</a>(RopeColliderId id, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a46fcf9be389bf6280bb4984bfcc6fd1b">observation</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a52362ba37c77eb9c969ae0eca86475a7">pin</a>(int particleIndex)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a905a339740e5544aa55812ecf0f01e2c">removeCollider</a>(RopeColliderId id)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af4cc5f68c9a61ae60c302dbb8c25091c">repair</a>(int elementIndex)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a0c40c0aaeae6efa7e365e108894e23e8">restoreObservation</a>(const SimulationObservation &amp;observation) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ab6d68c001562240e8d4cfbb97ae077f5">Rope3D</a>(int particleCount, float startX, float startY, float startZ, float endX, float endY, float endZ)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a38511f8cc126507a55de18b794934ebd">setBendCompliance</a>(float compliance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae14a464f4baf92e01a90dc951462fc85">setBendConstraintsEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#aa25855053279972fc183072a69ec7ab3">setBounds</a>(float x, float y, float z, float width, float height, float depth)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a5b19f397eec466ffd5d167d4245a91fc">setCollideSdf</a>(DistanceField3D *field)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a40ef0e5d2c0b54d439bd7ce9162edfe6">setCollideWorld</a>(World3D *world)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a93647690348a7b29d963f8d033596365">setCollisionFriction</a>(float friction)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a834ea5550425f2a4e71a3fa49b35ed87">setCollisionRestitution</a>(float restitution)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a555bac1dd8fe0d5191b48f4be360f394">setContinuousCollision</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a3fc7a83216e0fb29ec2731f12949ab2d">setDamping</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a4ba5f194c28e3ef69b56d5c9661054e5">setDistanceConstraintsEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af4326e6d540bcdf3659031e217b58bdb">setElementTearResistance</a>(int elementIndex, float multiplier)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af82863362bd6ae2a525428b784c5fb9f">setGravity</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a57d2984187690188c0fdd9687563437d">setMaxBending</a>(float fraction)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a80028eaffff378df6d5e0da4c40d219e">setMaxCompression</a>(float fraction)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a5b372bc1ce994b83627d4918c4415792">setParticleMass</a>(float mass)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a8f9f81f657058da09749db9684149cf6">setPlasticity</a>(float yield, float creep)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#af5afeb09c5188a27c4468b0ffa4a3d3b">setRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ad3bacabc38259ddd2114307c88d89f80">setRestLength</a>(float length)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a1a2ae8424abbc86c6fe2eca893bcc354">setSelfCollision</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a6653a88db79dac695f1ad992e57897f2">setStretchCompliance</a>(float compliance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae88565795f7d1a894fea71eba8bc9106">setTearing</a>(float resistance, int maxTearsPerStep)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#ae76215fad033a6ddb83b5f75d00baa43">step</a>(const eve::SimulationStep &amp;step, const SimulationSettings &amp;settings) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html#a13cae59e2cb343630a66111e697f2ee0">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1Rope3D.html">eve::physics::Rope3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

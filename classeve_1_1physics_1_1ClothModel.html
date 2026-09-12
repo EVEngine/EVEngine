@@ -1,0 +1,860 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::ClothModel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1physics_1_1ClothModel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::ClothModel类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Reusable, validated cloth simulation asset.  
+ <a href="classeve_1_1physics_1_1ClothModel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ClothModel_8h_source.html">ClothModel.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6e010a2b9024a81f06fc811bc4c0e53f" id="r_a6e010a2b9024a81f06fc811bc4c0e53f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a6e010a2b9024a81f06fc811bc4c0e53f">toValue</a> () const</td></tr>
+<tr class="memdesc:a6e010a2b9024a81f06fc811bc4c0e53f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode canonical owning <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> data.  <br /></td></tr>
+<tr class="separator:a6e010a2b9024a81f06fc811bc4c0e53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b48efd2e2618be9154db4a98dbeaf08" id="r_a1b48efd2e2618be9154db4a98dbeaf08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a1b48efd2e2618be9154db4a98dbeaf08">toJson</a> () const</td></tr>
+<tr class="memdesc:a1b48efd2e2618be9154db4a98dbeaf08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize deterministic compact <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> JSON.  <br /></td></tr>
+<tr class="separator:a1b48efd2e2618be9154db4a98dbeaf08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d77e3e3fd0d4f28b26917e37786d056" id="r_a0d77e3e3fd0d4f28b26917e37786d056"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a0d77e3e3fd0d4f28b26917e37786d056">schemaVersion</a> () const noexcept</td></tr>
+<tr class="memdesc:a0d77e3e3fd0d4f28b26917e37786d056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schema version used by serialization adapters.  <br /></td></tr>
+<tr class="separator:a0d77e3e3fd0d4f28b26917e37786d056"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3158a88d61a5b372cb874d80c0b0db67" id="r_a3158a88d61a5b372cb874d80c0b0db67"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelParticle.html">ClothModelParticle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a3158a88d61a5b372cb874d80c0b0db67">particles</a> () const noexcept</td></tr>
+<tr class="memdesc:a3158a88d61a5b372cb874d80c0b0db67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only particles, valid until this model is destroyed or assigned.  <br /></td></tr>
+<tr class="separator:a3158a88d61a5b372cb874d80c0b0db67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb950648619243cd11f79b501c9e827" id="r_a8bb950648619243cd11f79b501c9e827"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelTriangle.html">ClothModelTriangle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a8bb950648619243cd11f79b501c9e827">triangles</a> () const noexcept</td></tr>
+<tr class="memdesc:a8bb950648619243cd11f79b501c9e827"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only triangles, valid until this model is destroyed or assigned.  <br /></td></tr>
+<tr class="separator:a8bb950648619243cd11f79b501c9e827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f45036bc59ed58d6a3246129719c60b" id="r_a8f45036bc59ed58d6a3246129719c60b"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelDistanceConstraint.html">ClothModelDistanceConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a8f45036bc59ed58d6a3246129719c60b">distanceConstraints</a> () const noexcept</td></tr>
+<tr class="memdesc:a8f45036bc59ed58d6a3246129719c60b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only distance constraints, valid until this model is destroyed or assigned.  <br /></td></tr>
+<tr class="separator:a8f45036bc59ed58d6a3246129719c60b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b7d74ed6e89c34dd0abca98ccd53e33" id="r_a4b7d74ed6e89c34dd0abca98ccd53e33"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelFoldConstraint.html">ClothModelFoldConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a4b7d74ed6e89c34dd0abca98ccd53e33">foldConstraints</a> () const noexcept</td></tr>
+<tr class="memdesc:a4b7d74ed6e89c34dd0abca98ccd53e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only fold constraints, valid until this model is destroyed or assigned.  <br /></td></tr>
+<tr class="separator:a4b7d74ed6e89c34dd0abca98ccd53e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c9cb12ee63416c9f280e810e72f52e3" id="r_a3c9cb12ee63416c9f280e810e72f52e3"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelTetherConstraint.html">ClothModelTetherConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a3c9cb12ee63416c9f280e810e72f52e3">tetherConstraints</a> () const noexcept</td></tr>
+<tr class="memdesc:a3c9cb12ee63416c9f280e810e72f52e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only geodesic tethers generated from fixed particles.  <br /></td></tr>
+<tr class="separator:a3c9cb12ee63416c9f280e810e72f52e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8fdf61d03b5506e8b60a0c6e00d7376" id="r_ac8fdf61d03b5506e8b60a0c6e00d7376"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#ac8fdf61d03b5506e8b60a0c6e00d7376">isClosed</a> () const noexcept</td></tr>
+<tr class="memdesc:ac8fdf61d03b5506e8b60a0c6e00d7376"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether every topology edge belongs to exactly two triangles.  <br /></td></tr>
+<tr class="separator:ac8fdf61d03b5506e8b60a0c6e00d7376"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af839280a486384f7e5e454440cac7c51" id="r_af839280a486384f7e5e454440cac7c51"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#af839280a486384f7e5e454440cac7c51">restVolume</a> () const noexcept</td></tr>
+<tr class="memdesc:af839280a486384f7e5e454440cac7c51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signed rest volume for a consistently wound closed mesh, otherwise zero.  <br /></td></tr>
+<tr class="separator:af839280a486384f7e5e454440cac7c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f7e7e265738eed9a26f2ad544f4a5d4" id="r_a9f7e7e265738eed9a26f2ad544f4a5d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a9f7e7e265738eed9a26f2ad544f4a5d4">gridCols</a> () const noexcept</td></tr>
+<tr class="memdesc:a9f7e7e265738eed9a26f2ad544f4a5d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid column metadata, or zero for an arbitrary mesh.  <br /></td></tr>
+<tr class="separator:a9f7e7e265738eed9a26f2ad544f4a5d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a712fd300ead02d63de8eb067dfacacb6" id="r_a712fd300ead02d63de8eb067dfacacb6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a712fd300ead02d63de8eb067dfacacb6">gridRows</a> () const noexcept</td></tr>
+<tr class="memdesc:a712fd300ead02d63de8eb067dfacacb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid row metadata, or zero for an arbitrary mesh.  <br /></td></tr>
+<tr class="separator:a712fd300ead02d63de8eb067dfacacb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d486f324ce1b58faf139bcf51cf4a84" id="r_a7d486f324ce1b58faf139bcf51cf4a84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a7d486f324ce1b58faf139bcf51cf4a84">gridSpacing</a> () const noexcept</td></tr>
+<tr class="memdesc:a7d486f324ce1b58faf139bcf51cf4a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid spacing metadata, or zero for an arbitrary mesh.  <br /></td></tr>
+<tr class="separator:a7d486f324ce1b58faf139bcf51cf4a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a77dd5145a56a66ce672ee8092ec71ec4" id="r_a77dd5145a56a66ce672ee8092ec71ec4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a77dd5145a56a66ce672ee8092ec71ec4">fromTriangles</a> (std::span&lt; const float &gt; <a class="el" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>, std::span&lt; const int &gt; triangleIndices, std::span&lt; const float &gt; inverseMasses={})</td></tr>
+<tr class="memdesc:a77dd5145a56a66ce672ee8092ec71ec4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake an arbitrary indexed triangle mesh into a cloth model.  <br /></td></tr>
+<tr class="separator:a77dd5145a56a66ce672ee8092ec71ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac52771e9f7300729b979f91b5d7a26ce" id="r_ac52771e9f7300729b979f91b5d7a26ce"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#ac52771e9f7300729b979f91b5d7a26ce">grid</a> (int cols, int <a class="el" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, float originX, float originY, float originZ)</td></tr>
+<tr class="memdesc:ac52771e9f7300729b979f91b5d7a26ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake a regular XZ cloth grid with its top row pinned.  <br /></td></tr>
+<tr class="separator:ac52771e9f7300729b979f91b5d7a26ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc08d86e04a8761b389dd8faf7da0f0" id="r_a0cc08d86e04a8761b389dd8faf7da0f0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a0cc08d86e04a8761b389dd8faf7da0f0">fromValue</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a0cc08d86e04a8761b389dd8faf7da0f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode strict <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> data; unknown fields are rejected.  <br /></td></tr>
+<tr class="separator:a0cc08d86e04a8761b389dd8faf7da0f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a282d222d8084df228d4e203bea671df1" id="r_a282d222d8084df228d4e203bea671df1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a282d222d8084df228d4e203bea671df1">fromJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a282d222d8084df228d4e203bea671df1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and decode strict UTF-8 <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> JSON.  <br /></td></tr>
+<tr class="separator:a282d222d8084df228d4e203bea671df1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a6e98d8c3a3a39ff1afe7c154b0407d63" id="r_a6e98d8c3a3a39ff1afe7c154b0407d63"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothModel.html#a6e98d8c3a3a39ff1afe7c154b0407d63">SchemaVersion</a> = 1</td></tr>
+<tr class="separator:a6e98d8c3a3a39ff1afe7c154b0407d63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Reusable, validated cloth simulation asset. </p>
+<p><a class="el" href="classeve_1_1physics_1_1ClothModel.html" title="Reusable, validated cloth simulation asset.">ClothModel</a> owns rest-space particles, triangle topology and precomputed constraints. It contains no per-frame solver state, renderer object or collision-world reference, so one model may be copied into multiple cloth runtime instances. Construction is transactional: invalid topology produces a failed <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> and no partially usable model.</p>
+<p>@thread Construct off-thread when desired, then treat the published model as read-only. Accessors are safe for concurrent readers when no thread mutates the same <a class="el" href="classeve_1_1physics_1_1ClothModel.html" title="Reusable, validated cloth simulation asset.">ClothModel</a> object. @reentrancy Construction and access invoke no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00071">71</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a8f45036bc59ed58d6a3246129719c60b" name="a8f45036bc59ed58d6a3246129719c60b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f45036bc59ed58d6a3246129719c60b">&#9670;&#160;</a></span>distanceConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelDistanceConstraint.html">ClothModelDistanceConstraint</a> &gt; eve::physics::ClothModel::distanceConstraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read-only distance constraints, valid until this model is destroyed or assigned. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b7d74ed6e89c34dd0abca98ccd53e33" name="a4b7d74ed6e89c34dd0abca98ccd53e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b7d74ed6e89c34dd0abca98ccd53e33">&#9670;&#160;</a></span>foldConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelFoldConstraint.html">ClothModelFoldConstraint</a> &gt; eve::physics::ClothModel::foldConstraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read-only fold constraints, valid until this model is destroyed or assigned. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a282d222d8084df228d4e203bea671df1" name="a282d222d8084df228d4e203bea671df1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a282d222d8084df228d4e203bea671df1">&#9670;&#160;</a></span>fromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt; eve::physics::ClothModel::fromJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse and decode strict UTF-8 <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a> 第 <a class="el" href="ClothModel_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="ClothModel_8cpp_source.html#l00316">fromValue()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a77dd5145a56a66ce672ee8092ec71ec4" name="a77dd5145a56a66ce672ee8092ec71ec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77dd5145a56a66ce672ee8092ec71ec4">&#9670;&#160;</a></span>fromTriangles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt; eve::physics::ClothModel::fromTriangles </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>positions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int &gt;&#160;</td>
+          <td class="paramname"><em>triangleIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>inverseMasses</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bake an arbitrary indexed triangle mesh into a cloth model. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">positions</td><td>Packed XYZ rest positions; size must be a non-zero multiple of three. </td></tr>
+    <tr><td class="paramname">triangleIndices</td><td>Triangle indices; size must be a non-zero multiple of three. </td></tr>
+    <tr><td class="paramname">inverseMasses</td><td>Optional per-particle inverse masses. Zero pins a particle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Validated owning model, or a diagnostic without partial output. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a> 第 <a class="el" href="ClothModel_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00090">anchor</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1physics.html#a4e28fb551c7a66939b8800a71e724ca3adcef3e264a0eecc2a9eadd4478c67a1f">eve::physics::Bend</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00210">edges</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="namespaceeve_1_1physics.html#a4e28fb551c7a66939b8800a71e724ca3aa9a0f8e36e7dcc2b446c20be15322dc9">eve::physics::Structural</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00029">triangle</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8cpp_source.html#l00316">fromValue()</a> , 以及 <a class="el" href="ClothModel_8cpp_source.html#l00212">grid()</a>.</p>
+
+</div>
+</div>
+<a id="a0cc08d86e04a8761b389dd8faf7da0f0" name="a0cc08d86e04a8761b389dd8faf7da0f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc08d86e04a8761b389dd8faf7da0f0">&#9670;&#160;</a></span>fromValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt; eve::physics::ClothModel::fromValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode strict <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> data; unknown fields are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a> 第 <a class="el" href="ClothModel_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00069">eve::Value::asInt()</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ClothModel_8cpp_source.html#l00058">fromTriangles()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="ClothModel_8cpp_source.html#l00212">grid()</a>, <a class="el" href="Value_8h_source.html#l00091">eve::Value::isInt64()</a>, <a class="el" href="Value_8h_source.html#l00087">eve::Value::isNull()</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="ClothModel_8h_source.html#l00117">particles()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">rows</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="ClothModel_8h_source.html#l00119">triangles()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8cpp_source.html#l00310">fromJson()</a> , 以及 <a class="el" href="EvpackClothModel_8cpp_source.html#l00015">eve::asset_physics::EvpackClothModelLoader::load()</a>.</p>
+
+</div>
+</div>
+<a id="ac52771e9f7300729b979f91b5d7a26ce" name="ac52771e9f7300729b979f91b5d7a26ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac52771e9f7300729b979f91b5d7a26ce">&#9670;&#160;</a></span>grid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt; eve::physics::ClothModel::grid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bake a regular XZ cloth grid with its top row pinned. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cols</td><td>Grid columns, at least two. </td></tr>
+    <tr><td class="paramname">rows</td><td>Grid rows, at least two. </td></tr>
+    <tr><td class="paramname">spacing</td><td>Positive particle spacing in meters. </td></tr>
+    <tr><td class="paramname">originX</td><td>Rest-space origin X. </td></tr>
+    <tr><td class="paramname">originY</td><td>Rest-space origin Y. </td></tr>
+    <tr><td class="paramname">originZ</td><td>Rest-space origin Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Validated owning model, or a diagnostic without partial output. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a> 第 <a class="el" href="ClothModel_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1physics.html#a4e28fb551c7a66939b8800a71e724ca3adcef3e264a0eecc2a9eadd4478c67a1f">eve::physics::Bend</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ClothModel_8cpp_source.html#l00058">fromTriangles()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">rows</a>, <a class="el" href="namespaceeve_1_1physics.html#a4e28fb551c7a66939b8800a71e724ca3a02414922b70cc0f9d7c841b0c70a0f94">eve::physics::Shear</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="namespaceeve_1_1physics.html#a4e28fb551c7a66939b8800a71e724ca3aa9a0f8e36e7dcc2b446c20be15322dc9">eve::physics::Structural</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l00216">eve::physics::Cloth3D::Cloth3D()</a> , 以及 <a class="el" href="ClothModel_8cpp_source.html#l00316">fromValue()</a>.</p>
+
+</div>
+</div>
+<a id="a9f7e7e265738eed9a26f2ad544f4a5d4" name="a9f7e7e265738eed9a26f2ad544f4a5d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f7e7e265738eed9a26f2ad544f4a5d4">&#9670;&#160;</a></span>gridCols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::ClothModel::gridCols </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grid column metadata, or zero for an arbitrary mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00137">137</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a712fd300ead02d63de8eb067dfacacb6" name="a712fd300ead02d63de8eb067dfacacb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a712fd300ead02d63de8eb067dfacacb6">&#9670;&#160;</a></span>gridRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::ClothModel::gridRows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grid row metadata, or zero for an arbitrary mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00139">139</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d486f324ce1b58faf139bcf51cf4a84" name="a7d486f324ce1b58faf139bcf51cf4a84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d486f324ce1b58faf139bcf51cf4a84">&#9670;&#160;</a></span>gridSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::ClothModel::gridSpacing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grid spacing metadata, or zero for an arbitrary mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac8fdf61d03b5506e8b60a0c6e00d7376" name="ac8fdf61d03b5506e8b60a0c6e00d7376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8fdf61d03b5506e8b60a0c6e00d7376">&#9670;&#160;</a></span>isClosed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::ClothModel::isClosed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether every topology edge belongs to exactly two triangles. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3158a88d61a5b372cb874d80c0b0db67" name="a3158a88d61a5b372cb874d80c0b0db67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3158a88d61a5b372cb874d80c0b0db67">&#9670;&#160;</a></span>particles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelParticle.html">ClothModelParticle</a> &gt; eve::physics::ClothModel::particles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read-only particles, valid until this model is destroyed or assigned. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8cpp_source.html#l00316">fromValue()</a>.</p>
+
+</div>
+</div>
+<a id="af839280a486384f7e5e454440cac7c51" name="af839280a486384f7e5e454440cac7c51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af839280a486384f7e5e454440cac7c51">&#9670;&#160;</a></span>restVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::ClothModel::restVolume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Signed rest volume for a consistently wound closed mesh, otherwise zero. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d77e3e3fd0d4f28b26917e37786d056" name="a0d77e3e3fd0d4f28b26917e37786d056"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d77e3e3fd0d4f28b26917e37786d056">&#9670;&#160;</a></span>schemaVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::physics::ClothModel::schemaVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Schema version used by serialization adapters. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClothModel_8h_source.html#l00073">SchemaVersion</a>.</p>
+
+</div>
+</div>
+<a id="a3c9cb12ee63416c9f280e810e72f52e3" name="a3c9cb12ee63416c9f280e810e72f52e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c9cb12ee63416c9f280e810e72f52e3">&#9670;&#160;</a></span>tetherConstraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelTetherConstraint.html">ClothModelTetherConstraint</a> &gt; eve::physics::ClothModel::tetherConstraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read-only geodesic tethers generated from fixed particles. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b48efd2e2618be9154db4a98dbeaf08" name="a1b48efd2e2618be9154db4a98dbeaf08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b48efd2e2618be9154db4a98dbeaf08">&#9670;&#160;</a></span>toJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::physics::ClothModel::toJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize deterministic compact <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a> 第 <a class="el" href="ClothModel_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a> , 以及 <a class="el" href="ClothModel_8cpp_source.html#l00276">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a6e010a2b9024a81f06fc811bc4c0e53f" name="a6e010a2b9024a81f06fc811bc4c0e53f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e010a2b9024a81f06fc811bc4c0e53f">&#9670;&#160;</a></span>toValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> eve::physics::ClothModel::toValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode canonical owning <code><a class="el" href="namespaceeve_1_1cloth.html">eve.cloth</a>-model/1</code> data. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a> 第 <a class="el" href="ClothModel_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00029">triangle</a> , 以及 <a class="el" href="ClothModel_8h_source.html#l00119">triangles()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8cpp_source.html#l00308">toJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8bb950648619243cd11f79b501c9e827" name="a8bb950648619243cd11f79b501c9e827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb950648619243cd11f79b501c9e827">&#9670;&#160;</a></span>triangles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1ClothModelTriangle.html">ClothModelTriangle</a> &gt; eve::physics::ClothModel::triangles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read-only triangles, valid until this model is destroyed or assigned. </p>
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8cpp_source.html#l00316">fromValue()</a> , 以及 <a class="el" href="ClothModel_8cpp_source.html#l00276">toValue()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a6e98d8c3a3a39ff1afe7c154b0407d63" name="a6e98d8c3a3a39ff1afe7c154b0407d63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e98d8c3a3a39ff1afe7c154b0407d63">&#9670;&#160;</a></span>SchemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t eve::physics::ClothModel::SchemaVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClothModel_8h_source.html">ClothModel.h</a> 第 <a class="el" href="ClothModel_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8h_source.html#l00115">schemaVersion()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/cloth/<a class="el" href="ClothModel_8h_source.html">ClothModel.h</a></li>
+<li>src/modules/physics/cloth/<a class="el" href="ClothModel_8cpp_source.html">ClothModel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

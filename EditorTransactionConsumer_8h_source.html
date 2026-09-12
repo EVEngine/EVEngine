@@ -1,0 +1,313 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorTransactionConsumer.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorTransactionConsumer.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorTransactionConsumer_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditCommand_8h.html">editor/EditCommand.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorAuthority_8h.html">editor/EditorAuthority.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Transaction_8h.html">transaction/Transaction.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorTransactionRecord.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorTransactionRecord.html#a7f41fbf0e6928754105ff3e7a3c4e940">   24</a></span>    <a class="code hl_struct" href="structeve_1_1transaction_1_1TransactionReceipt.html">transaction::TransactionReceipt</a>                <a class="code hl_variable" href="structeve_1_1editor_1_1EditorTransactionRecord.html#a7f41fbf0e6928754105ff3e7a3c4e940">coordinator</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorTransactionRecord.html#aaa38fafda7fd33ccfb93b933fa2f17ed">   25</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TransactionSpec.html">TransactionSpec</a>                                <a class="code hl_variable" href="structeve_1_1editor_1_1EditorTransactionRecord.html#aaa38fafda7fd33ccfb93b933fa2f17ed">specification</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorTransactionRecord.html#ad79ef9d75df3927c1746eef1c14fd24f">   26</a></span>    std::optional&lt;eve::editor::TransactionReceipt&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EditorTransactionRecord.html#ad79ef9d75df3927c1746eef1c14fd24f">authorityReceipt</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorTransactionRecord.html#ad1fa68a4331238e6d9bcc383aaf01092">   27</a></span>    std::size_t                                    <a class="code hl_variable" href="structeve_1_1editor_1_1EditorTransactionRecord.html#ad1fa68a4331238e6d9bcc383aaf01092">commandCount</a>   = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorTransactionRecord.html#afcf7e8ac673ec223d6dd2f24bd0357b7">   28</a></span>    std::size_t                                    <a class="code hl_variable" href="structeve_1_1editor_1_1EditorTransactionRecord.html#afcf7e8ac673ec223d6dd2f24bd0357b7">operationCount</a> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorDryRunReport.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EditorDryRunReport.html">EditorDryRunReport</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorDryRunReport.html#acdcdd13601017c9420e1e3040fd1aff4">   39</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TransactionSpec.html">TransactionSpec</a>              <a class="code hl_variable" href="structeve_1_1editor_1_1EditorDryRunReport.html#acdcdd13601017c9420e1e3040fd1aff4">specification</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorDryRunReport.html#a71663a9b3f6f6e7c2e6b5ba1be5bdfb0">   40</a></span>    std::size_t                  <a class="code hl_variable" href="structeve_1_1editor_1_1EditorDryRunReport.html#a71663a9b3f6f6e7c2e6b5ba1be5bdfb0">commandCount</a>   = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorDryRunReport.html#abca258ecb831136af8f5051f4072537a">   41</a></span>    std::size_t                  <a class="code hl_variable" href="structeve_1_1editor_1_1EditorDryRunReport.html#abca258ecb831136af8f5051f4072537a">operationCount</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorDryRunReport.html#a95a6ccb8d48edb2b7647906d4036df2e">   42</a></span>    std::optional&lt;AuthorityPlan&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EditorDryRunReport.html#a95a6ccb8d48edb2b7647906d4036df2e">authorityPlan</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">   46</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">EditorCommitState</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa486cc7e8d85ac3ca7008c7510d238dc8">FailedRetryable</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fafd8f656590df4b2d2b217b060b7204d3">Committed</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">Discarded</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="};">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">   67</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditAuthority.html">IEditAuthority</a>* authority = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a12d788b1c698acddabbc615e3369fa8b">   71</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a12d788b1c698acddabbc615e3369fa8b">~EditorTransactionConsumer</a>();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4ab6b68cf30f356058818ecba2d63fed">   73</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4ab6b68cf30f356058818ecba2d63fed">EditorTransactionConsumer</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a10386b0a968a2e893e23bf1b6e68f78b">   74</a></span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a>&amp; <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a10386b0a968a2e893e23bf1b6e68f78b">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ab318bd598e818b3c3e7503cd82c954e6">setAuthority</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditAuthority.html">IEditAuthority</a>* authority);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;TransactionId&gt;</a> <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(<a class="code hl_struct" href="structeve_1_1editing_1_1TransactionSpec.html">TransactionSpec</a> specification);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;TransactionId&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#afaf192f85ecd5763921d18c1478b146a">beginLegacy</a>(std::string label);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a3b238ae669f1d325938077585ded7328">append</a>(std::unique_ptr&lt;IEditCommand&gt; command);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aee9515cd22601ca619687000c15cf30f">appendPreview</a>(std::unique_ptr&lt;IEditCommand&gt; command);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a3b238ae669f1d325938077585ded7328">append</a>(<a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> operation);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EditorDryRunReport&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a989564f55b91a72cb0e855d552ef7f0a">dryRun</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EditorTransactionRecord&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aae1e33f1406c11e01094e238f3c468f7">commit</a>();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EditorTransactionRecord&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aae1e33f1406c11e01094e238f3c468f7">commit</a>(</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        std::span&lt;transaction::ITransactionParticipant*&gt; additional);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EditorTransactionRecord&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a7a03bc25a59216eacff99792139d45de">retry</a>(</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        std::span&lt;transaction::ITransactionParticipant*&gt; additional = {});</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a8a625fae697dffe3f4b26133e89e60e2">discard</a>();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aa5ca2c22505cfac725602bfc7c5614cf">rollback</a>();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EditorTransactionRecord&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a1f831cea14324cf12ff707156b6712e5">undo</a>();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EditorTransactionRecord&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#afc4f92e2990913b933ddbc8af3154e66">redo</a>();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ad6df99881093016c0d807ede51fca570">active</a>() const noexcept;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#af4edaafd4ce5e833b2c27a65386332aa">canUndo</a>() const noexcept;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4d706699caa2f75c656be4435a24b982">canRedo</a>() const noexcept;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ae1afb3965fb30640b662ba986a0ca199">undoCount</a>() const noexcept;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4a68dfe7cb6d7ccee6a44f30a9f6c7b1">redoCount</a>() const noexcept;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">EditorCommitState</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a2e52787eddaf815d7fb17134e44cfe66">state</a>() const noexcept;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard]] const <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a>&gt;&amp; <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a51d9d7359b5e608593a56515f31a5191">diagnostics</a>() const noexcept;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a035faf175fa4f74fa28f8fc3ae7c996b">clear</a>();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>private:</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a>&gt; commitAttempt(</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <a class="code hl_namespace" href="namespacestd.html">std</a>::span&lt;transaction::ITransactionParticipant*&gt; additional, <span class="keywordtype">bool</span> retryAttempt);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    struct Impl;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>};</div>
+</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditCommand_8h_html"><div class="ttname"><a href="EditCommand_8h.html">EditCommand.h</a></div></div>
+<div class="ttc" id="aEditorAuthority_8h_html"><div class="ttname"><a href="EditorAuthority_8h.html">EditorAuthority.h</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aTransaction_8h_html"><div class="ttname"><a href="Transaction_8h.html">Transaction.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditAuthority_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditAuthority.html">eve::editing::IEditAuthority</a></div><div class="ttdoc">Final validation and commit boundary for editor mutations.</div><div class="ttdef"><b>Definition</b> <a href="EditingAuthority_8h_source.html#l00014">EditingAuthority.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html">eve::editor::EditorTransactionConsumer</a></div><div class="ttdoc">Editor consumer of the common transaction participant/coordinator protocol.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00067">EditorTransactionConsumer.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a035faf175fa4f74fa28f8fc3ae7c996b"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a035faf175fa4f74fa28f8fc3ae7c996b">eve::editor::EditorTransactionConsumer::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clears active work and editor-owned undo/redo history.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00881">EditorTransactionConsumer.cpp:881</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a10386b0a968a2e893e23bf1b6e68f78b"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a10386b0a968a2e893e23bf1b6e68f78b">eve::editor::EditorTransactionConsumer::operator=</a></div><div class="ttdeci">EditorTransactionConsumer &amp; operator=(const EditorTransactionConsumer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a12d788b1c698acddabbc615e3369fa8b"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a12d788b1c698acddabbc615e3369fa8b">eve::editor::EditorTransactionConsumer::~EditorTransactionConsumer</a></div><div class="ttdeci">~EditorTransactionConsumer()</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a1f831cea14324cf12ff707156b6712e5"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a1f831cea14324cf12ff707156b6712e5">eve::editor::EditorTransactionConsumer::undo</a></div><div class="ttdeci">eve::Result&lt; EditorTransactionRecord &gt; undo()</div><div class="ttdoc">Compensates the latest editor-owned commit and moves it to redo history.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00759">EditorTransactionConsumer.cpp:759</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a2e52787eddaf815d7fb17134e44cfe66"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a2e52787eddaf815d7fb17134e44cfe66">eve::editor::EditorTransactionConsumer::state</a></div><div class="ttdeci">EditorCommitState state() const noexcept</div><div class="ttdoc">Returns the explicit state of the active/latest commit lifecycle.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00876">EditorTransactionConsumer.cpp:876</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a3b238ae669f1d325938077585ded7328"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a3b238ae669f1d325938077585ded7328">eve::editor::EditorTransactionConsumer::append</a></div><div class="ttdeci">eve::Result&lt; void &gt; append(std::unique_ptr&lt; IEditCommand &gt; command)</div><div class="ttdoc">Appends a command without publishing its target mutation.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00344">EditorTransactionConsumer.cpp:344</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a4a68dfe7cb6d7ccee6a44f30a9f6c7b1"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4a68dfe7cb6d7ccee6a44f30a9f6c7b1">eve::editor::EditorTransactionConsumer::redoCount</a></div><div class="ttdeci">std::size_t redoCount() const noexcept</div><div class="ttdoc">Returns the number of redo entries.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00875">EditorTransactionConsumer.cpp:875</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a4ab6b68cf30f356058818ecba2d63fed"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4ab6b68cf30f356058818ecba2d63fed">eve::editor::EditorTransactionConsumer::EditorTransactionConsumer</a></div><div class="ttdeci">EditorTransactionConsumer(const EditorTransactionConsumer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a4d706699caa2f75c656be4435a24b982"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4d706699caa2f75c656be4435a24b982">eve::editor::EditorTransactionConsumer::canRedo</a></div><div class="ttdeci">bool canRedo() const noexcept</div><div class="ttdoc">Returns whether compensated editor history can be replayed.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00873">EditorTransactionConsumer.cpp:873</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a51d9d7359b5e608593a56515f31a5191"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a51d9d7359b5e608593a56515f31a5191">eve::editor::EditorTransactionConsumer::diagnostics</a></div><div class="ttdeci">const std::vector&lt; eve::Diagnostic &gt; &amp; diagnostics() const noexcept</div><div class="ttdoc">Returns diagnostics retained from the latest failed commit attempt.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00877">EditorTransactionConsumer.cpp:877</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a7a03bc25a59216eacff99792139d45de"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a7a03bc25a59216eacff99792139d45de">eve::editor::EditorTransactionConsumer::retry</a></div><div class="ttdeci">eve::Result&lt; EditorTransactionRecord &gt; retry(std::span&lt; transaction::ITransactionParticipant * &gt; additional={})</div><div class="ttdoc">Retries a failed commit while retaining its pending work.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00573">EditorTransactionConsumer.cpp:573</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a8a625fae697dffe3f4b26133e89e60e2"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a8a625fae697dffe3f4b26133e89e60e2">eve::editor::EditorTransactionConsumer::discard</a></div><div class="ttdeci">eve::Result&lt; void &gt; discard()</div><div class="ttdoc">Explicitly discards the pending transaction and any preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00720">EditorTransactionConsumer.cpp:720</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_a989564f55b91a72cb0e855d552ef7f0a"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a989564f55b91a72cb0e855d552ef7f0a">eve::editor::EditorTransactionConsumer::dryRun</a></div><div class="ttdeci">eve::Result&lt; EditorDryRunReport &gt; dryRun() const</div><div class="ttdoc">Runs structural and authority preflight without publishing state.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00538">EditorTransactionConsumer.cpp:538</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_aa5ca2c22505cfac725602bfc7c5614cf"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aa5ca2c22505cfac725602bfc7c5614cf">eve::editor::EditorTransactionConsumer::rollback</a></div><div class="ttdeci">eve::Result&lt; void &gt; rollback()</div><div class="ttdoc">Discards the active transaction and any unpublished preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00757">EditorTransactionConsumer.cpp:757</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_aae1e33f1406c11e01094e238f3c468f7"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aae1e33f1406c11e01094e238f3c468f7">eve::editor::EditorTransactionConsumer::commit</a></div><div class="ttdeci">eve::Result&lt; EditorTransactionRecord &gt; commit()</div><div class="ttdoc">Commits the active editor participant set through Coordinator.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00564">EditorTransactionConsumer.cpp:564</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_ab318bd598e818b3c3e7503cd82c954e6"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ab318bd598e818b3c3e7503cd82c954e6">eve::editor::EditorTransactionConsumer::setAuthority</a></div><div class="ttdeci">eve::Result&lt; void &gt; setAuthority(IEditAuthority *authority)</div><div class="ttdoc">Changes the borrowed authority when no transaction is active.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00308">EditorTransactionConsumer.cpp:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_ad6df99881093016c0d807ede51fca570"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ad6df99881093016c0d807ede51fca570">eve::editor::EditorTransactionConsumer::active</a></div><div class="ttdeci">bool active() const noexcept</div><div class="ttdoc">Returns whether an editor transaction is active.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00871">EditorTransactionConsumer.cpp:871</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_ae1afb3965fb30640b662ba986a0ca199"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ae1afb3965fb30640b662ba986a0ca199">eve::editor::EditorTransactionConsumer::undoCount</a></div><div class="ttdeci">std::size_t undoCount() const noexcept</div><div class="ttdoc">Returns the number of undo entries.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00874">EditorTransactionConsumer.cpp:874</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_aee9515cd22601ca619687000c15cf30f"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aee9515cd22601ca619687000c15cf30f">eve::editor::EditorTransactionConsumer::appendPreview</a></div><div class="ttdeci">eve::Result&lt; void &gt; appendPreview(std::unique_ptr&lt; IEditCommand &gt; command)</div><div class="ttdoc">Compatibility-only append that applies a command as an editor preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00375">EditorTransactionConsumer.cpp:375</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_af4edaafd4ce5e833b2c27a65386332aa"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#af4edaafd4ce5e833b2c27a65386332aa">eve::editor::EditorTransactionConsumer::canUndo</a></div><div class="ttdeci">bool canUndo() const noexcept</div><div class="ttdoc">Returns whether editor-owned history can be compensated.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00872">EditorTransactionConsumer.cpp:872</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_afaf192f85ecd5763921d18c1478b146a"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#afaf192f85ecd5763921d18c1478b146a">eve::editor::EditorTransactionConsumer::beginLegacy</a></div><div class="ttdeci">eve::Result&lt; TransactionId &gt; beginLegacy(std::string label)</div><div class="ttdoc">Begins a compatibility command transaction with an allocated identifier.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00334">EditorTransactionConsumer.cpp:334</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactionConsumer_html_afc4f92e2990913b933ddbc8af3154e66"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#afc4f92e2990913b933ddbc8af3154e66">eve::editor::EditorTransactionConsumer::redo</a></div><div class="ttdeci">eve::Result&lt; EditorTransactionRecord &gt; redo()</div><div class="ttdoc">Re-executes the latest compensated editor-owned transaction.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00812">EditorTransactionConsumer.cpp:812</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae09b74b5d2d969de08aa1a308d038a4f"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">eve::editor::EditorCommitState</a></div><div class="ttdeci">EditorCommitState</div><div class="ttdoc">Lifecycle state of the editor consumer's active commit attempt.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00046">EditorTransactionConsumer.h:46</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae09b74b5d2d969de08aa1a308d038a4fa2d13df6f8b5e4c5af9f87e0dc39df69d"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::editor::EditorCommitState::Pending</a></div><div class="ttdeci">@ Pending</div><div class="ttdoc">A transaction is open and has not yet had a commit attempt fail.</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae09b74b5d2d969de08aa1a308d038a4fa486cc7e8d85ac3ca7008c7510d238dc8"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa486cc7e8d85ac3ca7008c7510d238dc8">eve::editor::EditorCommitState::FailedRetryable</a></div><div class="ttdeci">@ FailedRetryable</div><div class="ttdoc">The last attempt failed and retained work may be retried safely.</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">eve::editor::EditorCommitState::Discarded</a></div><div class="ttdeci">@ Discarded</div><div class="ttdoc">The active transaction was explicitly rolled back or discarded.</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae09b74b5d2d969de08aa1a308d038a4fafd8f656590df4b2d2b217b060b7204d3"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fafd8f656590df4b2d2b217b060b7204d3">eve::editor::EditorCommitState::Committed</a></div><div class="ttdeci">@ Committed</div><div class="ttdoc">The active transaction was committed and moved to editor history.</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TransactionSpec_html"><div class="ttname"><a href="structeve_1_1editing_1_1TransactionSpec.html">eve::editing::TransactionSpec</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00081">EditingProtocol.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorDryRunReport_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorDryRunReport.html">eve::editor::EditorDryRunReport</a></div><div class="ttdoc">Side-effect-free information returned by an editor preflight.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00038">EditorTransactionConsumer.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorDryRunReport_html_a71663a9b3f6f6e7c2e6b5ba1be5bdfb0"><div class="ttname"><a href="structeve_1_1editor_1_1EditorDryRunReport.html#a71663a9b3f6f6e7c2e6b5ba1be5bdfb0">eve::editor::EditorDryRunReport::commandCount</a></div><div class="ttdeci">std::size_t commandCount</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00040">EditorTransactionConsumer.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorDryRunReport_html_a95a6ccb8d48edb2b7647906d4036df2e"><div class="ttname"><a href="structeve_1_1editor_1_1EditorDryRunReport.html#a95a6ccb8d48edb2b7647906d4036df2e">eve::editor::EditorDryRunReport::authorityPlan</a></div><div class="ttdeci">std::optional&lt; AuthorityPlan &gt; authorityPlan</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00042">EditorTransactionConsumer.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorDryRunReport_html_abca258ecb831136af8f5051f4072537a"><div class="ttname"><a href="structeve_1_1editor_1_1EditorDryRunReport.html#abca258ecb831136af8f5051f4072537a">eve::editor::EditorDryRunReport::operationCount</a></div><div class="ttdeci">std::size_t operationCount</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00041">EditorTransactionConsumer.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorDryRunReport_html_acdcdd13601017c9420e1e3040fd1aff4"><div class="ttname"><a href="structeve_1_1editor_1_1EditorDryRunReport.html#acdcdd13601017c9420e1e3040fd1aff4">eve::editor::EditorDryRunReport::specification</a></div><div class="ttdeci">TransactionSpec specification</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00039">EditorTransactionConsumer.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorTransactionRecord_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorTransactionRecord.html">eve::editor::EditorTransactionRecord</a></div><div class="ttdoc">Structured result of one editor transaction or compensation.</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00023">EditorTransactionConsumer.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorTransactionRecord_html_a7f41fbf0e6928754105ff3e7a3c4e940"><div class="ttname"><a href="structeve_1_1editor_1_1EditorTransactionRecord.html#a7f41fbf0e6928754105ff3e7a3c4e940">eve::editor::EditorTransactionRecord::coordinator</a></div><div class="ttdeci">transaction::TransactionReceipt coordinator</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00024">EditorTransactionConsumer.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorTransactionRecord_html_aaa38fafda7fd33ccfb93b933fa2f17ed"><div class="ttname"><a href="structeve_1_1editor_1_1EditorTransactionRecord.html#aaa38fafda7fd33ccfb93b933fa2f17ed">eve::editor::EditorTransactionRecord::specification</a></div><div class="ttdeci">TransactionSpec specification</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00025">EditorTransactionConsumer.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorTransactionRecord_html_ad1fa68a4331238e6d9bcc383aaf01092"><div class="ttname"><a href="structeve_1_1editor_1_1EditorTransactionRecord.html#ad1fa68a4331238e6d9bcc383aaf01092">eve::editor::EditorTransactionRecord::commandCount</a></div><div class="ttdeci">std::size_t commandCount</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00027">EditorTransactionConsumer.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorTransactionRecord_html_ad79ef9d75df3927c1746eef1c14fd24f"><div class="ttname"><a href="structeve_1_1editor_1_1EditorTransactionRecord.html#ad79ef9d75df3927c1746eef1c14fd24f">eve::editor::EditorTransactionRecord::authorityReceipt</a></div><div class="ttdeci">std::optional&lt; eve::editor::TransactionReceipt &gt; authorityReceipt</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00026">EditorTransactionConsumer.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorTransactionRecord_html_afcf7e8ac673ec223d6dd2f24bd0357b7"><div class="ttname"><a href="structeve_1_1editor_1_1EditorTransactionRecord.html#afcf7e8ac673ec223d6dd2f24bd0357b7">eve::editor::EditorTransactionRecord::operationCount</a></div><div class="ttdeci">std::size_t operationCount</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8h_source.html#l00028">EditorTransactionConsumer.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1transaction_1_1TransactionReceipt_html"><div class="ttname"><a href="structeve_1_1transaction_1_1TransactionReceipt.html">eve::transaction::TransactionReceipt</a></div><div class="ttdoc">Observable summary returned after an atomic participant commit.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00088">Transaction.h:88</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

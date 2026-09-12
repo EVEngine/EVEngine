@@ -1,0 +1,497 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::RTSProjectilePayloadSnapshot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html">RTSProjectilePayloadSnapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::RTSProjectilePayloadSnapshot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Stable <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> damage payload paired with one shared projectile-pool handle.  
+ <a href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a20e2b65101f27acab62c6f715579006f" id="r_a20e2b65101f27acab62c6f715579006f"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a20e2b65101f27acab62c6f715579006f">key</a> = 0</td></tr>
+<tr class="separator:a20e2b65101f27acab62c6f715579006f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f535a9528894f802845362121634df" id="r_a54f535a9528894f802845362121634df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a54f535a9528894f802845362121634df">source</a></td></tr>
+<tr class="separator:a54f535a9528894f802845362121634df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a549caca6cb33ac9fafe158ce37e45436" id="r_a549caca6cb33ac9fafe158ce37e45436"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a549caca6cb33ac9fafe158ce37e45436">faction</a></td></tr>
+<tr class="separator:a549caca6cb33ac9fafe158ce37e45436"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a934ff14c1f263b43bac9ddee921b6e00" id="r_a934ff14c1f263b43bac9ddee921b6e00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a934ff14c1f263b43bac9ddee921b6e00">target</a></td></tr>
+<tr class="separator:a934ff14c1f263b43bac9ddee921b6e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a197f83f5d9bb8c851016f8ddce76fd27" id="r_a197f83f5d9bb8c851016f8ddce76fd27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a197f83f5d9bb8c851016f8ddce76fd27">observer</a></td></tr>
+<tr class="separator:a197f83f5d9bb8c851016f8ddce76fd27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8631cab3c3c975c0461f4b6944753d9a" id="r_a8631cab3c3c975c0461f4b6944753d9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a8631cab3c3c975c0461f4b6944753d9a">targetPoint</a></td></tr>
+<tr class="separator:a8631cab3c3c975c0461f4b6944753d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf32de9d8d0af5c0f1ad0a602dba604b" id="r_adf32de9d8d0af5c0f1ad0a602dba604b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#adf32de9d8d0af5c0f1ad0a602dba604b">targetHeight</a> = 0.0f</td></tr>
+<tr class="separator:adf32de9d8d0af5c0f1ad0a602dba604b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e4e3d746a5dfccec4f401b3186fb2fc" id="r_a5e4e3d746a5dfccec4f401b3186fb2fc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a5e4e3d746a5dfccec4f401b3186fb2fc">damageType</a></td></tr>
+<tr class="separator:a5e4e3d746a5dfccec4f401b3186fb2fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05bf2cd231c968401b7edca3ecc2b1be" id="r_a05bf2cd231c968401b7edca3ecc2b1be"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a05bf2cd231c968401b7edca3ecc2b1be">damage</a> = 0.0</td></tr>
+<tr class="separator:a05bf2cd231c968401b7edca3ecc2b1be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a16081a1dc58e337ba52ac6d1d98d85" id="r_a9a16081a1dc58e337ba52ac6d1d98d85"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a9a16081a1dc58e337ba52ac6d1d98d85">radius</a> = 0.0f</td></tr>
+<tr class="separator:a9a16081a1dc58e337ba52ac6d1d98d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af991f9183f14d6bb0991858c677d80a0" id="r_af991f9183f14d6bb0991858c677d80a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#af991f9183f14d6bb0991858c677d80a0">splashMinimumDamageFactor</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af991f9183f14d6bb0991858c677d80a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe741d224d7ffe084a27dee80098ba63" id="r_abe741d224d7ffe084a27dee80098ba63"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#abe741d224d7ffe084a27dee80098ba63">targetsGround</a> = true</td></tr>
+<tr class="separator:abe741d224d7ffe084a27dee80098ba63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51031583956e8102377af61b34fd18ab" id="r_a51031583956e8102377af61b34fd18ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a51031583956e8102377af61b34fd18ab">targetsAir</a> = true</td></tr>
+<tr class="separator:a51031583956e8102377af61b34fd18ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1162ec932f936c0612edfaf3bb1e0d7d" id="r_a1162ec932f936c0612edfaf3bb1e0d7d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a1162ec932f936c0612edfaf3bb1e0d7d">friendlyFire</a> = false</td></tr>
+<tr class="separator:a1162ec932f936c0612edfaf3bb1e0d7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02d81b416e1f76335311d4932f949b11" id="r_a02d81b416e1f76335311d4932f949b11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a02d81b416e1f76335311d4932f949b11">blockedByObstacles</a> = false</td></tr>
+<tr class="separator:a02d81b416e1f76335311d4932f949b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b55c6dba2fc3c53778893a66118d6a5" id="r_a3b55c6dba2fc3c53778893a66118d6a5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a3b55c6dba2fc3c53778893a66118d6a5">requiredTargetTags</a></td></tr>
+<tr class="separator:a3b55c6dba2fc3c53778893a66118d6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56c3a79a2320d8fb72854523d71b0caf" id="r_a56c3a79a2320d8fb72854523d71b0caf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#a56c3a79a2320d8fb72854523d71b0caf">excludedTargetTags</a></td></tr>
+<tr class="separator:a56c3a79a2320d8fb72854523d71b0caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Stable <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> damage payload paired with one shared projectile-pool handle. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00594">594</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a02d81b416e1f76335311d4932f949b11" name="a02d81b416e1f76335311d4932f949b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02d81b416e1f76335311d4932f949b11">&#9670;&#160;</a></span>blockedByObstacles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::RTSProjectilePayloadSnapshot::blockedByObstacles = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00609">609</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05bf2cd231c968401b7edca3ecc2b1be" name="a05bf2cd231c968401b7edca3ecc2b1be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05bf2cd231c968401b7edca3ecc2b1be">&#9670;&#160;</a></span>damage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rts::RTSProjectilePayloadSnapshot::damage = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00603">603</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e4e3d746a5dfccec4f401b3186fb2fc" name="a5e4e3d746a5dfccec4f401b3186fb2fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e4e3d746a5dfccec4f401b3186fb2fc">&#9670;&#160;</a></span>damageType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::RTSProjectilePayloadSnapshot::damageType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00602">602</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56c3a79a2320d8fb72854523d71b0caf" name="a56c3a79a2320d8fb72854523d71b0caf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56c3a79a2320d8fb72854523d71b0caf">&#9670;&#160;</a></span>excludedTargetTags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::rts::RTSProjectilePayloadSnapshot::excludedTargetTags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00611">611</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a549caca6cb33ac9fafe158ce37e45436" name="a549caca6cb33ac9fafe158ce37e45436"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a549caca6cb33ac9fafe158ce37e45436">&#9670;&#160;</a></span>faction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSProjectilePayloadSnapshot::faction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00597">597</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1162ec932f936c0612edfaf3bb1e0d7d" name="a1162ec932f936c0612edfaf3bb1e0d7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1162ec932f936c0612edfaf3bb1e0d7d">&#9670;&#160;</a></span>friendlyFire</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::RTSProjectilePayloadSnapshot::friendlyFire = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00608">608</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20e2b65101f27acab62c6f715579006f" name="a20e2b65101f27acab62c6f715579006f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20e2b65101f27acab62c6f715579006f">&#9670;&#160;</a></span>key</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::rts::RTSProjectilePayloadSnapshot::key = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00595">595</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a197f83f5d9bb8c851016f8ddce76fd27" name="a197f83f5d9bb8c851016f8ddce76fd27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a197f83f5d9bb8c851016f8ddce76fd27">&#9670;&#160;</a></span>observer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSProjectilePayloadSnapshot::observer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00599">599</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a16081a1dc58e337ba52ac6d1d98d85" name="a9a16081a1dc58e337ba52ac6d1d98d85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a16081a1dc58e337ba52ac6d1d98d85">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::RTSProjectilePayloadSnapshot::radius = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00604">604</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b55c6dba2fc3c53778893a66118d6a5" name="a3b55c6dba2fc3c53778893a66118d6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b55c6dba2fc3c53778893a66118d6a5">&#9670;&#160;</a></span>requiredTargetTags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::rts::RTSProjectilePayloadSnapshot::requiredTargetTags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00610">610</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54f535a9528894f802845362121634df" name="a54f535a9528894f802845362121634df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f535a9528894f802845362121634df">&#9670;&#160;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSProjectilePayloadSnapshot::source</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00596">596</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af991f9183f14d6bb0991858c677d80a0" name="af991f9183f14d6bb0991858c677d80a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af991f9183f14d6bb0991858c677d80a0">&#9670;&#160;</a></span>splashMinimumDamageFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::RTSProjectilePayloadSnapshot::splashMinimumDamageFactor = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00605">605</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a934ff14c1f263b43bac9ddee921b6e00" name="a934ff14c1f263b43bac9ddee921b6e00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a934ff14c1f263b43bac9ddee921b6e00">&#9670;&#160;</a></span>target</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSProjectilePayloadSnapshot::target</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00598">598</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf32de9d8d0af5c0f1ad0a602dba604b" name="adf32de9d8d0af5c0f1ad0a602dba604b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf32de9d8d0af5c0f1ad0a602dba604b">&#9670;&#160;</a></span>targetHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::RTSProjectilePayloadSnapshot::targetHeight = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00601">601</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8631cab3c3c975c0461f4b6944753d9a" name="a8631cab3c3c975c0461f4b6944753d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8631cab3c3c975c0461f4b6944753d9a">&#9670;&#160;</a></span>targetPoint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> eve::rts::RTSProjectilePayloadSnapshot::targetPoint</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00600">600</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51031583956e8102377af61b34fd18ab" name="a51031583956e8102377af61b34fd18ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51031583956e8102377af61b34fd18ab">&#9670;&#160;</a></span>targetsAir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::RTSProjectilePayloadSnapshot::targetsAir = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00607">607</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe741d224d7ffe084a27dee80098ba63" name="abe741d224d7ffe084a27dee80098ba63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe741d224d7ffe084a27dee80098ba63">&#9670;&#160;</a></span>targetsGround</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::RTSProjectilePayloadSnapshot::targetsGround = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 第 <a class="el" href="RTSSystems_8h_source.html#l00606">606</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

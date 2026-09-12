@@ -1,0 +1,787 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene::SceneNode结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene.html">scene</a></li><li class="navelem"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1scene_1_1SceneNode-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene::SceneNode结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Retained scene node (arena). Conceptual GameObject; isomorphic to <a class="el" href="structeve_1_1ui_1_1UINode.html" title="Retained UI widget node (arena tree). Conceptual counterpart of eve::scene::SceneNode; built declarat...">eve::ui::UINode</a>.  
+ <a href="structeve_1_1scene_1_1SceneNode.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SceneHost_8h_source.html">SceneHost.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a762a92dab1375eed6f5d32b2f731ffb1" id="r_a762a92dab1375eed6f5d32b2f731ffb1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a762a92dab1375eed6f5d32b2f731ffb1">id</a></td></tr>
+<tr class="separator:a762a92dab1375eed6f5d32b2f731ffb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a86b8605f117f58ff79dbd4a1c62b1" id="r_a05a86b8605f117f58ff79dbd4a1c62b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a74c1df79187160b80844be412da6b014">eve::SceneObjectId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a05a86b8605f117f58ff79dbd4a1c62b1">persistentId</a></td></tr>
+<tr class="memdesc:a05a86b8605f117f58ff79dbd4a1c62b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persisted object identity; nil means the legacy locator is still in use.  <br /></td></tr>
+<tr class="separator:a05a86b8605f117f58ff79dbd4a1c62b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ef449ed41f931738ac1fb410a18ea9a" id="r_a7ef449ed41f931738ac1fb410a18ea9a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a7ef449ed41f931738ac1fb410a18ea9a">key</a></td></tr>
+<tr class="separator:a7ef449ed41f931738ac1fb410a18ea9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf99b6f5d1be9947575eb41dc05a37ca" id="r_aaf99b6f5d1be9947575eb41dc05a37ca"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aaf99b6f5d1be9947575eb41dc05a37ca">name</a></td></tr>
+<tr class="separator:aaf99b6f5d1be9947575eb41dc05a37ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8c48907cc06ab07ac1565b743088c9e" id="r_ab8c48907cc06ab07ac1565b743088c9e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ab8c48907cc06ab07ac1565b743088c9e">space</a> = &quot;3d&quot;</td></tr>
+<tr class="separator:ab8c48907cc06ab07ac1565b743088c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc1687da511249a4e949cd6fb30db3d8" id="r_acc1687da511249a4e949cd6fb30db3d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#acc1687da511249a4e949cd6fb30db3d8">visible</a> = true</td></tr>
+<tr class="separator:acc1687da511249a4e949cd6fb30db3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17e339d02740f371f98c520c75639b66" id="r_a17e339d02740f371f98c520c75639b66"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a17e339d02740f371f98c520c75639b66">tags</a></td></tr>
+<tr class="memdesc:a17e339d02740f371f98c520c75639b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gameplay groups (Godot-style): multiple string tags per node.  <br /></td></tr>
+<tr class="separator:a17e339d02740f371f98c520c75639b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51af3a5d39416c0dbcf5b75b3b54fdca" id="r_a51af3a5d39416c0dbcf5b75b3b54fdca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a51af3a5d39416c0dbcf5b75b3b54fdca">layer</a> = 0</td></tr>
+<tr class="separator:a51af3a5d39416c0dbcf5b75b3b54fdca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0886da45d920ff490b66f20c0a2cd0db" id="r_a0886da45d920ff490b66f20c0a2cd0db"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a0886da45d920ff490b66f20c0a2cd0db">bminX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a0886da45d920ff490b66f20c0a2cd0db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local-space AABB (for picking / culling / spatial index).  <br /></td></tr>
+<tr class="separator:a0886da45d920ff490b66f20c0a2cd0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad5b6287d602788cc476d88d79c697b3" id="r_aad5b6287d602788cc476d88d79c697b3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aad5b6287d602788cc476d88d79c697b3">bminY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aad5b6287d602788cc476d88d79c697b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc209ba7e63274057d2ce33fd5f5d9b8" id="r_acc209ba7e63274057d2ce33fd5f5d9b8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#acc209ba7e63274057d2ce33fd5f5d9b8">bminZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acc209ba7e63274057d2ce33fd5f5d9b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c8997672bb5fdf7353643ba46373d56" id="r_a3c8997672bb5fdf7353643ba46373d56"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a3c8997672bb5fdf7353643ba46373d56">bmaxX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3c8997672bb5fdf7353643ba46373d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa06292b6151169e1bd56cfa2861bdde6" id="r_aa06292b6151169e1bd56cfa2861bdde6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aa06292b6151169e1bd56cfa2861bdde6">bmaxY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa06292b6151169e1bd56cfa2861bdde6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e5829ee6872fde43e7e2953793d3a38" id="r_a7e5829ee6872fde43e7e2953793d3a38"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a7e5829ee6872fde43e7e2953793d3a38">bmaxZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7e5829ee6872fde43e7e2953793d3a38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada854a5d33cafce50e18a64e772ff0ae" id="r_ada854a5d33cafce50e18a64e772ff0ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ada854a5d33cafce50e18a64e772ff0ae">hasBounds</a> = false</td></tr>
+<tr class="separator:ada854a5d33cafce50e18a64e772ff0ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91505e27efd71805d05d91075d4c0f5b" id="r_a91505e27efd71805d05d91075d4c0f5b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a91505e27efd71805d05d91075d4c0f5b">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a91505e27efd71805d05d91075d4c0f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4afc72d7fa5ef1cd26c7b5a53f4f2925" id="r_a4afc72d7fa5ef1cd26c7b5a53f4f2925"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a4afc72d7fa5ef1cd26c7b5a53f4f2925">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4afc72d7fa5ef1cd26c7b5a53f4f2925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae948b5008627bc8118ba1d171b7307ea" id="r_ae948b5008627bc8118ba1d171b7307ea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae948b5008627bc8118ba1d171b7307ea">z</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae948b5008627bc8118ba1d171b7307ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0a9fa043b695e0765ad0346370c4326" id="r_ab0a9fa043b695e0765ad0346370c4326"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ab0a9fa043b695e0765ad0346370c4326">yaw</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab0a9fa043b695e0765ad0346370c4326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a477f24ab9ebe023d81477ff40f6f08" id="r_a8a477f24ab9ebe023d81477ff40f6f08"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a8a477f24ab9ebe023d81477ff40f6f08">pitch</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8a477f24ab9ebe023d81477ff40f6f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c1a0f7b91cf650313bbded55f94eda7" id="r_a5c1a0f7b91cf650313bbded55f94eda7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a5c1a0f7b91cf650313bbded55f94eda7">roll</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5c1a0f7b91cf650313bbded55f94eda7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9e9ddea8e8f7e1ed7c5e724774542c" id="r_aee9e9ddea8e8f7e1ed7c5e724774542c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aee9e9ddea8e8f7e1ed7c5e724774542c">sx</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aee9e9ddea8e8f7e1ed7c5e724774542c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7514ad855db9cc9531981c0672e157f" id="r_ae7514ad855db9cc9531981c0672e157f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae7514ad855db9cc9531981c0672e157f">sy</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae7514ad855db9cc9531981c0672e157f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae34c2ef43348fb58d9bfd755586cd028" id="r_ae34c2ef43348fb58d9bfd755586cd028"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae34c2ef43348fb58d9bfd755586cd028">sz</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae34c2ef43348fb58d9bfd755586cd028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af375aecc1c579eb35e4e30a5211b70c3" id="r_af375aecc1c579eb35e4e30a5211b70c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#af375aecc1c579eb35e4e30a5211b70c3">localDirty</a> = true</td></tr>
+<tr class="separator:af375aecc1c579eb35e4e30a5211b70c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3125275b0d5457bf756663be304c236c" id="r_a3125275b0d5457bf756663be304c236c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a3125275b0d5457bf756663be304c236c">subtreeDirty</a> = true</td></tr>
+<tr class="memdesc:a3125275b0d5457bf756663be304c236c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subtree needs world recompute (API edits mark node + ancestors).  <br /></td></tr>
+<tr class="separator:a3125275b0d5457bf756663be304c236c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb27123e7e8d7a28b5be4ddaac3715f9" id="r_afb27123e7e8d7a28b5be4ddaac3715f9"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#afb27123e7e8d7a28b5be4ddaac3715f9">world</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:afb27123e7e8d7a28b5be4ddaac3715f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dda4c3849b462bb443088a227319a33" id="r_a8dda4c3849b462bb443088a227319a33"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1scene_1_1SceneLink.html">SceneLink</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a8dda4c3849b462bb443088a227319a33">links</a></td></tr>
+<tr class="memdesc:a8dda4c3849b462bb443088a227319a33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic links (renderable / physics / camera / audio). Target owned elsewhere.  <br /></td></tr>
+<tr class="separator:a8dda4c3849b462bb443088a227319a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a058cc010549c25e7bd8a56fa2128c319" id="r_a058cc010549c25e7bd8a56fa2128c319"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a058cc010549c25e7bd8a56fa2128c319">objectId</a> = 0</td></tr>
+<tr class="memdesc:a058cc010549c25e7bd8a56fa2128c319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lazy companion <a class="el" href="classeve_1_1scene_1_1SceneObject.html" title="Per-node ECS identity (created lazily when a node needs script bindings or engine components)....">SceneObject</a> ECS runtime id; 0 = none. Never a persisted identity.  <br /></td></tr>
+<tr class="separator:a058cc010549c25e7bd8a56fa2128c319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3bab8dc18ee03aa8c8b6aecb6cc3246" id="r_ae3bab8dc18ee03aa8c8b6aecb6cc3246"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae3bab8dc18ee03aa8c8b6aecb6cc3246">firstChild</a> = -1</td></tr>
+<tr class="separator:ae3bab8dc18ee03aa8c8b6aecb6cc3246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aebc1e5facf58a751f27f6f40550adb" id="r_a8aebc1e5facf58a751f27f6f40550adb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a8aebc1e5facf58a751f27f6f40550adb">nextSibling</a> = -1</td></tr>
+<tr class="separator:a8aebc1e5facf58a751f27f6f40550adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7c913a6e57cecf26ebc6ca5d0e4539a" id="r_ae7c913a6e57cecf26ebc6ca5d0e4539a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae7c913a6e57cecf26ebc6ca5d0e4539a">parent</a> = -1</td></tr>
+<tr class="separator:ae7c913a6e57cecf26ebc6ca5d0e4539a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Retained scene node (arena). Conceptual GameObject; isomorphic to <a class="el" href="structeve_1_1ui_1_1UINode.html" title="Retained UI widget node (arena tree). Conceptual counterpart of eve::scene::SceneNode; built declarat...">eve::ui::UINode</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a3c8997672bb5fdf7353643ba46373d56" name="a3c8997672bb5fdf7353643ba46373d56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c8997672bb5fdf7353643ba46373d56">&#9670;&#160;</a></span>bmaxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::bmaxX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa06292b6151169e1bd56cfa2861bdde6" name="aa06292b6151169e1bd56cfa2861bdde6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa06292b6151169e1bd56cfa2861bdde6">&#9670;&#160;</a></span>bmaxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::bmaxY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e5829ee6872fde43e7e2953793d3a38" name="a7e5829ee6872fde43e7e2953793d3a38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e5829ee6872fde43e7e2953793d3a38">&#9670;&#160;</a></span>bmaxZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::bmaxZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0886da45d920ff490b66f20c0a2cd0db" name="a0886da45d920ff490b66f20c0a2cd0db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0886da45d920ff490b66f20c0a2cd0db">&#9670;&#160;</a></span>bminX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::bminX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local-space AABB (for picking / culling / spatial index). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad5b6287d602788cc476d88d79c697b3" name="aad5b6287d602788cc476d88d79c697b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad5b6287d602788cc476d88d79c697b3">&#9670;&#160;</a></span>bminY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::bminY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc209ba7e63274057d2ce33fd5f5d9b8" name="acc209ba7e63274057d2ce33fd5f5d9b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc209ba7e63274057d2ce33fd5f5d9b8">&#9670;&#160;</a></span>bminZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::bminZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3bab8dc18ee03aa8c8b6aecb6cc3246" name="ae3bab8dc18ee03aa8c8b6aecb6cc3246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3bab8dc18ee03aa8c8b6aecb6cc3246">&#9670;&#160;</a></span>firstChild</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene::SceneNode::firstChild = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ada854a5d33cafce50e18a64e772ff0ae" name="ada854a5d33cafce50e18a64e772ff0ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada854a5d33cafce50e18a64e772ff0ae">&#9670;&#160;</a></span>hasBounds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::SceneNode::hasBounds = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a762a92dab1375eed6f5d32b2f731ffb1" name="a762a92dab1375eed6f5d32b2f731ffb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a762a92dab1375eed6f5d32b2f731ffb1">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::scene::SceneNode::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00701">eve::sceneloader::SceneLoader::applyTreeDiff()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00667">eve::sceneloader::SceneLoader::diffTree()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00543">eve::scene::Scene::getChildIdAt()</a>, <a class="el" href="SceneNodeRef_8cpp_source.html#l00225">eve::scene::SceneNodeRef::getChildIdAt()</a>, <a class="el" href="SceneNodeRef_8cpp_source.html#l00213">eve::scene::SceneNodeRef::getParentId()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00531">eve::scene::Scene::getParentId()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00524">eve::scene::Scene::getRootId()</a> , 以及 <a class="el" href="SceneNodes_8cpp_source.html#l00508">eve::scene::Scene::nodeIdFromSpatialIdAt()</a>.</p>
+
+</div>
+</div>
+<a id="a7ef449ed41f931738ac1fb410a18ea9a" name="a7ef449ed41f931738ac1fb410a18ea9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ef449ed41f931738ac1fb410a18ea9a">&#9670;&#160;</a></span>key</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::scene::SceneNode::key</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51af3a5d39416c0dbcf5b75b3b54fdca" name="a51af3a5d39416c0dbcf5b75b3b54fdca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51af3a5d39416c0dbcf5b75b3b54fdca">&#9670;&#160;</a></span>layer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene::SceneNode::layer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8dda4c3849b462bb443088a227319a33" name="a8dda4c3849b462bb443088a227319a33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dda4c3849b462bb443088a227319a33">&#9670;&#160;</a></span>links</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1scene_1_1SceneLink.html">SceneLink</a>&gt; eve::scene::SceneNode::links</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generic links (renderable / physics / camera / audio). Target owned elsewhere. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af375aecc1c579eb35e4e30a5211b70c3" name="af375aecc1c579eb35e4e30a5211b70c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af375aecc1c579eb35e4e30a5211b70c3">&#9670;&#160;</a></span>localDirty</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::SceneNode::localDirty = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf99b6f5d1be9947575eb41dc05a37ca" name="aaf99b6f5d1be9947575eb41dc05a37ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf99b6f5d1be9947575eb41dc05a37ca">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::scene::SceneNode::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8aebc1e5facf58a751f27f6f40550adb" name="a8aebc1e5facf58a751f27f6f40550adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aebc1e5facf58a751f27f6f40550adb">&#9670;&#160;</a></span>nextSibling</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene::SceneNode::nextSibling = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a058cc010549c25e7bd8a56fa2128c319" name="a058cc010549c25e7bd8a56fa2128c319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a058cc010549c25e7bd8a56fa2128c319">&#9670;&#160;</a></span>objectId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::scene::SceneNode::objectId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lazy companion <a class="el" href="classeve_1_1scene_1_1SceneObject.html" title="Per-node ECS identity (created lazily when a node needs script bindings or engine components)....">SceneObject</a> ECS runtime id; 0 = none. Never a persisted identity. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7c913a6e57cecf26ebc6ca5d0e4539a" name="ae7c913a6e57cecf26ebc6ca5d0e4539a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7c913a6e57cecf26ebc6ca5d0e4539a">&#9670;&#160;</a></span>parent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene::SceneNode::parent = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05a86b8605f117f58ff79dbd4a1c62b1" name="a05a86b8605f117f58ff79dbd4a1c62b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05a86b8605f117f58ff79dbd4a1c62b1">&#9670;&#160;</a></span>persistentId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a74c1df79187160b80844be412da6b014">eve::SceneObjectId</a> eve::scene::SceneNode::persistentId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Persisted object identity; nil means the legacy locator is still in use. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a477f24ab9ebe023d81477ff40f6f08" name="a8a477f24ab9ebe023d81477ff40f6f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a477f24ab9ebe023d81477ff40f6f08">&#9670;&#160;</a></span>pitch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::pitch = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c1a0f7b91cf650313bbded55f94eda7" name="a5c1a0f7b91cf650313bbded55f94eda7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c1a0f7b91cf650313bbded55f94eda7">&#9670;&#160;</a></span>roll</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::roll = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8c48907cc06ab07ac1565b743088c9e" name="ab8c48907cc06ab07ac1565b743088c9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8c48907cc06ab07ac1565b743088c9e">&#9670;&#160;</a></span>space</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::scene::SceneNode::space = &quot;3d&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3125275b0d5457bf756663be304c236c" name="a3125275b0d5457bf756663be304c236c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3125275b0d5457bf756663be304c236c">&#9670;&#160;</a></span>subtreeDirty</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::SceneNode::subtreeDirty = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Subtree needs world recompute (API edits mark node + ancestors). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee9e9ddea8e8f7e1ed7c5e724774542c" name="aee9e9ddea8e8f7e1ed7c5e724774542c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee9e9ddea8e8f7e1ed7c5e724774542c">&#9670;&#160;</a></span>sx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::sx = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7514ad855db9cc9531981c0672e157f" name="ae7514ad855db9cc9531981c0672e157f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7514ad855db9cc9531981c0672e157f">&#9670;&#160;</a></span>sy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::sy = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae34c2ef43348fb58d9bfd755586cd028" name="ae34c2ef43348fb58d9bfd755586cd028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae34c2ef43348fb58d9bfd755586cd028">&#9670;&#160;</a></span>sz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::sz = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17e339d02740f371f98c520c75639b66" name="a17e339d02740f371f98c520c75639b66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17e339d02740f371f98c520c75639b66">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::scene::SceneNode::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gameplay groups (Godot-style): multiple string tags per node. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc1687da511249a4e949cd6fb30db3d8" name="acc1687da511249a4e949cd6fb30db3d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc1687da511249a4e949cd6fb30db3d8">&#9670;&#160;</a></span>visible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::SceneNode::visible = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb27123e7e8d7a28b5be4ddaac3715f9" name="afb27123e7e8d7a28b5be4ddaac3715f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb27123e7e8d7a28b5be4ddaac3715f9">&#9670;&#160;</a></span>world</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::scene::SceneNode::world {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91505e27efd71805d05d91075d4c0f5b" name="a91505e27efd71805d05d91075d4c0f5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91505e27efd71805d05d91075d4c0f5b">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4afc72d7fa5ef1cd26c7b5a53f4f2925" name="a4afc72d7fa5ef1cd26c7b5a53f4f2925"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4afc72d7fa5ef1cd26c7b5a53f4f2925">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab0a9fa043b695e0765ad0346370c4326" name="ab0a9fa043b695e0765ad0346370c4326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0a9fa043b695e0765ad0346370c4326">&#9670;&#160;</a></span>yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::yaw = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae948b5008627bc8118ba1d171b7307ea" name="ae948b5008627bc8118ba1d171b7307ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae948b5008627bc8118ba1d171b7307ea">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::scene::SceneNode::z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/scene/<a class="el" href="SceneHost_8h_source.html">SceneHost.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

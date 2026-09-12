@@ -1,0 +1,394 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editor::SceneEditorSession::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editor.html">scene_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a></li><li class="navelem"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editor::SceneEditorSession::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl_1_1CachedHull.html">CachedHull</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6bb7cc16ba65a285654c6b4bc764e4c9" id="r_a6bb7cc16ba65a285654c6b4bc764e4c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#a6bb7cc16ba65a285654c6b4bc764e4c9">Impl</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">scene_editing::SceneTargetBase</a> &gt; <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a6bb7cc16ba65a285654c6b4bc764e4c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a4e23804a4155c52815badb1d2b8ca81c" id="r_a4e23804a4155c52815badb1d2b8ca81c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">scene_editing::SceneTargetBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#a4e23804a4155c52815badb1d2b8ca81c">target</a></td></tr>
+<tr class="separator:a4e23804a4155c52815badb1d2b8ca81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9137fee8b26dac23da11300f1d847c64" id="r_a9137fee8b26dac23da11300f1d847c64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">editor::EditorCommandService</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#a9137fee8b26dac23da11300f1d847c64">commands</a></td></tr>
+<tr class="separator:a9137fee8b26dac23da11300f1d847c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ac60a9e0e60ddbbce81112b4d99665a" id="r_a2ac60a9e0e60ddbbce81112b4d99665a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">editor::EditorTargetCoordinator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#a2ac60a9e0e60ddbbce81112b4d99665a">coordinator</a></td></tr>
+<tr class="separator:a2ac60a9e0e60ddbbce81112b4d99665a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2357203d2e94940eadd0e707d16aed0" id="r_ac2357203d2e94940eadd0e707d16aed0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">editor::HostProfile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#ac2357203d2e94940eadd0e707d16aed0">profile</a> = <a class="el" href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">editor::HostProfile::developer</a>()</td></tr>
+<tr class="separator:ac2357203d2e94940eadd0e707d16aed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45223d466e9a9c7afc1d37ae9416f3a5" id="r_a45223d466e9a9c7afc1d37ae9416f3a5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend.html">ScenePhysicsPlacementBackend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#a45223d466e9a9c7afc1d37ae9416f3a5">placement</a></td></tr>
+<tr class="separator:a45223d466e9a9c7afc1d37ae9416f3a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4807b2d5994510d8435c7b120be3aff4" id="r_a4807b2d5994510d8435c7b120be3aff4"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl_1_1CachedHull.html">CachedHull</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#a4807b2d5994510d8435c7b120be3aff4">placementHulls</a></td></tr>
+<tr class="separator:a4807b2d5994510d8435c7b120be3aff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac31b6eb545127964c890c8ad028bc7f7" id="r_ac31b6eb545127964c890c8ad028bc7f7"><td class="memItemLeft" align="right" valign="top">SceneGraph&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#ac31b6eb545127964c890c8ad028bc7f7">placementGraph</a></td></tr>
+<tr class="separator:ac31b6eb545127964c890c8ad028bc7f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7b4390b922c3cbec89def50dde35461" id="r_ad7b4390b922c3cbec89def50dde35461"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, glm::dmat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#ad7b4390b922c3cbec89def50dde35461">placementInitialWorld</a></td></tr>
+<tr class="separator:ad7b4390b922c3cbec89def50dde35461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae98ac13c1c68e085679646b51ca16aa6" id="r_ae98ac13c1c68e085679646b51ca16aa6"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html#ae98ac13c1c68e085679646b51ca16aa6">placementTick</a> = 0</td></tr>
+<tr class="separator:ae98ac13c1c68e085679646b51ca16aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00269">269</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6bb7cc16ba65a285654c6b4bc764e4c9" name="a6bb7cc16ba65a285654c6b4bc764e4c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bb7cc16ba65a285654c6b4bc764e4c9">&#9670;&#160;</a></span>Impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::SceneEditorSession::Impl::Impl </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">scene_editing::SceneTargetBase</a> &gt;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneEditorSession_8cpp_source.html#l00282">coordinator</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="SceneEditingCommands_8cpp_source.html#l00043">eve::scene_editing::registerEditingCommands()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00157">eve::editor::EditorTargetCoordinator::registerTarget()</a> , 以及 <a class="el" href="SceneEditorSession_8cpp_source.html#l00280">target</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a9137fee8b26dac23da11300f1d847c64" name="a9137fee8b26dac23da11300f1d847c64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9137fee8b26dac23da11300f1d847c64">&#9670;&#160;</a></span>commands</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">editor::EditorCommandService</a> eve::scene_editor::SceneEditorSession::Impl::commands</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ac60a9e0e60ddbbce81112b4d99665a" name="a2ac60a9e0e60ddbbce81112b4d99665a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac60a9e0e60ddbbce81112b4d99665a">&#9670;&#160;</a></span>coordinator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">editor::EditorTargetCoordinator</a> eve::scene_editor::SceneEditorSession::Impl::coordinator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00274">Impl()</a>.</p>
+
+</div>
+</div>
+<a id="a45223d466e9a9c7afc1d37ae9416f3a5" name="a45223d466e9a9c7afc1d37ae9416f3a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45223d466e9a9c7afc1d37ae9416f3a5">&#9670;&#160;</a></span>placement</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend.html">ScenePhysicsPlacementBackend</a>&gt; eve::scene_editor::SceneEditorSession::Impl::placement</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac31b6eb545127964c890c8ad028bc7f7" name="ac31b6eb545127964c890c8ad028bc7f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31b6eb545127964c890c8ad028bc7f7">&#9670;&#160;</a></span>placementGraph</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SceneGraph eve::scene_editor::SceneEditorSession::Impl::placementGraph</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4807b2d5994510d8435c7b120be3aff4" name="a4807b2d5994510d8435c7b120be3aff4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4807b2d5994510d8435c7b120be3aff4">&#9670;&#160;</a></span>placementHulls</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl_1_1CachedHull.html">CachedHull</a>&gt; eve::scene_editor::SceneEditorSession::Impl::placementHulls</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7b4390b922c3cbec89def50dde35461" name="ad7b4390b922c3cbec89def50dde35461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7b4390b922c3cbec89def50dde35461">&#9670;&#160;</a></span>placementInitialWorld</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, glm::dmat4&gt; eve::scene_editor::SceneEditorSession::Impl::placementInitialWorld</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae98ac13c1c68e085679646b51ca16aa6" name="ae98ac13c1c68e085679646b51ca16aa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae98ac13c1c68e085679646b51ca16aa6">&#9670;&#160;</a></span>placementTick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::scene_editor::SceneEditorSession::Impl::placementTick = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2357203d2e94940eadd0e707d16aed0" name="ac2357203d2e94940eadd0e707d16aed0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2357203d2e94940eadd0e707d16aed0">&#9670;&#160;</a></span>profile</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">editor::HostProfile</a> eve::scene_editor::SceneEditorSession::Impl::profile = <a class="el" href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">editor::HostProfile::developer</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e23804a4155c52815badb1d2b8ca81c" name="a4e23804a4155c52815badb1d2b8ca81c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e23804a4155c52815badb1d2b8ca81c">&#9670;&#160;</a></span>target</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">scene_editing::SceneTargetBase</a>&gt; eve::scene_editor::SceneEditorSession::Impl::target</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00274">Impl()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/scene/editor/<a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

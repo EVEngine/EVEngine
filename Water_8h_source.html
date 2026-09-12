@@ -1,0 +1,361 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/Water.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Water.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Water_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="WaterStyleConfig_8h.html">graphics/WaterStyleConfig.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html">   34</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1Water.html">Water</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Water.html">Water</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ad0a19867a620bc2f03000af54acf7889">~Water</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a2eaa677cf3d3f74e9ce3ad57882cb161">   39</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a2eaa677cf3d3f74e9ce3ad57882cb161">Water</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#ab39da1d0e788f7d7bbdbb0c847754ed4">   40</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ab39da1d0e788f7d7bbdbb0c847754ed4">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a7242a1034016a78735d9d41ba1c62d85">createPlane</a>(<span class="keywordtype">float</span> sizeX, <span class="keywordtype">float</span> sizeZ, <span class="keywordtype">int</span> segX, <span class="keywordtype">int</span> segZ);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a4e96ae119fcffed5fdd2e157c39869ad">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a83d2a5bdfd5795a6fb7dc05cd24659cb">setTime</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a25e878005059ae9607b20280af967576">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a25e878005059ae9607b20280af967576">getTime</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> time_; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// --- Animation / material knobs ---</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a4340e27d8f85bb7a7da3dac7356c0944">setWaveSpeed</a>(<span class="keywordtype">float</span> speed);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a78d83a0fbf9d6f5c46a8de391e7b2596">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a78d83a0fbf9d6f5c46a8de391e7b2596">getWaveSpeed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#a91160dcf36ce53c54901dcbb96158119">waveSpeed</a>; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a2eea47872de479394e0a2ae7a5d39dc4">setWaveAmplitude</a>(<span class="keywordtype">float</span> amp);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a4ba26d34ee22337884e58a0a6d8ea9dc">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a4ba26d34ee22337884e58a0a6d8ea9dc">getWaveAmplitude</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#acf339a841c51cb06ad8be48debe71810">waveAmplitude</a>; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a4113893f526adb74c87a376c33d01905">setRippleAmplitude</a>(<span class="keywordtype">float</span> amp);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a5602c8a491a552cf2a638376b88818e2">   60</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a5602c8a491a552cf2a638376b88818e2">getRippleAmplitude</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#aba964fa68d3e14c8c302d25436fbe7e8">rippleAmplitude</a>; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a6e7fef7a90ed23882fd7268f41d21b5c">setEdgeFalloff</a>(<span class="keywordtype">float</span> edge);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a848dabbf26575fe22383cb4abc67a90d">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a848dabbf26575fe22383cb4abc67a90d">getEdgeFalloff</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#a592f2bda86177c450ac6127a131ab812">foamWidth</a>; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ad54a6dca6c9c0a239e421e3c2f85f539">setRippleCount</a>(<span class="keywordtype">int</span> count);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a71afbc5cc5097295d590e337a48dd7e8">   68</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a71afbc5cc5097295d590e337a48dd7e8">getRippleCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#a378cd6ca1393632064b174b55f4f1181">rippleCount</a>; }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ac296474d9b6ae0257d5f5eca0af0ff83">setRippleInterval</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a8a228be46ba1ecad32d03b92d03f2507">   72</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a8a228be46ba1ecad32d03b92d03f2507">getRippleInterval</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#a1b8e46592fe7c2b3a2305830ca10289d">rippleInterval</a>; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#aa3e508ac2107f40b30392a1c66307a6e">setWaveScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#ad7c273e403354a4687cfa02286e084cb">   75</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ad7c273e403354a4687cfa02286e084cb">getWaveScale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#a17997faa6b6f4091a1e0841d77743771">waveScale</a>; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ada4025ca0b0426a8e72c033fce1942ba">setWaterColor</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a811d5df79c5b80a0903c1e19effb1f3b">setReflectionTint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a84c815dd3bc8d497169b3ade6f9044f4">setReflectionIntensity</a>(<span class="keywordtype">float</span> intensity);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a698169fbea132fb88d93bf6f5ed3c2db">   80</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a698169fbea132fb88d93bf6f5ed3c2db">getReflectionIntensity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#afb437c04da4b66ee7b1fd02632f71480">reflectionIntensity</a>; }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a78c4daba0fcfec3281500cd08909a44a">setSunIntensity</a>(<span class="keywordtype">float</span> intensity);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a0c0d394e666733ee48f5499f45d555e9">   83</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a0c0d394e666733ee48f5499f45d555e9">getSunIntensity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#a5bdee4360525b39732eb19a8bb8a0ce7">sunIntensity</a>; }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a079706455ba3a62e5a63c06a3271cf16">setScreenSpaceReflection</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, <span class="keywordtype">float</span> strength = 0.85f);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#abacdee3f5ea46f59a9143b062d39d58a">   93</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#abacdee3f5ea46f59a9143b062d39d58a">getScreenSpaceReflection</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#ab1785286b34fb60937203261e6eb2f65">screenSpaceReflection</a>; }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#ab1c74cdf3f6aac2bcbb99aa6b1b3fa78">   94</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ab1c74cdf3f6aac2bcbb99aa6b1b3fa78">getScreenSpaceReflectionStrength</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_.<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterStyleConfig.html#ab0477e7a8c2d3430edb65477ad23a18b">screenSpaceReflectionStrength</a>; }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#af3087a27237cf91daad1f422fdcb621e">applyConfigJson</a>(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a41a6fd9382daa5da89e5cc9385df8c13">configJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#ad68a1f2488697976d0fc5732e1aafd1d">  106</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1WaterStyleConfig.html">WaterStyleConfig</a> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ad68a1f2488697976d0fc5732e1aafd1d">config</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ad2802c8c04cc998e59c7a7ca3f6109df">setViewport</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a8ea0b89c6abe3da1fa4975400f7b5739">  110</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a8ea0b89c6abe3da1fa4975400f7b5739">getViewportWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> viewportW_; }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a0b239accd7430dd074ab89ce7746ba53">  111</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a0b239accd7430dd074ab89ce7746ba53">getViewportHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> viewportH_; }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ac6c78aab732d2b6f5464788fe252ccf0">bindParams</a>();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a5f84521cdf872175dd143892bf77375e">draw</a>();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#afcc8bb68489bcfff7f0eff570e44c289">drawWithPlanarReflection</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* planarReflection, <span class="keywordtype">float</span> strength = 1.0F);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#aac7acd015816ba9959618bc7c97318b4">  130</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#aac7acd015816ba9959618bc7c97318b4">setReflectionCaptureEnabled</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) { reflectionCaptureEnabled_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>; }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#aed9ba89b63a126a7a225342c6b31ebd7">  132</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#aed9ba89b63a126a7a225342c6b31ebd7">getReflectionCaptureEnabled</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> reflectionCaptureEnabled_; }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a7b0534e30832046375b7b3929bf2dc0c">  134</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a7b0534e30832046375b7b3929bf2dc0c">setReflectionCaptureMask</a>(uint32_t <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>) { reflectionCaptureMask_ = <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>; }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a480037abf780c24ffbb8080e5cf77f04">  136</a></span>    uint32_t <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a480037abf780c24ffbb8080e5cf77f04">getReflectionCaptureMask</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> reflectionCaptureMask_; }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#ac556086a2d173794a49cd102d32f2d0f">  138</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#ac556086a2d173794a49cd102d32f2d0f">getShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> shader_; }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Water.html#a0776d1b95d7aaba5b16f826d1e7ba996">  139</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a0776d1b95d7aaba5b16f826d1e7ba996">getMesh</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mesh_; }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a977cb7152449b1b013c4cb1cd8948074">paramCount</a>();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1graphics_1_1Water.html#a3f7c37e74f19cae66c16c234afeeadcd">paramName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">void</span> drawWithReflection(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* reflection, <span class="keywordtype">float</span> strength);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span> drawReflectionCapture();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *shader_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *mesh_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">float</span> time_ = 0.f;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1WaterStyleConfig.html">WaterStyleConfig</a> config_;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">float</span> viewportW_ = 0.f;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">float</span> viewportH_ = 0.f;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    uint64_t captureDrawerToken_ = 0;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    uint32_t reflectionCaptureMask_ = 0xffffffffu;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordtype">bool</span> reflectionCaptureEnabled_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>};</div>
+</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>Shader *<a class="code hl_function" href="namespaceeve_1_1graphics.html#a6b871872774fd03f3dd68e04d72c2046">newWaterShader</a>(Graphics *gfx);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aWaterStyleConfig_8h_html"><div class="ttname"><a href="WaterStyleConfig_8h.html">WaterStyleConfig.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00107">Graphics.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00023">Mesh.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00035">Shader.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html">eve::graphics::Water</a></div><div class="ttdoc">Dynamic water surface with sky reflection and animated ripples.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00034">Water.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a0776d1b95d7aaba5b16f826d1e7ba996"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a0776d1b95d7aaba5b16f826d1e7ba996">eve::graphics::Water::getMesh</a></div><div class="ttdeci">Mesh * getMesh() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00139">Water.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a079706455ba3a62e5a63c06a3271cf16"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a079706455ba3a62e5a63c06a3271cf16">eve::graphics::Water::setScreenSpaceReflection</a></div><div class="ttdeci">void setScreenSpaceReflection(bool enabled, float strength=0.85f)</div><div class="ttdoc">Optional screen-space reflection overlay. When enabled, the shader samples the temporally resolved SS...</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00144">Water.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a0b239accd7430dd074ab89ce7746ba53"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a0b239accd7430dd074ab89ce7746ba53">eve::graphics::Water::getViewportHeight</a></div><div class="ttdeci">float getViewportHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00111">Water.h:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a0c0d394e666733ee48f5499f45d555e9"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a0c0d394e666733ee48f5499f45d555e9">eve::graphics::Water::getSunIntensity</a></div><div class="ttdeci">float getSunIntensity() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00083">Water.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a25e878005059ae9607b20280af967576"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a25e878005059ae9607b20280af967576">eve::graphics::Water::getTime</a></div><div class="ttdeci">float getTime() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00048">Water.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a2eaa677cf3d3f74e9ce3ad57882cb161"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a2eaa677cf3d3f74e9ce3ad57882cb161">eve::graphics::Water::Water</a></div><div class="ttdeci">Water(const Water &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a2eea47872de479394e0a2ae7a5d39dc4"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a2eea47872de479394e0a2ae7a5d39dc4">eve::graphics::Water::setWaveAmplitude</a></div><div class="ttdeci">void setWaveAmplitude(float amp)</div><div class="ttdoc">Amplitude of the shore-edge waves.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00130">Water.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a3f7c37e74f19cae66c16c234afeeadcd"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a3f7c37e74f19cae66c16c234afeeadcd">eve::graphics::Water::paramName</a></div><div class="ttdeci">static std::string paramName(int index)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00066">Water.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a4113893f526adb74c87a376c33d01905"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a4113893f526adb74c87a376c33d01905">eve::graphics::Water::setRippleAmplitude</a></div><div class="ttdeci">void setRippleAmplitude(float amp)</div><div class="ttdoc">Amplitude of the occasional middle drop ripples.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00131">Water.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a41a6fd9382daa5da89e5cc9385df8c13"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a41a6fd9382daa5da89e5cc9385df8c13">eve::graphics::Water::configJson</a></div><div class="ttdeci">Result&lt; std::string &gt; configJson() const</div><div class="ttdoc">Return the canonical current eve.graphics.stylized-water/1 JSON snapshot.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00189">Water.cpp:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a4340e27d8f85bb7a7da3dac7356c0944"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a4340e27d8f85bb7a7da3dac7356c0944">eve::graphics::Water::setWaveSpeed</a></div><div class="ttdeci">void setWaveSpeed(float speed)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00129">Water.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a480037abf780c24ffbb8080e5cf77f04"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a480037abf780c24ffbb8080e5cf77f04">eve::graphics::Water::getReflectionCaptureMask</a></div><div class="ttdeci">uint32_t getReflectionCaptureMask() const</div><div class="ttdoc">Return the reflection-capture visibility layer mask.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00136">Water.h:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a4ba26d34ee22337884e58a0a6d8ea9dc"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a4ba26d34ee22337884e58a0a6d8ea9dc">eve::graphics::Water::getWaveAmplitude</a></div><div class="ttdeci">float getWaveAmplitude() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00056">Water.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a4e96ae119fcffed5fdd2e157c39869ad"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a4e96ae119fcffed5fdd2e157c39869ad">eve::graphics::Water::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Advance the animation clock by dt seconds.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00119">Water.cpp:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a5602c8a491a552cf2a638376b88818e2"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a5602c8a491a552cf2a638376b88818e2">eve::graphics::Water::getRippleAmplitude</a></div><div class="ttdeci">float getRippleAmplitude() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00060">Water.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a5f84521cdf872175dd143892bf77375e"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a5f84521cdf872175dd143892bf77375e">eve::graphics::Water::draw</a></div><div class="ttdeci">void draw()</div><div class="ttdoc">Draw the water plane (uses default mesh3d camera / lighting state).</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00191">Water.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a698169fbea132fb88d93bf6f5ed3c2db"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a698169fbea132fb88d93bf6f5ed3c2db">eve::graphics::Water::getReflectionIntensity</a></div><div class="ttdeci">float getReflectionIntensity() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00080">Water.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a6e7fef7a90ed23882fd7268f41d21b5c"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a6e7fef7a90ed23882fd7268f41d21b5c">eve::graphics::Water::setEdgeFalloff</a></div><div class="ttdeci">void setEdgeFalloff(float edge)</div><div class="ttdoc">Compatibility setter for the world-space shoreline foam width.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00132">Water.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a71afbc5cc5097295d590e337a48dd7e8"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a71afbc5cc5097295d590e337a48dd7e8">eve::graphics::Water::getRippleCount</a></div><div class="ttdeci">int getRippleCount() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00068">Water.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a7242a1034016a78735d9d41ba1c62d85"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a7242a1034016a78735d9d41ba1c62d85">eve::graphics::Water::createPlane</a></div><div class="ttdeci">void createPlane(float sizeX, float sizeZ, int segX, int segZ)</div><div class="ttdoc">Build a flat XZ plane (Y-up) sized sizeX × sizeZ with UVs in [0,1]².</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00084">Water.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a78c4daba0fcfec3281500cd08909a44a"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a78c4daba0fcfec3281500cd08909a44a">eve::graphics::Water::setSunIntensity</a></div><div class="ttdeci">void setSunIntensity(float intensity)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00143">Water.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a78d83a0fbf9d6f5c46a8de391e7b2596"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a78d83a0fbf9d6f5c46a8de391e7b2596">eve::graphics::Water::getWaveSpeed</a></div><div class="ttdeci">float getWaveSpeed() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00052">Water.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a7b0534e30832046375b7b3929bf2dc0c"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a7b0534e30832046375b7b3929bf2dc0c">eve::graphics::Water::setReflectionCaptureMask</a></div><div class="ttdeci">void setReflectionCaptureMask(uint32_t mask)</div><div class="ttdoc">Set the reflection-capture visibility layer mask.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00134">Water.h:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a811d5df79c5b80a0903c1e19effb1f3b"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a811d5df79c5b80a0903c1e19effb1f3b">eve::graphics::Water::setReflectionTint</a></div><div class="ttdeci">void setReflectionTint(float r, float g, float b)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00139">Water.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a83d2a5bdfd5795a6fb7dc05cd24659cb"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a83d2a5bdfd5795a6fb7dc05cd24659cb">eve::graphics::Water::setTime</a></div><div class="ttdeci">void setTime(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00124">Water.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a848dabbf26575fe22383cb4abc67a90d"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a848dabbf26575fe22383cb4abc67a90d">eve::graphics::Water::getEdgeFalloff</a></div><div class="ttdeci">float getEdgeFalloff() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00064">Water.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a84c815dd3bc8d497169b3ade6f9044f4"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a84c815dd3bc8d497169b3ade6f9044f4">eve::graphics::Water::setReflectionIntensity</a></div><div class="ttdeci">void setReflectionIntensity(float intensity)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00142">Water.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a8a228be46ba1ecad32d03b92d03f2507"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a8a228be46ba1ecad32d03b92d03f2507">eve::graphics::Water::getRippleInterval</a></div><div class="ttdeci">float getRippleInterval() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00072">Water.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a8ea0b89c6abe3da1fa4975400f7b5739"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a8ea0b89c6abe3da1fa4975400f7b5739">eve::graphics::Water::getViewportWidth</a></div><div class="ttdeci">float getViewportWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00110">Water.h:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_a977cb7152449b1b013c4cb1cd8948074"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#a977cb7152449b1b013c4cb1cd8948074">eve::graphics::Water::paramCount</a></div><div class="ttdeci">static int paramCount()</div><div class="ttdoc">Names of the push-constant parameters (for UI / inspection).</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00064">Water.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_aa3e508ac2107f40b30392a1c66307a6e"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#aa3e508ac2107f40b30392a1c66307a6e">eve::graphics::Water::setWaveScale</a></div><div class="ttdeci">void setWaveScale(float scale)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00135">Water.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_aac7acd015816ba9959618bc7c97318b4"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#aac7acd015816ba9959618bc7c97318b4">eve::graphics::Water::setReflectionCaptureEnabled</a></div><div class="ttdeci">void setReflectionCaptureEnabled(bool enabled)</div><div class="ttdoc">Enable or disable inclusion in reflection-probe captures.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00130">Water.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ab1c74cdf3f6aac2bcbb99aa6b1b3fa78"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ab1c74cdf3f6aac2bcbb99aa6b1b3fa78">eve::graphics::Water::getScreenSpaceReflectionStrength</a></div><div class="ttdeci">float getScreenSpaceReflectionStrength() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00094">Water.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ab39da1d0e788f7d7bbdbb0c847754ed4"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ab39da1d0e788f7d7bbdbb0c847754ed4">eve::graphics::Water::operator=</a></div><div class="ttdeci">Water &amp; operator=(const Water &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_abacdee3f5ea46f59a9143b062d39d58a"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#abacdee3f5ea46f59a9143b062d39d58a">eve::graphics::Water::getScreenSpaceReflection</a></div><div class="ttdeci">bool getScreenSpaceReflection() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00093">Water.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ac296474d9b6ae0257d5f5eca0af0ff83"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ac296474d9b6ae0257d5f5eca0af0ff83">eve::graphics::Water::setRippleInterval</a></div><div class="ttdeci">void setRippleInterval(float seconds)</div><div class="ttdoc">Seconds between drop ripples.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00134">Water.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ac556086a2d173794a49cd102d32f2d0f"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ac556086a2d173794a49cd102d32f2d0f">eve::graphics::Water::getShader</a></div><div class="ttdeci">Shader * getShader() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00138">Water.h:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ac6c78aab732d2b6f5464788fe252ccf0"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ac6c78aab732d2b6f5464788fe252ccf0">eve::graphics::Water::bindParams</a></div><div class="ttdeci">void bindParams()</div><div class="ttdoc">Upload current params to the shader push constants.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00153">Water.cpp:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ad0a19867a620bc2f03000af54acf7889"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ad0a19867a620bc2f03000af54acf7889">eve::graphics::Water::~Water</a></div><div class="ttdeci">~Water()</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00082">Water.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ad2802c8c04cc998e59c7a7ca3f6109df"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ad2802c8c04cc998e59c7a7ca3f6109df">eve::graphics::Water::setViewport</a></div><div class="ttdeci">void setViewport(float width, float height)</div><div class="ttdoc">Window / target size in pixels, used to compute screen-space UVs.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00148">Water.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ad54a6dca6c9c0a239e421e3c2f85f539"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ad54a6dca6c9c0a239e421e3c2f85f539">eve::graphics::Water::setRippleCount</a></div><div class="ttdeci">void setRippleCount(int count)</div><div class="ttdoc">How many expanding drop ripples exist.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00133">Water.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ad68a1f2488697976d0fc5732e1aafd1d"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ad68a1f2488697976d0fc5732e1aafd1d">eve::graphics::Water::config</a></div><div class="ttdeci">WaterStyleConfig config() const</div><div class="ttdoc">Return the immutable current configuration snapshot by value.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00106">Water.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ad7c273e403354a4687cfa02286e084cb"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ad7c273e403354a4687cfa02286e084cb">eve::graphics::Water::getWaveScale</a></div><div class="ttdeci">float getWaveScale() const</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00075">Water.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_ada4025ca0b0426a8e72c033fce1942ba"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#ada4025ca0b0426a8e72c033fce1942ba">eve::graphics::Water::setWaterColor</a></div><div class="ttdeci">void setWaterColor(float r, float g, float b)</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00136">Water.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_aed9ba89b63a126a7a225342c6b31ebd7"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#aed9ba89b63a126a7a225342c6b31ebd7">eve::graphics::Water::getReflectionCaptureEnabled</a></div><div class="ttdeci">bool getReflectionCaptureEnabled() const</div><div class="ttdoc">Return whether this water surface is included in reflection-probe captures.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00132">Water.h:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_af3087a27237cf91daad1f422fdcb621e"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#af3087a27237cf91daad1f422fdcb621e">eve::graphics::Water::applyConfigJson</a></div><div class="ttdeci">Result&lt; void &gt; applyConfigJson(const std::string &amp;json)</div><div class="ttdoc">Atomically replace all authored parameters from eve.graphics.stylized-water/1 JSON.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00181">Water.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html_afcc8bb68489bcfff7f0eff570e44c289"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html#afcc8bb68489bcfff7f0eff570e44c289">eve::graphics::Water::drawWithPlanarReflection</a></div><div class="ttdeci">void drawWithPlanarReflection(Texture *planarReflection, float strength=1.0F)</div><div class="ttdoc">Draw with an optional caller-rendered planar reflection.</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00193">Water.cpp:193</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a6b871872774fd03f3dd68e04d72c2046"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a6b871872774fd03f3dd68e04d72c2046">eve::graphics::newWaterShader</a></div><div class="ttdeci">Shader * newWaterShader(Graphics *gfx)</div><div class="ttdoc">Create the embedded water fragment shader (owned by Graphics).</div><div class="ttdef"><b>Definition</b> <a href="Water_8cpp_source.html#l00041">Water.cpp:41</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html">eve::graphics::WaterStyleConfig</a></div><div class="ttdoc">Versioned, backend-neutral configuration for the built-in stylized water surface.</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00015">WaterStyleConfig.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_a17997faa6b6f4091a1e0841d77743771"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#a17997faa6b6f4091a1e0841d77743771">eve::graphics::WaterStyleConfig::waveScale</a></div><div class="ttdeci">float waveScale</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00026">WaterStyleConfig.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_a1b8e46592fe7c2b3a2305830ca10289d"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#a1b8e46592fe7c2b3a2305830ca10289d">eve::graphics::WaterStyleConfig::rippleInterval</a></div><div class="ttdeci">float rippleInterval</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00030">WaterStyleConfig.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_a378cd6ca1393632064b174b55f4f1181"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#a378cd6ca1393632064b174b55f4f1181">eve::graphics::WaterStyleConfig::rippleCount</a></div><div class="ttdeci">int rippleCount</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00029">WaterStyleConfig.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_a592f2bda86177c450ac6127a131ab812"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#a592f2bda86177c450ac6127a131ab812">eve::graphics::WaterStyleConfig::foamWidth</a></div><div class="ttdeci">float foamWidth</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00035">WaterStyleConfig.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_a5bdee4360525b39732eb19a8bb8a0ce7"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#a5bdee4360525b39732eb19a8bb8a0ce7">eve::graphics::WaterStyleConfig::sunIntensity</a></div><div class="ttdeci">float sunIntensity</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00041">WaterStyleConfig.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_a91160dcf36ce53c54901dcbb96158119"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#a91160dcf36ce53c54901dcbb96158119">eve::graphics::WaterStyleConfig::waveSpeed</a></div><div class="ttdeci">float waveSpeed</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00024">WaterStyleConfig.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_ab0477e7a8c2d3430edb65477ad23a18b"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#ab0477e7a8c2d3430edb65477ad23a18b">eve::graphics::WaterStyleConfig::screenSpaceReflectionStrength</a></div><div class="ttdeci">float screenSpaceReflectionStrength</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00043">WaterStyleConfig.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_ab1785286b34fb60937203261e6eb2f65"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#ab1785286b34fb60937203261e6eb2f65">eve::graphics::WaterStyleConfig::screenSpaceReflection</a></div><div class="ttdeci">bool screenSpaceReflection</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00042">WaterStyleConfig.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_aba964fa68d3e14c8c302d25436fbe7e8"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#aba964fa68d3e14c8c302d25436fbe7e8">eve::graphics::WaterStyleConfig::rippleAmplitude</a></div><div class="ttdeci">float rippleAmplitude</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00028">WaterStyleConfig.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_acf339a841c51cb06ad8be48debe71810"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#acf339a841c51cb06ad8be48debe71810">eve::graphics::WaterStyleConfig::waveAmplitude</a></div><div class="ttdeci">float waveAmplitude</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00025">WaterStyleConfig.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterStyleConfig_html_afb437c04da4b66ee7b1fd02632f71480"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterStyleConfig.html#afb437c04da4b66ee7b1fd02632f71480">eve::graphics::WaterStyleConfig::reflectionIntensity</a></div><div class="ttdeci">float reflectionIntensity</div><div class="ttdef"><b>Definition</b> <a href="WaterStyleConfig_8h_source.html#l00040">WaterStyleConfig.h:40</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

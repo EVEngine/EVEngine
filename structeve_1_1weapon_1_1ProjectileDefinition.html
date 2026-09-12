@@ -1,0 +1,343 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::ProjectileDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html">ProjectileDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1weapon_1_1ProjectileDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::ProjectileDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Data-driven trajectory and lifetime definition.  
+ <a href="structeve_1_1weapon_1_1ProjectileDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a14a20b78a639114e33c7ee8f64657a38" id="r_a14a20b78a639114e33c7ee8f64657a38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#a14a20b78a639114e33c7ee8f64657a38">validate</a> () const</td></tr>
+<tr class="memdesc:a14a20b78a639114e33c7ee8f64657a38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate finite, non-negative trajectory parameters and mode-specific requirements.  <br /></td></tr>
+<tr class="separator:a14a20b78a639114e33c7ee8f64657a38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a40e5b8a7cbb377b8e0652e8cb0a204ca" id="r_a40e5b8a7cbb377b8e0652e8cb0a204ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#a40e5b8a7cbb377b8e0652e8cb0a204ca">id</a></td></tr>
+<tr class="separator:a40e5b8a7cbb377b8e0652e8cb0a204ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20fd2a8823070c1f560e67b815dec4fb" id="r_a20fd2a8823070c1f560e67b815dec4fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3">ProjectileMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#a20fd2a8823070c1f560e67b815dec4fb">mode</a> = <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a32a843da6ea40ab3b17a3421ccdf671b">ProjectileMode::Linear</a></td></tr>
+<tr class="separator:a20fd2a8823070c1f560e67b815dec4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3558f482b7823e1d1cd65ab24140409" id="r_ae3558f482b7823e1d1cd65ab24140409"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#ae3558f482b7823e1d1cd65ab24140409">speed</a> = 0.0</td></tr>
+<tr class="separator:ae3558f482b7823e1d1cd65ab24140409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd771fec6b60e84bd0453d4c0530abfd" id="r_acd771fec6b60e84bd0453d4c0530abfd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#acd771fec6b60e84bd0453d4c0530abfd">gravity</a> = 0.0</td></tr>
+<tr class="separator:acd771fec6b60e84bd0453d4c0530abfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4ee9d99a5199f3a4ab3c820d13d246b" id="r_af4ee9d99a5199f3a4ab3c820d13d246b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#af4ee9d99a5199f3a4ab3c820d13d246b">maxTurnRateDegrees</a> = 0.0</td></tr>
+<tr class="separator:af4ee9d99a5199f3a4ab3c820d13d246b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6323f2d23d934665dfd3798cdbcc68a8" id="r_a6323f2d23d934665dfd3798cdbcc68a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1ProjectileDefinition.html#a6323f2d23d934665dfd3798cdbcc68a8">lifetime</a> = <a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>()</td></tr>
+<tr class="separator:a6323f2d23d934665dfd3798cdbcc68a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Data-driven trajectory and lifetime definition. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a14a20b78a639114e33c7ee8f64657a38" name="a14a20b78a639114e33c7ee8f64657a38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14a20b78a639114e33c7ee8f64657a38">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::ProjectileDefinition::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate finite, non-negative trajectory parameters and mode-specific requirements. </p>
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a> 第 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectileRuntime_8h_source.html#l00050">gravity</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a8dea110caafe3b2e7d6bd20b11ee4138">eve::weapon::Homing</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00052">lifetime</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00051">maxTurnRateDegrees</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00048">mode</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00049">speed</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="acd771fec6b60e84bd0453d4c0530abfd" name="acd771fec6b60e84bd0453d4c0530abfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd771fec6b60e84bd0453d4c0530abfd">&#9670;&#160;</a></span>gravity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::weapon::ProjectileDefinition::gravity = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a40e5b8a7cbb377b8e0652e8cb0a204ca" name="a40e5b8a7cbb377b8e0652e8cb0a204ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40e5b8a7cbb377b8e0652e8cb0a204ca">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> eve::weapon::ProjectileDefinition::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a>.</p>
+
+</div>
+</div>
+<a id="a6323f2d23d934665dfd3798cdbcc68a8" name="a6323f2d23d934665dfd3798cdbcc68a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6323f2d23d934665dfd3798cdbcc68a8">&#9670;&#160;</a></span>lifetime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::weapon::ProjectileDefinition::lifetime = <a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">validate()</a>.</p>
+
+</div>
+</div>
+<a id="af4ee9d99a5199f3a4ab3c820d13d246b" name="af4ee9d99a5199f3a4ab3c820d13d246b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4ee9d99a5199f3a4ab3c820d13d246b">&#9670;&#160;</a></span>maxTurnRateDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::weapon::ProjectileDefinition::maxTurnRateDegrees = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a20fd2a8823070c1f560e67b815dec4fb" name="a20fd2a8823070c1f560e67b815dec4fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20fd2a8823070c1f560e67b815dec4fb">&#9670;&#160;</a></span>mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3">ProjectileMode</a> eve::weapon::ProjectileDefinition::mode = <a class="el" href="namespaceeve_1_1weapon.html#a2c9ea9ad3b18de459ab76952321492c3a32a843da6ea40ab3b17a3421ccdf671b">ProjectileMode::Linear</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae3558f482b7823e1d1cd65ab24140409" name="ae3558f482b7823e1d1cd65ab24140409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3558f482b7823e1d1cd65ab24140409">&#9670;&#160;</a></span>speed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::weapon::ProjectileDefinition::speed = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a> 第 <a class="el" href="ProjectileRuntime_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a> , 以及 <a class="el" href="ProjectileRuntime_8cpp_source.html#l00064">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="ProjectileRuntime_8h_source.html">ProjectileRuntime.h</a></li>
+<li>src/modules/weapon/<a class="el" href="ProjectileRuntime_8cpp_source.html">ProjectileRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

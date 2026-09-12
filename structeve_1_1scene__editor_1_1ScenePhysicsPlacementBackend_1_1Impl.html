@@ -1,0 +1,570 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editor::ScenePhysicsPlacementBackend::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editor.html">scene_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend.html">ScenePhysicsPlacementBackend</a></li><li class="navelem"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editor::ScenePhysicsPlacementBackend::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl_1_1RuntimeObject.html">RuntimeObject</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a470f8e9459619ecd720f545c89045778" id="r_a470f8e9459619ecd720f545c89045778"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a470f8e9459619ecd720f545c89045778">Impl</a> (<a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a470f8e9459619ecd720f545c89045778"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82652568e9d8107a3010a13a2d76e1b5" id="r_a82652568e9d8107a3010a13a2d76e1b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a82652568e9d8107a3010a13a2d76e1b5">build</a> ()</td></tr>
+<tr class="separator:a82652568e9d8107a3010a13a2d76e1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ab107d4cd855b762a8f28eb04ef0d383d" id="r_ab107d4cd855b762a8f28eb04ef0d383d"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementCollider.html">PhysicsPlacementCollider</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#ab107d4cd855b762a8f28eb04ef0d383d">selectedColliders</a> (const <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementObject.html">PhysicsPlacementObject</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ac97cb78f063294691352db9479f416ee">PhysicsPlacementColliderPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="separator:ab107d4cd855b762a8f28eb04ef0d383d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd4bea5ace9bedec7b0779387a4537e" id="r_aebd4bea5ace9bedec7b0779387a4537e"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1Shape3D.html">physics::Shape3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#aebd4bea5ace9bedec7b0779387a4537e">createShape</a> (<a class="el" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a> &amp;<a class="el" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, const <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementCollider.html">PhysicsPlacementCollider</a> &amp;collider, const glm::dvec3 &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="separator:aebd4bea5ace9bedec7b0779387a4537e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:af0e492af0a316bae70110813f9111443" id="r_af0e492af0a316bae70110813f9111443"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#af0e492af0a316bae70110813f9111443">request</a></td></tr>
+<tr class="separator:af0e492af0a316bae70110813f9111443"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a55a0a79f699df48fe374c04271bd73" id="r_a9a55a0a79f699df48fe374c04271bd73"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a9a55a0a79f699df48fe374c04271bd73">world</a></td></tr>
+<tr class="separator:a9a55a0a79f699df48fe374c04271bd73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7495f0594955326e3624270edca20da4" id="r_a7495f0594955326e3624270edca20da4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl_1_1RuntimeObject.html">RuntimeObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a7495f0594955326e3624270edca20da4">objects</a></td></tr>
+<tr class="separator:a7495f0594955326e3624270edca20da4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8871772c1a363f14bbc5a9025fb206fe" id="r_a8871772c1a363f14bbc5a9025fb206fe"><td class="memItemLeft" align="right" valign="top">glm::dvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a8871772c1a363f14bbc5a9025fb206fe">initialHandle</a> {0.0}</td></tr>
+<tr class="separator:a8871772c1a363f14bbc5a9025fb206fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ac658755ffa8f3af2b294effbf7b9df" id="r_a6ac658755ffa8f3af2b294effbf7b9df"><td class="memItemLeft" align="right" valign="top">glm::dvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a6ac658755ffa8f3af2b294effbf7b9df">handle</a> {0.0}</td></tr>
+<tr class="separator:a6ac658755ffa8f3af2b294effbf7b9df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3040e4d079d1683d467dffac34da708d" id="r_a3040e4d079d1683d467dffac34da708d"><td class="memItemLeft" align="right" valign="top">glm::quat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a3040e4d079d1683d467dffac34da708d">initialHandleRotation</a> {1.0f, 0.0f, 0.0f, 0.0f}</td></tr>
+<tr class="separator:a3040e4d079d1683d467dffac34da708d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd163537325843b17b47ad512d1d5b65" id="r_abd163537325843b17b47ad512d1d5b65"><td class="memItemLeft" align="right" valign="top">glm::quat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#abd163537325843b17b47ad512d1d5b65">handleRotation</a> {1.0f, 0.0f, 0.0f, 0.0f}</td></tr>
+<tr class="separator:abd163537325843b17b47ad512d1d5b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a713bc36631e325d136518c2310f53ebd" id="r_a713bc36631e325d136518c2310f53ebd"><td class="memItemLeft" align="right" valign="top">glm::dvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a713bc36631e325d136518c2310f53ebd">initialHandleScale</a> {1.0}</td></tr>
+<tr class="separator:a713bc36631e325d136518c2310f53ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e982067fcfcd3aed6dcc41a41e85819" id="r_a9e982067fcfcd3aed6dcc41a41e85819"><td class="memItemLeft" align="right" valign="top">glm::dvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a9e982067fcfcd3aed6dcc41a41e85819">handleScale</a> {1.0}</td></tr>
+<tr class="separator:a9e982067fcfcd3aed6dcc41a41e85819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa39da09021f90f3f6bcfa4c20d8606c9" id="r_aa39da09021f90f3f6bcfa4c20d8606c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#aa39da09021f90f3f6bcfa4c20d8606c9">surfaceAligned</a> = false</td></tr>
+<tr class="separator:aa39da09021f90f3f6bcfa4c20d8606c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2966d2a5c8885a45267b7da55e64a2c" id="r_ac2966d2a5c8885a45267b7da55e64a2c"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#ac2966d2a5c8885a45267b7da55e64a2c">surfaceNormal</a> {0.0f, 1.0f, 0.0f}</td></tr>
+<tr class="separator:ac2966d2a5c8885a45267b7da55e64a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d7d783f8d7f8351dcbe748a3898f864" id="r_a9d7d783f8d7f8351dcbe748a3898f864"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl.html#a9d7d783f8d7f8351dcbe748a3898f864">tick</a> = 0</td></tr>
+<tr class="separator:a9d7d783f8d7f8351dcbe748a3898f864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a470f8e9459619ecd720f545c89045778" name="a470f8e9459619ecd720f545c89045778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a470f8e9459619ecd720f545c89045778">&#9670;&#160;</a></span>Impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::ScenePhysicsPlacementBackend::Impl::Impl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a>&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a82652568e9d8107a3010a13a2d76e1b5" name="a82652568e9d8107a3010a13a2d76e1b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82652568e9d8107a3010a13a2d76e1b5">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::ScenePhysicsPlacementBackend::Impl::build </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00229">body</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#a67569511739664400f34e8243cea7346a58fa788345ab5ac21c2cef38907d4580">eve::scene_editor::Fall</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="aebd4bea5ace9bedec7b0779387a4537e" name="aebd4bea5ace9bedec7b0779387a4537e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd4bea5ace9bedec7b0779387a4537e">&#9670;&#160;</a></span>createShape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1Shape3D.html">physics::Shape3D</a> &gt; eve::scene_editor::ScenePhysicsPlacementBackend::Impl::createShape </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementCollider.html">PhysicsPlacementCollider</a> &amp;&#160;</td>
+          <td class="paramname"><em>collider</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::dvec3 &amp;&#160;</td>
+          <td class="paramname"><em>scale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00229">body</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea4880c0f12c06dd6d142e7a40b041bf1a">eve::scene_editor::Capsule</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea3e1ee9920ed982b5da9becaf4b5463e5">eve::scene_editor::ConvexHull</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00040">eve::scene_editor::PhysicsPlacementCollider::convexMaxVertices</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00039">eve::scene_editor::PhysicsPlacementCollider::convexVertices</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00030">eve::scene_editor::PhysicsPlacementCollider::halfExtentX</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00031">eve::scene_editor::PhysicsPlacementCollider::halfExtentY</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00032">eve::scene_editor::PhysicsPlacementCollider::halfExtentZ</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00036">eve::scene_editor::PhysicsPlacementCollider::localRotationX</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00037">eve::scene_editor::PhysicsPlacementCollider::localRotationY</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00038">eve::scene_editor::PhysicsPlacementCollider::localRotationZ</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00033">eve::scene_editor::PhysicsPlacementCollider::localX</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00034">eve::scene_editor::PhysicsPlacementCollider::localY</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00035">eve::scene_editor::PhysicsPlacementCollider::localZ</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00028">eve::scene_editor::PhysicsPlacementCollider::shape</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfeab7095f057db3fefa7325ad93a04e14fd">eve::scene_editor::Sphere</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00046">vertices</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="ab107d4cd855b762a8f28eb04ef0d383d" name="ab107d4cd855b762a8f28eb04ef0d383d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab107d4cd855b762a8f28eb04ef0d383d">&#9670;&#160;</a></span>selectedColliders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::vector&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementCollider.html">PhysicsPlacementCollider</a> &gt; eve::scene_editor::ScenePhysicsPlacementBackend::Impl::selectedColliders </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementObject.html">PhysicsPlacementObject</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1scene__editor.html#ac97cb78f063294691352db9479f416ee">PhysicsPlacementColliderPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00040">eve::scene_editor::PhysicsPlacementCollider::convexMaxVertices</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00039">eve::scene_editor::PhysicsPlacementCollider::convexVertices</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00030">eve::scene_editor::PhysicsPlacementCollider::halfExtentX</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00031">eve::scene_editor::PhysicsPlacementCollider::halfExtentY</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00032">eve::scene_editor::PhysicsPlacementCollider::halfExtentZ</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00028">eve::scene_editor::PhysicsPlacementCollider::shape</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00214">eve::scene_editor::ScenePhysicsPlacementBackend::create()</a> , 以及 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00420">eve::scene_editor::ScenePhysicsPlacementBackend::step()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a6ac658755ffa8f3af2b294effbf7b9df" name="a6ac658755ffa8f3af2b294effbf7b9df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac658755ffa8f3af2b294effbf7b9df">&#9670;&#160;</a></span>handle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::dvec3 eve::scene_editor::ScenePhysicsPlacementBackend::Impl::handle {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abd163537325843b17b47ad512d1d5b65" name="abd163537325843b17b47ad512d1d5b65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd163537325843b17b47ad512d1d5b65">&#9670;&#160;</a></span>handleRotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::quat eve::scene_editor::ScenePhysicsPlacementBackend::Impl::handleRotation {1.0f, 0.0f, 0.0f, 0.0f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e982067fcfcd3aed6dcc41a41e85819" name="a9e982067fcfcd3aed6dcc41a41e85819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e982067fcfcd3aed6dcc41a41e85819">&#9670;&#160;</a></span>handleScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::dvec3 eve::scene_editor::ScenePhysicsPlacementBackend::Impl::handleScale {1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8871772c1a363f14bbc5a9025fb206fe" name="a8871772c1a363f14bbc5a9025fb206fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8871772c1a363f14bbc5a9025fb206fe">&#9670;&#160;</a></span>initialHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::dvec3 eve::scene_editor::ScenePhysicsPlacementBackend::Impl::initialHandle {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3040e4d079d1683d467dffac34da708d" name="a3040e4d079d1683d467dffac34da708d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3040e4d079d1683d467dffac34da708d">&#9670;&#160;</a></span>initialHandleRotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::quat eve::scene_editor::ScenePhysicsPlacementBackend::Impl::initialHandleRotation {1.0f, 0.0f, 0.0f, 0.0f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a713bc36631e325d136518c2310f53ebd" name="a713bc36631e325d136518c2310f53ebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a713bc36631e325d136518c2310f53ebd">&#9670;&#160;</a></span>initialHandleScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::dvec3 eve::scene_editor::ScenePhysicsPlacementBackend::Impl::initialHandleScale {1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7495f0594955326e3624270edca20da4" name="a7495f0594955326e3624270edca20da4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7495f0594955326e3624270edca20da4">&#9670;&#160;</a></span>objects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1scene__editor_1_1ScenePhysicsPlacementBackend_1_1Impl_1_1RuntimeObject.html">RuntimeObject</a>&gt; eve::scene_editor::ScenePhysicsPlacementBackend::Impl::objects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af0e492af0a316bae70110813f9111443" name="af0e492af0a316bae70110813f9111443"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e492af0a316bae70110813f9111443">&#9670;&#160;</a></span>request</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a> eve::scene_editor::ScenePhysicsPlacementBackend::Impl::request</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa39da09021f90f3f6bcfa4c20d8606c9" name="aa39da09021f90f3f6bcfa4c20d8606c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa39da09021f90f3f6bcfa4c20d8606c9">&#9670;&#160;</a></span>surfaceAligned</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::ScenePhysicsPlacementBackend::Impl::surfaceAligned = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2966d2a5c8885a45267b7da55e64a2c" name="ac2966d2a5c8885a45267b7da55e64a2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2966d2a5c8885a45267b7da55e64a2c">&#9670;&#160;</a></span>surfaceNormal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::scene_editor::ScenePhysicsPlacementBackend::Impl::surfaceNormal {0.0f, 1.0f, 0.0f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d7d783f8d7f8351dcbe748a3898f864" name="a9d7d783f8d7f8351dcbe748a3898f864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d7d783f8d7f8351dcbe748a3898f864">&#9670;&#160;</a></span>tick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::scene_editor::ScenePhysicsPlacementBackend::Impl::tick = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a55a0a79f699df48fe374c04271bd73" name="a9a55a0a79f699df48fe374c04271bd73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a55a0a79f699df48fe374c04271bd73">&#9670;&#160;</a></span>world</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> eve::scene_editor::ScenePhysicsPlacementBackend::Impl::world</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a> 第 <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/scene/editor/<a class="el" href="ScenePhysicsPlacement_8cpp_source.html">ScenePhysicsPlacement.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

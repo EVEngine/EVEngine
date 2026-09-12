@@ -1,0 +1,641 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editor::PhysicsPlacementSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editor.html">scene_editor</a></li><li class="navelem"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html">PhysicsPlacementSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editor::PhysicsPlacementSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic policy for collision-aware scene placement.  
+ <a href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:af948104cd29b9fec37490013525b65c4" id="r_af948104cd29b9fec37490013525b65c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editor.html#a67569511739664400f34e8243cea7346">PhysicsPlacementMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#af948104cd29b9fec37490013525b65c4">mode</a> = <a class="el" href="namespaceeve_1_1scene__editor.html#a67569511739664400f34e8243cea7346ab8a4d4c7e6bb7b5534b856ce7a9ccde0">PhysicsPlacementMode::Drag</a></td></tr>
+<tr class="separator:af948104cd29b9fec37490013525b65c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37b1529586a9511e74a1422da491ee2f" id="r_a37b1529586a9511e74a1422da491ee2f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a37b1529586a9511e74a1422da491ee2f">gravityX</a> = 0.0</td></tr>
+<tr class="separator:a37b1529586a9511e74a1422da491ee2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d30294c4e1b910bff2ad6a175f49983" id="r_a6d30294c4e1b910bff2ad6a175f49983"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a6d30294c4e1b910bff2ad6a175f49983">gravityY</a> = -9.8</td></tr>
+<tr class="separator:a6d30294c4e1b910bff2ad6a175f49983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761fe3630b600f01b65e3600ab83cc4d" id="r_a761fe3630b600f01b65e3600ab83cc4d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a761fe3630b600f01b65e3600ab83cc4d">gravityZ</a> = 0.0</td></tr>
+<tr class="separator:a761fe3630b600f01b65e3600ab83cc4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a219d9273e4a0fe6f72167058c4585a" id="r_a5a219d9273e4a0fe6f72167058c4585a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a5a219d9273e4a0fe6f72167058c4585a">maximumLinearSpeed</a> = 12.0</td></tr>
+<tr class="separator:a5a219d9273e4a0fe6f72167058c4585a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1216280f3aa8c58588565269a3a35d77" id="r_a1216280f3aa8c58588565269a3a35d77"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a1216280f3aa8c58588565269a3a35d77">linearDamping</a> = 0.0</td></tr>
+<tr class="separator:a1216280f3aa8c58588565269a3a35d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d1aedaafde1cc3f4e69799a5731ff5f" id="r_a1d1aedaafde1cc3f4e69799a5731ff5f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a1d1aedaafde1cc3f4e69799a5731ff5f">angularDamping</a> = 0.0</td></tr>
+<tr class="separator:a1d1aedaafde1cc3f4e69799a5731ff5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbe273e517f0754e39b1d8b31697c501" id="r_acbe273e517f0754e39b1d8b31697c501"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#acbe273e517f0754e39b1d8b31697c501">contactHertz</a> = 30.0</td></tr>
+<tr class="separator:acbe273e517f0754e39b1d8b31697c501"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a625aff88c19af3b85d3d1a699718ee07" id="r_a625aff88c19af3b85d3d1a699718ee07"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a625aff88c19af3b85d3d1a699718ee07">contactDampingRatio</a> = 10.0</td></tr>
+<tr class="separator:a625aff88c19af3b85d3d1a699718ee07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d4660d25ba1e787ea37cd8f98f70952" id="r_a4d4660d25ba1e787ea37cd8f98f70952"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a4d4660d25ba1e787ea37cd8f98f70952">maximumPushOutSpeed</a> = 3.0</td></tr>
+<tr class="separator:a4d4660d25ba1e787ea37cd8f98f70952"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a915fd996aac48161d534941e943fdbb0" id="r_a915fd996aac48161d534941e943fdbb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a915fd996aac48161d534941e943fdbb0">subStepCount</a> = 4</td></tr>
+<tr class="separator:a915fd996aac48161d534941e943fdbb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34fb9763f1e3c7e629111d8702baade6" id="r_a34fb9763f1e3c7e629111d8702baade6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a34fb9763f1e3c7e629111d8702baade6">preserveSelectionLayout</a> = true</td></tr>
+<tr class="separator:a34fb9763f1e3c7e629111d8702baade6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af11ef3f2b28edb91618978fd97bed5f4" id="r_af11ef3f2b28edb91618978fd97bed5f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editor.html#ac97cb78f063294691352db9479f416ee">PhysicsPlacementColliderPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#af11ef3f2b28edb91618978fd97bed5f4">colliderPolicy</a> = <a class="el" href="namespaceeve_1_1scene__editor.html#ac97cb78f063294691352db9479f416eea291f3029a9394b59f206c51e65086c5c">PhysicsPlacementColliderPolicy::GeneratedWhenMissing</a></td></tr>
+<tr class="separator:af11ef3f2b28edb91618978fd97bed5f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a459e09c33d75121aa539ce3f8c2abe6a" id="r_a459e09c33d75121aa539ce3f8c2abe6a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a459e09c33d75121aa539ce3f8c2abe6a">freezePositionX</a> = false</td></tr>
+<tr class="separator:a459e09c33d75121aa539ce3f8c2abe6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a200d3001648747b34f2d23ac45537a92" id="r_a200d3001648747b34f2d23ac45537a92"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a200d3001648747b34f2d23ac45537a92">freezePositionY</a> = false</td></tr>
+<tr class="separator:a200d3001648747b34f2d23ac45537a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9339449617c87caf4b3c242366469833" id="r_a9339449617c87caf4b3c242366469833"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a9339449617c87caf4b3c242366469833">freezePositionZ</a> = false</td></tr>
+<tr class="separator:a9339449617c87caf4b3c242366469833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a861bb3231d26c3025645cf49776985b3" id="r_a861bb3231d26c3025645cf49776985b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a861bb3231d26c3025645cf49776985b3">freezeRotationX</a> = false</td></tr>
+<tr class="separator:a861bb3231d26c3025645cf49776985b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f518d7af12916a1c85ac5ede8e7d379" id="r_a3f518d7af12916a1c85ac5ede8e7d379"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a3f518d7af12916a1c85ac5ede8e7d379">freezeRotationY</a> = false</td></tr>
+<tr class="separator:a3f518d7af12916a1c85ac5ede8e7d379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa963a9c2baf31066b86f6a13268239fd" id="r_aa963a9c2baf31066b86f6a13268239fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#aa963a9c2baf31066b86f6a13268239fd">freezeRotationZ</a> = false</td></tr>
+<tr class="separator:aa963a9c2baf31066b86f6a13268239fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47091d87424588ef80d5a64c70985efb" id="r_a47091d87424588ef80d5a64c70985efb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a47091d87424588ef80d5a64c70985efb">maximumAngularSpeed</a> = 20.0</td></tr>
+<tr class="separator:a47091d87424588ef80d5a64c70985efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3a457b8e1961e0dce381fe50f988651" id="r_ab3a457b8e1961e0dce381fe50f988651"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#ab3a457b8e1961e0dce381fe50f988651">scaleSpeedByBounds</a> = true</td></tr>
+<tr class="separator:ab3a457b8e1961e0dce381fe50f988651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdfd22bd8e3c757a40b56413f1853e57" id="r_afdfd22bd8e3c757a40b56413f1853e57"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#afdfd22bd8e3c757a40b56413f1853e57">minimumBoundsSpeedFactor</a> = 0.5</td></tr>
+<tr class="separator:afdfd22bd8e3c757a40b56413f1853e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99ca51575478acef869ff852aa14fc20" id="r_a99ca51575478acef869ff852aa14fc20"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a99ca51575478acef869ff852aa14fc20">maximumBoundsSpeedFactor</a> = 2.0</td></tr>
+<tr class="separator:a99ca51575478acef869ff852aa14fc20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1076f396f14ac62bb5872c03259ca8f7" id="r_a1076f396f14ac62bb5872c03259ca8f7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a1076f396f14ac62bb5872c03259ca8f7">teleportDistance</a> = 0.0</td></tr>
+<tr class="separator:a1076f396f14ac62bb5872c03259ca8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b241b29ab13d142b642c6d46d7d137d" id="r_a9b241b29ab13d142b642c6d46d7d137d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementSettings.html#a9b241b29ab13d142b642c6d46d7d137d">softCollision</a> = true</td></tr>
+<tr class="separator:a9b241b29ab13d142b642c6d46d7d137d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic policy for collision-aware scene placement. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00079">79</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a1d1aedaafde1cc3f4e69799a5731ff5f" name="a1d1aedaafde1cc3f4e69799a5731ff5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d1aedaafde1cc3f4e69799a5731ff5f">&#9670;&#160;</a></span>angularDamping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::angularDamping = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af11ef3f2b28edb91618978fd97bed5f4" name="af11ef3f2b28edb91618978fd97bed5f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af11ef3f2b28edb91618978fd97bed5f4">&#9670;&#160;</a></span>colliderPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1scene__editor.html#ac97cb78f063294691352db9479f416ee">PhysicsPlacementColliderPolicy</a> eve::scene_editor::PhysicsPlacementSettings::colliderPolicy = <a class="el" href="namespaceeve_1_1scene__editor.html#ac97cb78f063294691352db9479f416eea291f3029a9394b59f206c51e65086c5c">PhysicsPlacementColliderPolicy::GeneratedWhenMissing</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a625aff88c19af3b85d3d1a699718ee07" name="a625aff88c19af3b85d3d1a699718ee07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a625aff88c19af3b85d3d1a699718ee07">&#9670;&#160;</a></span>contactDampingRatio</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::contactDampingRatio = 10.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acbe273e517f0754e39b1d8b31697c501" name="acbe273e517f0754e39b1d8b31697c501"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbe273e517f0754e39b1d8b31697c501">&#9670;&#160;</a></span>contactHertz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::contactHertz = 30.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a459e09c33d75121aa539ce3f8c2abe6a" name="a459e09c33d75121aa539ce3f8c2abe6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a459e09c33d75121aa539ce3f8c2abe6a">&#9670;&#160;</a></span>freezePositionX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::freezePositionX = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a200d3001648747b34f2d23ac45537a92" name="a200d3001648747b34f2d23ac45537a92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200d3001648747b34f2d23ac45537a92">&#9670;&#160;</a></span>freezePositionY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::freezePositionY = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9339449617c87caf4b3c242366469833" name="a9339449617c87caf4b3c242366469833"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9339449617c87caf4b3c242366469833">&#9670;&#160;</a></span>freezePositionZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::freezePositionZ = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a861bb3231d26c3025645cf49776985b3" name="a861bb3231d26c3025645cf49776985b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a861bb3231d26c3025645cf49776985b3">&#9670;&#160;</a></span>freezeRotationX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::freezeRotationX = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f518d7af12916a1c85ac5ede8e7d379" name="a3f518d7af12916a1c85ac5ede8e7d379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f518d7af12916a1c85ac5ede8e7d379">&#9670;&#160;</a></span>freezeRotationY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::freezeRotationY = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa963a9c2baf31066b86f6a13268239fd" name="aa963a9c2baf31066b86f6a13268239fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa963a9c2baf31066b86f6a13268239fd">&#9670;&#160;</a></span>freezeRotationZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::freezeRotationZ = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37b1529586a9511e74a1422da491ee2f" name="a37b1529586a9511e74a1422da491ee2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37b1529586a9511e74a1422da491ee2f">&#9670;&#160;</a></span>gravityX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::gravityX = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6d30294c4e1b910bff2ad6a175f49983" name="a6d30294c4e1b910bff2ad6a175f49983"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d30294c4e1b910bff2ad6a175f49983">&#9670;&#160;</a></span>gravityY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::gravityY = -9.8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a761fe3630b600f01b65e3600ab83cc4d" name="a761fe3630b600f01b65e3600ab83cc4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761fe3630b600f01b65e3600ab83cc4d">&#9670;&#160;</a></span>gravityZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::gravityZ = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1216280f3aa8c58588565269a3a35d77" name="a1216280f3aa8c58588565269a3a35d77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1216280f3aa8c58588565269a3a35d77">&#9670;&#160;</a></span>linearDamping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::linearDamping = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47091d87424588ef80d5a64c70985efb" name="a47091d87424588ef80d5a64c70985efb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47091d87424588ef80d5a64c70985efb">&#9670;&#160;</a></span>maximumAngularSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::maximumAngularSpeed = 20.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a99ca51575478acef869ff852aa14fc20" name="a99ca51575478acef869ff852aa14fc20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ca51575478acef869ff852aa14fc20">&#9670;&#160;</a></span>maximumBoundsSpeedFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::maximumBoundsSpeedFactor = 2.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a219d9273e4a0fe6f72167058c4585a" name="a5a219d9273e4a0fe6f72167058c4585a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a219d9273e4a0fe6f72167058c4585a">&#9670;&#160;</a></span>maximumLinearSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::maximumLinearSpeed = 12.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d4660d25ba1e787ea37cd8f98f70952" name="a4d4660d25ba1e787ea37cd8f98f70952"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d4660d25ba1e787ea37cd8f98f70952">&#9670;&#160;</a></span>maximumPushOutSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::maximumPushOutSpeed = 3.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afdfd22bd8e3c757a40b56413f1853e57" name="afdfd22bd8e3c757a40b56413f1853e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdfd22bd8e3c757a40b56413f1853e57">&#9670;&#160;</a></span>minimumBoundsSpeedFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::minimumBoundsSpeedFactor = 0.5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af948104cd29b9fec37490013525b65c4" name="af948104cd29b9fec37490013525b65c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af948104cd29b9fec37490013525b65c4">&#9670;&#160;</a></span>mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1scene__editor.html#a67569511739664400f34e8243cea7346">PhysicsPlacementMode</a> eve::scene_editor::PhysicsPlacementSettings::mode = <a class="el" href="namespaceeve_1_1scene__editor.html#a67569511739664400f34e8243cea7346ab8a4d4c7e6bb7b5534b856ce7a9ccde0">PhysicsPlacementMode::Drag</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34fb9763f1e3c7e629111d8702baade6" name="a34fb9763f1e3c7e629111d8702baade6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34fb9763f1e3c7e629111d8702baade6">&#9670;&#160;</a></span>preserveSelectionLayout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::preserveSelectionLayout = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3a457b8e1961e0dce381fe50f988651" name="ab3a457b8e1961e0dce381fe50f988651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3a457b8e1961e0dce381fe50f988651">&#9670;&#160;</a></span>scaleSpeedByBounds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::scaleSpeedByBounds = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b241b29ab13d142b642c6d46d7d137d" name="a9b241b29ab13d142b642c6d46d7d137d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b241b29ab13d142b642c6d46d7d137d">&#9670;&#160;</a></span>softCollision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::PhysicsPlacementSettings::softCollision = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a915fd996aac48161d534941e943fdbb0" name="a915fd996aac48161d534941e943fdbb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a915fd996aac48161d534941e943fdbb0">&#9670;&#160;</a></span>subStepCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene_editor::PhysicsPlacementSettings::subStepCount = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1076f396f14ac62bb5872c03259ca8f7" name="a1076f396f14ac62bb5872c03259ca8f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1076f396f14ac62bb5872c03259ca8f7">&#9670;&#160;</a></span>teleportDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::scene_editor::PhysicsPlacementSettings::teleportDistance = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a> 第 <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/scene/editor/<a class="el" href="ScenePhysicsPlacement_8h_source.html">ScenePhysicsPlacement.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

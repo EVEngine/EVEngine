@@ -1,0 +1,264 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/scene/ArtifactProvider.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_ec6971fd057795f74726f2442b6b5463.html">scene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArtifactProvider.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="scene_2ArtifactProvider_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ArtifactPublication_8h.html">common/ArtifactPublication.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeHandle_8h.html">common/RuntimeHandle.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1scene.html">eve::scene</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactHandleTag.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1scene_1_1SceneArtifactHandleTag.html">SceneArtifactHandleTag</a> {};</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1scene.html#a8cf5977d97c7ac5ed165f8c79088a9cf">   21</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1RuntimeHandle.html">SceneArtifactHandle</a> = <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt;SceneArtifactHandleTag&gt;</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactNode.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1scene_1_1SceneArtifactNode.html">SceneArtifactNode</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactNode.html#a58479355545949f6a530c860d30d9cb3">   25</a></span>    std::string           <a class="code hl_variable" href="structeve_1_1scene_1_1SceneArtifactNode.html#a58479355545949f6a530c860d30d9cb3">role</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactNode.html#a1c4a6ea9a3840e17c7f012162aed2d97">   26</a></span>    <a class="code hl_struct" href="structeve_1_1artifact_1_1Bounds.html">eve::artifact::Bounds</a> <a class="code hl_variable" href="structeve_1_1scene_1_1SceneArtifactNode.html#a1c4a6ea9a3840e17c7f012162aed2d97">bounds</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactRecord.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1scene_1_1SceneArtifactRecord.html">SceneArtifactRecord</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactRecord.html#ad3f1cc8a906e45c8d73761cc8b9fc58c">   31</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a>              <a class="code hl_variable" href="structeve_1_1scene_1_1SceneArtifactRecord.html#ad3f1cc8a906e45c8d73761cc8b9fc58c">id</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactRecord.html#a5cae1cb480753fe6413151f17020c167">   32</a></span>    std::string                    <a class="code hl_variable" href="structeve_1_1scene_1_1SceneArtifactRecord.html#a5cae1cb480753fe6413151f17020c167">buildKey</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactRecord.html#a141c8fffa2bf6b8da9c62a403b95de0c">   33</a></span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">SceneArtifactHandle</a>            <a class="code hl_variable" href="structeve_1_1scene_1_1SceneArtifactRecord.html#a141c8fffa2bf6b8da9c62a403b95de0c">handle</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1scene_1_1SceneArtifactRecord.html#af6b286e16b3ebf769460e49e628c2670">   34</a></span>    std::vector&lt;SceneArtifactNode&gt; <a class="code hl_variable" href="structeve_1_1scene_1_1SceneArtifactRecord.html#af6b286e16b3ebf769460e49e628c2670">nodes</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneArtifactProvider.html">   44</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1scene_1_1SceneArtifactProvider.html">SceneArtifactProvider</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;eve::artifact::PreparedPublication&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a0d2e8910db6d0300a03a613ecc027530">prepare</a>(</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a>&amp; publication) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Value&gt;</a> <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad88599103dd73fd55fa5e0edc278f6da">snapshotState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8f794357b44c3d9523ebd8e5e50dbec8">restoreState</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a96cf764315a5c9d2d81c90b0e787b285">   54</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a96cf764315a5c9d2d81c90b0e787b285">emptyState</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> records_.empty(); }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a6eef3a5be30c7f3d76ab2df55940f19f">   56</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a6eef3a5be30c7f3d76ab2df55940f19f">clearState</a>() noexcept<span class="keyword"> override </span>{ <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad0c3cdb145159a6e617172a07578b382">clear</a>(); }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1scene_1_1SceneArtifactRecord.html">SceneArtifactRecord</a>* <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8217d2ad41af3e596869ccdb19bd1cee">find</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a291c54379aa3aa0a1dfa2817cde8e26b">   68</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a291c54379aa3aa0a1dfa2817cde8e26b">size</a>() const noexcept { <span class="keywordflow">return</span> records_.size(); }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad0c3cdb145159a6e617172a07578b382">clear</a>() noexcept;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneArtifactProvider.html#acfd1fa2573cb0cae62d2b1591595e303">   72</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneArtifactProvider.html#acfd1fa2573cb0cae62d2b1591595e303">setPrepareFailure</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept { failPrepare_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a9a6f2fc922e42baf80716b21b749c649">   75</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1scene_1_1SceneArtifactStage.html">SceneArtifactStage</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span>                             commit(<a class="code hl_struct" href="structeve_1_1scene_1_1SceneArtifactRecord.html">SceneArtifactRecord</a> record) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    std::vector&lt;SceneArtifactRecord&gt; records_;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::uint32_t                    nextIndex_   = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">bool</span>                             failPrepare_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>};</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1scene_1_1SceneArtifactProvider.html">SceneArtifactProvider</a>&amp; <a class="code hl_function" href="namespaceeve_1_1scene.html#af1bc4b03fd4265c3571837eb63897044">sceneArtifactProvider</a>() noexcept;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1scene.html#a1af65b8d5a11f1102c417ce0b34715cb">registerSceneArtifactProvider</a>();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}  <span class="comment">// namespace eve::scene</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aArtifactPublication_8h_html"><div class="ttname"><a href="ArtifactPublication_8h.html">ArtifactPublication.h</a></div><div class="ttdoc">Low-level capability contracts for publishing backend-neutral artifacts.</div></div>
+<div class="ttc" id="aRuntimeHandle_8h_html"><div class="ttname"><a href="RuntimeHandle_8h.html">RuntimeHandle.h</a></div><div class="ttdoc">Strong generation-qualified handles for non-ECS runtime registries.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; SceneArtifactHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ISceneArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a></div><div class="ttdoc">Scene graph publication capability, implemented by the scene module.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00143">ArtifactPublication.h:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html">eve::scene::SceneArtifactProvider</a></div><div class="ttdoc">Real scene-module provider for generated artifact publication.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00044">ArtifactProvider.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_a0d2e8910db6d0300a03a613ecc027530"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#a0d2e8910db6d0300a03a613ecc027530">eve::scene::SceneArtifactProvider::prepare</a></div><div class="ttdeci">eve::Result&lt; std::unique_ptr&lt; eve::artifact::PreparedPublication &gt; &gt; prepare(const eve::artifact::PublicationView &amp;publication) override</div><div class="ttdoc">Stage one artifact and copy all data needed after prepare.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00115">ArtifactProvider.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_a291c54379aa3aa0a1dfa2817cde8e26b"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#a291c54379aa3aa0a1dfa2817cde8e26b">eve::scene::SceneArtifactProvider::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return the number of committed scene artifact records.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00068">ArtifactProvider.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_a6eef3a5be30c7f3d76ab2df55940f19f"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#a6eef3a5be30c7f3d76ab2df55940f19f">eve::scene::SceneArtifactProvider::clearState</a></div><div class="ttdeci">void clearState() noexcept override</div><div class="ttdoc">Clear provider state through the common restore-cleanup hook.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00056">ArtifactProvider.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_a8217d2ad41af3e596869ccdb19bd1cee"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8217d2ad41af3e596869ccdb19bd1cee">eve::scene::SceneArtifactProvider::find</a></div><div class="ttdeci">const SceneArtifactRecord * find(eve::PersistentId id) const noexcept</div><div class="ttdoc">Find a committed scene artifact by persistent identity.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00156">ArtifactProvider.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_a8f794357b44c3d9523ebd8e5e50dbec8"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8f794357b44c3d9523ebd8e5e50dbec8">eve::scene::SceneArtifactProvider::restoreState</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreState(const eve::Value &amp;state) override</div><div class="ttdoc">Replace the registry from validated backend-neutral state.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00198">ArtifactProvider.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_a96cf764315a5c9d2d81c90b0e787b285"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#a96cf764315a5c9d2d81c90b0e787b285">eve::scene::SceneArtifactProvider::emptyState</a></div><div class="ttdeci">bool emptyState() const noexcept override</div><div class="ttdoc">Return whether the scene registry has no committed records.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00054">ArtifactProvider.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_acfd1fa2573cb0cae62d2b1591595e303"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#acfd1fa2573cb0cae62d2b1591595e303">eve::scene::SceneArtifactProvider::setPrepareFailure</a></div><div class="ttdeci">void setPrepareFailure(bool enabled) noexcept</div><div class="ttdoc">Inject a prepare failure for composition tests.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00072">ArtifactProvider.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_ad0c3cdb145159a6e617172a07578b382"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad0c3cdb145159a6e617172a07578b382">eve::scene::SceneArtifactProvider::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Remove all records and reset the local handle allocator.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00162">ArtifactProvider.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactProvider_html_ad88599103dd73fd55fa5e0edc278f6da"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad88599103dd73fd55fa5e0edc278f6da">eve::scene::SceneArtifactProvider::snapshotState</a></div><div class="ttdeci">eve::Result&lt; eve::Value &gt; snapshotState() const override</div><div class="ttdoc">Export scene identity, build keys, handles and part bounds.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00168">ArtifactProvider.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneArtifactStage_html"><div class="ttname"><a href="classeve_1_1scene_1_1SceneArtifactStage.html">eve::scene::SceneArtifactStage</a></div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00094">ArtifactProvider.cpp:94</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html"><div class="ttname"><a href="namespaceeve_1_1scene.html">eve::scene</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00031">AvatarInstance.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_a1af65b8d5a11f1102c417ce0b34715cb"><div class="ttname"><a href="namespaceeve_1_1scene.html#a1af65b8d5a11f1102c417ce0b34715cb">eve::scene::registerSceneArtifactProvider</a></div><div class="ttdeci">void registerSceneArtifactProvider()</div><div class="ttdoc">Register the scene provider in the common capability registry.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00267">ArtifactProvider.cpp:267</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_af1bc4b03fd4265c3571837eb63897044"><div class="ttname"><a href="namespaceeve_1_1scene.html#af1bc4b03fd4265c3571837eb63897044">eve::scene::sceneArtifactProvider</a></div><div class="ttdeci">SceneArtifactProvider &amp; sceneArtifactProvider() noexcept</div><div class="ttdoc">Return the process-owned scene artifact provider singleton.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8cpp_source.html#l00262">ArtifactProvider.cpp:262</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html">eve::artifact::Bounds</a></div><div class="ttdoc">Backend-neutral axis-aligned bounds copied from a generated part.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00035">ArtifactPublication.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a></div><div class="ttdoc">Borrowed immutable view of one complete generated publication.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00083">ArtifactPublication.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactHandleTag_html"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactHandleTag.html">eve::scene::SceneArtifactHandleTag</a></div><div class="ttdoc">Owner tag for scene artifact runtime handles.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00019">ArtifactProvider.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactNode_html"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactNode.html">eve::scene::SceneArtifactNode</a></div><div class="ttdoc">Backend-neutral node observable emitted for one artifact part.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00024">ArtifactProvider.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactNode_html_a1c4a6ea9a3840e17c7f012162aed2d97"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactNode.html#a1c4a6ea9a3840e17c7f012162aed2d97">eve::scene::SceneArtifactNode::bounds</a></div><div class="ttdeci">eve::artifact::Bounds bounds</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00026">ArtifactProvider.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactNode_html_a58479355545949f6a530c860d30d9cb3"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactNode.html#a58479355545949f6a530c860d30d9cb3">eve::scene::SceneArtifactNode::role</a></div><div class="ttdeci">std::string role</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00025">ArtifactProvider.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactRecord_html"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactRecord.html">eve::scene::SceneArtifactRecord</a></div><div class="ttdoc">Queryable scene registry record for one published artifact.</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00030">ArtifactProvider.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactRecord_html_a141c8fffa2bf6b8da9c62a403b95de0c"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactRecord.html#a141c8fffa2bf6b8da9c62a403b95de0c">eve::scene::SceneArtifactRecord::handle</a></div><div class="ttdeci">SceneArtifactHandle handle</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00033">ArtifactProvider.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactRecord_html_a5cae1cb480753fe6413151f17020c167"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactRecord.html#a5cae1cb480753fe6413151f17020c167">eve::scene::SceneArtifactRecord::buildKey</a></div><div class="ttdeci">std::string buildKey</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00032">ArtifactProvider.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactRecord_html_ad3f1cc8a906e45c8d73761cc8b9fc58c"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactRecord.html#ad3f1cc8a906e45c8d73761cc8b9fc58c">eve::scene::SceneArtifactRecord::id</a></div><div class="ttdeci">eve::PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00031">ArtifactProvider.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneArtifactRecord_html_af6b286e16b3ebf769460e49e628c2670"><div class="ttname"><a href="structeve_1_1scene_1_1SceneArtifactRecord.html#af6b286e16b3ebf769460e49e628c2670">eve::scene::SceneArtifactRecord::nodes</a></div><div class="ttdeci">std::vector&lt; SceneArtifactNode &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="scene_2ArtifactProvider_8h_source.html#l00034">ArtifactProvider.h:34</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

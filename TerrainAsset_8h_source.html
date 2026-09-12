@@ -1,0 +1,309 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainAsset.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainAsset.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainAsset_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainPipeline_8h.html">procgen/heightmap/TerrainPipeline.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html">ITerrainArchiveSource</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#a7403556d4bf33d2716ac1ad15b638b5a">   18</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#a7403556d4bf33d2716ac1ad15b638b5a">~ITerrainArchiveSource</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#a2f816d78e1a5d0257014ead7506a3c1f">   20</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#a2f816d78e1a5d0257014ead7506a3c1f">size</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#ae00a6393bf99079b773b7a9992d99493">   26</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::uint8_t&gt;&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#ae00a6393bf99079b773b7a9992d99493">read</a>(</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>, <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">size_t</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>) const = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html">   31</a></span>class <a class="code hl_class" href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html">MemoryTerrainArchiveSource</a> final : public <a class="code hl_class" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html">ITerrainArchiveSource</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html#a77ff0f55157066060722fe58b021abe7">   34</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html#a77ff0f55157066060722fe58b021abe7">MemoryTerrainArchiveSource</a>(std::span&lt;const std::uint8_t&gt; <a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        : bytes_(<a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>.<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(), <a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>.<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>()) {}</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html#a764a28e2fd24bfc13c9150f764823d2b">   36</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html#a764a28e2fd24bfc13c9150f764823d2b">size</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> bytes_.size(); }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;std::uint8_t&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#ae00a6393bf99079b773b7a9992d99493">read</a>(</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        std::uint64_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>, std::size_t <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::vector&lt;std::uint8_t&gt; bytes_;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainChunkData.html">TerrainChunkData</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#ac44eccd007242d6d5efab70064602d47">   46</a></span>    <span class="keywordtype">int</span> chunkX = 0, chunkY = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#afb61e3245ae313fd8c31e257f2ee78db">   47</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = 0, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#ad2c231aa85619295dc601c89a1dbe2b2">   48</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainChunkData.html#ad2c231aa85619295dc601c89a1dbe2b2">heights</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#a03f27b34b107f40c56b47d845a111998">   49</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainChunkData.html#a03f27b34b107f40c56b47d845a111998">flowAccumulation</a>, flowVectorX, flowVectorY;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#a39754bd978e8199eb6c2a584e2aaf85a">   50</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainChunkData.html#a39754bd978e8199eb6c2a584e2aaf85a">lakeDepth</a>, <a class="code hl_variable" href="HexTerrain_8cpp.html#afc1d28cfbce795d6ea954ebe725241f5">temperature</a>, <a class="code hl_variable" href="HexTerrain_8cpp.html#a910fab66e07cdf0c63d6e58b11738a17">moisture</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#a902d17d01bfa1d90e9228711b3341100">   51</a></span>    std::vector&lt;int8_t&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainChunkData.html#a902d17d01bfa1d90e9228711b3341100">flowDirection</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#a80c3cb7ac83c0654d67bed3eae50fee1">   52</a></span>    std::vector&lt;uint8_t&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainChunkData.html#a80c3cb7ac83c0654d67bed3eae50fee1">rivers</a>, streamOrder;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkData.html#a89ad67a35879e753b223c7a39c75fb10">   53</a></span>    std::vector&lt;Biome&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainChunkData.html#a89ad67a35879e753b223c7a39c75fb10">biomes</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkEntry.html">   57</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainChunkEntry.html">TerrainChunkEntry</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkEntry.html#aed1b23fa2a43d0e80e75133d76f8f5ad">   58</a></span>    <span class="keywordtype">int</span> chunkX = 0, chunkY = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkEntry.html#a9045019db9f9cd0b8391ae6aed2b2e75">   59</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = 0, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkEntry.html#a79b9e5a927392f2a4690d26b2886b8d9">   60</a></span>    uint64_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> = 0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkEntry.html#a3ff285173828182a300b39c40c05722f">   61</a></span>    uint32_t storedSize = 0, rawSize = 0, checksum = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainChunkEntry.html#aa7bfc7c00481cc92148790d6513e90e9">   62</a></span>    <span class="keywordtype">bool</span> compressed = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html">   75</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainAsset.html">TerrainAsset</a> {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> bake(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1HydrologyMap.html">HydrologyMap</a> &amp;hydrology,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                     <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ClimateMap.html">ClimateMap</a> &amp;climate, <span class="keywordtype">int</span> chunkSize, std::vector&lt;uint8_t&gt; &amp;out,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                     std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">bool</span> open(<span class="keyword">const</span> uint8_t *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>, std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> openSource(std::shared_ptr&lt;const ITerrainArchiveSource&gt; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">bool</span> loadChunk(<span class="keywordtype">int</span> chunkX, <span class="keywordtype">int</span> chunkY, <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainChunkData.html">TerrainChunkData</a> &amp;out,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                   std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html#acea01acdbf779cc252e9a95baf35d440">   95</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainAsset.html#acea01acdbf779cc252e9a95baf35d440">getWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html#ac6d52917cec96190d32d0299bce32e9b">   96</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainAsset.html#ac6d52917cec96190d32d0299bce32e9b">getHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html#a591a060bb19f8fd71e54aa13e8f6dcb7">   97</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainAsset.html#a591a060bb19f8fd71e54aa13e8f6dcb7">getChunkSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> chunkSize_; }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html#a5424151e8fa3fa482bf82e095e394e6f">   98</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainAsset.html#a5424151e8fa3fa482bf82e095e394e6f">getMinHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> minHeight_; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html#a0a741ec88454ef785bab41fe83184712">   99</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainAsset.html#a0a741ec88454ef785bab41fe83184712">getMaxHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxHeight_; }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainAsset.html#adac522450415eb199a100b293ada78d9">  100</a></span>    <span class="keyword">const</span> std::vector&lt;TerrainChunkEntry&gt; &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1TerrainAsset.html#adac522450415eb199a100b293ada78d9">chunks</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> chunks_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainChunkEntry.html">TerrainChunkEntry</a>* findChunk(<span class="keywordtype">int</span> chunkX, <span class="keywordtype">int</span> chunkY) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">bool</span> openMetadata(<span class="keyword">const</span> std::uint8_t* <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, std::size_t metadataSize,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                      std::uint64_t archiveSize, std::string* <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">int</span> width_ = 0, height_ = 0, chunkSize_ = 0;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    uint16_t version_ = 0;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">float</span> minHeight_ = 0.f, maxHeight_ = 1.f, maxFlow_ = 1.f;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::shared_ptr&lt;const ITerrainArchiveSource&gt; source_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::vector&lt;TerrainChunkEntry&gt; chunks_;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>};</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_a910fab66e07cdf0c63d6e58b11738a17"><div class="ttname"><a href="HexTerrain_8cpp.html#a910fab66e07cdf0c63d6e58b11738a17">moisture</a></div><div class="ttdeci">float moisture</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00031">HexTerrain.cpp:31</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_afc1d28cfbce795d6ea954ebe725241f5"><div class="ttname"><a href="HexTerrain_8cpp.html#afc1d28cfbce795d6ea954ebe725241f5">temperature</a></div><div class="ttdeci">float temperature</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00032">HexTerrain.cpp:32</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPreparedFile_8cpp_html_abd334a1a9ee04d4f3f143e881f9cdb3f"><div class="ttname"><a href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a></div><div class="ttdeci">std::shared_ptr&lt; const FileData &gt; bytes</div><div class="ttdef"><b>Definition</b> <a href="PreparedFile_8cpp_source.html#l00017">PreparedFile.cpp:17</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTerrainPipeline_8h_html"><div class="ttname"><a href="TerrainPipeline_8h.html">TerrainPipeline.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_aa6ea9b07932df851a61fa72bd01761fe"><div class="ttname"><a href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a></div><div class="ttdeci">float size</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00129">TreeMesh.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00019">Heightmap.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ITerrainArchiveSource_html"><div class="ttname"><a href="classeve_1_1procgen_1_1ITerrainArchiveSource.html">eve::procgen::ITerrainArchiveSource</a></div><div class="ttdoc">Immutable random-access byte source for an EVTR archive.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00016">TerrainAsset.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ITerrainArchiveSource_html_a2f816d78e1a5d0257014ead7506a3c1f"><div class="ttname"><a href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#a2f816d78e1a5d0257014ead7506a3c1f">eve::procgen::ITerrainArchiveSource::size</a></div><div class="ttdeci">virtual std::uint64_t size() const noexcept=0</div><div class="ttdoc">Total stable byte length of the archive. @thread Safe for concurrent reads.</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ITerrainArchiveSource_html_a7403556d4bf33d2716ac1ad15b638b5a"><div class="ttname"><a href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#a7403556d4bf33d2716ac1ad15b638b5a">eve::procgen::ITerrainArchiveSource::~ITerrainArchiveSource</a></div><div class="ttdeci">virtual ~ITerrainArchiveSource()=default</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ITerrainArchiveSource_html_ae00a6393bf99079b773b7a9992d99493"><div class="ttname"><a href="classeve_1_1procgen_1_1ITerrainArchiveSource.html#ae00a6393bf99079b773b7a9992d99493">eve::procgen::ITerrainArchiveSource::read</a></div><div class="ttdeci">virtual Result&lt; std::vector&lt; std::uint8_t &gt; &gt; read(std::uint64_t offset, std::size_t length) const =0</div><div class="ttdoc">Read exactly one bounded byte range.</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MemoryTerrainArchiveSource_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html">eve::procgen::MemoryTerrainArchiveSource</a></div><div class="ttdoc">Owning in-memory EVTR source used by compatibility callers and tests.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00031">TerrainAsset.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MemoryTerrainArchiveSource_html_a764a28e2fd24bfc13c9150f764823d2b"><div class="ttname"><a href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html#a764a28e2fd24bfc13c9150f764823d2b">eve::procgen::MemoryTerrainArchiveSource::size</a></div><div class="ttdeci">std::uint64_t size() const noexcept override</div><div class="ttdoc">Total stable byte length of the archive. @thread Safe for concurrent reads.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00036">TerrainAsset.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MemoryTerrainArchiveSource_html_a77ff0f55157066060722fe58b021abe7"><div class="ttname"><a href="classeve_1_1procgen_1_1MemoryTerrainArchiveSource.html#a77ff0f55157066060722fe58b021abe7">eve::procgen::MemoryTerrainArchiveSource::MemoryTerrainArchiveSource</a></div><div class="ttdeci">MemoryTerrainArchiveSource(std::span&lt; const std::uint8_t &gt; bytes)</div><div class="ttdoc">Copy immutable archive bytes into this source.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00034">TerrainAsset.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html">eve::procgen::TerrainAsset</a></div><div class="ttdoc">Versioned, random-access terrain archive.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00075">TerrainAsset.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html_a0a741ec88454ef785bab41fe83184712"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html#a0a741ec88454ef785bab41fe83184712">eve::procgen::TerrainAsset::getMaxHeight</a></div><div class="ttdeci">float getMaxHeight() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00099">TerrainAsset.h:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html_a5424151e8fa3fa482bf82e095e394e6f"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html#a5424151e8fa3fa482bf82e095e394e6f">eve::procgen::TerrainAsset::getMinHeight</a></div><div class="ttdeci">float getMinHeight() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00098">TerrainAsset.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html_a591a060bb19f8fd71e54aa13e8f6dcb7"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html#a591a060bb19f8fd71e54aa13e8f6dcb7">eve::procgen::TerrainAsset::getChunkSize</a></div><div class="ttdeci">int getChunkSize() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00097">TerrainAsset.h:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html_ac6d52917cec96190d32d0299bce32e9b"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html#ac6d52917cec96190d32d0299bce32e9b">eve::procgen::TerrainAsset::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00096">TerrainAsset.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html_acea01acdbf779cc252e9a95baf35d440"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html#acea01acdbf779cc252e9a95baf35d440">eve::procgen::TerrainAsset::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00095">TerrainAsset.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainAsset_html_adac522450415eb199a100b293ada78d9"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainAsset.html#adac522450415eb199a100b293ada78d9">eve::procgen::TerrainAsset::chunks</a></div><div class="ttdeci">const std::vector&lt; TerrainChunkEntry &gt; &amp; chunks() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00100">TerrainAsset.h:100</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ClimateMap_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ClimateMap.html">eve::procgen::ClimateMap</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainPipeline_8h_source.html#l00044">TerrainPipeline.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1HydrologyMap_html"><div class="ttname"><a href="structeve_1_1procgen_1_1HydrologyMap.html">eve::procgen::HydrologyMap</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainPipeline_8h_source.html#l00034">TerrainPipeline.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html">eve::procgen::TerrainChunkData</a></div><div class="ttdoc">Decoded terrain chunk containing all baked runtime layers.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00045">TerrainAsset.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html_a03f27b34b107f40c56b47d845a111998"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html#a03f27b34b107f40c56b47d845a111998">eve::procgen::TerrainChunkData::flowAccumulation</a></div><div class="ttdeci">std::vector&lt; float &gt; flowAccumulation</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00049">TerrainAsset.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html_a39754bd978e8199eb6c2a584e2aaf85a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html#a39754bd978e8199eb6c2a584e2aaf85a">eve::procgen::TerrainChunkData::lakeDepth</a></div><div class="ttdeci">std::vector&lt; float &gt; lakeDepth</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00050">TerrainAsset.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html_a80c3cb7ac83c0654d67bed3eae50fee1"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html#a80c3cb7ac83c0654d67bed3eae50fee1">eve::procgen::TerrainChunkData::rivers</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; rivers</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00052">TerrainAsset.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html_a89ad67a35879e753b223c7a39c75fb10"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html#a89ad67a35879e753b223c7a39c75fb10">eve::procgen::TerrainChunkData::biomes</a></div><div class="ttdeci">std::vector&lt; Biome &gt; biomes</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00053">TerrainAsset.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html_a902d17d01bfa1d90e9228711b3341100"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html#a902d17d01bfa1d90e9228711b3341100">eve::procgen::TerrainChunkData::flowDirection</a></div><div class="ttdeci">std::vector&lt; int8_t &gt; flowDirection</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00051">TerrainAsset.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkData_html_ad2c231aa85619295dc601c89a1dbe2b2"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkData.html#ad2c231aa85619295dc601c89a1dbe2b2">eve::procgen::TerrainChunkData::heights</a></div><div class="ttdeci">Heightmap heights</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00048">TerrainAsset.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainChunkEntry_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainChunkEntry.html">eve::procgen::TerrainChunkEntry</a></div><div class="ttdoc">Metadata for one independently compressed chunk in an EVTR archive.</div><div class="ttdef"><b>Definition</b> <a href="TerrainAsset_8h_source.html#l00057">TerrainAsset.h:57</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">GraphicsGpuDriven.cpp:77</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

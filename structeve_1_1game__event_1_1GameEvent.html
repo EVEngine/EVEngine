@@ -1,0 +1,460 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::game_event::GameEvent结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1game__event.html">game_event</a></li><li class="navelem"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1game__event_1_1GameEvent-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::game_event::GameEvent结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Envelope metadata shared by event domains.  
+ <a href="structeve_1_1game__event_1_1GameEvent.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GameEvent_8h_source.html">GameEvent.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a93f76707afa0d2b7edbf50e94bfd602b" id="r_a93f76707afa0d2b7edbf50e94bfd602b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1game__event.html#a09a000692bab724fc3f97f8d3dffcfe6">EventId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#a93f76707afa0d2b7edbf50e94bfd602b">eventId</a> = <a class="el" href="classeve_1_1detail_1_1Id128.html#a513a3e5d8650a85641eec67ddf887a82">EventId::nil</a>()</td></tr>
+<tr class="memdesc:a93f76707afa0d2b7edbf50e94bfd602b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable event identity; nil is allowed only for legacy transient events.  <br /></td></tr>
+<tr class="separator:a93f76707afa0d2b7edbf50e94bfd602b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907b5a100074223d7ef9ee7c76a468ad" id="r_a907b5a100074223d7ef9ee7c76a468ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#a907b5a100074223d7ef9ee7c76a468ad">sequence</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">EventSequence::zero</a>()</td></tr>
+<tr class="memdesc:a907b5a100074223d7ef9ee7c76a468ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence assigned by the owning stream; it is never global identity.  <br /></td></tr>
+<tr class="separator:a907b5a100074223d7ef9ee7c76a468ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d36306892c86c25637e71097f9e3f6" id="r_a78d36306892c86c25637e71097f9e3f6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#a78d36306892c86c25637e71097f9e3f6">type</a></td></tr>
+<tr class="memdesc:a78d36306892c86c25637e71097f9e3f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility event name and diagnostic topic.  <br /></td></tr>
+<tr class="separator:a78d36306892c86c25637e71097f9e3f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c84a844a8d0fc65871318aede21eb74" id="r_a5c84a844a8d0fc65871318aede21eb74"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#a5c84a844a8d0fc65871318aede21eb74">source</a></td></tr>
+<tr class="memdesc:a5c84a844a8d0fc65871318aede21eb74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable source reference, owned by this envelope.  <br /></td></tr>
+<tr class="separator:a5c84a844a8d0fc65871318aede21eb74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7ef274f3cb96c978e6e4f6c1d2f7977" id="r_af7ef274f3cb96c978e6e4f6c1d2f7977"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#af7ef274f3cb96c978e6e4f6c1d2f7977">subject</a></td></tr>
+<tr class="memdesc:af7ef274f3cb96c978e6e4f6c1d2f7977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable subject reference, owned by this envelope.  <br /></td></tr>
+<tr class="separator:af7ef274f3cb96c978e6e4f6c1d2f7977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af806b75d054ed832782796cf4d35e1ef" id="r_af806b75d054ed832782796cf4d35e1ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1game__event_1_1CausationRef.html">CausationRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#af806b75d054ed832782796cf4d35e1ef">causation</a></td></tr>
+<tr class="memdesc:af806b75d054ed832782796cf4d35e1ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct causation reference, normally an event or command ID.  <br /></td></tr>
+<tr class="separator:af806b75d054ed832782796cf4d35e1ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7f8fc4d5ea9f212a7cbca6ef153edc1" id="r_af7f8fc4d5ea9f212a7cbca6ef153edc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1game__event_1_1CorrelationId.html">CorrelationId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#af7f8fc4d5ea9f212a7cbca6ef153edc1">correlation</a></td></tr>
+<tr class="memdesc:af7f8fc4d5ea9f212a7cbca6ef153edc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Business workflow correlation reference.  <br /></td></tr>
+<tr class="separator:af7f8fc4d5ea9f212a7cbca6ef153edc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac88c01c0de4beeb1243538ac82edb28d" id="r_ac88c01c0de4beeb1243538ac82edb28d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1game__event.html#af3a1145177fdc7a9280236206af8be2d">SchemaId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#ac88c01c0de4beeb1243538ac82edb28d">schemaId</a></td></tr>
+<tr class="memdesc:ac88c01c0de4beeb1243538ac82edb28d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical schema identifier for the typed payload codec.  <br /></td></tr>
+<tr class="separator:ac88c01c0de4beeb1243538ac82edb28d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab693481755fb619433a3e4bcfd0ae0a3" id="r_ab693481755fb619433a3e4bcfd0ae0a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1game__event.html#abe7ee3c6e854e77ff601272118587141">SchemaVersion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#ab693481755fb619433a3e4bcfd0ae0a3">schemaVersion</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SchemaVersion::zero</a>()</td></tr>
+<tr class="memdesc:ab693481755fb619433a3e4bcfd0ae0a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version of the payload schema, not a stream or runtime generation.  <br /></td></tr>
+<tr class="separator:ab693481755fb619433a3e4bcfd0ae0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a1096661217d0b77a0928f9309d636" id="r_ae9a1096661217d0b77a0928f9309d636"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1game__event.html#a31bd988f6515691b7820a8b6773df756">SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#ae9a1096661217d0b77a0928f9309d636">tick</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>()</td></tr>
+<tr class="memdesc:ae9a1096661217d0b77a0928f9309d636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic simulation time at which the event was emitted.  <br /></td></tr>
+<tr class="separator:ae9a1096661217d0b77a0928f9309d636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad28847d4d51761e126facb9eed1faca7" id="r_ad28847d4d51761e126facb9eed1faca7"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#ad28847d4d51761e126facb9eed1faca7">flags</a> = 0</td></tr>
+<tr class="memdesc:ad28847d4d51761e126facb9eed1faca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain-defined bit flags; their meanings belong to the schema.  <br /></td></tr>
+<tr class="separator:ad28847d4d51761e126facb9eed1faca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0a2e4c1e42241410a7ceb67744206b7" id="r_ab0a2e4c1e42241410a7ceb67744206b7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html#ab0a2e4c1e42241410a7ceb67744206b7">payload</a> = &quot;null&quot;</td></tr>
+<tr class="memdesc:ab0a2e4c1e42241410a7ceb67744206b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical serialized payload at the stream persistence boundary.  <br /></td></tr>
+<tr class="separator:ab0a2e4c1e42241410a7ceb67744206b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Envelope metadata shared by event domains. </p>
+<p>The envelope carries identity, ordering and causal metadata only. The <code>payload</code> member is an opaque, canonical event-stream representation at the serialization boundary; a domain must keep its payload strongly typed and use <code><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a7d7f7e1d71d99cb0fe3683b831f8f194" title="Encodes a strongly typed domain payload and appends its envelope.">GameEventLog::appendTyped</a></code> to encode it. The stream never interprets that representation as a universal domain object. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00179">179</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="af806b75d054ed832782796cf4d35e1ef" name="af806b75d054ed832782796cf4d35e1ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af806b75d054ed832782796cf4d35e1ef">&#9670;&#160;</a></span>causation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1game__event_1_1CausationRef.html">CausationRef</a> eve::game_event::GameEvent::causation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Direct causation reference, normally an event or command ID. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a>.</p>
+
+</div>
+</div>
+<a id="af7f8fc4d5ea9f212a7cbca6ef153edc1" name="af7f8fc4d5ea9f212a7cbca6ef153edc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f8fc4d5ea9f212a7cbca6ef153edc1">&#9670;&#160;</a></span>correlation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1game__event_1_1CorrelationId.html">CorrelationId</a> eve::game_event::GameEvent::correlation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Business workflow correlation reference. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a93f76707afa0d2b7edbf50e94bfd602b" name="a93f76707afa0d2b7edbf50e94bfd602b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93f76707afa0d2b7edbf50e94bfd602b">&#9670;&#160;</a></span>eventId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1game__event.html#a09a000692bab724fc3f97f8d3dffcfe6">EventId</a> eve::game_event::GameEvent::eventId = <a class="el" href="classeve_1_1detail_1_1Id128.html#a513a3e5d8650a85641eec67ddf887a82">EventId::nil</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable event identity; nil is allowed only for legacy transient events. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a> , 以及 <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a>.</p>
+
+</div>
+</div>
+<a id="ad28847d4d51761e126facb9eed1faca7" name="ad28847d4d51761e126facb9eed1faca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad28847d4d51761e126facb9eed1faca7">&#9670;&#160;</a></span>flags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::game_event::GameEvent::flags = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Domain-defined bit flags; their meanings belong to the schema. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00201">201</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab0a2e4c1e42241410a7ceb67744206b7" name="ab0a2e4c1e42241410a7ceb67744206b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0a2e4c1e42241410a7ceb67744206b7">&#9670;&#160;</a></span>payload</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::game_event::GameEvent::payload = &quot;null&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical serialized payload at the stream persistence boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a> , 以及 <a class="el" href="GameEvent_8h_source.html#l00290">eve::game_event::GameEventLog::appendTyped()</a>.</p>
+
+</div>
+</div>
+<a id="ac88c01c0de4beeb1243538ac82edb28d" name="ac88c01c0de4beeb1243538ac82edb28d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac88c01c0de4beeb1243538ac82edb28d">&#9670;&#160;</a></span>schemaId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1game__event.html#af3a1145177fdc7a9280236206af8be2d">SchemaId</a> eve::game_event::GameEvent::schemaId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Logical schema identifier for the typed payload codec. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a>.</p>
+
+</div>
+</div>
+<a id="ab693481755fb619433a3e4bcfd0ae0a3" name="ab693481755fb619433a3e4bcfd0ae0a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab693481755fb619433a3e4bcfd0ae0a3">&#9670;&#160;</a></span>schemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1game__event.html#abe7ee3c6e854e77ff601272118587141">SchemaVersion</a> eve::game_event::GameEvent::schemaVersion = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SchemaVersion::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Version of the payload schema, not a stream or runtime generation. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a>.</p>
+
+</div>
+</div>
+<a id="a907b5a100074223d7ef9ee7c76a468ad" name="a907b5a100074223d7ef9ee7c76a468ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a907b5a100074223d7ef9ee7c76a468ad">&#9670;&#160;</a></span>sequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> eve::game_event::GameEvent::sequence = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">EventSequence::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sequence assigned by the owning stream; it is never global identity. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a> , 以及 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>.</p>
+
+</div>
+</div>
+<a id="a5c84a844a8d0fc65871318aede21eb74" name="a5c84a844a8d0fc65871318aede21eb74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c84a844a8d0fc65871318aede21eb74">&#9670;&#160;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::game_event::GameEvent::source</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable source reference, owned by this envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00187">187</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af7ef274f3cb96c978e6e4f6c1d2f7977" name="af7ef274f3cb96c978e6e4f6c1d2f7977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7ef274f3cb96c978e6e4f6c1d2f7977">&#9670;&#160;</a></span>subject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::game_event::GameEvent::subject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable subject reference, owned by this envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9a1096661217d0b77a0928f9309d636" name="ae9a1096661217d0b77a0928f9309d636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9a1096661217d0b77a0928f9309d636">&#9670;&#160;</a></span>tick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1game__event.html#a31bd988f6515691b7820a8b6773df756">SimulationTick</a> eve::game_event::GameEvent::tick = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deterministic simulation time at which the event was emitted. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00199">199</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78d36306892c86c25637e71097f9e3f6" name="a78d36306892c86c25637e71097f9e3f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d36306892c86c25637e71097f9e3f6">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::game_event::GameEvent::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility event name and diagnostic topic. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a> , 以及 <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/game_event/<a class="el" href="GameEvent_8h_source.html">GameEvent.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

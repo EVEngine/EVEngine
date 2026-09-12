@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/transaction/ResourceAccountParticipant.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d44cfd7f81a695298afaf8af49e343dd.html">transaction</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ResourceAccountParticipant.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ResourceAccountParticipant_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ResourceAccount_8h.html">common/ResourceAccount.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Transaction_8h.html">transaction/Transaction.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1transaction.html">eve::transaction</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">   18</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">ResourceDebitState</a> : std::uint8_t {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c">Idle</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb">Prepared</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3">Committed</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86">RolledBack</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84">Compensated</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">   35</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">ITransactionParticipant</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>(<a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                             std::string <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">name</a> = <span class="stringliteral">&quot;resource-debit&quot;</span>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a684c1389ae70d4b41727f364a70564e9">   46</a></span>    <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a684c1389ae70d4b41727f364a70564e9">ResourceDebitParticipant</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a2c6c668d2d04416277ae3bba1557bb80">   47</a></span>    <a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>&amp; <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a2c6c668d2d04416277ae3bba1557bb80">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#abe0c2736f2c1b9a0f441483634a62d8a">   48</a></span>    <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#abe0c2736f2c1b9a0f441483634a62d8a">ResourceDebitParticipant</a>(<a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>&amp;&amp;)                 = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0b48d0fc388ee9eb4c7a3dee87505623">   49</a></span>    <a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>&amp; <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0b48d0fc388ee9eb4c7a3dee87505623">operator=</a>(<a class="code hl_class" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a>&amp;&amp;)      = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">   52</a></span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">name</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> name_; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0046fe274db3497147f041f27ed3af2a">prepare</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a33d1c23fdc77ab9c3b1d554ed011255f">commit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#aed2e5edb44b60f0ba726a82d75ffd2d4">rollback</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a66001fc91aa55e4621c9442b23bad65f">compensate</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a80d3cfc38173d56a2d525c4b3d5c2232">   67</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">ResourceDebitState</a> <a class="code hl_function" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a80d3cfc38173d56a2d525c4b3d5c2232">state</a>() const noexcept { <span class="keywordflow">return</span> state_; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>&amp; account_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>          cost_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_struct" href="structeve_1_1resource_1_1Reservation.html">eve::resource::Reservation</a>       reservation_;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::string                      name_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_enumeration" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">ResourceDebitState</a>               state_ = <a class="code hl_enumvalue" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c">ResourceDebitState::Idle</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::transaction</span></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_ae8ae5102f9ee2a73efc07b521079dfc9"><div class="ttname"><a href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a></div><div class="ttdeci">eve::resource::IResourceAccount * account</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00036">DialoguePayment.cpp:36</a></div></div>
+<div class="ttc" id="aResourceAccount_8h_html"><div class="ttname"><a href="ResourceAccount_8h.html">ResourceAccount.h</a></div><div class="ttdoc">Strongly typed, transaction-friendly resource cost protocol.</div></div>
+<div class="ttc" id="aTransaction_8h_html"><div class="ttname"><a href="Transaction_8h.html">Transaction.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a></div><div class="ttdoc">Immutable canonical multi-resource cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00140">ResourceAccount.h:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ITransactionParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></div><div class="ttdoc">Synchronous participant contract for one coordinator transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00119">Transaction.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">eve::transaction::ResourceDebitParticipant</a></div><div class="ttdoc">Adapts IResourceAccount debit semantics to Coordinator.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8h_source.html#l00035">ResourceAccountParticipant.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a0046fe274db3497147f041f27ed3af2a"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0046fe274db3497147f041f27ed3af2a">eve::transaction::ResourceDebitParticipant::prepare</a></div><div class="ttdeci">eve::Result&lt; void &gt; prepare(const TransactionContext &amp;context) override</div><div class="ttdoc">Validate and stage local changes for the transaction.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8cpp_source.html#l00029">ResourceAccountParticipant.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a0b48d0fc388ee9eb4c7a3dee87505623"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0b48d0fc388ee9eb4c7a3dee87505623">eve::transaction::ResourceDebitParticipant::operator=</a></div><div class="ttdeci">ResourceDebitParticipant &amp; operator=(ResourceDebitParticipant &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a0e287b8baaa431624919cbb9b58bb993"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">eve::transaction::ResourceDebitParticipant::name</a></div><div class="ttdeci">std::string_view name() const noexcept override</div><div class="ttdoc">Return the diagnostic name supplied at construction.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8h_source.html#l00052">ResourceAccountParticipant.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a2c6c668d2d04416277ae3bba1557bb80"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a2c6c668d2d04416277ae3bba1557bb80">eve::transaction::ResourceDebitParticipant::operator=</a></div><div class="ttdeci">ResourceDebitParticipant &amp; operator=(const ResourceDebitParticipant &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a33d1c23fdc77ab9c3b1d554ed011255f"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a33d1c23fdc77ab9c3b1d554ed011255f">eve::transaction::ResourceDebitParticipant::commit</a></div><div class="ttdeci">eve::Result&lt; void &gt; commit(const TransactionContext &amp;context) override</div><div class="ttdoc">Publish this participant's staged changes.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8cpp_source.html#l00043">ResourceAccountParticipant.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a66001fc91aa55e4621c9442b23bad65f"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a66001fc91aa55e4621c9442b23bad65f">eve::transaction::ResourceDebitParticipant::compensate</a></div><div class="ttdeci">eve::Result&lt; void &gt; compensate(const TransactionContext &amp;context) override</div><div class="ttdoc">Undo an already committed external effect by compensation.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8cpp_source.html#l00067">ResourceAccountParticipant.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a684c1389ae70d4b41727f364a70564e9"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a684c1389ae70d4b41727f364a70564e9">eve::transaction::ResourceDebitParticipant::ResourceDebitParticipant</a></div><div class="ttdeci">ResourceDebitParticipant(const ResourceDebitParticipant &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_a80d3cfc38173d56a2d525c4b3d5c2232"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a80d3cfc38173d56a2d525c4b3d5c2232">eve::transaction::ResourceDebitParticipant::state</a></div><div class="ttdeci">ResourceDebitState state() const noexcept</div><div class="ttdoc">Return the participant lifecycle state for diagnostics/tests.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8h_source.html#l00067">ResourceAccountParticipant.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_abe0c2736f2c1b9a0f441483634a62d8a"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#abe0c2736f2c1b9a0f441483634a62d8a">eve::transaction::ResourceDebitParticipant::ResourceDebitParticipant</a></div><div class="ttdeci">ResourceDebitParticipant(ResourceDebitParticipant &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ResourceDebitParticipant_html_aed2e5edb44b60f0ba726a82d75ffd2d4"><div class="ttname"><a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#aed2e5edb44b60f0ba726a82d75ffd2d4">eve::transaction::ResourceDebitParticipant::rollback</a></div><div class="ttdeci">eve::Result&lt; void &gt; rollback(const TransactionContext &amp;context) override</div><div class="ttdoc">Discard a prepared but not committed stage.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8cpp_source.html#l00055">ResourceAccountParticipant.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1TransactionContext_html"><div class="ttname"><a href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a></div><div class="ttdoc">Immutable context shared by every participant of one transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00028">Transaction.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html"><div class="ttname"><a href="namespaceeve_1_1transaction.html">eve::transaction</a></div><div class="ttdef"><b>Definition</b> <a href="AtomicResourcePayment_8cpp_source.html#l00008">AtomicResourcePayment.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html_a662cd3605e5c5810223a4ea97e488817"><div class="ttname"><a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">eve::transaction::ResourceDebitState</a></div><div class="ttdeci">ResourceDebitState</div><div class="ttdoc">Lifecycle state of a resource debit participant.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccountParticipant_8h_source.html#l00018">ResourceAccountParticipant.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html_a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb"><div class="ttname"><a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb">eve::transaction::ResourceDebitState::Prepared</a></div><div class="ttdeci">@ Prepared</div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html_a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84"><div class="ttname"><a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84">eve::transaction::ResourceDebitState::Compensated</a></div><div class="ttdeci">@ Compensated</div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html_a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86"><div class="ttname"><a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86">eve::transaction::ResourceDebitState::RolledBack</a></div><div class="ttdeci">@ RolledBack</div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html_a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c">eve::transaction::ResourceDebitState::Idle</a></div><div class="ttdeci">@ Idle</div></div>
+<div class="ttc" id="anamespaceeve_1_1transaction_html_a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3"><div class="ttname"><a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3">eve::transaction::ResourceDebitState::Committed</a></div><div class="ttdeci">@ Committed</div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html">eve::resource::Reservation</a></div><div class="ttdoc">Reservation credential returned by a successful reserve operation.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00271">ResourceAccount.h:271</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

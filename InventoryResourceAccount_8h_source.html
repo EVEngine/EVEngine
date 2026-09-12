@@ -1,0 +1,261 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/inventory/InventoryResourceAccount.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b8bc26f51279c81dc355e07e5e1d99ba.html">inventory</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">InventoryResourceAccount.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="InventoryResourceAccount_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ResourceAccount_8h.html">common/ResourceAccount.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Bag_8h.html">inventory/Bag.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a>&amp; bag);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a6f4ce02d1cd433e4fbc26f37180cea44">   33</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a6f4ce02d1cd433e4fbc26f37180cea44">InventoryResourceAccount</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#af0cd1f8ec75d3ce62762361bf4cb1b58">   34</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>&amp; <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#af0cd1f8ec75d3ce62762361bf4cb1b58">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#adde10868e9d9d840fafa9c6047f2cca8">   35</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#adde10868e9d9d840fafa9c6047f2cca8">InventoryResourceAccount</a>(<a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>&amp;&amp;)                 = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#af3d700657da53139472a9d2602074770">   36</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>&amp; <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#af3d700657da53139472a9d2602074770">operator=</a>(<a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>&amp;&amp;)      = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a45e478bba0d241bc1ea123a4414e7c67">   37</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a45e478bba0d241bc1ea123a4414e7c67">~InventoryResourceAccount</a>() <span class="keyword">override</span>                                 = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::Affordability&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#ade488650b56015c140394794d32ac1fc">canAfford</a>(</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::Reservation&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a0c9ade406adfb29dad7a5676a47cc3df">reserve</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::Receipt&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a21a6e8927abd76f366ff235e22dc48b6">debit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::Receipt&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a5df5dfa128a150b2c81afe3bc691b3cb">credit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::Receipt&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a8f69984af682e75a5a60919eb2bb1080">commit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1resource_1_1Reservation.html">eve::resource::Reservation</a>&amp; reservation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a67c605a7a55ac3c4880569e515925c1e">rollback</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1resource_1_1Reservation.html">eve::resource::Reservation</a>&amp; reservation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">enum class</span> ReservationState : std::uint8_t { Active, Committed, RolledBack };</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">struct </span>ReservationRecord {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        ReservationState        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = ReservationState::Active;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::int64_t&gt;</a> balanceOf(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">eve::resource::ResourceId</a>&amp; resource) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::int64_t&gt;</a> activeReservationsFor(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">eve::resource::ResourceId</a>&amp; resource) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a>         activeReservationsAreCovered() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a>         applyDelta(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>, <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a21a6e8927abd76f366ff235e22dc48b6">debit</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    Bag&amp;                                                                bag_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::unordered_map&lt;eve::resource::ReservationId, ReservationRecord&gt; reservations_;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">eve::resource::AccountNonce</a>                                         accountNonce_;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::resource::ReservationId</a>                                        nextReservation_{1};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::resource::ReceiptId</a>                                            nextReceipt_{1};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="};">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1ItemCostAdapter.html">   79</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1inventory_1_1ItemCostAdapter.html">ItemCostAdapter</a> final {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::CostSpec&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemCostAdapter.html#a57dc432330fd3c45c49da9a99336c2a6">itemCost</a>(std::string_view <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, std::int64_t quantity);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::resource::CostSpec&gt;</a> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemCostAdapter.html#a8635368637f806fd50db6ab5a948c553">ammoCost</a>(std::string_view ammoItemId,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                                                       std::int64_t     quantity);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>};</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}  <span class="comment">// namespace eve::inventory</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00020">ActionTimelineWidget.cpp:20</a></div></div>
+<div class="ttc" id="aBag_8h_html"><div class="ttname"><a href="Bag_8h.html">Bag.h</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aResourceAccount_8h_html"><div class="ttname"><a href="ResourceAccount_8h.html">ResourceAccount.h</a></div><div class="ttdoc">Strongly typed, transaction-friendly resource cost protocol.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; eve::detail::ResourceReservationIdTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1Bag_html"><div class="ttname"><a href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a></div><div class="ttdoc">格子型物品容器（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="Bag_8h_source.html#l00019">Bag.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html">eve::inventory::InventoryResourceAccount</a></div><div class="ttdoc">Adapts one Bag's item quantities to the common resource protocol.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8h_source.html#l00028">InventoryResourceAccount.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a0c9ade406adfb29dad7a5676a47cc3df"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a0c9ade406adfb29dad7a5676a47cc3df">eve::inventory::InventoryResourceAccount::reserve</a></div><div class="ttdeci">eve::Result&lt; eve::resource::Reservation &gt; reserve(const eve::resource::CostSpec &amp;cost) override</div><div class="ttdoc">Reserve all items of a cost without changing visible balances.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00152">InventoryResourceAccount.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a21a6e8927abd76f366ff235e22dc48b6"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a21a6e8927abd76f366ff235e22dc48b6">eve::inventory::InventoryResourceAccount::debit</a></div><div class="ttdeci">eve::Result&lt; eve::resource::Receipt &gt; debit(const eve::resource::CostSpec &amp;cost) override</div><div class="ttdoc">Atomically debit all items immediately.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00255">InventoryResourceAccount.cpp:255</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a45e478bba0d241bc1ea123a4414e7c67"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a45e478bba0d241bc1ea123a4414e7c67">eve::inventory::InventoryResourceAccount::~InventoryResourceAccount</a></div><div class="ttdeci">~InventoryResourceAccount() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a5df5dfa128a150b2c81afe3bc691b3cb"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a5df5dfa128a150b2c81afe3bc691b3cb">eve::inventory::InventoryResourceAccount::credit</a></div><div class="ttdeci">eve::Result&lt; eve::resource::Receipt &gt; credit(const eve::resource::CostSpec &amp;cost) override</div><div class="ttdoc">Atomically credit all items immediately.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00271">InventoryResourceAccount.cpp:271</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a67c605a7a55ac3c4880569e515925c1e"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a67c605a7a55ac3c4880569e515925c1e">eve::inventory::InventoryResourceAccount::rollback</a></div><div class="ttdeci">eve::Result&lt; void &gt; rollback(const eve::resource::Reservation &amp;reservation) override</div><div class="ttdoc">Release one active reservation without changing balances.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00325">InventoryResourceAccount.cpp:325</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a6f4ce02d1cd433e4fbc26f37180cea44"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a6f4ce02d1cd433e4fbc26f37180cea44">eve::inventory::InventoryResourceAccount::InventoryResourceAccount</a></div><div class="ttdeci">InventoryResourceAccount(const InventoryResourceAccount &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_a8f69984af682e75a5a60919eb2bb1080"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a8f69984af682e75a5a60919eb2bb1080">eve::inventory::InventoryResourceAccount::commit</a></div><div class="ttdeci">eve::Result&lt; eve::resource::Receipt &gt; commit(const eve::resource::Reservation &amp;reservation) override</div><div class="ttdoc">Commit one active reservation as an atomic debit.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00300">InventoryResourceAccount.cpp:300</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_adde10868e9d9d840fafa9c6047f2cca8"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#adde10868e9d9d840fafa9c6047f2cca8">eve::inventory::InventoryResourceAccount::InventoryResourceAccount</a></div><div class="ttdeci">InventoryResourceAccount(InventoryResourceAccount &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_ade488650b56015c140394794d32ac1fc"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#ade488650b56015c140394794d32ac1fc">eve::inventory::InventoryResourceAccount::canAfford</a></div><div class="ttdeci">eve::Result&lt; eve::resource::Affordability &gt; canAfford(const eve::resource::CostSpec &amp;cost) const override</div><div class="ttdoc">Query whether a cost can be paid from currently available funds.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00131">InventoryResourceAccount.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_af0cd1f8ec75d3ce62762361bf4cb1b58"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#af0cd1f8ec75d3ce62762361bf4cb1b58">eve::inventory::InventoryResourceAccount::operator=</a></div><div class="ttdeci">InventoryResourceAccount &amp; operator=(const InventoryResourceAccount &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html_af3d700657da53139472a9d2602074770"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html#af3d700657da53139472a9d2602074770">eve::inventory::InventoryResourceAccount::operator=</a></div><div class="ttdeci">InventoryResourceAccount &amp; operator=(InventoryResourceAccount &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemCostAdapter_html"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemCostAdapter.html">eve::inventory::ItemCostAdapter</a></div><div class="ttdoc">Creates canonical costs for item and ammunition quantities.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8h_source.html#l00079">InventoryResourceAccount.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemCostAdapter_html_a57dc432330fd3c45c49da9a99336c2a6"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemCostAdapter.html#a57dc432330fd3c45c49da9a99336c2a6">eve::inventory::ItemCostAdapter::itemCost</a></div><div class="ttdeci">static eve::Result&lt; eve::resource::CostSpec &gt; itemCost(std::string_view itemId, std::int64_t quantity)</div><div class="ttdoc">Build a positive cost for an inventory item.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00341">InventoryResourceAccount.cpp:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemCostAdapter_html_a8635368637f806fd50db6ab5a948c553"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemCostAdapter.html#a8635368637f806fd50db6ab5a948c553">eve::inventory::ItemCostAdapter::ammoCost</a></div><div class="ttdeci">static eve::Result&lt; eve::resource::CostSpec &gt; ammoCost(std::string_view ammoItemId, std::int64_t quantity)</div><div class="ttdoc">Build a positive cost for ammunition stored as an item stack.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8cpp_source.html#l00345">InventoryResourceAccount.cpp:345</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html">eve::resource::AccountNonce</a></div><div class="ttdoc">Opaque process-local identity of the account that issued a credential.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00230">ResourceAccount.h:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a></div><div class="ttdoc">Immutable canonical multi-resource cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00140">ResourceAccount.h:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html">eve::resource::ResourceId</a></div><div class="ttdoc">Strong identity of a resource kind, such as mana or gold.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00036">ResourceAccount.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00035">AvatarInstance.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html">eve::resource::Reservation</a></div><div class="ttdoc">Reservation credential returned by a successful reserve operation.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00271">ResourceAccount.h:271</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

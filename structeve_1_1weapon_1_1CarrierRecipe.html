@@ -1,0 +1,346 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::CarrierRecipe结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1weapon_1_1CarrierRecipe-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::CarrierRecipe结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Data-driven composition recipe for one carrier family.  
+ <a href="structeve_1_1weapon_1_1CarrierRecipe.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2f77abd6a5431353c872e2b8e0cae794" id="r_a2f77abd6a5431353c872e2b8e0cae794"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#a2f77abd6a5431353c872e2b8e0cae794">validate</a> () const</td></tr>
+<tr class="memdesc:a2f77abd6a5431353c872e2b8e0cae794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate finite parameters and composition constraints.  <br /></td></tr>
+<tr class="separator:a2f77abd6a5431353c872e2b8e0cae794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a88d2ac3972cf18038450a11ea8307f82" id="r_a88d2ac3972cf18038450a11ea8307f82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#a88d2ac3972cf18038450a11ea8307f82">id</a></td></tr>
+<tr class="separator:a88d2ac3972cf18038450a11ea8307f82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aaf320c9ba01708a9610ac697e90f5c" id="r_a0aaf320c9ba01708a9610ac697e90f5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#a0aaf320c9ba01708a9610ac697e90f5c">lifetime</a> = <a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>()</td></tr>
+<tr class="separator:a0aaf320c9ba01708a9610ac697e90f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad03ee8e7e3b1513bc9a87923f32ec0a1" id="r_ad03ee8e7e3b1513bc9a87923f32ec0a1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#ad03ee8e7e3b1513bc9a87923f32ec0a1">speed</a> = 0.0</td></tr>
+<tr class="separator:ad03ee8e7e3b1513bc9a87923f32ec0a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a624a0c35c7bbf9ca21ce41b3467fdaeb" id="r_a624a0c35c7bbf9ca21ce41b3467fdaeb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierMotionOp.html">CarrierMotionOp</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#a624a0c35c7bbf9ca21ce41b3467fdaeb">motionOps</a></td></tr>
+<tr class="separator:a624a0c35c7bbf9ca21ce41b3467fdaeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c6165d7b1977344dfb4f2ee245fb45d" id="r_a2c6165d7b1977344dfb4f2ee245fb45d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierTrigger.html">CarrierTrigger</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#a2c6165d7b1977344dfb4f2ee245fb45d">triggers</a></td></tr>
+<tr class="separator:a2c6165d7b1977344dfb4f2ee245fb45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0400abe6085fd7d270f673c002625ee" id="r_aa0400abe6085fd7d270f673c002625ee"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierImpact.html">CarrierImpact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#aa0400abe6085fd7d270f673c002625ee">impacts</a></td></tr>
+<tr class="separator:aa0400abe6085fd7d270f673c002625ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Data-driven composition recipe for one carrier family. </p>
+<p>Recipes are immutable inputs to spawn; the runtime copies budgets into live state. <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html#a2f77abd6a5431353c872e2b8e0cae794" title="Validate finite parameters and composition constraints.">validate()</a> rejects empty motion, non-positive lifetime, and incomplete child/homing/hit bindings. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00105">105</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a2f77abd6a5431353c872e2b8e0cae794" name="a2f77abd6a5431353c872e2b8e0cae794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f77abd6a5431353c872e2b8e0cae794">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::CarrierRecipe::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate finite parameters and composition constraints. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71aa552e259a7aec237bbe28b9039dc3395">eve::weapon::Accelerate</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a0ffed7f9d337d81cbcf34e7b3441c7a5">eve::weapon::ApplyGravity</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a1692019f28fcae14228002ce735804a2">eve::weapon::CurveHelix</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a9f50090ebf9380415e6ad6f439dbe77e">eve::weapon::CurveSway</a>, <a class="el" href="CombatCarrier_8h_source.html#l00111">impacts</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a969d5b0a5db3512ed13b63c866ed4d49">eve::weapon::IntegrateLinear</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="CombatCarrier_8h_source.html#l00107">lifetime</a>, <a class="el" href="CombatCarrier_8h_source.html#l00109">motionOps</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a73ab03681bd7be2d62bd0660b2f19843">eve::weapon::OnExpire</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a36400f8ee1f1de646e1981eb65b36a02">eve::weapon::OnFuse</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0ac63f02f6baa2cdef618c088d6c7b8bb7">eve::weapon::OnHit</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a664e20fa2166a0488c7a06172d9244a2">eve::weapon::OnInterval</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a2506087021e3b48e7a6c6d81a969b2ed">eve::weapon::OnProximity</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="namespaceeve_1_1weapon.html#a044bbacfe19c41ce2d3accefac9a9058ab20f25abdfccc9129abb2b107cce1169">eve::weapon::SpawnChild</a>, <a class="el" href="CombatCarrier_8h_source.html#l00108">speed</a>, <a class="el" href="namespaceeve_1_1weapon.html#a044bbacfe19c41ce2d3accefac9a9058a26636c743cfadbf720cfc66222468198">eve::weapon::Splash</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71aae89f35e360eb6aa9b942c7db9081538">eve::weapon::SteerAvoidBody</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a11ddda5eaa4f2f7bdb8ef9fbc14bdce4">eve::weapon::SteerHoming</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CombatCarrier_8h_source.html#l00110">triggers</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a88d2ac3972cf18038450a11ea8307f82" name="a88d2ac3972cf18038450a11ea8307f82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88d2ac3972cf18038450a11ea8307f82">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> eve::weapon::CarrierRecipe::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00347">eve::weapon::CombatCarrierRuntime::registerRecipe()</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00428">eve::weapon::CombatCarrierRuntime::spawn()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00461">eve::weapon::CombatCarrierRuntime::spawnVolley()</a>.</p>
+
+</div>
+</div>
+<a id="aa0400abe6085fd7d270f673c002625ee" name="aa0400abe6085fd7d270f673c002625ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0400abe6085fd7d270f673c002625ee">&#9670;&#160;</a></span>impacts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1weapon_1_1CarrierImpact.html">CarrierImpact</a>&gt; eve::weapon::CarrierRecipe::impacts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00157">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0aaf320c9ba01708a9610ac697e90f5c" name="a0aaf320c9ba01708a9610ac697e90f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aaf320c9ba01708a9610ac697e90f5c">&#9670;&#160;</a></span>lifetime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::weapon::CarrierRecipe::lifetime = <a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00157">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a624a0c35c7bbf9ca21ce41b3467fdaeb" name="a624a0c35c7bbf9ca21ce41b3467fdaeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a624a0c35c7bbf9ca21ce41b3467fdaeb">&#9670;&#160;</a></span>motionOps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1weapon_1_1CarrierMotionOp.html">CarrierMotionOp</a>&gt; eve::weapon::CarrierRecipe::motionOps</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00157">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad03ee8e7e3b1513bc9a87923f32ec0a1" name="ad03ee8e7e3b1513bc9a87923f32ec0a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad03ee8e7e3b1513bc9a87923f32ec0a1">&#9670;&#160;</a></span>speed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::weapon::CarrierRecipe::speed = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00157">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a2c6165d7b1977344dfb4f2ee245fb45d" name="a2c6165d7b1977344dfb4f2ee245fb45d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c6165d7b1977344dfb4f2ee245fb45d">&#9670;&#160;</a></span>triggers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1weapon_1_1CarrierTrigger.html">CarrierTrigger</a>&gt; eve::weapon::CarrierRecipe::triggers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00274">eve::weapon::carrierRecipeFromProjectile()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00157">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a></li>
+<li>src/modules/weapon/<a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

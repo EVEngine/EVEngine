@@ -1,0 +1,328 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/agent/Learning.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d30a8ff4f2e5b955ace8ab3d035c3863.html">agent</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Learning.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Learning_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Agent_8h.html">agent/Agent.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;numeric&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html">   10</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1agent_1_1detail.html">eve::agent::detail</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// SplitMix64: local streams, with specified integer-to-double conversion.</span></div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1agent_1_1detail_1_1Random.html">   13</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1agent_1_1detail_1_1Random.html">Random</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1agent_1_1detail_1_1Random.html#a24be95a8d29da6a6a0f49b16774067ee">   15</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1agent_1_1detail_1_1Random.html#a24be95a8d29da6a6a0f49b16774067ee">Random</a>(std::uint64_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) : state_(<a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) {}</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1agent_1_1detail_1_1Random.html#ac1c894a075b057e571eea72c13e0639a">   16</a></span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1agent_1_1detail_1_1Random.html#ac1c894a075b057e571eea72c13e0639a">unit</a>() {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = (state_ += 0x9e3779b97f4a7c15ULL);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>      = (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> ^ (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &gt;&gt; 30)) * 0xbf58476d1ce4e5b9ULL;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>      = (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> ^ (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &gt;&gt; 27)) * 0x94d049bb133111ebULL;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> double((<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> ^ (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &gt;&gt; 31)) &gt;&gt; 11) * 0x1.0p-53;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    }</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1agent_1_1detail_1_1Random.html#a80ef81af31a4f7bc0a695729a4bd8712">   22</a></span>    std::size_t <a class="code hl_function" href="classeve_1_1agent_1_1detail_1_1Random.html#a80ef81af31a4f7bc0a695729a4bd8712">index</a>(std::size_t count) { <span class="keywordflow">return</span> std::size_t(<a class="code hl_function" href="classeve_1_1agent_1_1detail_1_1Random.html#ac1c894a075b057e571eea72c13e0639a">unit</a>() * <span class="keywordtype">double</span>(count)); }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    std::uint64_t state_;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html#ae6948dae660b9925d4560186089a21da">   28</a></span><span class="keyword">inline</span> std::size_t <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#ae6948dae660b9925d4560186089a21da">weightCount</a>(std::size_t <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, std::size_t hidden, std::size_t <a class="code hl_variable" href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a>) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> hidden * (<a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a> + 1) + hidden * (hidden + 1) + <a class="code hl_variable" href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a> * (hidden + 1);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html#a1a0eee24947fd7ed67c24080aeec158b">   32</a></span><span class="keyword">inline</span> std::vector&lt;double&gt; <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Policy.html">Policy</a>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, std::size_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>, std::size_t outputs,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                 <span class="keywordtype">bool</span> activate) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::vector&lt;double&gt; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>(outputs);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">for</span> (std::size_t j = 0; j &lt; outputs; ++j) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> = <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + j * (<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>.size() + 1);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordtype">double</span>     sum   = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights[<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> + <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>.size()];</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>.size(); ++i) sum += <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>[i] * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights[<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> + i];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>[j] = activate ? std::tanh(sum) : sum;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html#ad747664a1a8b7e650158f00a7f88c79d">   44</a></span><span class="keyword">inline</span> std::vector&lt;double&gt; <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#ad747664a1a8b7e650158f00a7f88c79d">softmax</a>(std::vector&lt;double&gt; logits, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Observation.html">Observation</a>&amp; o) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a> = -std::numeric_limits&lt;double&gt;::infinity();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> : o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#a0c0672dcba20e83418a8de13341c729a">legalActions</a>) <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a> = std::max(<a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, logits[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>]);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::vector&lt;double&gt; probabilities(logits.size());</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">double</span>              total = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> : o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#a0c0672dcba20e83418a8de13341c729a">legalActions</a>) total += probabilities[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>] = std::exp(logits[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>] - <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> : o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#a0c0672dcba20e83418a8de13341c729a">legalActions</a>) probabilities[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>] /= total;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> probabilities;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html#a9204e780ea033d1722b4877edacb8119">   54</a></span><span class="keyword">inline</span> std::vector&lt;double&gt; <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#a9204e780ea033d1722b4877edacb8119">forward</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Policy.html">Policy</a>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Observation.html">Observation</a>&amp; o) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::vector&lt;double&gt; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>(o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#af626bc6b33fb1cf822612a0cade5260e">features</a>.begin(), o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#af626bc6b33fb1cf822612a0cade5260e">features</a>.end());</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">auto</span>                h1     = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, 0, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">const</span> <span class="keyword">auto</span>          second = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.featureCount + 1);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">auto</span>                h2     = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(h1, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, second, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">const</span> <span class="keyword">auto</span>          third  = second + <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth + 1);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#ad747664a1a8b7e650158f00a7f88c79d">softmax</a>(<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(h2, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, third, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.actionCount, <span class="keyword">false</span>), o);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html#a664e4dfcff8d00bedd6688cbe9135bee">   63</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Policy.html">Policy</a> <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#a664e4dfcff8d00bedd6688cbe9135bee">makePolicy</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Config.html">Config</a>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_struct" href="structeve_1_1agent_1_1Policy.html">Policy</a> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.<a class="code hl_variable" href="structeve_1_1agent_1_1Policy.html#ac7fb3406ffc71b0357311f2ce34c16e6">featureCount</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.featureCount;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.actionCount  = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.actionCount;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth  = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.hiddenWidth;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights.resize(<a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#ae6948dae660b9925d4560186089a21da">weightCount</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.featureCount, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.hiddenWidth, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.actionCount));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1agent_1_1detail_1_1Random.html">Random</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.learningSeed);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> : <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights) <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a>.unit() * 2 - 1) / std::sqrt(<span class="keywordtype">double</span>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.hiddenWidth));</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceeve_1_1agent_1_1detail.html#a6b5bbba3bbf49b58fda17ccb463eac09">   74</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#a6b5bbba3bbf49b58fda17ccb463eac09">train</a>(<a class="code hl_struct" href="structeve_1_1agent_1_1Policy.html">Policy</a>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1agent_1_1Observation.html">Observation</a>&amp; o, std::uint32_t action, <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;double&gt; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>(o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#af626bc6b33fb1cf822612a0cade5260e">features</a>.begin(), o.<a class="code hl_variable" href="structeve_1_1agent_1_1Observation.html#af626bc6b33fb1cf822612a0cade5260e">features</a>.end());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">auto</span>                h1     = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, 0, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> <span class="keyword">auto</span>          second = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.featureCount + 1);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">auto</span>                h2     = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(h1, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, second, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">const</span> <span class="keyword">auto</span>          third  = second + <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth + 1);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">auto</span>                d3     = <a class="code hl_function" href="namespaceeve_1_1agent_1_1detail.html#ad747664a1a8b7e650158f00a7f88c79d">softmax</a>(<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(h2, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, third, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.actionCount, <span class="keyword">false</span>), o);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    d3[<a class="code hl_variable" href="PlayHost_8cpp.html#a057699cf114942bd42087102f39351f4">action</a>] -= 1;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::vector&lt;double&gt; d2(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth), d1(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth; ++i) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">for</span> (std::size_t j = 0; j &lt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.actionCount; ++j) d2[i] += d3[j] * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights[third + j * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth + 1) + i];</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        d2[i] *= 1 - h2[i] * h2[i];</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth; ++i) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">for</span> (std::size_t j = 0; j &lt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth; ++j)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            d1[i] += d2[j] * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights[second + j * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.hiddenWidth + 1) + i];</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        d1[i] *= 1 - h1[i] * h1[i];</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">auto</span> update = [&amp;](std::size_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>, <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, <span class="keyword">const</span> <span class="keyword">auto</span>&amp; gradient) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">for</span> (std::size_t j = 0; j &lt; gradient.size(); ++j) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> = <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + j * (<a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.size() + 1);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.size(); ++i)</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights[<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> + i] -= <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a> * std::clamp(gradient[j] * <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>[i], -1.0, 1.0);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.weights[<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> + <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.size()] -= <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a> * std::clamp(gradient[j], -1.0, 1.0);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    };</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    update(third, h2, d3);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    update(second, h1, d2);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    update(0, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, d1);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}  <span class="comment">// namespace eve::agent::detail</span></div>
+</div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aAgent_8h_html"><div class="ttname"><a href="Agent_8h.html">Agent.h</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00026">GltfImporter.cpp:26</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a0b872fb569a8d6ca3c6e55e3d7182e57"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a></div><div class="ttdeci">float rate</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00033">LegacyAnimationImporter.cpp:33</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a057699cf114942bd42087102f39351f4"><div class="ttname"><a href="PlayHost_8cpp.html#a057699cf114942bd42087102f39351f4">action</a></div><div class="ttdeci">std::string action</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00151">PlayHost.cpp:151</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_af6fd42a42168a245b67c5cc7fa032925"><div class="ttname"><a href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a></div><div class="ttdeci">std::vector&lt; ActionSpec &gt; actions</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00160">PlayHost.cpp:160</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a0bf444cb227a40151be0b5220b5b92bf"><div class="ttname"><a href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a></div><div class="ttdeci">int inputs</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00024">PointGraph.cpp:24</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_abeba743eb8c6a0bb955d78e10ab27d50"><div class="ttname"><a href="TacticsPersistence_8cpp.html#abeba743eb8c6a0bb955d78e10ab27d50">random</a></div><div class="ttdeci">Battle::Random random</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00139">TacticsPersistence.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1agent_1_1detail_1_1Random_html"><div class="ttname"><a href="classeve_1_1agent_1_1detail_1_1Random.html">eve::agent::detail::Random</a></div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00013">Learning.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1agent_1_1detail_1_1Random_html_a24be95a8d29da6a6a0f49b16774067ee"><div class="ttname"><a href="classeve_1_1agent_1_1detail_1_1Random.html#a24be95a8d29da6a6a0f49b16774067ee">eve::agent::detail::Random::Random</a></div><div class="ttdeci">Random(std::uint64_t seed)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00015">Learning.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1agent_1_1detail_1_1Random_html_a80ef81af31a4f7bc0a695729a4bd8712"><div class="ttname"><a href="classeve_1_1agent_1_1detail_1_1Random.html#a80ef81af31a4f7bc0a695729a4bd8712">eve::agent::detail::Random::index</a></div><div class="ttdeci">std::size_t index(std::size_t count)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00022">Learning.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1agent_1_1detail_1_1Random_html_ac1c894a075b057e571eea72c13e0639a"><div class="ttname"><a href="classeve_1_1agent_1_1detail_1_1Random.html#ac1c894a075b057e571eea72c13e0639a">eve::agent::detail::Random::unit</a></div><div class="ttdeci">double unit()</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00016">Learning.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1agent_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1agent_1_1detail.html">eve::agent::detail</a></div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00010">Learning.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1agent_1_1detail_html_a664e4dfcff8d00bedd6688cbe9135bee"><div class="ttname"><a href="namespaceeve_1_1agent_1_1detail.html#a664e4dfcff8d00bedd6688cbe9135bee">eve::agent::detail::makePolicy</a></div><div class="ttdeci">Policy makePolicy(const Config &amp;c)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00063">Learning.h:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1agent_1_1detail_html_a6b5bbba3bbf49b58fda17ccb463eac09"><div class="ttname"><a href="namespaceeve_1_1agent_1_1detail.html#a6b5bbba3bbf49b58fda17ccb463eac09">eve::agent::detail::train</a></div><div class="ttdeci">void train(Policy &amp;p, const Observation &amp;o, std::uint32_t action, double rate)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00074">Learning.h:74</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1agent_1_1detail_html_a9204e780ea033d1722b4877edacb8119"><div class="ttname"><a href="namespaceeve_1_1agent_1_1detail.html#a9204e780ea033d1722b4877edacb8119">eve::agent::detail::forward</a></div><div class="ttdeci">std::vector&lt; double &gt; forward(const Policy &amp;p, const Observation &amp;o)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00054">Learning.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1agent_1_1detail_html_ad747664a1a8b7e650158f00a7f88c79d"><div class="ttname"><a href="namespaceeve_1_1agent_1_1detail.html#ad747664a1a8b7e650158f00a7f88c79d">eve::agent::detail::softmax</a></div><div class="ttdeci">std::vector&lt; double &gt; softmax(std::vector&lt; double &gt; logits, const Observation &amp;o)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00044">Learning.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1agent_1_1detail_html_ae6948dae660b9925d4560186089a21da"><div class="ttname"><a href="namespaceeve_1_1agent_1_1detail.html#ae6948dae660b9925d4560186089a21da">eve::agent::detail::weightCount</a></div><div class="ttdeci">std::size_t weightCount(std::size_t inputs, std::size_t hidden, std::size_t actions)</div><div class="ttdef"><b>Definition</b> <a href="Learning_8h_source.html#l00028">Learning.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1agent_1_1Config_html"><div class="ttname"><a href="structeve_1_1agent_1_1Config.html">eve::agent::Config</a></div><div class="ttdoc">Bounded search configuration; seed streams for environment, search and learning are separate.</div><div class="ttdef"><b>Definition</b> <a href="Agent_8h_source.html#l00051">Agent.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1agent_1_1Observation_html"><div class="ttname"><a href="structeve_1_1agent_1_1Observation.html">eve::agent::Observation</a></div><div class="ttdoc">Owning state projection; action IDs index a fixed domain action catalogue.</div><div class="ttdef"><b>Definition</b> <a href="Agent_8h_source.html#l00015">Agent.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1agent_1_1Observation_html_a0c0672dcba20e83418a8de13341c729a"><div class="ttname"><a href="structeve_1_1agent_1_1Observation.html#a0c0672dcba20e83418a8de13341c729a">eve::agent::Observation::legalActions</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; legalActions</div><div class="ttdef"><b>Definition</b> <a href="Agent_8h_source.html#l00017">Agent.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1agent_1_1Observation_html_af626bc6b33fb1cf822612a0cade5260e"><div class="ttname"><a href="structeve_1_1agent_1_1Observation.html#af626bc6b33fb1cf822612a0cade5260e">eve::agent::Observation::features</a></div><div class="ttdeci">std::vector&lt; float &gt; features</div><div class="ttdef"><b>Definition</b> <a href="Agent_8h_source.html#l00016">Agent.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1agent_1_1Policy_html"><div class="ttname"><a href="structeve_1_1agent_1_1Policy.html">eve::agent::Policy</a></div><div class="ttdoc">Owning version-1 portable network weights; import validates the entire value before use.</div><div class="ttdef"><b>Definition</b> <a href="Agent_8h_source.html#l00097">Agent.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1agent_1_1Policy_html_ac7fb3406ffc71b0357311f2ce34c16e6"><div class="ttname"><a href="structeve_1_1agent_1_1Policy.html#ac7fb3406ffc71b0357311f2ce34c16e6">eve::agent::Policy::featureCount</a></div><div class="ttdeci">std::uint32_t featureCount</div><div class="ttdef"><b>Definition</b> <a href="Agent_8h_source.html#l00100">Agent.h:100</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

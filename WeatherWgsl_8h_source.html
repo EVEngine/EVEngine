@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weather/shaders/WeatherWgsl.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5174e1a75009182dde50ef8e54ca3631.html">weather</a></li><li class="navelem"><a class="el" href="dir_50a1edf797529b2bb11726fbf92c95c1.html">shaders</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WeatherWgsl.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WeatherWgsl_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="foldopen" id="foldopen00003" data-start="{" data-end="}">
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather_1_1shaders.html">    3</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weather_1_1shaders.html">eve::weather::shaders</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather_1_1shaders.html#a3922bdf2844b433e0a1a7f0b17a08a52">    5</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1weather_1_1shaders.html#a3922bdf2844b433e0a1a7f0b17a08a52">kWeatherVertWgsl</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="stringliteral">struct Light3D { posRadius: vec4f, color: vec4f };</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="stringliteral">struct Frame { mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array&lt;Light3D,8&gt;,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f };</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="stringliteral">struct Params { data: array&lt;vec4f,8&gt; }; struct In{@location(0) pos:vec3f,@location(1) normal:vec3f,@location(2) uv:vec2f};</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="stringliteral">struct Out{@builtin(position) pos:vec4f,@location(0) normal:vec3f,@location(1) uv:vec2f,@location(2) tint:vec4f,@location(3) world:vec3f,@location(4) camera:vec3f,@location(5) view:vec3f,@location(6) particle:f32};</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="stringliteral">@group(0) @binding(0) var&lt;uniform&gt; frame:Frame; @group(0) @binding(15) var&lt;uniform&gt; params:Params;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="stringliteral">fn p(i:u32)-&gt;f32{return params.data[i/4u][i%4u];}</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="stringliteral">fn hash12(q:vec2f)-&gt;f32{var v=fract(vec3f(q.x,q.y,q.x)*0.1031);v+=dot(v,v.yzx+vec3f(33.33));return fract((v.x+v.y)*v.z);}</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="stringliteral">@vertex fn vs_main(i:In)-&gt;Out {</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="stringliteral">    let kind=p(12u);</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="stringliteral">    let phase=hash12(i.pos.xz*0.5+vec2f(floor(i.pos.y*0.7),13.0));</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="stringliteral">    let speed=max(p(3u)*i.normal.z,0.01);</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="stringliteral">    let velocity=vec3f(p(1u),-speed,p(2u));</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="stringliteral">    var base=i.pos+vec3f(p(13u),-speed*p(0u),p(14u));</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="stringliteral">    if(kind&gt;1.5) { base=i.pos; }</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="stringliteral">    let relative=base-frame.cameraPos.xyz+vec3f(26.0,10.0,26.0);</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="stringliteral">    base=relative-floor(relative/vec3f(52.0,20.0,52.0))*vec3f(52.0,20.0,52.0)-vec3f(26.0,10.0,26.0)+frame.cameraPos.xyz;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="stringliteral">    if(kind&gt;0.5 &amp;&amp; kind&lt;1.5) {</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="stringliteral">        let flutter=p(0u)*1.7+phase*6.283185;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="stringliteral">        base.x+=sin(flutter)*0.32;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="stringliteral">        base.z+=cos(flutter*0.73)*0.24;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="stringliteral">    let cameraRight=vec3f(frame.view[0][0],frame.view[1][0],frame.view[2][0]);</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="stringliteral">    let cameraUp=vec3f(frame.view[0][1],frame.view[1][1],frame.view[2][1]);</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="stringliteral">    var up=-normalize(velocity);</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="stringliteral">    let sight=frame.cameraPos.xyz-base;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="stringliteral">    let side=cross(up,sight);</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="stringliteral">    var right=cameraRight;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="stringliteral">    if(dot(side,side)&gt;0.0001) { right=normalize(side); }</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="stringliteral">    var widthScale=i.normal.y;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="stringliteral">    if(kind&gt;0.5 &amp;&amp; kind&lt;1.5) {</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="stringliteral">        let angle=phase*6.283185+p(0u)*0.35;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="stringliteral">        right=cameraRight*cos(angle)+cameraUp*sin(angle);</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="stringliteral">        up=-cameraRight*sin(angle)+cameraUp*cos(angle);</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="stringliteral">        widthScale=i.normal.x;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="stringliteral">    let position=base+right*i.uv.x*p(5u)*widthScale+up*(i.uv.y-0.5)*p(4u)*i.normal.x;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="stringliteral">    let world=frame.model*vec4f(position,1);</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="stringliteral">    var o:Out;</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="stringliteral">    o.pos=frame.mvp*vec4f(position,1); o.pos.y=-o.pos.y;</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="stringliteral">    o.normal=i.normal; o.uv=vec2f(i.uv.x+0.5,i.uv.y); o.tint=frame.tint;</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="stringliteral">    let distanceFade=smoothstep(1.0,3.0,length(sight));</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="stringliteral">    let edgeFade=1.0-smoothstep(20.0,26.0,max(abs(base.x-frame.cameraPos.x),abs(base.z-frame.cameraPos.z)));</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="stringliteral">    o.tint.a*=distanceFade*edgeFade;</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="stringliteral">    o.world=world.xyz; o.camera=frame.cameraPos.xyz;</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="stringliteral">    o.view=(frame.view*world).xyz; o.particle=phase; return o;</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather_1_1shaders.html#a14ff224bf636d2e6d43d506044483802">   54</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1weather_1_1shaders.html#a14ff224bf636d2e6d43d506044483802">kWeatherFragWgsl</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="stringliteral">struct Params{data:array&lt;vec4f,8&gt;};struct In{@builtin(position) pos:vec4f,@location(1) uv:vec2f,@location(2) tint:vec4f,@location(3) world:vec3f,@location(4) camera:vec3f,@location(5) view:vec3f,@location(6) particle:f32};</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="stringliteral">@group(0) @binding(1) var albedo:texture_2d&lt;f32&gt;;@group(0) @binding(7) var samp:sampler;@group(0) @binding(15) var&lt;uniform&gt; params:Params;fn p(i:u32)-&gt;f32{return params.data[i/4u][i%4u];}</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="stringliteral">@fragment fn fs_main(i:In)-&gt;@location(0) vec4f {</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="stringliteral">    var tex=textureSample(albedo,samp,i.uv)*i.tint;</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="stringliteral">    // Evaluate derivatives before particle discard for uniform control flow.</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="stringliteral">    let t=i.uv.y;</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="stringliteral">    let center=0.5+(0.045+i.particle*0.035)*sin(t*3.141593);</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="stringliteral">    let taper=smoothstep(0.0,0.08,t)*(1.0-smoothstep(0.92,1.0,t));</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="stringliteral">    let head=fract(p(0u)*0.22+i.particle*7.13)*1.5-0.25;</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="stringliteral">    let along=1.0-t;</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="stringliteral">    let light=smoothstep(head-0.32,head-0.12,along)*(1.0-smoothstep(head-0.035,head+0.025,along));</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="stringliteral">    let halfWidth=0.006;</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="stringliteral">    let aa=max(fwidth(i.uv.x-center),0.001);</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="stringliteral">    if(p(12u)&gt;1.5) {</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="stringliteral">        let ribbon=1.0-smoothstep(max(halfWidth-aa,0.0),halfWidth+aa,abs(i.uv.x-center));</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="stringliteral">        tex=vec4f(vec3f(0.94,0.98,1.0)*i.tint.rgb,ribbon*taper*light*i.tint.a*0.16);</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="stringliteral">    if(p(6u)&lt;=0.0 || i.particle&gt;=p(6u)){discard;}</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="stringliteral">    let coverage=sqrt(max(tex.a,0.0))*select(0.95,0.88,p(12u)&gt;1.5);</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="stringliteral">    let threshold=fract(52.9829189*fract(dot(floor(i.pos.xy),vec2f(0.06711056,0.00583715))));</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="stringliteral">    if(coverage&lt;=threshold){discard;}</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="stringliteral">    let fog=clamp(1.0-exp(-length(i.view)*p(10u)),0.0,1.0);</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="stringliteral">    let glint=0.72+0.28*pow(max(0.0,1.0-abs(i.uv.x-0.5)*2.0),2.0);</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="stringliteral">    return vec4f(mix(tex.rgb*glint,vec3f(p(7u),p(8u),p(9u)),fog),1);</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather_1_1shaders.html#a9bcb0be071740628c66915486caaabf7">   82</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1weather_1_1shaders.html#a9bcb0be071740628c66915486caaabf7">kBoltVertWgsl</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="stringliteral">struct Light3D{posRadius:vec4f,color:vec4f};struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array&lt;Light3D,8&gt;,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f};struct In{@location(0) pos:vec3f,@location(1) normal:vec3f,@location(2) uv:vec2f};struct Out{@builtin(position) pos:vec4f,@location(0) normal:vec3f,@location(1) uv:vec2f,@location(2) tint:vec4f,@location(3) world:vec3f,@location(4) camera:vec3f,@location(5) view:vec3f};@group(0) @binding(0) var&lt;uniform&gt; frame:Frame;@vertex fn vs_main(i:In)-&gt;Out{let w=frame.model*vec4f(i.pos,1);var o:Out;o.pos=frame.mvp*vec4f(i.pos,1);o.pos.y=-o.pos.y;o.normal=i.normal;o.uv=i.uv;o.tint=frame.tint;o.world=w.xyz;o.camera=frame.cameraPos.xyz;o.view=(frame.view*w).xyz;return o;}</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather_1_1shaders.html#a6c01cfef20ef3124e093af41d06f47fa">   86</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1weather_1_1shaders.html#a6c01cfef20ef3124e093af41d06f47fa">kBoltFragWgsl</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="stringliteral">struct Params{data:array&lt;vec4f,8&gt;};struct In{@builtin(position) pos:vec4f,@location(1) uv:vec2f,@location(2) tint:vec4f,@location(3) world:vec3f,@location(5) view:vec3f};@group(0) @binding(15) var&lt;uniform&gt; params:Params;fn p(i:u32)-&gt;f32{return params.data[i/4u][i%4u];}</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="stringliteral">@fragment fn fs_main(i:In)-&gt;@location(0) vec4f{let flash=clamp(p(11u),0.0,1.0);if(flash&lt;=0.01){discard;}let across=abs(i.uv.x);let core=1.0-smoothstep(0.08,0.34,across);let halo=pow(max(0.0,1.0-across),2.2)*flash;let bayer=array&lt;f32,16&gt;(0.0,0.5,0.125,0.625,0.75,0.25,0.875,0.375,0.1875,0.6875,0.0625,0.5625,0.9375,0.4375,0.8125,0.3125);let q=vec2u(i.pos.xy)%vec2u(4);if(max(core,halo*0.72)&lt;=bayer[q.y*4u+q.x]){discard;}let color=mix(vec3f(0.20,0.38,0.95),vec3f(0.92,0.97,1.0),core)*(0.55+0.85*flash);let fog=clamp(1.0-exp(-length(i.view)*p(10u)),0.0,1.0);return vec4f(mix(color,vec3f(p(7u),p(8u),p(9u)),fog*0.6),1);}</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="stringliteral">}  </span><span class="comment">// namespace eve::weather::shaders</span></div>
+</div>
+<div class="ttc" id="anamespaceeve_1_1weather_1_1shaders_html"><div class="ttname"><a href="namespaceeve_1_1weather_1_1shaders.html">eve::weather::shaders</a></div><div class="ttdef"><b>Definition</b> <a href="WeatherWgsl_8h_source.html#l00003">WeatherWgsl.h:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_1_1shaders_html_a14ff224bf636d2e6d43d506044483802"><div class="ttname"><a href="namespaceeve_1_1weather_1_1shaders.html#a14ff224bf636d2e6d43d506044483802">eve::weather::shaders::kWeatherFragWgsl</a></div><div class="ttdeci">constexpr const char * kWeatherFragWgsl</div><div class="ttdef"><b>Definition</b> <a href="WeatherWgsl_8h_source.html#l00054">WeatherWgsl.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_1_1shaders_html_a3922bdf2844b433e0a1a7f0b17a08a52"><div class="ttname"><a href="namespaceeve_1_1weather_1_1shaders.html#a3922bdf2844b433e0a1a7f0b17a08a52">eve::weather::shaders::kWeatherVertWgsl</a></div><div class="ttdeci">constexpr const char * kWeatherVertWgsl</div><div class="ttdef"><b>Definition</b> <a href="WeatherWgsl_8h_source.html#l00005">WeatherWgsl.h:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_1_1shaders_html_a6c01cfef20ef3124e093af41d06f47fa"><div class="ttname"><a href="namespaceeve_1_1weather_1_1shaders.html#a6c01cfef20ef3124e093af41d06f47fa">eve::weather::shaders::kBoltFragWgsl</a></div><div class="ttdeci">constexpr const char * kBoltFragWgsl</div><div class="ttdef"><b>Definition</b> <a href="WeatherWgsl_8h_source.html#l00086">WeatherWgsl.h:86</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_1_1shaders_html_a9bcb0be071740628c66915486caaabf7"><div class="ttname"><a href="namespaceeve_1_1weather_1_1shaders.html#a9bcb0be071740628c66915486caaabf7">eve::weather::shaders::kBoltVertWgsl</a></div><div class="ttdeci">constexpr const char * kBoltVertWgsl</div><div class="ttdef"><b>Definition</b> <a href="WeatherWgsl_8h_source.html#l00082">WeatherWgsl.h:82</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

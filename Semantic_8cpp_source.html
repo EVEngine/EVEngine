@@ -1,0 +1,238 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/Semantic.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Semantic.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Semantic_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Semantic_8h.html">procgen/Semantic.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">const</span> std::unordered_map&lt;std::string, uint32_t&gt; &amp;nameToId() {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::unordered_map&lt;std::string, uint32_t&gt; <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> = {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        {<span class="stringliteral">&quot;empty&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a98869f2e92a791c9c10d7eca7062ab64">Semantic::Empty</a>},       {<span class="stringliteral">&quot;wall&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>},</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        {<span class="stringliteral">&quot;floor&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a>},       {<span class="stringliteral">&quot;corridor&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a69f554caa636d60bc8f0b3944711ec72">Semantic::Corridor</a>},</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        {<span class="stringliteral">&quot;water&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">Semantic::Water</a>},       {<span class="stringliteral">&quot;sand&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a38307da2a8d89724f9383c09c51a8711">Semantic::Sand</a>},</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        {<span class="stringliteral">&quot;grass&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a257aca213452997475d73df1dd291cc8">Semantic::Grass</a>},       {<span class="stringliteral">&quot;dirt&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a42717cd85e3f86e2ae4debc8b28f8550">Semantic::Dirt</a>},</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        {<span class="stringliteral">&quot;stone&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a29c06f76c165c6f129a5988d0fd5556f">Semantic::Stone</a>},       {<span class="stringliteral">&quot;snow&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae7b9acc7fe6a647129941b763f351152">Semantic::Snow</a>},</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        {<span class="stringliteral">&quot;door&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#aa71a7378111d7c0bc6685e085f86196a">Semantic::Door</a>},         {<span class="stringliteral">&quot;road&quot;</span>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a331abdb5a6991b65f0ec9912c1f80231">Semantic::Road</a>},</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    };</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#ac01e8a7a442f68a779c134fa29d00f5b">   22</a></span><span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_function" href="namespaceeve_1_1procgen.html#ac01e8a7a442f68a779c134fa29d00f5b">semanticName</a>(uint32_t <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">switch</span> (<span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a98869f2e92a791c9c10d7eca7062ab64">Semantic::Empty</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;empty&quot;</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;wall&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;floor&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a69f554caa636d60bc8f0b3944711ec72">Semantic::Corridor</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;corridor&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">Semantic::Water</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;water&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a38307da2a8d89724f9383c09c51a8711">Semantic::Sand</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;sand&quot;</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a257aca213452997475d73df1dd291cc8">Semantic::Grass</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;grass&quot;</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a42717cd85e3f86e2ae4debc8b28f8550">Semantic::Dirt</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;dirt&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a29c06f76c165c6f129a5988d0fd5556f">Semantic::Stone</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;stone&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae7b9acc7fe6a647129941b763f351152">Semantic::Snow</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;snow&quot;</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#aa71a7378111d7c0bc6685e085f86196a">Semantic::Door</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;door&quot;</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">case</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a331abdb5a6991b65f0ec9912c1f80231">Semantic::Road</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;road&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">default</span>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a5e3a441a9220ad047dbb9d4678495d85">   40</a></span>uint32_t <a class="code hl_function" href="namespaceeve_1_1procgen.html#a5e3a441a9220ad047dbb9d4678495d85">semanticId</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">auto</span> it = nameToId().find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> it == nameToId().end() ? <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a98869f2e92a791c9c10d7eca7062ab64">Semantic::Empty</a> : it-&gt;second;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aSemantic_8h_html"><div class="ttname"><a href="Semantic_8h.html">Semantic.h</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a21300f8aa8278b8c7682583c333e2098"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">eve::procgen::Semantic::Floor</a></div><div class="ttdeci">constexpr uint32_t Floor</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00012">Semantic.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a257aca213452997475d73df1dd291cc8"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a257aca213452997475d73df1dd291cc8">eve::procgen::Semantic::Grass</a></div><div class="ttdeci">constexpr uint32_t Grass</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00016">Semantic.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a29c06f76c165c6f129a5988d0fd5556f"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a29c06f76c165c6f129a5988d0fd5556f">eve::procgen::Semantic::Stone</a></div><div class="ttdeci">constexpr uint32_t Stone</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00018">Semantic.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a32bc9e2f55b389c403eba34b03af4cf8"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">eve::procgen::Semantic::Wall</a></div><div class="ttdeci">constexpr uint32_t Wall</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00011">Semantic.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a331abdb5a6991b65f0ec9912c1f80231"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a331abdb5a6991b65f0ec9912c1f80231">eve::procgen::Semantic::Road</a></div><div class="ttdeci">constexpr uint32_t Road</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00021">Semantic.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a38307da2a8d89724f9383c09c51a8711"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a38307da2a8d89724f9383c09c51a8711">eve::procgen::Semantic::Sand</a></div><div class="ttdeci">constexpr uint32_t Sand</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00015">Semantic.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a42717cd85e3f86e2ae4debc8b28f8550"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a42717cd85e3f86e2ae4debc8b28f8550">eve::procgen::Semantic::Dirt</a></div><div class="ttdeci">constexpr uint32_t Dirt</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00017">Semantic.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a69f554caa636d60bc8f0b3944711ec72"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a69f554caa636d60bc8f0b3944711ec72">eve::procgen::Semantic::Corridor</a></div><div class="ttdeci">constexpr uint32_t Corridor</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00013">Semantic.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a98869f2e92a791c9c10d7eca7062ab64"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a98869f2e92a791c9c10d7eca7062ab64">eve::procgen::Semantic::Empty</a></div><div class="ttdeci">constexpr uint32_t Empty</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00010">Semantic.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_aa71a7378111d7c0bc6685e085f86196a"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#aa71a7378111d7c0bc6685e085f86196a">eve::procgen::Semantic::Door</a></div><div class="ttdeci">constexpr uint32_t Door</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00020">Semantic.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_ae5b92f11f345ebc0bdbfa29d93683e2d"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">eve::procgen::Semantic::Water</a></div><div class="ttdeci">constexpr uint32_t Water</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00014">Semantic.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_ae7b9acc7fe6a647129941b763f351152"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#ae7b9acc7fe6a647129941b763f351152">eve::procgen::Semantic::Snow</a></div><div class="ttdeci">constexpr uint32_t Snow</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00019">Semantic.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a5e3a441a9220ad047dbb9d4678495d85"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a5e3a441a9220ad047dbb9d4678495d85">eve::procgen::semanticId</a></div><div class="ttdeci">uint32_t semanticId(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8cpp_source.html#l00040">Semantic.cpp:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ac01e8a7a442f68a779c134fa29d00f5b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ac01e8a7a442f68a779c134fa29d00f5b">eve::procgen::semanticName</a></div><div class="ttdeci">const char * semanticName(uint32_t id)</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8cpp_source.html#l00022">Semantic.cpp:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

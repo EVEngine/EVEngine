@@ -1,0 +1,389 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::data::zlibCompressor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1data.html">data</a></li><li class="navelem"><a class="el" href="classeve_1_1data_1_1zlibCompressor.html">zlibCompressor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1data_1_1zlibCompressor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::data::zlibCompressor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+类 eve::data::zlibCompressor 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1data_1_1zlibCompressor.png" usemap="#eve::data::zlibCompressor_map" alt=""/>
+  <map id="eve::data::zlibCompressor_map" name="eve::data::zlibCompressor_map">
+<area href="classeve_1_1data_1_1Compressor.html" title="Base class for backends for different compression formats." alt="eve::data::Compressor" shape="rect" coords="0,0,156,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abc457d6e1ce5a45ea222ec9a6318a304" id="r_abc457d6e1ce5a45ea222ec9a6318a304"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1zlibCompressor.html#abc457d6e1ce5a45ea222ec9a6318a304">compress</a> (std::string format, const char *data, size_t dataSize, int level, size_t &amp;<a class="el" href="EvaArchive_8cpp.html#a67e401259e535645812ef9542fabd2a5">compressedSize</a>) override</td></tr>
+<tr class="memdesc:abc457d6e1ce5a45ea222ec9a6318a304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compresses input data, and returns the compressed result.  <br /></td></tr>
+<tr class="separator:abc457d6e1ce5a45ea222ec9a6318a304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8ca5a48eafb994b40b4cb236ee25a89" id="r_ab8ca5a48eafb994b40b4cb236ee25a89"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1zlibCompressor.html#ab8ca5a48eafb994b40b4cb236ee25a89">decompress</a> (std::string format, const char *data, size_t dataSize, size_t &amp;decompressedSize) override</td></tr>
+<tr class="memdesc:ab8ca5a48eafb994b40b4cb236ee25a89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses compressed data, and returns the decompressed result.  <br /></td></tr>
+<tr class="separator:ab8ca5a48eafb994b40b4cb236ee25a89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3115c91b3f9a5a07b1612c0468e1d1bc" id="r_a3115c91b3f9a5a07b1612c0468e1d1bc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1zlibCompressor.html#a3115c91b3f9a5a07b1612c0468e1d1bc">isSupported</a> (std::string format) const override</td></tr>
+<tr class="memdesc:a3115c91b3f9a5a07b1612c0468e1d1bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether a specific format is supported by this backend.  <br /></td></tr>
+<tr class="separator:a3115c91b3f9a5a07b1612c0468e1d1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1data_1_1Compressor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1data_1_1Compressor')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1data_1_1Compressor.html">eve::data::Compressor</a></td></tr>
+<tr class="memitem:a946bd8b90ee86597831aadc8deeb940f inherit pub_methods_classeve_1_1data_1_1Compressor" id="r_a946bd8b90ee86597831aadc8deeb940f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1Compressor.html#a946bd8b90ee86597831aadc8deeb940f">~Compressor</a> ()</td></tr>
+<tr class="separator:a946bd8b90ee86597831aadc8deeb940f inherit pub_methods_classeve_1_1data_1_1Compressor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1data_1_1Compressor"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1data_1_1Compressor')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1data_1_1Compressor.html">eve::data::Compressor</a></td></tr>
+<tr class="memitem:a2b96a6a501fddc85dfafc9be37bf872b inherit pub_static_methods_classeve_1_1data_1_1Compressor" id="r_a2b96a6a501fddc85dfafc9be37bf872b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1data_1_1Compressor.html">Compressor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1Compressor.html#a2b96a6a501fddc85dfafc9be37bf872b">getCompressor</a> (std::string format)</td></tr>
+<tr class="memdesc:a2b96a6a501fddc85dfafc9be37bf872b inherit pub_static_methods_classeve_1_1data_1_1Compressor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a <a class="el" href="classeve_1_1data_1_1Compressor.html" title="Base class for backends for different compression formats.">Compressor</a> that can compress and decompress a specific format. Returns null if there are no supported compressors for the given format. Available formats are:  <br /></td></tr>
+<tr class="separator:a2b96a6a501fddc85dfafc9be37bf872b inherit pub_static_methods_classeve_1_1data_1_1Compressor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classeve_1_1data_1_1Compressor"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classeve_1_1data_1_1Compressor')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="classeve_1_1data_1_1Compressor.html">eve::data::Compressor</a></td></tr>
+<tr class="memitem:ad2980d1f27360ea512cadfc9b48a328d inherit pro_methods_classeve_1_1data_1_1Compressor" id="r_ad2980d1f27360ea512cadfc9b48a328d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1Compressor.html#ad2980d1f27360ea512cadfc9b48a328d">Compressor</a> ()</td></tr>
+<tr class="separator:ad2980d1f27360ea512cadfc9b48a328d inherit pro_methods_classeve_1_1data_1_1Compressor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Compressor_8cpp_source.html">Compressor.cpp</a> 第 <a class="el" href="Compressor_8cpp_source.html#l00150">150</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="abc457d6e1ce5a45ea222ec9a6318a304" name="abc457d6e1ce5a45ea222ec9a6318a304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc457d6e1ce5a45ea222ec9a6318a304">&#9670;&#160;</a></span>compress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::data::zlibCompressor::compress </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>dataSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>compressedSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compresses input data, and returns the compressed result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">format</td><td>The format to compress to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>The input (uncompressed) data. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataSize</td><td>The size in bytes of the input data. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">level</td><td>The amount of compression to apply (between 0 and 9.) A value of -1 indicates the default amount of compression. Specific formats may not use every level. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">compressedSize</td><td>The size in bytes of the compressed result.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly compressed data (allocated with new[]). </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1data_1_1Compressor.html#a6d198c69509fa06c00cdabc961346a8c">eve::data::Compressor</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Compressor_8cpp_source.html">Compressor.cpp</a> 第 <a class="el" href="Compressor_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00155">compressedSize</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="Compressor_8cpp_source.html#l00335">isSupported()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+</div>
+</div>
+<a id="ab8ca5a48eafb994b40b4cb236ee25a89" name="ab8ca5a48eafb994b40b4cb236ee25a89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8ca5a48eafb994b40b4cb236ee25a89">&#9670;&#160;</a></span>decompress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::data::zlibCompressor::decompress </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>dataSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>decompressedSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decompresses compressed data, and returns the decompressed result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">format</td><td>The format the compressed data is in. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>The input (compressed) data. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataSize</td><td>The size in bytes of the compressed data. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">decompressedSize</td><td>On input, the size in bytes of the original uncompressed data, or 0 if unknown. On return, the size in bytes of the decompressed data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The decompressed data (allocated with new[]). </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1data_1_1Compressor.html#a95e40f271031aa9cbe5e8f317d479f78">eve::data::Compressor</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Compressor_8cpp_source.html">Compressor.cpp</a> 第 <a class="el" href="Compressor_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="Compressor_8cpp_source.html#l00335">isSupported()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+</div>
+</div>
+<a id="a3115c91b3f9a5a07b1612c0468e1d1bc" name="a3115c91b3f9a5a07b1612c0468e1d1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3115c91b3f9a5a07b1612c0468e1d1bc">&#9670;&#160;</a></span>isSupported()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::data::zlibCompressor::isSupported </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether a specific format is supported by this backend. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1data_1_1Compressor.html#ad54c24af478211fa25fb1bb163727e6c">eve::data::Compressor</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Compressor_8cpp_source.html">Compressor.cpp</a> 第 <a class="el" href="Compressor_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Compressor_8cpp_source.html#l00241">compress()</a> , 以及 <a class="el" href="Compressor_8cpp_source.html#l00290">decompress()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/data/<a class="el" href="Compressor_8cpp_source.html">Compressor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

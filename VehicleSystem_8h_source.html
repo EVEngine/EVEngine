@@ -1,0 +1,252 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/vehicle/VehicleSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_67e8cd4d52697e685f77c3533c06f8a6.html">vehicle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VehicleSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VehicleSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="VehicleDriver_8h.html">vehicle/VehicleDriver.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="VehicleTypes_8h.html">vehicle/VehicleTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1vehicle.html">eve::vehicle</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>IVehicleMobility;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>IVehicleDriver;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1vehicle.html#a89d1258a88e9e27109584a04fd66aae6">   19</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1vehicle.html#a89d1258a88e9e27109584a04fd66aae6">VehicleEventSink</a> = std::function&lt;void(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleEvent.html">VehicleEvent</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleSystem.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleSystem.html">VehicleSystem</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#aacd331ecf62a7c4a21cc1db46b525671">registerMobility</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1IVehicleMobility.html">IVehicleMobility</a>* mobility);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1vehicle_1_1IVehicleMobility.html">IVehicleMobility</a>* <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#aa332f54c9036bf560c162c79bad87248">findMobility</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#afb63a5ad55ab69b83aab39a7fd44c94f">mobilityCount</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a9780ff6552619b1e1678e03f57396044">registerDriver</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1IVehicleDriver.html">IVehicleDriver</a>* driver);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1vehicle_1_1IVehicleDriver.html">IVehicleDriver</a>* <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a70f73a8e7cdb6389ce40c740606f7ece">findDriver</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a9a72613e4b4502a78de5eb36c554b989">driverCount</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a6508bb8d311b68723999fe1c6507f75d">setPlayerControls</a>(<span class="keywordtype">int</span> playerId, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1vehicle_1_1PlayerControl.html">PlayerControl</a>&amp; control);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1vehicle_1_1PlayerControl.html">PlayerControl</a>* <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#aa6c369f168999886a8dce89e35723fd4">playerControls</a>(<span class="keywordtype">int</span> playerId);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#aab48595ab3ba0bb93ae103e5103084af">setEventSink</a>(<a class="code hl_typedef" href="namespaceeve_1_1vehicle.html#a89d1258a88e9e27109584a04fd66aae6">VehicleEventSink</a> sink);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a1058f79ecd1e904f9fee0f82c0e2a417">update</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#af2c33313282a364ec7bc8135f75ad65a">processOrders</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a23a963f498426ab3112228f97f9cd84a">pushOrder</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a>&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#af0c2e1dc730d62eb753898c8ed01b13a">clearOrders</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a>* <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a817d0b63835ca504657ed1a690609310">currentOrder</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">static</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a5465d5f4c7e641afe94074feeb9a0a92">steerToward</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">float</span> targetHeadingDeg);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#af7df17df9c452aef9d45c5379c8bea78">enterSeat</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> seatIndex, <span class="keywordtype">int</span> playerId);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#a9f5e9e41ce7a42317a32d6ee885f9c03">exitSeat</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> seatIndex);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">static</span> <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleSystem.html#ad0ec4896757fcd3d996707cb67b09075">findSeatByPlayer</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> playerId);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>};</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}  <span class="comment">// namespace eve::vehicle</span></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aVehicleDriver_8h_html"><div class="ttname"><a href="VehicleDriver_8h.html">VehicleDriver.h</a></div></div>
+<div class="ttc" id="aVehicleTypes_8h_html"><div class="ttname"><a href="VehicleTypes_8h.html">VehicleTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1IVehicleDriver_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1IVehicleDriver.html">eve::vehicle::IVehicleDriver</a></div><div class="ttdoc">驾驶者：把某乘客的控制转成载具输入。</div><div class="ttdef"><b>Definition</b> <a href="VehicleDriver_8h_source.html#l00029">VehicleDriver.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1IVehicleMobility_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1IVehicleMobility.html">eve::vehicle::IVehicleMobility</a></div><div class="ttdoc">移动模型：读输入、更新运动状态。</div><div class="ttdef"><b>Definition</b> <a href="VehicleMobility_8h_source.html#l00017">VehicleMobility.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleEntity_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleEntity.html">eve::vehicle::VehicleEntity</a></div><div class="ttdoc">载具实体：数据全部在组件里，行为在 VehicleSystem。</div><div class="ttdef"><b>Definition</b> <a href="VehicleTypes_8h_source.html#l00172">VehicleTypes.h:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html">eve::vehicle::VehicleSystem</a></div><div class="ttdoc">载具系统：移动注册 + 命令处理 + 更新。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8h_source.html#l00022">VehicleSystem.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a1058f79ecd1e904f9fee0f82c0e2a417"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a1058f79ecd1e904f9fee0f82c0e2a417">eve::vehicle::VehicleSystem::update</a></div><div class="ttdeci">static void update(VehicleEntity &amp;v, float dt)</div><div class="ttdoc">每帧推进：命令 → 输入 → 移动模型。自动瞄准由 Vehicle 模块完成。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00200">VehicleSystem.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a23a963f498426ab3112228f97f9cd84a"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a23a963f498426ab3112228f97f9cd84a">eve::vehicle::VehicleSystem::pushOrder</a></div><div class="ttdeci">static eve::Result&lt; void &gt; pushOrder(VehicleEntity &amp;v, const VehicleOrder &amp;order)</div><div class="ttdoc">追加一条命令；Move/AttackMove 会清空旧命令（RTS 习惯）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00260">VehicleSystem.cpp:260</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a5465d5f4c7e641afe94074feeb9a0a92"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a5465d5f4c7e641afe94074feeb9a0a92">eve::vehicle::VehicleSystem::steerToward</a></div><div class="ttdeci">static float steerToward(VehicleEntity &amp;v, float targetHeadingDeg)</div><div class="ttdoc">按角度差生成转向输入（-1..1）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00285">VehicleSystem.cpp:285</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a6508bb8d311b68723999fe1c6507f75d"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a6508bb8d311b68723999fe1c6507f75d">eve::vehicle::VehicleSystem::setPlayerControls</a></div><div class="ttdeci">static void setPlayerControls(int playerId, const PlayerControl &amp;control)</div><div class="ttdoc">写入某玩家的控制状态（游戏每帧填充）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00302">VehicleSystem.cpp:302</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a70f73a8e7cdb6389ce40c740606f7ece"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a70f73a8e7cdb6389ce40c740606f7ece">eve::vehicle::VehicleSystem::findDriver</a></div><div class="ttdeci">static IVehicleDriver * findDriver(const std::string &amp;name)</div><div class="ttdoc">按名字取驾驶者；未注册返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00295">VehicleSystem.cpp:295</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a817d0b63835ca504657ed1a690609310"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a817d0b63835ca504657ed1a690609310">eve::vehicle::VehicleSystem::currentOrder</a></div><div class="ttdeci">static const VehicleOrder * currentOrder(VehicleEntity &amp;v)</div><div class="ttdoc">当前命令；无命令返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00283">VehicleSystem.cpp:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a9780ff6552619b1e1678e03f57396044"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a9780ff6552619b1e1678e03f57396044">eve::vehicle::VehicleSystem::registerDriver</a></div><div class="ttdeci">static void registerDriver(IVehicleDriver *driver)</div><div class="ttdoc">注册驾驶者实现；同名替换。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00290">VehicleSystem.cpp:290</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a9a72613e4b4502a78de5eb36c554b989"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a9a72613e4b4502a78de5eb36c554b989">eve::vehicle::VehicleSystem::driverCount</a></div><div class="ttdeci">static int driverCount()</div><div class="ttdoc">已注册驾驶者数量。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00300">VehicleSystem.cpp:300</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_a9f5e9e41ce7a42317a32d6ee885f9c03"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#a9f5e9e41ce7a42317a32d6ee885f9c03">eve::vehicle::VehicleSystem::exitSeat</a></div><div class="ttdeci">static bool exitSeat(VehicleEntity &amp;v, int seatIndex)</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00317">VehicleSystem.cpp:317</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_aa332f54c9036bf560c162c79bad87248"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#aa332f54c9036bf560c162c79bad87248">eve::vehicle::VehicleSystem::findMobility</a></div><div class="ttdeci">static IVehicleMobility * findMobility(const std::string &amp;name)</div><div class="ttdoc">按名字取移动模型；未注册返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00191">VehicleSystem.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_aa6c369f168999886a8dce89e35723fd4"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#aa6c369f168999886a8dce89e35723fd4">eve::vehicle::VehicleSystem::playerControls</a></div><div class="ttdeci">static const PlayerControl * playerControls(int playerId)</div><div class="ttdoc">取某玩家的控制状态；未设置返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00306">VehicleSystem.cpp:306</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_aab48595ab3ba0bb93ae103e5103084af"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#aab48595ab3ba0bb93ae103e5103084af">eve::vehicle::VehicleSystem::setEventSink</a></div><div class="ttdeci">static void setEventSink(VehicleEventSink sink)</div><div class="ttdoc">注册事件汇（替换旧的；传 nullptr 清空）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00198">VehicleSystem.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_aacd331ecf62a7c4a21cc1db46b525671"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#aacd331ecf62a7c4a21cc1db46b525671">eve::vehicle::VehicleSystem::registerMobility</a></div><div class="ttdeci">static void registerMobility(IVehicleMobility *mobility)</div><div class="ttdoc">注册移动模型实现；同名替换。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00186">VehicleSystem.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_ad0ec4896757fcd3d996707cb67b09075"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#ad0ec4896757fcd3d996707cb67b09075">eve::vehicle::VehicleSystem::findSeatByPlayer</a></div><div class="ttdeci">static int findSeatByPlayer(VehicleEntity &amp;v, int playerId)</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00323">VehicleSystem.cpp:323</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_af0c2e1dc730d62eb753898c8ed01b13a"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#af0c2e1dc730d62eb753898c8ed01b13a">eve::vehicle::VehicleSystem::clearOrders</a></div><div class="ttdeci">static void clearOrders(VehicleEntity &amp;v)</div><div class="ttdoc">清空命令队列。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00276">VehicleSystem.cpp:276</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_af2c33313282a364ec7bc8135f75ad65a"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#af2c33313282a364ec7bc8135f75ad65a">eve::vehicle::VehicleSystem::processOrders</a></div><div class="ttdeci">static void processOrders(VehicleEntity &amp;v, float dt)</div><div class="ttdoc">处理命令队列：把队首命令转成 v.input()。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00209">VehicleSystem.cpp:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_af7df17df9c452aef9d45c5379c8bea78"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#af7df17df9c452aef9d45c5379c8bea78">eve::vehicle::VehicleSystem::enterSeat</a></div><div class="ttdeci">static bool enterSeat(VehicleEntity &amp;v, int seatIndex, int playerId)</div><div class="ttdoc">座位：进入 / 离开 / 按玩家找座位。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00311">VehicleSystem.cpp:311</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleSystem_html_afb63a5ad55ab69b83aab39a7fd44c94f"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleSystem.html#afb63a5ad55ab69b83aab39a7fd44c94f">eve::vehicle::VehicleSystem::mobilityCount</a></div><div class="ttdeci">static int mobilityCount()</div><div class="ttdoc">已注册移动模型数量。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8cpp_source.html#l00196">VehicleSystem.cpp:196</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1vehicle_html"><div class="ttname"><a href="namespaceeve_1_1vehicle.html">eve::vehicle</a></div><div class="ttdoc">驾驶者接口与玩家控制状态。</div><div class="ttdef"><b>Definition</b> <a href="vehicle_2ContainerAdapters_8cpp_source.html#l00014">ContainerAdapters.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1vehicle_html_a89d1258a88e9e27109584a04fd66aae6"><div class="ttname"><a href="namespaceeve_1_1vehicle.html#a89d1258a88e9e27109584a04fd66aae6">eve::vehicle::VehicleEventSink</a></div><div class="ttdeci">std::function&lt; void(const VehicleEvent &amp;)&gt; VehicleEventSink</div><div class="ttdoc">事件汇：由 Vehicle 模块（或测试）注册，把事件写入自己的队列。</div><div class="ttdef"><b>Definition</b> <a href="VehicleSystem_8h_source.html#l00019">VehicleSystem.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1vehicle_1_1PlayerControl_html"><div class="ttname"><a href="structeve_1_1vehicle_1_1PlayerControl.html">eve::vehicle::PlayerControl</a></div><div class="ttdoc">一名玩家的原始控制（归一化，游戏侧填充）。角度为度。</div><div class="ttdef"><b>Definition</b> <a href="VehicleDriver_8h_source.html#l00018">VehicleDriver.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1vehicle_1_1VehicleEvent_html"><div class="ttname"><a href="structeve_1_1vehicle_1_1VehicleEvent.html">eve::vehicle::VehicleEvent</a></div><div class="ttdoc">载具事件（帧缓存，脚本轮询）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleTypes_8h_source.html#l00162">VehicleTypes.h:162</a></div></div>
+<div class="ttc" id="astructeve_1_1vehicle_1_1VehicleOrder_html"><div class="ttname"><a href="structeve_1_1vehicle_1_1VehicleOrder.html">eve::vehicle::VehicleOrder</a></div><div class="ttdoc">一条 Vehicle 领域命令（生命周期由 Vehicle order adapter 执行）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleTypes_8h_source.html#l00057">VehicleTypes.h:57</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

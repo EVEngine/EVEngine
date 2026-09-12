@@ -1,0 +1,1720 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen_editor::ProcgenScriptEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editor.html">procgen_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen_editor::ProcgenScriptEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Workspace controller for one encapsulated procedural script module.  
+ <a href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad6770d86ab4a7a1fdd2fa1b59a048b11" id="r_ad6770d86ab4a7a1fdd2fa1b59a048b11"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ad6770d86ab4a7a1fdd2fa1b59a048b11">ProcgenScriptEditor</a> (std::string targetId)</td></tr>
+<tr class="memdesc:ad6770d86ab4a7a1fdd2fa1b59a048b11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty generator host.  <br /></td></tr>
+<tr class="separator:ad6770d86ab4a7a1fdd2fa1b59a048b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a842e8a45f9611084e1d962a62d9d3434" id="r_a842e8a45f9611084e1d962a62d9d3434"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a842e8a45f9611084e1d962a62d9d3434">ProcgenScriptEditor</a> (const <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a842e8a45f9611084e1d962a62d9d3434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09ca3138a55e60fa4742bcdca7985db" id="r_ad09ca3138a55e60fa4742bcdca7985db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ad09ca3138a55e60fa4742bcdca7985db">operator=</a> (const <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:ad09ca3138a55e60fa4742bcdca7985db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3800688b2d02c94f8097223d3f1bfae" id="r_ac3800688b2d02c94f8097223d3f1bfae"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html">procgen_editing::ProcgenScriptDocumentTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac3800688b2d02c94f8097223d3f1bfae">target</a> () const noexcept</td></tr>
+<tr class="memdesc:ac3800688b2d02c94f8097223d3f1bfae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative generator document.  <br /></td></tr>
+<tr class="separator:ac3800688b2d02c94f8097223d3f1bfae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97ab5ac9aa50410a714100535e72c09" id="r_af97ab5ac9aa50410a714100535e72c09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#af97ab5ac9aa50410a714100535e72c09">configureWorkspace</a> (<a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace) const</td></tr>
+<tr class="memdesc:af97ab5ac9aa50410a714100535e72c09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install Modules / Preview / Inspector / Debug Stages panels.  <br /></td></tr>
+<tr class="separator:af97ab5ac9aa50410a714100535e72c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac43cea3da5a8752d66fb49f6a9b342d8" id="r_ac43cea3da5a8752d66fb49f6a9b342d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac43cea3da5a8752d66fb49f6a9b342d8">loadModule</a> (<a class="el" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">procgen_editing::ProcgenScriptModuleSpec</a> spec)</td></tr>
+<tr class="separator:ac43cea3da5a8752d66fb49f6a9b342d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7305a246fc491e3937d06bfc0829575" id="r_ab7305a246fc491e3937d06bfc0829575"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ab7305a246fc491e3937d06bfc0829575">loadModule</a> (std::string uri, std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a3bb323584382fec199a5e43b60467db1">displayName</a>, std::string <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ae481f68df543e2da86959d9c808d5c0d">kind</a>, const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">procgen_editing::EditorValue</a> &amp;schema)</td></tr>
+<tr class="separator:ab7305a246fc491e3937d06bfc0829575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb19f6ad8bdff38f2e30f7647686920" id="r_a4cb19f6ad8bdff38f2e30f7647686920"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a4cb19f6ad8bdff38f2e30f7647686920">setParam</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">procgen_editing::EditorValue</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a4cb19f6ad8bdff38f2e30f7647686920"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac277da59c6c9c39877b2a29064227c36" id="r_ac277da59c6c9c39877b2a29064227c36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac277da59c6c9c39877b2a29064227c36">setInt</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ac277da59c6c9c39877b2a29064227c36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb0ce5941d5610c1b5cec7c17db3dff7" id="r_afb0ce5941d5610c1b5cec7c17db3dff7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#afb0ce5941d5610c1b5cec7c17db3dff7">setFloat</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:afb0ce5941d5610c1b5cec7c17db3dff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19d2c91c2682218299bca09b06998ca" id="r_af19d2c91c2682218299bca09b06998ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#af19d2c91c2682218299bca09b06998ca">setBool</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:af19d2c91c2682218299bca09b06998ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c5499085c8e965bdccfcb8318cc635" id="r_a13c5499085c8e965bdccfcb8318cc635"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a13c5499085c8e965bdccfcb8318cc635">setString</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a13c5499085c8e965bdccfcb8318cc635"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd332733e3dca8f2d784972cc6c02db" id="r_aabd332733e3dca8f2d784972cc6c02db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#aabd332733e3dca8f2d784972cc6c02db">publishPreview</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a> *<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, std::string stage, std::uint64_t expectedRevision)</td></tr>
+<tr class="memdesc:aabd332733e3dca8f2d784972cc6c02db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a successful generation into the preview cache.  <br /></td></tr>
+<tr class="separator:aabd332733e3dca8f2d784972cc6c02db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66b60ed4c1f99aa3f1582247cc01941a" id="r_a66b60ed4c1f99aa3f1582247cc01941a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a66b60ed4c1f99aa3f1582247cc01941a">publishStage</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a> *<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, std::string stage)</td></tr>
+<tr class="memdesc:a66b60ed4c1f99aa3f1582247cc01941a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy an intermediate debug stage without changing the displayed output unless it is selected.  <br /></td></tr>
+<tr class="separator:a66b60ed4c1f99aa3f1582247cc01941a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a9f593811d6bbf1d18d8c3730822ac6" id="r_a8a9f593811d6bbf1d18d8c3730822ac6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a8a9f593811d6bbf1d18d8c3730822ac6">failPreview</a> (std::string <a class="el" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, std::uint64_t expectedRevision)</td></tr>
+<tr class="separator:a8a9f593811d6bbf1d18d8c3730822ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e8e2309e26a1bdc42a70740f674eeec" id="r_a2e8e2309e26a1bdc42a70740f674eeec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2e8e2309e26a1bdc42a70740f674eeec">selectStage</a> (std::string stage)</td></tr>
+<tr class="separator:a2e8e2309e26a1bdc42a70740f674eeec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf2b860bf896173a2061a5e9b3469678" id="r_abf2b860bf896173a2061a5e9b3469678"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#abf2b860bf896173a2061a5e9b3469678">setPointBudget</a> (int budget)</td></tr>
+<tr class="separator:abf2b860bf896173a2061a5e9b3469678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea7da7352818c06c808a52e7ef25e696" id="r_aea7da7352818c06c808a52e7ef25e696"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#aea7da7352818c06c808a52e7ef25e696">setLive</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:aea7da7352818c06c808a52e7ef25e696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Choose whether the presenter should rebuild on every parameter commit.  <br /></td></tr>
+<tr class="separator:aea7da7352818c06c808a52e7ef25e696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a057df1b4a32923dd80b37d11d859ef31" id="r_a057df1b4a32923dd80b37d11d859ef31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a057df1b4a32923dd80b37d11d859ef31">undo</a> ()</td></tr>
+<tr class="separator:a057df1b4a32923dd80b37d11d859ef31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace5611349be4726592f8b1e62c729a90" id="r_ace5611349be4726592f8b1e62c729a90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ace5611349be4726592f8b1e62c729a90">redo</a> ()</td></tr>
+<tr class="separator:ace5611349be4726592f8b1e62c729a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f28c012a445e8715ead7723f1309f4b" id="r_a6f28c012a445e8715ead7723f1309f4b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a6f28c012a445e8715ead7723f1309f4b">canUndo</a> () const noexcept</td></tr>
+<tr class="separator:a6f28c012a445e8715ead7723f1309f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49dbd34bffb9b04e3722e29ee39fffdd" id="r_a49dbd34bffb9b04e3722e29ee39fffdd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a49dbd34bffb9b04e3722e29ee39fffdd">canRedo</a> () const noexcept</td></tr>
+<tr class="separator:a49dbd34bffb9b04e3722e29ee39fffdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdfd972cd2e240f5fc7309d0a9f9fd2" id="r_abbdfd972cd2e240f5fc7309d0a9f9fd2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#abbdfd972cd2e240f5fc7309d0a9f9fd2">isDirty</a> () const noexcept</td></tr>
+<tr class="separator:abbdfd972cd2e240f5fc7309d0a9f9fd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c2510cc863a3765aed03b1cf97f006" id="r_a28c2510cc863a3765aed03b1cf97f006"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a28c2510cc863a3765aed03b1cf97f006">isContinuousRebuild</a> () const noexcept</td></tr>
+<tr class="memdesc:a28c2510cc863a3765aed03b1cf97f006"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the presenter should rebuild after every committed parameter edit.  <br /></td></tr>
+<tr class="separator:a28c2510cc863a3765aed03b1cf97f006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a605e17015d10c2446ae1c98908a9ba7a" id="r_a605e17015d10c2446ae1c98908a9ba7a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a605e17015d10c2446ae1c98908a9ba7a">revision</a> () const noexcept</td></tr>
+<tr class="separator:a605e17015d10c2446ae1c98908a9ba7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58d6cf23ca64ca01e166230d4ef15540" id="r_a58d6cf23ca64ca01e166230d4ef15540"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a58d6cf23ca64ca01e166230d4ef15540">previewRevision</a> () const noexcept</td></tr>
+<tr class="separator:a58d6cf23ca64ca01e166230d4ef15540"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d2d270f51d6cf723d3323326e0dc27e" id="r_a8d2d270f51d6cf723d3323326e0dc27e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a8d2d270f51d6cf723d3323326e0dc27e">pointBudget</a> () const noexcept</td></tr>
+<tr class="separator:a8d2d270f51d6cf723d3323326e0dc27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3f2f8f6b426628f3882e2a1c77a3a16" id="r_ad3f2f8f6b426628f3882e2a1c77a3a16"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ad3f2f8f6b426628f3882e2a1c77a3a16">moduleId</a> () const</td></tr>
+<tr class="separator:ad3f2f8f6b426628f3882e2a1c77a3a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bf67383ee5d27f8db947cd1c7b1f140" id="r_a1bf67383ee5d27f8db947cd1c7b1f140"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a1bf67383ee5d27f8db947cd1c7b1f140">moduleUri</a> () const</td></tr>
+<tr class="separator:a1bf67383ee5d27f8db947cd1c7b1f140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bb323584382fec199a5e43b60467db1" id="r_a3bb323584382fec199a5e43b60467db1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a3bb323584382fec199a5e43b60467db1">displayName</a> () const</td></tr>
+<tr class="separator:a3bb323584382fec199a5e43b60467db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae481f68df543e2da86959d9c808d5c0d" id="r_ae481f68df543e2da86959d9c808d5c0d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ae481f68df543e2da86959d9c808d5c0d">kind</a> () const</td></tr>
+<tr class="separator:ae481f68df543e2da86959d9c808d5c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2384c029207bc60c66073e2b2578494b" id="r_a2384c029207bc60c66073e2b2578494b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2384c029207bc60c66073e2b2578494b">selectedStage</a> () const</td></tr>
+<tr class="separator:a2384c029207bc60c66073e2b2578494b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a610d986bebe13d0cab3b19b020d16821" id="r_a610d986bebe13d0cab3b19b020d16821"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a610d986bebe13d0cab3b19b020d16821">previewFailureSummary</a> () const</td></tr>
+<tr class="memdesc:a610d986bebe13d0cab3b19b020d16821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty when the last publish succeeded; otherwise the failPreview summary.  <br /></td></tr>
+<tr class="separator:a610d986bebe13d0cab3b19b020d16821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a49bc6533dc21a556c93fc3564b4e7c" id="r_a2a49bc6533dc21a556c93fc3564b4e7c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2a49bc6533dc21a556c93fc3564b4e7c">paramCount</a> () const</td></tr>
+<tr class="separator:a2a49bc6533dc21a556c93fc3564b4e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46db73c49b6b814f5f7870e4efa246c5" id="r_a46db73c49b6b814f5f7870e4efa246c5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a46db73c49b6b814f5f7870e4efa246c5">paramKey</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a46db73c49b6b814f5f7870e4efa246c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5bbcbc961cc9696b8f936ad2314f573" id="r_ab5bbcbc961cc9696b8f936ad2314f573"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ab5bbcbc961cc9696b8f936ad2314f573">paramLabel</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab5bbcbc961cc9696b8f936ad2314f573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b1c43d7c943866d6e81200898d2048" id="r_ac0b1c43d7c943866d6e81200898d2048"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac0b1c43d7c943866d6e81200898d2048">paramKind</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac0b1c43d7c943866d6e81200898d2048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b5b4b83114ea139c83c6a09244485a4" id="r_a8b5b4b83114ea139c83c6a09244485a4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a8b5b4b83114ea139c83c6a09244485a4">paramMinimum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a8b5b4b83114ea139c83c6a09244485a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d46674259f1c27dd570471c87ad26a6" id="r_a4d46674259f1c27dd570471c87ad26a6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a4d46674259f1c27dd570471c87ad26a6">paramMaximum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a4d46674259f1c27dd570471c87ad26a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d70712503dd63e6e713d8e197cb3baa" id="r_a0d70712503dd63e6e713d8e197cb3baa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a0d70712503dd63e6e713d8e197cb3baa">paramStep</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a0d70712503dd63e6e713d8e197cb3baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3b0aff81c01a1135e1bc7c712192f3" id="r_adc3b0aff81c01a1135e1bc7c712192f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#adc3b0aff81c01a1135e1bc7c712192f3">paramChoiceCount</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:adc3b0aff81c01a1135e1bc7c712192f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d701ce4682fa5fd1baf28781d72c405" id="r_a4d701ce4682fa5fd1baf28781d72c405"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a4d701ce4682fa5fd1baf28781d72c405">paramChoice</a> (int paramIndex, int choiceIndex) const</td></tr>
+<tr class="separator:a4d701ce4682fa5fd1baf28781d72c405"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10c5101ad20d0027829b090182fd50bd" id="r_a10c5101ad20d0027829b090182fd50bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a10c5101ad20d0027829b090182fd50bd">getInt</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="separator:a10c5101ad20d0027829b090182fd50bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c54c21f7ceb82242c8cf6ecc4c8465f" id="r_a7c54c21f7ceb82242c8cf6ecc4c8465f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a7c54c21f7ceb82242c8cf6ecc4c8465f">getFloat</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="separator:a7c54c21f7ceb82242c8cf6ecc4c8465f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab991ad686fe47b81ac84b9c508438765" id="r_ab991ad686fe47b81ac84b9c508438765"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ab991ad686fe47b81ac84b9c508438765">getBool</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="separator:ab991ad686fe47b81ac84b9c508438765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e2e73f148c9732622b98bfc0d7be40a" id="r_a2e2e73f148c9732622b98bfc0d7be40a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2e2e73f148c9732622b98bfc0d7be40a">getString</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="separator:a2e2e73f148c9732622b98bfc0d7be40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae344857b98006d82e35f59b6de02db" id="r_a7ae344857b98006d82e35f59b6de02db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a7ae344857b98006d82e35f59b6de02db">stageCount</a> () const</td></tr>
+<tr class="separator:a7ae344857b98006d82e35f59b6de02db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a080484e341b085793b29208de8a90" id="r_a37a080484e341b085793b29208de8a90"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a37a080484e341b085793b29208de8a90">stageName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a37a080484e341b085793b29208de8a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a465100fb131ef95753b28f9c51afdc88" id="r_a465100fb131ef95753b28f9c51afdc88"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a465100fb131ef95753b28f9c51afdc88">pointCount</a> () const</td></tr>
+<tr class="separator:a465100fb131ef95753b28f9c51afdc88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2827d7a16d71c0b6881636a4d37ddefe" id="r_a2827d7a16d71c0b6881636a4d37ddefe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2827d7a16d71c0b6881636a4d37ddefe">pointX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a2827d7a16d71c0b6881636a4d37ddefe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626e722f04eeeda39d27bd5c3956093f" id="r_a626e722f04eeeda39d27bd5c3956093f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a626e722f04eeeda39d27bd5c3956093f">pointZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a626e722f04eeeda39d27bd5c3956093f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89223a4f111790ce2eefb6ef762ea307" id="r_a89223a4f111790ce2eefb6ef762ea307"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a89223a4f111790ce2eefb6ef762ea307">pointSeed</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a89223a4f111790ce2eefb6ef762ea307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Workspace controller for one encapsulated procedural script module. </p>
+<p>Owns the Params document and local undo. Script presenters run <code>generate</code> and publish copied PointSets; a stale or failed rebuild keeps the last successful preview on screen.</p>
+<p>@ownership Editor owns the document and preview copies. PointSet arguments are borrowed only for the publish call. @threadaffinity Owner thread only. @reentrancy Does not invoke script generate callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00036">36</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad6770d86ab4a7a1fdd2fa1b59a048b11" name="ad6770d86ab4a7a1fdd2fa1b59a048b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6770d86ab4a7a1fdd2fa1b59a048b11">&#9670;&#160;</a></span>ProcgenScriptEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen_editor::ProcgenScriptEditor::ProcgenScriptEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty generator host. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a842e8a45f9611084e1d962a62d9d3434" name="a842e8a45f9611084e1d962a62d9d3434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a842e8a45f9611084e1d962a62d9d3434">&#9670;&#160;</a></span>ProcgenScriptEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen_editor::ProcgenScriptEditor::ProcgenScriptEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a49dbd34bffb9b04e3722e29ee39fffdd" name="a49dbd34bffb9b04e3722e29ee39fffdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49dbd34bffb9b04e3722e29ee39fffdd">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen_editor::ProcgenScriptEditor::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00076">eve::editor::LocalTransactionBackend::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="a6f28c012a445e8715ead7723f1309f4b" name="a6f28c012a445e8715ead7723f1309f4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f28c012a445e8715ead7723f1309f4b">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen_editor::ProcgenScriptEditor::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00074">eve::editor::LocalTransactionBackend::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="af97ab5ac9aa50410a714100535e72c09" name="af97ab5ac9aa50410a714100535e72c09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af97ab5ac9aa50410a714100535e72c09">&#9670;&#160;</a></span>configureWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::configureWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install Modules / Preview / Inspector / Debug Stages panels. </p>
+<dl class="section note"><dt>注解</dt><dd>Does not retain <code>workspace</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">eve::editor::EditorWorkspace::activatePanel()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">eve::editor::EditorWorkspace::setPanelCapability()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">eve::editor::EditorWorkspace::setPanelContext()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="a3bb323584382fec199a5e43b60467db1" name="a3bb323584382fec199a5e43b60467db1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bb323584382fec199a5e43b60467db1">&#9670;&#160;</a></span>displayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::displayName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00092">eve::procgen_editing::ProcgenScriptDocumentTarget::displayName()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00096">loadModule()</a>.</p>
+
+</div>
+</div>
+<a id="a8a9f593811d6bbf1d18d8c3730822ac6" name="a8a9f593811d6bbf1d18d8c3730822ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a9f593811d6bbf1d18d8c3730822ac6">&#9670;&#160;</a></span>failPreview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::failPreview </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a> , 以及 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00057">eve::procgen_editing::ProcgenScriptDocumentTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="ab991ad686fe47b81ac84b9c508438765" name="ab991ad686fe47b81ac84b9c508438765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab991ad686fe47b81ac84b9c508438765">&#9670;&#160;</a></span>getBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen_editor::ProcgenScriptEditor::getBool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a> , 以及 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00095">eve::procgen_editing::ProcgenScriptDocumentTarget::values()</a>.</p>
+
+</div>
+</div>
+<a id="a7c54c21f7ceb82242c8cf6ecc4c8465f" name="a7c54c21f7ceb82242c8cf6ecc4c8465f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c54c21f7ceb82242c8cf6ecc4c8465f">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen_editor::ProcgenScriptEditor::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a> , 以及 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00095">eve::procgen_editing::ProcgenScriptDocumentTarget::values()</a>.</p>
+
+</div>
+</div>
+<a id="a10c5101ad20d0027829b090182fd50bd" name="a10c5101ad20d0027829b090182fd50bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10c5101ad20d0027829b090182fd50bd">&#9670;&#160;</a></span>getInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen_editor::ProcgenScriptEditor::getInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a> , 以及 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00095">eve::procgen_editing::ProcgenScriptDocumentTarget::values()</a>.</p>
+
+</div>
+</div>
+<a id="a2e2e73f148c9732622b98bfc0d7be40a" name="a2e2e73f148c9732622b98bfc0d7be40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e2e73f148c9732622b98bfc0d7be40a">&#9670;&#160;</a></span>getString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::getString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00095">eve::procgen_editing::ProcgenScriptDocumentTarget::values()</a>.</p>
+
+</div>
+</div>
+<a id="a28c2510cc863a3765aed03b1cf97f006" name="a28c2510cc863a3765aed03b1cf97f006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28c2510cc863a3765aed03b1cf97f006">&#9670;&#160;</a></span>isContinuousRebuild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen_editor::ProcgenScriptEditor::isContinuousRebuild </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the presenter should rebuild after every committed parameter edit. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbdfd972cd2e240f5fc7309d0a9f9fd2" name="abbdfd972cd2e240f5fc7309d0a9f9fd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbdfd972cd2e240f5fc7309d0a9f9fd2">&#9670;&#160;</a></span>isDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen_editor::ProcgenScriptEditor::isDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae481f68df543e2da86959d9c808d5c0d" name="ae481f68df543e2da86959d9c808d5c0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae481f68df543e2da86959d9c808d5c0d">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00093">eve::procgen_editing::ProcgenScriptDocumentTarget::kind()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00096">loadModule()</a>.</p>
+
+</div>
+</div>
+<a id="ac43cea3da5a8752d66fb49f6a9b342d8" name="ac43cea3da5a8752d66fb49f6a9b342d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac43cea3da5a8752d66fb49f6a9b342d8">&#9670;&#160;</a></span>loadModule() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::loadModule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">procgen_editing::ProcgenScriptModuleSpec</a>&#160;</td>
+          <td class="paramname"><em>spec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8cpp_source.html#l00352">eve::procgen_editing::ProcgenScriptDocumentTarget::makeLoadModule()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00096">loadModule()</a>.</p>
+
+</div>
+</div>
+<a id="ab7305a246fc491e3937d06bfc0829575" name="ab7305a246fc491e3937d06bfc0829575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7305a246fc491e3937d06bfc0829575">&#9670;&#160;</a></span>loadModule() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::loadModule </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>displayName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">procgen_editing::EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>schema</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00105">displayName()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ProcgenScriptEditor_8h_source.html#l00106">kind()</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00092">loadModule()</a> , 以及 <a class="el" href="ProcgenScriptTarget_8cpp_source.html#l00254">eve::procgen_editing::ProcgenScriptDocumentTarget::parseSpec()</a>.</p>
+
+</div>
+</div>
+<a id="ad3f2f8f6b426628f3882e2a1c77a3a16" name="ad3f2f8f6b426628f3882e2a1c77a3a16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3f2f8f6b426628f3882e2a1c77a3a16">&#9670;&#160;</a></span>moduleId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::moduleId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00091">eve::procgen_editing::ProcgenScriptDocumentTarget::moduleId()</a>.</p>
+
+</div>
+</div>
+<a id="a1bf67383ee5d27f8db947cd1c7b1f140" name="a1bf67383ee5d27f8db947cd1c7b1f140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bf67383ee5d27f8db947cd1c7b1f140">&#9670;&#160;</a></span>moduleUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::moduleUri </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00090">eve::procgen_editing::ProcgenScriptDocumentTarget::uri()</a>.</p>
+
+</div>
+</div>
+<a id="ad09ca3138a55e60fa4742bcdca7985db" name="ad09ca3138a55e60fa4742bcdca7985db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09ca3138a55e60fa4742bcdca7985db">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a> &amp; eve::procgen_editor::ProcgenScriptEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d701ce4682fa5fd1baf28781d72c405" name="a4d701ce4682fa5fd1baf28781d72c405"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d701ce4682fa5fd1baf28781d72c405">&#9670;&#160;</a></span>paramChoice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::paramChoice </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>paramIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>choiceIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc3b0aff81c01a1135e1bc7c712192f3" name="adc3b0aff81c01a1135e1bc7c712192f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc3b0aff81c01a1135e1bc7c712192f3">&#9670;&#160;</a></span>paramChoiceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen_editor::ProcgenScriptEditor::paramChoiceCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a2a49bc6533dc21a556c93fc3564b4e7c" name="a2a49bc6533dc21a556c93fc3564b4e7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a49bc6533dc21a556c93fc3564b4e7c">&#9670;&#160;</a></span>paramCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen_editor::ProcgenScriptEditor::paramCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00094">eve::procgen_editing::ProcgenScriptDocumentTarget::params()</a>.</p>
+
+</div>
+</div>
+<a id="a46db73c49b6b814f5f7870e4efa246c5" name="a46db73c49b6b814f5f7870e4efa246c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46db73c49b6b814f5f7870e4efa246c5">&#9670;&#160;</a></span>paramKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::paramKey </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac0b1c43d7c943866d6e81200898d2048" name="ac0b1c43d7c943866d6e81200898d2048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b1c43d7c943866d6e81200898d2048">&#9670;&#160;</a></span>paramKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::paramKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27226c864bac7454a8504f8edb15d95b">eve::procgen::Boolean</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a458b9dcc0921f46b1192427426d59c10">eve::procgen::Choice</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a22ae0e2b89e5e3d477f988cc36d3272b">eve::procgen::Float</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73aa0faef0851b4294c06f2b94bb1cb2044">eve::procgen::Integer</a> , 以及 <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27118326006d3829667a400ad23d5d98">eve::procgen::String</a>.</p>
+
+</div>
+</div>
+<a id="ab5bbcbc961cc9696b8f936ad2314f573" name="ab5bbcbc961cc9696b8f936ad2314f573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5bbcbc961cc9696b8f936ad2314f573">&#9670;&#160;</a></span>paramLabel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::paramLabel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a4d46674259f1c27dd570471c87ad26a6" name="a4d46674259f1c27dd570471c87ad26a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d46674259f1c27dd570471c87ad26a6">&#9670;&#160;</a></span>paramMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen_editor::ProcgenScriptEditor::paramMaximum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8b5b4b83114ea139c83c6a09244485a4" name="a8b5b4b83114ea139c83c6a09244485a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b5b4b83114ea139c83c6a09244485a4">&#9670;&#160;</a></span>paramMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen_editor::ProcgenScriptEditor::paramMinimum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a0d70712503dd63e6e713d8e197cb3baa" name="a0d70712503dd63e6e713d8e197cb3baa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d70712503dd63e6e713d8e197cb3baa">&#9670;&#160;</a></span>paramStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen_editor::ProcgenScriptEditor::paramStep </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8d2d270f51d6cf723d3323326e0dc27e" name="a8d2d270f51d6cf723d3323326e0dc27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d2d270f51d6cf723d3323326e0dc27e">&#9670;&#160;</a></span>pointBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen_editor::ProcgenScriptEditor::pointBudget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a465100fb131ef95753b28f9c51afdc88" name="a465100fb131ef95753b28f9c51afdc88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a465100fb131ef95753b28f9c51afdc88">&#9670;&#160;</a></span>pointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen_editor::ProcgenScriptEditor::pointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89223a4f111790ce2eefb6ef762ea307" name="a89223a4f111790ce2eefb6ef762ea307"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89223a4f111790ce2eefb6ef762ea307">&#9670;&#160;</a></span>pointSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::procgen_editor::ProcgenScriptEditor::pointSeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>.</p>
+
+</div>
+</div>
+<a id="a2827d7a16d71c0b6881636a4d37ddefe" name="a2827d7a16d71c0b6881636a4d37ddefe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2827d7a16d71c0b6881636a4d37ddefe">&#9670;&#160;</a></span>pointX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen_editor::ProcgenScriptEditor::pointX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a626e722f04eeeda39d27bd5c3956093f" name="a626e722f04eeeda39d27bd5c3956093f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626e722f04eeeda39d27bd5c3956093f">&#9670;&#160;</a></span>pointZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen_editor::ProcgenScriptEditor::pointZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a610d986bebe13d0cab3b19b020d16821" name="a610d986bebe13d0cab3b19b020d16821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a610d986bebe13d0cab3b19b020d16821">&#9670;&#160;</a></span>previewFailureSummary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::previewFailureSummary </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Empty when the last publish succeeded; otherwise the failPreview summary. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58d6cf23ca64ca01e166230d4ef15540" name="a58d6cf23ca64ca01e166230d4ef15540"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58d6cf23ca64ca01e166230d4ef15540">&#9670;&#160;</a></span>previewRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen_editor::ProcgenScriptEditor::previewRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabd332733e3dca8f2d784972cc6c02db" name="aabd332733e3dca8f2d784972cc6c02db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabd332733e3dca8f2d784972cc6c02db">&#9670;&#160;</a></span>publishPreview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::publishPreview </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a> *&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>stage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a successful generation into the preview cache. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">points</td><td>Borrowed output; null is rejected. Not retained after return. </td></tr>
+    <tr><td class="paramname">stage</td><td>Debug-stage name also used as the displayed output. </td></tr>
+    <tr><td class="paramname">expectedRevision</td><td>Document revision observed before generate; mismatch keeps the old preview. @ownership <code>points</code> is borrowed for this call only. @lifetime <code>points</code> must outlive this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a> , 以及 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00057">eve::procgen_editing::ProcgenScriptDocumentTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a66b60ed4c1f99aa3f1582247cc01941a" name="a66b60ed4c1f99aa3f1582247cc01941a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66b60ed4c1f99aa3f1582247cc01941a">&#9670;&#160;</a></span>publishStage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::publishStage </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a> *&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>stage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy an intermediate debug stage without changing the displayed output unless it is selected. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">points</td><td>Borrowed stage output; null is rejected. Not retained after return. @ownership <code>points</code> is borrowed for this call only. @lifetime <code>points</code> must outlive this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>.</p>
+
+</div>
+</div>
+<a id="ace5611349be4726592f8b1e62c729a90" name="ace5611349be4726592f8b1e62c729a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace5611349be4726592f8b1e62c729a90">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::procgen_editor::ProcgenScriptEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>.</p>
+
+</div>
+</div>
+<a id="a605e17015d10c2446ae1c98908a9ba7a" name="a605e17015d10c2446ae1c98908a9ba7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a605e17015d10c2446ae1c98908a9ba7a">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen_editor::ProcgenScriptEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenScriptTarget_8h_source.html#l00057">eve::procgen_editing::ProcgenScriptDocumentTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a2384c029207bc60c66073e2b2578494b" name="a2384c029207bc60c66073e2b2578494b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2384c029207bc60c66073e2b2578494b">&#9670;&#160;</a></span>selectedStage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::selectedStage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e8e2309e26a1bdc42a70740f674eeec" name="a2e8e2309e26a1bdc42a70740f674eeec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e8e2309e26a1bdc42a70740f674eeec">&#9670;&#160;</a></span>selectStage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::selectStage </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>stage</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af19d2c91c2682218299bca09b06998ca" name="af19d2c91c2682218299bca09b06998ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af19d2c91c2682218299bca09b06998ca">&#9670;&#160;</a></span>setBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setBool </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00106">setParam()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="afb0ce5941d5610c1b5cec7c17db3dff7" name="afb0ce5941d5610c1b5cec7c17db3dff7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb0ce5941d5610c1b5cec7c17db3dff7">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00106">setParam()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ac277da59c6c9c39877b2a29064227c36" name="ac277da59c6c9c39877b2a29064227c36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac277da59c6c9c39877b2a29064227c36">&#9670;&#160;</a></span>setInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setInt </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00106">setParam()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aea7da7352818c06c808a52e7ef25e696" name="aea7da7352818c06c808a52e7ef25e696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea7da7352818c06c808a52e7ef25e696">&#9670;&#160;</a></span>setLive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setLive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Choose whether the presenter should rebuild on every parameter commit. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>True for continuous rebuild after each committed edit. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a4cb19f6ad8bdff38f2e30f7647686920" name="a4cb19f6ad8bdff38f2e30f7647686920"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cb19f6ad8bdff38f2e30f7647686920">&#9670;&#160;</a></span>setParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setParam </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">procgen_editing::EditorValue</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8">eve::editing::Absolute</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="ProcgenScriptTarget_8cpp_source.html#l00381">eve::procgen_editing::ProcgenScriptDocumentTarget::makeSet()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00121">setBool()</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00117">setFloat()</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00113">setInt()</a> , 以及 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00125">setString()</a>.</p>
+
+</div>
+</div>
+<a id="abf2b860bf896173a2061a5e9b3469678" name="abf2b860bf896173a2061a5e9b3469678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf2b860bf896173a2061a5e9b3469678">&#9670;&#160;</a></span>setPointBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setPointBudget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>budget</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13c5499085c8e965bdccfcb8318cc635" name="a13c5499085c8e965bdccfcb8318cc635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c5499085c8e965bdccfcb8318cc635">&#9670;&#160;</a></span>setString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; void &gt; eve::procgen_editor::ProcgenScriptEditor::setString </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00106">setParam()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a7ae344857b98006d82e35f59b6de02db" name="a7ae344857b98006d82e35f59b6de02db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ae344857b98006d82e35f59b6de02db">&#9670;&#160;</a></span>stageCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen_editor::ProcgenScriptEditor::stageCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37a080484e341b085793b29208de8a90" name="a37a080484e341b085793b29208de8a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a080484e341b085793b29208de8a90">&#9670;&#160;</a></span>stageName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editor::ProcgenScriptEditor::stageName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac3800688b2d02c94f8097223d3f1bfae" name="ac3800688b2d02c94f8097223d3f1bfae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3800688b2d02c94f8097223d3f1bfae">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html">procgen_editing::ProcgenScriptDocumentTarget</a> &amp; eve::procgen_editor::ProcgenScriptEditor::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative generator document. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a> 第 <a class="el" href="ProcgenScriptEditor_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a057df1b4a32923dd80b37d11d859ef31" name="a057df1b4a32923dd80b37d11d859ef31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a057df1b4a32923dd80b37d11d859ef31">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">procgen_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::procgen_editor::ProcgenScriptEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a> 第 <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/editor/<a class="el" href="ProcgenScriptEditor_8h_source.html">ProcgenScriptEditor.h</a></li>
+<li>src/modules/procgen/editor/<a class="el" href="ProcgenScriptEditor_8cpp_source.html">ProcgenScriptEditor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

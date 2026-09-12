@@ -1,0 +1,305 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1RTS.html">RTS</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::rts::RTS 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae5cb02d905ed0499d6c63f46b759fee2">addBuildingAmmoSupply</a>(Building &amp;building, float rounds) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a65a609b80a441859f454905b9eb8499e">addMatchParticipant</a>(Match &amp;match, Faction &amp;faction, int team) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#afb75e5971fcdf5f8cd2eb1ec34d4cd12">addScriptResource</a>(Faction &amp;faction, std::string resource, std::int64_t amount)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a619a71551427e39ffbd715e7dabde15e">addUnitAmmoSupply</a>(Unit &amp;unit, float rounds) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ac6ba3e95ed500204b6786e8d4bc04134">addUnitReserveAmmo</a>(Unit &amp;unit, int rounds) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aff4b0829bd3c5016ef58931df21b784b">advanceGameplay</a>(const GameplaySession &amp;session, SubjectRef instance, const SimulationStep &amp;step) override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a4f3c5ec98a8d2483256ee6951eee363b">applyEffect</a>(Unit &amp;unit, const RTSEffectDefinition &amp;definition) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a2a68579008ad781ff209728a8890569d">applyEffect</a>(Building &amp;building, const RTSEffectDefinition &amp;definition) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#abda519d1c6302e20d1499ae4d052c95d">applyStatusEffect</a>(SubjectRef source, SubjectRef target, std::string effect, double durationOverride=-1.0)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae5416699145f330747e88594225d8278">assignBuilder</a>(Unit &amp;worker, Building &amp;building) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a6fc80e7f9abe4bc48ee54ee48f7934fb">assignWorker</a>(Unit &amp;worker, ResourceNode &amp;node, Building &amp;dropoff) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a56e0ee5daad8b8586f58e08cbb2bf33d">availableGameplayActions</a>(const GameplaySession &amp;session, SubjectRef instance, SubjectRef subject) const override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a295f3f546324d499d0b801fffad78aa2">build</a>(Building &amp;building, action::ActionRuntime &amp;action, resource::IResourceAccount &amp;account, resource::CostSpec cost, std::string product, Duration duration, std::string productionKind=&quot;unit&quot;, int priority=0, std::string transactionId={})</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a5e5e57a9f50b6d2fe4f8a41c245dfa3b">buildingCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a936f97a618efa88c853e71c4dc92f813">cancelFireSupport</a>(Unit &amp;requester) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aeb91cae92a6f2267f2cc060c1cc2db70">cancelProduction</a>(Building &amp;building, resource::IResourceAccount &amp;account, std::string productionTaskId, std::string orderId, resource::CostSpec refund, std::string reason=&quot;production cancelled&quot;)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a3b99bd650f4f92946fb1e6aab4f7d4dd">cancelScriptAbility</a>(Unit &amp;caster)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ab625cbcc5ed847ec4da327896dd6e572">cancelScriptConstruction</a>(Building &amp;building)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#abf92e7517d384e6227e7d8fd82210dec">cancelScriptProduction</a>(Building &amp;producer, int queueIndex=-1)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ad63046a83f3953c6a27d067e389e93e9">canonicalStateJson</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">capabilityName</a></td><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#af3a3510edad90d89afdb58d4d05ff499">captureScriptCheckpoint</a>(std::string name)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a6a83a152ceb01e997e0f939a00a67e7f">castScriptAbility</a>(Unit &amp;caster, std::string ability, SubjectRef target, WorldPosition point)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a3ede71aca45fc1db8cf2d71f5638562c">cleanupDestroyed</a>()</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ada559eb141dceaf5e4be83cfd5a7120f">clearBuildingRally</a>(Building &amp;producer) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a59c43e306c0dda8038efac28127d52d3">commandUnits</a>(std::span&lt; const SubjectRef &gt; subjects, const CommandSpec &amp;command, const FormationSpec &amp;formation={}) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a8842b6b05e4ecbccafd73a9a8bfcd63c">configureMatch</a>(Match &amp;match, VictoryRule rule, std::string archetype={}, double targetValue=0.0) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a642c928f0ae73a9855d601e33c6f9a4b">configureScriptAI</a>(Faction &amp;faction, LogicalId workerDefinition, LogicalId armyDefinition, LogicalId targetBuildingDefinition, int desiredWorkers, int attackThreshold, float thinkInterval=1.0f, float formationSpacing=1.2f, bool enabled=true)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a0ede2cb0077495716a689e3e728881a1">configureScriptWorld</a>(int width, int height, float cellSize, float originX=0.0f, float originY=0.0f)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ac7291b49c84f6c28c8f140e95d537c5f">configureWorkforce</a>(Faction &amp;faction, bool autoConstruction, int maxBuildersPerSite, bool autoRepair, int maxRepairersPerBuilding, int reserveWorkers) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a564719b390e5d935e86c6480b68f37f7">escortUnits</a>(std::span&lt; const SubjectRef &gt; subjects, SubjectRef protectedSubject, float guardRadius=6.0f, float spacing=1.5f) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a99889f45a500179a2332f2ba963ebe38">evacuateBuilding</a>(Building &amp;building, WorldPosition destination) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a51455710db59e1ad55b5c2a79e821f74">exportScriptCommandLog</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a1363c32d10004c101ae2117af1ecc0b5">factionCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ad44657447c9ec5d054399c8c3abe3073">fanOut</a>(Player::Selection &amp;selection, const CommandSpec &amp;command, const FormationSpec &amp;formation) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a5e4ed7840ba936e6316ab33ee242c7fb">findBuilding</a>(SubjectRef subject) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ac0d6d12d0baac4878eebdf914a06f994">findFaction</a>(SubjectRef subject) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a316293e254dad2e46dfdae47405fabea">findMatch</a>(SubjectRef subject) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a544c13e33dbb5f3df2dfdf4acd135bff">findResourceNode</a>(SubjectRef subject) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a80c087a4b87b552d109c6ca7baefa67f">findUnit</a>(SubjectRef subject) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a7531efbd69172df8c6c0a2a35ed4db40">gameplayDomain</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a30472e790016362d90a27a36473ef10b">gameplayEvents</a>(const GameplaySession &amp;session, SubjectRef instance, std::uint64_t afterSequence) const override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ab96a7561f43b297102de29a7e702095c">heal</a>(SubjectRef source, SubjectRef target, double amount) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aa7a9a5e4a1fbd7fbd425f8ead00fa8e0">importScriptCommandLog</a>(std::string_view text, bool clearExisting=true)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ab23bdbae6a938c9df1fc9688fe8895f0">inspectFrameEvents</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a4e1b1085c9bb3f728993066986baceda">inspectMatch</a>(Match &amp;match) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#afb0f60fdd2ae33bceef476224f1fc571">inspectState</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#abf300255964394bd7d1c58ca08ebf3ea">linkBuildingRally</a>(Building &amp;producer, Building &amp;source) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a43608a8c935a1627e5770e89999b8913">loadContent</a>(definitions::DefinitionRegistry &amp;registry, std::string_view json)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a3c53d5357a272e1763d758ed6b32c5b1">loadScriptContent</a>(std::string_view json)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a415c01e3463a182712f0e57bd5703770">matchCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae93c729b57a80a647ace1d65d72215c8">Module_REG</a>(RTS)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a41838bc231b4da0e8341368977fad4da">newBuilding</a>(SubjectRef subject, LogicalId definition={})</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a720cc34503b0040511aafd8dd1e8402d">newFaction</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a57f6289acb817584a4ddc6059d49b892">newFactionBuilding</a>(Faction &amp;faction, SubjectRef subject, LogicalId definition={})</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae3f4869ba36b094d7b9684a1c55e1a44">newFactionUnit</a>(Faction &amp;faction, SubjectRef subject, LogicalId definition={})</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a59c339ca991537f43bb05fff6f4b44ff">newMatch</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a19adca1ebf783e67b0c12d79e003699f">newPlayer</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a7e75c3cdcc4833bfe0e5dab513440b6f">newResourceNode</a>(SubjectRef subject, std::string resourceType, float amount, WorldPosition position, std::size_t workerCapacity=1)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a9221f78d85bbbf87dabc852ecc2fabb2">newUnit</a>(SubjectRef subject, LogicalId definition={})</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a0c3d5895d38c56841dc7f62a96d87212">observeGameplay</a>(const GameplaySession &amp;session, SubjectRef instance) const override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a7c1a50addaf9278a0cefe700a98528a4">playerCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a0983461e4fc5d921d9ef69f899aa0340">queueScriptCommand</a>(RTSReplayCommand command)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a7b2dd514b20b0a1f8f804b049b8f8c2b">queueScriptReinforcement</a>(Building &amp;producer, SubjectRef unitSubject, LogicalId preferredDefinition, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a220eb3e379baa9883ab9aa8af3360c12">queueScriptResearch</a>(Building &amp;producer, std::string upgrade, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a3c675dcd72954f698f09a148b9364cee">queueScriptUnit</a>(Building &amp;producer, SubjectRef unitSubject, LogicalId unitDefinition, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#af0c4dc876c4aaaae7177b44991593525">readUnitAttribute</a>(Unit &amp;unit, std::string_view attribute) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a8ad10fabba93c3525741a9efc18e01c9">rebuildState</a>(const RTSStateSnapshot &amp;snapshot)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aba3c3eef84566f8b918f4e0c47d440e0">remove</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ac49b768cd2a057c678c6ced52340ea4a">removeScriptCheckpoint</a>(std::string_view name)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a49b773a592e06b57295f3b07cbec7ee2">requestFireSupport</a>(Unit &amp;requester, WorldPosition center, float radius, int shotsPerResponder, std::size_t maxResponders=0) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a6ecfe647622500a114afe17c0c4d8c66">resourceNodeCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aac25c7eb2bae4253c97c7ff12135d13b">restoreScriptCheckpoint</a>(std::string_view name)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aa2ec069d7ee620d773979e44745843a9">restoreState</a>(const RTSStateSnapshot &amp;snapshot)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ac39879a6509001a604f26b11831edf65">RTS</a>()</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#abf0f7703c7bc9041daa9406ce1682c58">scriptCellExplored</a>(Faction &amp;faction, int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a2a8bd597404d79205b954cfe0212cc4b">scriptCellVisible</a>(Faction &amp;faction, int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a8f43c4b82c60dffac52cd2b53384939f">scriptContact</a>(Faction &amp;faction, SubjectRef target) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a1b47daa3c4a17a3970a45f083a6f323e">scriptResource</a>(Faction &amp;faction, std::string_view resource) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a051c000d80785c54725b0f0f4882a7de">scriptTerrainElevation</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a5c3d1e760925b4168b798db2bb57691e">scriptTick</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a8527f355514d6cfa150879d730a43c5c">sellScriptBuilding</a>(Building &amp;building)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a49023467fc7925735c0af213ec82ba88">setAIProductionRequest</a>(AIProductionRequest request)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a504447a78f01365063f9b5c6a53a5a41">setAmmoProductionPurchase</a>(AmmoProductionPurchase purchase)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aea1c7e6314fec40460caa2b086e26cc8">setBuildingRally</a>(Building &amp;producer, CommandSpec command, bool groupedReinforcements=false) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a6d23287d64b17bf3637d3ee948d7a2ae">setCombatHeightQuery</a>(CombatHeightQuery query)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a4ef61effdcdf8b5a003bcf037100dcec">setCombatProviders</a>(sensing::SensingWorld *sensing, combat::DamageRuntime *damage) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#af8e7f2f842320f867c680f40f0c807ad">setCrowdProvider</a>(crowd::Crowd *crowd) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a5e54a1074f973ff49dcb76d1e0038927">setDefinitionRegistry</a>(definitions::DefinitionRegistry *registry) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a0fa7a19cd2e7001f1c619f84d2699117">setFireLineQuery</a>(FireLineQuery query)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ad8f3ccc0ee03595895402fb69d580a69">setFogProvider</a>(FogProvider provider) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a20a71c14f3f0c70de3a80a30730ccb00">setMatchResourceQuery</a>(MatchResourceQuery query)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a86b9d5b6a8ffbd3d0d58b0a5781534cd">setNavigationProvider</a>(map::Pathfinder *pathfinder, NavigationGrid grid={}, NavigationEvent unreachable={}) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aa0f915b4381bf3e782ce3d65066dc047">setPassiveIncomeCredit</a>(PassiveIncomeCredit credit)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a6788ca272c9fd3a3634530f7789abcc0">setProductionResourceReserve</a>(Faction &amp;faction, std::string resource, std::int64_t amount, int minimumPriority)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aabd4ded7061252bba4157002b81dbe38">setProductionSpawn</a>(ProductionSpawn spawn)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a18b842ce0e53cf5439b53f84bdde5779">setProductionSpawnPosition</a>(ProductionSpawnPosition position)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae63e18c733d841a717f0a95bbab5bf5f">setProjectileCollisionQuery</a>(ProjectileCollisionQuery query)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a2a49d8cdc0442bbb72ab64ffc061eb07">setReinforcementAutoCancel</a>(Building &amp;producer, float seconds) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ab7ab8b0399fc1fb52dc7b39993a73baf">setReinforcementCancel</a>(ReinforcementCancel cancel)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a9d26a9dd880eb5ee93aa7555fe76578a">setReinforcementFallback</a>(Building &amp;producer, std::string preferred, std::string fallback) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a2460d830b4da7181a1b762ee4af73f4b">setReinforcementLimit</a>(Building &amp;producer, std::size_t maximum) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a67a5dd274dd5b07766ee561d11d57bed">setReinforcementTransport</a>(Building &amp;producer, Unit *transport, std::size_t minimumLoad=0) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a94ddd522a7de0944afffd0240d5c06c7">setReinforcementTypeLimit</a>(Building &amp;producer, std::string unitType, std::size_t maximum) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ac0dbf35a13933c5ebf44639a83ef1034">setReinforcementTypePriority</a>(Building &amp;producer, std::string unitType, int priority) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a0a9a137cf2077d7398f31da51774c263">setRepairDebit</a>(RepairDebit debit)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae2cf9960932d513f2353cf45fc4cd696">setResourceCredit</a>(ResourceCredit credit)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a695dcaa1fbd0768b7ae0817a3dc6891f">setScriptNavigationBlocked</a>(int x, int y, bool blocked)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a70a522064caf0f9cf63a050ee82722c6">setScriptNavigationCost</a>(int x, int y, float cost)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a705490d1103ab626d5480d2c5623ce1b">setScriptTerrainElevation</a>(int x, int y, float elevation)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a4ddfdf9f2e0405f4b30e24bf832bcd34">setUnitAttribute</a>(Unit &amp;unit, std::string_view attribute, double value) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#ae881812b04d070110d4c2a920a669a8a">setUnitAutoResupply</a>(Unit &amp;unit, bool enabled) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a1e6c71dc6cefa5ffb4510ad0ae8032f2">setUnitCloaked</a>(Unit &amp;unit, bool cloaked) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a67aaae99826d8da5cc8690d61cf62e51">setUnitMovementPriority</a>(std::span&lt; const SubjectRef &gt; subjects, int priority) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a129fbecda138423529dd93eb1d410141">setUnitStance</a>(std::span&lt; const SubjectRef &gt; subjects, CombatStance stance, float leashRange) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a451f83c2e1962c06691df7963138d005">setWorkerAutoAssignment</a>(std::span&lt; const SubjectRef &gt; subjects, bool enabled) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a187c4545cae4320b89d17cb517a55d87">snapshotState</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#af946f1a9fcdc87c04a67dd272b7e0a55">startMatch</a>(Match &amp;match) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#aec9f5044422b31d2738256b75c6b8c1b">startScriptConstruction</a>(Faction &amp;faction, SubjectRef buildingSubject, LogicalId buildingDefinition, WorldPosition position, Unit &amp;builder)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a0814de262761ed000a3f57b63ed4c584">stateHash</a>(const SnapshotHashProvider &amp;hashProvider) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a2d2ce6b709ec0c7f2742456bb6834854">step</a>(const SimulationStep &amp;step, IRTSActionExecutor &amp;executor)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a7eefa17202ab107fdf789cb57f125851">stepScript</a>(double seconds)</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a22666ea6da0a25175e4dfbf88f5381a3">submitGameplay</a>(const GameplaySession &amp;session, SubjectRef instance, const GameplayCommand &amp;command) override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a16ace7923bac9367041326db60639ee4">suppressArea</a>(std::span&lt; const SubjectRef &gt; subjects, WorldPosition start, WorldPosition end, float width=1.0f, int shotsPerUnit=0) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a67b643d3b47d7e40ee95c9952c34c7e5">surrenderMatch</a>(Match &amp;match, Faction &amp;faction) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a9c73921624c3e0147fb747f71126b79f">unitCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a6dd1cf42092b1dbe8f5accfb0a9d34db">unloadTransport</a>(Unit &amp;transport, WorldPosition destination) const</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">~IGameplayControlProvider</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html#a4ec43484add6419b290f61c1d907d78a">~RTS</a>() override</td><td class="entry"><a class="el" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

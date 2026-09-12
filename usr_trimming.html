@@ -1,0 +1,245 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 按需裁剪模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">按需裁剪模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>按需裁剪模块</h1>
+<p>EVEngine 默认把全部模块编进引擎。如果你的游戏只用到其中一部分，可以在构建时把其余的裁掉， 减少编译时间、二进制体积和第三方依赖。</p>
+<blockquote class="doxtable">
+<p>&zwj;<b>下载的预编译 SDK 默认包含全部模块</b>，无需也不支持在安装后裁剪；本节只对“从源码构建”的用户有效 （构建方法见根目录 <a href="https://github.com/EVEngine/EVEngine/blob/main/Readme.md#从源码构建引擎开发者--贡献者">Readme.md 的“从源码构建”章节</a>）。 </p>
+</blockquote>
+<p>引擎架构与这套机制的设计依据见<a href="https://github.com/EVEngine/EVEngine/blob/main/docs/dev/模块编排与裁剪架构.md">模块编排与裁剪架构</a>。</p>
+<h2>预设档位</h2>
+<p>大多数情况选一个档位就够了：</p>
+<div class="fragment"><div class="line">cmake -B build -DCMAKE_BUILD_TYPE=Debug -DEVENGINE_PROFILE=2d</div>
+</div><!-- fragment --><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">档位   </th><th class="markdownTableHeadNone">内容   </th><th class="markdownTableHeadNone">适合    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>minimal</code>   </td><td class="markdownTableBodyNone">窗口、事件、输入、图形、数学、文件系统、UI   </td><td class="markdownTableBodyNone">自己搭一切的引擎壳    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>2d</code>   </td><td class="markdownTableBodyNone"><code>minimal</code> + 图片、字体、地图、粒子、动画、物理、音频、空间索引、i18n   </td><td class="markdownTableBodyNone">LÖVE 级 2D 游戏    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>3d</code>   </td><td class="markdownTableBodyNone"><code>2d</code> + 3D 模型、场景树、场景载入、GPGPU、风格化、昼夜、天气、体素、程序化生成、编辑器构件、DevTools   </td><td class="markdownTableBodyNone">3D 游戏    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>full</code>   </td><td class="markdownTableBodyNone">全部（<b>默认</b>）   </td><td class="markdownTableBodyNone">不确定时用这个    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>web</code>   </td><td class="markdownTableBodyNone">浏览器 WASM 可用的集合   </td><td class="markdownTableBodyNone">Emscripten 构建自动选中   </td></tr>
+</table>
+<p>档位只是起点，可以在其上继续微调（见下）。</p>
+<h2>单个模块开关</h2>
+<div class="fragment"><div class="line"># 关掉不用的</div>
+<div class="line">cmake -B build -DEVENGINE_MODULE_DATABASE=OFF -DEVENGINE_MODULE_NETWORK=OFF</div>
+<div class="line"> </div>
+<div class="line"># 在某个档位基础上补一个</div>
+<div class="line">cmake -B build -DEVENGINE_PROFILE=2d -DEVENGINE_MODULE_DIALOGUE=ON</div>
+</div><!-- fragment --><p>模块名就是 <code>src/modules/</code> 下的目录名，大小写都认：<code>-DEVENGINE_MODULE_map=OFF</code> 和 <code>-DEVENGINE_MODULE_MAP=OFF</code> 等价。</p>
+<p>配置时会打印实际结果：</p>
+<div class="fragment"><div class="line">-- Module profile: 2d</div>
+<div class="line">-- Modules enabled: 32/56</div>
+<div class="line">-- Modules disabled: devtools;editor;plugins;database;rpg;...</div>
+<div class="line">-- Third-party groups: squirrel;sdl2;medialoader_image;...</div>
+</div><!-- fragment --><h2>依赖会自动处理</h2>
+<p>打开一个模块，它需要的模块会自动跟着打开 —— 开 <code>particles</code> 就会带上 <code>gpgpu</code>、<code>animation</code>、<code>ik</code>，不用自己列。</p>
+<p>反过来，关掉别人还需要的模块是<b>配置期错误</b>，而不是等到链接期才冒出一堆 undefined reference：</p>
+<div class="fragment"><div class="line">CMake Error: Module &#39;devtools&#39; needs &#39;procgen&#39;, which was disabled with</div>
+<div class="line">-DEVENGINE_MODULE_procgen=OFF. Disable &#39;devtools&#39; too, or re-enable &#39;procgen&#39;.</div>
+</div><!-- fragment --><p>按提示二选一即可。</p>
+<h2>脚本侧不用改</h2>
+<p>启动脚本按构建产物绑定模块，被裁掉的模块不会出现在根表里。如果你的游戏脚本 要兼容多种档位，用 <code>has_module()</code> 判断：</p>
+<div class="fragment"><div class="line">if (has_module(&quot;particles&quot;)) {</div>
+<div class="line">    particles.update(dt);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>eve.moduleList</code> 是这次构建实际绑定的 <code>{ slot, cls }</code> 列表，可以直接遍历查看。</p>
+<h2>哪些模块不能裁</h2>
+<p><code>window</code>、<code>graphics</code>、<code>event</code>、<code>filesystem</code>、<code>timer</code> 是引擎运行的前提，不可关闭。</p>
+<p>另外两处目前限制了裁剪范围，配置时会点名提示：</p>
+<ul>
+<li><b>DevTools</b> 直接引用了 <code>scene</code> / <code>physics</code> / <code>procgen</code> / <code>particles</code> / <code>audio</code> / <code>ui</code>， 要裁这几个得先 <code>-DEVENGINE_MODULE_DEVTOOLS=OFF</code>。</li>
+<li><b><code>ui</code></b> 被命令行的 <code>eve mcp</code> 子命令引用，目前不可裁，所以 <code>minimal</code> 档也带着 ImGui。</li>
+</ul>
+<h2>能省多少</h2>
+<p>linux-debug 实测：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">档位   </th><th class="markdownTableHeadNone">模块数   </th><th class="markdownTableHeadNone">二进制   </th><th class="markdownTableHeadNone">相比 <code>full</code> 少掉的第三方    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>full</code>   </td><td class="markdownTableBodyNone">56   </td><td class="markdownTableBodyNone">233 MB   </td><td class="markdownTableBodyNone">—    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>3d</code>   </td><td class="markdownTableBodyNone">45   </td><td class="markdownTableBodyNone">198 MB   </td><td class="markdownTableBodyNone">PocoData、SQLite    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>2d</code>   </td><td class="markdownTableBodyNone">32   </td><td class="markdownTableBodyNone">—   </td><td class="markdownTableBodyNone">上述 + DTL    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>minimal</code>   </td><td class="markdownTableBodyNone">19   </td><td class="markdownTableBodyNone">—   </td><td class="markdownTableBodyNone">上述 + OpenAL、Box2D/box3d、音频编解码、assimp、medialoader model/sound   </td></tr>
+</table>
+<p>Release 构建的绝对体积小得多，比例接近。</p>
+<h2>加新模块</h2>
+<p>在 <a href="../../cmake/module_manifest.cmake"><code>cmake/module_manifest.cmake</code></a> 里声明一次即可， 链接列表、第三方依赖、脚本绑定和依赖闭包都从那里派生：</p>
+<div class="fragment"><div class="line">eve_declare_module(NAME mymodule LAYER 4</div>
+<div class="line">                   DEPS graphics data</div>
+<div class="line">                   THIRDPARTY poco</div>
+<div class="line">                   SCRIPT MyModule SLOT mymod</div>
+<div class="line">                   GROUP 3d)</div>
+</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

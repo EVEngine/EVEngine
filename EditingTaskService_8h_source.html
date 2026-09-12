@@ -1,0 +1,292 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editing/EditingTaskService.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c30fd2ccc85dff25828f75fb0f9ea243.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditingTaskService.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditingTaskService_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;deque&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editing.html">eve::editing</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">TaskState</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3">Queued</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa5bda814c4aedb126839228f1a3d92f09">Running</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa66d02c2f8a582446f8dd8752366002b5">Succeeded</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632faa149e85a44aeec9140e92733d9ed694e">Cancelled</a> };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1TaskSnapshot.html">TaskSnapshot</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html#a51a9b368a4d30c752c5a0cb7e08b82ca">   23</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>                        <a class="code hl_variable" href="structeve_1_1editing_1_1TaskSnapshot.html#a51a9b368a4d30c752c5a0cb7e08b82ca">id</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html#a23b807714fb2c279d704ac0753954714">   24</a></span>    std::string                   <a class="code hl_variable" href="structeve_1_1editing_1_1TaskSnapshot.html#a23b807714fb2c279d704ac0753954714">name</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html#a1fa265f1c6f22beb992e58d0480b4cae">   25</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">TaskState</a>                     <a class="code hl_variable" href="structeve_1_1editing_1_1TaskSnapshot.html#a1fa265f1c6f22beb992e58d0480b4cae">state</a>    = <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3">TaskState::Queued</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html#ac89caee85c9a623fa7458b8d74d77567">   26</a></span>    <span class="keywordtype">float</span>                         <a class="code hl_variable" href="structeve_1_1editing_1_1TaskSnapshot.html#ac89caee85c9a623fa7458b8d74d77567">progress</a> = 0.0F;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html#a3e52704495849506869c1103833b5668">   27</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>                         <a class="code hl_variable" href="structeve_1_1editing_1_1TaskSnapshot.html#a3e52704495849506869c1103833b5668">output</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskSnapshot.html#aa5592ff34f6c67821c481aa69623e7b0">   28</a></span>    std::vector&lt;Diagnostic&gt;       <a class="code hl_variable" href="structeve_1_1editing_1_1TaskSnapshot.html#aa5592ff34f6c67821c481aa69623e7b0">diagnostics</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1TaskContext.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1TaskContext.html">TaskContext</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editing_1_1TaskContext.html#a7e24d36995a046a60934e6108ef69730">isCancellationRequested</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editing_1_1TaskContext.html#a07a1b5ac9062633559f31247c719ce9a">reportProgress</a>(<span class="keywordtype">float</span> progress) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1TaskContext.html#a0ef7be22a95cc02364150fc1c03419ca">   40</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1TaskService.html">TaskService</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1editing_1_1TaskContext.html">TaskContext</a>(std::shared_ptr&lt;std::atomic_bool&gt; cancelled, std::function&lt;<span class="keywordtype">void</span>(<span class="keywordtype">float</span>)&gt; progress);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::shared_ptr&lt;std::atomic_bool&gt; cancelled_;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::function&lt;void(<span class="keywordtype">float</span>)&gt;        progress_;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskOutcome.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1TaskOutcome.html">TaskOutcome</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskOutcome.html#ac2efced880dc5dba7ac721dca9b2f743">   48</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">Status</a>                  <a class="code hl_variable" href="structeve_1_1editing_1_1TaskOutcome.html#ac2efced880dc5dba7ac721dca9b2f743">status</a> = Status::Applied;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskOutcome.html#a1b4f16ecb08ef4ea93e023f3488eed5e">   49</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>                   <a class="code hl_variable" href="structeve_1_1editing_1_1TaskOutcome.html#a1b4f16ecb08ef4ea93e023f3488eed5e">output</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1TaskOutcome.html#a9b2eb4c7322f8918bbe66a215eb3b1fa">   50</a></span>    std::vector&lt;Diagnostic&gt; <a class="code hl_variable" href="structeve_1_1editing_1_1TaskOutcome.html#a9b2eb4c7322f8918bbe66a215eb3b1fa">diagnostics</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1TaskService.html">   60</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1TaskService.html">TaskService</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1TaskService.html#a8f5602ed866c1a41531906922f2ace94">   62</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1editing_1_1TaskService.html#a8f5602ed866c1a41531906922f2ace94">Work</a> = std::function&lt;<a class="code hl_struct" href="structeve_1_1editing_1_1TaskOutcome.html">TaskOutcome</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1TaskContext.html">TaskContext</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#a528b34911ea8a2371b77b092761c55fe">TaskService</a>();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#aedf18eea66d438fe91881d6f19b20219">~TaskService</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1TaskService.html#aa330e837672ec11bdeb7ab14fa040daf">   68</a></span>    <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#aa330e837672ec11bdeb7ab14fa040daf">TaskService</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1TaskService.html">TaskService</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1TaskService.html#ab4ea79f3172b28971796008be7c1a1d8">   69</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1TaskService.html">TaskService</a>&amp; <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#ab4ea79f3172b28971796008be7c1a1d8">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1TaskService.html">TaskService</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TaskId&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#a2646f9d71119c096eae51dbc844cd749">submit</a>(std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1editing_1_1TaskService.html#a8f5602ed866c1a41531906922f2ace94">Work</a> work);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#a4c7431332216134a18e06562c991d992">cancel</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>&amp; task);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TaskSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#afece56a9e1210e3ea8c6371f4eccc8c8">snapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>&amp; task) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1TaskService.html#a8fcdc20fe9006ba3cd7f3950eeb53425">waitIdle</a>(std::chrono::milliseconds timeout);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">struct </span>TaskRecord;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> workerLoop();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">mutable</span> std::mutex                                                                  mutex_;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::condition_variable                                                             workReady_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::condition_variable                                                             idle_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::unordered_map&lt;TaskId, std::shared_ptr&lt;TaskRecord&gt;, <a class="code hl_struct" href="structeve_1_1editing_1_1StrongIdHash.html">StrongIdHash&lt;TaskId&gt;</a>&gt; tasks_;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::deque&lt;std::shared_ptr&lt;TaskRecord&gt;&gt;                                             queue_;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::thread                                                                         worker_;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">bool</span>                                                                                stopping_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::uint64_t                                                                       sequence_ = 0;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>};</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::editing</span></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskContext_html"><div class="ttname"><a href="classeve_1_1editing_1_1TaskContext.html">eve::editing::TaskContext</a></div><div class="ttdoc">Cooperative cancellation and progress API passed to worker code.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00032">EditingTaskService.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskContext_html_a07a1b5ac9062633559f31247c719ce9a"><div class="ttname"><a href="classeve_1_1editing_1_1TaskContext.html#a07a1b5ac9062633559f31247c719ce9a">eve::editing::TaskContext::reportProgress</a></div><div class="ttdeci">void reportProgress(float progress) const</div><div class="ttdoc">Publish normalized progress in the inclusive range 0..1.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00021">EditingTaskService.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskContext_html_a7e24d36995a046a60934e6108ef69730"><div class="ttname"><a href="classeve_1_1editing_1_1TaskContext.html#a7e24d36995a046a60934e6108ef69730">eve::editing::TaskContext::isCancellationRequested</a></div><div class="ttdeci">bool isCancellationRequested() const</div><div class="ttdoc">True after cancellation was requested.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00017">EditingTaskService.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html">eve::editing::TaskService</a></div><div class="ttdoc">Single-worker background queue shared by editor domains.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00060">EditingTaskService.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_a2646f9d71119c096eae51dbc844cd749"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#a2646f9d71119c096eae51dbc844cd749">eve::editing::TaskService::submit</a></div><div class="ttdeci">Result&lt; TaskId &gt; submit(std::string name, Work work)</div><div class="ttdoc">Queue background work and return its stable task identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00040">EditingTaskService.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_a4c7431332216134a18e06562c991d992"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#a4c7431332216134a18e06562c991d992">eve::editing::TaskService::cancel</a></div><div class="ttdeci">Result&lt; void &gt; cancel(const TaskId &amp;task)</div><div class="ttdoc">Request cooperative cancellation of queued or running work.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00062">EditingTaskService.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_a528b34911ea8a2371b77b092761c55fe"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#a528b34911ea8a2371b77b092761c55fe">eve::editing::TaskService::TaskService</a></div><div class="ttdeci">TaskService()</div><div class="ttdoc">Start the editor background worker.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00025">EditingTaskService.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_a8f5602ed866c1a41531906922f2ace94"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#a8f5602ed866c1a41531906922f2ace94">eve::editing::TaskService::Work</a></div><div class="ttdeci">std::function&lt; TaskOutcome(const TaskContext &amp;)&gt; Work</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00062">EditingTaskService.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_a8fcdc20fe9006ba3cd7f3950eeb53425"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#a8fcdc20fe9006ba3cd7f3950eeb53425">eve::editing::TaskService::waitIdle</a></div><div class="ttdeci">Result&lt; void &gt; waitIdle(std::chrono::milliseconds timeout)</div><div class="ttdoc">Wait until no task is queued or running; intended for shutdown and tests.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00088">EditingTaskService.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_aa330e837672ec11bdeb7ab14fa040daf"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#aa330e837672ec11bdeb7ab14fa040daf">eve::editing::TaskService::TaskService</a></div><div class="ttdeci">TaskService(const TaskService &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_ab4ea79f3172b28971796008be7c1a1d8"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#ab4ea79f3172b28971796008be7c1a1d8">eve::editing::TaskService::operator=</a></div><div class="ttdeci">TaskService &amp; operator=(const TaskService &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_aedf18eea66d438fe91881d6f19b20219"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#aedf18eea66d438fe91881d6f19b20219">eve::editing::TaskService::~TaskService</a></div><div class="ttdeci">~TaskService()</div><div class="ttdoc">Cooperatively cancel pending work and join the worker.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00027">EditingTaskService.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1TaskService_html_afece56a9e1210e3ea8c6371f4eccc8c8"><div class="ttname"><a href="classeve_1_1editing_1_1TaskService.html#afece56a9e1210e3ea8c6371f4eccc8c8">eve::editing::TaskService::snapshot</a></div><div class="ttdeci">Result&lt; TaskSnapshot &gt; snapshot(const TaskId &amp;task) const</div><div class="ttdoc">Return a thread-safe task snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8cpp_source.html#l00079">EditingTaskService.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html"><div class="ttname"><a href="namespaceeve_1_1editing.html">eve::editing</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00007">EditableTarget.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a8e0e39a3e832460065f2432d0193632f"><div class="ttname"><a href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632f">eve::editing::TaskState</a></div><div class="ttdeci">TaskState</div><div class="ttdoc">Observable lifecycle of a background editor task.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00019">EditingTaskService.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a8e0e39a3e832460065f2432d0193632fa5bda814c4aedb126839228f1a3d92f09"><div class="ttname"><a href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa5bda814c4aedb126839228f1a3d92f09">eve::editing::TaskState::Running</a></div><div class="ttdeci">@ Running</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a8e0e39a3e832460065f2432d0193632fa66d02c2f8a582446f8dd8752366002b5"><div class="ttname"><a href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa66d02c2f8a582446f8dd8752366002b5">eve::editing::TaskState::Succeeded</a></div><div class="ttdeci">@ Succeeded</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3"><div class="ttname"><a href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632fa7b2f31b90fe1c2cc33a52233c1925df3">eve::editing::TaskState::Queued</a></div><div class="ttdeci">@ Queued</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a8e0e39a3e832460065f2432d0193632faa149e85a44aeec9140e92733d9ed694e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a8e0e39a3e832460065f2432d0193632faa149e85a44aeec9140e92733d9ed694e">eve::editing::TaskState::Cancelled</a></div><div class="ttdeci">@ Cancelled</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a981141eded4668311d0ac0e70dbb4fe6ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::editing::TransactionState::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1StrongIdHash_html"><div class="ttname"><a href="structeve_1_1editing_1_1StrongIdHash.html">eve::editing::StrongIdHash</a></div><div class="ttdoc">Hash functor for a strong authoring identifier.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00022">EditingIds.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskOutcome_html"><div class="ttname"><a href="structeve_1_1editing_1_1TaskOutcome.html">eve::editing::TaskOutcome</a></div><div class="ttdoc">Type-erased result produced by a background editor task.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00047">EditingTaskService.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskOutcome_html_a1b4f16ecb08ef4ea93e023f3488eed5e"><div class="ttname"><a href="structeve_1_1editing_1_1TaskOutcome.html#a1b4f16ecb08ef4ea93e023f3488eed5e">eve::editing::TaskOutcome::output</a></div><div class="ttdeci">Value output</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00049">EditingTaskService.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskOutcome_html_a9b2eb4c7322f8918bbe66a215eb3b1fa"><div class="ttname"><a href="structeve_1_1editing_1_1TaskOutcome.html#a9b2eb4c7322f8918bbe66a215eb3b1fa">eve::editing::TaskOutcome::diagnostics</a></div><div class="ttdeci">std::vector&lt; Diagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00050">EditingTaskService.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskOutcome_html_ac2efced880dc5dba7ac721dca9b2f743"><div class="ttname"><a href="structeve_1_1editing_1_1TaskOutcome.html#ac2efced880dc5dba7ac721dca9b2f743">eve::editing::TaskOutcome::status</a></div><div class="ttdeci">Status status</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00048">EditingTaskService.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html">eve::editing::TaskSnapshot</a></div><div class="ttdoc">Immutable status returned to UI, scripts and automation clients.</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00022">EditingTaskService.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html_a1fa265f1c6f22beb992e58d0480b4cae"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html#a1fa265f1c6f22beb992e58d0480b4cae">eve::editing::TaskSnapshot::state</a></div><div class="ttdeci">TaskState state</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00025">EditingTaskService.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html_a23b807714fb2c279d704ac0753954714"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html#a23b807714fb2c279d704ac0753954714">eve::editing::TaskSnapshot::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00024">EditingTaskService.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html_a3e52704495849506869c1103833b5668"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html#a3e52704495849506869c1103833b5668">eve::editing::TaskSnapshot::output</a></div><div class="ttdeci">Value output</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00027">EditingTaskService.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html_a51a9b368a4d30c752c5a0cb7e08b82ca"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html#a51a9b368a4d30c752c5a0cb7e08b82ca">eve::editing::TaskSnapshot::id</a></div><div class="ttdeci">TaskId id</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00023">EditingTaskService.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html_aa5592ff34f6c67821c481aa69623e7b0"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html#aa5592ff34f6c67821c481aa69623e7b0">eve::editing::TaskSnapshot::diagnostics</a></div><div class="ttdeci">std::vector&lt; Diagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00028">EditingTaskService.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TaskSnapshot_html_ac89caee85c9a623fa7458b8d74d77567"><div class="ttname"><a href="structeve_1_1editing_1_1TaskSnapshot.html#ac89caee85c9a623fa7458b8d74d77567">eve::editing::TaskSnapshot::progress</a></div><div class="ttdeci">float progress</div><div class="ttdef"><b>Definition</b> <a href="EditingTaskService_8h_source.html#l00026">EditingTaskService.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

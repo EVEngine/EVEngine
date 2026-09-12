@@ -1,0 +1,207 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::AnimSkin 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aa42c88fa99b47b2248924d9fd1d0e922">AnimSkin</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a52177a6ed7ecad4271613d8b6905035f">AnimSkin</a>(const AnimSkin &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a1373509b8b760d9f2c622a66ba43ce2b">applyToMesh</a>(graphics::Graphics *gfx, graphics::Mesh *mesh, const AnimPose *pose)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ab2803a59555d2551a772e67280638953">bindGpuMesh</a>(graphics::Graphics *gfx, graphics::Mesh *mesh)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a82f00b7fc58816b727208cc129b8ac5d">fromModel</a>(const model3d::ModelData *model, int meshIndex, const AnimSkeleton *skeleton)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a4280cb8e8f3b62e7e6007811ee433162">getBindPositionX</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ae0452077d3696bb75bed518177ce23d1">getBindPositionY</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ac9ec15a33932dc99fb2eed67b428a5f9">getBindPositionZ</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a1c8e1116ecc48a5a2efd1306408b8731">getBoneCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a81f6df7ecfb40934cbd3258d40f5f408">getInfluenceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a1a90d2a49ba8b01cd074f02ad76d66f6">getInverseBindElement</a>(int skinBoneIndex, int elementIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a6679eae04b2def762df1e2f154ad7b4d">getMatrixPaletteElement</a>(int skinBoneIndex, int elementIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a029c2026c3257a46751061fcded3689b">getSkeletonBone</a>(int skinBoneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aa1f412c47ec3986c6576732c18ad3695">getSkinBoneName</a>(int skinBoneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#abcb64032383728c97615b9d5e8e8ed7b">getSkinnedNormals</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a22436c05795bc9b31420cbd5905c8b4e">getSkinnedPositions</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a3404169b72f511bb66dd9b5e771acaae">getSkinnedPositionX</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#adeefd4c2ca6a1b9fd45a09d957811cf7">getSkinnedPositionY</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ad63ecd113ee309791dd1e896e22a3034">getSkinnedPositionZ</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a44b161f244a4e614ebd1a9677ac183d0">getVertexBone</a>(int vertexIndex, int influenceIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#af3653b7bedb2d0be80c88f34af678442">getVertexCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a91e3e091248117402857a710905ad149">getVertexWeight</a>(int vertexIndex, int influenceIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aa396bdcbe116dcde043b233fd431ec87">hasSkinnedNormals</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a463cee32cbad3b9bd7c27e55c928e2d5">hasSkinnedPositions</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#adfb4650bbd42e07b805e152791375db6">kMaxInfluences</a></td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a4973ca74306643cd04ef6f4c26220aaf">operator=</a>(const AnimSkin &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aef11be708c332ff08fc61091b75db017">skinPositions</a>(const AnimPose *pose, float *outPosXYZ) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a874c5b3465f0285412451875c2af6da7">skinPositionsTo</a>(const AnimPose *pose, std::vector&lt; float &gt; &amp;outPosXYZ) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aca80c6f352b1b782f05aa5d2226503e6">updateGpuMesh</a>(graphics::Mesh *mesh, const AnimPose *pose) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a3a5bc870fae7c64e0d870ebfed1e7971">updateMatrixPalette</a>(const AnimPose *pose) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a72d09ac1c6ee068b0bdf5d0af2237368">updateSkinnedNormals</a>(const AnimPose *pose)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a5ce22989d3b318043e7e01cf35e1443d">updateSkinnedPositions</a>(const AnimPose *pose)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#af720ee5d105559139df3d03b6a86d92d">~AnimSkin</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">eve::animation::AnimSkin</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

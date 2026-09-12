@@ -1,0 +1,238 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::editor::EditorSession 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a689a0293913cc95ff8ab11cfac84b41d">activateTool</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a03e28a96994e64b42a10d5237bba3003">activeDocument</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a31416e30f7e02f9e414323d8948ab750">activeTool</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#acc72107b975f52f551af047f8033f507">activeToolId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3624ecf96490e0c30503efc92d86601d">addTool</a>(IEditorTool *tool)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a237d3c59604063c3407b5ceae75c4bbe">autosaveDocument</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad1db9c8160714525ffae0ec160d022fe">availableCommands</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2809cd69f2486e9ac4191eca008b2e5d">bindCommandService</a>(EditorCommandService &amp;service)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3389ab40458786f2a6533a80de66c46a">bindDocument</a>(const DocumentId &amp;document)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ae8aa57feb4fd16e9f758f1dc24847e4e">bindDocumentServices</a>(DocumentService &amp;documents, AutosaveService *autosave=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ac3852db454976e0f7fc2a4c126d69cbc">bindTarget</a>(IEditableTarget &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aadeca810fe8f2be61a69e819d9c47009">bindTarget</a>(IEditableTarget *target)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aaa5779d50010c78302fd65352d3e1836">boundTargetId</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aa22d8a202bf1c17e32a216f99bea4be4">cancelActiveTool</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a34dfacab8a86c849482e6dcea2cd098b">cancelRetainedPlan</a>(const PlanId &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a1559f3fe33be98f1e6df31589cf7fb30">capturedPointerId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab5ad989b1b8607f00772439fb80a8b4b">clearCommandService</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a4b01106debe7dcb0c12e9d02242df01c">clearDocumentServices</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a6fac95a6386229ffd300e21cac6d104c">clearRetainedPlans</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a10f291473554d1e7df1327642505925c">clearTarget</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aa85b5d456b19ae544fc81a1fcf3a6770">clearTools</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aef2e512889b6a3cd2392875a56d01d7f">commandService</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a481cb204e3a2c61ecd7843d9c15ff2ae">constraints</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad408711ff9e486574d280e76dca26ce3">context</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a352f7586d6d3cb65a93cc63991e41fc8">context</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a43792c1b576541133063bd19c04cfe9f">contextSnapshot</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a49cf9e49c71a4caed522b4ef48467c4b">dispatchKey</a>(const EditorKeyEvent &amp;event)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a47ffd0de020cbf299460773c81a9f3f7">dispatchPointer</a>(const EditorPointerEvent &amp;event)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a62c20090d11a7c114435c65671cc5f75">drawOverlay</a>(IEditorOverlay &amp;overlay)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a467ca81f6b9c28c7b2d19be3ca012de7">editDocument</a>(EditorValue content, std::optional&lt; Revision &gt; expectedRevision=std::nullopt)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3d761407fccb01f6265cf6cd8716ec8f">EditorSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2b4365e4f0fc19586bb12b33bb050102">EditorSession</a>(const EditorSession &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aeac834c5f47e2154ddc077d20910f333">EditorTargetCoordinator</a></td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3ac05251e66178eae72716a4aa040063">execute</a>(std::unique_ptr&lt; IEditCommand &gt; command)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a75d9f902734f7fa339e19cb3726d6960">executeChecked</a>(std::unique_ptr&lt; IEditCommand &gt; command)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad298278cdfedd5c5ce57cf46903fc2f9">executeCommand</a>(const CommandId &amp;id, const EditorValue &amp;payload={}, CommandSource source=CommandSource::Api)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab9c2d1b561a74cbe0c894e3c83320dad">executeCommandReceipt</a>(const CommandId &amp;id, const EditorValue &amp;payload={}, CommandSource source=CommandSource::Api)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a53fb70be0a2ff2614be276e34b840c0e">executePlan</a>(const CommandPlan &amp;plan, const EditorValue &amp;payload={}, CommandSource source=CommandSource::Api)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aae8f372c8810f6ee2d7f0cb359e188e3">executeRetainedPlan</a>(const PlanId &amp;id, CommandSource source=CommandSource::Api)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a28d1a85de54e9da33f65fcf81264790a">findTool</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3f32e3a35f67d568e5ad8b96dcb55a62">getTool</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#acd518dacaa74aac1d49d42cd289e93ee">getToolCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a0b9c265c466f9c477c9d613ddf458791">hasPointerCapture</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a12c4268d5a93bf49b284191899890351">hostProfile</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a992c3f11c64091ca9b8776b63cb51e26">inspect</a>(IEditorInspector &amp;inspector)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a997e7f7fea8ad722712fef3bc2b18c95">lastAutosavedRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a480275838fad86e91353a6835ac5c717">operator=</a>(const EditorSession &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a8670241eb2e9223393165ffd4d894f55">planCommand</a>(const CommandId &amp;id, const EditorValue &amp;payload={}, CommandSource source=CommandSource::Api, std::optional&lt; Revision &gt; expectedRevision=std::nullopt) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a1949ede1e3e3b0b0863b96637f731c92">pollDocumentChanges</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3dce77c129b53dd85d0d6d49311b65eb">removeTool</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aca8a67ed5d4a048cce47b065d19cf420">retainPlan</a>(const CommandId &amp;id, const EditorValue &amp;payload={}, CommandSource source=CommandSource::Api, std::optional&lt; Revision &gt; expectedRevision=std::nullopt)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad9aee267b9f3c59194f588a41277422a">saveDocument</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aa19512841ab04f6a502f3eba2bc97b43">sessionId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab17c985b764b542dbb2b0836b24de196">setAutosaveInterval</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2b72f002b02c3d30e538eb5ddeeb1dc4">setCommandService</a>(EditorCommandService *service)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ae23669b44dfb5013473f8c60d88dffd2">setDocumentServices</a>(DocumentService *documents, AutosaveService *autosave=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab1a39ad9f3400f616258913169ac6a0d">setExternalPollInterval</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a87429dc08fff529e2234e4ffa4f1cde8">setHostProfile</a>(HostProfile profile)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a6523710de0db10a69516151ac0c7df22">setSessionId</a>(SessionId id)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a05e43c4eb386aefa2a28e045a553c697">target</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a5b399073eda890b9dde3fdca07f3df49">transactions</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2b4c084aca1af2eaa4143bcb7047afca">unbindDocument</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a728c561945d1fdf388880e238dcdefcc">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab7e405ed6b5dca0862a502161dd7a478">~EditorSession</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">eve::editor::EditorSession</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

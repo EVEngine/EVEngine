@@ -1,0 +1,725 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::avatar::VrmMaterial结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar.html">avatar</a></li><li class="navelem"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html">VrmMaterial</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1avatar_1_1VrmMaterial-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::avatar::VrmMaterial结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Linear material factors and image references from VRMC_materials_mtoon.  
+ <a href="structeve_1_1avatar_1_1VrmMaterial.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a6e464a5c49c54d9be970c45dc7bc7396" id="r_a6e464a5c49c54d9be970c45dc7bc7396"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a6e464a5c49c54d9be970c45dc7bc7396">name</a></td></tr>
+<tr class="separator:a6e464a5c49c54d9be970c45dc7bc7396"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cebc73e8da7e5b6f6eb426a8996c352" id="r_a4cebc73e8da7e5b6f6eb426a8996c352"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a4cebc73e8da7e5b6f6eb426a8996c352">alphaMode</a> = &quot;OPAQUE&quot;</td></tr>
+<tr class="separator:a4cebc73e8da7e5b6f6eb426a8996c352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04ce10c9f777ae27d4e3ba1a669a0cda" id="r_a04ce10c9f777ae27d4e3ba1a669a0cda"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a04ce10c9f777ae27d4e3ba1a669a0cda">outlineMode</a> = &quot;none&quot;</td></tr>
+<tr class="separator:a04ce10c9f777ae27d4e3ba1a669a0cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4daba19b27f2d855ea86222b28efacd1" id="r_a4daba19b27f2d855ea86222b28efacd1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a4daba19b27f2d855ea86222b28efacd1">mtoon</a> = false</td></tr>
+<tr class="separator:a4daba19b27f2d855ea86222b28efacd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2131881414c5b1e2a3923210fb129e51" id="r_a2131881414c5b1e2a3923210fb129e51"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a2131881414c5b1e2a3923210fb129e51">doubleSided</a> = false</td></tr>
+<tr class="separator:a2131881414c5b1e2a3923210fb129e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68625abc1e81021af9aac398d17a1b8d" id="r_a68625abc1e81021af9aac398d17a1b8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a68625abc1e81021af9aac398d17a1b8d">zWrite</a> = false</td></tr>
+<tr class="separator:a68625abc1e81021af9aac398d17a1b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64c06e97bcb5c9f0473361f8e50e1de" id="r_af64c06e97bcb5c9f0473361f8e50e1de"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#af64c06e97bcb5c9f0473361f8e50e1de">queue</a> = 0</td></tr>
+<tr class="separator:af64c06e97bcb5c9f0473361f8e50e1de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a491a4cdcdfe7805a8b9922cc1bb23941" id="r_a491a4cdcdfe7805a8b9922cc1bb23941"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a491a4cdcdfe7805a8b9922cc1bb23941">color</a> {1, 1, 1, 1}</td></tr>
+<tr class="separator:a491a4cdcdfe7805a8b9922cc1bb23941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2798ed8bd8334edfc06d9524ef27be82" id="r_a2798ed8bd8334edfc06d9524ef27be82"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a2798ed8bd8334edfc06d9524ef27be82">shade</a> {0, 0, 0}</td></tr>
+<tr class="separator:a2798ed8bd8334edfc06d9524ef27be82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed42d303e2053082c9cbc6ad8aae45d7" id="r_aed42d303e2053082c9cbc6ad8aae45d7"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#aed42d303e2053082c9cbc6ad8aae45d7">emission</a> {}</td></tr>
+<tr class="separator:aed42d303e2053082c9cbc6ad8aae45d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21175caa46f8521a3f7f46298a3e896c" id="r_a21175caa46f8521a3f7f46298a3e896c"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a21175caa46f8521a3f7f46298a3e896c">matcap</a> {1, 1, 1}</td></tr>
+<tr class="separator:a21175caa46f8521a3f7f46298a3e896c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9413314ee9c67b1018220e801342074" id="r_ae9413314ee9c67b1018220e801342074"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#ae9413314ee9c67b1018220e801342074">rim</a> {}</td></tr>
+<tr class="separator:ae9413314ee9c67b1018220e801342074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef46014f9c6a5f96a40799b1cd753a1" id="r_a0ef46014f9c6a5f96a40799b1cd753a1"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a0ef46014f9c6a5f96a40799b1cd753a1">outline</a> {}</td></tr>
+<tr class="separator:a0ef46014f9c6a5f96a40799b1cd753a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3103c1a0285f1207a3b55d53939a8f2e" id="r_a3103c1a0285f1207a3b55d53939a8f2e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a3103c1a0285f1207a3b55d53939a8f2e">cutoff</a> = .5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3103c1a0285f1207a3b55d53939a8f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b6c00db9baf4173bae3d9765a41a523" id="r_a7b6c00db9baf4173bae3d9765a41a523"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a7b6c00db9baf4173bae3d9765a41a523">shift</a> = 0</td></tr>
+<tr class="separator:a7b6c00db9baf4173bae3d9765a41a523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47ded8f0664a87377556727c4344ccc4" id="r_a47ded8f0664a87377556727c4344ccc4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a47ded8f0664a87377556727c4344ccc4">shiftTextureScale</a> = 1</td></tr>
+<tr class="separator:a47ded8f0664a87377556727c4344ccc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77861a31a6a732758b724e56c5ec4824" id="r_a77861a31a6a732758b724e56c5ec4824"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a77861a31a6a732758b724e56c5ec4824">toony</a> = .9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a77861a31a6a732758b724e56c5ec4824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3fc2b59e97108368ffaeb10f45d32c" id="r_a1a3fc2b59e97108368ffaeb10f45d32c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a1a3fc2b59e97108368ffaeb10f45d32c">gi</a> = .9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1a3fc2b59e97108368ffaeb10f45d32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac08af63594b0196698c4510aea1c17ed" id="r_ac08af63594b0196698c4510aea1c17ed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#ac08af63594b0196698c4510aea1c17ed">rimMix</a> = 1</td></tr>
+<tr class="separator:ac08af63594b0196698c4510aea1c17ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee71f798f37039c374976518680af4d4" id="r_aee71f798f37039c374976518680af4d4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#aee71f798f37039c374976518680af4d4">rimPower</a> = 1</td></tr>
+<tr class="separator:aee71f798f37039c374976518680af4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff631bfeba233cee38ecdbd1df9da30c" id="r_aff631bfeba233cee38ecdbd1df9da30c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#aff631bfeba233cee38ecdbd1df9da30c">rimLift</a> = 0</td></tr>
+<tr class="separator:aff631bfeba233cee38ecdbd1df9da30c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcc8c938e50d0706050563c15b4ec9be" id="r_adcc8c938e50d0706050563c15b4ec9be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#adcc8c938e50d0706050563c15b4ec9be">outlineWidth</a> = 0</td></tr>
+<tr class="separator:adcc8c938e50d0706050563c15b4ec9be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad67fb6da6d60dcc8adcb1e1f1f9191e2" id="r_ad67fb6da6d60dcc8adcb1e1f1f9191e2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#ad67fb6da6d60dcc8adcb1e1f1f9191e2">outlineMix</a> = 1</td></tr>
+<tr class="separator:ad67fb6da6d60dcc8adcb1e1f1f9191e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ca8ee096eb54912c166f581ccb481e" id="r_ac5ca8ee096eb54912c166f581ccb481e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#ac5ca8ee096eb54912c166f581ccb481e">normalScale</a> = 1</td></tr>
+<tr class="separator:ac5ca8ee096eb54912c166f581ccb481e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04874b4343a447c7d15544cc9245bb1b" id="r_a04874b4343a447c7d15544cc9245bb1b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a04874b4343a447c7d15544cc9245bb1b">emissionStrength</a> = 1</td></tr>
+<tr class="separator:a04874b4343a447c7d15544cc9245bb1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a872c797b3bba523144b5d01b030ff128" id="r_a872c797b3bba523144b5d01b030ff128"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a872c797b3bba523144b5d01b030ff128">scrollX</a> = 0</td></tr>
+<tr class="separator:a872c797b3bba523144b5d01b030ff128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d8151d4b0f1c17828d7292a8d5e577c" id="r_a8d8151d4b0f1c17828d7292a8d5e577c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a8d8151d4b0f1c17828d7292a8d5e577c">scrollY</a> = 0</td></tr>
+<tr class="separator:a8d8151d4b0f1c17828d7292a8d5e577c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0882b2836e5ff9d572c7a7c0cfc481d" id="r_aa0882b2836e5ff9d572c7a7c0cfc481d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#aa0882b2836e5ff9d572c7a7c0cfc481d">rotationSpeed</a> = 0</td></tr>
+<tr class="separator:aa0882b2836e5ff9d572c7a7c0cfc481d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e6bb93614472835d23de51d546c4cd2" id="r_a6e6bb93614472835d23de51d546c4cd2"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="structeve_1_1avatar_1_1VrmTexture.html">VrmTexture</a>, 9 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1avatar_1_1VrmMaterial.html#a6e6bb93614472835d23de51d546c4cd2">textures</a></td></tr>
+<tr class="separator:a6e6bb93614472835d23de51d546c4cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Linear material factors and image references from VRMC_materials_mtoon. </p>
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a4cebc73e8da7e5b6f6eb426a8996c352" name="a4cebc73e8da7e5b6f6eb426a8996c352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cebc73e8da7e5b6f6eb426a8996c352">&#9670;&#160;</a></span>alphaMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::VrmMaterial::alphaMode = &quot;OPAQUE&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a491a4cdcdfe7805a8b9922cc1bb23941" name="a491a4cdcdfe7805a8b9922cc1bb23941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a491a4cdcdfe7805a8b9922cc1bb23941">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::avatar::VrmMaterial::color {1, 1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmSurface_8cpp_source.html#l00112">eve::avatar::VrmSurface::update()</a>.</p>
+
+</div>
+</div>
+<a id="a3103c1a0285f1207a3b55d53939a8f2e" name="a3103c1a0285f1207a3b55d53939a8f2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3103c1a0285f1207a3b55d53939a8f2e">&#9670;&#160;</a></span>cutoff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::cutoff = .5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2131881414c5b1e2a3923210fb129e51" name="a2131881414c5b1e2a3923210fb129e51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2131881414c5b1e2a3923210fb129e51">&#9670;&#160;</a></span>doubleSided</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::VrmMaterial::doubleSided = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed42d303e2053082c9cbc6ad8aae45d7" name="aed42d303e2053082c9cbc6ad8aae45d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed42d303e2053082c9cbc6ad8aae45d7">&#9670;&#160;</a></span>emission</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::avatar::VrmMaterial::emission {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmSurface_8cpp_source.html#l00112">eve::avatar::VrmSurface::update()</a>.</p>
+
+</div>
+</div>
+<a id="a04874b4343a447c7d15544cc9245bb1b" name="a04874b4343a447c7d15544cc9245bb1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04874b4343a447c7d15544cc9245bb1b">&#9670;&#160;</a></span>emissionStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::emissionStrength = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a3fc2b59e97108368ffaeb10f45d32c" name="a1a3fc2b59e97108368ffaeb10f45d32c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3fc2b59e97108368ffaeb10f45d32c">&#9670;&#160;</a></span>gi</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::gi = .9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21175caa46f8521a3f7f46298a3e896c" name="a21175caa46f8521a3f7f46298a3e896c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21175caa46f8521a3f7f46298a3e896c">&#9670;&#160;</a></span>matcap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::avatar::VrmMaterial::matcap {1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmSurface_8cpp_source.html#l00112">eve::avatar::VrmSurface::update()</a>.</p>
+
+</div>
+</div>
+<a id="a4daba19b27f2d855ea86222b28efacd1" name="a4daba19b27f2d855ea86222b28efacd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4daba19b27f2d855ea86222b28efacd1">&#9670;&#160;</a></span>mtoon</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::VrmMaterial::mtoon = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e464a5c49c54d9be970c45dc7bc7396" name="a6e464a5c49c54d9be970c45dc7bc7396"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e464a5c49c54d9be970c45dc7bc7396">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::VrmMaterial::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5ca8ee096eb54912c166f581ccb481e" name="ac5ca8ee096eb54912c166f581ccb481e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ca8ee096eb54912c166f581ccb481e">&#9670;&#160;</a></span>normalScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::normalScale = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ef46014f9c6a5f96a40799b1cd753a1" name="a0ef46014f9c6a5f96a40799b1cd753a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef46014f9c6a5f96a40799b1cd753a1">&#9670;&#160;</a></span>outline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::avatar::VrmMaterial::outline {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmSurface_8cpp_source.html#l00112">eve::avatar::VrmSurface::update()</a>.</p>
+
+</div>
+</div>
+<a id="ad67fb6da6d60dcc8adcb1e1f1f9191e2" name="ad67fb6da6d60dcc8adcb1e1f1f9191e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad67fb6da6d60dcc8adcb1e1f1f9191e2">&#9670;&#160;</a></span>outlineMix</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::outlineMix = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a04ce10c9f777ae27d4e3ba1a669a0cda" name="a04ce10c9f777ae27d4e3ba1a669a0cda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04ce10c9f777ae27d4e3ba1a669a0cda">&#9670;&#160;</a></span>outlineMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::VrmMaterial::outlineMode = &quot;none&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adcc8c938e50d0706050563c15b4ec9be" name="adcc8c938e50d0706050563c15b4ec9be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcc8c938e50d0706050563c15b4ec9be">&#9670;&#160;</a></span>outlineWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::outlineWidth = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af64c06e97bcb5c9f0473361f8e50e1de" name="af64c06e97bcb5c9f0473361f8e50e1de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af64c06e97bcb5c9f0473361f8e50e1de">&#9670;&#160;</a></span>queue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar::VrmMaterial::queue = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9413314ee9c67b1018220e801342074" name="ae9413314ee9c67b1018220e801342074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9413314ee9c67b1018220e801342074">&#9670;&#160;</a></span>rim</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::avatar::VrmMaterial::rim {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmSurface_8cpp_source.html#l00112">eve::avatar::VrmSurface::update()</a>.</p>
+
+</div>
+</div>
+<a id="aff631bfeba233cee38ecdbd1df9da30c" name="aff631bfeba233cee38ecdbd1df9da30c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff631bfeba233cee38ecdbd1df9da30c">&#9670;&#160;</a></span>rimLift</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::rimLift = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac08af63594b0196698c4510aea1c17ed" name="ac08af63594b0196698c4510aea1c17ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac08af63594b0196698c4510aea1c17ed">&#9670;&#160;</a></span>rimMix</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::rimMix = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee71f798f37039c374976518680af4d4" name="aee71f798f37039c374976518680af4d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee71f798f37039c374976518680af4d4">&#9670;&#160;</a></span>rimPower</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::rimPower = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0882b2836e5ff9d572c7a7c0cfc481d" name="aa0882b2836e5ff9d572c7a7c0cfc481d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0882b2836e5ff9d572c7a7c0cfc481d">&#9670;&#160;</a></span>rotationSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::rotationSpeed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a872c797b3bba523144b5d01b030ff128" name="a872c797b3bba523144b5d01b030ff128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a872c797b3bba523144b5d01b030ff128">&#9670;&#160;</a></span>scrollX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::scrollX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d8151d4b0f1c17828d7292a8d5e577c" name="a8d8151d4b0f1c17828d7292a8d5e577c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d8151d4b0f1c17828d7292a8d5e577c">&#9670;&#160;</a></span>scrollY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::scrollY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2798ed8bd8334edfc06d9524ef27be82" name="a2798ed8bd8334edfc06d9524ef27be82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2798ed8bd8334edfc06d9524ef27be82">&#9670;&#160;</a></span>shade</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::avatar::VrmMaterial::shade {0, 0, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VrmSurface_8cpp_source.html#l00112">eve::avatar::VrmSurface::update()</a>.</p>
+
+</div>
+</div>
+<a id="a7b6c00db9baf4173bae3d9765a41a523" name="a7b6c00db9baf4173bae3d9765a41a523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b6c00db9baf4173bae3d9765a41a523">&#9670;&#160;</a></span>shift</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::shift = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47ded8f0664a87377556727c4344ccc4" name="a47ded8f0664a87377556727c4344ccc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47ded8f0664a87377556727c4344ccc4">&#9670;&#160;</a></span>shiftTextureScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::shiftTextureScale = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e6bb93614472835d23de51d546c4cd2" name="a6e6bb93614472835d23de51d546c4cd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e6bb93614472835d23de51d546c4cd2">&#9670;&#160;</a></span>textures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="structeve_1_1avatar_1_1VrmTexture.html">VrmTexture</a>, 9&gt; eve::avatar::VrmMaterial::textures</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a77861a31a6a732758b724e56c5ec4824" name="a77861a31a6a732758b724e56c5ec4824"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77861a31a6a732758b724e56c5ec4824">&#9670;&#160;</a></span>toony</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::VrmMaterial::toony = .9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68625abc1e81021af9aac398d17a1b8d" name="a68625abc1e81021af9aac398d17a1b8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68625abc1e81021af9aac398d17a1b8d">&#9670;&#160;</a></span>zWrite</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::VrmMaterial::zWrite = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a> 第 <a class="el" href="VrmDocument_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/avatar/<a class="el" href="VrmDocument_8h_source.html">VrmDocument.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1vehicle.html">vehicle</a></li><li class="navelem"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">Vehicle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::vehicle::Vehicle 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0c104bf07f6f76c7f3c1684a9f0d87d1">applyDamage</a>(VehicleEntity *v, float amount, const std::string &amp;zone=&quot;&quot;, int sourceId=0)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0ac23c268f3d950479220e5fd99d6320">attachPhysics2D</a>(VehicleEntity *v, eve::physics::World *world)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a91f20dceac2df810a9ce22e1255bd214">attachPhysics3D</a>(VehicleEntity *v, eve::physics::World3D *world, float heightY=1.f)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a242d2d57010627a2299671ec98843212">attack</a>(VehicleEntity *v, float x, float y, int targetId=0)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a46b1b0a2f2911fbd2b98612700183948">attackMove</a>(VehicleEntity *v, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a665349de4fcd981019b0324f67ebc3e7">clearEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac930e7a8ddeea86783bcf6283db46cc6">clearOrders</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7198ef676d2012302e7f4242d212b8c7">clearVehicleDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac674dd6cb9d832220c54a09efb1c5e1f">definitionRegistry</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aef36d90bcd81dae3b4079ee8ff9df0e7">detachPhysics</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a00e74f05651ad2de9341623f62c7cab3">enterSeat</a>(VehicleEntity *v, int seatIndex, int playerId)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aec27d1d94ff9b04252d65402eb0dda44">exitSeat</a>(VehicleEntity *v, int seatIndex)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a9f5c8aa39551abfb3419d6df7c4c6d04">exitSeatByPlayer</a>(VehicleEntity *v, int playerId)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a148e352629532a30db3090729e9e4c63">getArmorZoneMult</a>(VehicleEntity *v, const std::string &amp;zone)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac1ac63f0283e60abc9e92ca34ca435cd">getCurrentOrderType</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a56b2d7752065a422d888b350c6cbb40c">getEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7ffccc856d7967e67fde827a039d025f">getEventDefId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aa21bfa1c01b494a70dbd93e0784d61f5">getEventOrderType</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a4ae7e2a117c4b9ee84ff8b9ec1eb07ca">getEventType</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#adb02569b9777fdf373a51ac82851d292">getEventVehicleId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aa08739f33ad552dbb11df3279ea42de0">getEventX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7bba30e90bea5af416182c3ff4108d1c">getEventY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7617b7586ae3947d1fc18fcda677f4ab">getFaction</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a795967174c3fa37ef476ac6f0fcd3aba">getHeading</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a2c67e7fe6eb1631173a45ecf02ddb3ce">getHealth</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a5691adac3df9113de7a167a2f2fb0d6e">getHeight</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a13c8456a909eea4c4aa22a3061ea0325">getMaxHealth</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8a80b2b36b0f7262650dba25ac771aef">getMobilityCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a03be6ca6ffbbff1b80f5bfd5fb57f321">getMount</a>(VehicleEntity *v, int index)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a5a4d45eb2888522a85979d0fc68350d7">getMountCount</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7ed0b4fc899f506f5f5639e35e5624c0">getPhysicsSpace</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a439cbcc6044d86c89c26c28755b3c3b8">getSeatCameraMode</a>(VehicleEntity *v, int seatIndex)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a573094e0a40abaadefeac779e219ba3b">getSeatCount</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8a3945e082154c92ec7320f1aeb4fb0d">getSeatMount</a>(VehicleEntity *v, int seatIndex)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7d19f134e06ecd672f52519a48d77d6c">getSeatName</a>(VehicleEntity *v, int seatIndex)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0205df758172dffb91a8c9846a413643">getSeatOccupant</a>(VehicleEntity *v, int seatIndex)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8ac02b961dab46942ac9564cbfd60ada">getSpeed</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0a5a2d0a0b1ab8b5b0f95458eb5e62b0">getVehicleDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a703e76ccd58f896fcb18eecffc63dc5d">getVehicleDefinitionMaxHealth</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a53447b76730573df1ed639af10ae602d">getVehicleDefinitionMobility</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac57f92a3f7a5baf2d2a67f8790249e23">getX</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a6eb8421fda5618711d8dd24bb0cbfc8d">getY</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a4391a27951e17676cbb805ce309cb183">hasPhysics</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a24c32ed118f85903ba19f4caa2e8287c">hasVehicleDefinition</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#acfd5963bc960df89c1765eb8fa3d8c72">hold</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aa88113c29796ae7dbcc70b675f1960ce">isArrived</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8b900332657e763df4a08038272a38fc">isDestroyed</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aefb9d25bc866cd25e36633c334748228">isSeatOccupied</a>(VehicleEntity *v, int seatIndex)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#af33cbf9dfaad08a5c9a4bc856a5cffd4">Module_REG</a>(Vehicle)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a42af37378a007c09c801db52c32511d9">moveTo</a>(VehicleEntity *v, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a1deec5bd12c4412bfcc8b3d44acf79c3">newVehicle</a>(const std::string &amp;defId, float x, float y, float heading=0.f, const std::string &amp;faction=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac7eaa9d6598abca2a6625d11e76a4dd1">orderCount</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a889718ce7cb003022309744673cb2fb4">registerMobility</a>(IVehicleMobility *mobility)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ae06e6aaf4a410e60d4b9ec383f80564d">registerVehiclesFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aaa66a53a8e49caafdc4b1632022b026a">setFaction</a>(VehicleEntity *v, const std::string &amp;faction)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a42fbe1e060dfe00ab5da7a26492da3cc">setHeading</a>(VehicleEntity *v, float deg)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a38e88220d3625362dd49a3e4b9d05b30">setHealth</a>(VehicleEntity *v, float hp)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ae13ccd8bdc110bdc13806e41d983d7e3">setInput</a>(VehicleEntity *v, float throttle, float steer, float brake=0.f, bool handbrake=false)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a27a8c34bbf4aa9f9a462a47adbc06b83">setPlayerControls</a>(int playerId, float throttle, float steer, float brake, bool fire, float aimYaw, float aimPitch)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#afa347765d0b1e4e4e999c294c849ba67">setPosition</a>(VehicleEntity *v, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#adb329900f2d96179f68a9160fbfb0c8c">stop</a>(VehicleEntity *v)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a6651501a079ef056fb2133ef850b478c">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a4cb757569c4f1560e0e31b1b0f79d2ff">Vehicle</a>()</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a26884e1ace1aae9085095745c20d9c58">~Vehicle</a>() override</td><td class="entry"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">eve::vehicle::Vehicle</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

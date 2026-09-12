@@ -1,0 +1,713 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::CombatCarrierRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html">CombatCarrierRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1weapon_1_1CombatCarrierRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::CombatCarrierRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread deterministic carrier simulator with composable behaviors.  
+ <a href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a27edb1656f91c23adcad67388792802a" id="r_a27edb1656f91c23adcad67388792802a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a27edb1656f91c23adcad67388792802a">CombatCarrierRuntime</a> ()</td></tr>
+<tr class="separator:a27edb1656f91c23adcad67388792802a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45b0bd4078280b328a7eadefec28bb67" id="r_a45b0bd4078280b328a7eadefec28bb67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a45b0bd4078280b328a7eadefec28bb67">configurePool</a> (std::uint32_t <a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a463ba956d23056a944553aebc9c5168f">capacity</a>)</td></tr>
+<tr class="memdesc:a45b0bd4078280b328a7eadefec28bb67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the pool while empty; capacity must be in 1..1048576.  <br /></td></tr>
+<tr class="separator:a45b0bd4078280b328a7eadefec28bb67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2c1b3fc01bdefc4c5e2aeccb7d67735" id="r_ad2c1b3fc01bdefc4c5e2aeccb7d67735"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#ad2c1b3fc01bdefc4c5e2aeccb7d67735">registerRecipe</a> (const <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &amp;recipe)</td></tr>
+<tr class="memdesc:ad2c1b3fc01bdefc4c5e2aeccb7d67735"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or replace a recipe by id. @ownership <a class="el" href="classeve_1_1Runtime.html">Runtime</a> copies the recipe; callers may discard their instance.  <br /></td></tr>
+<tr class="separator:ad2c1b3fc01bdefc4c5e2aeccb7d67735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a844a660e145c25e7021935bf935d43f1" id="r_a844a660e145c25e7021935bf935d43f1"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a844a660e145c25e7021935bf935d43f1">findRecipe</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:a844a660e145c25e7021935bf935d43f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up a previously registered recipe by id.  <br /></td></tr>
+<tr class="separator:a844a660e145c25e7021935bf935d43f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad17818d756653afbd29ead238aa18d99" id="r_ad17818d756653afbd29ead238aa18d99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#ad17818d756653afbd29ead238aa18d99">spawn</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;recipeId, const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:ad17818d756653afbd29ead238aa18d99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn one carrier from a registered recipe id.  <br /></td></tr>
+<tr class="separator:ad17818d756653afbd29ead238aa18d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb13b0c72426184e2bef07e2591c3afa" id="r_acb13b0c72426184e2bef07e2591c3afa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#acb13b0c72426184e2bef07e2591c3afa">spawn</a> (const <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &amp;recipe, const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:acb13b0c72426184e2bef07e2591c3afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn one carrier from an inline validated recipe (also registers it).  <br /></td></tr>
+<tr class="separator:acb13b0c72426184e2bef07e2591c3afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ebe031b79511b54b84ccd84e29b650f" id="r_a7ebe031b79511b54b84ccd84e29b650f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a7ebe031b79511b54b84ccd84e29b650f">spawnVolley</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;recipeId, const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, const <a class="el" href="structeve_1_1weapon_1_1CarrierVolleySpec.html">CarrierVolleySpec</a> &amp;volley)</td></tr>
+<tr class="memdesc:a7ebe031b79511b54b84ccd84e29b650f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn multiple carriers in deterministic Fan/Ring directions.  <br /></td></tr>
+<tr class="separator:a7ebe031b79511b54b84ccd84e29b650f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89434c613dd7cfff536dd5e5dfde96da" id="r_a89434c613dd7cfff536dd5e5dfde96da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a89434c613dd7cfff536dd5e5dfde96da">spawnVolley</a> (const <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &amp;recipe, const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, const <a class="el" href="structeve_1_1weapon_1_1CarrierVolleySpec.html">CarrierVolleySpec</a> &amp;volley)</td></tr>
+<tr class="separator:a89434c613dd7cfff536dd5e5dfde96da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b4be587bc6c2a5afe9b13910f3a455" id="r_ac0b4be587bc6c2a5afe9b13910f3a455"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierFrame.html">CarrierFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#ac0b4be587bc6c2a5afe9b13910f3a455">update</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> delta, const <a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html">IProjectileTargetProvider</a> *targets=nullptr, const <a class="el" href="classeve_1_1weapon_1_1ICarrierHitProbe.html">ICarrierHitProbe</a> *hits=nullptr, const <a class="el" href="classeve_1_1weapon_1_1ICarrierBodyDefenseProvider.html">ICarrierBodyDefenseProvider</a> *bodies=nullptr)</td></tr>
+<tr class="memdesc:ac0b4be587bc6c2a5afe9b13910f3a455"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically advance all live carriers by supplied deterministic time.  <br /></td></tr>
+<tr class="separator:ac0b4be587bc6c2a5afe9b13910f3a455"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71df3dfa0cdb756e7aafaf6d13eb0938" id="r_a71df3dfa0cdb756e7aafaf6d13eb0938"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a71df3dfa0cdb756e7aafaf6d13eb0938">release</a> (<a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:a71df3dfa0cdb756e7aafaf6d13eb0938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly release one live handle; stale handles are rejected.  <br /></td></tr>
+<tr class="separator:a71df3dfa0cdb756e7aafaf6d13eb0938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f459664a743245549b9b0d070ebd272" id="r_a0f459664a743245549b9b0d070ebd272"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierState.html">CarrierState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a0f459664a743245549b9b0d070ebd272">find</a> (<a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a0f459664a743245549b9b0d070ebd272"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning state copy, or empty for a stale/released handle.  <br /></td></tr>
+<tr class="separator:a0f459664a743245549b9b0d070ebd272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada62052d48fa839e5288a66b53d11de5" id="r_ada62052d48fa839e5288a66b53d11de5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierState.html">CarrierState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#ada62052d48fa839e5288a66b53d11de5">states</a> () const</td></tr>
+<tr class="memdesc:ada62052d48fa839e5288a66b53d11de5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return owning live states in stable slot order.  <br /></td></tr>
+<tr class="separator:ada62052d48fa839e5288a66b53d11de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3cb472d078f9a7884fe5359f591f7d4" id="r_ad3cb472d078f9a7884fe5359f591f7d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1weapon_1_1CarrierRuntimeSnapshot.html">CarrierRuntimeSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#ad3cb472d078f9a7884fe5359f591f7d4">snapshot</a> () const</td></tr>
+<tr class="memdesc:ad3cb472d078f9a7884fe5359f591f7d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture live carriers plus empty-slot generations.  <br /></td></tr>
+<tr class="separator:ad3cb472d078f9a7884fe5359f591f7d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6322b4a0ab8b03005de64ec6005ed116" id="r_a6322b4a0ab8b03005de64ec6005ed116"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a6322b4a0ab8b03005de64ec6005ed116">restore</a> (const <a class="el" href="structeve_1_1weapon_1_1CarrierRuntimeSnapshot.html">CarrierRuntimeSnapshot</a> &amp;<a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#ad3cb472d078f9a7884fe5359f591f7d4">snapshot</a>)</td></tr>
+<tr class="memdesc:a6322b4a0ab8b03005de64ec6005ed116"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace this pool from a validated snapshot.  <br /></td></tr>
+<tr class="separator:a6322b4a0ab8b03005de64ec6005ed116"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e77d23305db792491c2f03a5a3fc3bf" id="r_a9e77d23305db792491c2f03a5a3fc3bf"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a9e77d23305db792491c2f03a5a3fc3bf">activeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a9e77d23305db792491c2f03a5a3fc3bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of live carriers.  <br /></td></tr>
+<tr class="separator:a9e77d23305db792491c2f03a5a3fc3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a463ba956d23056a944553aebc9c5168f" id="r_a463ba956d23056a944553aebc9c5168f"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1CombatCarrierRuntime.html#a463ba956d23056a944553aebc9c5168f">capacity</a> () const noexcept</td></tr>
+<tr class="memdesc:a463ba956d23056a944553aebc9c5168f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current fixed pool capacity.  <br /></td></tr>
+<tr class="separator:a463ba956d23056a944553aebc9c5168f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread deterministic carrier simulator with composable behaviors. </p>
+<p>update stages every live carrier on a candidate copy and publishes only after all target/hit lookups succeed. Child spawns are attempted at frame end; pool exhaustion fails the whole frame without partial publish. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00288">288</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a27edb1656f91c23adcad67388792802a" name="a27edb1656f91c23adcad67388792802a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27edb1656f91c23adcad67388792802a">&#9670;&#160;</a></span>CombatCarrierRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weapon::CombatCarrierRuntime::CombatCarrierRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9e77d23305db792491c2f03a5a3fc3bf" name="a9e77d23305db792491c2f03a5a3fc3bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e77d23305db792491c2f03a5a3fc3bf">&#9670;&#160;</a></span>activeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::weapon::CombatCarrierRuntime::activeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of live carriers. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00351">351</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a463ba956d23056a944553aebc9c5168f" name="a463ba956d23056a944553aebc9c5168f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a463ba956d23056a944553aebc9c5168f">&#9670;&#160;</a></span>capacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::weapon::CombatCarrierRuntime::capacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current fixed pool capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a> 第 <a class="el" href="CombatCarrier_8h_source.html#l00354">354</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00314">configurePool()</a>.</p>
+
+</div>
+</div>
+<a id="a45b0bd4078280b328a7eadefec28bb67" name="a45b0bd4078280b328a7eadefec28bb67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45b0bd4078280b328a7eadefec28bb67">&#9670;&#160;</a></span>configurePool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::CombatCarrierRuntime::configurePool </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>capacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resize the pool while empty; capacity must be in 1..1048576. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CombatCarrier_8h_source.html#l00354">capacity()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0f459664a743245549b9b0d070ebd272" name="a0f459664a743245549b9b0d070ebd272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f459664a743245549b9b0d070ebd272">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierState.html">CarrierState</a> &gt; eve::weapon::CombatCarrierRuntime::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning state copy, or empty for a stale/released handle. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00862">862</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a> , 以及 <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>.</p>
+
+</div>
+</div>
+<a id="a844a660e145c25e7021935bf935d43f1" name="a844a660e145c25e7021935bf935d43f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a844a660e145c25e7021935bf935d43f1">&#9670;&#160;</a></span>findRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &gt; eve::weapon::CombatCarrierRuntime::findRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Look up a previously registered recipe by id. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2c1b3fc01bdefc4c5e2aeccb7d67735" name="ad2c1b3fc01bdefc4c5e2aeccb7d67735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2c1b3fc01bdefc4c5e2aeccb7d67735">&#9670;&#160;</a></span>registerRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::CombatCarrierRuntime::registerRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register or replace a recipe by id. @ownership <a class="el" href="classeve_1_1Runtime.html">Runtime</a> copies the recipe; callers may discard their instance. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CombatCarrier_8h_source.html#l00106">eve::weapon::CarrierRecipe::id</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00428">spawn()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00461">spawnVolley()</a>.</p>
+
+</div>
+</div>
+<a id="a71df3dfa0cdb756e7aafaf6d13eb0938" name="a71df3dfa0cdb756e7aafaf6d13eb0938"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71df3dfa0cdb756e7aafaf6d13eb0938">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::CombatCarrierRuntime::release </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicitly release one live handle; stale handles are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00851">851</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a6322b4a0ab8b03005de64ec6005ed116" name="a6322b4a0ab8b03005de64ec6005ed116"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6322b4a0ab8b03005de64ec6005ed116">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::weapon::CombatCarrierRuntime::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierRuntimeSnapshot.html">CarrierRuntimeSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace this pool from a validated snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00885">885</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00021">active</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="CombatCarrier_8h_source.html#l00209">eve::weapon::CarrierRuntimeSnapshot::slots</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad3cb472d078f9a7884fe5359f591f7d4" name="ad3cb472d078f9a7884fe5359f591f7d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3cb472d078f9a7884fe5359f591f7d4">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1weapon_1_1CarrierRuntimeSnapshot.html">CarrierRuntimeSnapshot</a> eve::weapon::CombatCarrierRuntime::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture live carriers plus empty-slot generations. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00878">878</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CombatCarrier_8h_source.html#l00209">eve::weapon::CarrierRuntimeSnapshot::slots</a>.</p>
+
+</div>
+</div>
+<a id="acb13b0c72426184e2bef07e2591c3afa" name="acb13b0c72426184e2bef07e2591c3afa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb13b0c72426184e2bef07e2591c3afa">&#9670;&#160;</a></span>spawn() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt; eve::weapon::CombatCarrierRuntime::spawn </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn one carrier from an inline validated recipe (also registers it). </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CombatCarrier_8h_source.html#l00106">eve::weapon::CarrierRecipe::id</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00347">registerRecipe()</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00421">spawn()</a>.</p>
+
+</div>
+</div>
+<a id="ad17818d756653afbd29ead238aa18d99" name="ad17818d756653afbd29ead238aa18d99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad17818d756653afbd29ead238aa18d99">&#9670;&#160;</a></span>spawn() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt; eve::weapon::CombatCarrierRuntime::spawn </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn one carrier from a registered recipe id. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00428">spawn()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00434">spawnVolley()</a>.</p>
+
+</div>
+</div>
+<a id="a89434c613dd7cfff536dd5e5dfde96da" name="a89434c613dd7cfff536dd5e5dfde96da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89434c613dd7cfff536dd5e5dfde96da">&#9670;&#160;</a></span>spawnVolley() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt; &gt; eve::weapon::CombatCarrierRuntime::spawnVolley </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierRecipe.html">CarrierRecipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierVolleySpec.html">CarrierVolleySpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>volley</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CombatCarrier_8h_source.html#l00106">eve::weapon::CarrierRecipe::id</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00347">registerRecipe()</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00434">spawnVolley()</a>.</p>
+
+</div>
+</div>
+<a id="a7ebe031b79511b54b84ccd84e29b650f" name="a7ebe031b79511b54b84ccd84e29b650f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ebe031b79511b54b84ccd84e29b650f">&#9670;&#160;</a></span>spawnVolley() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a> &gt; &gt; eve::weapon::CombatCarrierRuntime::spawnVolley </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierSpawnRequest.html">CarrierSpawnRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1CarrierVolleySpec.html">CarrierVolleySpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>volley</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn multiple carriers in deterministic Fan/Ring directions. </p>
+<p>Each projectile shares the base position/target/source and receives a rotated aim vector. Fails without partial spawns when the pool cannot fit the full volley or any single spawn is invalid. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CombatCarrier_8h_source.html#l00128">eve::weapon::CarrierSpawnRequest::direction</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00421">spawn()</a> , 以及 <a class="el" href="GraphicsParticles_8cpp_source.html#l00024">spawned</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCarrier_8cpp_source.html#l00461">spawnVolley()</a>.</p>
+
+</div>
+</div>
+<a id="ada62052d48fa839e5288a66b53d11de5" name="ada62052d48fa839e5288a66b53d11de5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada62052d48fa839e5288a66b53d11de5">&#9670;&#160;</a></span>states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierState.html">CarrierState</a> &gt; eve::weapon::CombatCarrierRuntime::states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return owning live states in stable slot order. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00869">869</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac0b4be587bc6c2a5afe9b13910f3a455" name="ac0b4be587bc6c2a5afe9b13910f3a455"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b4be587bc6c2a5afe9b13910f3a455">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1CarrierFrame.html">CarrierFrame</a> &gt; eve::weapon::CombatCarrierRuntime::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>delta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html">IProjectileTargetProvider</a> *&#160;</td>
+          <td class="paramname"><em>targets</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1weapon_1_1ICarrierHitProbe.html">ICarrierHitProbe</a> *&#160;</td>
+          <td class="paramname"><em>hits</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1weapon_1_1ICarrierBodyDefenseProvider.html">ICarrierBodyDefenseProvider</a> *&#160;</td>
+          <td class="paramname"><em>bodies</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically advance all live carriers by supplied deterministic time. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">targets</td><td>Optional provider required when any live recipe uses homing/proximity. </td></tr>
+    <tr><td class="paramname">hits</td><td>Optional probe required when any live recipe uses OnHit. </td></tr>
+    <tr><td class="paramname">bodies</td><td>Optional provider required when any live recipe uses SteerAvoidBody. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a> 第 <a class="el" href="CombatCarrier_8cpp_source.html#l00469">469</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71aa552e259a7aec237bbe28b9039dc3395">eve::weapon::Accelerate</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a0ffed7f9d337d81cbcf34e7b3441c7a5">eve::weapon::ApplyGravity</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00229">body</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a1692019f28fcae14228002ce735804a2">eve::weapon::CurveHelix</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a9f50090ebf9380415e6ad6f439dbe77e">eve::weapon::CurveSway</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00123">dir</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a969d5b0a5db3512ed13b63c866ed4d49">eve::weapon::IntegrateLinear</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Time_8h_source.html#l00073">eve::Duration::isZero()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a73ab03681bd7be2d62bd0660b2f19843">eve::weapon::OnExpire</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a36400f8ee1f1de646e1981eb65b36a02">eve::weapon::OnFuse</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0ac63f02f6baa2cdef618c088d6c7b8bb7">eve::weapon::OnHit</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a664e20fa2166a0488c7a06172d9244a2">eve::weapon::OnInterval</a>, <a class="el" href="namespaceeve_1_1weapon.html#a9044c1c9c14f49f6a418df1beeeb5df0a2506087021e3b48e7a6c6d81a969b2ed">eve::weapon::OnProximity</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="CombatCarrier_8h_source.html#l00153">eve::weapon::CarrierMotion::position</a>, <a class="el" href="classeve_1_1weapon_1_1IProjectileTargetProvider.html#aca4676e7877b1fa43b267546a2433439">eve::weapon::IProjectileTargetProvider::position()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="classeve_1_1weapon_1_1ICarrierHitProbe.html#a62ba0014824e350dba983f287c5fd41e">eve::weapon::ICarrierHitProbe::query()</a>, <a class="el" href="Procgen_8cpp_source.html#l00076">release</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="classeve_1_1weapon_1_1ICarrierBodyDefenseProvider.html#a09736698b3e4ae5edf5d3894dcb2429f">eve::weapon::ICarrierBodyDefenseProvider::sample()</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71aae89f35e360eb6aa9b942c7db9081538">eve::weapon::SteerAvoidBody</a>, <a class="el" href="namespaceeve_1_1weapon.html#a2f858d708b43200445314754c898cb71a11ddda5eaa4f2f7bdb8ef9fbc14bdce4">eve::weapon::SteerHoming</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Time_8cpp_source.html#l00030">eve::Duration::tryAdd()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="CombatCarrier_8h_source.html#l00154">eve::weapon::CarrierMotion::velocity</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00021">eve::weapon::ProjectilePoint::x</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00030">eve::weapon::ProjectileVector::x</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00022">eve::weapon::ProjectilePoint::y</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00031">eve::weapon::ProjectileVector::y</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00023">eve::weapon::ProjectilePoint::z</a>, <a class="el" href="ProjectileRuntime_8h_source.html#l00032">eve::weapon::ProjectileVector::z</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="CombatCarrier_8h_source.html">CombatCarrier.h</a></li>
+<li>src/modules/weapon/<a class="el" href="CombatCarrier_8cpp_source.html">CombatCarrier.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

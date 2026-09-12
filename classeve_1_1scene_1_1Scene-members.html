@@ -1,0 +1,282 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene.html">scene</a></li><li class="navelem"><a class="el" href="classeve_1_1scene_1_1Scene.html">Scene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::scene::Scene 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ad8b04e8e02f8f3b3b340a7713d10f658">addChildAt</a>(const std::string &amp;hostName, const std::string &amp;parentId, const std::string &amp;childId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#acae435fc9dbb99f73772cafd65cd0268">addNode</a>(const std::string &amp;id, const std::string &amp;name=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#af75dc5fab717d1cd3376f68621ddc3db">addNodeTagAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a2ebaf39b47b1fd136759b6e16c5c4459">beginBuild</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a864b549c591b4a8598ade619ec8e9458">beginGroup</a>(const std::string &amp;id=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a005709ae3708b567f4fe30e5f19e98b0">beginNode</a>(const std::string &amp;id, const std::string &amp;name=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a71691bc98a836c7985b59c542ae482d0">bindOwner</a>(uint32_t ownerId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a62b6d2e173d64d7d7bff45b44d4a2f49">collectChildIds</a>(const std::string &amp;parentId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae528898db34887ca81892f021321666e">collectFrustumIdsAt</a>(const std::string &amp;hostName, graphics::Camera3D *cam, float viewW, float viewH) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a184d053f000f8336a9227346525c7949">collectIds</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a949d7cea8dd3bf39e1dc193af1440ff3">collectIdsByName</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a208c4a4134e7a6834170fbdf6a560d17">collectIdsByTagAt</a>(const std::string &amp;hostName, const std::string &amp;tag) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a15c9df965b94b27936491bbe4823e57d">collectIdsFrom</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a685e5aa0df082624cd7dc3bd83736beb">collectIdsVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a8e1a135304fce7a56846fc029327d1d9">current</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a6c9c358fdd955d093648b7d86f363c9b">currentHostName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#abc3cc46a5b5287177954490b0d3e9f28">deserializeHostAt</a>(const std::string &amp;hostName, const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a5a0aace576b9ee8d42915ad406dca6b9">end</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ad241d6c7cc9e5f3429c1f033b929f200">findHost</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a0828a9346db4e585f52bd5ffeddf55ca">findHostByOwner</a>(uint32_t ownerId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a7559af68f4e42bc45d6a54ce7f36df84">findIdByName</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a2713a043b38083426eae320802bfef33">findIdByPath</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#afc7104664a7c49682cc476c16cce8cf7">forEachEntity</a>(const std::string &amp;hostName, const std::string &amp;nodeId, ssq::Object cb)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a75a1887da857ab7b96677540a0aaceba">getChildCount</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ada3615e6febbf79ec909ab7d382c53ff">getChildIdAt</a>(const std::string &amp;parentId, int childOrdinal)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#af06716debf8bcb7b39928ae9341cd0a9">getNodeBoundsAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae3f1fd4c1093140a30f1674334e7457b">getNodeCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a512cbdb8c0154ddb824264edbb837915">getNodeLayerAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a7199684026342876fce8ff40aa3e1535">getNodePath</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a4f0f5c802d6fb1c681bb204e134e1203">getNodePositionAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac9606aea1c830b44331694b00ab13f3b">getNodeQuaternionAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a57666faa4d7a0b75fc2cba9dc39be91e">getNodeRefAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a00ebdeda1926de0cefb5b474a96603a5">getNodeRefByPathAt</a>(const std::string &amp;hostName, const std::string &amp;path) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a2572614dcb662b960d48c836795eeac8">getNodeRotationAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#aa10336331fa8407be67fff011591dfaa">getNodeScaleAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#aaad7b6deeddb1820ef06313b92df3146">getNodeTagsAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a3ce30597a248319aafef21231c96406c">getNodeVisibleAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a4fddc3b64119a507ea71d7887d1967b8">getNodeWorldPositionAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a6d37afe6aee9b5cb523917563e2164cb">getNodeWorldRotationAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#adcd77c2630a70d8cb2b8c345860ca084">getNodeWorldScaleAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a9242602655560791f687940055f75861">getParentId</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ad791cd79992c11133a86a5b478fd0c70">getRootId</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a710a8a8968ee1967ebdb54c7b4df4d61">hasNode</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ab7dd1c18e017f4011ae2f603e89fe52e">hasNodeBoundsAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae2d14c733c36bce3d2fbcf1ac49f99ef">hasNodeTagAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, const std::string &amp;tag) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a85eb30257474526809a89c72f48be119">isAncestor</a>(const std::string &amp;ancestorId, const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae1ae34d7a7c79271aefe35d428b97632">isDescendant</a>(const std::string &amp;nodeId, const std::string &amp;ancestorId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a6b1c68a0ec3ef8ffe93bdfa6574e271e">linkAudio3DAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, audio::Source *s)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a1afcc879542d5d5d5d18d4f55ee90c3a">linkCamera3DAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, graphics::Camera3D *c)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ab4eafb1a16ce11bdec572232693664da">linkCountAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a520550fcf1b51d64fbe1391fc68ac630">linkPhysics2DAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, physics::Body *b, const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a036e5265e4b8a262b4781410069f3113">linkPhysics3DAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, physics::Body3D *b, const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#afbb9442f280b889613f736ef46e4e617">linkRenderable2D</a>(const std::string &amp;nodeId, graphics::Renderable2D *r)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#adb9229f7e9812019eff472ba4eb35fed">linkRenderable2DAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, graphics::Renderable2D *r)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac2faf5807235e54bad64bf9a75c34622">linkRenderable3D</a>(const std::string &amp;nodeId, graphics::Renderable3D *r)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a78c722110784cb15f981f60baacb9514">linkRenderable3DAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, graphics::Renderable3D *r)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#adc79fb618965583a11e8b473f9155b8e">localToWorldAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a191a7a973d59cf591efd6f5052d532ff">Module_REG</a>(Scene)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a46880514e9d9ebd9bf910c5fda6839ba">mount</a>(NodeDesc root)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a340c518f395927a060ca68e4ff178cf4">mountAs</a>(const std::string &amp;name, NodeDesc root)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a122a50c47d10693fd3ca87f7c2d48ab0">mountBuild</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a8594a1d42266c8e0a19b15560c6068f1">mountBuildAs</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#aa23dc1828da0016124c67ef48e6bcdd9">nodeIdFromSpatialIdAt</a>(const std::string &amp;hostName, int index) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#af39c0543fc22cd94a32106341b8604b4">pickRayAt</a>(const std::string &amp;hostName, float ox, float oy, float oz, float dx, float dy, float dz) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a2d7c76c4b6554752c8f553cfe1e5242b">pickScreenAt</a>(const std::string &amp;hostName, graphics::Camera3D *cam, float screenX, float screenY, float viewW, float viewH) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a79aa21e8c85e70820e853284287272c8">remount</a>(NodeDesc root)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#aa7212ce8b5086592772670f4bc67a91f">remountAs</a>(const std::string &amp;name, NodeDesc root)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac1cf88bd2796b50955433243821d553c">remountBuildAs</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae8df45275b2d05590435574c80751242">remountReconcile</a>(NodeDesc root)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ad20a10506ee39bdc97d36baf79eddd64">removeChildAt</a>(const std::string &amp;hostName, const std::string &amp;parentId, const std::string &amp;childId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a545d7a2e5f78522916f779b52dcf05bd">removeNodeAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a76cbe8082a2b91cd71f0854b44731678">removeNodeTagAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a03bf26eed9fda817ef582016ff3688b9">resolveHost</a>(const std::string &amp;hostName) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a272cfcc4435100243944ba81c4d4c5a5">rootEntity</a>(const std::string &amp;hostName, const std::string &amp;nodeId, ssq::Object instance)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#adc392067f4c086a059190b7aa6f73977">Scene</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae0c6bef060c4edd88cbdde8c3f2eef75">select</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a1f7e5af1625e842b9c6d72fc2d2c721d">serializeHostAt</a>(const std::string &amp;hostName) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a81b5a0c001381454b38034c1352c67d4">setBuildPosition</a>(float x, float y, float z=0.f)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a436abf35755669f50acedaa0276d07cc">setBuildRotation</a>(float yaw, float pitch=0.f, float roll=0.f)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae72f7ad333b9e55f4fad871a602f1246">setBuildScale</a>(float sx, float sy, float sz=1.f)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a0b2204f7cfc7bef1f03d6fb122d7f1c9">setBuildSpace</a>(const std::string &amp;space)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a20cac8fd2afde9f786ccf16a53d40ef3">setBuildVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a9a40051057fb71cd4ac9a177f45bad7b">setHostLayer</a>(int layer)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a64d2ef0e1116f0b4cd61bb778105f546">setHostVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ad53784f0ab91c7225d20e588a582557a">setNodeBoundsAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac952afab084161e3f5bdd84cc3108a15">setNodeEventHandlerAt</a>(const std::string &amp;hostName, ssq::Object cb)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac4b29eafebb66ed578fea88eae853569">setNodeLayerAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, int layer)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a6b464ee688cd953a397cd5a5d8991b44">setNodeLookAtAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, float tx, float ty, float tz)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a169e4312d88a73a8cab3878eb3edcd52">setNodeParentAt</a>(const std::string &amp;hostName, const std::string &amp;childId, const std::string &amp;parentId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a669a546a4a5efcb9e572f2d9807b76cb">setNodePosition</a>(const std::string &amp;id, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a3295b5aebd15a73af6c5bfa237f403c0">setNodeQuaternionAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, float qx, float qy, float qz, float qw)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac512e464f0c348a13427af0f99b85f14">setNodeRotation</a>(const std::string &amp;id, float yaw, float pitch, float roll)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a8c87466976713ac73ea9a18f2d08240c">setNodeScale</a>(const std::string &amp;id, float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ad5ee1c4318509a1c71f6b59f037ac8f9">setNodeVisible</a>(const std::string &amp;id, bool visible)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac8b223f0bb5e4410433402da7c9a071e">syncSpatialIndexAt</a>(const std::string &amp;hostName, spatial::Octree *ot) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac741cb23898ce38342e5ea4266f7575f">unlinkNode</a>(const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a64e5ed07b109632121dcaf814c6a64f6">unlinkNodeAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a9de594eaa99da1413d6063405edd800a">unlinkNodeKindAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, const std::string &amp;kind)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ac06cb95c8eeaf250e0e7e55104a37362">unrootEntityAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, int index)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a4aebc466822f55684ae230b37d07a002">updateScripts</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a15ed86ddbe407b03f26a701bcef594b6">updateTransforms</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#aac8c25c8b9a4f7bc97de2008eaf04059">updateTransformsAll</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#abe4a0f78518eb2dbcec8fc81fa67be83">walkBreadthFirstIds</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#ae437cb37d7c64cde8fa8187704f5cd32">walkDepthFirstIds</a>()</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a414d64fbc4232de4f11c320aa39f6971">worldToLocalAt</a>(const std::string &amp;hostName, const std::string &amp;nodeId, float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html#a55135ce9a50fb01f4349b2aec345aeb7">~Scene</a>() override=default</td><td class="entry"><a class="el" href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

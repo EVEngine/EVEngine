@@ -1,0 +1,231 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar__editor.html">avatar_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::avatar_editor::AvatarDocumentEditor 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a8385cccd589e8240823f66a7a9b19e93">AvatarDocumentEditor</a>(std::string targetId)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ab9e09d895815ee6dc5c618a31e90ec32">AvatarDocumentEditor</a>(const AvatarDocumentEditor &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a995158a7303f0fb118361b7b9d1081f7">canRedo</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a12ede9b7b4df8c8e19603b1c48e9975c">canUndo</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a090628f42519abe55b9d0cbf887e84fc">configureWorkspace</a>(editor::EditorWorkspace &amp;workspace) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a2fafb99e429f251c4eaadd42e8b434c9">createExpression</a>(std::string id, std::string name)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a151d13f1969234eaa8628f81e551bc47">createLayer</a>(std::string id, std::string name)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af513e941789162a412928cf23409175c">createParameter</a>(std::string id, std::string name)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a2c27c9bdbdd7800bd0ce70bd366dfa10">deleteSelectedExpression</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a76ad7c1ccc16a40ac7b6825a0c42dc06">deleteSelectedLayer</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a6d17515b80b333aeb2271eadcae77a64">deleteSelectedParameter</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a74743b89599c9786f9432d97842da161">expressionChannelCount</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a004b7f2e5b007033f8b25a2438837178">expressionChannelName</a>(int expression, int channel) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a9561e0b6aa19273a90a20b0024bc4bad">expressionCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a224c77637b10ca827a3d2b7e6322238b">expressionId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a40f4cfe1cdceff834fea8ca792413b8a">expressionName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a7cbbfe3e8e2381757b200dd08615e3de">isExpressionSelected</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af4ae180ed7822f5b4024ec2c73b0cba9">isLayerSelected</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a6241c9af67194b06880baaf0e73d1701">isParameterSelected</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ae394c5298bec76e6d60bc9cf92980256">isPreviewSelected</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aa1b774337b019606bf288f4b7a87109d">kind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a75ad6d5d3d46ec2869046590c6b58a56">layerCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1735d2e5273aed0c83e8535e14611e73">layerId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ad9cb5913ad64df413ea4972f3518c3b4">layerName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af0e25c3b1a91a0ff934ced1fb9657f75">layerVisible</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a379d76f7e91a38db483807aa356d1b2e">layerZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#add337bba4bb92ca8d1e851f0ba3e5f17">operator=</a>(const AvatarDocumentEditor &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a7f6b5abc6314ad5fad5199f38b0e07fc">parameterCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ad6c1c06cca34f4361b50f7c0f58b86ab">parameterId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a63e1a367a1c0857255b704e040bf6293">parameterMaximum</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1afc14cf72719fa3422b361dd3d9e189">parameterMinimum</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ab1f0a906318265b0788529ca5bb6888d">parameterName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1317bdf73eb41e2247b067035b9a76b5">parameterValue</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a01dd24954b5eccf88b1c9d143a3a7aaf">pointerDown</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a42afb03d9ac7c2d5cce2b67f72d4b8ff">previewA</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a4960823c498251e96c5059b1c71a4eaf">previewB</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aa0ab1d343eea90f92b0377edad9ae5c2">previewG</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aeda413803ea9d34b879a0ec9ab4a61f4">previewH</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a6ea5d57a29393b8873fd9cdd8d824c75">previewLayerCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a18cfab50c64c24ecbdfedb400ee18a8f">previewName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ae09860c06e21e4be82034c02cc74f81c">previewR</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a72ec3953e1cce82aa3237d2fe31103c7">previewRevision</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a977d58458a10fd7b7299122fc77f8a77">previewW</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a333477120e13df505a2bf9ef0cbb07c8">previewX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af8d89d5e51d8d71f9cccdb76db9b11d5">previewY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1cea1caf1d9b54e7080dc1287dca9e5c">redo</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a9c2fc3e2be5320b109da8c965af749ff">revision</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ac53beca35a3237b1ffb3c49ac6c37c13">selectedId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a3540f02f00fb2942e90423ccdf5980e0">selectedType</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a2fbffe6aa7f932a531f431c78da87a39">selectExpression</a>(std::string id)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a75523fb94bfb52435267e926f0aff318">selectLayer</a>(std::string id)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a998b90a1dfbeb299f90c7e3aa373a7b8">selectParameter</a>(std::string id)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a3ad408d9bbf5520f78a2fa85e3150216">setLayerVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a0ede6db4b5bf395068e808c31d0b5695">setLayerZ</a>(int zIndex)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ab22eb3e3019632324c8cd53fbaeedb0c">setParameterValue</a>(double value)</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a36613ab464fb5cf6d5ac2e0cc6661ae5">target</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a30a3da45dd36dcdc9a3a996d09747146">undo</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">eve::avatar_editor::AvatarDocumentEditor</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

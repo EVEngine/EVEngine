@@ -1,0 +1,225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/RenderableInstances.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RenderableInstances.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RenderableInstances_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="RenderableInstances_8h.html">graphics/RenderableInstances.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1detail.html#af835ca2eddda04fdfb65add5e487874c">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1detail.html#af835ca2eddda04fdfb65add5e487874c">validateInstancedRenderable</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">Renderable3D::MeshRenderer</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">auto</span>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.material ? <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.material-&gt;effectiveShader() : <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.shader;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.mesh || !<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;getKind() != <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866">Shader::Kind::eMesh3D</a> || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;isXray() || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.usesParts() ||</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.effectiveHair() || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.xrayHighlight || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.lodCount || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.mesh-&gt;hasGpuSkinning() ||</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.effectiveCastShadow() || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>.castOcclusion)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>            <span class="stringliteral">&quot;Instanced renderables require one custom static mesh without shadow/occlusion casting, LOD, hair or Xray&quot;</span>,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            <span class="stringliteral">&quot;graphics.instances&quot;</span>));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}  <span class="comment">// namespace detail</span></div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Renderable3D.html#a326df2ea9b89b0e6f325f54af01ceed7">   19</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a326df2ea9b89b0e6f325f54af01ceed7">Renderable3D::setInstanceRange</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1MeshInstanceRange.html">MeshInstanceRange</a>&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="namespaceeve_1_1graphics.html#a738201979ab57f411f12291960ea8a99">validateMeshInstanceRange</a>(<a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>        = meshRenderer();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> supported = <a class="code hl_function" href="namespaceeve_1_1graphics_1_1detail.html#af835ca2eddda04fdfb65add5e487874c">detail::validateInstancedRenderable</a>(*<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!supported) <span class="keywordflow">return</span> supported;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>-&gt;instances = <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Renderable3D.html#a29996b6204a852fbc96fb1d6a2ab3115">   28</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a29996b6204a852fbc96fb1d6a2ab3115">Renderable3D::clearInstanceRange</a>() { meshRenderer()-&gt;instances.reset(); }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_ad73a08b362d03aef0cbf46e78c9c0631"><div class="ttname"><a href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a></div><div class="ttdeci">Range range</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00020">LanguageIndex.cpp:20</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00550">McpServer.cpp:550</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a36e5cf87735a845c3dce5817abf63e69"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a></div><div class="ttdeci">Renderable3D::MeshRenderer * mr</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00548">RenderSystem3D.cpp:548</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00551">RenderSystem3D.cpp:551</a></div></div>
+<div class="ttc" id="aRenderableInstances_8h_html"><div class="ttname"><a href="RenderableInstances_8h.html">RenderableInstances.h</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a29996b6204a852fbc96fb1d6a2ab3115"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a29996b6204a852fbc96fb1d6a2ab3115">eve::graphics::Renderable3D::clearInstanceRange</a></div><div class="ttdeci">void clearInstanceRange()</div><div class="ttdoc">Remove runtime instance metadata on the update thread; no callbacks.</div><div class="ttdef"><b>Definition</b> <a href="RenderableInstances_8cpp_source.html#l00028">RenderableInstances.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a326df2ea9b89b0e6f325f54af01ceed7"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a326df2ea9b89b0e6f325f54af01ceed7">eve::graphics::Renderable3D::setInstanceRange</a></div><div class="ttdeci">Result&lt; void &gt; setInstanceRange(const MeshInstanceRange &amp;range)</div><div class="ttdoc">Atomically set static instance range and bounds; render/update thread only. @ownership Metadata is co...</div><div class="ttdef"><b>Definition</b> <a href="RenderableInstances_8cpp_source.html#l00019">RenderableInstances.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866">eve::graphics::Shader::Kind::eMesh3D</a></div><div class="ttdeci">@ eMesh3D</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1detail_html_af835ca2eddda04fdfb65add5e487874c"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1detail.html#af835ca2eddda04fdfb65add5e487874c">eve::graphics::detail::validateInstancedRenderable</a></div><div class="ttdeci">Result&lt; void &gt; validateInstancedRenderable(const Renderable3D::MeshRenderer &amp;mr)</div><div class="ttdef"><b>Definition</b> <a href="RenderableInstances_8cpp_source.html#l00007">RenderableInstances.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a738201979ab57f411f12291960ea8a99"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a738201979ab57f411f12291960ea8a99">eve::graphics::validateMeshInstanceRange</a></div><div class="ttdeci">Result&lt; void &gt; validateMeshInstanceRange(const MeshInstanceRange &amp;range)</div><div class="ttdoc">Worker-safe validation of value-owned range and culling metadata.</div><div class="ttdef"><b>Definition</b> <a href="MeshInstanceRange_8cpp_source.html#l00008">MeshInstanceRange.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1MeshInstanceRange_html"><div class="ttname"><a href="structeve_1_1graphics_1_1MeshInstanceRange.html">eve::graphics::MeshInstanceRange</a></div><div class="ttdoc">Value-owned subset of a resource shader's static instances.</div><div class="ttdef"><b>Definition</b> <a href="MeshInstanceRange_8h_source.html#l00015">MeshInstanceRange.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer_html"><div class="ttname"><a href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">eve::graphics::Renderable3D::MeshRenderer</a></div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00185">RenderSystem3D.h:185</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

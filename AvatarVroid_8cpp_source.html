@@ -1,0 +1,517 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/avatar/AvatarVroid.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_92d32a9ddf71877e00af8592433a55dc.html">avatar</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AvatarVroid.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AvatarVroid_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;glm/gtc/matrix_transform.hpp&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimConstraintStack_8h.html">animation/AnimConstraintStack.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="AnimLayerMixer_8h.html">animation/AnimLayerMixer.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="AnimPlayer_8h.html">animation/AnimPlayer.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="AnimPose_8h.html">animation/AnimPose.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="AnimSkeleton_8h.html">animation/AnimSkeleton.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="AnimSkin_8h.html">animation/AnimSkin.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="AnimStateMachine_8h.html">animation/AnimStateMachine.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="DynamicBoneSolver_8h.html">animation/DynamicBoneSolver.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="FootIKSolver_8h.html">animation/FootIKSolver.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Tween_8h.html">animation/Tween.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Avatar_8h.html">avatar/Avatar.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="AvatarInstance_8h.html">avatar/AvatarInstance.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="VrmRuntime_8h.html">avatar/VrmRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="ECS_8h.html">common/ECS.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="DrawItem2D_8h.html">graphics/DrawItem2D.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="RenderSystem_8h.html">graphics/RenderSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="RenderSystem3D_8h.html">graphics/RenderSystem3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="Texture_8h.html">graphics/Texture.h</a>&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="ImageData_8h.html">image/ImageData.h</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="Equipment_8h.html">inventory/Equipment.h</a>&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="ModelData_8h.html">model3d/ModelData.h</a>&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="Scene_8h.html">scene/Scene.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;cctype&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1avatar.html">eve::avatar</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">// ---- vroid ----</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#aff6c2603711395055ebc995aa3af69f8">   38</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#aff6c2603711395055ebc995aa3af69f8">AvatarInstance::loadVroidModel</a>(std::string_view <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (kind_ != <span class="stringliteral">&quot;vroid&quot;</span> || released_ || <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.empty())</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Expected a live VRoid Avatar and a nonempty path&quot;</span>, <span class="stringliteral">&quot;path&quot;</span>));</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">auto</span> prepared = <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#a048d4538f5a2af2a0ac63dbd3a0ebe63">VrmRuntime::prepare</a>(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!prepared.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(prepared.status());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">auto</span>                                         candidate = std::move(prepared).takeValue();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::unordered_map&lt;std::string, std::string&gt; humanoid;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, node] : candidate-&gt;document.humanoid) humanoid[<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>] = candidate-&gt;document.nodes[node];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">decltype</span>(parameters_)        parameters;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">decltype</span>(parameterOrder_)    <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">decltype</span>(parameterMetadata_) metadata;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">auto</span>                         add = [&amp;](<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.empty() || parameters.contains(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        parameters.emplace(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, 0.f);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>.push_back(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        metadata.emplace(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, ParameterMetadata{});</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    };</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;expression : candidate-&gt;document.expressions) add(expression.name);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> = 0; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> &lt; candidate-&gt;model-&gt;getMeshCount(); ++<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> morph = 0; morph &lt; candidate-&gt;model-&gt;getMorphTargetCount(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>); ++morph)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            add(candidate-&gt;model-&gt;getMorphTargetName(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, morph));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::string importedPath(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    animPlayer_       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    animSkeleton_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    animSkin_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    animStateMachine_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    animLayerMixer_   = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    animConstraintStack_.reset();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    footIKSolver_.reset();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    dynamicBoneSolver_.reset();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    skinnedParts_.clear();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    motions_.clear();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    attachmentPoseMatrices_.clear();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    humanoidBones_ = std::move(humanoid);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    visemeMorphs_.clear();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    activeViseme_.clear();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    parameters_.swap(parameters);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    parameterOrder_.swap(<a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    parameterMetadata_.swap(metadata);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    expressionDefs_.clear();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    expressionBlendFrom_.clear();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    expressionBlendTo_.clear();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    expression_.clear();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    motion_.clear();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    lookAtApplied_   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    hasPreviousRoot_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    vrm_             = std::move(candidate);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    vroidPath_       = std::move(importedPath);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    vroidData_       = vrm_-&gt;model.get();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    animPlayer_      = vrm_-&gt;player.get();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    animSkeleton_    = vrm_-&gt;skeleton.get();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a1b51fff267ac6341c033675ead99ef17">   92</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a1b51fff267ac6341c033675ead99ef17">AvatarInstance::setHumanoidBoneRotation</a>(std::string_view <a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>, <span class="keywordtype">float</span> yaw, <span class="keywordtype">float</span> pitch,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                                                          <span class="keywordtype">float</span> roll) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!vrm_ || !std::isfinite(yaw) || !std::isfinite(pitch) || !std::isfinite(roll))</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Expected imported VRM and finite angles&quot;</span>));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">auto</span> found = vrm_-&gt;document.humanoid.find(std::string(<a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (found == vrm_-&gt;document.humanoid.end())</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;Humanoid semantic is not mapped&quot;</span>, std::string(<a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>)));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    vrm_-&gt;rotations[vrm_-&gt;nodeBones[found-&gt;second]] = {yaw, pitch, roll};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a81bd812fa257dd41d6cdaef23a555d5f">  104</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a81bd812fa257dd41d6cdaef23a555d5f">AvatarInstance::loadVroidModelPath</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#aff6c2603711395055ebc995aa3af69f8">loadVroidModel</a>(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>).<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">ok</a>(); }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#ae9887673f1aca0e28f9a1ee420f1079d">  105</a></span><span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#ae9887673f1aca0e28f9a1ee420f1079d">AvatarInstance::getVroidMeshCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vrm_ ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(vrm_-&gt;parts.size()) : 0; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a1fa6f27ca8e648b4f839537186adf542">  106</a></span><span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a1fa6f27ca8e648b4f839537186adf542">AvatarInstance::getVroidSpringCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vrm_ ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(vrm_-&gt;document.springs.size()) : 0; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a8401ec9805daa7561a4d20f31cb34c14">  107</a></span>std::string <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a8401ec9805daa7561a4d20f31cb34c14">AvatarInstance::getVroidVersion</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vrm_ ? vrm_-&gt;document.version : std::string{}; }</div>
+<div class="foldopen" id="foldopen00108" data-start="{" data-end="}">
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#aff74ceefab02e105522b076d85e247b3">  108</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *<a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#aff74ceefab02e105522b076d85e247b3">AvatarInstance::getRenderable3D</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">if</span> (vrm_ &amp;&amp; !vrm_-&gt;parts.empty())</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *<span class="keyword">&gt;</span>(ecs::try_get(vrm_-&gt;parts.front().entity));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">return</span> renderable3d_;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a884deb21f24d06e30dd23a1eb7c1cecc">  114</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a884deb21f24d06e30dd23a1eb7c1cecc">AvatarInstance::bindVroidModelData</a>(<a class="code hl_class" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *data) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> (kind_ != <span class="stringliteral">&quot;vroid&quot;</span> || vrm_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    vroidData_ = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e5ddb402ae236bb7482ee99370628d1">loadMorphNamesFromModel</a>(0);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> != <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="}">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e5ddb402ae236bb7482ee99370628d1">  121</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e5ddb402ae236bb7482ee99370628d1">AvatarInstance::loadMorphNamesFromModel</a>(<span class="keywordtype">int</span> meshIndex) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (kind_ != <span class="stringliteral">&quot;vroid&quot;</span> || !vroidData_) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>     = vroidData_-&gt;<a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#afe715aaa433c1ff82fae953b60900c4f">getMorphTargetCount</a>(meshIndex);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">int</span>       added = 0;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keyword">const</span> std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> = vroidData_-&gt;<a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ac647b56a1e3b9db18da6ff1300016b56">getMorphTargetName</a>(meshIndex, i);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.empty()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#af6fbd8c5cfe9d4cd57c5a6e283ce6555">hasParameter</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            ensureParameter(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, 0.f);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            ++added;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> added;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="foldopen" id="foldopen00136" data-start="{" data-end="}">
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a896d4f9baa63aa39c0c9a9f8d383d6d0">  136</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a896d4f9baa63aa39c0c9a9f8d383d6d0">AvatarInstance::setMesh</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">if</span> (kind_ != <span class="stringliteral">&quot;vroid&quot;</span> || vrm_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    boundMesh_ = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    renderable3d_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#abc86f6b6f8376704aa3f9c8841db7102">setMesh</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> &amp;&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>-&gt;hasMorphData()) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>-&gt;getMorphCount(); ++i) {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            <span class="keyword">const</span> std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>-&gt;getMorphName(i);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            ensureParameter(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>-&gt;getMorphWeight(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>));</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="foldopen" id="foldopen00149" data-start="{" data-end="}">
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#ab1d17b587c047c842f4f5fff13f8019f">  149</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#ab1d17b587c047c842f4f5fff13f8019f">AvatarInstance::setTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (kind_ != <span class="stringliteral">&quot;vroid&quot;</span> || vrm_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    renderable3d_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a6a440beae3071df7416b975048137657">setTexture</a>(texture);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}</div>
+</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#aff78f9cbbb9dc104555b0b45ac48a305">  155</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#aff78f9cbbb9dc104555b0b45ac48a305">AvatarInstance::setPosition3D</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    x3_ = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    y3_ = <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    z3_ = <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="foldopen" id="foldopen00161" data-start="{" data-end="}">
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#ac09efbbf665038a862abd4419e58bdd0">  161</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#ac09efbbf665038a862abd4419e58bdd0">AvatarInstance::setRotation3D</a>(<span class="keywordtype">float</span> yaw, <span class="keywordtype">float</span> pitch, <span class="keywordtype">float</span> roll) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    yaw_   = yaw;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    pitch_ = pitch;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    roll_  = roll;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>}</div>
+</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#ae5bee5cfadfcf466ad3d587affb3f69d">  167</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#ae5bee5cfadfcf466ad3d587affb3f69d">AvatarInstance::setScale3D</a>(<span class="keywordtype">float</span> sx, <span class="keywordtype">float</span> sy, <span class="keywordtype">float</span> sz) {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    sx3_ = sx;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    sy3_ = sy;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    sz3_ = sz;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}</div>
+</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#a6114dce5c385da34267b265dd1d36743">  173</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a6114dce5c385da34267b265dd1d36743">AvatarInstance::getBoundMesh</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">return</span> vrm_ ? (!vrm_-&gt;providerLifetime.expired() &amp;&amp; !vrm_-&gt;parts.empty() ? vrm_-&gt;parts.front().mesh : <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                : boundMesh_;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}</div>
+</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="keywordtype">void</span> AvatarInstance::syncMorphWeightsToMesh() {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">if</span> (!boundMesh_ || !boundMesh_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a122cab2eb4f7703fcd7d5e7afc8e3620">hasMorphData</a>()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; boundMesh_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#ab5877ae19bdbbd902497fccd0039d85e">getMorphCount</a>(); ++i) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keyword">const</span> std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> = boundMesh_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#ac6fe702b407ef44ed3ece6951c62d509">getMorphName</a>(i);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        boundMesh_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a39a7c8746c72d500a7e8e4e756a096cf">setMorphWeight</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#a20f14b18b0f618951e3fa90dafc53ea4">getParameter</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>));</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1AvatarInstance.html#ab01811fe83a450dd1404638f7938465f">  186</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#ab01811fe83a450dd1404638f7938465f">AvatarInstance::bakeMorphs</a>() {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">if</span> (vrm_) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        vrm_-&gt;morphs(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    syncMorphWeightsToMesh();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">if</span> (!boundMesh_ || !boundMesh_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a23ab8afd06381ccda01b672f397fd3c6">isMorphDirty</a>()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keyword">auto</span> *gfx = ModuleManager::getInstance&lt;graphics::Graphics&gt;(<span class="stringliteral">&quot;Graphics&quot;</span>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">if</span> (!gfx) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">return</span> gfx-&gt;bakeMeshMorph(boundMesh_);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>}</div>
+</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="keywordtype">void</span> AvatarInstance::syncVroid() {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordflow">if</span> (vrm_) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        glm::mat4 <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a> = glm::translate(glm::mat4(1), glm::vec3(x3_, y3_, z3_));</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>           = glm::rotate(<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, yaw_, glm::vec3(0, 1, 0));</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>           = glm::rotate(<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, pitch_, glm::vec3(1, 0, 0));</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>           = glm::rotate(<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, roll_, glm::vec3(0, 0, 1));</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>           = glm::scale(<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, glm::vec3(sx3_ * sx_, sy3_ * sy_, sz3_));</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        vrm_-&gt;sync(*<span class="keyword">this</span>, <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, visible_);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        vrm_-&gt;morphs(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">if</span> (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">if</span> (!sceneLinked_) {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        renderable3d_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">setPosition</a>(x3_, y3_, z3_);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        renderable3d_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#a2adef4427f9f2570307f69b707e599af">setRotation</a>(yaw_, pitch_, roll_);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        renderable3d_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">setScale</a>(sx3_ * sx_, sy3_ * sy_, sz3_);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        renderable3d_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">setVisible</a>(visible_);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;visual : equipmentVisuals_) {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a> = projectedEquipment_.find(visual.equipmentSlot);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">if</span> (!visual.renderable || !visual.boneName.empty() || <a class="code hl_variable" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a> == projectedEquipment_.end() ||</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            <a class="code hl_variable" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a>-&gt;second != visual.itemId)</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        visual.renderable-&gt;setPosition(x3_ + visual.ox, y3_ + visual.oy, z3_ + visual.oz);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        visual.renderable-&gt;setRotation(yaw_, pitch_, roll_);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        visual.renderable-&gt;setScale(sx3_ * sx_, sy3_ * sy_, sz3_);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        visual.renderable-&gt;setVisible(visible_);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <a class="code hl_function" href="classeve_1_1avatar_1_1AvatarInstance.html#ab01811fe83a450dd1404638f7938465f">bakeMorphs</a>();</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>}</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="keywordtype">void</span> AvatarInstance::destroyVroid() {</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    vrm_.reset();</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordflow">if</span> (renderable3d_) {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        ecs::DestroyEntity(renderable3d_);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        renderable3d_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    boundMesh_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    vroidData_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    vroidPath_.clear();</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>}</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>}  <span class="comment">// namespace eve::avatar</span></div>
+<div class="ttc" id="aAgentBindings_8cpp_html_a9fec294565128b5012cbe5fd8a566ac8"><div class="ttname"><a href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a></div><div class="ttdeci">bool &amp; active</div><div class="ttdef"><b>Definition</b> <a href="AgentBindings_8cpp_source.html#l00021">AgentBindings.cpp:21</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aAnimConstraintStack_8h_html"><div class="ttname"><a href="AnimConstraintStack_8h.html">AnimConstraintStack.h</a></div></div>
+<div class="ttc" id="aAnimLayerMixer_8h_html"><div class="ttname"><a href="AnimLayerMixer_8h.html">AnimLayerMixer.h</a></div></div>
+<div class="ttc" id="aAnimPlayer_8h_html"><div class="ttname"><a href="AnimPlayer_8h.html">AnimPlayer.h</a></div></div>
+<div class="ttc" id="aAnimPose_8h_html"><div class="ttname"><a href="AnimPose_8h.html">AnimPose.h</a></div></div>
+<div class="ttc" id="aAnimSkeleton_8h_html"><div class="ttname"><a href="AnimSkeleton_8h.html">AnimSkeleton.h</a></div></div>
+<div class="ttc" id="aAnimSkin_8h_html"><div class="ttname"><a href="AnimSkin_8h.html">AnimSkin.h</a></div></div>
+<div class="ttc" id="aAnimStateMachine_8h_html"><div class="ttname"><a href="AnimStateMachine_8h.html">AnimStateMachine.h</a></div></div>
+<div class="ttc" id="aAvatarInstance_8h_html"><div class="ttname"><a href="AvatarInstance_8h.html">AvatarInstance.h</a></div></div>
+<div class="ttc" id="aAvatar_8h_html"><div class="ttname"><a href="Avatar_8h.html">Avatar.h</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aDrawItem2D_8h_html"><div class="ttname"><a href="DrawItem2D_8h.html">DrawItem2D.h</a></div></div>
+<div class="ttc" id="aDynamicBoneSolver_8h_html"><div class="ttname"><a href="DynamicBoneSolver_8h.html">DynamicBoneSolver.h</a></div></div>
+<div class="ttc" id="aECS_8h_html"><div class="ttname"><a href="ECS_8h.html">ECS.h</a></div></div>
+<div class="ttc" id="aEquipment_8h_html"><div class="ttname"><a href="Equipment_8h.html">Equipment.h</a></div></div>
+<div class="ttc" id="aFootIKSolver_8h_html"><div class="ttname"><a href="FootIKSolver_8h.html">FootIKSolver.h</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aImageData_8h_html"><div class="ttname"><a href="ImageData_8h.html">ImageData.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aModelData_8h_html"><div class="ttname"><a href="ModelData_8h.html">ModelData.h</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00549">RenderSystem3D.cpp:549</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8h_html"><div class="ttname"><a href="RenderSystem3D_8h.html">RenderSystem3D.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aRenderSystem_8h_html"><div class="ttname"><a href="RenderSystem_8h.html">RenderSystem.h</a></div></div>
+<div class="ttc" id="aScene_8h_html"><div class="ttname"><a href="Scene_8h.html">Scene.h</a></div></div>
+<div class="ttc" id="aTexture_8h_html"><div class="ttname"><a href="Texture_8h.html">Texture.h</a></div></div>
+<div class="ttc" id="aTween_8h_html"><div class="ttname"><a href="Tween_8h.html">Tween.h</a></div></div>
+<div class="ttc" id="aVrmRuntime_8h_html"><div class="ttname"><a href="VrmRuntime_8h.html">VrmRuntime.h</a></div></div>
+<div class="ttc" id="aWfcSimple_8cpp_html_adb4a2bf208285ee38a22edc61cb92ed3"><div class="ttname"><a href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a></div><div class="ttdeci">uint32_t semantic</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00015">WfcSimple.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a18d816508fd802a87608171ce0c67354"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">eve::Result&lt; void &gt;::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00416">Result.h:416</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a1b51fff267ac6341c033675ead99ef17"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a1b51fff267ac6341c033675ead99ef17">eve::avatar::AvatarInstance::setHumanoidBoneRotation</a></div><div class="ttdeci">eve::Result&lt; void &gt; setHumanoidBoneRotation(std::string_view semantic, float yaw, float pitch, float roll)</div><div class="ttdoc">Set an imported humanoid bone's local rotation offset in radians.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00092">AvatarVroid.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a1fa6f27ca8e648b4f839537186adf542"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a1fa6f27ca8e648b4f839537186adf542">eve::avatar::AvatarInstance::getVroidSpringCount</a></div><div class="ttdeci">int getVroidSpringCount() const</div><div class="ttdoc">Number of imported VRM spring chains.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00106">AvatarVroid.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a20f14b18b0f618951e3fa90dafc53ea4"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a20f14b18b0f618951e3fa90dafc53ea4">eve::avatar::AvatarInstance::getParameter</a></div><div class="ttdeci">float getParameter(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8cpp_source.html#l00503">AvatarInstance.cpp:503</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a6114dce5c385da34267b265dd1d36743"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a6114dce5c385da34267b265dd1d36743">eve::avatar::AvatarInstance::getBoundMesh</a></div><div class="ttdeci">graphics::Mesh * getBoundMesh() const</div><div class="ttdoc">Borrow the first imported mesh, or the manually bound mesh.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00173">AvatarVroid.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a81bd812fa257dd41d6cdaef23a555d5f"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a81bd812fa257dd41d6cdaef23a555d5f">eve::avatar::AvatarInstance::loadVroidModelPath</a></div><div class="ttdeci">bool loadVroidModelPath(const std::string &amp;path)</div><div class="ttdoc">Compatibility-only bool projection of loadVroidModel; performs the real import.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00104">AvatarVroid.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a8401ec9805daa7561a4d20f31cb34c14"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a8401ec9805daa7561a4d20f31cb34c14">eve::avatar::AvatarInstance::getVroidVersion</a></div><div class="ttdeci">std::string getVroidVersion() const</div><div class="ttdoc">Imported VRM specification version, or empty before import.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00107">AvatarVroid.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a884deb21f24d06e30dd23a1eb7c1cecc"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a884deb21f24d06e30dd23a1eb7c1cecc">eve::avatar::AvatarInstance::bindVroidModelData</a></div><div class="ttdeci">bool bindVroidModelData(model3d::ModelData *data)</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00114">AvatarVroid.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a896d4f9baa63aa39c0c9a9f8d383d6d0"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a896d4f9baa63aa39c0c9a9f8d383d6d0">eve::avatar::AvatarInstance::setMesh</a></div><div class="ttdeci">void setMesh(graphics::Mesh *mesh)</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00136">AvatarVroid.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_a9e5ddb402ae236bb7482ee99370628d1"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#a9e5ddb402ae236bb7482ee99370628d1">eve::avatar::AvatarInstance::loadMorphNamesFromModel</a></div><div class="ttdeci">int loadMorphNamesFromModel(int meshIndex=0)</div><div class="ttdoc">Register morph target names from ModelData as parameters (weights default 0).</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00121">AvatarVroid.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_ab01811fe83a450dd1404638f7938465f"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#ab01811fe83a450dd1404638f7938465f">eve::avatar::AvatarInstance::bakeMorphs</a></div><div class="ttdeci">bool bakeMorphs()</div><div class="ttdoc">Push parameter weights onto Mesh morphs and bake GPU verts when possible.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00186">AvatarVroid.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_ab1d17b587c047c842f4f5fff13f8019f"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#ab1d17b587c047c842f4f5fff13f8019f">eve::avatar::AvatarInstance::setTexture</a></div><div class="ttdeci">void setTexture(graphics::Texture *texture)</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00149">AvatarVroid.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_ac09efbbf665038a862abd4419e58bdd0"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#ac09efbbf665038a862abd4419e58bdd0">eve::avatar::AvatarInstance::setRotation3D</a></div><div class="ttdeci">void setRotation3D(float yaw, float pitch, float roll)</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00161">AvatarVroid.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_ae5bee5cfadfcf466ad3d587affb3f69d"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#ae5bee5cfadfcf466ad3d587affb3f69d">eve::avatar::AvatarInstance::setScale3D</a></div><div class="ttdeci">void setScale3D(float sx, float sy, float sz)</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00167">AvatarVroid.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_ae9887673f1aca0e28f9a1ee420f1079d"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#ae9887673f1aca0e28f9a1ee420f1079d">eve::avatar::AvatarInstance::getVroidMeshCount</a></div><div class="ttdeci">int getVroidMeshCount() const</div><div class="ttdoc">Number of imported mesh primitives; zero before successful import.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00105">AvatarVroid.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_af6fbd8c5cfe9d4cd57c5a6e283ce6555"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#af6fbd8c5cfe9d4cd57c5a6e283ce6555">eve::avatar::AvatarInstance::hasParameter</a></div><div class="ttdeci">bool hasParameter(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8cpp_source.html#l00509">AvatarInstance.cpp:509</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_aff6c2603711395055ebc995aa3af69f8"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#aff6c2603711395055ebc995aa3af69f8">eve::avatar::AvatarInstance::loadVroidModel</a></div><div class="ttdeci">eve::Result&lt; void &gt; loadVroidModel(std::string_view path)</div><div class="ttdoc">Import and atomically replace a complete VRM avatar from a VFS path.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00038">AvatarVroid.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_aff74ceefab02e105522b076d85e247b3"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#aff74ceefab02e105522b076d85e247b3">eve::avatar::AvatarInstance::getRenderable3D</a></div><div class="ttdeci">graphics::Renderable3D * getRenderable3D() const</div><div class="ttdoc">Borrow the first imported render projection, or the manual projection.</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00108">AvatarVroid.cpp:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html_aff78f9cbbb9dc104555b0b45ac48a305"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html#aff78f9cbbb9dc104555b0b45ac48a305">eve::avatar::AvatarInstance::setPosition3D</a></div><div class="ttdeci">void setPosition3D(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="AvatarVroid_8cpp_source.html#l00155">AvatarVroid.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a048d4538f5a2af2a0ac63dbd3a0ebe63"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a048d4538f5a2af2a0ac63dbd3a0ebe63">eve::avatar::VrmRuntime::prepare</a></div><div class="ttdeci">static eve::Result&lt; std::unique_ptr&lt; VrmRuntime &gt; &gt; prepare(std::string_view path)</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8cpp_source.html#l00036">VrmRuntime.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00023">Mesh.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a122cab2eb4f7703fcd7d5e7afc8e3620"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a122cab2eb4f7703fcd7d5e7afc8e3620">eve::graphics::Mesh::hasMorphData</a></div><div class="ttdeci">bool hasMorphData() const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00095">Mesh.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a23ab8afd06381ccda01b672f397fd3c6"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a23ab8afd06381ccda01b672f397fd3c6">eve::graphics::Mesh::isMorphDirty</a></div><div class="ttdeci">bool isMorphDirty() const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00093">Mesh.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a39a7c8746c72d500a7e8e4e756a096cf"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a39a7c8746c72d500a7e8e4e756a096cf">eve::graphics::Mesh::setMorphWeight</a></div><div class="ttdeci">bool setMorphWeight(const std::string &amp;name, float weight)</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00202">Mesh.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_ab5877ae19bdbbd902497fccd0039d85e"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#ab5877ae19bdbbd902497fccd0039d85e">eve::graphics::Mesh::getMorphCount</a></div><div class="ttdeci">int getMorphCount() const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00191">Mesh.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_ac6fe702b407ef44ed3ece6951c62d509"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#ac6fe702b407ef44ed3ece6951c62d509">eve::graphics::Mesh::getMorphName</a></div><div class="ttdeci">std::string getMorphName(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00193">Mesh.cpp:193</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00173">RenderSystem3D.h:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a2adef4427f9f2570307f69b707e599af"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a2adef4427f9f2570307f69b707e599af">eve::graphics::Renderable3D::setRotation</a></div><div class="ttdeci">void setRotation(float yaw, float pitch, float roll)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00016">Renderable3D.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_a6a440beae3071df7416b975048137657"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#a6a440beae3071df7416b975048137657">eve::graphics::Renderable3D::setTexture</a></div><div class="ttdeci">void setTexture(Texture *texture)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00038">Renderable3D.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_aadbf8d0baf588bcbbe039409b04e71c0"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">eve::graphics::Renderable3D::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00009">Renderable3D.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_abc86f6b6f8376704aa3f9c8841db7102"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#abc86f6b6f8376704aa3f9c8841db7102">eve::graphics::Renderable3D::setMesh</a></div><div class="ttdeci">void setMesh(Mesh *mesh)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00034">Renderable3D.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_aed2524d98e20423f87442da12abf8fef"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">eve::graphics::Renderable3D::setScale</a></div><div class="ttdeci">void setScale(float sx, float sy, float sz)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00027">Renderable3D.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable3D_html_af03a073a6efe8f600cc5f5990cda7426"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">eve::graphics::Renderable3D::setVisible</a></div><div class="ttdeci">void setVisible(bool visible)</div><div class="ttdef"><b>Definition</b> <a href="Renderable3D_8cpp_source.html#l00166">Renderable3D.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></div><div class="ttdoc">CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ...</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8h_source.html#l00037">ModelData.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ac647b56a1e3b9db18da6ff1300016b56"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ac647b56a1e3b9db18da6ff1300016b56">eve::model3d::ModelData::getMorphTargetName</a></div><div class="ttdeci">std::string getMorphTargetName(int meshIndex, int morphIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00463">ModelData.cpp:463</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_afe715aaa433c1ff82fae953b60900c4f"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#afe715aaa433c1ff82fae953b60900c4f">eve::model3d::ModelData::getMorphTargetCount</a></div><div class="ttdeci">int getMorphTargetCount(int meshIndex) const</div><div class="ttdoc">Assimp morph / blend-shape targets on a mesh (aiAnimMesh).</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00457">ModelData.cpp:457</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar_html"><div class="ttname"><a href="namespaceeve_1_1avatar.html">eve::avatar</a></div><div class="ttdef"><b>Definition</b> <a href="Avatar_8cpp_source.html#l00012">Avatar.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

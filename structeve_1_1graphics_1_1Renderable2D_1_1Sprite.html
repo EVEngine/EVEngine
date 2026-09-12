@@ -1,0 +1,637 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Renderable2D::Sprite结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Renderable2D.html">Renderable2D</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html">Sprite</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Renderable2D::Sprite结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aa74f837f185aec22d5eca46f85fe3fcb" id="r_aa74f837f185aec22d5eca46f85fe3fcb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#aa74f837f185aec22d5eca46f85fe3fcb">width</a> = 32</td></tr>
+<tr class="separator:aa74f837f185aec22d5eca46f85fe3fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9473276c7a0debf671bc3030a45d6f4" id="r_ab9473276c7a0debf671bc3030a45d6f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#ab9473276c7a0debf671bc3030a45d6f4">height</a> = 32</td></tr>
+<tr class="separator:ab9473276c7a0debf671bc3030a45d6f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415f29561624d126279537e5c20929a6" id="r_a415f29561624d126279537e5c20929a6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a415f29561624d126279537e5c20929a6">r</a> = 1</td></tr>
+<tr class="separator:a415f29561624d126279537e5c20929a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f97a6185034841465b851ac5c8bad75" id="r_a5f97a6185034841465b851ac5c8bad75"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a5f97a6185034841465b851ac5c8bad75">g</a> = 1</td></tr>
+<tr class="separator:a5f97a6185034841465b851ac5c8bad75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae81735becf0640712a54a84dbbc5486e" id="r_ae81735becf0640712a54a84dbbc5486e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#ae81735becf0640712a54a84dbbc5486e">b</a> = 1</td></tr>
+<tr class="separator:ae81735becf0640712a54a84dbbc5486e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab44930a67a990bb9ddee3ba2353d36c" id="r_aab44930a67a990bb9ddee3ba2353d36c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#aab44930a67a990bb9ddee3ba2353d36c">a</a> = 1</td></tr>
+<tr class="separator:aab44930a67a990bb9ddee3ba2353d36c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21d6c3e1bf321dc38be4fc9c78bad152" id="r_a21d6c3e1bf321dc38be4fc9c78bad152"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a21d6c3e1bf321dc38be4fc9c78bad152">layer</a> = 0</td></tr>
+<tr class="separator:a21d6c3e1bf321dc38be4fc9c78bad152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3add1278b2377c91787775049c7632dc" id="r_a3add1278b2377c91787775049c7632dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a3add1278b2377c91787775049c7632dc">visible</a> = true</td></tr>
+<tr class="separator:a3add1278b2377c91787775049c7632dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1de522eb3392012437a5f442a9ec8aea" id="r_a1de522eb3392012437a5f442a9ec8aea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a1de522eb3392012437a5f442a9ec8aea">texture</a> = nullptr</td></tr>
+<tr class="separator:a1de522eb3392012437a5f442a9ec8aea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af38f8c982dfa65b51d9d9a8b0bb03623" id="r_af38f8c982dfa65b51d9d9a8b0bb03623"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#af38f8c982dfa65b51d9d9a8b0bb03623">normalTexture</a> = nullptr</td></tr>
+<tr class="separator:af38f8c982dfa65b51d9d9a8b0bb03623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd6a35a168738574fba4e3f066d140fe" id="r_afd6a35a168738574fba4e3f066d140fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Quad.html">Quad</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#afd6a35a168738574fba4e3f066d140fe">quad</a> = nullptr</td></tr>
+<tr class="separator:afd6a35a168738574fba4e3f066d140fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bd57256e0d13052f65279e312c97a12" id="r_a1bd57256e0d13052f65279e312c97a12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a1bd57256e0d13052f65279e312c97a12">shader</a> = nullptr</td></tr>
+<tr class="separator:a1bd57256e0d13052f65279e312c97a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4378328b5153c91cb147a4a63eef5fb6" id="r_a4378328b5153c91cb147a4a63eef5fb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a4378328b5153c91cb147a4a63eef5fb6">canvas</a> = nullptr</td></tr>
+<tr class="separator:a4378328b5153c91cb147a4a63eef5fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0443b900d14ea9fdb2c87b74289adc49" id="r_a0443b900d14ea9fdb2c87b74289adc49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a0443b900d14ea9fdb2c87b74289adc49">camera</a> = nullptr</td></tr>
+<tr class="separator:a0443b900d14ea9fdb2c87b74289adc49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb70be2beccddd626eab7b8ca12f4288" id="r_afb70be2beccddd626eab7b8ca12f4288"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#afb70be2beccddd626eab7b8ca12f4288">receiveLight</a> = true</td></tr>
+<tr class="separator:afb70be2beccddd626eab7b8ca12f4288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1766c0760cbc30207d5ed9216c177e7" id="r_af1766c0760cbc30207d5ed9216c177e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#af1766c0760cbc30207d5ed9216c177e7">castOcclusion</a> = true</td></tr>
+<tr class="separator:af1766c0760cbc30207d5ed9216c177e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10e9d93d84bca4c1c706717d9c2b0318" id="r_a10e9d93d84bca4c1c706717d9c2b0318"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a10e9d93d84bca4c1c706717d9c2b0318">blend</a> = <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a></td></tr>
+<tr class="separator:a10e9d93d84bca4c1c706717d9c2b0318"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d6460328e4ccb8a20d1ff061e005d2" id="r_a12d6460328e4ccb8a20d1ff061e005d2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a12d6460328e4ccb8a20d1ff061e005d2">anchorX</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a12d6460328e4ccb8a20d1ff061e005d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b6f1115f8fdc981b3753639f1f14412" id="r_a3b6f1115f8fdc981b3753639f1f14412"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a3b6f1115f8fdc981b3753639f1f14412">anchorY</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3b6f1115f8fdc981b3753639f1f14412"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85679d2527b2326440d5cfd891f22848" id="r_a85679d2527b2326440d5cfd891f22848"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a85679d2527b2326440d5cfd891f22848">flipX</a> = false</td></tr>
+<tr class="separator:a85679d2527b2326440d5cfd891f22848"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c2b33f7fbf8a98063fd8d0cd2c4d29d" id="r_a6c2b33f7fbf8a98063fd8d0cd2c4d29d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a6c2b33f7fbf8a98063fd8d0cd2c4d29d">flipY</a> = false</td></tr>
+<tr class="separator:a6c2b33f7fbf8a98063fd8d0cd2c4d29d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38b19fb3bdbf373217b41640d6e526a0" id="r_a38b19fb3bdbf373217b41640d6e526a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a38b19fb3bdbf373217b41640d6e526a0">trimW</a> = 0</td></tr>
+<tr class="separator:a38b19fb3bdbf373217b41640d6e526a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11ca6f7a658e6a6c456d53701703a813" id="r_a11ca6f7a658e6a6c456d53701703a813"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#a11ca6f7a658e6a6c456d53701703a813">trimH</a> = 0</td></tr>
+<tr class="separator:a11ca6f7a658e6a6c456d53701703a813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1c371e89e9a0623df34cc124ec1c47c" id="r_ad1c371e89e9a0623df34cc124ec1c47c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#ad1c371e89e9a0623df34cc124ec1c47c">offsetX</a> = 0</td></tr>
+<tr class="separator:ad1c371e89e9a0623df34cc124ec1c47c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3ee7bdd28d30e9c6d93c652cf3ee37b" id="r_af3ee7bdd28d30e9c6d93c652cf3ee37b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Renderable2D_1_1Sprite.html#af3ee7bdd28d30e9c6d93c652cf3ee37b">offsetY</a> = 0</td></tr>
+<tr class="separator:af3ee7bdd28d30e9c6d93c652cf3ee37b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00080">80</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aab44930a67a990bb9ddee3ba2353d36c" name="aab44930a67a990bb9ddee3ba2353d36c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab44930a67a990bb9ddee3ba2353d36c">&#9670;&#160;</a></span>a</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::a = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12d6460328e4ccb8a20d1ff061e005d2" name="a12d6460328e4ccb8a20d1ff061e005d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d6460328e4ccb8a20d1ff061e005d2">&#9670;&#160;</a></span>anchorX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::anchorX = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b6f1115f8fdc981b3753639f1f14412" name="a3b6f1115f8fdc981b3753639f1f14412"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b6f1115f8fdc981b3753639f1f14412">&#9670;&#160;</a></span>anchorY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::anchorY = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae81735becf0640712a54a84dbbc5486e" name="ae81735becf0640712a54a84dbbc5486e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae81735becf0640712a54a84dbbc5486e">&#9670;&#160;</a></span>b</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::b = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a10e9d93d84bca4c1c706717d9c2b0318" name="a10e9d93d84bca4c1c706717d9c2b0318"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10e9d93d84bca4c1c706717d9c2b0318">&#9670;&#160;</a></span>blend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> eve::graphics::Renderable2D::Sprite::blend = <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0443b900d14ea9fdb2c87b74289adc49" name="a0443b900d14ea9fdb2c87b74289adc49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0443b900d14ea9fdb2c87b74289adc49">&#9670;&#160;</a></span>camera</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a>* eve::graphics::Renderable2D::Sprite::camera = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4378328b5153c91cb147a4a63eef5fb6" name="a4378328b5153c91cb147a4a63eef5fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4378328b5153c91cb147a4a63eef5fb6">&#9670;&#160;</a></span>canvas</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a>* eve::graphics::Renderable2D::Sprite::canvas = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af1766c0760cbc30207d5ed9216c177e7" name="af1766c0760cbc30207d5ed9216c177e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1766c0760cbc30207d5ed9216c177e7">&#9670;&#160;</a></span>castOcclusion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable2D::Sprite::castOcclusion = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85679d2527b2326440d5cfd891f22848" name="a85679d2527b2326440d5cfd891f22848"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85679d2527b2326440d5cfd891f22848">&#9670;&#160;</a></span>flipX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable2D::Sprite::flipX = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c2b33f7fbf8a98063fd8d0cd2c4d29d" name="a6c2b33f7fbf8a98063fd8d0cd2c4d29d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c2b33f7fbf8a98063fd8d0cd2c4d29d">&#9670;&#160;</a></span>flipY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable2D::Sprite::flipY = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f97a6185034841465b851ac5c8bad75" name="a5f97a6185034841465b851ac5c8bad75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f97a6185034841465b851ac5c8bad75">&#9670;&#160;</a></span>g</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::g = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9473276c7a0debf671bc3030a45d6f4" name="ab9473276c7a0debf671bc3030a45d6f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9473276c7a0debf671bc3030a45d6f4">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::height = 32</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21d6c3e1bf321dc38be4fc9c78bad152" name="a21d6c3e1bf321dc38be4fc9c78bad152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21d6c3e1bf321dc38be4fc9c78bad152">&#9670;&#160;</a></span>layer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable2D::Sprite::layer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af38f8c982dfa65b51d9d9a8b0bb03623" name="af38f8c982dfa65b51d9d9a8b0bb03623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af38f8c982dfa65b51d9d9a8b0bb03623">&#9670;&#160;</a></span>normalTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::Renderable2D::Sprite::normalTexture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1c371e89e9a0623df34cc124ec1c47c" name="ad1c371e89e9a0623df34cc124ec1c47c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1c371e89e9a0623df34cc124ec1c47c">&#9670;&#160;</a></span>offsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable2D::Sprite::offsetX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3ee7bdd28d30e9c6d93c652cf3ee37b" name="af3ee7bdd28d30e9c6d93c652cf3ee37b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3ee7bdd28d30e9c6d93c652cf3ee37b">&#9670;&#160;</a></span>offsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable2D::Sprite::offsetY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd6a35a168738574fba4e3f066d140fe" name="afd6a35a168738574fba4e3f066d140fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd6a35a168738574fba4e3f066d140fe">&#9670;&#160;</a></span>quad</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Quad.html">Quad</a>* eve::graphics::Renderable2D::Sprite::quad = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a415f29561624d126279537e5c20929a6" name="a415f29561624d126279537e5c20929a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415f29561624d126279537e5c20929a6">&#9670;&#160;</a></span>r</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::r = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb70be2beccddd626eab7b8ca12f4288" name="afb70be2beccddd626eab7b8ca12f4288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb70be2beccddd626eab7b8ca12f4288">&#9670;&#160;</a></span>receiveLight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable2D::Sprite::receiveLight = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1bd57256e0d13052f65279e312c97a12" name="a1bd57256e0d13052f65279e312c97a12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bd57256e0d13052f65279e312c97a12">&#9670;&#160;</a></span>shader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a>* eve::graphics::Renderable2D::Sprite::shader = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1de522eb3392012437a5f442a9ec8aea" name="a1de522eb3392012437a5f442a9ec8aea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1de522eb3392012437a5f442a9ec8aea">&#9670;&#160;</a></span>texture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::Renderable2D::Sprite::texture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11ca6f7a658e6a6c456d53701703a813" name="a11ca6f7a658e6a6c456d53701703a813"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11ca6f7a658e6a6c456d53701703a813">&#9670;&#160;</a></span>trimH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable2D::Sprite::trimH = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38b19fb3bdbf373217b41640d6e526a0" name="a38b19fb3bdbf373217b41640d6e526a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38b19fb3bdbf373217b41640d6e526a0">&#9670;&#160;</a></span>trimW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Renderable2D::Sprite::trimW = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3add1278b2377c91787775049c7632dc" name="a3add1278b2377c91787775049c7632dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3add1278b2377c91787775049c7632dc">&#9670;&#160;</a></span>visible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Renderable2D::Sprite::visible = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa74f837f185aec22d5eca46f85fe3fcb" name="aa74f837f185aec22d5eca46f85fe3fcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa74f837f185aec22d5eca46f85fe3fcb">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Renderable2D::Sprite::width = 32</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a> 第 <a class="el" href="RenderSystem_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="RenderSystem_8h_source.html">RenderSystem.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

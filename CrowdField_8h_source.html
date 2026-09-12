@@ -1,0 +1,299 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/crowd/CrowdField.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_dcb6d51ed595f676e5530c21ce2add48.html">crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CrowdField.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CrowdField_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// 连续流场：Dijkstra 积分场 + 梯度方向场 + 双线性采样。</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// 与 map/FlowField 的区别：map 的流场是格级 next 指针，本类是连续方向向量，</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// 供单位在格子内平滑移动、平滑转向。纯数学，零模块依赖。</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1crowd.html">eve::crowd</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#adec34daf77dd559616be91b6d98f1e3f">   23</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="classeve_1_1crowd_1_1CrowdField.html#adec34daf77dd559616be91b6d98f1e3f">kUnreachable</a> = 3.4e38f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#ac43284a8d1b1dd0076c3e886e03f6050">   25</a></span>    <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#ac43284a8d1b1dd0076c3e886e03f6050">CrowdField</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#ae988291f7c680a31230e4d18745640cb">resize</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> cellSize, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a9621aab51cb47743b2e50a61865221cd">clear</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#af081bea3b90c68d30acc3f6477c80c0b">   41</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#af081bea3b90c68d30acc3f6477c80c0b">valid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_ &gt; 0 &amp;&amp; height_ &gt; 0 &amp;&amp; cellSize_ &gt; 0.f; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a41fd3abed735feee1345045441d6f5f5">   44</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a41fd3abed735feee1345045441d6f5f5">getWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a881d7ebfbda44444989b8f40b62076bc">   45</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a881d7ebfbda44444989b8f40b62076bc">getHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#ac9cb5754c98a6f953d5fdc186aafd6cb">   46</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#ac9cb5754c98a6f953d5fdc186aafd6cb">getCellSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cellSize_; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a262a8c938ee7bc1aff79a20f4184e649">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a262a8c938ee7bc1aff79a20f4184e649">getOriginX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originX_; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a5c90e60cba354824ec7dd0d83a01d60b">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a5c90e60cba354824ec7dd0d83a01d60b">getOriginY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originY_; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a34ee0d948015a89729b452017b8c29b3">setBlocked</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">bool</span> blocked);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#aa33a37258b29b1da2ff46988dd8d3fe9">isBlocked</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a454321ec19b5a7fc66b253ceac0ae8cc">setCellCost</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#abe7c422d33b3dbf6c527a26b5de72d1c">getCellCost</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#ab7621144462ba883456e91a9a6365987">setAllCellCost</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a115abb6c725c201d7d4ed273149b96a3">setGoal</a>(<span class="keywordtype">int</span> gx, <span class="keywordtype">int</span> gy);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#af611d0d7d63aac6fec0618116fe7953f">addGoal</a>(<span class="keywordtype">int</span> gx, <span class="keywordtype">int</span> gy);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#af6a2b78e347d5dce7c13ab7eda2de6ba">clearGoals</a>();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a6785dd702221f1f52fba2190d7bd6d5e">   85</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a6785dd702221f1f52fba2190d7bd6d5e">goalCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(goals_.size() / 2); }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a7c21cd052960d07acef1695dfce04cff">   88</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a7c21cd052960d07acef1695dfce04cff">isBuilt</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> built_; }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#af331013329de6d89384da9bbaccbadef">build</a>();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#aee898b36f3c8a5dee40a9b04007d29b6">costAtCell</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a4419ac2a614a55cfb672c9dd6e91d288">isReachable</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a1b2b6ce111b4591f3295f93174be4922">flowAtCell</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> &amp;dx, <span class="keywordtype">float</span> &amp;dy) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a237b53aa892d6c41b83dde0862c0b28d">costAtWorld</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a7f121a62a095eb3f664091a469346de4">flowAtWorld</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, <span class="keywordtype">float</span> &amp;dx, <span class="keywordtype">float</span> &amp;dy) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a7183d346b1769bc63e322b5f119c2fc7">resolvePenetration</a>(<span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a61f9c66a10e1efec76f3889299df778e">  139</a></span>    <span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a61f9c66a10e1efec76f3889299df778e">integration</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> integ_; }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#a0bec2d28a0b6d25e655d25931423af27">  141</a></span>    <span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#a0bec2d28a0b6d25e655d25931423af27">flowX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> flowX_; }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1CrowdField.html#ad7339684ba0813156e07a0944fb0b388">  143</a></span>    <span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_function" href="classeve_1_1crowd_1_1CrowdField.html#ad7339684ba0813156e07a0944fb0b388">flowY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> flowY_; }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">bool</span> inBounds(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> &lt; width_ &amp;&amp; <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> &lt; height_; }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> * width_ + <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">void</span> worldToCell(<span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, <span class="keywordtype">float</span> &amp;fx, <span class="keywordtype">float</span> &amp;fy) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">void</span> rebuildFlow();</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">int</span> width_ = 0;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">int</span> height_ = 0;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">float</span> cellSize_ = 0.f;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">float</span> originX_ = 0.f;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">float</span> originY_ = 0.f;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    std::vector&lt;float&gt; cost_;     <span class="comment">// 地形代价（0=阻挡，&gt;=1 可走）</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    std::vector&lt;float&gt; integ_;    <span class="comment">// Dijkstra 积分场</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    std::vector&lt;float&gt; flowX_;    <span class="comment">// 每格方向 X</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    std::vector&lt;float&gt; flowY_;    <span class="comment">// 每格方向 Y</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    std::vector&lt;int&gt; goals_;      <span class="comment">// 目标格 (x,y) 对</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordtype">bool</span> built_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>};</div>
+</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>}  <span class="comment">// namespace eve::crowd</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a40083d5d71ff675499a8d392ff75f401"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a></div><div class="ttdeci">float wx</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00175">WorldSnapshot.cpp:175</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_ae05e525eb10e278f769ff1bc049eec10"><div class="ttname"><a href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a></div><div class="ttdeci">float wy</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00175">WorldSnapshot.cpp:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html">eve::crowd::CrowdField</a></div><div class="ttdoc">连续流场（flow field）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00020">CrowdField.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a0bec2d28a0b6d25e655d25931423af27"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a0bec2d28a0b6d25e655d25931423af27">eve::crowd::CrowdField::flowX</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; flowX() const</div><div class="ttdoc">只读访问方向场 X 分量（调试渲染用）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00141">CrowdField.h:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a115abb6c725c201d7d4ed273149b96a3"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a115abb6c725c201d7d4ed273149b96a3">eve::crowd::CrowdField::setGoal</a></div><div class="ttdeci">void setGoal(int gx, int gy)</div><div class="ttdoc">设定唯一目标格（等价 clearGoals + addGoal）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00073">CrowdField.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a1b2b6ce111b4591f3295f93174be4922"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a1b2b6ce111b4591f3295f93174be4922">eve::crowd::CrowdField::flowAtCell</a></div><div class="ttdeci">void flowAtCell(int cx, int cy, float &amp;dx, float &amp;dy) const</div><div class="ttdoc">查询格级方向向量（单位长度；目标格/阻挡/不可达为 0）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00191">CrowdField.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a237b53aa892d6c41b83dde0862c0b28d"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a237b53aa892d6c41b83dde0862c0b28d">eve::crowd::CrowdField::costAtWorld</a></div><div class="ttdeci">float costAtWorld(float wx, float wy) const</div><div class="ttdoc">查询世界坐标处的积分代价（双线性插值；场外返回 kUnreachable）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00199">CrowdField.cpp:199</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a262a8c938ee7bc1aff79a20f4184e649"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a262a8c938ee7bc1aff79a20f4184e649">eve::crowd::CrowdField::getOriginX</a></div><div class="ttdeci">float getOriginX() const</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00047">CrowdField.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a34ee0d948015a89729b452017b8c29b3"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a34ee0d948015a89729b452017b8c29b3">eve::crowd::CrowdField::setBlocked</a></div><div class="ttdeci">void setBlocked(int cx, int cy, bool blocked)</div><div class="ttdoc">设置/清除某格阻挡。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00049">CrowdField.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a41fd3abed735feee1345045441d6f5f5"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a41fd3abed735feee1345045441d6f5f5">eve::crowd::CrowdField::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdoc">网格尺寸访问器。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00044">CrowdField.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a4419ac2a614a55cfb672c9dd6e91d288"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a4419ac2a614a55cfb672c9dd6e91d288">eve::crowd::CrowdField::isReachable</a></div><div class="ttdeci">bool isReachable(int cx, int cy) const</div><div class="ttdoc">某格是否可达（积分代价有限且非负）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00187">CrowdField.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a454321ec19b5a7fc66b253ceac0ae8cc"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a454321ec19b5a7fc66b253ceac0ae8cc">eve::crowd::CrowdField::setCellCost</a></div><div class="ttdeci">void setCellCost(int cx, int cy, float cost)</div><div class="ttdoc">设置某格地形代价（进入该格的移动成本）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00059">CrowdField.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a5c90e60cba354824ec7dd0d83a01d60b"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a5c90e60cba354824ec7dd0d83a01d60b">eve::crowd::CrowdField::getOriginY</a></div><div class="ttdeci">float getOriginY() const</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00048">CrowdField.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a61f9c66a10e1efec76f3889299df778e"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a61f9c66a10e1efec76f3889299df778e">eve::crowd::CrowdField::integration</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; integration() const</div><div class="ttdoc">只读访问积分场（调试渲染用）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00139">CrowdField.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a6785dd702221f1f52fba2190d7bd6d5e"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a6785dd702221f1f52fba2190d7bd6d5e">eve::crowd::CrowdField::goalCount</a></div><div class="ttdeci">int goalCount() const</div><div class="ttdoc">目标个数。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00085">CrowdField.h:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a7183d346b1769bc63e322b5f119c2fc7"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a7183d346b1769bc63e322b5f119c2fc7">eve::crowd::CrowdField::resolvePenetration</a></div><div class="ttdeci">bool resolvePenetration(float &amp;wx, float &amp;wy, float radius) const</div><div class="ttdoc">圆 vs 阻挡格碰撞消解：把圆心从覆盖到的阻挡格中推出来。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00272">CrowdField.cpp:272</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a7c21cd052960d07acef1695dfce04cff"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a7c21cd052960d07acef1695dfce04cff">eve::crowd::CrowdField::isBuilt</a></div><div class="ttdeci">bool isBuilt() const</div><div class="ttdoc">是否已 build 过（build 后或 resize 后为 true，改动地形后仍为 true）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00088">CrowdField.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a7f121a62a095eb3f664091a469346de4"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a7f121a62a095eb3f664091a469346de4">eve::crowd::CrowdField::flowAtWorld</a></div><div class="ttdeci">void flowAtWorld(float wx, float wy, float &amp;dx, float &amp;dy) const</div><div class="ttdoc">查询世界坐标处的跟随方向（双线性插值后归一化）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00234">CrowdField.cpp:234</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a881d7ebfbda44444989b8f40b62076bc"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a881d7ebfbda44444989b8f40b62076bc">eve::crowd::CrowdField::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00045">CrowdField.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_a9621aab51cb47743b2e50a61865221cd"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#a9621aab51cb47743b2e50a61865221cd">eve::crowd::CrowdField::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">清空全部数据（回到无效状态）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00037">CrowdField.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_aa33a37258b29b1da2ff46988dd8d3fe9"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#aa33a37258b29b1da2ff46988dd8d3fe9">eve::crowd::CrowdField::isBlocked</a></div><div class="ttdeci">bool isBlocked(int cx, int cy) const</div><div class="ttdoc">查询某格是否阻挡。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00054">CrowdField.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_ab7621144462ba883456e91a9a6365987"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#ab7621144462ba883456e91a9a6365987">eve::crowd::CrowdField::setAllCellCost</a></div><div class="ttdeci">void setAllCellCost(float cost)</div><div class="ttdoc">把全部格子设为同一地形代价（通常 build 前重置用）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00069">CrowdField.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_abe7c422d33b3dbf6c527a26b5de72d1c"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#abe7c422d33b3dbf6c527a26b5de72d1c">eve::crowd::CrowdField::getCellCost</a></div><div class="ttdeci">float getCellCost(int cx, int cy) const</div><div class="ttdoc">查询地形代价（越界/阻挡返回 0）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00064">CrowdField.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_ac43284a8d1b1dd0076c3e886e03f6050"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#ac43284a8d1b1dd0076c3e886e03f6050">eve::crowd::CrowdField::CrowdField</a></div><div class="ttdeci">CrowdField()=default</div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_ac9cb5754c98a6f953d5fdc186aafd6cb"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#ac9cb5754c98a6f953d5fdc186aafd6cb">eve::crowd::CrowdField::getCellSize</a></div><div class="ttdeci">float getCellSize() const</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00046">CrowdField.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_ad7339684ba0813156e07a0944fb0b388"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#ad7339684ba0813156e07a0944fb0b388">eve::crowd::CrowdField::flowY</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; flowY() const</div><div class="ttdoc">只读访问方向场 Y 分量（调试渲染用）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00143">CrowdField.h:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_adec34daf77dd559616be91b6d98f1e3f"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#adec34daf77dd559616be91b6d98f1e3f">eve::crowd::CrowdField::kUnreachable</a></div><div class="ttdeci">static constexpr float kUnreachable</div><div class="ttdoc">不可达/阻挡的积分代价。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00023">CrowdField.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_ae988291f7c680a31230e4d18745640cb"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#ae988291f7c680a31230e4d18745640cb">eve::crowd::CrowdField::resize</a></div><div class="ttdeci">void resize(int width, int height, float cellSize, float originX, float originY)</div><div class="ttdoc">配置网格（保留原有 cost/goals，若尺寸变化则重置）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00018">CrowdField.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_aee898b36f3c8a5dee40a9b04007d29b6"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#aee898b36f3c8a5dee40a9b04007d29b6">eve::crowd::CrowdField::costAtCell</a></div><div class="ttdeci">float costAtCell(int cx, int cy) const</div><div class="ttdoc">查询格级积分代价（未 build 返回 kUnreachable）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00182">CrowdField.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_af081bea3b90c68d30acc3f6477c80c0b"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#af081bea3b90c68d30acc3f6477c80c0b">eve::crowd::CrowdField::valid</a></div><div class="ttdeci">bool valid() const</div><div class="ttdoc">是否配置了有效网格。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00041">CrowdField.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_af331013329de6d89384da9bbaccbadef"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#af331013329de6d89384da9bbaccbadef">eve::crowd::CrowdField::build</a></div><div class="ttdeci">void build()</div><div class="ttdoc">从目标格做 Dijkstra，生成积分场与方向场。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00091">CrowdField.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_af611d0d7d63aac6fec0618116fe7953f"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#af611d0d7d63aac6fec0618116fe7953f">eve::crowd::CrowdField::addGoal</a></div><div class="ttdeci">void addGoal(int gx, int gy)</div><div class="ttdoc">追加一个目标格（多目标支持）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00078">CrowdField.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html_af6a2b78e347d5dce7c13ab7eda2de6ba"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html#af6a2b78e347d5dce7c13ab7eda2de6ba">eve::crowd::CrowdField::clearGoals</a></div><div class="ttdeci">void clearGoals()</div><div class="ttdoc">清空目标列表。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8cpp_source.html#l00084">CrowdField.cpp:84</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html"><div class="ttname"><a href="namespaceeve_1_1crowd.html">eve::crowd</a></div><div class="ttdef"><b>Definition</b> <a href="Crowd_8cpp_source.html#l00019">Crowd.cpp:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

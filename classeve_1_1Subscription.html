@@ -1,0 +1,524 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Subscription类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Subscription.html">Subscription</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1Subscription-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Subscription类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Move-only RAII token that owns one observer registration.  
+ <a href="classeve_1_1Subscription.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Subscription_8h_source.html">Subscription.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:ad901ed9464524417cf98585e47c4f0dd" id="r_ad901ed9464524417cf98585e47c4f0dd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#ad901ed9464524417cf98585e47c4f0dd">Cancel</a> = std::function&lt; void()&gt;</td></tr>
+<tr class="separator:ad901ed9464524417cf98585e47c4f0dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0c6607f4d034b707d98bb4cd33c58118" id="r_a0c6607f4d034b707d98bb4cd33c58118"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#a0c6607f4d034b707d98bb4cd33c58118">Subscription</a> () noexcept=default</td></tr>
+<tr class="memdesc:a0c6607f4d034b707d98bb4cd33c58118"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an inactive token.  <br /></td></tr>
+<tr class="separator:a0c6607f4d034b707d98bb4cd33c58118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67159c83e8f67506849c2da175c8867" id="r_ac67159c83e8f67506849c2da175c8867"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#ac67159c83e8f67506849c2da175c8867">Subscription</a> (<a class="el" href="classeve_1_1Subscription.html#ad901ed9464524417cf98585e47c4f0dd">Cancel</a> cancel)</td></tr>
+<tr class="memdesc:ac67159c83e8f67506849c2da175c8867"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a token from a cancellation callback.  <br /></td></tr>
+<tr class="separator:ac67159c83e8f67506849c2da175c8867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc0dfebb2e7174edd1be40914d5bb9ec" id="r_acc0dfebb2e7174edd1be40914d5bb9ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#acc0dfebb2e7174edd1be40914d5bb9ec">Subscription</a> (const <a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;)=delete</td></tr>
+<tr class="separator:acc0dfebb2e7174edd1be40914d5bb9ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f0b1280dc275c9589bcfebd4f572329" id="r_a0f0b1280dc275c9589bcfebd4f572329"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#a0f0b1280dc275c9589bcfebd4f572329">operator=</a> (const <a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;)=delete</td></tr>
+<tr class="separator:a0f0b1280dc275c9589bcfebd4f572329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1c366602bfa123cd452c565ca00e86b" id="r_ae1c366602bfa123cd452c565ca00e86b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#ae1c366602bfa123cd452c565ca00e86b">Subscription</a> (<a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="separator:ae1c366602bfa123cd452c565ca00e86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a816cc8b770ce1d7b2b728e27978be0b2" id="r_a816cc8b770ce1d7b2b728e27978be0b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#a816cc8b770ce1d7b2b728e27978be0b2">operator=</a> (<a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="separator:a816cc8b770ce1d7b2b728e27978be0b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a4318a24338f09a96a4ec48fe32791" id="r_a14a4318a24338f09a96a4ec48fe32791"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#a14a4318a24338f09a96a4ec48fe32791">~Subscription</a> ()</td></tr>
+<tr class="separator:a14a4318a24338f09a96a4ec48fe32791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed053299bad9e4252e9d6ab7921371c7" id="r_aed053299bad9e4252e9d6ab7921371c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#aed053299bad9e4252e9d6ab7921371c7">dispose</a> () noexcept</td></tr>
+<tr class="memdesc:aed053299bad9e4252e9d6ab7921371c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels this registration; safe to call repeatedly.  <br /></td></tr>
+<tr class="separator:aed053299bad9e4252e9d6ab7921371c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa769d4d4bd09d4099785d15c3f7dcf59" id="r_aa769d4d4bd09d4099785d15c3f7dcf59"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#aa769d4d4bd09d4099785d15c3f7dcf59">disposed</a> () const noexcept</td></tr>
+<tr class="memdesc:aa769d4d4bd09d4099785d15c3f7dcf59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this token is inactive or has already been disposed.  <br /></td></tr>
+<tr class="separator:aa769d4d4bd09d4099785d15c3f7dcf59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898487a68a534a233e7abecb32f54d33" id="r_a898487a68a534a233e7abecb32f54d33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Subscription.html#a898487a68a534a233e7abecb32f54d33">isDisposed</a> () const noexcept</td></tr>
+<tr class="memdesc:a898487a68a534a233e7abecb32f54d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility spelling for <a class="el" href="classeve_1_1Subscription.html#aa769d4d4bd09d4099785d15c3f7dcf59" title="Returns whether this token is inactive or has already been disposed.">disposed()</a>.  <br /></td></tr>
+<tr class="separator:a898487a68a534a233e7abecb32f54d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Move-only RAII token that owns one observer registration. </p>
+<p>Destroying or explicitly disposing the token cancels the registration. The cancellation operation is idempotent, and a moved-from token is inactive. The cancellation callback must be non-throwing; <code><a class="el" href="classeve_1_1Subscription.html#aed053299bad9e4252e9d6ab7921371c7" title="Cancels this registration; safe to call repeatedly.">dispose()</a></code> is <code>noexcept</code> and is therefore suitable for destructor use.</p>
+<p>A token belongs to the thread-affine observer that created it. It must be disposed or destroyed on that observer's owner thread unless the observer explicitly documents a stronger cross-thread guarantee. </p>
+
+<p class="definition">在文件 <a class="el" href="Subscription_8h_source.html">Subscription.h</a> 第 <a class="el" href="Subscription_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="ad901ed9464524417cf98585e47c4f0dd" name="ad901ed9464524417cf98585e47c4f0dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad901ed9464524417cf98585e47c4f0dd">&#9670;&#160;</a></span>Cancel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1Subscription.html#ad901ed9464524417cf98585e47c4f0dd">eve::Subscription::Cancel</a> =  std::function&lt;void()&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Subscription_8h_source.html">Subscription.h</a> 第 <a class="el" href="Subscription_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0c6607f4d034b707d98bb4cd33c58118" name="a0c6607f4d034b707d98bb4cd33c58118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c6607f4d034b707d98bb4cd33c58118">&#9670;&#160;</a></span>Subscription() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Subscription::Subscription </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an inactive token. </p>
+
+</div>
+</div>
+<a id="ac67159c83e8f67506849c2da175c8867" name="ac67159c83e8f67506849c2da175c8867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac67159c83e8f67506849c2da175c8867">&#9670;&#160;</a></span>Subscription() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Subscription::Subscription </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Subscription.html#ad901ed9464524417cf98585e47c4f0dd">Cancel</a>&#160;</td>
+          <td class="paramname"><em>cancel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a token from a cancellation callback. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cancel</td><td>Non-throwing callback invoked at most once on disposal. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Subscription_8cpp_source.html">Subscription.cpp</a> 第 <a class="el" href="Subscription_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc0dfebb2e7174edd1be40914d5bb9ec" name="acc0dfebb2e7174edd1be40914d5bb9ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc0dfebb2e7174edd1be40914d5bb9ec">&#9670;&#160;</a></span>Subscription() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Subscription::Subscription </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1c366602bfa123cd452c565ca00e86b" name="ae1c366602bfa123cd452c565ca00e86b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1c366602bfa123cd452c565ca00e86b">&#9670;&#160;</a></span>Subscription() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Subscription::Subscription </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Subscription_8cpp_source.html">Subscription.cpp</a> 第 <a class="el" href="Subscription_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14a4318a24338f09a96a4ec48fe32791" name="a14a4318a24338f09a96a4ec48fe32791"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14a4318a24338f09a96a4ec48fe32791">&#9670;&#160;</a></span>~Subscription()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Subscription::~Subscription </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Subscription_8cpp_source.html">Subscription.cpp</a> 第 <a class="el" href="Subscription_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Subscription_8cpp_source.html#l00025">dispose()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aed053299bad9e4252e9d6ab7921371c7" name="aed053299bad9e4252e9d6ab7921371c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed053299bad9e4252e9d6ab7921371c7">&#9670;&#160;</a></span>dispose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Subscription::dispose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancels this registration; safe to call repeatedly. </p>
+
+<p class="definition">在文件 <a class="el" href="Subscription_8cpp_source.html">Subscription.cpp</a> 第 <a class="el" href="Subscription_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PropertyView_8cpp_source.html#l00257">eve::ui::PropertyComponent::bind()</a>, <a class="el" href="PlatformEvent_8h_source.html#l00134">eve::platform_event::PlatformEvent::setPollObserver()</a> , 以及 <a class="el" href="Subscription_8cpp_source.html#l00023">~Subscription()</a>.</p>
+
+</div>
+</div>
+<a id="aa769d4d4bd09d4099785d15c3f7dcf59" name="aa769d4d4bd09d4099785d15c3f7dcf59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa769d4d4bd09d4099785d15c3f7dcf59">&#9670;&#160;</a></span>disposed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Subscription::disposed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether this token is inactive or has already been disposed. </p>
+
+<p class="definition">在文件 <a class="el" href="Subscription_8h_source.html">Subscription.h</a> 第 <a class="el" href="Subscription_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a898487a68a534a233e7abecb32f54d33" name="a898487a68a534a233e7abecb32f54d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a898487a68a534a233e7abecb32f54d33">&#9670;&#160;</a></span>isDisposed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Subscription::isDisposed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility spelling for <a class="el" href="classeve_1_1Subscription.html#aa769d4d4bd09d4099785d15c3f7dcf59" title="Returns whether this token is inactive or has already been disposed.">disposed()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Subscription_8h_source.html">Subscription.h</a> 第 <a class="el" href="Subscription_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f0b1280dc275c9589bcfebd4f572329" name="a0f0b1280dc275c9589bcfebd4f572329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f0b1280dc275c9589bcfebd4f572329">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp; eve::Subscription::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a816cc8b770ce1d7b2b728e27978be0b2" name="a816cc8b770ce1d7b2b728e27978be0b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a816cc8b770ce1d7b2b728e27978be0b2">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp; eve::Subscription::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Subscription_8cpp_source.html">Subscription.cpp</a> 第 <a class="el" href="Subscription_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Subscription_8h_source.html">Subscription.h</a></li>
+<li>src/engine/common/<a class="el" href="Subscription_8cpp_source.html">Subscription.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

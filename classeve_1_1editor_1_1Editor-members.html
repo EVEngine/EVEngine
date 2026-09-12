@@ -1,0 +1,206 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1Editor.html">Editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::editor::Editor 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#ad6d42caabf18ad854c92c1192fa89418">bindEditingTarget</a>(EditorSession &amp;session, const TargetId &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#acb2267873298031e3ff247041b8df309">commandService</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a3749eba4b183f7e4cba7f1178debe59e">commandService</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a9773f791d6ada52b28fc8a0c2fbc08c8">Editor</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a486dde7ee68d4fc6965faf2ebc5fb6ec">extensionProviders</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a034e875cacd64f7929c821fc54e7ea58">extensionProviders</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0734edc1e3f23ae45a4271283e58973a">Module_REG</a>(Editor)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#ad4bc1903bd7410656e5f87243cdb219e">newAddScalarFieldOperation</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a6980e917ddd095f942355eb3da1fd1af">newBoxBrushKernel</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0e41f69dfb28fe9709eb0d342ed6356c">newBoxVolumeBrushKernel</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#ae861e86295e1d8a72b799beb3b059615">newCircleBrushKernel</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#aa66ceb3c14b3bd38b80e76ea137a43e4">newConstantBrushFalloff</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0d015b6cfdbb312ca98b619203d30353">newDock</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a7a61a2d8097302bd84aed61b2f44ae77">newFieldBrushTool</a>(const std::string &amp;id, const std::string &amp;label)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a1b6b42f5f6d85c3c19f23b94d0580d50">newGizmo</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#acc649ac83ef57f41e84d70f3adcf5ea7">newGizmoManager</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#aefc331c86308ce8a8c36f752976b7b90">newInspector</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#ac6ab2d71a3c76e0cadff668671d381e7">newLinearBrushFalloff</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a0b5490b0aa83157c7ebebfd070e80564">newPaintIntFieldOperation</a>(int value)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a07b17bbc94d8f6575f09fcaf7720a446">newPaintIntVolumeOperation</a>(int value)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a3f839e1af2a7dbfa679b7e4d6066022c">newScriptTool</a>(const std::string &amp;id, const std::string &amp;label)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a705b7c38e8fc40d8a620df7397f8810f">newSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#aab6599f2b882e0e5355b206e931e5a97">newSmoothBrushFalloff</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a82e3de2c50a0633d64b50714f460bfd1">newSphereVolumeBrushKernel</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#aafa570f3d91489411cded14c4f45fdc5">newToolbar</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a37babb58de21cc9740683cfcb0227c92">newVolumeBrushTool</a>(const std::string &amp;id, const std::string &amp;label)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#ac2f82f61b1422ec0f4e668b79226b9b2">newWorkspace</a>(const std::string &amp;id, const std::string &amp;title)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a26d452ee056c54f2878bd8393598edef">registerEditingTarget</a>(IEditableTarget &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a761d666e3500f7572de71bf7ed689178">unregisterEditingTarget</a>(const TargetId &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html#a376a947f9f61f247c524b51a6751233a">~Editor</a>() override</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/Biome.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Biome.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Biome_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="SpatialData_8h.html">procgen/SpatialData.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeAssetRule.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1BiomeAssetRule.html">BiomeAssetRule</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a7889dc104058f7335762766f8aa03ae2">   15</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a7889dc104058f7335762766f8aa03ae2">asset</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a3db5a4c2a011943ed10059b5f5dfe5b2">   16</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a3db5a4c2a011943ed10059b5f5dfe5b2">weight</a>   = 1.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a0ca1c46656482d8ca89c0351f0945b78">   17</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a0ca1c46656482d8ca89c0351f0945b78">minScale</a> = 1.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a7c842dda5f8ba4ba1a360ee17fa469b1">   18</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a7c842dda5f8ba4ba1a360ee17fa469b1">maxScale</a> = 1.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a29d3587b22a3b408ab40ee97cba04070">   19</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeAssetRule.html#a29d3587b22a3b408ab40ee97cba04070">randomYaw</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeLayerRule.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1BiomeLayerRule.html">BiomeLayerRule</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeLayerRule.html#aa5f341cda3cd0077e7871334454c8a4d">   24</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeLayerRule.html#aa5f341cda3cd0077e7871334454c8a4d">name</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeLayerRule.html#aa2d51807872ea04e9d17fb0ed695418f">   25</a></span>    <span class="keywordtype">int</span>                          <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeLayerRule.html#aa2d51807872ea04e9d17fb0ed695418f">priority</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeLayerRule.html#a723dd5759dd53468afd2d28b26eb22cb">   26</a></span>    <span class="keywordtype">float</span>                        <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeLayerRule.html#a723dd5759dd53468afd2d28b26eb22cb">density</a>  = 1.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeLayerRule.html#a591839f600a9877786026eb1203ed14d">   27</a></span>    std::shared_ptr&lt;SpatialData&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeLayerRule.html#a591839f600a9877786026eb1203ed14d">spatial</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1BiomeLayerRule.html#a0a1f5f7aa46550dcc374a2c63ae7a14f">   28</a></span>    std::vector&lt;BiomeAssetRule&gt;  <a class="code hl_variable" href="structeve_1_1procgen_1_1BiomeLayerRule.html#a0a1f5f7aa46550dcc374a2c63ae7a14f">assets</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1BiomeRules.html">   38</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1BiomeRules.html">BiomeRules</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#ab9072aa43fb342161f11f044b23d10a1">clear</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#aa2dd6b97a948c17590e2074d16b80eb1">addLayer</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_class" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>* spatial, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>, <span class="keywordtype">float</span> density);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#ab4bed15e7c36978b99897badbece9008">removeLayer</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a81166d3598dbe3ffc4960e82627a0cf5">hasLayer</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a958fd636eefe5d8bcd74b67aa945c3f1">getLayerCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a271dfa1d9cd1eea490b67cbabab04658">getLayerName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a5f527ef0dcb3beba7ebc49da351090f9">getLayerPriority</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span>       <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a6d1735f01b1b5dc7a4f987a83a694ec5">getLayerDensity</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a4bbc82ff4a1a693a012c560b04d3e421">addAsset</a>(<span class="keyword">const</span> std::string&amp; layerName, <span class="keyword">const</span> std::string&amp; asset, <span class="keywordtype">float</span> weight,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                  <span class="keywordtype">float</span> minScale, <span class="keywordtype">float</span> maxScale, <span class="keywordtype">bool</span> randomYaw);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a82b562ef96be5a202e7f43281d890fee">getAssetCount</a>(<span class="keyword">const</span> std::string&amp; layerName) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a7f65e278ec6c621ca967a5eaf06036c4">getAssetName</a>(<span class="keyword">const</span> std::string&amp; layerName, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#ac3b21036b90def83aa96a2bb667e409d">addExclusion</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>* spatial);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a380026091847dc5fdc9df3b56b8312db">getExclusionCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>* <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#afa411ca1621752df6c44dc1ec75b119c">generate</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>* domain, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, <span class="keywordtype">float</span> jitter);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#a51a4ac20aa82b4007f1c3bae31269d5d">getError</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1BiomeRules.html#ac8a3a40d1381ef65be97f1f814744bb2">debugReport</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1BiomeLayerRule.html">BiomeLayerRule</a>*       findLayer(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1BiomeLayerRule.html">BiomeLayerRule</a>* findLayer(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::vector&lt;BiomeLayerRule&gt;            layers_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    std::vector&lt;std::shared_ptr&lt;SpatialData&gt;&gt; exclusions_;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::string                            error_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">int</span>                                    lastCandidateCount_ = 0;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">int</span>                                    lastOutputCount_    = 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aSpatialData_8h_html"><div class="ttname"><a href="SpatialData_8h.html">SpatialData.h</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a12acf4cc0533ead229b8b9f6c86b7fe6"><div class="ttname"><a href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a></div><div class="ttdeci">int spacing</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00136">TileConfig.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html">eve::procgen::BiomeRules</a></div><div class="ttdoc">Data-driven biome distribution rules compatible with PointGraph and scene batches.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00038">Biome.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a271dfa1d9cd1eea490b67cbabab04658"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a271dfa1d9cd1eea490b67cbabab04658">eve::procgen::BiomeRules::getLayerName</a></div><div class="ttdeci">std::string getLayerName(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00049">Biome.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a380026091847dc5fdc9df3b56b8312db"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a380026091847dc5fdc9df3b56b8312db">eve::procgen::BiomeRules::getExclusionCount</a></div><div class="ttdeci">int getExclusionCount() const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00085">Biome.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a4bbc82ff4a1a693a012c560b04d3e421"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a4bbc82ff4a1a693a012c560b04d3e421">eve::procgen::BiomeRules::addAsset</a></div><div class="ttdeci">bool addAsset(const std::string &amp;layerName, const std::string &amp;asset, float weight, float minScale, float maxScale, bool randomYaw)</div><div class="ttdoc">Add a weighted asset rule to a layer.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00061">Biome.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a51a4ac20aa82b4007f1c3bae31269d5d"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a51a4ac20aa82b4007f1c3bae31269d5d">eve::procgen::BiomeRules::getError</a></div><div class="ttdeci">std::string getError() const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00150">Biome.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a5f527ef0dcb3beba7ebc49da351090f9"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a5f527ef0dcb3beba7ebc49da351090f9">eve::procgen::BiomeRules::getLayerPriority</a></div><div class="ttdeci">int getLayerPriority(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00052">Biome.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a6d1735f01b1b5dc7a4f987a83a694ec5"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a6d1735f01b1b5dc7a4f987a83a694ec5">eve::procgen::BiomeRules::getLayerDensity</a></div><div class="ttdeci">float getLayerDensity(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00056">Biome.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a7f65e278ec6c621ca967a5eaf06036c4"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a7f65e278ec6c621ca967a5eaf06036c4">eve::procgen::BiomeRules::getAssetName</a></div><div class="ttdeci">std::string getAssetName(const std::string &amp;layerName, int index) const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00074">Biome.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a81166d3598dbe3ffc4960e82627a0cf5"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a81166d3598dbe3ffc4960e82627a0cf5">eve::procgen::BiomeRules::hasLayer</a></div><div class="ttdeci">bool hasLayer(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00047">Biome.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a82b562ef96be5a202e7f43281d890fee"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a82b562ef96be5a202e7f43281d890fee">eve::procgen::BiomeRules::getAssetCount</a></div><div class="ttdeci">int getAssetCount(const std::string &amp;layerName) const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00070">Biome.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_a958fd636eefe5d8bcd74b67aa945c3f1"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#a958fd636eefe5d8bcd74b67aa945c3f1">eve::procgen::BiomeRules::getLayerCount</a></div><div class="ttdeci">int getLayerCount() const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00048">Biome.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_aa2dd6b97a948c17590e2074d16b80eb1"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#aa2dd6b97a948c17590e2074d16b80eb1">eve::procgen::BiomeRules::addLayer</a></div><div class="ttdeci">bool addLayer(const std::string &amp;name, SpatialData *spatial, int priority, float density)</div><div class="ttdoc">Add a named spatial layer. Names are unique.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00028">Biome.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_ab4bed15e7c36978b99897badbece9008"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#ab4bed15e7c36978b99897badbece9008">eve::procgen::BiomeRules::removeLayer</a></div><div class="ttdeci">bool removeLayer(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00039">Biome.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_ab9072aa43fb342161f11f044b23d10a1"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#ab9072aa43fb342161f11f044b23d10a1">eve::procgen::BiomeRules::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Remove layers and exclusions.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00020">Biome.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_ac3b21036b90def83aa96a2bb667e409d"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#ac3b21036b90def83aa96a2bb667e409d">eve::procgen::BiomeRules::addExclusion</a></div><div class="ttdeci">bool addExclusion(SpatialData *spatial)</div><div class="ttdoc">Add a copied spatial exclusion shared by every layer.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00080">Biome.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_ac8a3a40d1381ef65be97f1f814744bb2"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#ac8a3a40d1381ef65be97f1f814744bb2">eve::procgen::BiomeRules::debugReport</a></div><div class="ttdeci">std::string debugReport() const</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00151">Biome.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1BiomeRules_html_afa411ca1621752df6c44dc1ec75b119c"><div class="ttname"><a href="classeve_1_1procgen_1_1BiomeRules.html#afa411ca1621752df6c44dc1ec75b119c">eve::procgen::BiomeRules::generate</a></div><div class="ttdeci">PointSet * generate(SpatialData *domain, float spacing, uint32_t seed, float jitter)</div><div class="ttdoc">Generate attributed biome points.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8cpp_source.html#l00087">Biome.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00056">PointSet.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SpatialData_html"><div class="ttname"><a href="classeve_1_1procgen_1_1SpatialData.html">eve::procgen::SpatialData</a></div><div class="ttdoc">Queryable spatial input for procedural pipelines.</div><div class="ttdef"><b>Definition</b> <a href="SpatialData_8h_source.html#l00032">SpatialData.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeAssetRule_html"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeAssetRule.html">eve::procgen::BiomeAssetRule</a></div><div class="ttdoc">One weighted asset entry in a procedural biome layer.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00014">Biome.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeAssetRule_html_a0ca1c46656482d8ca89c0351f0945b78"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeAssetRule.html#a0ca1c46656482d8ca89c0351f0945b78">eve::procgen::BiomeAssetRule::minScale</a></div><div class="ttdeci">float minScale</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00017">Biome.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeAssetRule_html_a29d3587b22a3b408ab40ee97cba04070"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeAssetRule.html#a29d3587b22a3b408ab40ee97cba04070">eve::procgen::BiomeAssetRule::randomYaw</a></div><div class="ttdeci">bool randomYaw</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00019">Biome.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeAssetRule_html_a3db5a4c2a011943ed10059b5f5dfe5b2"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeAssetRule.html#a3db5a4c2a011943ed10059b5f5dfe5b2">eve::procgen::BiomeAssetRule::weight</a></div><div class="ttdeci">float weight</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00016">Biome.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeAssetRule_html_a7889dc104058f7335762766f8aa03ae2"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeAssetRule.html#a7889dc104058f7335762766f8aa03ae2">eve::procgen::BiomeAssetRule::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00015">Biome.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeAssetRule_html_a7c842dda5f8ba4ba1a360ee17fa469b1"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeAssetRule.html#a7c842dda5f8ba4ba1a360ee17fa469b1">eve::procgen::BiomeAssetRule::maxScale</a></div><div class="ttdeci">float maxScale</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00018">Biome.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeLayerRule_html"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeLayerRule.html">eve::procgen::BiomeLayerRule</a></div><div class="ttdoc">One spatially-defined biome layer and its asset table.</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00023">Biome.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeLayerRule_html_a0a1f5f7aa46550dcc374a2c63ae7a14f"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeLayerRule.html#a0a1f5f7aa46550dcc374a2c63ae7a14f">eve::procgen::BiomeLayerRule::assets</a></div><div class="ttdeci">std::vector&lt; BiomeAssetRule &gt; assets</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00028">Biome.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeLayerRule_html_a591839f600a9877786026eb1203ed14d"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeLayerRule.html#a591839f600a9877786026eb1203ed14d">eve::procgen::BiomeLayerRule::spatial</a></div><div class="ttdeci">std::shared_ptr&lt; SpatialData &gt; spatial</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00027">Biome.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeLayerRule_html_a723dd5759dd53468afd2d28b26eb22cb"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeLayerRule.html#a723dd5759dd53468afd2d28b26eb22cb">eve::procgen::BiomeLayerRule::density</a></div><div class="ttdeci">float density</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00026">Biome.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeLayerRule_html_aa2d51807872ea04e9d17fb0ed695418f"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeLayerRule.html#aa2d51807872ea04e9d17fb0ed695418f">eve::procgen::BiomeLayerRule::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00025">Biome.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1BiomeLayerRule_html_aa5f341cda3cd0077e7871334454c8a4d"><div class="ttname"><a href="structeve_1_1procgen_1_1BiomeLayerRule.html#aa5f341cda3cd0077e7871334454c8a4d">eve::procgen::BiomeLayerRule::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="Biome_8h_source.html#l00024">Biome.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

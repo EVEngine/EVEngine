@@ -1,0 +1,340 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/editing/ProcgenScriptTarget.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_c0bcaccfe06cae91fea59d43076fd71c.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ProcgenScriptTarget.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ProcgenScriptTarget_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditableTarget_8h.html">editing/EditableTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProperty_8h.html">editing/EditingProperty.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditingTargetOperations_8h.html">editing/EditingTargetOperations.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="ParamSchema_8h.html">procgen/ParamSchema.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen__editing.html">eve::procgen_editing</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1procgen__editing.html#a45b269580142c257bab5989fe084ff14">EditorDiagnostic</a> = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#a0cc8e37c960efb4a7997225bab64bb5e">EditorStatus</a>     = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a>      = editing::Value;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a> = editing::Result&lt;T&gt;;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">ProcgenScriptModuleSpec</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#ae76b7e91a2b4bc2ec9e5cf898a74e89c">   26</a></span>    std::string                      <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#ae76b7e91a2b4bc2ec9e5cf898a74e89c">uri</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a9ebab605f0960bbc1511565ad6cced56">   27</a></span>    std::string                      <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a9ebab605f0960bbc1511565ad6cced56">id</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a14dda1d637031d8d5c466f4460b915a8">   28</a></span>    std::string                      <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a14dda1d637031d8d5c466f4460b915a8">displayName</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a4b60f663b70e3daaa99fdb3e46406a4d">   29</a></span>    std::string                      <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a4b60f663b70e3daaa99fdb3e46406a4d">kind</a> = <span class="stringliteral">&quot;points&quot;</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a2744484e0ae57160720b01e50d9a1b49">   30</a></span>    std::vector&lt;procgen::ParamDescriptor&gt; <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a2744484e0ae57160720b01e50d9a1b49">params</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html">   43</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html">ProcgenScriptDocumentTarget</a> final : <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                          <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a>,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                          <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                          <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html">ProcgenScriptDocumentTarget</a>(std::string <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abc41b386721a047aa767e2808de876b8">   52</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::CapabilityId</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abc41b386721a047aa767e2808de876b8">propertyCapabilityId</a>() {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a>(<span class="stringliteral">&quot;eve.editor.target.procgen-script-properties&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a699db72099265fe1b119a85ffd663336">   56</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::TargetId</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a699db72099265fe1b119a85ffd663336">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a>(id_); }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a7adcc529d029efddd446b115877ddd6d">   57</a></span>    std::uint64_t     <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a7adcc529d029efddd446b115877ddd6d">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a0f1d30c7d35623683cd769552177bf91">   58</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a0f1d30c7d35623683cd769552177bf91">dirtyRegion</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a5de71b01fb89571c10bcd7f3fe0df533">   59</a></span>    <span class="keywordtype">void</span>              <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a5de71b01fb89571c10bcd7f3fe0df533">clearDirtyRegion</a>()<span class="keyword"> override </span>{ dirty_.<a class="code hl_function" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a>(); }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#afb28a6366a82a27abccfb3728b46ba03">describe</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ac78af003eb68f407f8a9af8d4c587785">queryCapability</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::CapabilityId</a>&amp;) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ae7680578b04b430933d92c0da95443df">applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a>&amp;) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::unique_ptr&lt;editing::IDomainOperationTarget&gt; <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a8f7adecccaf8427ffc031f65fc0fbe47">cloneDomainState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a75ecc9b4852473dfc964cab9fcc67f03">commitDomainState</a>(std::unique_ptr&lt;editing::IDomainOperationTarget&gt;) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Revision&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a47c8dccb055a288400c3527632c4d0e5">currentRevision</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>&amp;) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a> schema(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>&amp;) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abbbe4d3c1fab86cc694f7d7d65885bb2">read</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>&amp;,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                     <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a>&amp;) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;editing::DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a797c406f1e599087a845c4d4e7e71e9c">makeSet</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>&amp;,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                                                   <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp;,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                   <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;editing::DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ad1f5f9a00a69bbe4fca82b5c7ba684cd">makeReset</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>&amp;,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                                     <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a>&amp;) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;ProcgenScriptModuleSpec&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#aff61dfc893484c6dd5d4d6206e313aa2">parseSpec</a>(std::string <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ad0f87b9ab0aac91a352d2719b3bc9fa9">uri</a>, std::string <span class="keywordtype">id</span>, std::string <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a934f96ffded5d38c15a714e4e6a46ea8">displayName</a>,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                                           std::string <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a6f70fc1f85859fcc05ab011d80c9514d">kind</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; schema);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;editing::DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a4c394720c5bee8c7c00619fa94082d4e">makeLoadModule</a>(<a class="code hl_struct" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">ProcgenScriptModuleSpec</a> spec) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ad0f87b9ab0aac91a352d2719b3bc9fa9">   90</a></span>    <span class="keyword">const</span> std::string&amp;              <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ad0f87b9ab0aac91a352d2719b3bc9fa9">uri</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> uri_; }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a63160edfc115dae6d426eb4a92f464f9">   91</a></span>    <span class="keyword">const</span> std::string&amp;              <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a63160edfc115dae6d426eb4a92f464f9">moduleId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> moduleId_; }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a934f96ffded5d38c15a714e4e6a46ea8">   92</a></span>    <span class="keyword">const</span> std::string&amp;              <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a934f96ffded5d38c15a714e4e6a46ea8">displayName</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> displayName_; }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a6f70fc1f85859fcc05ab011d80c9514d">   93</a></span>    <span class="keyword">const</span> std::string&amp;              <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a6f70fc1f85859fcc05ab011d80c9514d">kind</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_; }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#aea63a51e35ae0a8c5803efdaf65675d7">   94</a></span>    <span class="keyword">const</span> std::vector&lt;procgen::ParamDescriptor&gt;&amp; <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#aea63a51e35ae0a8c5803efdaf65675d7">params</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> params_; }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abf63ed8bc045a23a1b121d64202f9a88">   95</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>&amp;      <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abf63ed8bc045a23a1b121d64202f9a88">values</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> values_; }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">procgen::ParamDescriptor</a>* <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a5355954ee8123e59017c6fad402d2c35">findParam</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abc99491eb002ba239b384ee5ca1b491c">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>                   <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abd14d2df25d049cbb5b6d5e905fd717e">snapshotValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a>            <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a50421229b08a297cf5bd0514d1a896ad">loadSnapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp;);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">bool</span> matches(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>&amp;) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> contentValue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> schemaValue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_variable" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ParamDescriptor.html">procgen::ParamDescriptor</a>&amp; param);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">static</span> <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a> propertyType(<a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73">procgen::ParamKind</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a6f70fc1f85859fcc05ab011d80c9514d">kind</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">void</span> applySpec(<a class="code hl_struct" href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">ProcgenScriptModuleSpec</a> spec);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    std::string                         id_;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::string                         uri_;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    std::string                         moduleId_;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::string                         displayName_;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::string                         kind_ = <span class="stringliteral">&quot;points&quot;</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    std::vector&lt;procgen::ParamDescriptor&gt; params_;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>                 values_;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a>                   revision_ = 1;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a>                 dirty_;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>};</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}  <span class="comment">// namespace eve::procgen_editing</span></div>
+<div class="ttc" id="aEditableTarget_8h_html"><div class="ttname"><a href="EditableTarget_8h.html">EditableTarget.h</a></div></div>
+<div class="ttc" id="aEditingProperty_8h_html"><div class="ttname"><a href="EditingProperty_8h.html">EditingProperty.h</a></div></div>
+<div class="ttc" id="aEditingTargetOperations_8h_html"><div class="ttname"><a href="EditingTargetOperations_8h.html">EditingTargetOperations.h</a></div></div>
+<div class="ttc" id="aParamSchema_8h_html"><div class="ttname"><a href="ParamSchema_8h.html">ParamSchema.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a7600cb1e54c2a5b89ad934e9fc6f1399"><div class="ttname"><a href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a></div><div class="ttdeci">const char * defaultValue</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00020">PointGraph.cpp:20</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00018">PointGraph.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTargetStaging_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></div><div class="ttdoc">Optional candidate/publish capability for atomic domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00025">EditingTargetOperations.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IPropertyProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></div><div class="ttdoc">UI-independent property access for an immutable selection snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00117">EditingProperty.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html">eve::procgen_editing::ProcgenScriptDocumentTarget</a></div><div class="ttdoc">Revisioned Params document for a script-hosted procedural generator.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00043">ProcgenScriptTarget.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a0f1d30c7d35623683cd769552177bf91"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a0f1d30c7d35623683cd769552177bf91">eve::procgen_editing::ProcgenScriptDocumentTarget::dirtyRegion</a></div><div class="ttdeci">editing::EditRegion dirtyRegion() const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00058">ProcgenScriptTarget.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a47c8dccb055a288400c3527632c4d0e5"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a47c8dccb055a288400c3527632c4d0e5">eve::procgen_editing::ProcgenScriptDocumentTarget::currentRevision</a></div><div class="ttdeci">eve::Result&lt; eve::Revision &gt; currentRevision(const editing::SelectionSnapshot &amp;) const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00097">ProcgenScriptTarget.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a4c394720c5bee8c7c00619fa94082d4e"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a4c394720c5bee8c7c00619fa94082d4e">eve::procgen_editing::ProcgenScriptDocumentTarget::makeLoadModule</a></div><div class="ttdeci">EditorResult&lt; editing::DomainOperation &gt; makeLoadModule(ProcgenScriptModuleSpec spec) const</div><div class="ttdoc">Replace module identity and schema, remapping values (drop unknown, fill defaults).</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00352">ProcgenScriptTarget.cpp:352</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a50421229b08a297cf5bd0514d1a896ad"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a50421229b08a297cf5bd0514d1a896ad">eve::procgen_editing::ProcgenScriptDocumentTarget::loadSnapshot</a></div><div class="ttdeci">EditorResult&lt; void &gt; loadSnapshot(const EditorValue &amp;)</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00483">ProcgenScriptTarget.cpp:483</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a5355954ee8123e59017c6fad402d2c35"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a5355954ee8123e59017c6fad402d2c35">eve::procgen_editing::ProcgenScriptDocumentTarget::findParam</a></div><div class="ttdeci">const procgen::ParamDescriptor * findParam(const std::string &amp;key) const</div><div class="ttdoc">Find one reflected parameter by stable key.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00141">ProcgenScriptTarget.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a5de71b01fb89571c10bcd7f3fe0df533"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a5de71b01fb89571c10bcd7f3fe0df533">eve::procgen_editing::ProcgenScriptDocumentTarget::clearDirtyRegion</a></div><div class="ttdeci">void clearDirtyRegion() override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00059">ProcgenScriptTarget.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a63160edfc115dae6d426eb4a92f464f9"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a63160edfc115dae6d426eb4a92f464f9">eve::procgen_editing::ProcgenScriptDocumentTarget::moduleId</a></div><div class="ttdeci">const std::string &amp; moduleId() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00091">ProcgenScriptTarget.h:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a699db72099265fe1b119a85ffd663336"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a699db72099265fe1b119a85ffd663336">eve::procgen_editing::ProcgenScriptDocumentTarget::targetId</a></div><div class="ttdeci">editing::TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00056">ProcgenScriptTarget.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a6f70fc1f85859fcc05ab011d80c9514d"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a6f70fc1f85859fcc05ab011d80c9514d">eve::procgen_editing::ProcgenScriptDocumentTarget::kind</a></div><div class="ttdeci">const std::string &amp; kind() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00093">ProcgenScriptTarget.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a75ecc9b4852473dfc964cab9fcc67f03"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a75ecc9b4852473dfc964cab9fcc67f03">eve::procgen_editing::ProcgenScriptDocumentTarget::commitDomainState</a></div><div class="ttdeci">EditorResult&lt; void &gt; commitDomainState(std::unique_ptr&lt; editing::IDomainOperationTarget &gt;) override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00469">ProcgenScriptTarget.cpp:469</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a797c406f1e599087a845c4d4e7e71e9c"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a797c406f1e599087a845c4d4e7e71e9c">eve::procgen_editing::ProcgenScriptDocumentTarget::makeSet</a></div><div class="ttdeci">EditorResult&lt; editing::DomainOperation &gt; makeSet(const editing::SelectionSnapshot &amp;, const editing::PropertyPath &amp;, const EditorValue &amp;, editing::PropertySetMode) const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00381">ProcgenScriptTarget.cpp:381</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a7adcc529d029efddd446b115877ddd6d"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a7adcc529d029efddd446b115877ddd6d">eve::procgen_editing::ProcgenScriptDocumentTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00057">ProcgenScriptTarget.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a8f7adecccaf8427ffc031f65fc0fbe47"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a8f7adecccaf8427ffc031f65fc0fbe47">eve::procgen_editing::ProcgenScriptDocumentTarget::cloneDomainState</a></div><div class="ttdeci">std::unique_ptr&lt; editing::IDomainOperationTarget &gt; cloneDomainState() const override</div><div class="ttdoc">Clone the complete target state into an owning detached candidate.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00465">ProcgenScriptTarget.cpp:465</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_a934f96ffded5d38c15a714e4e6a46ea8"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#a934f96ffded5d38c15a714e4e6a46ea8">eve::procgen_editing::ProcgenScriptDocumentTarget::displayName</a></div><div class="ttdeci">const std::string &amp; displayName() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00092">ProcgenScriptTarget.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_abbbe4d3c1fab86cc694f7d7d65885bb2"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abbbe4d3c1fab86cc694f7d7d65885bb2">eve::procgen_editing::ProcgenScriptDocumentTarget::read</a></div><div class="ttdeci">editing::PropertyReadResult read(const editing::SelectionSnapshot &amp;, const editing::PropertyPath &amp;) const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00169">ProcgenScriptTarget.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_abc41b386721a047aa767e2808de876b8"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abc41b386721a047aa767e2808de876b8">eve::procgen_editing::ProcgenScriptDocumentTarget::propertyCapabilityId</a></div><div class="ttdeci">static editing::CapabilityId propertyCapabilityId()</div><div class="ttdoc">Capability identity published by describe() for Inspector editing.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00052">ProcgenScriptTarget.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_abc99491eb002ba239b384ee5ca1b491c"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abc99491eb002ba239b384ee5ca1b491c">eve::procgen_editing::ProcgenScriptDocumentTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00417">ProcgenScriptTarget.cpp:417</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_abd14d2df25d049cbb5b6d5e905fd717e"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abd14d2df25d049cbb5b6d5e905fd717e">eve::procgen_editing::ProcgenScriptDocumentTarget::snapshotValue</a></div><div class="ttdeci">EditorValue snapshotValue() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00479">ProcgenScriptTarget.cpp:479</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_abf63ed8bc045a23a1b121d64202f9a88"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#abf63ed8bc045a23a1b121d64202f9a88">eve::procgen_editing::ProcgenScriptDocumentTarget::values</a></div><div class="ttdeci">const EditorValue::Object &amp; values() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00095">ProcgenScriptTarget.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_ac78af003eb68f407f8a9af8d4c587785"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ac78af003eb68f407f8a9af8d4c587785">eve::procgen_editing::ProcgenScriptDocumentTarget::queryCapability</a></div><div class="ttdeci">void * queryCapability(const editing::CapabilityId &amp;) override</div><div class="ttdoc">Query Inspector property capability.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00088">ProcgenScriptTarget.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_ad0f87b9ab0aac91a352d2719b3bc9fa9"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ad0f87b9ab0aac91a352d2719b3bc9fa9">eve::procgen_editing::ProcgenScriptDocumentTarget::uri</a></div><div class="ttdeci">const std::string &amp; uri() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00090">ProcgenScriptTarget.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_ad1f5f9a00a69bbe4fca82b5c7ba684cd"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ad1f5f9a00a69bbe4fca82b5c7ba684cd">eve::procgen_editing::ProcgenScriptDocumentTarget::makeReset</a></div><div class="ttdeci">EditorResult&lt; editing::DomainOperation &gt; makeReset(const editing::SelectionSnapshot &amp;, const editing::PropertyPath &amp;) const override</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00408">ProcgenScriptTarget.cpp:408</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_ae7680578b04b430933d92c0da95443df"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#ae7680578b04b430933d92c0da95443df">eve::procgen_editing::ProcgenScriptDocumentTarget::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const editing::DomainOperation &amp;) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00437">ProcgenScriptTarget.cpp:437</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_aea63a51e35ae0a8c5803efdaf65675d7"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#aea63a51e35ae0a8c5803efdaf65675d7">eve::procgen_editing::ProcgenScriptDocumentTarget::params</a></div><div class="ttdeci">const std::vector&lt; procgen::ParamDescriptor &gt; &amp; params() const</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00094">ProcgenScriptTarget.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_afb28a6366a82a27abccfb3728b46ba03"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#afb28a6366a82a27abccfb3728b46ba03">eve::procgen_editing::ProcgenScriptDocumentTarget::describe</a></div><div class="ttdeci">editing::TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00080">ProcgenScriptTarget.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget_html_aff61dfc893484c6dd5d4d6206e313aa2"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1ProcgenScriptDocumentTarget.html#aff61dfc893484c6dd5d4d6206e313aa2">eve::procgen_editing::ProcgenScriptDocumentTarget::parseSpec</a></div><div class="ttdeci">static EditorResult&lt; ProcgenScriptModuleSpec &gt; parseSpec(std::string uri, std::string id, std::string displayName, std::string kind, const EditorValue &amp;schema)</div><div class="ttdoc">Parse a schema array into a module spec.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8cpp_source.html#l00254">ProcgenScriptTarget.cpp:254</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a0cc8e37c960efb4a7997225bab64bb5e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a0cc8e37c960efb4a7997225bab64bb5e">eve::editing::EditorStatus</a></div><div class="ttdeci">Status EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="EditingValueJson_8h_source.html#l00011">EditingValueJson.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00054">EditingIds.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::editing::PropertyType</a></div><div class="ttdeci">PropertyType</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00018">EditingProperty.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a642f65bf61b271dc4b599f4069b93060"><div class="ttname"><a href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::editing::PropertySetMode</a></div><div class="ttdeci">PropertySetMode</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00114">EditingProperty.h:114</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a69c9bf05ec03afaf2b389ee7df89f13e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">eve::editing::EditorValue</a></div><div class="ttdeci">Value EditorValue</div><div class="ttdef"><b>Definition</b> <a href="EditingValueJson_8h_source.html#l00010">EditingValueJson.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a80e450b5eb4cf0da7c013972cc572568"><div class="ttname"><a href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a></div><div class="ttdeci">StrongId&lt; CapabilityIdTag &gt; CapabilityId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00058">EditingIds.h:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_aa0a4032a9ee9adfb533ff1081f983f04"><div class="ttname"><a href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">eve::editing::EditorResult</a></div><div class="ttdeci">Result&lt; T &gt; EditorResult</div><div class="ttdef"><b>Definition</b> <a href="EditingValueJson_8h_source.html#l00013">EditingValueJson.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen__editing_html"><div class="ttname"><a href="namespaceeve_1_1procgen__editing.html">eve::procgen_editing</a></div><div class="ttdef"><b>Definition</b> <a href="HeightmapBrush_8h_source.html#l00007">HeightmapBrush.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen__editing_html_a45b269580142c257bab5989fe084ff14"><div class="ttname"><a href="namespaceeve_1_1procgen__editing.html#a45b269580142c257bab5989fe084ff14">eve::procgen_editing::EditorDiagnostic</a></div><div class="ttdeci">editing::Diagnostic EditorDiagnostic</div><div class="ttdef"><b>Definition</b> <a href="ProcgenEditingTypes_8h_source.html#l00010">ProcgenEditingTypes.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab639f8be33d9ffdd8a4640a7d3a60c73"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73">eve::procgen::ParamKind</a></div><div class="ttdeci">ParamKind</div><div class="ttdoc">Semantic type used by schema-driven recipe parameter editors.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00011">ParamSchema.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html">eve::editing::EditRegion</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00008">EditableTarget.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html_acc33c22f9fc876d717944a1fe94a932c"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">eve::editing::EditRegion::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00011">EditableTarget.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyReadResult_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyReadResult.html">eve::editing::PropertyReadResult</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00108">EditingProperty.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html">eve::editing::PropertySchema</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00099">EditingProperty.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00016">EditingSelection.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00032">EditableTarget.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ParamDescriptor_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ParamDescriptor.html">eve::procgen::ParamDescriptor</a></div><div class="ttdoc">UI-independent metadata for one procedural recipe parameter.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00014">ParamSchema.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec_html"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html">eve::procgen_editing::ProcgenScriptModuleSpec</a></div><div class="ttdoc">Authored identity and reflected parameter schema for one script generator.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00025">ProcgenScriptTarget.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec_html_a14dda1d637031d8d5c466f4460b915a8"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a14dda1d637031d8d5c466f4460b915a8">eve::procgen_editing::ProcgenScriptModuleSpec::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00028">ProcgenScriptTarget.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec_html_a2744484e0ae57160720b01e50d9a1b49"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a2744484e0ae57160720b01e50d9a1b49">eve::procgen_editing::ProcgenScriptModuleSpec::params</a></div><div class="ttdeci">std::vector&lt; procgen::ParamDescriptor &gt; params</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00030">ProcgenScriptTarget.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec_html_a4b60f663b70e3daaa99fdb3e46406a4d"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a4b60f663b70e3daaa99fdb3e46406a4d">eve::procgen_editing::ProcgenScriptModuleSpec::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00029">ProcgenScriptTarget.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec_html_a9ebab605f0960bbc1511565ad6cced56"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#a9ebab605f0960bbc1511565ad6cced56">eve::procgen_editing::ProcgenScriptModuleSpec::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00027">ProcgenScriptTarget.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec_html_ae76b7e91a2b4bc2ec9e5cf898a74e89c"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1ProcgenScriptModuleSpec.html#ae76b7e91a2b4bc2ec9e5cf898a74e89c">eve::procgen_editing::ProcgenScriptModuleSpec::uri</a></div><div class="ttdeci">std::string uri</div><div class="ttdef"><b>Definition</b> <a href="ProcgenScriptTarget_8h_source.html#l00026">ProcgenScriptTarget.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

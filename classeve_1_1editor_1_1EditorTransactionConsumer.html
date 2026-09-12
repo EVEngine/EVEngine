@@ -1,0 +1,987 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorTransactionConsumer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1EditorTransactionConsumer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorTransactionConsumer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1editor_1_1Editor.html" title="Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();">Editor</a> consumer of the common transaction participant/coordinator protocol.  
+ <a href="classeve_1_1editor_1_1EditorTransactionConsumer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorTransactionConsumer_8h_source.html">EditorTransactionConsumer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae0bde8aeed5fe26d01cbb5e348172855" id="r_ae0bde8aeed5fe26d01cbb5e348172855"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ae0bde8aeed5fe26d01cbb5e348172855">EditorTransactionConsumer</a> (<a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *authority=nullptr)</td></tr>
+<tr class="memdesc:ae0bde8aeed5fe26d01cbb5e348172855"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a consumer with an optional non-owning edit authority.  <br /></td></tr>
+<tr class="separator:ae0bde8aeed5fe26d01cbb5e348172855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d788b1c698acddabbc615e3369fa8b" id="r_a12d788b1c698acddabbc615e3369fa8b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a12d788b1c698acddabbc615e3369fa8b">~EditorTransactionConsumer</a> ()</td></tr>
+<tr class="separator:a12d788b1c698acddabbc615e3369fa8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab6b68cf30f356058818ecba2d63fed" id="r_a4ab6b68cf30f356058818ecba2d63fed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4ab6b68cf30f356058818ecba2d63fed">EditorTransactionConsumer</a> (const <a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> &amp;)=delete</td></tr>
+<tr class="separator:a4ab6b68cf30f356058818ecba2d63fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10386b0a968a2e893e23bf1b6e68f78b" id="r_a10386b0a968a2e893e23bf1b6e68f78b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a10386b0a968a2e893e23bf1b6e68f78b">operator=</a> (const <a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> &amp;)=delete</td></tr>
+<tr class="separator:a10386b0a968a2e893e23bf1b6e68f78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab318bd598e818b3c3e7503cd82c954e6" id="r_ab318bd598e818b3c3e7503cd82c954e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ab318bd598e818b3c3e7503cd82c954e6">setAuthority</a> (<a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *authority)</td></tr>
+<tr class="memdesc:ab318bd598e818b3c3e7503cd82c954e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the borrowed authority when no transaction is active.  <br /></td></tr>
+<tr class="separator:ab318bd598e818b3c3e7503cd82c954e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13ee859cdbd12ebe7aec0920734c75b2" id="r_a13ee859cdbd12ebe7aec0920734c75b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">TransactionId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a13ee859cdbd12ebe7aec0920734c75b2">begin</a> (<a class="el" href="namespaceeve_1_1editor.html#aa291deb653e7c3252981b678f8ac3eef">TransactionSpec</a> specification)</td></tr>
+<tr class="memdesc:a13ee859cdbd12ebe7aec0920734c75b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begins a transaction with an explicit stable editor identifier.  <br /></td></tr>
+<tr class="separator:a13ee859cdbd12ebe7aec0920734c75b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaf192f85ecd5763921d18c1478b146a" id="r_afaf192f85ecd5763921d18c1478b146a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">TransactionId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#afaf192f85ecd5763921d18c1478b146a">beginLegacy</a> (std::string label)</td></tr>
+<tr class="memdesc:afaf192f85ecd5763921d18c1478b146a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begins a compatibility command transaction with an allocated identifier.  <br /></td></tr>
+<tr class="separator:afaf192f85ecd5763921d18c1478b146a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b238ae669f1d325938077585ded7328" id="r_a3b238ae669f1d325938077585ded7328"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a3b238ae669f1d325938077585ded7328">append</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt; command)</td></tr>
+<tr class="memdesc:a3b238ae669f1d325938077585ded7328"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a command without publishing its target mutation.  <br /></td></tr>
+<tr class="separator:a3b238ae669f1d325938077585ded7328"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9515cd22601ca619687000c15cf30f" id="r_aee9515cd22601ca619687000c15cf30f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aee9515cd22601ca619687000c15cf30f">appendPreview</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt; command)</td></tr>
+<tr class="memdesc:aee9515cd22601ca619687000c15cf30f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only append that applies a command as an editor preview.  <br /></td></tr>
+<tr class="separator:aee9515cd22601ca619687000c15cf30f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49ede1a951e5fcbd0b96a063542a9ded" id="r_a49ede1a951e5fcbd0b96a063542a9ded"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a49ede1a951e5fcbd0b96a063542a9ded">append</a> (<a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> operation)</td></tr>
+<tr class="memdesc:a49ede1a951e5fcbd0b96a063542a9ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a serializable domain operation for authority preflight.  <br /></td></tr>
+<tr class="separator:a49ede1a951e5fcbd0b96a063542a9ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a989564f55b91a72cb0e855d552ef7f0a" id="r_a989564f55b91a72cb0e855d552ef7f0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorDryRunReport.html">EditorDryRunReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a989564f55b91a72cb0e855d552ef7f0a">dryRun</a> () const</td></tr>
+<tr class="memdesc:a989564f55b91a72cb0e855d552ef7f0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs structural and authority preflight without publishing state.  <br /></td></tr>
+<tr class="separator:a989564f55b91a72cb0e855d552ef7f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae1e33f1406c11e01094e238f3c468f7" id="r_aae1e33f1406c11e01094e238f3c468f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aae1e33f1406c11e01094e238f3c468f7">commit</a> ()</td></tr>
+<tr class="memdesc:aae1e33f1406c11e01094e238f3c468f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commits the active editor participant set through Coordinator.  <br /></td></tr>
+<tr class="separator:aae1e33f1406c11e01094e238f3c468f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d17b8cb3259d09f45fc26c2a8f1d717" id="r_a2d17b8cb3259d09f45fc26c2a8f1d717"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a2d17b8cb3259d09f45fc26c2a8f1d717">commit</a> (std::span&lt; <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">transaction::ITransactionParticipant</a> * &gt; additional)</td></tr>
+<tr class="memdesc:a2d17b8cb3259d09f45fc26c2a8f1d717"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commits with additional borrowed participants for one composition boundary.  <br /></td></tr>
+<tr class="separator:a2d17b8cb3259d09f45fc26c2a8f1d717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a03bc25a59216eacff99792139d45de" id="r_a7a03bc25a59216eacff99792139d45de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a7a03bc25a59216eacff99792139d45de">retry</a> (std::span&lt; <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">transaction::ITransactionParticipant</a> * &gt; additional={})</td></tr>
+<tr class="memdesc:a7a03bc25a59216eacff99792139d45de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retries a failed commit while retaining its pending work.  <br /></td></tr>
+<tr class="separator:a7a03bc25a59216eacff99792139d45de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a625fae697dffe3f4b26133e89e60e2" id="r_a8a625fae697dffe3f4b26133e89e60e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a8a625fae697dffe3f4b26133e89e60e2">discard</a> ()</td></tr>
+<tr class="memdesc:a8a625fae697dffe3f4b26133e89e60e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly discards the pending transaction and any preview.  <br /></td></tr>
+<tr class="separator:a8a625fae697dffe3f4b26133e89e60e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5ca2c22505cfac725602bfc7c5614cf" id="r_aa5ca2c22505cfac725602bfc7c5614cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#aa5ca2c22505cfac725602bfc7c5614cf">rollback</a> ()</td></tr>
+<tr class="memdesc:aa5ca2c22505cfac725602bfc7c5614cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discards the active transaction and any unpublished preview.  <br /></td></tr>
+<tr class="separator:aa5ca2c22505cfac725602bfc7c5614cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f831cea14324cf12ff707156b6712e5" id="r_a1f831cea14324cf12ff707156b6712e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a1f831cea14324cf12ff707156b6712e5">undo</a> ()</td></tr>
+<tr class="memdesc:a1f831cea14324cf12ff707156b6712e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compensates the latest editor-owned commit and moves it to redo history.  <br /></td></tr>
+<tr class="separator:a1f831cea14324cf12ff707156b6712e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc4f92e2990913b933ddbc8af3154e66" id="r_afc4f92e2990913b933ddbc8af3154e66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#afc4f92e2990913b933ddbc8af3154e66">redo</a> ()</td></tr>
+<tr class="memdesc:afc4f92e2990913b933ddbc8af3154e66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-executes the latest compensated editor-owned transaction.  <br /></td></tr>
+<tr class="separator:afc4f92e2990913b933ddbc8af3154e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6df99881093016c0d807ede51fca570" id="r_ad6df99881093016c0d807ede51fca570"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ad6df99881093016c0d807ede51fca570">active</a> () const noexcept</td></tr>
+<tr class="memdesc:ad6df99881093016c0d807ede51fca570"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether an editor transaction is active.  <br /></td></tr>
+<tr class="separator:ad6df99881093016c0d807ede51fca570"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4edaafd4ce5e833b2c27a65386332aa" id="r_af4edaafd4ce5e833b2c27a65386332aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#af4edaafd4ce5e833b2c27a65386332aa">canUndo</a> () const noexcept</td></tr>
+<tr class="memdesc:af4edaafd4ce5e833b2c27a65386332aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether editor-owned history can be compensated.  <br /></td></tr>
+<tr class="separator:af4edaafd4ce5e833b2c27a65386332aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d706699caa2f75c656be4435a24b982" id="r_a4d706699caa2f75c656be4435a24b982"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4d706699caa2f75c656be4435a24b982">canRedo</a> () const noexcept</td></tr>
+<tr class="memdesc:a4d706699caa2f75c656be4435a24b982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether compensated editor history can be replayed.  <br /></td></tr>
+<tr class="separator:a4d706699caa2f75c656be4435a24b982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1afb3965fb30640b662ba986a0ca199" id="r_ae1afb3965fb30640b662ba986a0ca199"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#ae1afb3965fb30640b662ba986a0ca199">undoCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ae1afb3965fb30640b662ba986a0ca199"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of undo entries.  <br /></td></tr>
+<tr class="separator:ae1afb3965fb30640b662ba986a0ca199"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a68dfe7cb6d7ccee6a44f30a9f6c7b1" id="r_a4a68dfe7cb6d7ccee6a44f30a9f6c7b1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a4a68dfe7cb6d7ccee6a44f30a9f6c7b1">redoCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a4a68dfe7cb6d7ccee6a44f30a9f6c7b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of redo entries.  <br /></td></tr>
+<tr class="separator:a4a68dfe7cb6d7ccee6a44f30a9f6c7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e52787eddaf815d7fb17134e44cfe66" id="r_a2e52787eddaf815d7fb17134e44cfe66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">EditorCommitState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a2e52787eddaf815d7fb17134e44cfe66">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a2e52787eddaf815d7fb17134e44cfe66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the explicit state of the active/latest commit lifecycle.  <br /></td></tr>
+<tr class="separator:a2e52787eddaf815d7fb17134e44cfe66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d9d7359b5e608593a56515f31a5191" id="r_a51d9d7359b5e608593a56515f31a5191"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a51d9d7359b5e608593a56515f31a5191">diagnostics</a> () const noexcept</td></tr>
+<tr class="memdesc:a51d9d7359b5e608593a56515f31a5191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns diagnostics retained from the latest failed commit attempt.  <br /></td></tr>
+<tr class="separator:a51d9d7359b5e608593a56515f31a5191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a035faf175fa4f74fa28f8fc3ae7c996b" id="r_a035faf175fa4f74fa28f8fc3ae7c996b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a035faf175fa4f74fa28f8fc3ae7c996b">clear</a> ()</td></tr>
+<tr class="memdesc:a035faf175fa4f74fa28f8fc3ae7c996b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears active work and editor-owned undo/redo history.  <br /></td></tr>
+<tr class="separator:a035faf175fa4f74fa28f8fc3ae7c996b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1editor_1_1Editor.html" title="Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();">Editor</a> consumer of the common transaction participant/coordinator protocol. </p>
+<p>This class owns the editor transaction history. It adapts legacy reversible <a class="el" href="classeve_1_1editor_1_1IEditCommand.html" title="Reversible unit accepted by the editor transaction manager.">IEditCommand</a> objects to the generic prepare/commit/rollback/compensate lifecycle, and adapts IEditAuthority for serializable DomainOperation work. The consumer is synchronous and owner-thread-only. Authorities, command targets, and extra participants are borrowed and must outlive the call that uses them. No callback is invoked while an internal lock is held. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8h_source.html">EditorTransactionConsumer.h</a> 第 <a class="el" href="EditorTransactionConsumer_8h_source.html#l00067">67</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae0bde8aeed5fe26d01cbb5e348172855" name="ae0bde8aeed5fe26d01cbb5e348172855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0bde8aeed5fe26d01cbb5e348172855">&#9670;&#160;</a></span>EditorTransactionConsumer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTransactionConsumer::EditorTransactionConsumer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authority</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a consumer with an optional non-owning edit authority. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12d788b1c698acddabbc615e3369fa8b" name="a12d788b1c698acddabbc615e3369fa8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d788b1c698acddabbc615e3369fa8b">&#9670;&#160;</a></span>~EditorTransactionConsumer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTransactionConsumer::~EditorTransactionConsumer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ab6b68cf30f356058818ecba2d63fed" name="a4ab6b68cf30f356058818ecba2d63fed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ab6b68cf30f356058818ecba2d63fed">&#9670;&#160;</a></span>EditorTransactionConsumer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTransactionConsumer::EditorTransactionConsumer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad6df99881093016c0d807ede51fca570" name="ad6df99881093016c0d807ede51fca570"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6df99881093016c0d807ede51fca570">&#9670;&#160;</a></span>active()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorTransactionConsumer::active </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether an editor transaction is active. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00871">871</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8h_source.html#l00041">eve::editor::EditorTransactions::isActive()</a>.</p>
+
+</div>
+</div>
+<a id="a49ede1a951e5fcbd0b96a063542a9ded" name="a49ede1a951e5fcbd0b96a063542a9ded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49ede1a951e5fcbd0b96a063542a9ded">&#9670;&#160;</a></span>append() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::editor::EditorTransactionConsumer::append </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a>&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends a serializable domain operation for authority preflight. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00516">516</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>.</p>
+
+</div>
+</div>
+<a id="a3b238ae669f1d325938077585ded7328" name="a3b238ae669f1d325938077585ded7328"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b238ae669f1d325938077585ded7328">&#9670;&#160;</a></span>append() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::editor::EditorTransactionConsumer::append </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt;&#160;</td>
+          <td class="paramname"><em>command</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends a command without publishing its target mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00068">eve::editor::LocalTransactionBackend::append()</a>.</p>
+
+</div>
+</div>
+<a id="aee9515cd22601ca619687000c15cf30f" name="aee9515cd22601ca619687000c15cf30f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee9515cd22601ca619687000c15cf30f">&#9670;&#160;</a></span>appendPreview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::editor::EditorTransactionConsumer::appendPreview </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt;&#160;</td>
+          <td class="paramname"><em>command</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only append that applies a command as an editor preview. </p>
+<dl class="section remark"><dt>备注</dt><dd>The preview is still committed, rolled back, and compensated by the generic participant; new code should use <a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html#a3b238ae669f1d325938077585ded7328" title="Appends a command without publishing its target mutation.">append()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8cpp_source.html#l00013">eve::editor::EditorTransactions::append()</a>.</p>
+
+</div>
+</div>
+<a id="a13ee859cdbd12ebe7aec0920734c75b2" name="a13ee859cdbd12ebe7aec0920734c75b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ee859cdbd12ebe7aec0920734c75b2">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">TransactionId</a> &gt; eve::editor::EditorTransactionConsumer::begin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#aa291deb653e7c3252981b678f8ac3eef">TransactionSpec</a>&#160;</td>
+          <td class="paramname"><em>specification</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begins a transaction with an explicit stable editor identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00082">eve::editing::TransactionSpec::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::editor::Pending</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00272">eve::editor::EditorTransactionConsumer::Impl::Pending::specification</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00060">eve::editor::LocalTransactionBackend::begin()</a> , 以及 <a class="el" href="EditorTransactions_8cpp_source.html#l00005">eve::editor::EditorTransactions::beginTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="afaf192f85ecd5763921d18c1478b146a" name="afaf192f85ecd5763921d18c1478b146a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaf192f85ecd5763921d18c1478b146a">&#9670;&#160;</a></span>beginLegacy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">TransactionId</a> &gt; eve::editor::EditorTransactionConsumer::beginLegacy </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begins a compatibility command transaction with an allocated identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="EditingProtocol_8h_source.html#l00082">eve::editing::TransactionSpec::id</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00083">eve::editing::TransactionSpec::label</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8cpp_source.html#l00009">eve::editor::EditorTransactions::beginTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="a4d706699caa2f75c656be4435a24b982" name="a4d706699caa2f75c656be4435a24b982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d706699caa2f75c656be4435a24b982">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorTransactionConsumer::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether compensated editor history can be replayed. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00873">873</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8h_source.html#l00043">eve::editor::EditorTransactions::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="af4edaafd4ce5e833b2c27a65386332aa" name="af4edaafd4ce5e833b2c27a65386332aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4edaafd4ce5e833b2c27a65386332aa">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorTransactionConsumer::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether editor-owned history can be compensated. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00872">872</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8h_source.html#l00042">eve::editor::EditorTransactions::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="a035faf175fa4f74fa28f8fc3ae7c996b" name="a035faf175fa4f74fa28f8fc3ae7c996b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a035faf175fa4f74fa28f8fc3ae7c996b">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorTransactionConsumer::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears active work and editor-owned undo/redo history. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00881">881</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00720">discard()</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">eve::editor::Discarded</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8cpp_source.html#l00049">eve::editor::EditorTransactions::clear()</a>.</p>
+
+</div>
+</div>
+<a id="aae1e33f1406c11e01094e238f3c468f7" name="aae1e33f1406c11e01094e238f3c468f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae1e33f1406c11e01094e238f3c468f7">&#9670;&#160;</a></span>commit() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt; eve::editor::EditorTransactionConsumer::commit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commits the active editor participant set through Coordinator. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00564">564</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00074">eve::editor::LocalTransactionBackend::commit()</a> , 以及 <a class="el" href="EditorTransactions_8cpp_source.html#l00017">eve::editor::EditorTransactions::commitTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="a2d17b8cb3259d09f45fc26c2a8f1d717" name="a2d17b8cb3259d09f45fc26c2a8f1d717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d17b8cb3259d09f45fc26c2a8f1d717">&#9670;&#160;</a></span>commit() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt; eve::editor::EditorTransactionConsumer::commit </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">transaction::ITransactionParticipant</a> * &gt;&#160;</td>
+          <td class="paramname"><em>additional</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commits with additional borrowed participants for one composition boundary. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">additional</td><td>Participants owned by the caller and used only for this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>Additional participants are coordinated atomically for this call; editor history only owns the editor participants and therefore a caller must provide their own replay policy for external effects. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00568">568</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51d9d7359b5e608593a56515f31a5191" name="a51d9d7359b5e608593a56515f31a5191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d9d7359b5e608593a56515f31a5191">&#9670;&#160;</a></span>diagnostics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> &gt; &amp; eve::editor::EditorTransactionConsumer::diagnostics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns diagnostics retained from the latest failed commit attempt. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00877">877</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a625fae697dffe3f4b26133e89e60e2" name="a8a625fae697dffe3f4b26133e89e60e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a625fae697dffe3f4b26133e89e60e2">&#9670;&#160;</a></span>discard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::editor::EditorTransactionConsumer::discard </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicitly discards the pending transaction and any preview. </p>
+<dl class="section return"><dt>返回</dt><dd>Success when all preview state was reverted, otherwise a failure retaining the pending transaction for diagnosis. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00720">720</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">eve::editor::Discarded</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa486cc7e8d85ac3ca7008c7510d238dc8">eve::editor::FailedRetryable</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00881">clear()</a>, <a class="el" href="EditorTransactionService_8cpp_source.html#l00076">eve::editor::LocalTransactionBackend::discard()</a> , 以及 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00757">rollback()</a>.</p>
+
+</div>
+</div>
+<a id="a989564f55b91a72cb0e855d552ef7f0a" name="a989564f55b91a72cb0e855d552ef7f0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a989564f55b91a72cb0e855d552ef7f0a">&#9670;&#160;</a></span>dryRun()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorDryRunReport.html">EditorDryRunReport</a> &gt; eve::editor::EditorTransactionConsumer::dryRun </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs structural and authority preflight without publishing state. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00538">538</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8h_source.html#l00042">eve::editor::EditorDryRunReport::authorityPlan</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00040">eve::editor::EditorDryRunReport::commandCount</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00041">eve::editor::EditorDryRunReport::operationCount</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00039">eve::editor::EditorDryRunReport::specification</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00072">eve::editor::LocalTransactionBackend::preview()</a>.</p>
+
+</div>
+</div>
+<a id="a10386b0a968a2e893e23bf1b6e68f78b" name="a10386b0a968a2e893e23bf1b6e68f78b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10386b0a968a2e893e23bf1b6e68f78b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> &amp; eve::editor::EditorTransactionConsumer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc4f92e2990913b933ddbc8af3154e66" name="afc4f92e2990913b933ddbc8af3154e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc4f92e2990913b933ddbc8af3154e66">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt; eve::editor::EditorTransactionConsumer::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-executes the latest compensated editor-owned transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00812">812</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00285">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::authorityReceipt</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00026">eve::editor::EditorTransactionRecord::authorityReceipt</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00027">eve::editor::EditorTransactionRecord::commandCount</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00283">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::commands</a>, <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fafd8f656590df4b2d2b217b060b7204d3">eve::editor::Committed</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00024">eve::editor::EditorTransactionRecord::coordinator</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00082">eve::editing::TransactionSpec::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00028">eve::editor::EditorTransactionRecord::operationCount</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00284">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::operations</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00282">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::specification</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00025">eve::editor::EditorTransactionRecord::specification</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a> , 以及 <a class="el" href="EditorTransactions_8cpp_source.html#l00023">eve::editor::EditorTransactions::redoTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="a4a68dfe7cb6d7ccee6a44f30a9f6c7b1" name="a4a68dfe7cb6d7ccee6a44f30a9f6c7b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a68dfe7cb6d7ccee6a44f30a9f6c7b1">&#9670;&#160;</a></span>redoCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::editor::EditorTransactionConsumer::redoCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the number of redo entries. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00875">875</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8h_source.html#l00045">eve::editor::EditorTransactions::redoCount()</a>.</p>
+
+</div>
+</div>
+<a id="a7a03bc25a59216eacff99792139d45de" name="a7a03bc25a59216eacff99792139d45de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a03bc25a59216eacff99792139d45de">&#9670;&#160;</a></span>retry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt; eve::editor::EditorTransactionConsumer::retry </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">transaction::ITransactionParticipant</a> * &gt;&#160;</td>
+          <td class="paramname"><em>additional</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retries a failed commit while retaining its pending work. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">additional</td><td>The same borrowed participant set used by the failed attempt; participants are deliberately not retained by the consumer. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A committed record, or a failure leaving the pending work and diagnostic available for another retry or discard. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>A retry uses a fresh attempt transaction id. The caller must provide the same participant instances in the same order and ensure their compensation/rollback contract made them reusable. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00573">573</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa486cc7e8d85ac3ca7008c7510d238dc8">eve::editor::FailedRetryable</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00080">eve::editor::LocalTransactionBackend::retry()</a>.</p>
+
+</div>
+</div>
+<a id="aa5ca2c22505cfac725602bfc7c5614cf" name="aa5ca2c22505cfac725602bfc7c5614cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5ca2c22505cfac725602bfc7c5614cf">&#9670;&#160;</a></span>rollback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::editor::EditorTransactionConsumer::rollback </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discards the active transaction and any unpublished preview. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00757">757</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00720">discard()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8cpp_source.html#l00019">eve::editor::EditorTransactions::rollbackTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="ab318bd598e818b3c3e7503cd82c954e6" name="ab318bd598e818b3c3e7503cd82c954e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab318bd598e818b3c3e7503cd82c954e6">&#9670;&#160;</a></span>setAuthority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::editor::EditorTransactionConsumer::setAuthority </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes the borrowed authority when no transaction is active. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00056">eve::editor::LocalTransactionBackend::setAuthority()</a>.</p>
+
+</div>
+</div>
+<a id="a2e52787eddaf815d7fb17134e44cfe66" name="a2e52787eddaf815d7fb17134e44cfe66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e52787eddaf815d7fb17134e44cfe66">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">EditorCommitState</a> eve::editor::EditorTransactionConsumer::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the explicit state of the active/latest commit lifecycle. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00876">876</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f831cea14324cf12ff707156b6712e5" name="a1f831cea14324cf12ff707156b6712e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f831cea14324cf12ff707156b6712e5">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionRecord.html">EditorTransactionRecord</a> &gt; eve::editor::EditorTransactionConsumer::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compensates the latest editor-owned commit and moves it to redo history. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00759">759</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00285">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::authorityReceipt</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00026">eve::editor::EditorTransactionRecord::authorityReceipt</a>, <a class="el" href="EditingProtocol_8h_source.html#l00086">eve::editing::TransactionSpec::baseRevision</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00027">eve::editor::EditorTransactionRecord::commandCount</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00283">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::commands</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00024">eve::editor::EditorTransactionRecord::coordinator</a>, <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">eve::editor::Discarded</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00082">eve::editing::TransactionSpec::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00028">eve::editor::EditorTransactionRecord::operationCount</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00284">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::operations</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00282">eve::editor::EditorTransactionConsumer::Impl::HistoryEntry::specification</a>, <a class="el" href="EditorTransactionConsumer_8h_source.html#l00025">eve::editor::EditorTransactionRecord::specification</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a> , 以及 <a class="el" href="EditorTransactions_8cpp_source.html#l00021">eve::editor::EditorTransactions::undoTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="ae1afb3965fb30640b662ba986a0ca199" name="ae1afb3965fb30640b662ba986a0ca199"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1afb3965fb30640b662ba986a0ca199">&#9670;&#160;</a></span>undoCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::editor::EditorTransactionConsumer::undoCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the number of undo entries. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00874">874</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactions_8h_source.html#l00044">eve::editor::EditorTransactions::undoCount()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorTransactionConsumer_8h_source.html">EditorTransactionConsumer.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

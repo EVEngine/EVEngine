@@ -1,0 +1,290 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/avatar/VrmRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_92d32a9ddf71877e00af8592433a55dc.html">avatar</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VrmRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VrmRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="VrmDocument_8h.html">avatar/VrmDocument.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="ECS_8h.html">common/ECS.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>AnimPlayer;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>AnimSkin;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>AnimPose;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1model3d.html">eve::model3d</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>ModelData;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206">Material</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1avatar.html">eve::avatar</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>AvatarInstance;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">struct </span>VrmSurface;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">// Private import transaction and runtime owner. ECS projections are always resolved by generation.</span></div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1avatar_1_1VrmRuntime.html">VrmRuntime</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#ae49dd50121214fd0fd0352ce4dcaf742">   31</a></span>    <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#ae49dd50121214fd0fd0352ce4dcaf742">VrmRuntime</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#ae5a7a8ffc6af3d9a347b6a5cf98dbdfd">~VrmRuntime</a>();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;VrmRuntime&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#a048d4538f5a2af2a0ac63dbd3a0ebe63">prepare</a>(std::string_view <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#a63a2052e2b62887406d4fbb64c09f02b">animate</a>(<a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a>&amp; avatar, <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a>&amp; pose, <span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#ac6eefb5acb54f198c01b15a7b6950b31">sync</a>(<a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a>&amp; avatar, <span class="keyword">const</span> glm::mat4&amp; <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">world</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#a8f427315bd793573dd9e110259eb9bdb">morphs</a>(<a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a>&amp; avatar);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1avatar_1_1VrmRuntime.html#a995c038852d27ff9b7f7fba5ce77dd9e">gaze</a>(<a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a>&amp; avatar, <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a>&amp; pose, <span class="keyword">const</span> glm::mat4&amp; <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">world</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, glm::vec3 <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>              <span class="keywordtype">float</span> weight);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#adcb09ee6df59e4947a664baed091885a">   39</a></span>    std::weak_ptr&lt;const void&gt;                <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#adcb09ee6df59e4947a664baed091885a">providerLifetime</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#a54f290fe8835c08c205fc643f7dea03e">   40</a></span>    <a class="code hl_struct" href="structeve_1_1avatar_1_1VrmDocument.html">VrmDocument</a>                              <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#a54f290fe8835c08c205fc643f7dea03e">document</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#addf72dc64b8e2a14793ba190dccd95da">   41</a></span>    std::unique_ptr&lt;model3d::ModelData&gt;      <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#addf72dc64b8e2a14793ba190dccd95da">model</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#a598f287f859b83557c67fd8f11d4b817">   42</a></span>    std::unique_ptr&lt;animation::AnimSkeleton&gt; <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#a598f287f859b83557c67fd8f11d4b817">skeleton</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#ae09fd6d84c4e4aef1b125ccbff775ce3">   43</a></span>    std::unique_ptr&lt;animation::AnimPlayer&gt;   <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#ae09fd6d84c4e4aef1b125ccbff775ce3">player</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#a4f59ccf85d4d822e57074a66135adbb8">   44</a></span>    std::vector&lt;int&gt;                         <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#a4f59ccf85d4d822e57074a66135adbb8">nodeBones</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#aac2aad3df08cfaa2e6b8f08646a3cdb3">   45</a></span>    std::map&lt;int, std::array&lt;float, 3&gt;&gt;      <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#aac2aad3df08cfaa2e6b8f08646a3cdb3">rotations</a>;</div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html">   46</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html">Part</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#aff7578ee0a39c3bb116b400f275ca792">   47</a></span>        ecs::EntityHandle                    <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#aff7578ee0a39c3bb116b400f275ca792">entity</a>, <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a2321cc7da6dda7ee011a9c9f2aa3398e">outline</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#ac274f2823e9a44b194e496d7c85bd345">   48</a></span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>*                      <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#ac274f2823e9a44b194e496d7c85bd345">mesh</a>       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a9e43f6ff48b035090f29f683f4a04f4c">   49</a></span>        <span class="keywordtype">int</span>                                  <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a4212b20b87d52e2be81d448461c8c37e">sourceMesh</a> = -1, <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a9343db128c986d65dc22a8bac5cf9bfd">node</a> = -1, <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a9e43f6ff48b035090f29f683f4a04f4c">material</a> = -1;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a0cc5a24eb670008dd24a37d91e1038f8">   50</a></span>        std::unique_ptr&lt;animation::AnimSkin&gt; <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a0cc5a24eb670008dd24a37d91e1038f8">skin</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a452fbf914827b3790e9dbdb6718a35a2">   51</a></span>        std::vector&lt;float&gt;                   <a class="code hl_variable" href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a452fbf914827b3790e9dbdb6718a35a2">cpu</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#a9ef3ca5c729c3342b47b0dd380300a83">   53</a></span>    std::vector&lt;Part&gt;                        <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#a9ef3ca5c729c3342b47b0dd380300a83">parts</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#a72c0f964fdde4c88aa04aa10704752f5">   54</a></span>    std::vector&lt;std::unique_ptr&lt;VrmSurface&gt;&gt; <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#a72c0f964fdde4c88aa04aa10704752f5">surfaces</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#a91005cbfcd57b2b087a153763f55b4cb">   55</a></span>    std::vector&lt;graphics::Texture*&gt;          <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#a91005cbfcd57b2b087a153763f55b4cb">textures</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">   56</a></span>    glm::mat4                                <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">world</a>{1};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1avatar_1_1VrmRuntime.html#adae822d4a31854c1e8e9ea445787b462">   57</a></span>    <span class="keywordtype">float</span>                                    <a class="code hl_variable" href="classeve_1_1avatar_1_1VrmRuntime.html#adae822d4a31854c1e8e9ea445787b462">time</a> = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">struct </span>Particle {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        glm::vec3 current{}, <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>{};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">bool</span>      initialized = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    };</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::vector&lt;std::vector&lt;Particle&gt;&gt;     particles_;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::unordered_map&lt;std::string, float&gt; gazeWeights_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span>                                   springs(<a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a>&amp; pose, <span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}  <span class="comment">// namespace eve::avatar</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aECS_8h_html"><div class="ttname"><a href="ECS_8h.html">ECS.h</a></div></div>
+<div class="ttc" id="aOffscreenPreview_8cpp_html_ae3297973ca89615d6bee8dc8f02b05b1"><div class="ttname"><a href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a></div><div class="ttdeci">graphics::Canvas * previous</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00017">OffscreenPreview.cpp:17</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00920">TileConfig.cpp:920</a></div></div>
+<div class="ttc" id="aVrmDocument_8h_html"><div class="ttname"><a href="VrmDocument_8h.html">VrmDocument.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></div><div class="ttdoc">Unified avatar instance. Kind is a string: &quot;image&quot; | &quot;live2d&quot; | &quot;vroid&quot;. Script-facing API avoids ove...</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00102">AvatarInstance.h:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html">eve::avatar::VrmRuntime</a></div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00029">VrmRuntime.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a048d4538f5a2af2a0ac63dbd3a0ebe63"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a048d4538f5a2af2a0ac63dbd3a0ebe63">eve::avatar::VrmRuntime::prepare</a></div><div class="ttdeci">static eve::Result&lt; std::unique_ptr&lt; VrmRuntime &gt; &gt; prepare(std::string_view path)</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8cpp_source.html#l00036">VrmRuntime.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a4f59ccf85d4d822e57074a66135adbb8"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a4f59ccf85d4d822e57074a66135adbb8">eve::avatar::VrmRuntime::nodeBones</a></div><div class="ttdeci">std::vector&lt; int &gt; nodeBones</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00044">VrmRuntime.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a54f290fe8835c08c205fc643f7dea03e"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a54f290fe8835c08c205fc643f7dea03e">eve::avatar::VrmRuntime::document</a></div><div class="ttdeci">VrmDocument document</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00040">VrmRuntime.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a598f287f859b83557c67fd8f11d4b817"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a598f287f859b83557c67fd8f11d4b817">eve::avatar::VrmRuntime::skeleton</a></div><div class="ttdeci">std::unique_ptr&lt; animation::AnimSkeleton &gt; skeleton</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00042">VrmRuntime.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a63a2052e2b62887406d4fbb64c09f02b"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a63a2052e2b62887406d4fbb64c09f02b">eve::avatar::VrmRuntime::animate</a></div><div class="ttdeci">void animate(AvatarInstance &amp;avatar, animation::AnimPose &amp;pose, float dt)</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8cpp_source.html#l00146">VrmRuntime.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a72c0f964fdde4c88aa04aa10704752f5"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a72c0f964fdde4c88aa04aa10704752f5">eve::avatar::VrmRuntime::surfaces</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; VrmSurface &gt; &gt; surfaces</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00054">VrmRuntime.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a8f427315bd793573dd9e110259eb9bdb"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a8f427315bd793573dd9e110259eb9bdb">eve::avatar::VrmRuntime::morphs</a></div><div class="ttdeci">void morphs(AvatarInstance &amp;avatar)</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8cpp_source.html#l00154">VrmRuntime.cpp:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a91005cbfcd57b2b087a153763f55b4cb"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a91005cbfcd57b2b087a153763f55b4cb">eve::avatar::VrmRuntime::textures</a></div><div class="ttdeci">std::vector&lt; graphics::Texture * &gt; textures</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00055">VrmRuntime.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a995c038852d27ff9b7f7fba5ce77dd9e"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a995c038852d27ff9b7f7fba5ce77dd9e">eve::avatar::VrmRuntime::gaze</a></div><div class="ttdeci">void gaze(AvatarInstance &amp;avatar, animation::AnimPose &amp;pose, const glm::mat4 &amp;world, bool enabled, glm::vec3 target, float weight)</div><div class="ttdef"><b>Definition</b> <a href="VrmMotion_8cpp_source.html#l00032">VrmMotion.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_a9ef3ca5c729c3342b47b0dd380300a83"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#a9ef3ca5c729c3342b47b0dd380300a83">eve::avatar::VrmRuntime::parts</a></div><div class="ttdeci">std::vector&lt; Part &gt; parts</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00053">VrmRuntime.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_aac2aad3df08cfaa2e6b8f08646a3cdb3"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#aac2aad3df08cfaa2e6b8f08646a3cdb3">eve::avatar::VrmRuntime::rotations</a></div><div class="ttdeci">std::map&lt; int, std::array&lt; float, 3 &gt; &gt; rotations</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00045">VrmRuntime.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_ac6eefb5acb54f198c01b15a7b6950b31"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#ac6eefb5acb54f198c01b15a7b6950b31">eve::avatar::VrmRuntime::sync</a></div><div class="ttdeci">void sync(AvatarInstance &amp;avatar, const glm::mat4 &amp;world, bool visible)</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8cpp_source.html#l00122">VrmRuntime.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_ac7d0cdb5af84a7a19b6a7bf20a98d5b2"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#ac7d0cdb5af84a7a19b6a7bf20a98d5b2">eve::avatar::VrmRuntime::world</a></div><div class="ttdeci">glm::mat4 world</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00056">VrmRuntime.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_adae822d4a31854c1e8e9ea445787b462"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#adae822d4a31854c1e8e9ea445787b462">eve::avatar::VrmRuntime::time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00057">VrmRuntime.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_adcb09ee6df59e4947a664baed091885a"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#adcb09ee6df59e4947a664baed091885a">eve::avatar::VrmRuntime::providerLifetime</a></div><div class="ttdeci">std::weak_ptr&lt; const void &gt; providerLifetime</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00039">VrmRuntime.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_addf72dc64b8e2a14793ba190dccd95da"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#addf72dc64b8e2a14793ba190dccd95da">eve::avatar::VrmRuntime::model</a></div><div class="ttdeci">std::unique_ptr&lt; model3d::ModelData &gt; model</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00041">VrmRuntime.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_ae09fd6d84c4e4aef1b125ccbff775ce3"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#ae09fd6d84c4e4aef1b125ccbff775ce3">eve::avatar::VrmRuntime::player</a></div><div class="ttdeci">std::unique_ptr&lt; animation::AnimPlayer &gt; player</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00043">VrmRuntime.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_ae49dd50121214fd0fd0352ce4dcaf742"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#ae49dd50121214fd0fd0352ce4dcaf742">eve::avatar::VrmRuntime::VrmRuntime</a></div><div class="ttdeci">VrmRuntime()</div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1VrmRuntime_html_ae5a7a8ffc6af3d9a347b6a5cf98dbdfd"><div class="ttname"><a href="classeve_1_1avatar_1_1VrmRuntime.html#ae5a7a8ffc6af3d9a347b6a5cf98dbdfd">eve::avatar::VrmRuntime::~VrmRuntime</a></div><div class="ttdeci">~VrmRuntime()</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8cpp_source.html#l00023">VrmRuntime.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00023">Mesh.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206">eve::asset_import::UnitySourceKind::Material</a></div><div class="ttdeci">@ Material</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar_html"><div class="ttname"><a href="namespaceeve_1_1avatar.html">eve::avatar</a></div><div class="ttdef"><b>Definition</b> <a href="Avatar_8cpp_source.html#l00012">Avatar.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1model3d_html"><div class="ttname"><a href="namespaceeve_1_1model3d.html">eve::model3d</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00012">Animation.h:12</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmDocument_html"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmDocument.html">eve::avatar::VrmDocument</a></div><div class="ttdoc">Validated VRM schema data. Unknown optional fields are ignored; unknown versions fail.</div><div class="ttdef"><b>Definition</b> <a href="VrmDocument_8h_source.html#l00083">VrmDocument.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html">eve::avatar::VrmRuntime::Part</a></div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00046">VrmRuntime.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_a0cc5a24eb670008dd24a37d91e1038f8"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a0cc5a24eb670008dd24a37d91e1038f8">eve::avatar::VrmRuntime::Part::skin</a></div><div class="ttdeci">std::unique_ptr&lt; animation::AnimSkin &gt; skin</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00050">VrmRuntime.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_a2321cc7da6dda7ee011a9c9f2aa3398e"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a2321cc7da6dda7ee011a9c9f2aa3398e">eve::avatar::VrmRuntime::Part::outline</a></div><div class="ttdeci">ecs::EntityHandle outline</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00047">VrmRuntime.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_a4212b20b87d52e2be81d448461c8c37e"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a4212b20b87d52e2be81d448461c8c37e">eve::avatar::VrmRuntime::Part::sourceMesh</a></div><div class="ttdeci">int sourceMesh</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00049">VrmRuntime.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_a452fbf914827b3790e9dbdb6718a35a2"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a452fbf914827b3790e9dbdb6718a35a2">eve::avatar::VrmRuntime::Part::cpu</a></div><div class="ttdeci">std::vector&lt; float &gt; cpu</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00051">VrmRuntime.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_a9343db128c986d65dc22a8bac5cf9bfd"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a9343db128c986d65dc22a8bac5cf9bfd">eve::avatar::VrmRuntime::Part::node</a></div><div class="ttdeci">int node</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00049">VrmRuntime.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_a9e43f6ff48b035090f29f683f4a04f4c"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#a9e43f6ff48b035090f29f683f4a04f4c">eve::avatar::VrmRuntime::Part::material</a></div><div class="ttdeci">int material</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00049">VrmRuntime.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_ac274f2823e9a44b194e496d7c85bd345"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#ac274f2823e9a44b194e496d7c85bd345">eve::avatar::VrmRuntime::Part::mesh</a></div><div class="ttdeci">graphics::Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00048">VrmRuntime.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar_1_1VrmRuntime_1_1Part_html_aff7578ee0a39c3bb116b400f275ca792"><div class="ttname"><a href="structeve_1_1avatar_1_1VrmRuntime_1_1Part.html#aff7578ee0a39c3bb116b400f275ca792">eve::avatar::VrmRuntime::Part::entity</a></div><div class="ttdeci">ecs::EntityHandle entity</div><div class="ttdef"><b>Definition</b> <a href="VrmRuntime_8h_source.html#l00047">VrmRuntime.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

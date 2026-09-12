@@ -1,0 +1,295 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/fx/BuildingFxBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li><li class="navelem"><a class="el" href="dir_70198042829e3fff182e66cf44999956.html">fx</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BuildingFxBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BuildingFxBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Ghost_8h.html">building/Ghost.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementSession_8h.html">building/PlacementSession.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementWorld_8h.html">building/PlacementWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingFx_8h.html">building/fx/BuildingFx.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1buildingfx.html">eve::buildingfx</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keywordtype">void</span> BuildingFx::expose(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>.addClass(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, BuildingFx::create, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    expose(<a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">void</span> BuildingFx::expose(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setMeshResolver&quot;</span>, [](<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a3e6ed993d5dba1476546d9fe7d18b80e">BuildingFx</a>* fx, ssq::Table <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a2176bcdc827f88a010b2837fd5351119">resources</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        std::unordered_map&lt;std::string, graphics::Mesh*&gt; meshes;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>                                      <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>  = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a2176bcdc827f88a010b2837fd5351119">resources</a>.getHandle();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">const</span> SQInteger                                  <a class="code hl_variable" href="AgentBindings_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            sq_pushobject(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a2176bcdc827f88a010b2837fd5351119">resources</a>.getRaw());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            sq_pushnull(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keywordflow">while</span> (SQ_SUCCEEDED(sq_next(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, -2))) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                <span class="keyword">const</span> <span class="keyword">auto</span>    <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>  = ssq::detail::popValue&lt;std::string&gt;(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, -2);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                SQUserPointer <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <span class="keyword">const</span> <span class="keyword">auto</span>    tag  = <span class="keyword">reinterpret_cast&lt;</span>SQUserPointer<span class="keyword">&gt;</span>(ssq::detail::stableTypeHash&lt;graphics::Mesh*&gt;());</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                <span class="keywordflow">if</span> (SQ_FAILED(sq_getinstanceup(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, -1, &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, tag)) || !<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                    <span class="keywordflow">throw</span> ssq::TypeException(<span class="stringliteral">&quot;mesh resolver values must be non-null Mesh instances&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                meshes.emplace(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keyword">static_cast&lt;</span>graphics::Mesh*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                sq_pop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, 2);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="AgentBindings_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="AgentBindings_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        fx-&gt;setMeshResolver([meshes = std::move(meshes)](<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keyword">const</span> <span class="keyword">auto</span> found = meshes.find(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">return</span> found == meshes.end() ? <span class="keyword">nullptr</span> : found-&gt;second;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        });</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    });</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clearMeshResolver&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#ac37f6be9b7d32e9bc11668b249258d76">BuildingFx::clearMeshResolver</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;attach&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a16bddcdfff8907228455d48567be0732">BuildingFx::attach</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;detach&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#ade88aa61d5d64c62cdc5f1293c96da74">BuildingFx::detach</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;isAttached&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a962890958bc7b8e620cb354088067791">BuildingFx::isAttached</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getAttachedCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a05718ca62686b666918efe575d2795e4">BuildingFx::getAttachedCount</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;sync&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#aef8db391726ed623a46987404df6c33e">BuildingFx::sync</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getVisualCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a1e354865ca6b72a6bf0fd16e04f83dbf">BuildingFx::getVisualCount</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getVisualVariant&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a410b82dd43eb564f67bc85f1f001bbeb">BuildingFx::getVisualVariant</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getVisualResource&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a1521390400607412a13fda666107dc57">BuildingFx::getVisualResource</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getVisualFallbackReason&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#affdea65a7793cfc5e66fa891d42b824a">BuildingFx::getVisualFallbackReason</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getCurveGroupCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a07d8ce9049e8a5402a4d2a88e0b60d5e">BuildingFx::getCurveGroupCount</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getContinuousCurveVisualCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#abf75da8181cbb67f4c670c1b5bc76e9c">BuildingFx::getContinuousCurveVisualCount</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getCurveVisualFallbackReason&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#afbb5ed73216a3d9787aa3bff10505fb6">BuildingFx::getCurveVisualFallbackReason</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;updateEdgeCurveSurfacePreview&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#ae1cc085dc68ee5e3d649deddaaf5c926">BuildingFx::updateEdgeCurveSurfacePreviewStatus</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clearEdgeCurvePreview&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#aa0c877ae4c6d43b64d10db24d2963293">BuildingFx::clearEdgeCurvePreview</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;hasEdgeCurvePreview&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#ab0178c3aa6344960251086f6cd69024a">BuildingFx::hasEdgeCurvePreview</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getEdgeCurvePreviewFallbackReason&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#af07ff557cb7f7650f13237ff248e51c8">BuildingFx::getEdgeCurvePreviewFallbackReason</a>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getEdgeCurvePreviewSurfaceId&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a7eaaf55beca669a6c96611ed836d79e6">BuildingFx::getEdgeCurvePreviewSurfaceId</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setLevelVisibilityMode&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a41cef00317988959a45bf96f0f97174d">BuildingFx::setLevelVisibilityMode</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getLevelVisibilityMode&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a01762aaacf10f98ecad0801f5c84d39b">BuildingFx::getLevelVisibilityMode</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;isVisualVisible&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#aaa40a3ca3e5b736e7bc222307fb77c8f">BuildingFx::isVisualVisible</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;updateGhost&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#ad1f28be496cb7efbe5b1b9fa4f4199c8">BuildingFx::updateGhost</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;hideGhost&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a2a6d5e72ce4284f5ce2f0f0326e43c66">BuildingFx::hideGhost</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;updateAreaPreview&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a90e6ef7d39c88050e022faba95a5ba48">BuildingFx::updateAreaPreview</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clearAreaPreview&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a490f62fb733a2652a5d346bf66083fa8">BuildingFx::clearAreaPreview</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getAreaPreviewCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a129ca6e900336e3b5c19dcf0118ddd88">BuildingFx::getAreaPreviewCount</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getAreaPreviewAccepted&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a4f67963c2fec5a325cfdd2d2ddcd416f">BuildingFx::getAreaPreviewAccepted</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setGridVisible&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a7fcc15b879b21b886ef43369b883680c">BuildingFx::setGridVisible</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getGridVisible&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#a2637c7d28da651fa5381fe5b9de35871">BuildingFx::getGridVisible</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;drawGrid2D&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#ae5f0527a6a2ba0f751e650a701895fa5">BuildingFx::drawGrid2D</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;drawGrid3D&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1buildingfx_1_1BuildingFx.html#aa4409a3b0845592488fde0ce6bb2ba19">BuildingFx::drawGrid3D</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace eve::buildingfx</span></div>
+<div class="ttc" id="aAgentBindings_8cpp_html_a8f53a853d53616e68dce5e5688ea3311"><div class="ttname"><a href="AgentBindings_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a></div><div class="ttdeci">SQInteger top</div><div class="ttdef"><b>Definition</b> <a href="AgentBindings_8cpp_source.html#l00016">AgentBindings.cpp:16</a></div></div>
+<div class="ttc" id="aBuildingFx_8h_html"><div class="ttname"><a href="BuildingFx_8h.html">BuildingFx.h</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00021">ECS.cpp:21</a></div></div>
+<div class="ttc" id="aGhost_8h_html"><div class="ttname"><a href="Ghost_8h.html">Ghost.h</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a2176bcdc827f88a010b2837fd5351119"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a2176bcdc827f88a010b2837fd5351119">resources</a></div><div class="ttdeci">std::vector&lt; std::weak_ptr&lt; DeviceBytes &gt; &gt; resources</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00055">OnnxGpgpu.cpp:55</a></div></div>
+<div class="ttc" id="aPlacementSession_8h_html"><div class="ttname"><a href="PlacementSession_8h.html">PlacementSession.h</a></div></div>
+<div class="ttc" id="aPlacementWorld_8h_html"><div class="ttname"><a href="PlacementWorld_8h.html">PlacementWorld.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00018">PointGraph.cpp:18</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00549">RenderSystem3D.cpp:549</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a01762aaacf10f98ecad0801f5c84d39b"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a01762aaacf10f98ecad0801f5c84d39b">eve::buildingfx::BuildingFx::getLevelVisibilityMode</a></div><div class="ttdeci">std::string getLevelVisibilityMode(building::PlacementWorld *world) const</div><div class="ttdoc">Return the stable per-world floor visibility token.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01118">BuildingFx.cpp:1118</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a05718ca62686b666918efe575d2795e4"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a05718ca62686b666918efe575d2795e4">eve::buildingfx::BuildingFx::getAttachedCount</a></div><div class="ttdeci">int getAttachedCount() const</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00643">BuildingFx.cpp:643</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a07d8ce9049e8a5402a4d2a88e0b60d5e"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a07d8ce9049e8a5402a4d2a88e0b60d5e">eve::buildingfx::BuildingFx::getCurveGroupCount</a></div><div class="ttdeci">int getCurveGroupCount(building::PlacementWorld *world) const</div><div class="ttdoc">Number of authoritative curve groups observed by the last sync.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01068">BuildingFx.cpp:1068</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a129ca6e900336e3b5c19dcf0118ddd88"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a129ca6e900336e3b5c19dcf0118ddd88">eve::buildingfx::BuildingFx::getAreaPreviewCount</a></div><div class="ttdeci">int getAreaPreviewCount(building::PlacementWorld *world) const</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01411">BuildingFx.cpp:1411</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a1521390400607412a13fda666107dc57"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a1521390400607412a13fda666107dc57">eve::buildingfx::BuildingFx::getVisualResource</a></div><div class="ttdeci">std::string getVisualResource(building::PlacementWorld *world, int instanceId) const</div><div class="ttdoc">Selected configured resource id after mask, class, and base resolution.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01145">BuildingFx.cpp:1145</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a16bddcdfff8907228455d48567be0732"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a16bddcdfff8907228455d48567be0732">eve::buildingfx::BuildingFx::attach</a></div><div class="ttdeci">bool attach(building::PlacementWorld *world)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00624">BuildingFx.cpp:624</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a1e354865ca6b72a6bf0fd16e04f83dbf"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a1e354865ca6b72a6bf0fd16e04f83dbf">eve::buildingfx::BuildingFx::getVisualCount</a></div><div class="ttdeci">int getVisualCount(building::PlacementWorld *world) const</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01063">BuildingFx.cpp:1063</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a2637c7d28da651fa5381fe5b9de35871"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a2637c7d28da651fa5381fe5b9de35871">eve::buildingfx::BuildingFx::getGridVisible</a></div><div class="ttdeci">bool getGridVisible(building::PlacementWorld *world) const</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01427">BuildingFx.cpp:1427</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a2a6d5e72ce4284f5ce2f0f0326e43c66"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a2a6d5e72ce4284f5ce2f0f0326e43c66">eve::buildingfx::BuildingFx::hideGhost</a></div><div class="ttdeci">void hideGhost(building::PlacementWorld *world)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01379">BuildingFx.cpp:1379</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a3e6ed993d5dba1476546d9fe7d18b80e"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a3e6ed993d5dba1476546d9fe7d18b80e">eve::buildingfx::BuildingFx::BuildingFx</a></div><div class="ttdeci">BuildingFx()=default</div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a410b82dd43eb564f67bc85f1f001bbeb"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a410b82dd43eb564f67bc85f1f001bbeb">eve::buildingfx::BuildingFx::getVisualVariant</a></div><div class="ttdeci">std::string getVisualVariant(building::PlacementWorld *world, int instanceId) const</div><div class="ttdoc">Current derived topology variant for one visual, or empty when unavailable.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01137">BuildingFx.cpp:1137</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a41cef00317988959a45bf96f0f97174d"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a41cef00317988959a45bf96f0f97174d">eve::buildingfx::BuildingFx::setLevelVisibilityMode</a></div><div class="ttdeci">void setLevelVisibilityMode(building::PlacementWorld *world, const std::string &amp;mode)</div><div class="ttdoc">Set per-world floor visibility: all, active, or active_and_below.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01101">BuildingFx.cpp:1101</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a490f62fb733a2652a5d346bf66083fa8"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a490f62fb733a2652a5d346bf66083fa8">eve::buildingfx::BuildingFx::clearAreaPreview</a></div><div class="ttdeci">void clearAreaPreview(building::PlacementWorld *world)</div><div class="ttdoc">Clear all area-preview cells and their derived render entities.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01404">BuildingFx.cpp:1404</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a4f67963c2fec5a325cfdd2d2ddcd416f"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a4f67963c2fec5a325cfdd2d2ddcd416f">eve::buildingfx::BuildingFx::getAreaPreviewAccepted</a></div><div class="ttdeci">bool getAreaPreviewAccepted(building::PlacementWorld *world, int index) const</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01416">BuildingFx.cpp:1416</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a7eaaf55beca669a6c96611ed836d79e6"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a7eaaf55beca669a6c96611ed836d79e6">eve::buildingfx::BuildingFx::getEdgeCurvePreviewSurfaceId</a></div><div class="ttdeci">std::string getEdgeCurvePreviewSurfaceId(building::PlacementWorld *world) const</div><div class="ttdoc">Surface identity represented by the current preview, or empty.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00610">BuildingFx.cpp:610</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a7fcc15b879b21b886ef43369b883680c"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a7fcc15b879b21b886ef43369b883680c">eve::buildingfx::BuildingFx::setGridVisible</a></div><div class="ttdeci">void setGridVisible(building::PlacementWorld *world, bool visible)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01422">BuildingFx.cpp:1422</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a90e6ef7d39c88050e022faba95a5ba48"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a90e6ef7d39c88050e022faba95a5ba48">eve::buildingfx::BuildingFx::updateAreaPreview</a></div><div class="ttdeci">void updateAreaPreview(building::PlacementWorld *world, building::PlacementSession *session)</div><div class="ttdoc">Copy the session's owning area-preview projection for 2D/3D heatmap rendering.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01388">BuildingFx.cpp:1388</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_a962890958bc7b8e620cb354088067791"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#a962890958bc7b8e620cb354088067791">eve::buildingfx::BuildingFx::isAttached</a></div><div class="ttdeci">bool isAttached(building::PlacementWorld *world) const</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00639">BuildingFx.cpp:639</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_aa0c877ae4c6d43b64d10db24d2963293"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#aa0c877ae4c6d43b64d10db24d2963293">eve::buildingfx::BuildingFx::clearEdgeCurvePreview</a></div><div class="ttdeci">void clearEdgeCurvePreview(building::PlacementWorld *world)</div><div class="ttdoc">Remove the transient continuous curve draft for a world.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00581">BuildingFx.cpp:581</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_aa4409a3b0845592488fde0ce6bb2ba19"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#aa4409a3b0845592488fde0ce6bb2ba19">eve::buildingfx::BuildingFx::drawGrid3D</a></div><div class="ttdeci">void drawGrid3D(building::PlacementWorld *world, graphics::Graphics *gfx, float height=0.f)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01512">BuildingFx.cpp:1512</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_aaa40a3ca3e5b736e7bc222307fb77c8f"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#aaa40a3ca3e5b736e7bc222307fb77c8f">eve::buildingfx::BuildingFx::isVisualVisible</a></div><div class="ttdeci">bool isVisualVisible(building::PlacementWorld *world, int instanceId) const</div><div class="ttdoc">Return whether one synchronized instance is currently visible.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01128">BuildingFx.cpp:1128</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_ab0178c3aa6344960251086f6cd69024a"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#ab0178c3aa6344960251086f6cd69024a">eve::buildingfx::BuildingFx::hasEdgeCurvePreview</a></div><div class="ttdeci">bool hasEdgeCurvePreview(building::PlacementWorld *world) const</div><div class="ttdoc">Return whether the world owns a current CPU curve-preview mesh.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00595">BuildingFx.cpp:595</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_abf75da8181cbb67f4c670c1b5bc76e9c"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#abf75da8181cbb67f4c670c1b5bc76e9c">eve::buildingfx::BuildingFx::getContinuousCurveVisualCount</a></div><div class="ttdeci">int getContinuousCurveVisualCount(building::PlacementWorld *world) const</div><div class="ttdoc">Number of curve groups currently rendered as one continuous 3D mesh.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01076">BuildingFx.cpp:1076</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_ac37f6be9b7d32e9bc11668b249258d76"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#ac37f6be9b7d32e9bc11668b249258d76">eve::buildingfx::BuildingFx::clearMeshResolver</a></div><div class="ttdeci">void clearMeshResolver()</div><div class="ttdoc">Remove the mesh resolver; configured resources fall back to the primitive cube.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8h_source.html#l00082">BuildingFx.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_ad1f28be496cb7efbe5b1b9fa4f4199c8"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#ad1f28be496cb7efbe5b1b9fa4f4199c8">eve::buildingfx::BuildingFx::updateGhost</a></div><div class="ttdeci">void updateGhost(building::PlacementWorld *world, building::Ghost *ghost)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01161">BuildingFx.cpp:1161</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_ade88aa61d5d64c62cdc5f1293c96da74"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#ade88aa61d5d64c62cdc5f1293c96da74">eve::buildingfx::BuildingFx::detach</a></div><div class="ttdeci">bool detach(building::PlacementWorld *world)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00630">BuildingFx.cpp:630</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_ae1cc085dc68ee5e3d649deddaaf5c926"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#ae1cc085dc68ee5e3d649deddaaf5c926">eve::buildingfx::BuildingFx::updateEdgeCurveSurfacePreviewStatus</a></div><div class="ttdeci">CurvePreviewUpdateStatus updateEdgeCurveSurfacePreviewStatus(building::PlacementWorld *world, building::PlacementSession *session, int subdivisions, const std::string &amp;surfaceName)</div><div class="ttdoc">Script projection of updateEdgeCurveSurfacePreview's structured result.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00516">BuildingFx.cpp:516</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_ae5f0527a6a2ba0f751e650a701895fa5"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#ae5f0527a6a2ba0f751e650a701895fa5">eve::buildingfx::BuildingFx::drawGrid2D</a></div><div class="ttdeci">void drawGrid2D(building::PlacementWorld *world, graphics::Graphics *gfx)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01432">BuildingFx.cpp:1432</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_aef8db391726ed623a46987404df6c33e"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#aef8db391726ed623a46987404df6c33e">eve::buildingfx::BuildingFx::sync</a></div><div class="ttdeci">void sync(building::PlacementWorld *world)</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00903">BuildingFx.cpp:903</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_af07ff557cb7f7650f13237ff248e51c8"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#af07ff557cb7f7650f13237ff248e51c8">eve::buildingfx::BuildingFx::getEdgeCurvePreviewFallbackReason</a></div><div class="ttdeci">std::string getEdgeCurvePreviewFallbackReason(building::PlacementWorld *world) const</div><div class="ttdoc">Return the stable backend degradation reason for the transient curve preview.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00601">BuildingFx.cpp:601</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_afbb5ed73216a3d9787aa3bff10505fb6"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#afbb5ed73216a3d9787aa3bff10505fb6">eve::buildingfx::BuildingFx::getCurveVisualFallbackReason</a></div><div class="ttdeci">std::string getCurveVisualFallbackReason(building::PlacementWorld *world, int instanceId) const</div><div class="ttdoc">Stable degradation reason for the curve group containing an instance.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01087">BuildingFx.cpp:1087</a></div></div>
+<div class="ttc" id="aclasseve_1_1buildingfx_1_1BuildingFx_html_affdea65a7793cfc5e66fa891d42b824a"><div class="ttname"><a href="classeve_1_1buildingfx_1_1BuildingFx.html#affdea65a7793cfc5e66fa891d42b824a">eve::buildingfx::BuildingFx::getVisualFallbackReason</a></div><div class="ttdeci">std::string getVisualFallbackReason(building::PlacementWorld *world, int instanceId) const</div><div class="ttdoc">Empty on resolved resources, otherwise a stable observable degradation reason.</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l01152">BuildingFx.cpp:1152</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1buildingfx_html"><div class="ttname"><a href="namespaceeve_1_1buildingfx.html">eve::buildingfx</a></div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00023">BuildingFx.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae33307d84fd0b94d2d0ef89255b4405b"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">eve::rpg::table</a></div><div class="ttdeci">std::unordered_map&lt; std::string, SkillDefinition &gt; &amp; table()</div><div class="ttdef"><b>Definition</b> <a href="Skill_8cpp_source.html#l00065">Skill.cpp:65</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

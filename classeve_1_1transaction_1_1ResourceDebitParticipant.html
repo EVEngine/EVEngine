@@ -1,0 +1,609 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::transaction::ResourceDebitParticipant类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1transaction.html">transaction</a></li><li class="navelem"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1transaction_1_1ResourceDebitParticipant-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::transaction::ResourceDebitParticipant类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Adapts IResourceAccount debit semantics to <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a>.  
+ <a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ResourceAccountParticipant_8h_source.html">ResourceAccountParticipant.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::transaction::ResourceDebitParticipant 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1transaction_1_1ResourceDebitParticipant.png" usemap="#eve::transaction::ResourceDebitParticipant_map" alt=""/>
+  <map id="eve::transaction::ResourceDebitParticipant_map" name="eve::transaction::ResourceDebitParticipant_map">
+<area href="classeve_1_1transaction_1_1ITransactionParticipant.html" title="Synchronous participant contract for one coordinator transaction." alt="eve::transaction::ITransactionParticipant" shape="rect" coords="0,0,250,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a19c2b0b5d0fee52cca6df0a66813d691" id="r_a19c2b0b5d0fee52cca6df0a66813d691"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a19c2b0b5d0fee52cca6df0a66813d691">ResourceDebitParticipant</a> (<a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, <a class="el" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a> <a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>, std::string <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">name</a>=&quot;resource-debit&quot;)</td></tr>
+<tr class="memdesc:a19c2b0b5d0fee52cca6df0a66813d691"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind one debit cost to an account.  <br /></td></tr>
+<tr class="separator:a19c2b0b5d0fee52cca6df0a66813d691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a684c1389ae70d4b41727f364a70564e9" id="r_a684c1389ae70d4b41727f364a70564e9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a684c1389ae70d4b41727f364a70564e9">ResourceDebitParticipant</a> (const <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;)=delete</td></tr>
+<tr class="separator:a684c1389ae70d4b41727f364a70564e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c6c668d2d04416277ae3bba1557bb80" id="r_a2c6c668d2d04416277ae3bba1557bb80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a2c6c668d2d04416277ae3bba1557bb80">operator=</a> (const <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;)=delete</td></tr>
+<tr class="separator:a2c6c668d2d04416277ae3bba1557bb80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe0c2736f2c1b9a0f441483634a62d8a" id="r_abe0c2736f2c1b9a0f441483634a62d8a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#abe0c2736f2c1b9a0f441483634a62d8a">ResourceDebitParticipant</a> (<a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:abe0c2736f2c1b9a0f441483634a62d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b48d0fc388ee9eb4c7a3dee87505623" id="r_a0b48d0fc388ee9eb4c7a3dee87505623"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0b48d0fc388ee9eb4c7a3dee87505623">operator=</a> (<a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a0b48d0fc388ee9eb4c7a3dee87505623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e287b8baaa431624919cbb9b58bb993" id="r_a0e287b8baaa431624919cbb9b58bb993"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0e287b8baaa431624919cbb9b58bb993">name</a> () const noexcept override</td></tr>
+<tr class="memdesc:a0e287b8baaa431624919cbb9b58bb993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the diagnostic name supplied at construction.  <br /></td></tr>
+<tr class="separator:a0e287b8baaa431624919cbb9b58bb993"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0046fe274db3497147f041f27ed3af2a" id="r_a0046fe274db3497147f041f27ed3af2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a0046fe274db3497147f041f27ed3af2a">prepare</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context) override</td></tr>
+<tr class="memdesc:a0046fe274db3497147f041f27ed3af2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and stage local changes for the transaction.    <br /></td></tr>
+<tr class="separator:a0046fe274db3497147f041f27ed3af2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33d1c23fdc77ab9c3b1d554ed011255f" id="r_a33d1c23fdc77ab9c3b1d554ed011255f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a33d1c23fdc77ab9c3b1d554ed011255f">commit</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context) override</td></tr>
+<tr class="memdesc:a33d1c23fdc77ab9c3b1d554ed011255f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish this participant's staged changes.    <br /></td></tr>
+<tr class="separator:a33d1c23fdc77ab9c3b1d554ed011255f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed2e5edb44b60f0ba726a82d75ffd2d4" id="r_aed2e5edb44b60f0ba726a82d75ffd2d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#aed2e5edb44b60f0ba726a82d75ffd2d4">rollback</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context) override</td></tr>
+<tr class="memdesc:aed2e5edb44b60f0ba726a82d75ffd2d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard a prepared but not committed stage.    <br /></td></tr>
+<tr class="separator:aed2e5edb44b60f0ba726a82d75ffd2d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66001fc91aa55e4621c9442b23bad65f" id="r_a66001fc91aa55e4621c9442b23bad65f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a66001fc91aa55e4621c9442b23bad65f">compensate</a> (const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;context) override</td></tr>
+<tr class="memdesc:a66001fc91aa55e4621c9442b23bad65f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo an already committed external effect by compensation.    <br /></td></tr>
+<tr class="separator:a66001fc91aa55e4621c9442b23bad65f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80d3cfc38173d56a2d525c4b3d5c2232" id="r_a80d3cfc38173d56a2d525c4b3d5c2232"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">ResourceDebitState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#a80d3cfc38173d56a2d525c4b3d5c2232">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a80d3cfc38173d56a2d525c4b3d5c2232"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the participant lifecycle state for diagnostics/tests.  <br /></td></tr>
+<tr class="separator:a80d3cfc38173d56a2d525c4b3d5c2232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1transaction_1_1ITransactionParticipant"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1transaction_1_1ITransactionParticipant')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></td></tr>
+<tr class="memitem:a1a1fa7c45593e1328ea96f2000a484e0 inherit pub_methods_classeve_1_1transaction_1_1ITransactionParticipant" id="r_a1a1fa7c45593e1328ea96f2000a484e0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a1a1fa7c45593e1328ea96f2000a484e0">~ITransactionParticipant</a> ()=default</td></tr>
+<tr class="separator:a1a1fa7c45593e1328ea96f2000a484e0 inherit pub_methods_classeve_1_1transaction_1_1ITransactionParticipant"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Adapts IResourceAccount debit semantics to <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a>. </p>
+<p><code>prepare</code> reserves the complete cost, <code>commit</code> consumes that reservation, <code>rollback</code> releases an uncommitted reservation, and <code>compensate</code> credits the same cost after a later participant has already committed. This class owns no account balance; the referenced account and CostSpec remain caller-owned and must outlive the synchronous <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a> call. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8h_source.html">ResourceAccountParticipant.h</a> 第 <a class="el" href="ResourceAccountParticipant_8h_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a19c2b0b5d0fee52cca6df0a66813d691" name="a19c2b0b5d0fee52cca6df0a66813d691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19c2b0b5d0fee52cca6df0a66813d691">&#9670;&#160;</a></span>ResourceDebitParticipant() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::ResourceDebitParticipant::ResourceDebitParticipant </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> &amp;&#160;</td>
+          <td class="paramname"><em>account</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a>&#160;</td>
+          <td class="paramname"><em>cost</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em> = <code>&quot;resource-debit&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind one debit cost to an account. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">account</td><td>Borrowed account whose balance will be debited. </td></tr>
+    <tr><td class="paramname">cost</td><td>Validated or pending-validation canonical resource cost. </td></tr>
+    <tr><td class="paramname">name</td><td>Stable diagnostic name used by <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8cpp_source.html">ResourceAccountParticipant.cpp</a> 第 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a684c1389ae70d4b41727f364a70564e9" name="a684c1389ae70d4b41727f364a70564e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a684c1389ae70d4b41727f364a70564e9">&#9670;&#160;</a></span>ResourceDebitParticipant() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::ResourceDebitParticipant::ResourceDebitParticipant </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe0c2736f2c1b9a0f441483634a62d8a" name="abe0c2736f2c1b9a0f441483634a62d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe0c2736f2c1b9a0f441483634a62d8a">&#9670;&#160;</a></span>ResourceDebitParticipant() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::ResourceDebitParticipant::ResourceDebitParticipant </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a33d1c23fdc77ab9c3b1d554ed011255f" name="a33d1c23fdc77ab9c3b1d554ed011255f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33d1c23fdc77ab9c3b1d554ed011255f">&#9670;&#160;</a></span>commit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::transaction::ResourceDebitParticipant::commit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Publish this participant's staged changes.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when the participant is committed, otherwise diagnostics.   </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#adb456dad34179ed35c22e804d4afe41b">eve::transaction::ITransactionParticipant</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8cpp_source.html">ResourceAccountParticipant.cpp</a> 第 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a50027bdbae7f26a3a6e97d7d1ea45be8">eve::resource::IResourceAccount::commit()</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3">eve::transaction::Committed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb">eve::transaction::Prepared</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a66001fc91aa55e4621c9442b23bad65f" name="a66001fc91aa55e4621c9442b23bad65f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66001fc91aa55e4621c9442b23bad65f">&#9670;&#160;</a></span>compensate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::transaction::ResourceDebitParticipant::compensate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Undo an already committed external effect by compensation.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when compensation completes, <code>Unsupported</code> when impossible, or another failure with diagnostics.   </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a29f85eeb8dcd2e3e22504b7e5d19b0ff">eve::transaction::ITransactionParticipant</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8cpp_source.html">ResourceAccountParticipant.cpp</a> 第 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3">eve::transaction::Committed</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84">eve::transaction::Compensated</a>, <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a1e224d43b9d9a240f4d27e20296c4085">eve::resource::IResourceAccount::credit()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0e287b8baaa431624919cbb9b58bb993" name="a0e287b8baaa431624919cbb9b58bb993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e287b8baaa431624919cbb9b58bb993">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::transaction::ResourceDebitParticipant::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the diagnostic name supplied at construction. </p>
+
+<p>重载 <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#ab85f89782b7849b61416502d8bb0f84d">eve::transaction::ITransactionParticipant</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8h_source.html">ResourceAccountParticipant.h</a> 第 <a class="el" href="ResourceAccountParticipant_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c6c668d2d04416277ae3bba1557bb80" name="a2c6c668d2d04416277ae3bba1557bb80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c6c668d2d04416277ae3bba1557bb80">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp; eve::transaction::ResourceDebitParticipant::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b48d0fc388ee9eb4c7a3dee87505623" name="a0b48d0fc388ee9eb4c7a3dee87505623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b48d0fc388ee9eb4c7a3dee87505623">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp; eve::transaction::ResourceDebitParticipant::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0046fe274db3497147f041f27ed3af2a" name="a0046fe274db3497147f041f27ed3af2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0046fe274db3497147f041f27ed3af2a">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::transaction::ResourceDebitParticipant::prepare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate and stage local changes for the transaction.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when this participant is prepared, otherwise diagnostics.   </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a73ef50c2784bbc7ae1f2de588ee0b5a0">eve::transaction::ITransactionParticipant</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8cpp_source.html">ResourceAccountParticipant.cpp</a> 第 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3">eve::transaction::Committed</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84">eve::transaction::Compensated</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb">eve::transaction::Prepared</a>, <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a7980ac1f9f73552817b59cdbdb931fd4">eve::resource::IResourceAccount::reserve()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aed2e5edb44b60f0ba726a82d75ffd2d4" name="aed2e5edb44b60f0ba726a82d75ffd2d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed2e5edb44b60f0ba726a82d75ffd2d4">&#9670;&#160;</a></span>rollback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::transaction::ResourceDebitParticipant::rollback </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discard a prepared but not committed stage.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Shared borrowed transaction context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success when provisional state is discarded, otherwise diagnostics.   </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html#a90133c7cb99511eb1bf20acbbfb6da46">eve::transaction::ITransactionParticipant</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8cpp_source.html">ResourceAccountParticipant.cpp</a> 第 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb">eve::transaction::Prepared</a>, <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#af3099c0d5a5c081c400eeb9b476b032d">eve::resource::IResourceAccount::rollback()</a>, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86">eve::transaction::RolledBack</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a80d3cfc38173d56a2d525c4b3d5c2232" name="a80d3cfc38173d56a2d525c4b3d5c2232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80d3cfc38173d56a2d525c4b3d5c2232">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">ResourceDebitState</a> eve::transaction::ResourceDebitParticipant::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the participant lifecycle state for diagnostics/tests. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8h_source.html">ResourceAccountParticipant.h</a> 第 <a class="el" href="ResourceAccountParticipant_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/transaction/<a class="el" href="ResourceAccountParticipant_8h_source.html">ResourceAccountParticipant.h</a></li>
+<li>src/modules/transaction/<a class="el" href="ResourceAccountParticipant_8cpp_source.html">ResourceAccountParticipant.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

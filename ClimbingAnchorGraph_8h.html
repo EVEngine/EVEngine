@@ -1,0 +1,319 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingAnchorGraph.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">ClimbingAnchorGraph.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Versioned body-local climbing topology, dynamic resolution, and deterministic occupancy.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ClimbingPrimitives_8h_source.html">climbing/ClimbingPrimitives.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelOwnership_8h_source.html">common/SquirrelOwnership.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="StrongUint64_8h_source.html">common/StrongUint64.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PhysicsHandles_8h_source.html">physics/PhysicsHandles.h</a>&quot;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="ClimbingAnchorGraph_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeDefinition.html">eve::climbing::ClimbingAnchorNodeDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One body-local anchor node with deterministic occupancy slots.  <a href="structeve_1_1climbing_1_1ClimbingAnchorNodeDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorEdgeDefinition.html">eve::climbing::ClimbingAnchorEdgeDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directed authored transition in a climbing anchor graph.  <a href="structeve_1_1climbing_1_1ClimbingAnchorEdgeDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">eve::climbing::ClimbingAnchorGraphDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versioned graph asset; topology is authoritative while collision remains owned by Physics.  <a href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1detail_1_1ClimbingAnchorReservationIdTag.html">eve::climbing::detail::ClimbingAnchorReservationIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1detail_1_1ClimbingAnchorAgentIdTag.html">eve::climbing::detail::ClimbingAnchorAgentIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorOccupant.html">eve::climbing::ClimbingAnchorOccupant</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compound occupancy owner; execution ids are only unique inside one agent/runtime.  <a href="structeve_1_1climbing_1_1ClimbingAnchorOccupant.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">eve::climbing::ClimbingAnchorNodeRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified reference to an authored anchor node.  <a href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">eve::climbing::ClimbingAnchorReservation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning reservation credential; release validates every field.  <a href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRouteRequest.html">eve::climbing::ClimbingAnchorRouteRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only route request over one current anchor-graph generation.  <a href="structeve_1_1climbing_1_1ClimbingAnchorRouteRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRouteStep.html">eve::climbing::ClimbingAnchorRouteStep</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owning directed edge in a planned anchor route.  <a href="structeve_1_1climbing_1_1ClimbingAnchorRouteStep.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRoute.html">eve::climbing::ClimbingAnchorRoute</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shortest deterministic route pinned to one graph generation.  <a href="structeve_1_1climbing_1_1ClimbingAnchorRoute.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ResolvedClimbingAnchorNode.html">eve::climbing::ResolvedClimbingAnchorNode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space projection of a body-local anchor at one synchronous resolve point.  <a href="structeve_1_1climbing_1_1ResolvedClimbingAnchorNode.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphReload.html">eve::climbing::ClimbingAnchorGraphReload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic graph-reload outcome and owners whose old-generation reservations were invalidated.  <a href="structeve_1_1climbing_1_1ClimbingAnchorGraphReload.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html">eve::climbing::ClimbingAnchorGraphInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> instance binding one immutable graph generation to one Physics body.  <a href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphHandleTag.html">eve::climbing::ClimbingAnchorGraphHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle domain for module-owned anchor graph runtime instances.  <a href="structeve_1_1climbing_1_1ClimbingAnchorGraphHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1physics" id="r_namespaceeve_1_1physics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html">eve::physics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1physics"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional physics backend for vehicle mobility and body attach. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1climbing" id="r_namespaceeve_1_1climbing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html">eve::climbing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1climbing_1_1detail" id="r_namespaceeve_1_1climbing_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing_1_1detail.html">eve::climbing::detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a7a9a7a94dd0f6f260ee813c7e0269ca1" id="r_a7a9a7a94dd0f6f260ee813c7e0269ca1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#a7a9a7a94dd0f6f260ee813c7e0269ca1">eve::climbing::ClimbingAnchorReservationId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; <a class="el" href="structeve_1_1climbing_1_1detail_1_1ClimbingAnchorReservationIdTag.html">detail::ClimbingAnchorReservationIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a7a9a7a94dd0f6f260ee813c7e0269ca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable non-zero identity of one live anchor-slot reservation.  <br /></td></tr>
+<tr class="separator:a7a9a7a94dd0f6f260ee813c7e0269ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb4cc5e9595447bc9f8d8b2112df9a8f" id="r_abb4cc5e9595447bc9f8d8b2112df9a8f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#abb4cc5e9595447bc9f8d8b2112df9a8f">eve::climbing::ClimbingAnchorAgentId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; <a class="el" href="structeve_1_1climbing_1_1detail_1_1ClimbingAnchorAgentIdTag.html">detail::ClimbingAnchorAgentIdTag</a> &gt;</td></tr>
+<tr class="memdesc:abb4cc5e9595447bc9f8d8b2112df9a8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable non-zero identity of the character/agent that owns graph occupancy.  <br /></td></tr>
+<tr class="separator:abb4cc5e9595447bc9f8d8b2112df9a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa46e3edff6f2c3012e65b65a7fa78d5b" id="r_aa46e3edff6f2c3012e65b65a7fa78d5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#aa46e3edff6f2c3012e65b65a7fa78d5b">eve::climbing::ClimbingAnchorGraphHandleRef</a> = <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphHandleTag.html">ClimbingAnchorGraphHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:aa46e3edff6f2c3012e65b65a7fa78d5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation- and module-epoch-qualified anchor graph instance reference.  <br /></td></tr>
+<tr class="separator:aa46e3edff6f2c3012e65b65a7fa78d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a428a0a7cfcc51ee54b15c14add4e7085" id="r_a428a0a7cfcc51ee54b15c14add4e7085"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085">eve::climbing::ClimbingAnchorKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085aaa99e89e2e262b33252a871edb07bc80">eve::climbing::Ledge</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085ac455b4d9a6744f05c2fc47c1dee9cb3e">eve::climbing::CornerInner</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085af90f4e8e748afec8bd296461c80803b5">eve::climbing::CornerOuter</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085a56d68f4c4eae31046f6e9f48244aaf97">eve::climbing::LadderRung</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085ae2f9f85fd569b428ca0ea31f891c36b0">eve::climbing::Pole</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085adc6e84a67852dd96c1ba57da273b26ac">eve::climbing::Beam</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085addc35f88fa71b6ef142ae61f35364653">eve::climbing::Bar</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a428a0a7cfcc51ee54b15c14add4e7085"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authored semantic of one explicit climbing anchor.  <a href="namespaceeve_1_1climbing.html#a428a0a7cfcc51ee54b15c14add4e7085">更多...</a><br /></td></tr>
+<tr class="separator:a428a0a7cfcc51ee54b15c14add4e7085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fc9253074969249a1158e7fdfcf75d8" id="r_a2fc9253074969249a1158e7fdfcf75d8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8">eve::climbing::ClimbingAnchorEdgeKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a4cc8eb1b9e400f47ba44901992e04f58">eve::climbing::Shimmy</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a45671f70ac97ff86643523f29eb4d3b9">eve::climbing::Corner</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a101f693f72287a2819a364f64ca1c0ed">eve::climbing::Jump</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a3e679cff5b3a6f6f8f32aead541a0a12">eve::climbing::Drop</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8aeace16d66cdd93ad876c620db7456077">eve::climbing::Mount</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8af7bf77579f3ef4525685e62930eedf13">eve::climbing::Dismount</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a6a1c691bbf96b5c71a26173491b350cd">eve::climbing::Climb</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a99a808d8d16122d70e44bd7f709d30fb">eve::climbing::Balance</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8a198b44a40aa77f2256886010c7526c0b">eve::climbing::Swing</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a2fc9253074969249a1158e7fdfcf75d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allowed authored transition between two explicit anchors.  <a href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8">更多...</a><br /></td></tr>
+<tr class="separator:a2fc9253074969249a1158e7fdfcf75d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61054b76acb2c73a9f03397cc662d93c" id="r_a61054b76acb2c73a9f03397cc662d93c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#a61054b76acb2c73a9f03397cc662d93c">eve::climbing::ClimbingRouteOccupancyPolicy</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1climbing.html#a61054b76acb2c73a9f03397cc662d93cafd038fc7f319e48f3115d92bf5bdbef9">eve::climbing::Ignore</a>
+, <a class="el" href="namespaceeve_1_1climbing.html#a61054b76acb2c73a9f03397cc662d93ca316f6e5f4a6856d011f1434db7b61e5b">eve::climbing::AvoidFull</a>
+ }</td></tr>
+<tr class="memdesc:a61054b76acb2c73a9f03397cc662d93c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy controlling whether deterministic route planning may cross fully occupied nodes.  <a href="namespaceeve_1_1climbing.html#a61054b76acb2c73a9f03397cc662d93c">更多...</a><br /></td></tr>
+<tr class="separator:a61054b76acb2c73a9f03397cc662d93c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a69a698d51a87b7850bd52833191c883a" id="r_a69a698d51a87b7850bd52833191c883a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#a69a698d51a87b7850bd52833191c883a">eve::climbing::validateClimbingAnchorGraphDefinition</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>)</td></tr>
+<tr class="memdesc:a69a698d51a87b7850bd52833191c883a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates all graph identities, frames, slots, tags, and edge endpoints.  <br /></td></tr>
+<tr class="separator:a69a698d51a87b7850bd52833191c883a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeabb345d577c5e0d8d2ce763000eb7e5" id="r_aeabb345d577c5e0d8d2ce763000eb7e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#aeabb345d577c5e0d8d2ce763000eb7e5">eve::climbing::encodeClimbingAnchorGraphDefinition</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>)</td></tr>
+<tr class="memdesc:aeabb345d577c5e0d8d2ce763000eb7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes a validated graph to its canonical owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> representation.  <br /></td></tr>
+<tr class="separator:aeabb345d577c5e0d8d2ce763000eb7e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add6ce4a5cf2fb65c6dd7a5c228130f21" id="r_add6ce4a5cf2fb65c6dd7a5c228130f21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1climbing.html#add6ce4a5cf2fb65c6dd7a5c228130f21">eve::climbing::decodeClimbingAnchorGraphDefinition</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:add6ce4a5cf2fb65c6dd7a5c228130f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodes and validates a complete owning graph candidate transactionally.  <br /></td></tr>
+<tr class="separator:add6ce4a5cf2fb65c6dd7a5c228130f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Versioned body-local climbing topology, dynamic resolution, and deterministic occupancy. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

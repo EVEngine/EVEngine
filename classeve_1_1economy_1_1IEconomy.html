@@ -1,0 +1,574 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::economy::IEconomy类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1economy.html">economy</a></li><li class="navelem"><a class="el" href="classeve_1_1economy_1_1IEconomy.html">IEconomy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1economy_1_1IEconomy-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::economy::IEconomy类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>经济账本的跨模块查询/操作接口（提供方：economy 模块）。  
+ <a href="classeve_1_1economy_1_1IEconomy.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IEconomy_8h_source.html">IEconomy.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::economy::IEconomy 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1economy_1_1IEconomy.png" usemap="#eve::economy::IEconomy_map" alt=""/>
+  <map id="eve::economy::IEconomy_map" name="eve::economy::IEconomy_map">
+<area href="classeve_1_1economy_1_1Economy.html" title="经济模块（eve.Economy）：资源类型注册 + 玩家账本 + 事件 + 采集流水线。" alt="eve::economy::Economy" shape="rect" coords="0,56,151,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a08c5efcc3e509a7b51b7bffe4980d422" id="r_a08c5efcc3e509a7b51b7bffe4980d422"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#a08c5efcc3e509a7b51b7bffe4980d422">~IEconomy</a> ()=default</td></tr>
+<tr class="separator:a08c5efcc3e509a7b51b7bffe4980d422"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66ad539e4a56bed22ae580924fe3201" id="r_aa66ad539e4a56bed22ae580924fe3201"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#aa66ad539e4a56bed22ae580924fe3201">credit</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, int amount)=0</td></tr>
+<tr class="memdesc:aa66ad539e4a56bed22ae580924fe3201"><td class="mdescLeft">&#160;</td><td class="mdescRight">为玩家入账 amount，受资源类型上限约束。  <br /></td></tr>
+<tr class="separator:aa66ad539e4a56bed22ae580924fe3201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85fab58fc69c20c7a0d2848434b0a6d1" id="r_a85fab58fc69c20c7a0d2848434b0a6d1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#a85fab58fc69c20c7a0d2848434b0a6d1">debit</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, int amount)=0</td></tr>
+<tr class="memdesc:a85fab58fc69c20c7a0d2848434b0a6d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">为玩家出账 amount；余额不足返回 false 且不扣款。  <br /></td></tr>
+<tr class="separator:a85fab58fc69c20c7a0d2848434b0a6d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa3f1c3e283ee1f081b975fed8504270" id="r_afa3f1c3e283ee1f081b975fed8504270"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#afa3f1c3e283ee1f081b975fed8504270">get</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const =0</td></tr>
+<tr class="memdesc:afa3f1c3e283ee1f081b975fed8504270"><td class="mdescLeft">&#160;</td><td class="mdescRight">玩家当前持有量。  <br /></td></tr>
+<tr class="separator:afa3f1c3e283ee1f081b975fed8504270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac84b3979c65874ddfc2e820faff7de7d" id="r_ac84b3979c65874ddfc2e820faff7de7d"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#ac84b3979c65874ddfc2e820faff7de7d">getCap</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const =0</td></tr>
+<tr class="memdesc:ac84b3979c65874ddfc2e820faff7de7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">玩家该类型的持有上限（0=不限）。  <br /></td></tr>
+<tr class="separator:ac84b3979c65874ddfc2e820faff7de7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b148f474647f662eda724abf26d2d1a" id="r_a1b148f474647f662eda724abf26d2d1a"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#a1b148f474647f662eda724abf26d2d1a">getWasted</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const =0</td></tr>
+<tr class="memdesc:a1b148f474647f662eda724abf26d2d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">因满仓浪费的累计量。  <br /></td></tr>
+<tr class="separator:a1b148f474647f662eda724abf26d2d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0b2192a5f3677f7f206aede98f3bfd7" id="r_ae0b2192a5f3677f7f206aede98f3bfd7"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#ae0b2192a5f3677f7f206aede98f3bfd7">getIncome</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const =0</td></tr>
+<tr class="memdesc:ae0b2192a5f3677f7f206aede98f3bfd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">累计入账量。  <br /></td></tr>
+<tr class="separator:ae0b2192a5f3677f7f206aede98f3bfd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbfeb61515eef890b06649dfa6ca9636" id="r_adbfeb61515eef890b06649dfa6ca9636"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#adbfeb61515eef890b06649dfa6ca9636">getExpense</a> (int player, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const =0</td></tr>
+<tr class="memdesc:adbfeb61515eef890b06649dfa6ca9636"><td class="mdescLeft">&#160;</td><td class="mdescRight">累计出账量。  <br /></td></tr>
+<tr class="separator:adbfeb61515eef890b06649dfa6ca9636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a84284e1d8abf1e41b80a25138582bdf7" id="r_a84284e1d8abf1e41b80a25138582bdf7"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1economy_1_1IEconomy.html#a84284e1d8abf1e41b80a25138582bdf7">capabilityName</a> = &quot;IEconomy&quot;</td></tr>
+<tr class="separator:a84284e1d8abf1e41b80a25138582bdf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>经济账本的跨模块查询/操作接口（提供方：economy 模块）。 </p>
+<p>消费方（AI、UI、生产队列）通过 <a class="el" href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">eve::cap::query&lt;IEconomy&gt;()</a> 获取实现， 不直接 include economy 模块；无提供方时返回 nullptr，调用方自行兜底。 </p>
+
+<p class="definition">在文件 <a class="el" href="IEconomy_8h_source.html">IEconomy.h</a> 第 <a class="el" href="IEconomy_8h_source.html#l00013">13</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a08c5efcc3e509a7b51b7bffe4980d422" name="a08c5efcc3e509a7b51b7bffe4980d422"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08c5efcc3e509a7b51b7bffe4980d422">&#9670;&#160;</a></span>~IEconomy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::economy::IEconomy::~IEconomy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa66ad539e4a56bed22ae580924fe3201" name="aa66ad539e4a56bed22ae580924fe3201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa66ad539e4a56bed22ae580924fe3201">&#9670;&#160;</a></span>credit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::economy::IEconomy::credit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>为玩家入账 amount，受资源类型上限约束。 </p>
+<dl class="section return"><dt>返回</dt><dd>实际入账量（超出上限的部分记为浪费）。 </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#ac7b0e8e50d01631e5aadbf7f1ef5c409">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a85fab58fc69c20c7a0d2848434b0a6d1" name="a85fab58fc69c20c7a0d2848434b0a6d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85fab58fc69c20c7a0d2848434b0a6d1">&#9670;&#160;</a></span>debit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::economy::IEconomy::debit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>为玩家出账 amount；余额不足返回 false 且不扣款。 </p>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#a65c6a899a14c303c162a7ba0e67dea29">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afa3f1c3e283ee1f081b975fed8504270" name="afa3f1c3e283ee1f081b975fed8504270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa3f1c3e283ee1f081b975fed8504270">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::economy::IEconomy::get </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>玩家当前持有量。 </p>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#a358320100c3a27f8ae2a9a33665dcca3">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac84b3979c65874ddfc2e820faff7de7d" name="ac84b3979c65874ddfc2e820faff7de7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac84b3979c65874ddfc2e820faff7de7d">&#9670;&#160;</a></span>getCap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::economy::IEconomy::getCap </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>玩家该类型的持有上限（0=不限）。 </p>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#a95e8638c2860b7ef923416200ced7bb5">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="adbfeb61515eef890b06649dfa6ca9636" name="adbfeb61515eef890b06649dfa6ca9636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbfeb61515eef890b06649dfa6ca9636">&#9670;&#160;</a></span>getExpense()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::economy::IEconomy::getExpense </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>累计出账量。 </p>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#aa9a5b144abd4c87b0bca5cba7e473bca">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae0b2192a5f3677f7f206aede98f3bfd7" name="ae0b2192a5f3677f7f206aede98f3bfd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0b2192a5f3677f7f206aede98f3bfd7">&#9670;&#160;</a></span>getIncome()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::economy::IEconomy::getIncome </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>累计入账量。 </p>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#a1eb9526a1e1c816d8c2f40dc7fc4c649">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a1b148f474647f662eda724abf26d2d1a" name="a1b148f474647f662eda724abf26d2d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b148f474647f662eda724abf26d2d1a">&#9670;&#160;</a></span>getWasted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::economy::IEconomy::getWasted </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>因满仓浪费的累计量。 </p>
+
+<p>在 <a class="el" href="classeve_1_1economy_1_1Economy.html#a25ba60ffbfe10b3f6c8b5a66d7211dd3">eve::economy::Economy</a> 内被实现.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a84284e1d8abf1e41b80a25138582bdf7" name="a84284e1d8abf1e41b80a25138582bdf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84284e1d8abf1e41b80a25138582bdf7">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::economy::IEconomy::capabilityName = &quot;IEconomy&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="IEconomy_8h_source.html">IEconomy.h</a> 第 <a class="el" href="IEconomy_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="IEconomy_8h_source.html">IEconomy.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

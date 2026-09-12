@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/editing/UiThemePreview.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li><li class="navelem"><a class="el" href="dir_883e4d568dba4a266e0f9c7a88294404.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UiThemePreview.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UiThemePreview_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="UiTheme_8h.html">ui/editing/UiTheme.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="UiThemeTokens_8h.html">ui/editing/UiThemeTokens.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Theme_8h.html">ui/Theme.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui__editing.html">eve::ui_editing</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><a class="code hl_typedef" href="namespaceeve_1_1ui__editing.html#a3bce9e3b5384ec7c0c6369ad2eeaf117">EditorDiagnostic</a> previewDiagnostic(<span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">RuleId</a>(rule),</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                                        DiagnosticSeverity::Error, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>));</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editing_1_1UiThemePreviewService.html#a6f05b774adf0ed33d5988e806d38e476">   16</a></span><a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html">UiThemePreviewSnapshot</a> <a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemePreviewService.html#a6f05b774adf0ed33d5988e806d38e476">UiThemePreviewService::build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html">UiThemeCatalogTarget</a>&amp; catalog, <span class="keyword">const</span> ObjectId&amp; themeId,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                                    Revision expectedRevision)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html">UiThemePreviewSnapshot</a> snapshot;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#a28c1e10e07b8663a8bc5d0e957ab0b49">documentRevision</a> = catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a95b69f2f2158d79b37f134bcbcb21a73">revision</a>();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#a3f2e4cb81b18dc6961357f8a5cf2fd0b">themeId</a>          = themeId;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (expectedRevision != catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a95b69f2f2158d79b37f134bcbcb21a73">revision</a>()) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#ab426195c22d6fa5aec9281aa044a143b">status</a> = EditorStatus::Conflict;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#adeaeb7390b5097a0832f2337586187bf">diagnostics</a>.push_back(</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            previewDiagnostic(<span class="stringliteral">&quot;editor.ui-theme.stale-preview&quot;</span>, <span class="stringliteral">&quot;Theme preview requires the current catalog revision&quot;</span>));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> snapshot;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">auto</span> asset = catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#aed85e2088c1062dba843655f7aed5ec0">theme</a>(themeId);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (!asset.ok()) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#ab426195c22d6fa5aec9281aa044a143b">status</a> = EditorStatus::NotFound;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#adeaeb7390b5097a0832f2337586187bf">diagnostics</a>.insert(snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#adeaeb7390b5097a0832f2337586187bf">diagnostics</a>.end(), asset.status().diagnostics().begin(),</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                    asset.status().diagnostics().end());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> snapshot;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#a443fe88807c8ce382f2dd567dfd9969c">theme</a>       = asset.value().tokens;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#accaf96c8a79c1558d2bd5aa929bddf79">runtimeName</a> = catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a189c0b7abcc92b166415fbb58ec7d7cc">runtimeName</a>(themeId);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    snapshot.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#ab426195c22d6fa5aec9281aa044a143b">status</a>      = EditorStatus::Applied;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">return</span> snapshot;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editing_1_1UiThemeRuntimePublisher.html#a437a20ed10c033f70873a9e5518a263b">   40</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeRuntimePublisher.html#a437a20ed10c033f70873a9e5518a263b">UiThemeRuntimePublisher::publish</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html">UiThemeCatalogTarget</a>&amp; catalog)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">auto</span> asset = catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#aed85e2088c1062dba843655f7aed5ec0">theme</a>(catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a9a62c16b6e8214ea298e673bd220b13e">activeId</a>());</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (!asset.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(asset.status());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">auto</span> diagnostics = <a class="code hl_function" href="namespaceeve_1_1ui__editing.html#a3de0b46e3a12f87b8135fef77b09b23b">validateThemeTokens</a>(asset.value().tokens);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (!diagnostics.empty())</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(EditorStatus::Rejected, RuleId(<span class="stringliteral">&quot;editor.ui-theme.publish&quot;</span>),</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                          <span class="stringliteral">&quot;Active theme tokens are invalid&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_function" href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">ui::setGlobalTheme</a>(asset.value().tokens, catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a189c0b7abcc92b166415fbb58ec7d7cc">runtimeName</a>(catalog.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a9a62c16b6e8214ea298e673bd220b13e">activeId</a>()));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}  <span class="comment">// namespace eve::ui_editing</span></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aTheme_8h_html"><div class="ttname"><a href="Theme_8h.html">Theme.h</a></div></div>
+<div class="ttc" id="aUiThemeTokens_8h_html"><div class="ttname"><a href="UiThemeTokens_8h.html">UiThemeTokens.h</a></div></div>
+<div class="ttc" id="aUiTheme_8h_html"><div class="ttname"><a href="UiTheme_8h.html">UiTheme.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemeCatalogTarget_html"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html">eve::ui_editing::UiThemeCatalogTarget</a></div><div class="ttdoc">Serializable catalog of named UI themes with one active publication slot.</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00054">UiTheme.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemeCatalogTarget_html_a189c0b7abcc92b166415fbb58ec7d7cc"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a189c0b7abcc92b166415fbb58ec7d7cc">eve::ui_editing::UiThemeCatalogTarget::runtimeName</a></div><div class="ttdeci">std::string runtimeName(const ObjectId &amp;id) const</div><div class="ttdoc">Runtime name written to ui::globalThemeName(): dark, light, or custom.</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8cpp_source.html#l00156">UiTheme.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemeCatalogTarget_html_a95b69f2f2158d79b37f134bcbcb21a73"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a95b69f2f2158d79b37f134bcbcb21a73">eve::ui_editing::UiThemeCatalogTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00070">UiTheme.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemeCatalogTarget_html_a9a62c16b6e8214ea298e673bd220b13e"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#a9a62c16b6e8214ea298e673bd220b13e">eve::ui_editing::UiThemeCatalogTarget::activeId</a></div><div class="ttdeci">const ObjectId &amp; activeId() const noexcept</div><div class="ttdoc">Active publication id; empty only if the catalog failed to seed.</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00089">UiTheme.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemeCatalogTarget_html_aed85e2088c1062dba843655f7aed5ec0"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#aed85e2088c1062dba843655f7aed5ec0">eve::ui_editing::UiThemeCatalogTarget::theme</a></div><div class="ttdeci">EditorResult&lt; UiThemeAsset &gt; theme(const ObjectId &amp;id) const</div><div class="ttdoc">Copy one named theme, or NotFound.</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8cpp_source.html#l00148">UiTheme.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemePreviewService_html_a6f05b774adf0ed33d5988e806d38e476"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemePreviewService.html#a6f05b774adf0ed33d5988e806d38e476">eve::ui_editing::UiThemePreviewService::build</a></div><div class="ttdeci">UiThemePreviewSnapshot build(const UiThemeCatalogTarget &amp;catalog, const ObjectId &amp;themeId, Revision expectedRevision) const</div><div class="ttdoc">Copy tokens for themeId when expectedRevision matches the catalog.</div><div class="ttdef"><b>Definition</b> <a href="UiThemePreview_8cpp_source.html#l00016">UiThemePreview.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiThemeRuntimePublisher_html_a437a20ed10c033f70873a9e5518a263b"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiThemeRuntimePublisher.html#a437a20ed10c033f70873a9e5518a263b">eve::ui_editing::UiThemeRuntimePublisher::publish</a></div><div class="ttdeci">EditorResult&lt; void &gt; publish(const UiThemeCatalogTarget &amp;catalog) const</div><div class="ttdoc">Replace the process global theme with the catalog's active asset.</div><div class="ttdef"><b>Definition</b> <a href="UiThemePreview_8cpp_source.html#l00040">UiThemePreview.cpp:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a71149fce33bc9588696b7d54b72f7f92"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">eve::animation_editing::RuleId</a></div><div class="ttdeci">editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00017">SkeletonOverlay.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui__editing_html"><div class="ttname"><a href="namespaceeve_1_1ui__editing.html">eve::ui_editing</a></div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8cpp_source.html#l00009">UiDocument.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui__editing_html_a3bce9e3b5384ec7c0c6369ad2eeaf117"><div class="ttname"><a href="namespaceeve_1_1ui__editing.html#a3bce9e3b5384ec7c0c6369ad2eeaf117">eve::ui_editing::EditorDiagnostic</a></div><div class="ttdeci">editing::Diagnostic EditorDiagnostic</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00044">UiDocument.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui__editing_html_a3de0b46e3a12f87b8135fef77b09b23b"><div class="ttname"><a href="namespaceeve_1_1ui__editing.html#a3de0b46e3a12f87b8135fef77b09b23b">eve::ui_editing::validateThemeTokens</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validateThemeTokens(const ui::Theme &amp;theme)</div><div class="ttdef"><b>Definition</b> <a href="UiThemeTokens_8cpp_source.html#l00349">UiThemeTokens.cpp:349</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a2363ac6b57739cc492b7e7e5d486899d"><div class="ttname"><a href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">eve::ui::setGlobalTheme</a></div><div class="ttdeci">void setGlobalTheme(const Theme &amp;theme)</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00141">Theme.cpp:141</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html">eve::ui_editing::UiThemePreviewSnapshot</a></div><div class="ttdoc">Revision-bound Theme copy used by gallery hosts without mutating globalTheme.</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00144">UiTheme.h:144</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html_a28c1e10e07b8663a8bc5d0e957ab0b49"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#a28c1e10e07b8663a8bc5d0e957ab0b49">eve::ui_editing::UiThemePreviewSnapshot::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00146">UiTheme.h:146</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html_a3f2e4cb81b18dc6961357f8a5cf2fd0b"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#a3f2e4cb81b18dc6961357f8a5cf2fd0b">eve::ui_editing::UiThemePreviewSnapshot::themeId</a></div><div class="ttdeci">ObjectId themeId</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00147">UiTheme.h:147</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html_a443fe88807c8ce382f2dd567dfd9969c"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#a443fe88807c8ce382f2dd567dfd9969c">eve::ui_editing::UiThemePreviewSnapshot::theme</a></div><div class="ttdeci">ui::Theme theme</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00148">UiTheme.h:148</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html_ab426195c22d6fa5aec9281aa044a143b"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#ab426195c22d6fa5aec9281aa044a143b">eve::ui_editing::UiThemePreviewSnapshot::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00145">UiTheme.h:145</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html_accaf96c8a79c1558d2bd5aa929bddf79"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#accaf96c8a79c1558d2bd5aa929bddf79">eve::ui_editing::UiThemePreviewSnapshot::runtimeName</a></div><div class="ttdeci">std::string runtimeName</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00149">UiTheme.h:149</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiThemePreviewSnapshot_html_adeaeb7390b5097a0832f2337586187bf"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#adeaeb7390b5097a0832f2337586187bf">eve::ui_editing::UiThemePreviewSnapshot::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="UiTheme_8h_source.html#l00150">UiTheme.h:150</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

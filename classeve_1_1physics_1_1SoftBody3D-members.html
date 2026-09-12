@@ -1,0 +1,234 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">SoftBody3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::SoftBody3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a0b070cff8eac4dbe9bf9e095d0567308">applyForce</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad3bae4296db28632fec3a068bc768c38">clearBounds</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aa17e2cb154dd69ee6c41ff6f20d17dba">create</a>(const SoftBody3DDefinition &amp;definition)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af03ed4f281a02cddd6ea4712a3b3da2f">create</a>(int cols, int rows, int layers, float spacing, float originX, float originY, float originZ)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af79ba203833aa5da9fc569e99097a5c1">destroy</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a0439a9c54c983f0299b9696c75c284cc">determinism</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a04529cfd87f9265979357bb89186c65f">getCollideWorld</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af585e0fedce279182f0afb9e3369f530">getCols</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac14262b9cd90e821c20f1c1e634262a3">getDamping</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a9c5fa3b1915d7cf3fb75bf5a46a33140">getDeformationResistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aacd9cce4af6038e4619beba002afcaab">getGrabIndex</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af554d3af305b85d93e468e8659238111">getGravityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a18c05ab7d9ac0f5a83c1ae71e9b68828">getGravityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a29adff2358dc2721820ebd90f11c9fa6">getGravityZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a7cb492a8da63fc4f0e7791b86bc2a284">getIterations</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a87e75eecfbfe8693f6f8be79412db079">getLayers</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a61849084e021f09b81983b3875b65709">getMaxDeformation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a0663d99c77a36169f8f7a53a39dcc19c">getParticleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a1ce44bc1f2f06c3b75c61086dadce014">getParticleMass</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#afb5dc2e91d7b21d9bdbe0c7da0491c47">getParticleRadius</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#adf852e9b1893fa9b92929e0aec9a0de1">getParticleX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ae5978118f94ef3f7acb90ce848bb959b">getParticleY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a327ef52a033981e9774d405411bb82f5">getParticleZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a52368ba857762d8656a4ab7c148c2d3e">getPlasticCreep</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac4299736bc57848acd3eaf7fd448e324">getPlasticRecovery</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a76a35854ccf62afbf82113020ab0324b">getPlasticYield</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad4e166aab378232aad03620e9deee5ce">getRows</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a39a49e0804ee0073b055003445cb73c1">getSelfCollision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a6d29633aeb5da3c0c33bb9506224a44b">getVolumeRatio</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aed127cfa448d8ebe045b6f9fc5ef61d0">grabAt</a>(float x, float y, float z, float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aaa85871108a5e1d9ab9636ccbfca8683">interactAt</a>(float x, float y, float z, float radius, float strength)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a01c3840ecf37b013d19b4183b7664aef">isDestroyed</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aabb7964c926343ede1255b1ad69066ff">isGrabbing</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad939ea4811e9da4c84971ca0e6f3862a">isPinned</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a013c3107c9d550a94bb1d3de376e62d9">kind</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a7780e85935926200e1609592fff18582">moveGrab</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a3227ee8f753dcc016e4c8972ca12987e">observation</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a963dc0fccb955b6af0a7068f00effa48">operator=</a>(const SoftBody3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a14ece5e6c0127946ccef15f21a480eff">pin</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a2189eae4068756ab1edf2d43943a6037">releaseGrab</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aaed0fd230e61e55f4cdbf1e19712e527">reset</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac65e066cbb5103a8ba50b0b672bcdd06">restoreObservation</a>(const SimulationObservation &amp;observation) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a2f8ebf6bc65754777100eef9d4a88441">setBounds</a>(float x, float y, float z, float width, float height, float depth)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a51f72dccc89bcd21bb9d843b95d76c0c">setCollideWorld</a>(World3D *world)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a2cc8e485c2a6e8aa465ca6fe67fb7864">setCollisionWorld</a>(softbody::ISoftBodyCollisionWorld *world)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ad742a9622f6c74dbf02e493061c796e2">setDamping</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a46fbad461bffb61a9dee1d9ece584fc9">setDeformationResistance</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a9233ff60562224c2fd3f38941a526aea">setGravity</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a33cf0f7f27d2357a390ba7f41b557a5f">setIterations</a>(int value)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a15103ba7b3cc36f8627377e94aeb0385">setParticleMass</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a9851b281381450a73a834f7ffba96335">setParticlePosition</a>(int index, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#acd4a60c1016b758738af1e40f370808c">setParticleRadius</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a94e03555a2cefe7ae82f7287c650cd34">setPlasticity</a>(float yield, float creep, float recovery, float maxDeformation)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#af9417395f0ca3e7ba52925183e5c9e8e">setSelfCollision</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#ac109648c15c08d4339f2001e26ccce1f">SoftBody3D</a>(const SoftBody3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a52b0b586390c24df2370bb29fb9c7b87">step</a>(const eve::SimulationStep &amp;step, const SimulationSettings &amp;settings) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#aedd0299a9884d9117a2dd4908037139b">unpin</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a24be8c8eb62f52101f06d4d19bd59274">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html#a5970b7e12bfac5df7068200ade59f7ff">~SoftBody3D</a>() override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1SoftBody3D.html">eve::physics::SoftBody3D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

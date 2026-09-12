@@ -1,0 +1,220 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 手柄模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">手柄模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>手柄模块</h1>
+<p><b>脚本入口：</b> <code>eve.Joystick()</code></p>
+<p>枚举手柄 / 摇杆设备，读取轴、按钮、方向帽（hat）与 GameController 映射，并支持振动。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local joy = eve.Joystick();</div>
+<div class="line">print(&quot;pads=&quot; + joy.getJoystickCount() + &quot;\n&quot;);</div>
+<div class="line"> </div>
+<div class="line">// 读取第一个设备的轴（返回数组，取值约 -1..1）与按钮状态：</div>
+<div class="line">local pad = joy.getJoystick(0);</div>
+<div class="line">if (pad != null) {</div>
+<div class="line">    local axis = pad.getAxis(0);</div>
+<div class="line">    local a = pad.isDown(0);        // 0 号按钮</div>
+<div class="line">    local bx = pad.getGamepadAxis(&quot;leftx&quot;);</div>
+<div class="line">    local bA = pad.isGamepadDown(&quot;a&quot;);</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Joystick</code> 模块由 SDL 事件泵在设备热插拔时维护 <code>Pad</code> 列表；脚本通过 <code>getJoystick(index)</code> / <code>getJoystickFromID(instanceID)</code> 获取 <code>Pad</code> 引用。<code>Pad</code> 由模块持有，脚本不应释放；设备断开后查询返回空值/0。 轴与按钮读取应放在 <code>eve_update</code>（每帧），不要在 <code>eve_render</code> 中做输入采样。</p>
+<p><code>Pad</code> 提供两套命名：</p>
+<ul>
+<li>原始摇杆：<code>getAxis(index)</code> / <code>getAxes()</code> / <code>isDown(index)</code> / <code>getHat(index)</code>（方向串 <code>c/u/d/l/r/lu/ld/ru/rd</code>）。</li>
+<li>GameController：<code>getGamepadAxis("leftx")</code> / <code>isGamepadDown("a")</code>，名称遵循 SDL GameController 字符串 （<code>leftx</code>、<code>lefty</code>、<code>rightx</code>、<code>righty</code>、<code>a</code>、<code>b</code>、<code>x</code>、<code>y</code>、<code>dpup</code> 等），需要设备已被 SDL 识别为手柄。</li>
+</ul>
+<h2>目标导向指南</h2>
+<h3>检测手柄是否可用</h3>
+<p>启动和设备事件发生后读取 <code>getJoystickCount()</code>；数量为 0 时保留键鼠提示，数量大于 0 时切换为手柄提示。</p>
+<h3>用左摇杆控制移动</h3>
+<div class="fragment"><div class="line">local pad = eve.Joystick().getJoystick(0);</div>
+<div class="line">local x = pad.getGamepadAxis(&quot;leftx&quot;);</div>
+<div class="line">local y = pad.getGamepadAxis(&quot;lefty&quot;);</div>
+</div><!-- fragment --><h3>支持社区手柄映射</h3>
+<p>启动时用 <code>loadGamepadMappings(mappings)</code> 导入 SDL 映射数据库；设置界面修改映射后用 <code>saveGamepadMappings()</code> 保存，并可用 <code>getGamepadMappingString(guid)</code> 显示诊断信息。</p>
+<h3>手柄振动</h3>
+<p><code>isVibrationSupported()</code> 探测能力，<code>setVibration(left, right)</code> 持续振动，<code>setVibrationTimed(left, right, seconds)</code> 限时振动，<code>stopVibration()</code> 停止，<code>getVibrationLeft()</code> / <code>getVibrationRight()</code> 读回当前强度。</p>
+<h2>常见问题</h2>
+<ul>
+<li><code>getJoystick(i)</code> 返回 null：设备不存在或已拔出，先判断 null。</li>
+<li>轴读数为 0：设备是纯摇杆而非 GameController，改用 <code>getAxis</code> / <code>getAxes</code>。</li>
+<li>mapping 数据库格式错误：使用 SDL 标准映射文本。</li>
+<li>保存映射覆盖随包文件：写入用户存档目录。</li>
+</ul>
+<h2>API 快查</h2>
+<ul>
+<li><code>Joystick</code>：<code>getName()</code>、<code>getJoystickCount()</code>、<code>getJoystick(index)</code>、<code>getJoystickFromID(instanceID)</code>、 <code>getIndex(pad)</code>、<code>addJoystick(deviceIndex)</code>、<code>removeJoystick(pad)</code>、<code>loadGamepadMappings(mappings)</code>、 <code>saveGamepadMappings()</code>、<code>getGamepadMappingString(guid)</code></li>
+<li><code>Pad</code>：<code>getName()</code>、<code>getAxisCount()</code>、<code>getButtonCount()</code>、<code>getHatCount()</code>、<code>getAxis(index)</code>、<code>getAxes()</code>、 <code>getHat(index)</code>、<code>isDown(index)</code>、<code>isGamepad()</code>、<code>getGamepadAxis(name)</code>、<code>isGamepadDown(name)</code>、 <code>getGamepadMappingString()</code>、<code>getGUID()</code>、<code>getInstanceID()</code>、<code>getID()</code>、<code>getVendorID()</code>、<code>getProductID()</code>、 <code>getProductVersion()</code>、<code>isVibrationSupported()</code>、<code>setVibration(left, right)</code>、 <code>setVibrationTimed(left, right, seconds)</code>、<code>stopVibration()</code>、<code>getVibrationLeft()</code>、<code>getVibrationRight()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/joystick/"><code>src/modules/joystick/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>joystick</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

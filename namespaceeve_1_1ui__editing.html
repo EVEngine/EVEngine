@@ -1,0 +1,603 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui_editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui__editing.html">ui_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui_editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1CreateUiWidgetRequest.html">CreateUiWidgetRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request for creating one widget with stable identity.  <a href="structeve_1_1ui__editing_1_1CreateUiWidgetRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1IUiDocumentEditTarget.html">IUiDocumentEditTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hierarchy/layout capability consumed by UI tree and canvas tools.  <a href="classeve_1_1ui__editing_1_1IUiDocumentEditTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiContentValue.html">UiContentValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer-neutral text and image skin authored per widget.  <a href="structeve_1_1ui__editing_1_1UiContentValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html">UiDocumentPreviewService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UI-neutral preview, picking and anchor-gizmo geometry service.  <a href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1UiDocumentRuntimeBridge.html">UiDocumentRuntimeBridge</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bridge publishing a UI document into a real runtime UIHost.  <a href="classeve_1_1ui__editing_1_1UiDocumentRuntimeBridge.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html">UiDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable UI authoring document with hierarchy and inspector capabilities.  <a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiLayoutValue.html">UiLayoutValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer-neutral layout values shared by UI document hosts.  <a href="structeve_1_1ui__editing_1_1UiLayoutValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">UiPreviewSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic UI layout preview used by canvas rendering and picking.  <a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computed widget rectangle in a revision-bound UI preview.  <a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiStyleValue.html">UiStyleValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer-neutral visual and box-model style authored per widget.  <a href="structeve_1_1ui__editing_1_1UiStyleValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiThemeAsset.html">UiThemeAsset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One named, fully snapshotted Theme asset.  <a href="structeve_1_1ui__editing_1_1UiThemeAsset.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html">UiThemeCatalogTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable catalog of named UI themes with one active publication slot.  <a href="classeve_1_1ui__editing_1_1UiThemeCatalogTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1UiThemePreviewService.html">UiThemePreviewService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds a Theme copy for a catalog revision without touching runtime globals.  <a href="classeve_1_1ui__editing_1_1UiThemePreviewService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html">UiThemePreviewSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revision-bound Theme copy used by gallery hosts without mutating globalTheme.  <a href="structeve_1_1ui__editing_1_1UiThemePreviewSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui__editing_1_1UiThemeRuntimePublisher.html">UiThemeRuntimePublisher</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publishes the active catalog theme through <a class="el" href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">ui::setGlobalTheme</a>.  <a href="classeve_1_1ui__editing_1_1UiThemeRuntimePublisher.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui__editing_1_1UiWidgetSnapshot.html">UiWidgetSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable widget snapshot used across editor/runtime boundaries.  <a href="structeve_1_1ui__editing_1_1UiWidgetSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a79f391d24d6fd7ad4750f7d2cd5d3150" id="r_a79f391d24d6fd7ad4750f7d2cd5d3150"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a79f391d24d6fd7ad4750f7d2cd5d3150"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:a79f391d24d6fd7ad4750f7d2cd5d3150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44a87ecf0ec55b9e042bfc19a9e0ea9" id="r_af44a87ecf0ec55b9e042bfc19a9e0ea9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#af44a87ecf0ec55b9e042bfc19a9e0ea9">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:af44a87ecf0ec55b9e042bfc19a9e0ea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbb46089960a179349ff347d9081673e" id="r_acbb46089960a179349ff347d9081673e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:acbb46089960a179349ff347d9081673e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bce9e3b5384ec7c0c6369ad2eeaf117" id="r_a3bce9e3b5384ec7c0c6369ad2eeaf117"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a3bce9e3b5384ec7c0c6369ad2eeaf117">EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a3bce9e3b5384ec7c0c6369ad2eeaf117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ab892bfdc5d5f116db0d407bad0ce2132" id="r_ab892bfdc5d5f116db0d407bad0ce2132"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a> { <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132aa18366b217ebf811ad1886e4f4f865b2">Dark</a>
+, <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a9914a0ce04a7b7b6a8e39bec55064b82">Light</a>
+, <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a90589c47f06eb971d548591f23c285af">Custom</a>
+ }</td></tr>
+<tr class="memdesc:ab892bfdc5d5f116db0d407bad0ce2132"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base preset used when resetting a named theme asset.  <a href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">更多...</a><br /></td></tr>
+<tr class="separator:ab892bfdc5d5f116db0d407bad0ce2132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aec3bae737754ab31383b590a7b76f380" id="r_aec3bae737754ab31383b590a7b76f380"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#aec3bae737754ab31383b590a7b76f380">themeTokensValue</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>)</td></tr>
+<tr class="separator:aec3bae737754ab31383b590a7b76f380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4d0eb3d53ef961c9258db14020456c4" id="r_ab4d0eb3d53ef961c9258db14020456c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a>&lt; <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#ab4d0eb3d53ef961c9258db14020456c4">parseThemeTokens</a> (const <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ab4d0eb3d53ef961c9258db14020456c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76afcf6e30eb41c441dfcb093c7f76a5" id="r_a76afcf6e30eb41c441dfcb093c7f76a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a76afcf6e30eb41c441dfcb093c7f76a5">assignThemeToken</a> (<a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a76afcf6e30eb41c441dfcb093c7f76a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a054bff49c0f0aa973a60abedbf555481" id="r_a054bff49c0f0aa973a60abedbf555481"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a054bff49c0f0aa973a60abedbf555481">readThemeToken</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:a054bff49c0f0aa973a60abedbf555481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94e1f3c2e6c2bace6b80955a193c1d1c" id="r_a94e1f3c2e6c2bace6b80955a193c1d1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a94e1f3c2e6c2bace6b80955a193c1d1c">themeTokenSchema</a> ()</td></tr>
+<tr class="separator:a94e1f3c2e6c2bace6b80955a193c1d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3de0b46e3a12f87b8135fef77b09b23b" id="r_a3de0b46e3a12f87b8135fef77b09b23b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1ui__editing.html#a3bce9e3b5384ec7c0c6369ad2eeaf117">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a3de0b46e3a12f87b8135fef77b09b23b">validateThemeTokens</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>)</td></tr>
+<tr class="separator:a3de0b46e3a12f87b8135fef77b09b23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14c75ef01efd2f97a467c9c31882a0fc" id="r_a14c75ef01efd2f97a467c9c31882a0fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a14c75ef01efd2f97a467c9c31882a0fc">themeFromPreset</a> (<a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a> preset)</td></tr>
+<tr class="separator:a14c75ef01efd2f97a467c9c31882a0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ddfadb62a73c947db1273b96200644" id="r_a89ddfadb62a73c947db1273b96200644"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a89ddfadb62a73c947db1273b96200644">presetName</a> (<a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a> preset)</td></tr>
+<tr class="separator:a89ddfadb62a73c947db1273b96200644"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f9b036e07b74c5f88f5734cc69ce92f" id="r_a4f9b036e07b74c5f88f5734cc69ce92f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui__editing.html#a4f9b036e07b74c5f88f5734cc69ce92f">parsePreset</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a4f9b036e07b74c5f88f5734cc69ce92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a3bce9e3b5384ec7c0c6369ad2eeaf117" name="a3bce9e3b5384ec7c0c6369ad2eeaf117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bce9e3b5384ec7c0c6369ad2eeaf117">&#9670;&#160;</a></span>EditorDiagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a> <a class="el" href="namespaceeve_1_1ui__editing.html#a3bce9e3b5384ec7c0c6369ad2eeaf117">eve::ui_editing::EditorDiagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiDocument_8h_source.html">UiDocument.h</a> 第 <a class="el" href="UiDocument_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79f391d24d6fd7ad4750f7d2cd5d3150" name="a79f391d24d6fd7ad4750f7d2cd5d3150"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79f391d24d6fd7ad4750f7d2cd5d3150">&#9670;&#160;</a></span>EditorResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">eve::ui_editing::EditorResult</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiDocument_8h_source.html">UiDocument.h</a> 第 <a class="el" href="UiDocument_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af44a87ecf0ec55b9e042bfc19a9e0ea9" name="af44a87ecf0ec55b9e042bfc19a9e0ea9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af44a87ecf0ec55b9e042bfc19a9e0ea9">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a> <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::ui_editing::EditorStatus</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiDocument_8h_source.html">UiDocument.h</a> 第 <a class="el" href="UiDocument_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acbb46089960a179349ff347d9081673e" name="acbb46089960a179349ff347d9081673e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbb46089960a179349ff347d9081673e">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">eve::ui_editing::EditorValue</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiDocument_8h_source.html">UiDocument.h</a> 第 <a class="el" href="UiDocument_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ab892bfdc5d5f116db0d407bad0ce2132" name="ab892bfdc5d5f116db0d407bad0ce2132"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab892bfdc5d5f116db0d407bad0ce2132">&#9670;&#160;</a></span>UiThemeBasePreset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">eve::ui_editing::UiThemeBasePreset</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Base preset used when resetting a named theme asset. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab892bfdc5d5f116db0d407bad0ce2132aa18366b217ebf811ad1886e4f4f865b2" name="ab892bfdc5d5f116db0d407bad0ce2132aa18366b217ebf811ad1886e4f4f865b2"></a>Dark&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab892bfdc5d5f116db0d407bad0ce2132a9914a0ce04a7b7b6a8e39bec55064b82" name="ab892bfdc5d5f116db0d407bad0ce2132a9914a0ce04a7b7b6a8e39bec55064b82"></a>Light&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab892bfdc5d5f116db0d407bad0ce2132a90589c47f06eb971d548591f23c285af" name="ab892bfdc5d5f116db0d407bad0ce2132a90589c47f06eb971d548591f23c285af"></a>Custom&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="UiTheme_8h_source.html">UiTheme.h</a> 第 <a class="el" href="UiTheme_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a76afcf6e30eb41c441dfcb093c7f76a5" name="a76afcf6e30eb41c441dfcb093c7f76a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76afcf6e30eb41c441dfcb093c7f76a5">&#9670;&#160;</a></span>assignThemeToken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a>&lt; void &gt; eve::ui_editing::assignThemeToken </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00037">token</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UiThemeProperty_8cpp_source.html#l00050">eve::ui_editing::UiThemeCatalogTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a4f9b036e07b74c5f88f5734cc69ce92f" name="a4f9b036e07b74c5f88f5734cc69ce92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f9b036e07b74c5f88f5734cc69ce92f">&#9670;&#160;</a></span>parsePreset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a> &gt; eve::ui_editing::parsePreset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132aa18366b217ebf811ad1886e4f4f865b2">Dark</a>, <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a9914a0ce04a7b7b6a8e39bec55064b82">Light</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ab4d0eb3d53ef961c9258db14020456c4" name="ab4d0eb3d53ef961c9258db14020456c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4d0eb3d53ef961c9258db14020456c4">&#9670;&#160;</a></span>parseThemeTokens()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#a79f391d24d6fd7ad4750f7d2cd5d3150">EditorResult</a>&lt; <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &gt; eve::ui_editing::parseThemeTokens </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="OnnxReader_8cpp_source.html#l00011">number</a>, <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00037">token</a>, <a class="el" href="UiThemeTokens_8cpp_source.html#l00349">validateThemeTokens()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a89ddfadb62a73c947db1273b96200644" name="a89ddfadb62a73c947db1273b96200644"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ddfadb62a73c947db1273b96200644">&#9670;&#160;</a></span>presetName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui_editing::presetName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a>&#160;</td>
+          <td class="paramname"><em>preset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132aa18366b217ebf811ad1886e4f4f865b2">Dark</a> , 以及 <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a9914a0ce04a7b7b6a8e39bec55064b82">Light</a>.</p>
+
+</div>
+</div>
+<a id="a054bff49c0f0aa973a60abedbf555481" name="a054bff49c0f0aa973a60abedbf555481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a054bff49c0f0aa973a60abedbf555481">&#9670;&#160;</a></span>readThemeToken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> eve::ui_editing::readThemeToken </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00037">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UiThemeProperty_8cpp_source.html#l00036">eve::ui_editing::UiThemeCatalogTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a14c75ef01efd2f97a467c9c31882a0fc" name="a14c75ef01efd2f97a467c9c31882a0fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14c75ef01efd2f97a467c9c31882a0fc">&#9670;&#160;</a></span>themeFromPreset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> eve::ui_editing::themeFromPreset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132">UiThemeBasePreset</a>&#160;</td>
+          <td class="paramname"><em>preset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Theme_8cpp_source.html#l00034">eve::ui::Theme::dark()</a>, <a class="el" href="namespaceeve_1_1ui__editing.html#ab892bfdc5d5f116db0d407bad0ce2132a9914a0ce04a7b7b6a8e39bec55064b82">Light</a> , 以及 <a class="el" href="Theme_8cpp_source.html#l00040">eve::ui::Theme::light()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UiTheme_8cpp_source.html#l00216">eve::ui_editing::UiThemeCatalogTarget::makeCreateFromPreset()</a> , 以及 <a class="el" href="UiTheme_8cpp_source.html#l00304">eve::ui_editing::UiThemeCatalogTarget::makeResetToBase()</a>.</p>
+
+</div>
+</div>
+<a id="a94e1f3c2e6c2bace6b80955a193c1d1c" name="a94e1f3c2e6c2bace6b80955a193c1d1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94e1f3c2e6c2bace6b80955a193c1d1c">&#9670;&#160;</a></span>themeTokenSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> eve::ui_editing::themeTokenSchema </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProperty_8h_source.html#l00070">eve::editing::PropertyDescriptor::category</a>, <a class="el" href="EditingProperty_8h_source.html#l00073">eve::editing::PropertyDescriptor::defaultValue</a>, <a class="el" href="EditingProperty_8h_source.html#l00068">eve::editing::PropertyDescriptor::displayNameKey</a>, <a class="el" href="EditingProperty_8h_source.html#l00072">eve::editing::PropertyDescriptor::flags</a>, <a class="el" href="EditingProperty_8h_source.html#l00067">eve::editing::PropertyDescriptor::path</a>, <a class="el" href="EditingProperty_8h_source.html#l00102">eve::editing::PropertySchema::properties</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00037">token</a>, <a class="el" href="EditingProperty_8h_source.html#l00071">eve::editing::PropertyDescriptor::type</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00100">eve::editing::PropertySchema::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UiThemeProperty_8cpp_source.html#l00034">eve::ui_editing::UiThemeCatalogTarget::schema()</a>.</p>
+
+</div>
+</div>
+<a id="aec3bae737754ab31383b590a7b76f380" name="aec3bae737754ab31383b590a7b76f380"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec3bae737754ab31383b590a7b76f380">&#9670;&#160;</a></span>themeTokensValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui__editing.html#acbb46089960a179349ff347d9081673e">EditorValue</a> eve::ui_editing::themeTokensValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00037">token</a>.</p>
+
+</div>
+</div>
+<a id="a3de0b46e3a12f87b8135fef77b09b23b" name="a3de0b46e3a12f87b8135fef77b09b23b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3de0b46e3a12f87b8135fef77b09b23b">&#9670;&#160;</a></span>validateThemeTokens()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1ui__editing.html#a3bce9e3b5384ec7c0c6369ad2eeaf117">EditorDiagnostic</a> &gt; eve::ui_editing::validateThemeTokens </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">ui::Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UiThemeTokens_8cpp_source.html">UiThemeTokens.cpp</a> 第 <a class="el" href="UiThemeTokens_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00037">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UiThemeTokens_8cpp_source.html#l00214">parseThemeTokens()</a>, <a class="el" href="UiThemePreview_8cpp_source.html#l00040">eve::ui_editing::UiThemeRuntimePublisher::publish()</a> , 以及 <a class="el" href="UiTheme_8cpp_source.html#l00161">eve::ui_editing::UiThemeCatalogTarget::validate()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

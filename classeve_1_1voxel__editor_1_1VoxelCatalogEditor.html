@@ -1,0 +1,1571 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::voxel_editor::VoxelCatalogEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1voxel__editor.html">voxel_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::voxel_editor::VoxelCatalogEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Workspace controller for a MagicaVoxel-style voxel sculpt project.  
+ <a href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aea2c8128d027e777bd57a5ac31061a26" id="r_aea2c8128d027e777bd57a5ac31061a26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#aea2c8128d027e777bd57a5ac31061a26">VoxelCatalogEditor</a> (std::string targetId)</td></tr>
+<tr class="memdesc:aea2c8128d027e777bd57a5ac31061a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a seeded solid cube and a sculpted bed.  <br /></td></tr>
+<tr class="separator:aea2c8128d027e777bd57a5ac31061a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a956933ecc8d67f084d7d192fd575af72" id="r_a956933ecc8d67f084d7d192fd575af72"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a956933ecc8d67f084d7d192fd575af72">VoxelCatalogEditor</a> (const <a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a956933ecc8d67f084d7d192fd575af72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b18a91487667d51f025f31c8555cc34" id="r_a4b18a91487667d51f025f31c8555cc34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a4b18a91487667d51f025f31c8555cc34">operator=</a> (const <a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a4b18a91487667d51f025f31c8555cc34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40f1ea725c285270a85d94bddc0a679e" id="r_a40f1ea725c285270a85d94bddc0a679e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1voxel__editing_1_1VoxelCatalogTarget.html">voxel_editing::VoxelCatalogTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a40f1ea725c285270a85d94bddc0a679e">target</a> () const noexcept</td></tr>
+<tr class="separator:a40f1ea725c285270a85d94bddc0a679e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82bd8c197bcceccc002b3527540fe402" id="r_a82bd8c197bcceccc002b3527540fe402"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a82bd8c197bcceccc002b3527540fe402">configureWorkspace</a> (<a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace) const</td></tr>
+<tr class="memdesc:a82bd8c197bcceccc002b3527540fe402"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install Models / Viewport / Tools / Inspector panels.  <br /></td></tr>
+<tr class="separator:a82bd8c197bcceccc002b3527540fe402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaddb1eb2050d6bcb78f447b086a93821" id="r_aaddb1eb2050d6bcb78f447b086a93821"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#aaddb1eb2050d6bcb78f447b086a93821">selectModel</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:aaddb1eb2050d6bcb78f447b086a93821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb5e00d8a3afa0dd4bf61d3562bf8f26" id="r_aeb5e00d8a3afa0dd4bf61d3562bf8f26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#aeb5e00d8a3afa0dd4bf61d3562bf8f26">setTool</a> (std::string tool)</td></tr>
+<tr class="separator:aeb5e00d8a3afa0dd4bf61d3562bf8f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70246a8181d36844478de73e61cefbca" id="r_a70246a8181d36844478de73e61cefbca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a70246a8181d36844478de73e61cefbca">setViewport</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="separator:a70246a8181d36844478de73e61cefbca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97d54e7458f28e6dff8b3da559de0c86" id="r_a97d54e7458f28e6dff8b3da559de0c86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a97d54e7458f28e6dff8b3da559de0c86">orbit</a> (float yawDelta, float pitchDelta)</td></tr>
+<tr class="separator:a97d54e7458f28e6dff8b3da559de0c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2084aaffb30aa4c56d2eb1e6d6b38581" id="r_a2084aaffb30aa4c56d2eb1e6d6b38581"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a2084aaffb30aa4c56d2eb1e6d6b38581">pointerDown</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a2084aaffb30aa4c56d2eb1e6d6b38581"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c27ccef3c00233f0c9dd469ca90cfaf" id="r_a2c27ccef3c00233f0c9dd469ca90cfaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a2c27ccef3c00233f0c9dd469ca90cfaf">pointerWorldRay</a> (float <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, float <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, float oz, float dx, float dy, float dz)</td></tr>
+<tr class="memdesc:a2c27ccef3c00233f0c9dd469ca90cfaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">MagicaVoxel attach/erase using a world-space camera ray.  <br /></td></tr>
+<tr class="separator:a2c27ccef3c00233f0c9dd469ca90cfaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac083c8c9a01468afb394d60c90c52876" id="r_ac083c8c9a01468afb394d60c90c52876"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#ac083c8c9a01468afb394d60c90c52876">setVoxel</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, bool occupied)</td></tr>
+<tr class="separator:ac083c8c9a01468afb394d60c90c52876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4959beca00dbfe6ba0eaff0bbd6d0525" id="r_a4959beca00dbfe6ba0eaff0bbd6d0525"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a4959beca00dbfe6ba0eaff0bbd6d0525">setSelectedSocket</a> (std::string tag, std::string <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="separator:a4959beca00dbfe6ba0eaff0bbd6d0525"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18aeb5cd3308d0e403e62cc5516395fd" id="r_a18aeb5cd3308d0e403e62cc5516395fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a18aeb5cd3308d0e403e62cc5516395fd">selectFace</a> (int face)</td></tr>
+<tr class="separator:a18aeb5cd3308d0e403e62cc5516395fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dc7903d135143a1ef2a0279cc529d4" id="r_aa5dc7903d135143a1ef2a0279cc529d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#aa5dc7903d135143a1ef2a0279cc529d4">createModel</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int sizeX, int sizeY, int sizeZ)</td></tr>
+<tr class="separator:aa5dc7903d135143a1ef2a0279cc529d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac48b41f24fef988b977042f39c5f2d89" id="r_ac48b41f24fef988b977042f39c5f2d89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#ac48b41f24fef988b977042f39c5f2d89">deleteSelectedModel</a> ()</td></tr>
+<tr class="separator:ac48b41f24fef988b977042f39c5f2d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12bc366a3aaa2de3656cba70cd36f18e" id="r_a12bc366a3aaa2de3656cba70cd36f18e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a12bc366a3aaa2de3656cba70cd36f18e">undo</a> ()</td></tr>
+<tr class="separator:a12bc366a3aaa2de3656cba70cd36f18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad37dddca9193a16c8c72a274ce10c695" id="r_ad37dddca9193a16c8c72a274ce10c695"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#ad37dddca9193a16c8c72a274ce10c695">redo</a> ()</td></tr>
+<tr class="separator:ad37dddca9193a16c8c72a274ce10c695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7d0c650960c0386ed856ee008ea39ae" id="r_af7d0c650960c0386ed856ee008ea39ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#af7d0c650960c0386ed856ee008ea39ae">canUndo</a> () const noexcept</td></tr>
+<tr class="separator:af7d0c650960c0386ed856ee008ea39ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a23c6436a07a22d210209675187612f" id="r_a6a23c6436a07a22d210209675187612f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a6a23c6436a07a22d210209675187612f">canRedo</a> () const noexcept</td></tr>
+<tr class="separator:a6a23c6436a07a22d210209675187612f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb7d238d6762bd5d16087deb12a8aeb6" id="r_abb7d238d6762bd5d16087deb12a8aeb6"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#abb7d238d6762bd5d16087deb12a8aeb6">revision</a> () const noexcept</td></tr>
+<tr class="separator:abb7d238d6762bd5d16087deb12a8aeb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb60ebf634cc77ee0fca39fe4d043275" id="r_acb60ebf634cc77ee0fca39fe4d043275"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#acb60ebf634cc77ee0fca39fe4d043275">previewRevision</a> () const noexcept</td></tr>
+<tr class="separator:acb60ebf634cc77ee0fca39fe4d043275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1870115d0a9c107beafa6330fdb50bdb" id="r_a1870115d0a9c107beafa6330fdb50bdb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a1870115d0a9c107beafa6330fdb50bdb">selectedId</a> () const</td></tr>
+<tr class="separator:a1870115d0a9c107beafa6330fdb50bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9831c5e3dbce2df91d6d111121fe01b4" id="r_a9831c5e3dbce2df91d6d111121fe01b4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a9831c5e3dbce2df91d6d111121fe01b4">toolName</a> () const</td></tr>
+<tr class="separator:a9831c5e3dbce2df91d6d111121fe01b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50396b04e8b8d827e3b5ad7e10a2ac67" id="r_a50396b04e8b8d827e3b5ad7e10a2ac67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a50396b04e8b8d827e3b5ad7e10a2ac67">selectedFace</a> () const noexcept</td></tr>
+<tr class="separator:a50396b04e8b8d827e3b5ad7e10a2ac67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57e14543301905f16cce68401ede81a0" id="r_a57e14543301905f16cce68401ede81a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a57e14543301905f16cce68401ede81a0">orbitYaw</a> () const noexcept</td></tr>
+<tr class="separator:a57e14543301905f16cce68401ede81a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a281f27f210e38173ddeb5486a94f5108" id="r_a281f27f210e38173ddeb5486a94f5108"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a281f27f210e38173ddeb5486a94f5108">orbitPitch</a> () const noexcept</td></tr>
+<tr class="separator:a281f27f210e38173ddeb5486a94f5108"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fcdc27840ec739a0ae5012fe6a300c9" id="r_a8fcdc27840ec739a0ae5012fe6a300c9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a8fcdc27840ec739a0ae5012fe6a300c9">modelCount</a> () const</td></tr>
+<tr class="separator:a8fcdc27840ec739a0ae5012fe6a300c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a356732578b36e7dca222831008bf0a55" id="r_a356732578b36e7dca222831008bf0a55"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a356732578b36e7dca222831008bf0a55">modelId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a356732578b36e7dca222831008bf0a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a618728b74acdfc3ed3775994476e73ac" id="r_a618728b74acdfc3ed3775994476e73ac"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a618728b74acdfc3ed3775994476e73ac">modelName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a618728b74acdfc3ed3775994476e73ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843f6d32a61613093e09f6e258c81a11" id="r_a843f6d32a61613093e09f6e258c81a11"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a843f6d32a61613093e09f6e258c81a11">modelFill</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a843f6d32a61613093e09f6e258c81a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c0929880be8994cfeeff75e0c6c330f" id="r_a0c0929880be8994cfeeff75e0c6c330f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a0c0929880be8994cfeeff75e0c6c330f">isModelSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a0c0929880be8994cfeeff75e0c6c330f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a965a1a886ea13ccef022597e4a239674" id="r_a965a1a886ea13ccef022597e4a239674"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a965a1a886ea13ccef022597e4a239674">voxelCount</a> () const</td></tr>
+<tr class="separator:a965a1a886ea13ccef022597e4a239674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fdd53f854bfd22c9e6cd6cfd7e006c2" id="r_a3fdd53f854bfd22c9e6cd6cfd7e006c2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a3fdd53f854bfd22c9e6cd6cfd7e006c2">voxelX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a3fdd53f854bfd22c9e6cd6cfd7e006c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a474ece7cebcfcff5cd44cf44845d4231" id="r_a474ece7cebcfcff5cd44cf44845d4231"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a474ece7cebcfcff5cd44cf44845d4231">voxelY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a474ece7cebcfcff5cd44cf44845d4231"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09f5795738e72f6f15ee9acfb0bd106" id="r_ad09f5795738e72f6f15ee9acfb0bd106"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#ad09f5795738e72f6f15ee9acfb0bd106">voxelZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad09f5795738e72f6f15ee9acfb0bd106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acec236d1e67edf8a78cd5030f538e5f6" id="r_acec236d1e67edf8a78cd5030f538e5f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#acec236d1e67edf8a78cd5030f538e5f6">modelSizeX</a> () const</td></tr>
+<tr class="separator:acec236d1e67edf8a78cd5030f538e5f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc17edde183ee4bbfc5a7043fd434d8" id="r_accc17edde183ee4bbfc5a7043fd434d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#accc17edde183ee4bbfc5a7043fd434d8">modelSizeY</a> () const</td></tr>
+<tr class="separator:accc17edde183ee4bbfc5a7043fd434d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7d1bb784aae4cb49304af42155f2bc8" id="r_ad7d1bb784aae4cb49304af42155f2bc8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#ad7d1bb784aae4cb49304af42155f2bc8">modelSizeZ</a> () const</td></tr>
+<tr class="separator:ad7d1bb784aae4cb49304af42155f2bc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc944a6277c6741f3c6fa5dc7668b496" id="r_afc944a6277c6741f3c6fa5dc7668b496"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#afc944a6277c6741f3c6fa5dc7668b496">screenVoxelCount</a> () const</td></tr>
+<tr class="separator:afc944a6277c6741f3c6fa5dc7668b496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7387ae8cc91950cd6e05aa355bca1c92" id="r_a7387ae8cc91950cd6e05aa355bca1c92"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a7387ae8cc91950cd6e05aa355bca1c92">screenVoxelX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7387ae8cc91950cd6e05aa355bca1c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a601bd49a5c599a09ccf3ec267238065a" id="r_a601bd49a5c599a09ccf3ec267238065a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a601bd49a5c599a09ccf3ec267238065a">screenVoxelY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a601bd49a5c599a09ccf3ec267238065a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af76de61763de7e755e0c5bacb0b1e18d" id="r_af76de61763de7e755e0c5bacb0b1e18d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#af76de61763de7e755e0c5bacb0b1e18d">screenVoxelW</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af76de61763de7e755e0c5bacb0b1e18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5e5ea061277dbe98cca182948eb103d" id="r_ac5e5ea061277dbe98cca182948eb103d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#ac5e5ea061277dbe98cca182948eb103d">screenVoxelH</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac5e5ea061277dbe98cca182948eb103d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e206e6d031f1f4cbdc33e526794bb69" id="r_a5e206e6d031f1f4cbdc33e526794bb69"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a5e206e6d031f1f4cbdc33e526794bb69">selectedSocketTag</a> () const</td></tr>
+<tr class="separator:a5e206e6d031f1f4cbdc33e526794bb69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a978dbb1fbbb571f44b48e884c3bdb4b3" id="r_a978dbb1fbbb571f44b48e884c3bdb4b3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a978dbb1fbbb571f44b48e884c3bdb4b3">selectedSocketKind</a> () const</td></tr>
+<tr class="separator:a978dbb1fbbb571f44b48e884c3bdb4b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e5e73c2e608f3d9b967bd32f3b86917" id="r_a0e5e73c2e608f3d9b967bd32f3b86917"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#a0e5e73c2e608f3d9b967bd32f3b86917">joinPartnerCount</a> () const</td></tr>
+<tr class="separator:a0e5e73c2e608f3d9b967bd32f3b86917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd30692c3f06e67c2a9b5b645f8f3333" id="r_abd30692c3f06e67c2a9b5b645f8f3333"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html#abd30692c3f06e67c2a9b5b645f8f3333">joinPartnerId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:abd30692c3f06e67c2a9b5b645f8f3333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Workspace controller for a MagicaVoxel-style voxel sculpt project. </p>
+<p>Owns the catalog of bounded occupancy models, local undo, and sculpt tools. The presenter renders with <code>eve.Voxel()</code> and picks with a camera ray.</p>
+<p>@ownership Editor owns the document. Screen getters copy values. @threadaffinity Owner thread only. @reentrancy No unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aea2c8128d027e777bd57a5ac31061a26" name="aea2c8128d027e777bd57a5ac31061a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea2c8128d027e777bd57a5ac31061a26">&#9670;&#160;</a></span>VoxelCatalogEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel_editor::VoxelCatalogEditor::VoxelCatalogEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a seeded solid cube and a sculpted bed. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a956933ecc8d67f084d7d192fd575af72" name="a956933ecc8d67f084d7d192fd575af72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a956933ecc8d67f084d7d192fd575af72">&#9670;&#160;</a></span>VoxelCatalogEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel_editor::VoxelCatalogEditor::VoxelCatalogEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6a23c6436a07a22d210209675187612f" name="a6a23c6436a07a22d210209675187612f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a23c6436a07a22d210209675187612f">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel_editor::VoxelCatalogEditor::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00076">eve::editor::LocalTransactionBackend::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="af7d0c650960c0386ed856ee008ea39ae" name="af7d0c650960c0386ed856ee008ea39ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7d0c650960c0386ed856ee008ea39ae">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel_editor::VoxelCatalogEditor::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00074">eve::editor::LocalTransactionBackend::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="a82bd8c197bcceccc002b3527540fe402" name="a82bd8c197bcceccc002b3527540fe402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82bd8c197bcceccc002b3527540fe402">&#9670;&#160;</a></span>configureWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::configureWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install Models / Viewport / Tools / Inspector panels. </p>
+<dl class="section note"><dt>注解</dt><dd>Does not retain <code>workspace</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">eve::editor::EditorWorkspace::activatePanel()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">eve::editor::EditorWorkspace::setPanelCapability()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">eve::editor::EditorWorkspace::setPanelContext()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="aa5dc7903d135143a1ef2a0279cc529d4" name="aa5dc7903d135143a1ef2a0279cc529d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dc7903d135143a1ef2a0279cc529d4">&#9670;&#160;</a></span>createModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::createModel </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sizeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sizeZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="VoxelCatalog_8h_source.html#l00075">eve::voxel_editing::VoxelModelValue::id</a>, <a class="el" href="VoxelCatalog_8cpp_source.html#l00464">eve::voxel_editing::VoxelCatalogTarget::makeCreateModel()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00205">selectModel()</a>.</p>
+
+</div>
+</div>
+<a id="ac48b41f24fef988b977042f39c5f2d89" name="ac48b41f24fef988b977042f39c5f2d89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac48b41f24fef988b977042f39c5f2d89">&#9670;&#160;</a></span>deleteSelectedModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::deleteSelectedModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelCatalog_8cpp_source.html#l00477">eve::voxel_editing::VoxelCatalogTarget::makeDeleteModel()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="VoxelCatalog_8h_source.html#l00169">eve::voxel_editing::VoxelCatalogTarget::models()</a> , 以及 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00205">selectModel()</a>.</p>
+
+</div>
+</div>
+<a id="a0c0929880be8994cfeeff75e0c6c330f" name="a0c0929880be8994cfeeff75e0c6c330f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c0929880be8994cfeeff75e0c6c330f">&#9670;&#160;</a></span>isModelSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel_editor::VoxelCatalogEditor::isModelSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00085">modelCount()</a> , 以及 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00368">modelId()</a>.</p>
+
+</div>
+</div>
+<a id="a0e5e73c2e608f3d9b967bd32f3b86917" name="a0e5e73c2e608f3d9b967bd32f3b86917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e5e73c2e608f3d9b967bd32f3b86917">&#9670;&#160;</a></span>joinPartnerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::joinPartnerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00457">joinPartnerId()</a>.</p>
+
+</div>
+</div>
+<a id="abd30692c3f06e67c2a9b5b645f8f3333" name="abd30692c3f06e67c2a9b5b645f8f3333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd30692c3f06e67c2a9b5b645f8f3333">&#9670;&#160;</a></span>joinPartnerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::joinPartnerId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00107">joinPartnerCount()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a8fcdc27840ec739a0ae5012fe6a300c9" name="a8fcdc27840ec739a0ae5012fe6a300c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fcdc27840ec739a0ae5012fe6a300c9">&#9670;&#160;</a></span>modelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::modelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelCatalog_8h_source.html#l00169">eve::voxel_editing::VoxelCatalogTarget::models()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00383">isModelSelected()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00378">modelFill()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00368">modelId()</a> , 以及 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00373">modelName()</a>.</p>
+
+</div>
+</div>
+<a id="a843f6d32a61613093e09f6e258c81a11" name="a843f6d32a61613093e09f6e258c81a11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a843f6d32a61613093e09f6e258c81a11">&#9670;&#160;</a></span>modelFill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::modelFill </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00085">modelCount()</a>, <a class="el" href="VoxelCatalog_8h_source.html#l00169">eve::voxel_editing::VoxelCatalogTarget::models()</a> , 以及 <a class="el" href="VoxelCatalog_8cpp_source.html#l00218">eve::voxel_editing::voxelClassifyModelFill()</a>.</p>
+
+</div>
+</div>
+<a id="a356732578b36e7dca222831008bf0a55" name="a356732578b36e7dca222831008bf0a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a356732578b36e7dca222831008bf0a55">&#9670;&#160;</a></span>modelId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::modelId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00368">368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00085">modelCount()</a>, <a class="el" href="VoxelCatalog_8h_source.html#l00169">eve::voxel_editing::VoxelCatalogTarget::models()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00383">isModelSelected()</a>.</p>
+
+</div>
+</div>
+<a id="a618728b74acdfc3ed3775994476e73ac" name="a618728b74acdfc3ed3775994476e73ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a618728b74acdfc3ed3775994476e73ac">&#9670;&#160;</a></span>modelName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::modelName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00085">modelCount()</a>, <a class="el" href="VoxelCatalog_8h_source.html#l00169">eve::voxel_editing::VoxelCatalogTarget::models()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="acec236d1e67edf8a78cd5030f538e5f6" name="acec236d1e67edf8a78cd5030f538e5f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acec236d1e67edf8a78cd5030f538e5f6">&#9670;&#160;</a></span>modelSizeX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::modelSizeX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>.</p>
+
+</div>
+</div>
+<a id="accc17edde183ee4bbfc5a7043fd434d8" name="accc17edde183ee4bbfc5a7043fd434d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc17edde183ee4bbfc5a7043fd434d8">&#9670;&#160;</a></span>modelSizeY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::modelSizeY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>.</p>
+
+</div>
+</div>
+<a id="ad7d1bb784aae4cb49304af42155f2bc8" name="ad7d1bb784aae4cb49304af42155f2bc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7d1bb784aae4cb49304af42155f2bc8">&#9670;&#160;</a></span>modelSizeZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::modelSizeZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00420">420</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>.</p>
+
+</div>
+</div>
+<a id="a4b18a91487667d51f025f31c8555cc34" name="a4b18a91487667d51f025f31c8555cc34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b18a91487667d51f025f31c8555cc34">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a> &amp; eve::voxel_editor::VoxelCatalogEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel__editor_1_1VoxelCatalogEditor.html">VoxelCatalogEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97d54e7458f28e6dff8b3da559de0c86" name="a97d54e7458f28e6dff8b3da559de0c86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97d54e7458f28e6dff8b3da559de0c86">&#9670;&#160;</a></span>orbit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::orbit </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yawDelta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitchDelta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a281f27f210e38173ddeb5486a94f5108" name="a281f27f210e38173ddeb5486a94f5108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a281f27f210e38173ddeb5486a94f5108">&#9670;&#160;</a></span>orbitPitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel_editor::VoxelCatalogEditor::orbitPitch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57e14543301905f16cce68401ede81a0" name="a57e14543301905f16cce68401ede81a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57e14543301905f16cce68401ede81a0">&#9670;&#160;</a></span>orbitYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel_editor::VoxelCatalogEditor::orbitYaw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2084aaffb30aa4c56d2eb1e6d6b38581" name="a2084aaffb30aa4c56d2eb1e6d6b38581"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2084aaffb30aa4c56d2eb1e6d6b38581">&#9670;&#160;</a></span>pointerDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::pointerDown </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="VoxelCatalog_8cpp_source.html#l00225">eve::voxel_editing::pickVoxelModel()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a2c27ccef3c00233f0c9dd469ca90cfaf" name="a2c27ccef3c00233f0c9dd469ca90cfaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c27ccef3c00233f0c9dd469ca90cfaf">&#9670;&#160;</a></span>pointerWorldRay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::pointerWorldRay </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>MagicaVoxel attach/erase using a world-space camera ray. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ox</td><td>Ray origin X in model space. </td></tr>
+    <tr><td class="paramname">oy</td><td>Ray origin Y in model space. </td></tr>
+    <tr><td class="paramname">oz</td><td>Ray origin Z in model space. </td></tr>
+    <tr><td class="paramname">dx</td><td>Ray direction X. </td></tr>
+    <tr><td class="paramname">dy</td><td>Ray direction Y. </td></tr>
+    <tr><td class="paramname">dz</td><td>Ray direction Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a> , 以及 <a class="el" href="VoxelCatalog_8cpp_source.html#l00225">eve::voxel_editing::pickVoxelModel()</a>.</p>
+
+</div>
+</div>
+<a id="acb60ebf634cc77ee0fca39fe4d043275" name="acb60ebf634cc77ee0fca39fe4d043275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb60ebf634cc77ee0fca39fe4d043275">&#9670;&#160;</a></span>previewRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::voxel_editor::VoxelCatalogEditor::previewRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad37dddca9193a16c8c72a274ce10c695" name="ad37dddca9193a16c8c72a274ce10c695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad37dddca9193a16c8c72a274ce10c695">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::voxel_editor::VoxelCatalogEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>.</p>
+
+</div>
+</div>
+<a id="abb7d238d6762bd5d16087deb12a8aeb6" name="abb7d238d6762bd5d16087deb12a8aeb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb7d238d6762bd5d16087deb12a8aeb6">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::voxel_editor::VoxelCatalogEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelCatalog_8h_source.html#l00141">eve::voxel_editing::VoxelCatalogTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="afc944a6277c6741f3c6fa5dc7668b496" name="afc944a6277c6741f3c6fa5dc7668b496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc944a6277c6741f3c6fa5dc7668b496">&#9670;&#160;</a></span>screenVoxelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::screenVoxelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00440">screenVoxelH()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00435">screenVoxelW()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00425">screenVoxelX()</a> , 以及 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00430">screenVoxelY()</a>.</p>
+
+</div>
+</div>
+<a id="ac5e5ea061277dbe98cca182948eb103d" name="ac5e5ea061277dbe98cca182948eb103d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5e5ea061277dbe98cca182948eb103d">&#9670;&#160;</a></span>screenVoxelH()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel_editor::VoxelCatalogEditor::screenVoxelH </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00440">440</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00687">h</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00099">screenVoxelCount()</a>.</p>
+
+</div>
+</div>
+<a id="af76de61763de7e755e0c5bacb0b1e18d" name="af76de61763de7e755e0c5bacb0b1e18d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af76de61763de7e755e0c5bacb0b1e18d">&#9670;&#160;</a></span>screenVoxelW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel_editor::VoxelCatalogEditor::screenVoxelW </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00099">screenVoxelCount()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a7387ae8cc91950cd6e05aa355bca1c92" name="a7387ae8cc91950cd6e05aa355bca1c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7387ae8cc91950cd6e05aa355bca1c92">&#9670;&#160;</a></span>screenVoxelX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel_editor::VoxelCatalogEditor::screenVoxelX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00425">425</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00099">screenVoxelCount()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a601bd49a5c599a09ccf3ec267238065a" name="a601bd49a5c599a09ccf3ec267238065a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a601bd49a5c599a09ccf3ec267238065a">&#9670;&#160;</a></span>screenVoxelY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel_editor::VoxelCatalogEditor::screenVoxelY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelCatalogEditor_8h_source.html#l00099">screenVoxelCount()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a50396b04e8b8d827e3b5ad7e10a2ac67" name="a50396b04e8b8d827e3b5ad7e10a2ac67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50396b04e8b8d827e3b5ad7e10a2ac67">&#9670;&#160;</a></span>selectedFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::selectedFace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1870115d0a9c107beafa6330fdb50bdb" name="a1870115d0a9c107beafa6330fdb50bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1870115d0a9c107beafa6330fdb50bdb">&#9670;&#160;</a></span>selectedId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::selectedId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a978dbb1fbbb571f44b48e884c3bdb4b3" name="a978dbb1fbbb571f44b48e884c3bdb4b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a978dbb1fbbb571f44b48e884c3bdb4b3">&#9670;&#160;</a></span>selectedSocketKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::selectedSocketKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a> , 以及 <a class="el" href="VoxelCatalog_8cpp_source.html#l00185">eve::voxel_editing::voxelSocketKindName()</a>.</p>
+
+</div>
+</div>
+<a id="a5e206e6d031f1f4cbdc33e526794bb69" name="a5e206e6d031f1f4cbdc33e526794bb69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e206e6d031f1f4cbdc33e526794bb69">&#9670;&#160;</a></span>selectedSocketTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::selectedSocketTag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>.</p>
+
+</div>
+</div>
+<a id="a18aeb5cd3308d0e403e62cc5516395fd" name="a18aeb5cd3308d0e403e62cc5516395fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18aeb5cd3308d0e403e62cc5516395fd">&#9670;&#160;</a></span>selectFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::selectFace </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaddb1eb2050d6bcb78f447b086a93821" name="aaddb1eb2050d6bcb78f447b086a93821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaddb1eb2050d6bcb78f447b086a93821">&#9670;&#160;</a></span>selectModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::selectModel </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelCatalog_8cpp_source.html#l00328">eve::voxel_editing::VoxelCatalogTarget::findModel()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00326">createModel()</a> , 以及 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00339">deleteSelectedModel()</a>.</p>
+
+</div>
+</div>
+<a id="a4959beca00dbfe6ba0eaff0bbd6d0525" name="a4959beca00dbfe6ba0eaff0bbd6d0525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4959beca00dbfe6ba0eaff0bbd6d0525">&#9670;&#160;</a></span>setSelectedSocket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::setSelectedSocket </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="VoxelCatalog_8cpp_source.html#l00409">eve::voxel_editing::VoxelCatalogTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="aeb5e00d8a3afa0dd4bf61d3562bf8f26" name="aeb5e00d8a3afa0dd4bf61d3562bf8f26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb5e00d8a3afa0dd4bf61d3562bf8f26">&#9670;&#160;</a></span>setTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::setTool </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tool</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1voxel__editor.html#a8f524077d1bffc44a156660f4f3d8c8aa7193518e6f5f0076ef05680742323f9c">eve::voxel_editor::Attach</a> , 以及 <a class="el" href="namespaceeve_1_1voxel__editor.html#a8f524077d1bffc44a156660f4f3d8c8aaedc187bdea52d6e32b9c0f84e0849ec5">eve::voxel_editor::Erase</a>.</p>
+
+</div>
+</div>
+<a id="a70246a8181d36844478de73e61cefbca" name="a70246a8181d36844478de73e61cefbca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70246a8181d36844478de73e61cefbca">&#9670;&#160;</a></span>setViewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::setViewport </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="ac083c8c9a01468afb394d60c90c52876" name="ac083c8c9a01468afb394d60c90c52876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac083c8c9a01468afb394d60c90c52876">&#9670;&#160;</a></span>setVoxel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; void &gt; eve::voxel_editor::VoxelCatalogEditor::setVoxel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>occupied</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelCatalog_8cpp_source.html#l00485">eve::voxel_editing::VoxelCatalogTarget::makeSetVoxel()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a40f1ea725c285270a85d94bddc0a679e" name="a40f1ea725c285270a85d94bddc0a679e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40f1ea725c285270a85d94bddc0a679e">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1voxel__editing_1_1VoxelCatalogTarget.html">voxel_editing::VoxelCatalogTarget</a> &amp; eve::voxel_editor::VoxelCatalogEditor::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a> 第 <a class="el" href="VoxelCatalogEditor_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9831c5e3dbce2df91d6d111121fe01b4" name="a9831c5e3dbce2df91d6d111121fe01b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9831c5e3dbce2df91d6d111121fe01b4">&#9670;&#160;</a></span>toolName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel_editor::VoxelCatalogEditor::toolName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1voxel__editor.html#a8f524077d1bffc44a156660f4f3d8c8aaedc187bdea52d6e32b9c0f84e0849ec5">eve::voxel_editor::Erase</a>.</p>
+
+</div>
+</div>
+<a id="a12bc366a3aaa2de3656cba70cd36f18e" name="a12bc366a3aaa2de3656cba70cd36f18e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12bc366a3aaa2de3656cba70cd36f18e">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">voxel_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::voxel_editor::VoxelCatalogEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+</div>
+</div>
+<a id="a965a1a886ea13ccef022597e4a239674" name="a965a1a886ea13ccef022597e4a239674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a965a1a886ea13ccef022597e4a239674">&#9670;&#160;</a></span>voxelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::voxelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>.</p>
+
+</div>
+</div>
+<a id="a3fdd53f854bfd22c9e6cd6cfd7e006c2" name="a3fdd53f854bfd22c9e6cd6cfd7e006c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fdd53f854bfd22c9e6cd6cfd7e006c2">&#9670;&#160;</a></span>voxelX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::voxelX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a474ece7cebcfcff5cd44cf44845d4231" name="a474ece7cebcfcff5cd44cf44845d4231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a474ece7cebcfcff5cd44cf44845d4231">&#9670;&#160;</a></span>voxelY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::voxelY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ad09f5795738e72f6f15ee9acfb0bd106" name="ad09f5795738e72f6f15ee9acfb0bd106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09f5795738e72f6f15ee9acfb0bd106">&#9670;&#160;</a></span>voxelZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel_editor::VoxelCatalogEditor::voxelZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a> 第 <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/voxel/editor/<a class="el" href="VoxelCatalogEditor_8h_source.html">VoxelCatalogEditor.h</a></li>
+<li>src/modules/voxel/editor/<a class="el" href="VoxelCatalogEditor_8cpp_source.html">VoxelCatalogEditor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

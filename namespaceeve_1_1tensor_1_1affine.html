@@ -1,0 +1,500 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::affine 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html">affine</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::affine 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1tensor_1_1affine_1_1detail" id="r_namespaceeve_1_1tensor_1_1affine_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1affine_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed packed 8-bit values, valid for the duration of a synchronous call.  <a href="structeve_1_1tensor_1_1affine_1_1ByteView.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">ConvShape</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit 1D/2D NCHW convolution geometry; missing 1D height is one.  <a href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1QuantizedActivation.html">QuantizedActivation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONNX unsigned activation quantization; owns bytes and scalar parameters.  <a href="structeve_1_1tensor_1_1affine_1_1QuantizedActivation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a712a2867b1aad345a5d41381ba17241c" id="r_a712a2867b1aad345a5d41381ba17241c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html#a712a2867b1aad345a5d41381ba17241c">quantize</a> (std::span&lt; const float &gt; <a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, int zeroPoint, bool signedValues)</td></tr>
+<tr class="memdesc:a712a2867b1aad345a5d41381ba17241c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Affine quantization to int8/uint8 bytes, saturating and rounding ties to even.  <br /></td></tr>
+<tr class="separator:a712a2867b1aad345a5d41381ba17241c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af80cce4eb090aa097100c961ab847734" id="r_af80cce4eb090aa097100c961ab847734"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tensor_1_1affine_1_1QuantizedActivation.html">QuantizedActivation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html#af80cce4eb090aa097100c961ab847734">dynamicQuantize</a> (std::span&lt; const float &gt; <a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>)</td></tr>
+<tr class="memdesc:af80cce4eb090aa097100c961ab847734"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantize finite FP32 activations with ONNX DynamicQuantizeLinear semantics.  <br /></td></tr>
+<tr class="separator:af80cce4eb090aa097100c961ab847734"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fefdaaa00d2f2e789e0a5f994e6cd62" id="r_a5fefdaaa00d2f2e789e0a5f994e6cd62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html#a5fefdaaa00d2f2e789e0a5f994e6cd62">dequantize</a> (<a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a> <a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, std::span&lt; const float &gt; <a class="el" href="OnnxLstm_8cpp.html#a2b96aecc7a643d2c0467ba7093eb1030">scales</a>, std::span&lt; const int32_t &gt; <a class="el" href="OnnxLstm_8cpp.html#af1c1706d95537d0e7d1aea2094dd01c3">zeros</a>, size_t inner=1)</td></tr>
+<tr class="memdesc:a5fefdaaa00d2f2e789e0a5f994e6cd62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Affine dequantization using scalar or per-axis scale/zero point.  <br /></td></tr>
+<tr class="separator:a5fefdaaa00d2f2e789e0a5f994e6cd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9191430d23ccb9f398b8627eccaf2b2f" id="r_a9191430d23ccb9f398b8627eccaf2b2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; int32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html#a9191430d23ccb9f398b8627eccaf2b2f">matmul</a> (<a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, size_t <a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, size_t k, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, int aZero=0, int bZero=0, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *<a class="el" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>=nullptr)</td></tr>
+<tr class="memdesc:a9191430d23ccb9f398b8627eccaf2b2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer row-major [M,K] x [K,N], subtracting scalar zero points.  <br /></td></tr>
+<tr class="separator:a9191430d23ccb9f398b8627eccaf2b2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad98833230400a926f8a7b8959dbecc6b" id="r_ad98833230400a926f8a7b8959dbecc6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; int32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html#ad98833230400a926f8a7b8959dbecc6b">conv</a> (<a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a> <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a> <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, const <a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">ConvShape</a> &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>, int xZero, std::span&lt; const int32_t &gt; wZeros, <a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *<a class="el" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>=nullptr)</td></tr>
+<tr class="memdesc:ad98833230400a926f8a7b8959dbecc6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer Conv, supporting groups, asymmetric padding and dilation.  <br /></td></tr>
+<tr class="separator:ad98833230400a926f8a7b8959dbecc6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="ad98833230400a926f8a7b8959dbecc6b" name="ad98833230400a926f8a7b8959dbecc6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad98833230400a926f8a7b8959dbecc6b">&#9670;&#160;</a></span>conv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; int32_t &gt; &gt; eve::tensor::affine::conv </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a>&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a>&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">ConvShape</a> &amp;&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>xZero</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>wZeros</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Integer Conv, supporting groups, asymmetric padding and dilation. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning NCHW int32 values; rejects bad geometry or accumulator overflow. </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">compute</td><td>Optional borrowed GPU provider; null selects CPU. No retry on GPU failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>Synchronous. CPU is thread-safe; GPU uses the provider thread. Padding represents real zero. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8cpp_source.html">AffineQuant.cpp</a> 第 <a class="el" href="AffineQuant_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00046">eve::tensor::onnx_detail::gpuConv()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00102">eve::tensor::affine::detail::validateConv()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>.</p>
+
+</div>
+</div>
+<a id="a5fefdaaa00d2f2e789e0a5f994e6cd62" name="a5fefdaaa00d2f2e789e0a5f994e6cd62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fefdaaa00d2f2e789e0a5f994e6cd62">&#9670;&#160;</a></span>dequantize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt; eve::tensor::affine::dequantize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a>&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>scales</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int32_t &gt;&#160;</td>
+          <td class="paramname"><em>zeros</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>inner</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Affine dequantization using scalar or per-axis scale/zero point. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inner</td><td>Number of contiguous values following the channel axis. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning FP32 values; InvalidArgument on inconsistent channel layout. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>CPU, thread-safe; all views are borrowed for the call, no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8cpp_source.html">AffineQuant.cpp</a> 第 <a class="el" href="AffineQuant_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00027">scales</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="OnnxLstm_8cpp_source.html#l00028">zeros</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>.</p>
+
+</div>
+</div>
+<a id="af80cce4eb090aa097100c961ab847734" name="af80cce4eb090aa097100c961ab847734"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af80cce4eb090aa097100c961ab847734">&#9670;&#160;</a></span>dynamicQuantize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tensor_1_1affine_1_1QuantizedActivation.html">QuantizedActivation</a> &gt; eve::tensor::affine::dynamicQuantize </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>input</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Quantize finite FP32 activations with ONNX DynamicQuantizeLinear semantics. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input</td><td>Borrowed flat input; not retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning uint8 values, scale, zero point; InvalidArgument for nonfinite input. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>CPU, thread-safe, no callbacks; nearest-even rounding independent of fenv. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8cpp_source.html">AffineQuant.cpp</a> 第 <a class="el" href="AffineQuant_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="AffineQuant_8cpp_source.html#l00028">quantize()</a>, <a class="el" href="AffineQuant_8h_source.html#l00017">eve::tensor::affine::QuantizedActivation::scale</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AffineQuant_8h_source.html#l00016">eve::tensor::affine::QuantizedActivation::values</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AffineQuant_8h_source.html#l00018">eve::tensor::affine::QuantizedActivation::zeroPoint</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a> , 以及 <a class="el" href="OnnxLstm_8cpp_source.html#l00078">eve::tensor::onnx_detail::executeQuantLstm()</a>.</p>
+
+</div>
+</div>
+<a id="a9191430d23ccb9f398b8627eccaf2b2f" name="a9191430d23ccb9f398b8627eccaf2b2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9191430d23ccb9f398b8627eccaf2b2f">&#9670;&#160;</a></span>matmul()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; int32_t &gt; &gt; eve::tensor::affine::matmul </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ByteView.html">ByteView</a>&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>aZero</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bZero</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> *&#160;</td>
+          <td class="paramname"><em>compute</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Integer row-major [M,K] x [K,N], subtracting scalar zero points. </p>
+<dl class="section return"><dt>返回</dt><dd>Exact owning int32 accumulators; rejects dimension and int32 overflow. </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">compute</td><td>Optional borrowed GPU provider; null selects CPU. No retry on GPU failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>Synchronous. CPU is thread-safe; GPU uses the provider thread. Weights remain packed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8cpp_source.html">AffineQuant.cpp</a> 第 <a class="el" href="AffineQuant_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00024">compute</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="OnnxGpuKernels_8cpp_source.html#l00040">eve::tensor::onnx_detail::gpuMatmul()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>.</p>
+
+</div>
+</div>
+<a id="a712a2867b1aad345a5d41381ba17241c" name="a712a2867b1aad345a5d41381ba17241c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a712a2867b1aad345a5d41381ba17241c">&#9670;&#160;</a></span>quantize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; uint8_t &gt; &gt; eve::tensor::affine::quantize </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zeroPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>signedValues</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Affine quantization to int8/uint8 bytes, saturating and rounding ties to even. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning packed bytes; rejects invalid scale, zero point or nonfinite input. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>CPU, thread-safe; spans are borrowed only during the call. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8cpp_source.html">AffineQuant.cpp</a> 第 <a class="el" href="AffineQuant_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AffineQuant_8cpp_source.html#l00042">dynamicQuantize()</a> , 以及 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

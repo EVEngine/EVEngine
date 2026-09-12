@@ -1,0 +1,443 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::EncounterDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html">EncounterDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rpg_1_1EncounterDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::EncounterDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One immutable, fully specified encounter composition and settlement definition.  
+ <a href="structeve_1_1rpg_1_1EncounterDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a87d7dddd498cf278d4ee6f107d17b10d" id="r_a87d7dddd498cf278d4ee6f107d17b10d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a87d7dddd498cf278d4ee6f107d17b10d">id</a></td></tr>
+<tr class="separator:a87d7dddd498cf278d4ee6f107d17b10d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58218f91a0530273e587886ff00fd381" id="r_a58218f91a0530273e587886ff00fd381"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a58218f91a0530273e587886ff00fd381">displayName</a></td></tr>
+<tr class="separator:a58218f91a0530273e587886ff00fd381"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79cb29d517a6aa3e797b314db125b236" id="r_a79cb29d517a6aa3e797b314db125b236"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html">EncounterMemberDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a79cb29d517a6aa3e797b314db125b236">members</a></td></tr>
+<tr class="separator:a79cb29d517a6aa3e797b314db125b236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd007d86b1b3f9143673dfba2390205" id="r_a5fd007d86b1b3f9143673dfba2390205"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a5fd007d86b1b3f9143673dfba2390205">xpReward</a> = 0.0</td></tr>
+<tr class="separator:a5fd007d86b1b3f9143673dfba2390205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb6cca84ff838de00165109648c07d00" id="r_acb6cca84ff838de00165109648c07d00"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#acb6cca84ff838de00165109648c07d00">xpGrowth</a> = 1.2</td></tr>
+<tr class="separator:acb6cca84ff838de00165109648c07d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24a6bd046971d3743a1d8d7838ebbb96" id="r_a24a6bd046971d3743a1d8d7838ebbb96"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a24a6bd046971d3743a1d8d7838ebbb96">goldReward</a> = 0.0</td></tr>
+<tr class="separator:a24a6bd046971d3743a1d8d7838ebbb96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1e81d46b345aa883b7b7b0630cf9ac1" id="r_ab1e81d46b345aa883b7b7b0630cf9ac1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#ab1e81d46b345aa883b7b7b0630cf9ac1">requiredQuestId</a></td></tr>
+<tr class="separator:ab1e81d46b345aa883b7b7b0630cf9ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc71583063cd80a3a7e51d26f118d3c" id="r_a4dc71583063cd80a3a7e51d26f118d3c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a4dc71583063cd80a3a7e51d26f118d3c">notifyTopic</a></td></tr>
+<tr class="separator:a4dc71583063cd80a3a7e51d26f118d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8579554182c47fb74a670f7af9a39fbe" id="r_a8579554182c47fb74a670f7af9a39fbe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a8579554182c47fb74a670f7af9a39fbe">notifyTarget</a></td></tr>
+<tr class="separator:a8579554182c47fb74a670f7af9a39fbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad07fb9d2a71adc704350f568c695e5c0" id="r_ad07fb9d2a71adc704350f568c695e5c0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#ad07fb9d2a71adc704350f568c695e5c0">notifyAmount</a> = 0</td></tr>
+<tr class="separator:ad07fb9d2a71adc704350f568c695e5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9e0c3b43e9b4b8a90a7502472db6c9" id="r_a1d9e0c3b43e9b4b8a90a7502472db6c9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a1d9e0c3b43e9b4b8a90a7502472db6c9">defeatCounterId</a></td></tr>
+<tr class="separator:a1d9e0c3b43e9b4b8a90a7502472db6c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac980056c7ba1bd69925c4cecdd5e93a9" id="r_ac980056c7ba1bd69925c4cecdd5e93a9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#ac980056c7ba1bd69925c4cecdd5e93a9">defeatCounterAmount</a> = 0</td></tr>
+<tr class="separator:ac980056c7ba1bd69925c4cecdd5e93a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22aced1de1ca5cb0abf9346460ad2ddc" id="r_a22aced1de1ca5cb0abf9346460ad2ddc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#a22aced1de1ca5cb0abf9346460ad2ddc">levelPointAttributeId</a></td></tr>
+<tr class="separator:a22aced1de1ca5cb0abf9346460ad2ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdec25db1ea4c149b8f9183305a1e0b8" id="r_abdec25db1ea4c149b8f9183305a1e0b8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EncounterDefinition.html#abdec25db1ea4c149b8f9183305a1e0b8">pointsPerLevel</a> = 0</td></tr>
+<tr class="separator:abdec25db1ea4c149b8f9183305a1e0b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One immutable, fully specified encounter composition and settlement definition. </p>
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ac980056c7ba1bd69925c4cecdd5e93a9" name="ac980056c7ba1bd69925c4cecdd5e93a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac980056c7ba1bd69925c4cecdd5e93a9">&#9670;&#160;</a></span>defeatCounterAmount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::EncounterDefinition::defeatCounterAmount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d9e0c3b43e9b4b8a90a7502472db6c9" name="a1d9e0c3b43e9b4b8a90a7502472db6c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d9e0c3b43e9b4b8a90a7502472db6c9">&#9670;&#160;</a></span>defeatCounterId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::defeatCounterId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58218f91a0530273e587886ff00fd381" name="a58218f91a0530273e587886ff00fd381"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58218f91a0530273e587886ff00fd381">&#9670;&#160;</a></span>displayName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::displayName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24a6bd046971d3743a1d8d7838ebbb96" name="a24a6bd046971d3743a1d8d7838ebbb96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a6bd046971d3743a1d8d7838ebbb96">&#9670;&#160;</a></span>goldReward</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::EncounterDefinition::goldReward = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87d7dddd498cf278d4ee6f107d17b10d" name="a87d7dddd498cf278d4ee6f107d17b10d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87d7dddd498cf278d4ee6f107d17b10d">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22aced1de1ca5cb0abf9346460ad2ddc" name="a22aced1de1ca5cb0abf9346460ad2ddc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22aced1de1ca5cb0abf9346460ad2ddc">&#9670;&#160;</a></span>levelPointAttributeId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::levelPointAttributeId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79cb29d517a6aa3e797b314db125b236" name="a79cb29d517a6aa3e797b314db125b236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79cb29d517a6aa3e797b314db125b236">&#9670;&#160;</a></span>members</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1rpg_1_1EncounterMemberDefinition.html">EncounterMemberDefinition</a>&gt; eve::rpg::EncounterDefinition::members</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad07fb9d2a71adc704350f568c695e5c0" name="ad07fb9d2a71adc704350f568c695e5c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad07fb9d2a71adc704350f568c695e5c0">&#9670;&#160;</a></span>notifyAmount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::EncounterDefinition::notifyAmount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8579554182c47fb74a670f7af9a39fbe" name="a8579554182c47fb74a670f7af9a39fbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8579554182c47fb74a670f7af9a39fbe">&#9670;&#160;</a></span>notifyTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::notifyTarget</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4dc71583063cd80a3a7e51d26f118d3c" name="a4dc71583063cd80a3a7e51d26f118d3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dc71583063cd80a3a7e51d26f118d3c">&#9670;&#160;</a></span>notifyTopic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::notifyTopic</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abdec25db1ea4c149b8f9183305a1e0b8" name="abdec25db1ea4c149b8f9183305a1e0b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdec25db1ea4c149b8f9183305a1e0b8">&#9670;&#160;</a></span>pointsPerLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::EncounterDefinition::pointsPerLevel = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1e81d46b345aa883b7b7b0630cf9ac1" name="ab1e81d46b345aa883b7b7b0630cf9ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1e81d46b345aa883b7b7b0630cf9ac1">&#9670;&#160;</a></span>requiredQuestId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::EncounterDefinition::requiredQuestId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb6cca84ff838de00165109648c07d00" name="acb6cca84ff838de00165109648c07d00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb6cca84ff838de00165109648c07d00">&#9670;&#160;</a></span>xpGrowth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::EncounterDefinition::xpGrowth = 1.2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5fd007d86b1b3f9143673dfba2390205" name="a5fd007d86b1b3f9143673dfba2390205"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fd007d86b1b3f9143673dfba2390205">&#9670;&#160;</a></span>xpReward</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::EncounterDefinition::xpReward = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a> 第 <a class="el" href="EncounterCatalogue_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="EncounterCatalogue_8h_source.html">EncounterCatalogue.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

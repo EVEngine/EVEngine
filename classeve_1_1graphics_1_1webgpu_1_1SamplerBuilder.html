@@ -1,0 +1,530 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu::SamplerBuilder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu::SamplerBuilder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Fluent builder for wgpu::Sampler.  
+ <a href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a30d5d8fc19ee62f6dd1956aad2d5b678" id="r_a30d5d8fc19ee62f6dd1956aad2d5b678"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a30d5d8fc19ee62f6dd1956aad2d5b678">SamplerBuilder</a> ()=default</td></tr>
+<tr class="memdesc:a30d5d8fc19ee62f6dd1956aad2d5b678"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defaults: clamp-to-edge, linear mag/min, no mip sampling, aniso 1.  <br /></td></tr>
+<tr class="separator:a30d5d8fc19ee62f6dd1956aad2d5b678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa60207da9aeea95fc7df9e8b6e8006" id="r_aafa60207da9aeea95fc7df9e8b6e8006"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#aafa60207da9aeea95fc7df9e8b6e8006">label</a> (const char *l)</td></tr>
+<tr class="separator:aafa60207da9aeea95fc7df9e8b6e8006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3aaf25575b62548b4e8b90be45c0f3e4" id="r_a3aaf25575b62548b4e8b90be45c0f3e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a3aaf25575b62548b4e8b90be45c0f3e4">address</a> (wgpu::AddressMode <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, wgpu::AddressMode <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, wgpu::AddressMode <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>=wgpu::AddressMode::ClampToEdge)</td></tr>
+<tr class="separator:a3aaf25575b62548b4e8b90be45c0f3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab35aae6bba2acf65afe21853c05cb6c5" id="r_ab35aae6bba2acf65afe21853c05cb6c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#ab35aae6bba2acf65afe21853c05cb6c5">filter</a> (wgpu::FilterMode mag, wgpu::FilterMode min)</td></tr>
+<tr class="separator:ab35aae6bba2acf65afe21853c05cb6c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75bc7400aa193e1b34ea8f29bec8b684" id="r_a75bc7400aa193e1b34ea8f29bec8b684"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a75bc7400aa193e1b34ea8f29bec8b684">mipmap</a> (wgpu::MipmapFilterMode mip, float lodMin=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float lodMax=1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a75bc7400aa193e1b34ea8f29bec8b684"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26ee6676db561f5a89f507d6804a9870" id="r_a26ee6676db561f5a89f507d6804a9870"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a26ee6676db561f5a89f507d6804a9870">compare</a> (wgpu::CompareFunction cmp)</td></tr>
+<tr class="separator:a26ee6676db561f5a89f507d6804a9870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01baa7ae2213479dc39c50728eaa8e43" id="r_a01baa7ae2213479dc39c50728eaa8e43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a01baa7ae2213479dc39c50728eaa8e43">anisotropy</a> (float maxAniso)</td></tr>
+<tr class="separator:a01baa7ae2213479dc39c50728eaa8e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0586572ced5b3ebd478344389263719c" id="r_a0586572ced5b3ebd478344389263719c"><td class="memItemLeft" align="right" valign="top">wgpu::Sampler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a0586572ced5b3ebd478344389263719c">build</a> (const wgpu::Device &amp;<a class="el" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>) const</td></tr>
+<tr class="memdesc:a0586572ced5b3ebd478344389263719c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the sampler. Throws eve::graphics::Exception on null device.  <br /></td></tr>
+<tr class="separator:a0586572ced5b3ebd478344389263719c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a319222522072ab7cb912c75362076028" id="r_a319222522072ab7cb912c75362076028"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html#a319222522072ab7cb912c75362076028">fromEngine</a> (const <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">eve::graphics::TextureSampler</a> &amp;<a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, uint32_t mipLevels, float maxDeviceAnisotropy)</td></tr>
+<tr class="memdesc:a319222522072ab7cb912c75362076028"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start from an engine <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html" title="Sampler state for a Texture (filter, wrap, mip LOD, anisotropy). Defaults match historical engine beh...">TextureSampler</a> (mirrors Graphics::makeSampler).  <br /></td></tr>
+<tr class="separator:a319222522072ab7cb912c75362076028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Fluent builder for wgpu::Sampler. </p>
+<p>The constructor already writes WebGPU-legal defaults (clamp-to-edge, linear, no mips, anisotropy 1), so a sampler is always valid without extra calls — this mirrors vk-bootstrap's "builder default is a valid value" principle and removes the hand-written WGPUSamplerDescriptor zero-init + reinterpret_cast that made default-mask bugs possible in Graphics.cpp. </p>
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a30d5d8fc19ee62f6dd1956aad2d5b678" name="a30d5d8fc19ee62f6dd1956aad2d5b678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30d5d8fc19ee62f6dd1956aad2d5b678">&#9670;&#160;</a></span>SamplerBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::webgpu::SamplerBuilder::SamplerBuilder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Defaults: clamp-to-edge, linear mag/min, no mip sampling, aniso 1. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3aaf25575b62548b4e8b90be45c0f3e4" name="a3aaf25575b62548b4e8b90be45c0f3e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3aaf25575b62548b4e8b90be45c0f3e4">&#9670;&#160;</a></span>address()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp; eve::graphics::webgpu::SamplerBuilder::address </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::AddressMode&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::AddressMode&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::AddressMode&#160;</td>
+          <td class="paramname"><em>w</em> = <code>wgpu::AddressMode::ClampToEdge</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a01baa7ae2213479dc39c50728eaa8e43" name="a01baa7ae2213479dc39c50728eaa8e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01baa7ae2213479dc39c50728eaa8e43">&#9670;&#160;</a></span>anisotropy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp; eve::graphics::webgpu::SamplerBuilder::anisotropy </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxAniso</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0586572ced5b3ebd478344389263719c" name="a0586572ced5b3ebd478344389263719c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0586572ced5b3ebd478344389263719c">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::Sampler eve::graphics::webgpu::SamplerBuilder::build </td>
+          <td>(</td>
+          <td class="paramtype">const wgpu::Device &amp;&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the sampler. Throws eve::graphics::Exception on null device. </p>
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8cpp_source.html">SamplerBuilder.cpp</a> 第 <a class="el" href="SamplerBuilder_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>.</p>
+
+</div>
+</div>
+<a id="a26ee6676db561f5a89f507d6804a9870" name="a26ee6676db561f5a89f507d6804a9870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26ee6676db561f5a89f507d6804a9870">&#9670;&#160;</a></span>compare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp; eve::graphics::webgpu::SamplerBuilder::compare </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::CompareFunction&#160;</td>
+          <td class="paramname"><em>cmp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab35aae6bba2acf65afe21853c05cb6c5" name="ab35aae6bba2acf65afe21853c05cb6c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab35aae6bba2acf65afe21853c05cb6c5">&#9670;&#160;</a></span>filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp; eve::graphics::webgpu::SamplerBuilder::filter </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::FilterMode&#160;</td>
+          <td class="paramname"><em>mag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::FilterMode&#160;</td>
+          <td class="paramname"><em>min</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a319222522072ab7cb912c75362076028" name="a319222522072ab7cb912c75362076028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319222522072ab7cb912c75362076028">&#9670;&#160;</a></span>fromEngine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> eve::graphics::webgpu::SamplerBuilder::fromEngine </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">eve::graphics::TextureSampler</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mipLevels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDeviceAnisotropy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start from an engine <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html" title="Sampler state for a Texture (filter, wrap, mip LOD, anisotropy). Defaults match historical engine beh...">TextureSampler</a> (mirrors Graphics::makeSampler). </p>
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8cpp_source.html">SamplerBuilder.cpp</a> 第 <a class="el" href="SamplerBuilder_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">eve::graphics::Disabled</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007">eve::graphics::Nearest</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="aafa60207da9aeea95fc7df9e8b6e8006" name="aafa60207da9aeea95fc7df9e8b6e8006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa60207da9aeea95fc7df9e8b6e8006">&#9670;&#160;</a></span>label()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp; eve::graphics::webgpu::SamplerBuilder::label </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>l</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75bc7400aa193e1b34ea8f29bec8b684" name="a75bc7400aa193e1b34ea8f29bec8b684"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75bc7400aa193e1b34ea8f29bec8b684">&#9670;&#160;</a></span>mipmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1SamplerBuilder.html">SamplerBuilder</a> &amp; eve::graphics::webgpu::SamplerBuilder::mipmap </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::MipmapFilterMode&#160;</td>
+          <td class="paramname"><em>mip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lodMin</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lodMax</em> = <code>1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a> 第 <a class="el" href="SamplerBuilder_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/webgpu/<a class="el" href="SamplerBuilder_8h_source.html">SamplerBuilder.h</a></li>
+<li>src/modules/graphics/webgpu/<a class="el" href="SamplerBuilder_8cpp_source.html">SamplerBuilder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

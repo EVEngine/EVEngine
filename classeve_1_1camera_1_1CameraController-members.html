@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1camera.html">camera</a></li><li class="navelem"><a class="el" href="classeve_1_1camera_1_1CameraController.html">CameraController</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::camera::CameraController 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#addcec7ff03594d0bacbedf4f9a9f2eda">activateRig</a>(const std::string &amp;name, float blendTime)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aec63a2c106e77f1b52721583fed270ee">addCollisionBox</a>(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aa211e2d96f2f555af852a74eacb6e696">addFovImpulse</a>(float degrees, float duration)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aaab5d18e46913f57b948e92049b3262f">addImpulse</a>(float positionAmplitude, float rotationAmplitude, float duration, unsigned int seed=0)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a8601a9d2b140c396aca7bfd99072961d">addInput</a>(float yawDeltaDeg, float pitchDeltaDeg, float zoomDelta)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a90865ddbab943fc0a2fbf061a1ed0a08">addRig</a>(const std::string &amp;name, const std::string &amp;mode, int priority)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a418b8b4c489348a2746ec2783cb60ea6">addTimelineCut</a>(float time, const std::string &amp;rigName, float blendTime)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#af9b3b66f89b087b703aea22158d660d7">addTimelineEvent</a>(float time, const std::string &amp;name, const std::string &amp;data)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a5d5ac7596b6aab5fbc3b37b48908a8ef">addTimelineFloat</a>(float time, const std::string &amp;property, float value)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a2e68fbcfa9415121fa6e79571b23c409">addView</a>(const std::string &amp;name, float ex, float ey, float ez, float tx, float ty, float tz)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a3ea4ec54c3753a1daa5413253dcefede">CameraController</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#abc9480cf43022879b96cdfe350772573">clearCollisionBoxes</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aba7b15ff68e59e8dbfee1ff34968fe2b">clearImpulses</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a56075ec7f1b1320289983ad0af1e2ff5">clearTimeline</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a9dd67e484486d80c1ec8a22c000e2123">consumeTimelineEvent</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a12463208aba255ba4127b671980764e0">deserializeAsset</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a48b9fcdc7cb40acfa7ff33e01036b167">getActiveRig</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a72ceea414f33070df886c8eacfb72278">getCamera</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a1ba3a482ce12c7a7dda06f98f226f80b">getCollisionBodyId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a861c5ef4b90c19e99ccd31537733b75b">getFov</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a773dfecdaac11648444e57d9149c7111">getMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a8b1f3f5b3de05e76533be1dabb53bebf">getPendingTimelineEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a056658236c8661ccff73c5e55cfc629e">getRigCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a9bd21b3b51a5f57c96307bfe056c480f">getTargetX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#af09290beb7bbe2c4d438354c5b8336b1">getTargetY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a7e034c7854b854f2e73bbefa04d68a87">getTargetZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a11afef4c850035e04b0c6cdecb7344a1">getTimelineDuration</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ab13d7790b37a9c7483b088f25880ada6">getTimelineEventData</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a5271bb3da93eacecd16d8d1f989df420">getTimelineTime</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a19249695d80205b8299f9edd4af97884">isObstructed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a93dfd58712f97237e76d098129ee024e">isPlaying</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a97ca6c2b88ea5ad6b4fbad0190ea276c">isTimelinePlaying</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#acb8d2a0d03f0356904a1dac834d4ea74">pauseTimeline</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a86a94839859d8436f84bd89de6f33a0e">playSequence</a>(float stepTime)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a6e52d33c7529fd0a6a83b4a07afb0e00">playTimeline</a>(bool loop)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a6b46d73e39440fdb9793d8b8e20d4332">removeRig</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ace9d6b465e207a97e17dba3d112427fa">saveRigState</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a84664bb3ac08cbd63edce9186f67a78f">seekTimeline</a>(float time, bool fireEvents=false)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a53f5e11dcbfa38790fcd06ef8902d9fc">serializeAsset</a>() const</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aed6391a86e44a78982e1c85088aad4fc">setAzimuth</a>(float deg)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a5666b34e00b64a8820f39d461bb89375">setCamera</a>(graphics::Camera3D *cam)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a93566cd69794b7747757c04149cea373">setCollisionEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a93203251739f01e2f688c84fa8b56483">setCollisionIgnoredBody</a>(int bodyId)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a110394f0de14d67bede55495a48c26bb">setCollisionMask</a>(uint64_t maskBits)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a2cdff54f2737ad4c7e23ee8d4296710a">setCollisionRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#af84ef6acd62b5a608cb7ce514f1e71f8">setCollisionRecovery</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a67bb4de011bdbf460fd13064750dc16b">setComposition</a>(float screenX, float screenY)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ae9cc9d1159a770309fb6b8dabbc5de21">setDeadZone</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ad0f779e8700f240cc2c1e0eaf48d3b5a">setElevation</a>(float deg)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a19acdef9bd014546dae5e5a9bf89ffea">setEventSink</a>(platform_event::PlatformEvent *sink)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ac7d0f63281fe4c1f1125dda00360585a">setFov</a>(float degrees)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ab1b797a785c4e5d8cc19627dd86aafad">setLookAhead</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#abec4a138111273072ff39070b156cc18">setMaxSpeed</a>(float unitsPerSec)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ab6d74ff1d2b22e462286987018b1a261">setMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ac1d045bdd40b60b54ab346d833938352">setOffset</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ae22ae4d228cd499f2af89c007aef3cbf">setOrbitSpeed</a>(float degPerSec)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a7ced5b600dc72a7f01d95b87147a1747">setPitch</a>(float deg)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aabde7a3a6a2f8e71975975c70cecb779">setPositionSmooth</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a4305b46d815f6b4158793c1adc92b99f">setRadius</a>(float r)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a52f7788393e7e00dd1e268d82fb45e70">setRigEnabled</a>(const std::string &amp;name, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#adc7bd39e64991223a7f1edff8b5bca2e">setRigPriority</a>(const std::string &amp;name, int priority)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a415ee789c8637709a276e58f0f1982ac">setSmooth</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a3efc5dddfafacd0cc288be69d0ba4a1c">setTarget</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#abca9bb3e181869bf9f7a85c713f34a0d">setTargetNode</a>(scene::SceneNodeRef *node)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ae77ebc6fd91088d2ed62fb0375aa3b47">setTargetSmooth</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a13f4f7f407b7de323eb652575b09fc69">setYaw</a>(float deg)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aeab9f953664a20828a4125457e9f543f">snap</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a408ad2001daacf41e595ee8d6e0d3d7d">stopSequence</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a4b697e0981cd01e2b750abac4f6f8265">stopTimeline</a>()</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ac03a7780869c3eea5c2b4041c71c32bd">switchTo</a>(const std::string &amp;name, float blendTime)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a3f9f6773385ade1d0b8a95cf6146c098">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a9f24481e3137ef226e471a072af6944f">~CameraController</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1camera_1_1CameraController.html">eve::camera::CameraController</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

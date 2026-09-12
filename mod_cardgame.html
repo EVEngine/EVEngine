@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 卡牌游戏工具模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">卡牌游戏工具模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>卡牌游戏工具模块</h1>
+<p><b>脚本入口：</b> <code>eve.Card()</code></p>
+<p>面向卡牌游戏（炉石 / MTGA / 杀戮尖塔风格）的通用 UI 工具集：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌背面与偷看、费用不足置灰，以及 UiCard 同款的可实时调节布局参数。参考 <a href="https://github.com/ycarowr/UiCard">ycarowr/UiCard</a> 的功能面实现，以 C++ 模块提供（布局/交互/渲染均在本模块内完成）。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local card = eve.Card();</div>
+<div class="line"> </div>
+<div class="line">// 注册卡牌类型定义</div>
+<div class="line">card.registerCardsFromJson(@&quot;[</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;flame&quot;&quot;,&quot;&quot;name&quot;&quot;:&quot;&quot;烈焰元素&quot;&quot;,&quot;&quot;kind&quot;&quot;:&quot;&quot;creature&quot;&quot;,&quot;&quot;cost&quot;&quot;:2,&quot;&quot;attack&quot;&quot;:3,&quot;&quot;health&quot;&quot;:2,&quot;&quot;tint&quot;&quot;:[0.85,0.35,0.20]},</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;fireball&quot;&quot;,&quot;&quot;name&quot;&quot;:&quot;&quot;火球术&quot;&quot;,&quot;&quot;kind&quot;&quot;:&quot;&quot;spell&quot;&quot;,&quot;&quot;cost&quot;&quot;:3,&quot;&quot;tint&quot;&quot;:[0.95,0.55,0.25]}</div>
+<div class="line">]&quot;);</div>
+<div class="line"> </div>
+<div class="line">// 布局配置（UiCard 的 Configs）</div>
+<div class="line">local cfg = card.newConfig();</div>
+<div class="line">cfg.setHandX(config.width * 0.5);</div>
+<div class="line">cfg.setHandY(config.height - 80.0);</div>
+<div class="line">card.setConfig(cfg);</div>
+<div class="line"> </div>
+<div class="line">// 牌库 + 手牌 + 落牌区</div>
+<div class="line">local deck = card.newDeck();</div>
+<div class="line">deck.push(card.newCard(&quot;flame&quot;));</div>
+<div class="line">deck.shuffle();</div>
+<div class="line"> </div>
+<div class="line">local ph = card.newHand(cfg);</div>
+<div class="line">ph.setOwner(&quot;player&quot;);</div>
+<div class="line"> </div>
+<div class="line">local eh = card.newHand(card.newConfig());</div>
+<div class="line">eh.setOwner(&quot;enemy&quot;);</div>
+<div class="line">eh.setFaceDown(true);        // 背面朝上</div>
+<div class="line">eh.setInteractive(false);    // 不可拖拽</div>
+<div class="line"> </div>
+<div class="line">card.newZone(&quot;play&quot;, &quot;出牌区&quot;, config.width * 0.5 - 240, config.height * 0.32, 480, 170);</div>
+<div class="line">card.drawCard(&quot;player&quot;);     // 从牌库抽一张到手牌</div>
+<div class="line"> </div>
+<div class="line">// 每帧</div>
+<div class="line">card.update(dt, mouse.getX(), mouse.getY(), mouse.isDown(1) &amp;&amp; !ui.wantCaptureMouse());</div>
+<div class="line">card.render(gfx);            // 画落牌区 + 所有手牌</div>
+<div class="line">card.renderDeck(gfx);        // 画牌库堆 + 剩余张数</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>eve.Card()</code> 是单例模块，持有全部状态：卡牌类型定义表（<code>registerCardsFromJson</code>）、一份牌库（<code>newDeck</code>）、若干手牌（<code>newHand</code>）、若干落牌区（<code>newZone</code>）、若干布局配置（<code>newConfig</code>）。<code>new*</code> 返回的脚本对象是**非拥有句柄**——底层 C++ 对象由模块持有，脚本持有引用即可跨帧使用（不要手动释放）。</p>
+<p><code>update</code> 逐手牌推进布局与拖拽状态机，并把交互写入事件队列：<code>getEventType(i)</code> 为 <code>"click"</code>、<code>"drop"</code> 或 <code>"dropRejected"</code>，<code>getEventCardId(i)</code> / <code>getEventZone(i)</code> / <code>getEventHand(i)</code> / <code>getEventReason(i)</code> 给出对应字段；处理完用 <code>clearEvents()</code> 清空。拖拽命中落牌区后卡牌**仍留在手牌数组**，由脚本调用 <code>hand.removeCard(card)</code> 决定是否离手；不处理则自动归位。</p>
+<p>自定义 2D 或 3D 表现可调用 <code>setBuiltInVisuals(false)</code>，然后每帧在 <code>update</code> 后调用 <code>capturePresentation()</code>。<code>getPresentation(i)</code> 返回只读布局快照，含实例/定义 ID、位置、尺寸、角度、缩放、透明度与交互状态。快照对象只在下一次 <code>capturePresentation()</code> 前有效，不要跨帧保存；用 <code>getInstanceId()</code> 关联自己的 Sprite/Renderable。</p>
+<p>Card 不内置固定的卡牌编辑器。项目可用 <code>setCardDefinition</code> / <code>removeCardDefinition</code> 增删定义，用按 ID 排序的 <code>getCardDefinitionId</code> 枚举定义，再根据自己的 schema 动态组合 Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据； <a href="../../../examples/composable-editor/gameplay_components.nut"><code>examples/composable-editor/gameplay_components.nut</code></a> 展示了用通用 <code>Schema</code>、<code>Definitions</code> 和 ECS 组合项目专属卡牌工具的做法。</p>
+<p>把逻辑手牌映射到 3D 桌面时，用 <code>newPlaneMapper()</code> 创建映射器，<code>setLogicalRect()</code> 设置 Card 画布，<code>setPlane()</code> 设置世界 origin、全宽 U 向量和全高 V 向量。把 <code>Camera3D.screenToRay()</code> 的射线交给 <code>mapRay()</code>，随后将 <code>getLogicalX/Y()</code> 传给 <code>card.update()</code>；用 <code>mapLayout(snapshot.getX(), snapshot.getY())</code> 取得对应世界坐标。</p>
+<h2>目标导向指南</h2>
+<h3>做一个炉石式手牌与出牌流程</h3>
+<p>建玩家手牌（<code>setInteractive(true)</code>），按 <code>card.getCost() &gt; mana</code> 逐帧 <code>setDisabled(true)</code> 置灰；在事件循环里命中 <code>"drop"</code> 且 <code>getEventZone == "play"</code> 时检查费用、<code>hand.removeCard</code> 并扣法力，<code>"discard"</code> 时弃掉，<code>"hand"</code> 时不做任何事。</p>
+<h3>敌方手牌 / 偷看</h3>
+<p><code>hand.setFaceDown(true)</code> 整手渲染为牌背；<code>hand.setPeek(true)</code> 时翻面显示正面。<code>setInteractive(false)</code> 防止拖走敌方牌。</p>
+<h3>实时调节布局（UiCard Configs 面板）</h3>
+<p>把 <code>LayoutConfig</code> 的 getter/setter 接到 <a class="el" href="namespaceImGui.html">ImGui</a> 面板：<code>ui.slider</code> + <code>ui.consumeChange</code> + <code>ui.getValue</code>，每帧用 <code>ui.setValue</code> 同步。可调：<code>spacing</code>、<code>arcHeight</code>、<code>rotationAngle</code>、<code>hoverRotation</code>、<code>hoverScale</code>、<code>hoverLift</code>、<code>hoverSpeed</code>、<code>motionSpeed</code>、<code>disabledAlpha</code>、<code>handY</code>。</p>
+<h2>常见问题</h2>
+<ul>
+<li>卡牌文字：C++ 模块会使用 Graphics 当前字体绘制文字；未设置字体时静默跳过文字，只画色块/宝石。字体资源由宿主渲染初始化流程管理。</li>
+<li><code>mouse.isDown(1)</code> 是左键；面板悬浮时先查 <code>ui.wantCaptureMouse()</code>，避免把 UI 操作误当卡牌拖拽。</li>
+<li>布局为“中心锚定”的抛物线扇形（两端上翘），<code>rotationAngle</code> 控制两端最大旋转角；<code>hoverRotation</code> 控制悬浮时是否转正。</li>
+<li><code>Zone.acceptKinds</code> 通过 <code>addAcceptKind</code> 设置后会参与实际 Drop 判定，不匹配的卡牌不会产生 drop 事件。</li>
+<li><code>newCard(defId)</code> 返回的实例 id 形如 <code>defId#N</code>（保证唯一）；卡牌定义用 <code>getCardDefinition*</code> 系列读取。</li>
+</ul>
+<h2>API 快查</h2>
+<ul>
+<li><code>eve.Card()</code>：<code>registerCardsFromJson</code>、<code>clearCardDefinitions</code>、<code>getCardDefinitionCount</code>、<code>getCardDefinitionId</code>、<code>hasCardDefinition</code>、<code>setCardDefinition</code>、<code>removeCardDefinition</code>、<code>getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB</code></li>
+<li><code>eve.Card()</code> 工厂：<code>newConfig()</code>、<code>newCard(defId)</code>、<code>newDeck()</code>、<code>newZone(id, label, x, y, w, h)</code>、<code>newHand(cfg)</code></li>
+<li><code>eve.Card()</code> 空间适配：<code>newPlaneMapper()</code>；<code>CardPlaneMapper.setLogicalRect/setPlane/mapRay/mapLayout/getLogicalX/getLogicalY/getWorldX/getWorldY/getWorldZ</code></li>
+<li><code>eve.Card()</code> 状态：<code>setConfig</code>/<code>getConfig</code>、<code>handCount</code>/<code>getHand</code>/<code>findHand</code>、<code>zoneCount</code>/<code>getZone</code>、<code>getDeck</code>、<code>drawCard(handOwner)</code></li>
+<li><code>eve.Card()</code> 每帧：<code>update(dt, mx, my, down)</code>、<code>render(gfx)</code>、<code>renderDeck(gfx)</code>、<code>set/getBuiltInVisuals</code></li>
+<li><code>eve.Card()</code> 表现快照：<code>capturePresentation</code>、<code>getPresentationCount</code>、<code>getPresentation(index)</code></li>
+<li><code>eve.Card()</code> 事件：<code>clearEvents</code>、<code>getEventCount</code>、<code>getEventType</code>、<code>getEventHand</code>、<code>getEventZone</code>、<code>getEventCardId</code>、<code>getEventReason</code></li>
+<li><code>eve.Card()</code> 目标选择：<code>beginTargeting</code>、<code>updateTargeting</code>、<code>cancelTargeting</code>、<code>renderTargeting</code>、<code>isTargeting</code>、<code>isTargetValid</code>、<code>getTargetSource</code>、<code>getTargetId</code></li>
+<li><code>LayoutConfig</code>：<code>get/setCardW</code>、<code>get/setCardH</code>、<code>get/setSpacing</code>、<code>get/setHandX</code>、<code>get/setHandY</code>、<code>get/setArcHeight</code>、<code>get/setRotationAngle</code>、<code>get/setHoverRotation</code>、<code>get/setHoverScale</code>、<code>get/setHoverLift</code>、<code>get/setHoverSpeed</code>、<code>get/setMotionSpeed</code>、<code>get/setDisabledAlpha</code>、<code>get/setShowZones</code>、<code>get/setDeckX</code>、<code>get/setDeckY</code>、<code>get/setDragThreshold</code></li>
+<li><code>CardData</code>：<code>getId/setId</code>（兼容接口）、<code>getInstanceId/getDefinitionId</code>、<code>getName/setName</code>、<code>getKind/setKind</code>、<code>getCost/setCost</code>、<code>getAttack/setAttack</code>、<code>getHealth/setHealth</code>、<code>isFaceUp/setFaceUp</code>、<code>isDisabled/setDisabled</code>、<code>getState/setState</code>、<code>getTintR/G/B</code>、<code>setTint(r, g, b)</code>、<code>setArt/getArt</code>、<code>getX/getY/getW/getH/getAngle/getScale/getAlpha</code>、<code>isHovered/isDragging</code>、<code><a class="el" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit(px, py)</a></code>、<code>describe()</code></li>
+<li><code>CardPresentationSnapshot</code>：<code>getInstanceId/getDefinitionId/getState</code>、<code>getX/getY/getW/getH/getAngle/getScale/getAlpha</code>、<code>isHovered/isDragging/isDisabled/isFaceUp</code></li>
+<li><code>Deck</code>：<code>push</code>、<code>draw</code>、<code>peek</code>、<code>count</code>、<code>isEmpty</code>、<code>clear</code>、<code>shuffle</code>、<code>getCard</code></li>
+<li><code>Zone</code>：<code>getId/setId</code>、<code>getLabel/setLabel</code>、<code>getX/getY/getW/getH</code>、<code>setRect</code>、<code>getColorR/G/B</code>、<code>setColor(r, g, b)</code>、<code>getAlpha/setAlpha</code>、<code>isEnabled/setEnabled</code>、<code>addAcceptKind</code>、<code>clearAcceptKinds</code>、<code>accepts</code>、<code>contains</code>、<code>render</code></li>
+<li><code>Hand</code>：<code>getOwner/setOwner</code>、<code>getConfig/setConfig</code>、<code>isFaceDown/setFaceDown</code>、<code>isPeek/setPeek</code>、<code>isInteractive/setInteractive</code>、<code>addCard</code>、<code>removeCard</code>、<code>clear</code>、<code>count</code>、<code>getCard</code>、<code>findCard</code>、<code>pickCard</code>、<code>render</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li><code>eve.Card()</code>、<code>LayoutConfig</code>、<code>Hand</code>、<code>Deck</code>、<code>Zone</code>、<code>CardData</code> 实例都保存在全局或实体状态中，<code>eve_init</code> 里只建一次，不要每帧重建。</li>
+<li>一个 <code>Hand</code> 使用一份独立的 <code>LayoutConfig</code>（如敌方手牌新建一份并调 <code>setHandY</code>），不要共享后改字段。</li>
+<li><code>hand.addCard</code> 会把牌从 0 缩放平滑生长到槽位，形成“出牌”动画；拖拽未落入任何落牌区时自动归位。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/card/"><code>src/modules/card/</code></a> <br  />
+ <b>示例：</b> <a href="../../../examples/cardgame/"><code>examples/cardgame/</code></a> <br  />
+ <b>运行：</b> <code>make run/&lt;platform&gt;-debug GAME=examples/cardgame</code> </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

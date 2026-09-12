@@ -1,0 +1,212 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">Waterfall</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::Waterfall 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">bindParams</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a2c1dc31f7e63127c060ca468fb2f53c8">createCurvedSheet</a>(float width, float height, int segX, int segY, float curveDepth, float lipOverhang)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a270931ddceb7509c9877d3931b87182d">createSheet</a>(float width, float height, int segX, int segY)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a4679778c4e0ef3367f1f85a547907c02">draw</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a58bb726ec05ab5195994d8b17f114061">getBottomFoam</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#ae4c8c9e9aa99e08a1303cca47d027c77">getFlowSpeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a3412e908d68661441db88d3ad179e2b4">getFoamAmount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a4d3272ae37b887dec3e8a6ca5140be98">getMesh</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a0322e03a56c72d8643069827a4652d46">getReflectionCaptureEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#aa6cc5563a7c49b1f666bb5cbebea1625">getReflectionCaptureMask</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a6af7b9b652e4c70bdbaa35c3c5c943bc">getReflectionIntensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a18e590a9d5360e45cd69c3bce6715d0d">getShader</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a32d5f2ba6dd6211511a8898afee0d93e">getStreakCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a0108a7a2e585c5a0165969508967b007">getStreakScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a308fe3992132e84ee9fdc564d17a1488">getSunIntensity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a36ca59d19a0c3e5bcbcd4b2a81d65fc4">getTime</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a97be3ef7e61991d043d8fd808f3f0623">getTopFoam</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a4fb32a01db156b1ad5531e37359b862d">getTurbulence</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#afe2e2cb35e26be4fcb7da62c0ff9a9aa">operator=</a>(const Waterfall &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a26ee512f92a8a9e8d49a96383b52672b">paramCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#afeafb0905a0c07be31557f250eb2cd91">paramName</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a7f3ce9d1f835999af158af27ebd7d3e8">setBottomFoam</a>(float v)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#ab0baa40e4047326f6f0fe8c70fd0c150">setFlowSpeed</a>(float speed)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a31a8509178a37ca54bce2ba47dcc9205">setFoamAmount</a>(float v)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#ad84424c4c05ba1e4450e60fda7ce0c50">setReflectionCaptureEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#af6e0dd58ca40eb80001474e9fe56c2dc">setReflectionCaptureMask</a>(uint32_t mask)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a08729a8a48903095fb29fb1a4b676062">setReflectionIntensity</a>(float intensity)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a31283378746baffc4a631cf786fd5765">setStreakCount</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a89fa7f50db7f3bb840d3316987076e92">setStreakScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a017bfadcaf96580296d300ff7bf0809f">setSunIntensity</a>(float intensity)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#ac6c3c1e860b2224b12621bc887a450a0">setTime</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#aabf9db70f8d2ad8a0433d6db9b30785f">setTopFoam</a>(float v)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a69bf019ff6f2d9097f4f12f6be624a0a">setTurbulence</a>(float t)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a4cfc3704aa2c7eeb77935095817737e4">setWaterColor</a>(float r, float g, float b)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#aa7cc6880c4f836732bbb0f076f44c3c5">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a9b663b441062af498c23ce8c583e9938">Waterfall</a>(Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#a8285e8a95ddcb90f4d47526de9a3f8dd">Waterfall</a>(const Waterfall &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html#ac73bcb47d2b05661e3a402166ceb9a08">~Waterfall</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

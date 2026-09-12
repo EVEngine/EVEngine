@@ -1,0 +1,481 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::affine::ConvShape结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor_1_1affine.html">affine</a></li><li class="navelem"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html">ConvShape</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1tensor_1_1affine_1_1ConvShape-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::affine::ConvShape结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Explicit 1D/2D NCHW convolution geometry; missing 1D height is one.  
+ <a href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a249a060abe538abf9d43b19415b0d830" id="r_a249a060abe538abf9d43b19415b0d830"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a249a060abe538abf9d43b19415b0d830">batch</a> = 1</td></tr>
+<tr class="separator:a249a060abe538abf9d43b19415b0d830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0d8925fe7dd6f33b7d97661a4a481ff" id="r_ac0d8925fe7dd6f33b7d97661a4a481ff"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#ac0d8925fe7dd6f33b7d97661a4a481ff">channels</a> = 1</td></tr>
+<tr class="separator:ac0d8925fe7dd6f33b7d97661a4a481ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074894d1c72fef0715136353f7ff846d" id="r_a074894d1c72fef0715136353f7ff846d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a074894d1c72fef0715136353f7ff846d">height</a> = 1</td></tr>
+<tr class="separator:a074894d1c72fef0715136353f7ff846d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61999c503ed28699112d1cc98485781e" id="r_a61999c503ed28699112d1cc98485781e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a61999c503ed28699112d1cc98485781e">width</a> = 1</td></tr>
+<tr class="separator:a61999c503ed28699112d1cc98485781e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8665a28496993b1b33f93765cda0a95" id="r_ab8665a28496993b1b33f93765cda0a95"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#ab8665a28496993b1b33f93765cda0a95">outputs</a> = 1</td></tr>
+<tr class="separator:ab8665a28496993b1b33f93765cda0a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af55779748b2676e91fcf696bb72edd6d" id="r_af55779748b2676e91fcf696bb72edd6d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#af55779748b2676e91fcf696bb72edd6d">kernelH</a> = 1</td></tr>
+<tr class="separator:af55779748b2676e91fcf696bb72edd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a313b3d31926065660c188f5f5f8d517e" id="r_a313b3d31926065660c188f5f5f8d517e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a313b3d31926065660c188f5f5f8d517e">kernelW</a> = 1</td></tr>
+<tr class="separator:a313b3d31926065660c188f5f5f8d517e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0733e025691bc96315aa29e523d77a" id="r_aac0733e025691bc96315aa29e523d77a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#aac0733e025691bc96315aa29e523d77a">strideH</a> = 1</td></tr>
+<tr class="separator:aac0733e025691bc96315aa29e523d77a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d9e0104c79b6b3133f229863d69cc90" id="r_a9d9e0104c79b6b3133f229863d69cc90"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a9d9e0104c79b6b3133f229863d69cc90">strideW</a> = 1</td></tr>
+<tr class="separator:a9d9e0104c79b6b3133f229863d69cc90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93222d3f256b6801e7d240df4ffa64ef" id="r_a93222d3f256b6801e7d240df4ffa64ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a93222d3f256b6801e7d240df4ffa64ef">dilationH</a> = 1</td></tr>
+<tr class="separator:a93222d3f256b6801e7d240df4ffa64ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8601c81f1c5a525a51d36f3c78740511" id="r_a8601c81f1c5a525a51d36f3c78740511"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a8601c81f1c5a525a51d36f3c78740511">dilationW</a> = 1</td></tr>
+<tr class="separator:a8601c81f1c5a525a51d36f3c78740511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90fb3c1109c429fefa06b8adea60ea48" id="r_a90fb3c1109c429fefa06b8adea60ea48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a90fb3c1109c429fefa06b8adea60ea48">padTop</a> = 0</td></tr>
+<tr class="separator:a90fb3c1109c429fefa06b8adea60ea48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05de907dbf0f2565bf0e745065349d5b" id="r_a05de907dbf0f2565bf0e745065349d5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a05de907dbf0f2565bf0e745065349d5b">padLeft</a> = 0</td></tr>
+<tr class="separator:a05de907dbf0f2565bf0e745065349d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a745a7412603e2c957466e2ac65d42fb5" id="r_a745a7412603e2c957466e2ac65d42fb5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#a745a7412603e2c957466e2ac65d42fb5">padBottom</a> = 0</td></tr>
+<tr class="separator:a745a7412603e2c957466e2ac65d42fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ccc20750aa6ee634aa5388d35af203" id="r_af1ccc20750aa6ee634aa5388d35af203"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#af1ccc20750aa6ee634aa5388d35af203">padRight</a> = 0</td></tr>
+<tr class="separator:af1ccc20750aa6ee634aa5388d35af203"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae217321162287487c88e50aa85f73f6a" id="r_ae217321162287487c88e50aa85f73f6a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1affine_1_1ConvShape.html#ae217321162287487c88e50aa85f73f6a">groups</a> = 1</td></tr>
+<tr class="separator:ae217321162287487c88e50aa85f73f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Explicit 1D/2D NCHW convolution geometry; missing 1D height is one. </p>
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00062">62</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a249a060abe538abf9d43b19415b0d830" name="a249a060abe538abf9d43b19415b0d830"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a249a060abe538abf9d43b19415b0d830">&#9670;&#160;</a></span>batch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::batch = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxQuant_8cpp_source.html#l00028">eve::tensor::onnx_detail::executeQuant()</a>.</p>
+
+</div>
+</div>
+<a id="ac0d8925fe7dd6f33b7d97661a4a481ff" name="ac0d8925fe7dd6f33b7d97661a4a481ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0d8925fe7dd6f33b7d97661a4a481ff">&#9670;&#160;</a></span>channels</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::channels = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93222d3f256b6801e7d240df4ffa64ef" name="a93222d3f256b6801e7d240df4ffa64ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93222d3f256b6801e7d240df4ffa64ef">&#9670;&#160;</a></span>dilationH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::dilationH = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8601c81f1c5a525a51d36f3c78740511" name="a8601c81f1c5a525a51d36f3c78740511"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8601c81f1c5a525a51d36f3c78740511">&#9670;&#160;</a></span>dilationW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::dilationW = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae217321162287487c88e50aa85f73f6a" name="ae217321162287487c88e50aa85f73f6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae217321162287487c88e50aa85f73f6a">&#9670;&#160;</a></span>groups</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::groups = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a074894d1c72fef0715136353f7ff846d" name="a074894d1c72fef0715136353f7ff846d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a074894d1c72fef0715136353f7ff846d">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::height = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af55779748b2676e91fcf696bb72edd6d" name="af55779748b2676e91fcf696bb72edd6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af55779748b2676e91fcf696bb72edd6d">&#9670;&#160;</a></span>kernelH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::kernelH = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a313b3d31926065660c188f5f5f8d517e" name="a313b3d31926065660c188f5f5f8d517e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a313b3d31926065660c188f5f5f8d517e">&#9670;&#160;</a></span>kernelW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::kernelW = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8665a28496993b1b33f93765cda0a95" name="ab8665a28496993b1b33f93765cda0a95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8665a28496993b1b33f93765cda0a95">&#9670;&#160;</a></span>outputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::outputs = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a745a7412603e2c957466e2ac65d42fb5" name="a745a7412603e2c957466e2ac65d42fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a745a7412603e2c957466e2ac65d42fb5">&#9670;&#160;</a></span>padBottom</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::padBottom = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05de907dbf0f2565bf0e745065349d5b" name="a05de907dbf0f2565bf0e745065349d5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05de907dbf0f2565bf0e745065349d5b">&#9670;&#160;</a></span>padLeft</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::padLeft = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af1ccc20750aa6ee634aa5388d35af203" name="af1ccc20750aa6ee634aa5388d35af203"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ccc20750aa6ee634aa5388d35af203">&#9670;&#160;</a></span>padRight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::padRight = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90fb3c1109c429fefa06b8adea60ea48" name="a90fb3c1109c429fefa06b8adea60ea48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90fb3c1109c429fefa06b8adea60ea48">&#9670;&#160;</a></span>padTop</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::padTop = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac0733e025691bc96315aa29e523d77a" name="aac0733e025691bc96315aa29e523d77a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0733e025691bc96315aa29e523d77a">&#9670;&#160;</a></span>strideH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::strideH = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d9e0104c79b6b3133f229863d69cc90" name="a9d9e0104c79b6b3133f229863d69cc90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d9e0104c79b6b3133f229863d69cc90">&#9670;&#160;</a></span>strideW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::strideW = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61999c503ed28699112d1cc98485781e" name="a61999c503ed28699112d1cc98485781e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61999c503ed28699112d1cc98485781e">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::affine::ConvShape::width = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a> 第 <a class="el" href="AffineQuant_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/tensor/<a class="el" href="AffineQuant_8h_source.html">AffineQuant.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

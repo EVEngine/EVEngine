@@ -1,0 +1,367 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/graphics/EvpackShader.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_18cf729940a50382a445224e4045f343.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EvpackShader.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EvpackShader_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackShader_8h.html">asset/graphics/EvpackShader.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/gtc/type_ptr.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackResourceReader_8h.html">asset/EvpackResourceReader.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="ShaderAsset_8h.html">asset/ShaderAsset.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ShaderAssetValidation_8h.html">asset/graphics/ShaderAssetValidation.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__graphics.html">eve::asset_graphics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>Result&lt;T&gt; <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), {}, {}, <span class="stringliteral">&quot;asset.shader.runtime&quot;</span>));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">template</span> &lt;std::<span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">bool</span> <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<span class="keyword">const</span> std::array&lt;float, N&gt;&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> std::all_of(<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.begin(), <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.end(), [](<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { return std::isfinite(value); });</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html">EvpackShader::Impl</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#a48a1884908e97f5a4217ff18640ab9d7">   24</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#a48a1884908e97f5a4217ff18640ab9d7">graphics</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#a7cdf343205ffb6529e2287e4f18dc162">   25</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1ShaderAsset.html">asset::ShaderAsset</a>  <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#a7cdf343205ffb6529e2287e4f18dc162">definition</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#ab866feb80093a7d4c012610bc8481e35">   26</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>*   <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#ab866feb80093a7d4c012610bc8481e35">shader</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a6a275931f432dc79154e8a0806ccc481">EvpackShader::EvpackShader</a>(std::unique_ptr&lt;Impl&gt; <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>) : impl_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)) {}</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#ac40144e84c7737a3d597d3cc7808464f">   29</a></span><a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#ac40144e84c7737a3d597d3cc7808464f">EvpackShader::~EvpackShader</a>() {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">auto</span> result = <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a97305f913bc5c8f55d688cfbd1ec900d">release</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!result) std::fprintf(stderr, <span class="stringliteral">&quot;EvpackShader release failed: %s\n&quot;</span>, result.error()-&gt;message().c_str());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#aa09fc7af863cc2b0e827767a9a5af2f1">   33</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1ShaderAsset.html">asset::ShaderAsset</a>&amp;             <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#aa09fc7af863cc2b0e827767a9a5af2f1">EvpackShader::definition</a>() const noexcept { <span class="keywordflow">return</span> impl_-&gt;definition; }</div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#af0e36883595d8814c4a50f72a23fe24d">   34</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;EvpackShader&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#af0e36883595d8814c4a50f72a23fe24d">EvpackShader::load</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a>&amp; reader,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                                         <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp;                    asset,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                                         <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a>&amp;   capabilities,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                         <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp;                graphics) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (graphics.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a11112fd49bc952f7c50a710e5abad6c7">getBackendName</a>() != <span class="stringliteral">&quot;vulkan&quot;</span> || capabilities.<a class="code hl_variable" href="structeve_1_1asset_1_1EvpackCapabilities.html#a021e92e3625de4d3bab3cee3e2c065c1">graphics</a> != graphics.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a11112fd49bc952f7c50a710e5abad6c7">getBackendName</a>())</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> failure&lt;std::unique_ptr&lt;EvpackShader&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>, <span class="stringliteral">&quot;Shader backend mismatch&quot;</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">auto</span> decoded = <a class="code hl_function" href="namespaceeve_1_1asset.html#aa4419030b42f4e3d8cea54bbbc93b4dc">asset::loadShaderAsset</a>(reader, asset, capabilities);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (!decoded) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;EvpackShader&gt;</a>&gt;::failure(decoded.status());</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">auto</span> validated = <a class="code hl_function" href="namespaceeve_1_1asset__graphics.html#ab28330d6604629c09cb1587fd9464cfe">validateShaderAssetGpu</a>(decoded.value());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!validated) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;EvpackShader&gt;</a>&gt;::failure(validated.status());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">auto</span> result = std::unique_ptr&lt;EvpackShader&gt;(</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1asset__graphics_1_1EvpackShader.html">EvpackShader</a>(std::make_unique&lt;Impl&gt;(<a class="code hl_struct" href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html">Impl</a>{graphics, std::move(decoded).takeValue()})));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>  = *result-&gt;impl_;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader = <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.definition.interface == <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a3e8cbdb349b5bf9d62672f017d7fd83ba8316b12f67e824b6ff0e82de691f0080">asset::ShaderAssetInterface::Mesh3D</a></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                          ? graphics.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">newMeshShaderFromSpv</a>(<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.definition.vertex, <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.definition.fragment)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                          : graphics.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ab5cd1bae3097d42ba5fb9b798ce321c0">newShaderFromSpv</a>(<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.definition.vertex, <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.definition.fragment);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> failure&lt;std::unique_ptr&lt;EvpackShader&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                          <span class="stringliteral">&quot;Shader upload returned no allocation&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; parameter : <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.definition.parameters) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">switch</span> (parameter.defaults.size()) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <span class="keywordflow">case</span> 1: <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(parameter.name); <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <span class="keywordflow">case</span> 2: <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;declareVec2(parameter.name); <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <span class="keywordflow">case</span> 3: <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;declareVec3(parameter.name); <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                <span class="keywordflow">case</span> 4: <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;declareVec4(parameter.name); <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    <span class="keywordflow">return</span> failure&lt;std::unique_ptr&lt;EvpackShader&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                                  <span class="stringliteral">&quot;Invalid parameter width&quot;</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;sendToVar(parameter.name, parameter.defaults.data(),</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                   parameter.defaults.size() * <span class="keyword">sizeof</span>(float));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="comment">// Initialize/upload the entire ABI block, including unused trailing slots.</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordtype">unsigned</span> padding = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">while</span> (<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;usedFloats() &lt; <a class="code hl_variable" href="classeve_1_1graphics_1_1Shader.html#a8ed56a224168d927c70843d9ce2a72bf">graphics::Shader::kMaxFloats</a>) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> = <span class="stringliteral">&quot;__eve_padding_&quot;</span> + std::to_string(padding++);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;hasUniform(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)) <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>.shader-&gt;declareFloat(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;EvpackShader&gt;</a>&gt;::success(std::move(result));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span> failure&lt;std::unique_ptr&lt;EvpackShader&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a59603905c1053833481d5b04a6632a2d">   78</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a59603905c1053833481d5b04a6632a2d">EvpackShader::setParameter</a>(std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::span&lt;const float&gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!impl_-&gt;shader) <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;Shader lease is released&quot;</span>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">const</span> <span class="keyword">auto</span> it = std::find_if(impl_-&gt;definition.parameters.begin(), impl_-&gt;definition.parameters.end(),</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                 [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; parameter) { return parameter.name == name; });</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (it == impl_-&gt;definition.parameters.end() || it-&gt;defaults.size() != <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.size() ||</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        !std::all_of(<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.begin(), <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.end(), [](<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { return std::isfinite(value); }))</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Unknown parameter, wrong width or non-finite value&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    impl_-&gt;shader-&gt;sendToVar(it-&gt;name, <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.data(), <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.size_bytes());</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="}">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a1673dbfeb6a741b1d3a186bfdd293319">   90</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a1673dbfeb6a741b1d3a186bfdd293319">EvpackShader::drawMesh</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <span class="keyword">const</span> std::array&lt;float, 16&gt;&amp; transform,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                    <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef&lt;graphics::Texture&gt;</a> texture, <span class="keyword">const</span> std::array&lt;float, 4&gt;&amp; <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (!impl_-&gt;shader) <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;Shader lease is released&quot;</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (impl_-&gt;definition.interface != <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a3e8cbdb349b5bf9d62672f017d7fd83ba8316b12f67e824b6ff0e82de691f0080">asset::ShaderAssetInterface::Mesh3D</a> || !<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(transform) || !<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>))</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Invalid mesh draw or shader kind&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    impl_-&gt;graphics.drawMeshShader(&amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, glm::make_mat4(transform.data()), texture ? &amp;texture-&gt;get() : <span class="keyword">nullptr</span>,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                   <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>(<a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[0], <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[1], <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[2], <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[3]), impl_-&gt;shader);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#ad318596aa9c63e81830cd88d1ec0a9e5">  101</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#ad318596aa9c63e81830cd88d1ec0a9e5">EvpackShader::drawSprite</a>(<a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef&lt;graphics::Texture&gt;</a> texture, <span class="keyword">const</span> std::array&lt;float, 4&gt;&amp; rect,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                      <span class="keyword">const</span> std::array&lt;float, 4&gt;&amp; <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!impl_-&gt;shader) <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;Shader lease is released&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (impl_-&gt;definition.interface != <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a3e8cbdb349b5bf9d62672f017d7fd83ba411b82db44407403782a5ccfe79bac26">asset::ShaderAssetInterface::Sprite2D</a> || !<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(rect) || !<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>))</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Invalid sprite draw or shader kind&quot;</span>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    impl_-&gt;graphics.drawTexturedRectShader(texture ? &amp;texture-&gt;get() : <span class="keyword">nullptr</span>, impl_-&gt;shader, rect[0], rect[1],</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                           rect[2], rect[3], <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>(<a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[0], <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[1], <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[2], <a class="code hl_variable" href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>[3]));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00112" data-start="{" data-end="}">
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a97305f913bc5c8f55d688cfbd1ec900d">  112</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackShader.html#a97305f913bc5c8f55d688cfbd1ec900d">EvpackShader::release</a>() <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> (!impl_-&gt;shader) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (!impl_-&gt;graphics.releaseShader(impl_-&gt;shader))</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;Graphics rejected shader release&quot;</span>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">delete</span> impl_-&gt;shader;  <span class="comment">// releaseShader transfers the CPU facade back to the lease.</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    impl_-&gt;shader = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}  <span class="comment">// namespace eve::asset_graphics</span></div>
+<div class="ttc" id="aCapability_8cpp_html_ad55031c6556322124ec04be72e3244de"><div class="ttname"><a href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a></div><div class="ttdeci">void * impl</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00014">Capability.cpp:14</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aEvpackResourceReader_8h_html"><div class="ttname"><a href="EvpackResourceReader_8h.html">EvpackResourceReader.h</a></div><div class="ttdoc">Typed capability-aware runtime access to admitted packs.</div></div>
+<div class="ttc" id="aEvpackShader_8h_html"><div class="ttname"><a href="EvpackShader_8h.html">EvpackShader.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aGraphicsPbr_8cpp_html_a7675542847a16d47375ee96d007f8999"><div class="ttname"><a href="GraphicsPbr_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a></div><div class="ttdeci">glm::vec4 tint</div><div class="ttdef"><b>Definition</b> <a href="GraphicsPbr_8cpp_source.html#l00018">GraphicsPbr.cpp:18</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aOnnxRuntime_8cpp_html_a17baa4f903ac9966a0197d7067d9b425"><div class="ttname"><a href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a></div><div class="ttdeci">bool finite</div><div class="ttdef"><b>Definition</b> <a href="OnnxRuntime_8cpp_source.html#l00026">OnnxRuntime.cpp:26</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00549">RenderSystem3D.cpp:549</a></div></div>
+<div class="ttc" id="aShaderAssetValidation_8h_html"><div class="ttname"><a href="ShaderAssetValidation_8h.html">ShaderAssetValidation.h</a></div></div>
+<div class="ttc" id="aShaderAsset_8h_html"><div class="ttname"><a href="ShaderAsset_8h.html">ShaderAsset.h</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html"><div class="ttname"><a href="classeve_1_1AssetRef.html">eve::AssetRef</a></div><div class="ttdoc">Stable asset identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00051">ResourceRef.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackResourceReader_html"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackResourceReader.html">eve::asset::EvpackResourceReader</a></div><div class="ttdoc">Immutable reader retaining an admitted pack by shared ownership.</div><div class="ttdef"><b>Definition</b> <a href="EvpackResourceReader_8h_source.html#l00027">EvpackResourceReader.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html">eve::asset_graphics::EvpackShader</a></div><div class="ttdoc">Unique lease on a validated package shader and its independent parameter instance....</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8h_source.html#l00025">EvpackShader.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_a1673dbfeb6a741b1d3a186bfdd293319"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#a1673dbfeb6a741b1d3a186bfdd293319">eve::asset_graphics::EvpackShader::drawMesh</a></div><div class="ttdeci">Result&lt; void &gt; drawMesh(graphics::Mesh &amp;mesh, const std::array&lt; float, 16 &gt; &amp;transform, OptionalRef&lt; graphics::Texture &gt; texture, const std::array&lt; float, 4 &gt; &amp;tint)</div><div class="ttdoc">Draw through the owning Graphics in an open 3D frame; all arguments are immediate borrowed inputs.</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00090">EvpackShader.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_a59603905c1053833481d5b04a6632a2d"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#a59603905c1053833481d5b04a6632a2d">eve::asset_graphics::EvpackShader::setParameter</a></div><div class="ttdeci">Result&lt; void &gt; setParameter(std::string_view name, std::span&lt; const float &gt; values)</div><div class="ttdoc">Set one declared scalar/vector with exact finite component count; failure leaves it unchanged.</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00078">EvpackShader.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_a6a275931f432dc79154e8a0806ccc481"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#a6a275931f432dc79154e8a0806ccc481">eve::asset_graphics::EvpackShader::EvpackShader</a></div><div class="ttdeci">EvpackShader(const EvpackShader &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_a97305f913bc5c8f55d688cfbd1ec900d"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#a97305f913bc5c8f55d688cfbd1ec900d">eve::asset_graphics::EvpackShader::release</a></div><div class="ttdeci">Result&lt; void &gt; release()</div><div class="ttdoc">Release explicitly; failure retains the lease for retry. Destruction retries and reports errors.</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00112">EvpackShader.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_aa09fc7af863cc2b0e827767a9a5af2f1"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#aa09fc7af863cc2b0e827767a9a5af2f1">eve::asset_graphics::EvpackShader::definition</a></div><div class="ttdeci">const asset::ShaderAsset &amp; definition() const noexcept</div><div class="ttdoc">Immutable CPU metadata borrowed until this lease is destroyed.</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00033">EvpackShader.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_ac40144e84c7737a3d597d3cc7808464f"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#ac40144e84c7737a3d597d3cc7808464f">eve::asset_graphics::EvpackShader::~EvpackShader</a></div><div class="ttdeci">~EvpackShader()</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00029">EvpackShader.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_ad318596aa9c63e81830cd88d1ec0a9e5"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#ad318596aa9c63e81830cd88d1ec0a9e5">eve::asset_graphics::EvpackShader::drawSprite</a></div><div class="ttdeci">Result&lt; void &gt; drawSprite(OptionalRef&lt; graphics::Texture &gt; texture, const std::array&lt; float, 4 &gt; &amp;rect, const std::array&lt; float, 4 &gt; &amp;tint)</div><div class="ttdoc">Draw a sprite in the active canvas; rect is x/y/width/height in pixels.</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00101">EvpackShader.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackShader_html_af0e36883595d8814c4a50f72a23fe24d"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackShader.html#af0e36883595d8814c4a50f72a23fe24d">eve::asset_graphics::EvpackShader::load</a></div><div class="ttdeci">static Result&lt; std::unique_ptr&lt; EvpackShader &gt; &gt; load(const asset::EvpackResourceReader &amp;reader, const AssetRef &amp;asset, const asset::EvpackCapabilities &amp;capabilities, graphics::Graphics &amp;graphics)</div><div class="ttdoc">Validate then upload; failures preserve all existing instances. Reader is not retained.</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00034">EvpackShader.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00107">Graphics.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a11112fd49bc952f7c50a710e5abad6c7"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a11112fd49bc952f7c50a710e5abad6c7">eve::graphics::Graphics::getBackendName</a></div><div class="ttdeci">virtual std::string getBackendName() const =0</div><div class="ttdoc">Renderer backend id used by sibling modules (e.g. Gpgpu).</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a1a88617c82f58d00a3dd797e857018fe"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newMeshShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div><div class="ttdoc">Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo). Empty vert → default mesh3d....</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ab5cd1bae3097d42ba5fb9b798ce321c0"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ab5cd1bae3097d42ba5fb9b798ce321c0">eve::graphics::Graphics::newShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div><div class="ttdoc">Create a custom 2D shader from SPIR-V words (vert + frag). Owned by Graphics. Vertex stage may be emp...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00023">Mesh.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00035">Shader.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a8ed56a224168d927c70843d9ce2a72bf"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a8ed56a224168d927c70843d9ce2a72bf">eve::graphics::Shader::kMaxFloats</a></div><div class="ttdeci">static constexpr int kMaxFloats</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00037">Shader.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_ab15e58eeeaa70277a2d0b90a9a01c3e6"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">eve::graphics::Shader::declareFloat</a></div><div class="ttdeci">int declareFloat(const std::string &amp;name)</div><div class="ttdoc">Reserve sequential float slots in the push-constant block. Returns start index.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00030">Shader.cpp:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__graphics_html"><div class="ttname"><a href="namespaceeve_1_1asset__graphics.html">eve::asset_graphics</a></div><div class="ttdef"><b>Definition</b> <a href="CookedMaterial_8cpp_source.html#l00005">CookedMaterial.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__graphics_html_ab28330d6604629c09cb1587fd9464cfe"><div class="ttname"><a href="namespaceeve_1_1asset__graphics.html#ab28330d6604629c09cb1587fd9464cfe">eve::asset_graphics::validateShaderAssetGpu</a></div><div class="ttdeci">Result&lt; void &gt; validateShaderAssetGpu(const asset::ShaderAsset &amp;shader)</div><div class="ttdoc">Validate complete SPIR-V semantics and the supported engine pipeline interface before upload.</div><div class="ttdef"><b>Definition</b> <a href="ShaderAssetValidation_8cpp_source.html#l00100">ShaderAssetValidation.cpp:100</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_a4cf204329c882041f2183b19af0c0700"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">eve::asset_import::detail::failure</a></div><div class="ttdeci">Result&lt; T &gt; failure(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdef"><b>Definition</b> <a href="ImportCommon_8h_source.html#l00013">ImportCommon.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a3e8cbdb349b5bf9d62672f017d7fd83ba411b82db44407403782a5ccfe79bac26"><div class="ttname"><a href="namespaceeve_1_1asset.html#a3e8cbdb349b5bf9d62672f017d7fd83ba411b82db44407403782a5ccfe79bac26">eve::asset::ShaderAssetInterface::Sprite2D</a></div><div class="ttdeci">@ Sprite2D</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a3e8cbdb349b5bf9d62672f017d7fd83ba8316b12f67e824b6ff0e82de691f0080"><div class="ttname"><a href="namespaceeve_1_1asset.html#a3e8cbdb349b5bf9d62672f017d7fd83ba8316b12f67e824b6ff0e82de691f0080">eve::asset::ShaderAssetInterface::Mesh3D</a></div><div class="ttdeci">@ Mesh3D</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_aa4419030b42f4e3d8cea54bbbc93b4dc"><div class="ttname"><a href="namespaceeve_1_1asset.html#aa4419030b42f4e3d8cea54bbbc93b4dc">eve::asset::loadShaderAsset</a></div><div class="ttdeci">Result&lt; ShaderAsset &gt; loadShaderAsset(const EvpackResourceReader &amp;reader, const AssetRef &amp;asset, const EvpackCapabilities &amp;capabilities)</div><div class="ttdoc">Read and decode one capability-selected eve.shader/1 from an admitted runtime package.</div><div class="ttdef"><b>Definition</b> <a href="ShaderAssetLoader_8cpp_source.html#l00006">ShaderAssetLoader.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="anamespaceeve_html_a503b0fa2c99caf9c2f8d2144f64c683f"><div class="ttname"><a href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a></div><div class="ttdeci">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; OptionalRef</div><div class="ttdoc">Optional borrowed reference; it does not extend T's lifetime.</div><div class="ttdef"><b>Definition</b> <a href="BorrowedRef_8h_source.html#l00024">BorrowedRef.h:24</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackCapabilities_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackCapabilities.html">eve::asset::EvpackCapabilities</a></div><div class="ttdoc">Actual runtime device capabilities used for variant selection.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00088">Evpack.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackCapabilities_html_a021e92e3625de4d3bab3cee3e2c065c1"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackCapabilities.html#a021e92e3625de4d3bab3cee3e2c065c1">eve::asset::EvpackCapabilities::graphics</a></div><div class="ttdeci">std::string graphics</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00091">Evpack.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1ShaderAsset_html"><div class="ttname"><a href="structeve_1_1asset_1_1ShaderAsset.html">eve::asset::ShaderAsset</a></div><div class="ttdoc">Owning CPU program snapshot; decoding does not prove GPU/descriptor compatibility.</div><div class="ttdef"><b>Definition</b> <a href="ShaderAsset_8h_source.html#l00025">ShaderAsset.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1EvpackShader_1_1Impl_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html">eve::asset_graphics::EvpackShader::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00023">EvpackShader.cpp:23</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1EvpackShader_1_1Impl_html_a48a1884908e97f5a4217ff18640ab9d7"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#a48a1884908e97f5a4217ff18640ab9d7">eve::asset_graphics::EvpackShader::Impl::graphics</a></div><div class="ttdeci">graphics::Graphics &amp; graphics</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00024">EvpackShader.cpp:24</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1EvpackShader_1_1Impl_html_a7cdf343205ffb6529e2287e4f18dc162"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#a7cdf343205ffb6529e2287e4f18dc162">eve::asset_graphics::EvpackShader::Impl::definition</a></div><div class="ttdeci">asset::ShaderAsset definition</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00025">EvpackShader.cpp:25</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1EvpackShader_1_1Impl_html_ab866feb80093a7d4c012610bc8481e35"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1EvpackShader_1_1Impl.html#ab866feb80093a7d4c012610bc8481e35">eve::asset_graphics::EvpackShader::Impl::shader</a></div><div class="ttdeci">graphics::Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="EvpackShader_8cpp_source.html#l00026">EvpackShader.cpp:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

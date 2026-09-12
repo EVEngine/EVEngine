@@ -1,0 +1,330 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html">detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab1e774955d8d81a1e29da02faf9e5c1e" id="r_ab1e774955d8d81a1e29da02faf9e5c1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#ab1e774955d8d81a1e29da02faf9e5c1e">exposeRenderable3DBindings</a> (ssq::Table &amp;table)</td></tr>
+<tr class="separator:ab1e774955d8d81a1e29da02faf9e5c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af835ca2eddda04fdfb65add5e487874c" id="r_af835ca2eddda04fdfb65add5e487874c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#af835ca2eddda04fdfb65add5e487874c">validateInstancedRenderable</a> (const <a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">Renderable3D::MeshRenderer</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">mr</a>)</td></tr>
+<tr class="separator:af835ca2eddda04fdfb65add5e487874c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49838c666df3abd7bb20374e1021bb7f" id="r_a49838c666df3abd7bb20374e1021bb7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a49838c666df3abd7bb20374e1021bb7f">exposeShaderResourceBindings</a> (ssq::Table &amp;table, ssq::Class &amp;<a class="el" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>)</td></tr>
+<tr class="separator:a49838c666df3abd7bb20374e1021bb7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53c41d5386c6afee555b2b98a9632536" id="r_a53c41d5386c6afee555b2b98a9632536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a53c41d5386c6afee555b2b98a9632536">validateResourceShaderStages</a> (std::span&lt; const uint32_t &gt; vertex, std::span&lt; const uint32_t &gt; fragment, const <a class="el" href="structeve_1_1graphics_1_1ShaderResourceInputs.html">ShaderResourceInputs</a> &amp;<a class="el" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>)</td></tr>
+<tr class="separator:a53c41d5386c6afee555b2b98a9632536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99931b03c06555c8f818f673a4aa7c66" id="r_a99931b03c06555c8f818f673a4aa7c66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a99931b03c06555c8f818f673a4aa7c66">readShaderStageFile</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:a99931b03c06555c8f818f673a4aa7c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="ab1e774955d8d81a1e29da02faf9e5c1e" name="ab1e774955d8d81a1e29da02faf9e5c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1e774955d8d81a1e29da02faf9e5c1e">&#9670;&#160;</a></span>exposeRenderable3DBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::detail::exposeRenderable3DBindings </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Renderable3DBindings_8cpp_source.html">Renderable3DBindings.cpp</a> 第 <a class="el" href="Renderable3DBindings_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderableInstances_8cpp_source.html#l00028">eve::graphics::Renderable3D::clearInstanceRange()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00200">eve::graphics::Renderable3D::clearMeshLod()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00093">eve::graphics::Renderable3D::clearParts()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00078">eve::graphics::Renderable3D::clearPartSortPriority()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="MeshInstanceRange_8h_source.html#l00016">eve::graphics::MeshInstanceRange::first</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00182">eve::graphics::Renderable3D::getCastOcclusion()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00278">eve::graphics::Renderable3D::getEntityGeneration()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00276">eve::graphics::Renderable3D::getEntityId()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00123">eve::graphics::Renderable3D::getHair()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00048">eve::graphics::Renderable3D::getMaterial()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00036">eve::graphics::Renderable3D::getMesh()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00206">eve::graphics::Renderable3D::getMeshLodCount()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00208">eve::graphics::Renderable3D::getMeshLodLevelAtDistance()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00164">eve::graphics::Renderable3D::getParallaxMaxLayers()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00162">eve::graphics::Renderable3D::getParallaxMinLayers()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00160">eve::graphics::Renderable3D::getParallaxScale()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00101">eve::graphics::Renderable3D::getPartCount()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00115">eve::graphics::Renderable3D::getPartMaterial()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00109">eve::graphics::Renderable3D::getPartMesh()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00103">eve::graphics::Renderable3D::getPartName()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00085">eve::graphics::Renderable3D::getPartSortPriority()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00172">eve::graphics::Renderable3D::getReflectionCaptureMask()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00344">eve::graphics::Renderable3D::getRoughness()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00148">eve::graphics::Renderable3D::getTexCellBombRotation()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00144">eve::graphics::Renderable3D::getTexCellBombScale()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00146">eve::graphics::Renderable3D::getTexCellBombStrength()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00342">eve::graphics::Renderable3D::getTintB()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00340">eve::graphics::Renderable3D::getTintG()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00338">eve::graphics::Renderable3D::getTintR()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00025">eve::graphics::Renderable3D::getYaw()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00025">minimum</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00438">eve::script::projectResult()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00184">eve::graphics::Renderable3D::setCamera()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00180">eve::graphics::Renderable3D::setCastOcclusion()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00176">eve::graphics::Renderable3D::setCastShadow()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00121">eve::graphics::Renderable3D::setHair()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00042">eve::graphics::Renderable3D::setHeightTexture()</a>, <a class="el" href="RenderableInstances_8cpp_source.html#l00019">eve::graphics::Renderable3D::setInstanceRange()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00046">eve::graphics::Renderable3D::setMaterial()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00034">eve::graphics::Renderable3D::setMesh()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00186">eve::graphics::Renderable3D::setMeshLod()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00133">eve::graphics::Renderable3D::setMetallic()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00040">eve::graphics::Renderable3D::setNormalTexture()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00150">eve::graphics::Renderable3D::setParallax()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00058">eve::graphics::Renderable3D::setPart()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00071">eve::graphics::Renderable3D::setPartSortPriority()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00009">eve::graphics::Renderable3D::setPosition()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00174">eve::graphics::Renderable3D::setReceiveLight()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00178">eve::graphics::Renderable3D::setReceiveShadow()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00168">eve::graphics::Renderable3D::setReflectionCaptureMask()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00016">eve::graphics::Renderable3D::setRotation()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00135">eve::graphics::Renderable3D::setRoughness()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00027">eve::graphics::Renderable3D::setScale()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00044">eve::graphics::Renderable3D::setShader()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00137">eve::graphics::Renderable3D::setTexCellBomb()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00038">eve::graphics::Renderable3D::setTexture()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00125">eve::graphics::Renderable3D::setTint()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00166">eve::graphics::Renderable3D::setVisible()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00023">eve::graphics::Renderable3D::setYaw()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a49838c666df3abd7bb20374e1021bb7f" name="a49838c666df3abd7bb20374e1021bb7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49838c666df3abd7bb20374e1021bb7f">&#9670;&#160;</a></span>exposeShaderResourceBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::detail::exposeShaderResourceBindings </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>table</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Class &amp;&#160;</td>
+          <td class="paramname"><em>cls</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderResourceScriptBindings_8cpp_source.html">ShaderResourceScriptBindings.cpp</a> 第 <a class="el" href="ShaderResourceScriptBindings_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8a63df313532fa1e0e9a9727141f8120adfdc5ea2a7a33aa4bde76e09aecd8d07">eve::graphics::Graphics::Aces</a>, <a class="el" href="ECS_8cpp_source.html#l00021">cls</a>, <a class="el" href="BloomGaussian_8cpp_source.html#l00026">eve::graphics::Bloom::configureFilter()</a>, <a class="el" href="Graphics_8h_source.html#l00992">eve::graphics::Graphics::drawMeshShaderInstances()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Bloom_8h_source.html#l00018">eve::graphics::BloomFilterSettings::filter</a>, <a class="el" href="Bloom_8h_source.html#l00052">eve::graphics::Bloom::filterSettings()</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1e6e43509a54ede476ec9c0422fb0e27aefa1c471a4c8ac492b3c087c4e3ef2dc">eve::graphics::GaussianScatter</a>, <a class="el" href="Graphics_8h_source.html#l01202">eve::graphics::Graphics::getSceneToneMapping()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00255">instances</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00284">iterations</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1e6e43509a54ede476ec9c0422fb0e27a4339be88a732fef356b8a85472d7b153">eve::graphics::KarisTent</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00549">mesh</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00552">model</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8a63df313532fa1e0e9a9727141f8120a6adf97f83acf6453d4a6a4b1070f3754">eve::graphics::Graphics::None</a>, <a class="el" href="Graphics_8cpp_source.html#l01187">eve::graphics::Graphics::pipelineBloom()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00438">eve::script::projectResult()</a>, <a class="el" href="SceneToneMapping_8cpp_source.html#l00004">eve::graphics::Graphics::setSceneToneMapping()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00551">shader</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>, <a class="el" href="BloomGaussian_8cpp_source.html#l00017">eve::graphics::validateBloomFilterSettings()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00342">eve::script::valueFromSquirrel()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderScriptBindings_8cpp_source.html#l00086">eve::graphics::exposeShaderScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a99931b03c06555c8f818f673a4aa7c66" name="a99931b03c06555c8f818f673a4aa7c66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99931b03c06555c8f818f673a4aa7c66">&#9670;&#160;</a></span>readShaderStageFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint32_t &gt; &gt; eve::graphics::detail::readShaderStageFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderScriptBindings_8cpp_source.html">ShaderScriptBindings.cpp</a> 第 <a class="el" href="ShaderScriptBindings_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PreparedFile_8cpp_source.html#l00017">bytes</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a> , 以及 <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>.</p>
+
+</div>
+</div>
+<a id="af835ca2eddda04fdfb65add5e487874c" name="af835ca2eddda04fdfb65add5e487874c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af835ca2eddda04fdfb65add5e487874c">&#9670;&#160;</a></span>validateInstancedRenderable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::detail::validateInstancedRenderable </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">Renderable3D::MeshRenderer</a> &amp;&#160;</td>
+          <td class="paramname"><em>mr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderableInstances_8cpp_source.html">RenderableInstances.cpp</a> 第 <a class="el" href="RenderableInstances_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866">eve::graphics::Shader::eMesh3D</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00548">mr</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00551">shader</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00570">eve::graphics::RenderSystem3D::render()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l01314">eve::graphics::RenderSystem3D::renderToCanvas()</a> , 以及 <a class="el" href="RenderableInstances_8cpp_source.html#l00019">eve::graphics::Renderable3D::setInstanceRange()</a>.</p>
+
+</div>
+</div>
+<a id="a53c41d5386c6afee555b2b98a9632536" name="a53c41d5386c6afee555b2b98a9632536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c41d5386c6afee555b2b98a9632536">&#9670;&#160;</a></span>validateResourceShaderStages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::detail::validateResourceShaderStages </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>vertex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>fragment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ShaderResourceInputs.html">ShaderResourceInputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderResourceValidation_8cpp_source.html">ShaderResourceValidation.cpp</a> 第 <a class="el" href="ShaderResourceValidation_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">inputs</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00076">eve::graphics::vulkan::Graphics::replaceMeshShaderResources()</a> , 以及 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00063">eve::graphics::vulkan::validateMeshResourceShaderReload()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

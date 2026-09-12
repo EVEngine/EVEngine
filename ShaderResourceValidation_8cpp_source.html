@@ -1,0 +1,350 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ShaderResourceValidation.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ShaderResourceValidation.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ShaderResourceValidation_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ShaderResourceValidation_8h.html">graphics/ShaderResourceValidation.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#if defined(EVENGINE_SPIRV_ASSET_VALIDATION)</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;spirv-tools/libspirv.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;spirv_cross/spirv_cross.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1detail.html">eve::graphics::detail</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>Result&lt;void&gt; fail(std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a> = <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), <span class="stringliteral">&quot;shader.resources&quot;</span>));</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#if defined(EVENGINE_SPIRV_ASSET_VALIDATION)</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a98254bb2fc89ff4e8c86531885191757">floats</a>(<span class="keyword">const</span> spirv_cross::SPIRType&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, uint32_t <a class="code hl_variable" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.basetype == spirv_cross::SPIRType::Float &amp;&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.width == 32 &amp;&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.vecsize == <a class="code hl_variable" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a> &amp;&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.columns == 1 &amp;&amp;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>           <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.array.empty();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>Result&lt;void&gt; stage(std::span&lt;const uint32_t&gt; words, <span class="keywordtype">bool</span> vertex, <span class="keyword">const</span> ShaderResourceInputs&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    spvtools::SpirvTools validator(SPV_ENV_VULKAN_1_2);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (!validator.Validate(words.data(), words.size()))</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Invalid Vulkan 1.2 SPIR-V&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">DiagnosticCode::ParseError</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    spirv_cross::Compiler <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>(words.data(), words.size());</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keyword">auto</span>            <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_entry_points_and_stages();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>.size() != 1 || <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>[0].name != <span class="stringliteral">&quot;main&quot;</span> ||</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>[0].execution_model != (vertex ? spv::ExecutionModelVertex : spv::ExecutionModelFragment))</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        return fail(<span class="stringliteral">&quot;Expected one main entry point with the requested stage&quot;</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> cap : <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_declared_capabilities())</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        if (cap != spv::CapabilityShader &amp;&amp; cap != spv::CapabilityMatrix)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            return fail(<span class="stringliteral">&quot;Resource programs require only Shader/Matrix capabilities&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_declared_extensions().empty() || !<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_specialization_constants().empty())</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Extensions and specialization constants are unsupported&quot;</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_shader_resources();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.storage_images.empty() || !<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.subpass_inputs.empty() || !<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.separate_images.empty() ||</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        !<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.separate_samplers.empty() || !<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.atomic_counters.empty())</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Resource programs require combined sampled images and uniform buffers&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.storage_buffers.size() &gt; 1) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Only the readonly instance matrix buffer is supported&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a> : <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.storage_buffers) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.base_type_id);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (!vertex || <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.instanceMatrices.empty() ||</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.id, spv::DecorationDescriptorSet) != 1 ||</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.id, spv::DecorationBinding) != 33 ||</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            !<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.type_id).array.empty() || <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types.size() != 1 ||</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_offset(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0) != 0)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Instance storage must be vertex-only set 1 binding 33&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types[0]);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> ((!<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.has_decoration(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.id, spv::DecorationNonWritable) &amp;&amp;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>             !<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.has_member_decoration(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.self, 0, spv::DecorationNonWritable)) ||</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.basetype != spirv_cross::SPIRType::Float || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.width != 32 || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.vecsize != 4 || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.columns != 4 ||</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.array.size() != 1 || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.array[0] != 0 || <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_array_stride(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0) != 64 ||</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_matrix_stride(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0) != 16 ||</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.has_member_decoration(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.self, 0, spv::DecorationRowMajor))</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Instance storage must contain readonly column-major mat4 records&quot;</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; image : <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.sampled_images) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>       = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>.type_id);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">const</span> <span class="keyword">auto</span>  set     = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>.id, spv::DecorationDescriptorSet);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> <span class="keyword">auto</span>  binding = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>.id, spv::DecorationBinding);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.array.empty() || <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.image.ms || <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.image.depth ||</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.image.type).basetype != spirv_cross::SPIRType::Float)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Expected a non-shadow, non-MS float combined image&quot;</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669">ShaderImageDimension</a> expected = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669ab696e5f895616f606a8be85892c374a9">ShaderImageDimension::Image2D</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">if</span> (set == 0 &amp;&amp; binding == 1 &amp;&amp; !vertex) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="comment">// The existing per-material albedo binding.</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (set == 1) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keyword">auto</span> found = std::find_if(<a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.images.begin(), <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.images.end(),</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                      [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; item) { return item.binding == binding; });</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">if</span> (found == <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.images.end()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Shader image binding has no supplied resource&quot;</span>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            expected = found-&gt;dimension;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Image binding is outside the resource program ABI&quot;</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.image.dim != (expected == <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669aa296104f0c61a9cf39f4824d05315e12">ShaderImageDimension::Cube</a> ? spv::DimCube : spv::Dim2D) ||</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            bool(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>.arrayed) != (expected == <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669">ShaderImageDimension</a>::<a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669a096a665f02124c8ef91616f3df924602">Array2D</a>))</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            return fail(<span class="stringliteral">&quot;Shader image view dimension does not match the supplied resource&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a> : <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.uniform_buffers) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> <span class="keyword">auto</span>  set     = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.id, spv::DecorationDescriptorSet);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> <span class="keyword">auto</span>  binding = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.id, spv::DecorationBinding);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>       = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.base_type_id);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.type_id).array.empty()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Buffer descriptor arrays unsupported&quot;</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (set == 1 &amp;&amp; binding == 32) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.constants.empty() || <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_declared_struct_size(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) &gt; <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.constants.size())</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Uniform buffer is larger than its supplied bytes&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (set == 0 &amp;&amp; binding == 0) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types.empty() || <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types.size() &gt; 6) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Expected the supported Frame prefix&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types.size(); ++i) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types[i]);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_offset(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, i) != (i &lt; 2 ? i * 64 : 128 + (i - 2) * 16))</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                    return fail(<span class="stringliteral">&quot;Frame member offset mismatch&quot;</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keywordflow">if</span> (i &lt; 2) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                    <span class="keywordflow">if</span> (<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.basetype != spirv_cross::SPIRType::Float || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.width != 32 || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.columns != 4 ||</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                        <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.vecsize != 4 || !<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.array.empty() || <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_matrix_stride(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, i) != 16 ||</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                        <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.has_member_decoration(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.self, i, spv::DecorationRowMajor))</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Frame matrices must be column-major mat4&quot;</span>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a98254bb2fc89ff4e8c86531885191757">floats</a>(<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, 4))</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                    <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Frame trailing members must be vec4&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Uniform binding is outside the resource program ABI&quot;</span>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.push_constant_buffers.size() &gt; 1) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Multiple push constant blocks unsupported&quot;</span>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a> : <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.push_constant_buffers) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>.base_type_id);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types.size() != 1 || <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_offset(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0) != 0)</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Push constants must contain float data[32]&quot;</span>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.member_types[0]);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.basetype != spirv_cross::SPIRType::Float || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.width != 32 || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.vecsize != 1 || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.columns != 1 ||</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.array.size() != 1 || !<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.array_size_literal[0] || <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.array[0] != 32 ||</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.type_struct_member_array_stride(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0) != 4)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Push constants must be 128 tightly packed float bytes&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> (vertex) {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> : <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.stage_inputs) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keyword">auto</span>           location = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.id, spv::DecorationLocation);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keyword">const</span> uint32_t sizes[]  = {3, 3, 2, 0, 0, 4};</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keywordflow">if</span> (location &gt; 5 || sizes[location] == 0 || !<a class="code hl_function" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a98254bb2fc89ff4e8c86531885191757">floats</a>(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.type_id), sizes[location]))</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Resource vertex inputs require position/normal/UV or optional vec4 tangent at location 5&quot;</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.stage_outputs.size() != 1 ||</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>               <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_decoration(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.stage_outputs[0].id, spv::DecorationLocation) != 0 ||</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>               !<a class="code hl_function" href="namespaceeve_1_1tensor_1_1onnx__detail.html#a98254bb2fc89ff4e8c86531885191757">floats</a>(<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a>.get_type(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.stage_outputs[0].type_id), 4))</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Fragment output must be one vec4 at location 0&quot;</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1detail.html#a53c41d5386c6afee555b2b98a9632536">  129</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1detail.html#a53c41d5386c6afee555b2b98a9632536">validateResourceShaderStages</a>(std::span&lt;const uint32_t&gt; vertex, std::span&lt;const uint32_t&gt; fragment,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                          <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1ShaderResourceInputs.html">ShaderResourceInputs</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">#if defined(EVENGINE_SPIRV_ASSET_VALIDATION)</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">if</span> (!vertex.empty()) {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keyword">auto</span> result = stage(vertex, <span class="keyword">true</span>, <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keywordflow">if</span> (!result) <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">return</span> stage(fragment, <span class="keyword">false</span>, <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordflow">return</span> fail(<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what(), <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">DiagnosticCode::ParseError</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    (void)vertex;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    (void)fragment;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    (void)<a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;SPIR-V validation provider is unavailable&quot;</span>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}  <span class="comment">// namespace eve::graphics::detail</span></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_aeab8fb65bf7593cd8b7f00fb67d2dc09"><div class="ttname"><a href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestRuntime &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00024">BattleVictory.cpp:24</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac97fcc7b295c4be16e43a17090bc02db"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a></div><div class="ttdeci">vk::UniqueImage image</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00014">GraphicsShaderResources.cpp:14</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a590f530c59473dd9135ce1b17237fbcf"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a590f530c59473dd9135ce1b17237fbcf">compiler</a></div><div class="ttdeci">onnx_detail::CompilerQueue compiler</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00045">OnnxGpgpu.cpp:45</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a90fb29238b3761db70cfbff3bc865e75"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a></div><div class="ttdeci">std::unique_ptr&lt; gpgpu::GpuBuffer &gt; buffer</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00026">OnnxGpgpu.cpp:26</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a0bf444cb227a40151be0b5220b5b92bf"><div class="ttname"><a href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a></div><div class="ttdeci">int inputs</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00024">PointGraph.cpp:24</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aShaderResourceValidation_8h_html"><div class="ttname"><a href="ShaderResourceValidation_8h.html">ShaderResourceValidation.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_aa6ea9b07932df851a61fa72bd01761fe"><div class="ttname"><a href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a></div><div class="ttdeci">float size</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00129">TreeMesh.cpp:129</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1detail.html">eve::graphics::detail</a></div><div class="ttdef"><b>Definition</b> <a href="Renderable3DBindings_8cpp_source.html#l00009">Renderable3DBindings.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1detail_html_a53c41d5386c6afee555b2b98a9632536"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1detail.html#a53c41d5386c6afee555b2b98a9632536">eve::graphics::detail::validateResourceShaderStages</a></div><div class="ttdeci">Result&lt; void &gt; validateResourceShaderStages(std::span&lt; const uint32_t &gt; vertex, std::span&lt; const uint32_t &gt; fragment, const ShaderResourceInputs &amp;inputs)</div><div class="ttdef"><b>Definition</b> <a href="ShaderResourceValidation_8cpp_source.html#l00129">ShaderResourceValidation.cpp:129</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a1bea414c24b27aede3f4320639704669"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669">eve::graphics::ShaderImageDimension</a></div><div class="ttdeci">ShaderImageDimension</div><div class="ttdoc">Sampled image view dimension; arrays retain all authored layers.</div><div class="ttdef"><b>Definition</b> <a href="ShaderResources_8h_source.html#l00030">ShaderResources.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a1bea414c24b27aede3f4320639704669a096a665f02124c8ef91616f3df924602"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669a096a665f02124c8ef91616f3df924602">eve::graphics::ShaderImageDimension::Array2D</a></div><div class="ttdeci">@ Array2D</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a1bea414c24b27aede3f4320639704669aa296104f0c61a9cf39f4824d05315e12"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669aa296104f0c61a9cf39f4824d05315e12">eve::graphics::ShaderImageDimension::Cube</a></div><div class="ttdeci">@ Cube</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a1bea414c24b27aede3f4320639704669ab696e5f895616f606a8be85892c374a9"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669ab696e5f895616f606a8be85892c374a9">eve::graphics::ShaderImageDimension::Image2D</a></div><div class="ttdeci">@ Image2D</div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1onnx__detail_html_a98254bb2fc89ff4e8c86531885191757"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1onnx__detail.html#a98254bb2fc89ff4e8c86531885191757">eve::tensor::onnx_detail::floats</a></div><div class="ttdeci">std::vector&lt; float &gt; floats(const RuntimeTensor &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="OnnxInternal_8h_source.html#l00093">OnnxInternal.h:93</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::DiagnosticCode::ParseError</a></div><div class="ttdeci">@ ParseError</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShaderResourceInputs_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ShaderResourceInputs.html">eve::graphics::ShaderResourceInputs</a></div><div class="ttdoc">Inputs for descriptor set 1 of a resource mesh program.</div><div class="ttdef"><b>Definition</b> <a href="ShaderResources_8h_source.html#l00059">ShaderResources.h:59</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/softbody/editing/SoftBody3DSchema.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_4bb74fb27710831de26933735fff0e3d.html">softbody</a></li><li class="navelem"><a class="el" href="dir_c448c36a36f9f83e4943427d801f197d.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SoftBody3DSchema.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SoftBody3DSchema_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="SoftBody3DSchema_8h.html">physics/softbody/editing/SoftBody3DSchema.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="SoftBody3DDefinition_8h.html">physics/softbody/SoftBody3DDefinition.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics__editing.html">eve::physics_editing</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>editing::PropertyDescriptor property(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* label, <span class="keyword">const</span> <span class="keywordtype">char</span>* description, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="UiThemeTokens_8cpp.html#a125628117df0d6a7dd6caa43f2afa61c">category</a>,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                                     <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, editing::Value <a class="code hl_variable" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    editing::PropertyDescriptor result;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    result.path           = editing::PropertyPath(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    result.displayNameKey = label;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    result.descriptionKey = description;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    result.category       = <a class="code hl_variable" href="UiThemeTokens_8cpp.html#a125628117df0d6a7dd6caa43f2afa61c">category</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    result.type           = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    result.defaultValue   = std::move(<a class="code hl_variable" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">void</span> numeric(editing::PropertySchema&amp; schema, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* label, <span class="keyword">const</span> <span class="keywordtype">char</span>* description,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>             <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="UiThemeTokens_8cpp.html#a125628117df0d6a7dd6caa43f2afa61c">category</a>, <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, editing::Value <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>             <span class="keywordtype">double</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a> = <span class="stringliteral">&quot;&quot;</span>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>            = property(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, label, description, <a class="code hl_variable" href="UiThemeTokens_8cpp.html#a125628117df0d6a7dd6caa43f2afa61c">category</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, std::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.minimum = <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.maximum = <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.step    = <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.units   = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    schema.properties.push_back(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics__editing.html#ab6a86d4492593b0fb1a03879ec7b783f">   35</a></span><a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a> <a class="code hl_function" href="namespaceeve_1_1physics__editing.html#ab6a86d4492593b0fb1a03879ec7b783f">softBody3DDefinitionSchema</a>() {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SoftBody3DDefinition.html">physics::SoftBody3DDefinition</a> defaults;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a>             schema;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    schema.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a90f289676e4f9869039bc1f0c2126457">typeId</a>  = std::string(<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7bcd24b2dd24dea12ab43d3add5cb725">physics::SoftBody3DDefinition::SchemaId</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    schema.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a9e2c892bbdbb65f4d58936214970866d">version</a> = <a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#afbf7bc23d08b821f7052e92c051d6ccb">physics::SoftBody3DDefinition::SchemaVersion</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    numeric(schema, <span class="stringliteral">&quot;cols&quot;</span>, <span class="stringliteral">&quot;Soft body columns&quot;</span>, <span class="stringliteral">&quot;Particle count along the local X axis&quot;</span>, <span class="stringliteral">&quot;Lattice&quot;</span>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">editing::PropertyType::Int</a>, std::int64_t(defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa23e8cd534d98eb5062bbe429f99a828">cols</a>), 2, 1000000, 1);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    numeric(schema, <span class="stringliteral">&quot;rows&quot;</span>, <span class="stringliteral">&quot;Soft body rows&quot;</span>, <span class="stringliteral">&quot;Particle count along the local Y axis&quot;</span>, <span class="stringliteral">&quot;Lattice&quot;</span>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">editing::PropertyType::Int</a>, std::int64_t(defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a08a9a622d79990bf9ec708f2aa6d6715">rows</a>), 2, 1000000, 1);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    numeric(schema, <span class="stringliteral">&quot;layers&quot;</span>, <span class="stringliteral">&quot;Soft body layers&quot;</span>, <span class="stringliteral">&quot;Particle count along the local Z axis&quot;</span>, <span class="stringliteral">&quot;Lattice&quot;</span>,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">editing::PropertyType::Int</a>, std::int64_t(defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a89d2a085e98539a4715ffab3d817071e">layers</a>), 2, 1000000, 1);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    numeric(schema, <span class="stringliteral">&quot;spacing&quot;</span>, <span class="stringliteral">&quot;Particle spacing&quot;</span>, <span class="stringliteral">&quot;Rest distance between adjacent particles&quot;</span>, <span class="stringliteral">&quot;Lattice&quot;</span>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a5bb7fc83c9444fef0ec1f2ea72bf3686">spacing</a>, 0.0001, 100000, 0.01, <span class="stringliteral">&quot;m&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    numeric(schema, <span class="stringliteral">&quot;originX&quot;</span>, <span class="stringliteral">&quot;Origin X&quot;</span>, <span class="stringliteral">&quot;Minimum rest-space X coordinate&quot;</span>, <span class="stringliteral">&quot;Transform&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a287005dde2fe63cb2c7b03aee74cf86a">originX</a>, -100000, 100000, 0.01, <span class="stringliteral">&quot;m&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    numeric(schema, <span class="stringliteral">&quot;originY&quot;</span>, <span class="stringliteral">&quot;Origin Y&quot;</span>, <span class="stringliteral">&quot;Minimum rest-space Y coordinate&quot;</span>, <span class="stringliteral">&quot;Transform&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad578857560851f1633a75f0fd2fcdf97">originY</a>, -100000, 100000, 0.01, <span class="stringliteral">&quot;m&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    numeric(schema, <span class="stringliteral">&quot;originZ&quot;</span>, <span class="stringliteral">&quot;Origin Z&quot;</span>, <span class="stringliteral">&quot;Minimum rest-space Z coordinate&quot;</span>, <span class="stringliteral">&quot;Transform&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a50dfa399b998b63d337d764aaeb758f7">originZ</a>, -100000, 100000, 0.01, <span class="stringliteral">&quot;m&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    numeric(schema, <span class="stringliteral">&quot;gravityX&quot;</span>, <span class="stringliteral">&quot;Gravity X&quot;</span>, <span class="stringliteral">&quot;Acceleration along world X&quot;</span>, <span class="stringliteral">&quot;Forces&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab9abcb1bb18d740f934b5f1d3808b0cb">gravityX</a>, -1000, 1000, 0.1, <span class="stringliteral">&quot;m/s2&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    numeric(schema, <span class="stringliteral">&quot;gravityY&quot;</span>, <span class="stringliteral">&quot;Gravity Y&quot;</span>, <span class="stringliteral">&quot;Acceleration along world Y&quot;</span>, <span class="stringliteral">&quot;Forces&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ac360a4964aa00099f6ffd1bd04108bc1">gravityY</a>, -1000, 1000, 0.1, <span class="stringliteral">&quot;m/s2&quot;</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    numeric(schema, <span class="stringliteral">&quot;gravityZ&quot;</span>, <span class="stringliteral">&quot;Gravity Z&quot;</span>, <span class="stringliteral">&quot;Acceleration along world Z&quot;</span>, <span class="stringliteral">&quot;Forces&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7a1030cd67a4f5ac99acd124040c4fbb">gravityZ</a>, -1000, 1000, 0.1, <span class="stringliteral">&quot;m/s2&quot;</span>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    numeric(schema, <span class="stringliteral">&quot;deformationResistance&quot;</span>, <span class="stringliteral">&quot;Deformation resistance&quot;</span>, <span class="stringliteral">&quot;Elastic shape-matching strength&quot;</span>, <span class="stringliteral">&quot;Solver&quot;</span>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9ea442dc5d0fda8a988b405595ca6b2c">deformationResistance</a>, 0, 1, 0.01);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    numeric(schema, <span class="stringliteral">&quot;iterations&quot;</span>, <span class="stringliteral">&quot;Solver iterations&quot;</span>, <span class="stringliteral">&quot;Constraint iterations per substep&quot;</span>, <span class="stringliteral">&quot;Solver&quot;</span>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">editing::PropertyType::Int</a>, std::int64_t(defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a2f118b9c43b80c8d0044896ffb8f8380">iterations</a>), 1, 32, 1);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    numeric(schema, <span class="stringliteral">&quot;damping&quot;</span>, <span class="stringliteral">&quot;Damping&quot;</span>, <span class="stringliteral">&quot;Velocity damping per integration step&quot;</span>, <span class="stringliteral">&quot;Solver&quot;</span>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9a0921bcd3fee63c89f245e6ec243638">damping</a>, 0, 1, 0.01);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    numeric(schema, <span class="stringliteral">&quot;particleRadius&quot;</span>, <span class="stringliteral">&quot;Particle radius&quot;</span>, <span class="stringliteral">&quot;Collision radius of each particle&quot;</span>, <span class="stringliteral">&quot;Particles&quot;</span>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a97b57ee654f0dd48778f1a3a0e65c444">particleRadius</a>, 0.0001, 100000, 0.01, <span class="stringliteral">&quot;m&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    numeric(schema, <span class="stringliteral">&quot;particleMass&quot;</span>, <span class="stringliteral">&quot;Particle mass&quot;</span>, <span class="stringliteral">&quot;Mass used for force and rigid-body impulse exchange&quot;</span>, <span class="stringliteral">&quot;Particles&quot;</span>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa8f023c81531b2c585bd20aca2188f91">particleMass</a>, 0.0001, 100000, 0.01, <span class="stringliteral">&quot;kg&quot;</span>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    numeric(schema, <span class="stringliteral">&quot;plasticYield&quot;</span>, <span class="stringliteral">&quot;Plastic yield&quot;</span>, <span class="stringliteral">&quot;Strain threshold before permanent deformation&quot;</span>, <span class="stringliteral">&quot;Plasticity&quot;</span>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ae3a5419d21eac7861d425575889d7eac">plasticYield</a>, 0, 1000, 0.01);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    numeric(schema, <span class="stringliteral">&quot;plasticCreep&quot;</span>, <span class="stringliteral">&quot;Plastic creep&quot;</span>, <span class="stringliteral">&quot;Rate at which yielded strain becomes permanent&quot;</span>, <span class="stringliteral">&quot;Plasticity&quot;</span>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a445dd64adf89d26943fb19892b751f16">plasticCreep</a>, 0, 1, 0.01);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    numeric(schema, <span class="stringliteral">&quot;plasticRecovery&quot;</span>, <span class="stringliteral">&quot;Plastic recovery&quot;</span>, <span class="stringliteral">&quot;Rate at which plastic offsets return to rest&quot;</span>, <span class="stringliteral">&quot;Plasticity&quot;</span>,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a77ce174821fadb4c848e0fdbdb531375">plasticRecovery</a>, 0, 1, 0.01);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    numeric(schema, <span class="stringliteral">&quot;maxDeformation&quot;</span>, <span class="stringliteral">&quot;Maximum deformation&quot;</span>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="stringliteral">&quot;Maximum stored plastic displacement; zero disables plasticity&quot;</span>, <span class="stringliteral">&quot;Plasticity&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">editing::PropertyType::Float</a>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#af95ad41b955fa096ca9cb8e296580349">maxDeformation</a>, 0, 100000, 0.01, <span class="stringliteral">&quot;m&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    schema.<a class="code hl_variable" href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">properties</a>.push_back(property(<span class="stringliteral">&quot;selfCollision&quot;</span>, <span class="stringliteral">&quot;Self collision&quot;</span>, <span class="stringliteral">&quot;Resolve non-neighbor particle overlap&quot;</span>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                         <span class="stringliteral">&quot;Collision&quot;</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034">editing::PropertyType::Bool</a>, defaults.<a class="code hl_variable" href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a52017ad076c982695216bcc627180db2">selfCollision</a>));</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> schema;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}  <span class="comment">// namespace eve::physics_editing</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00026">GltfImporter.cpp:26</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a909c88a187a1961fa2765ce3b9cecb24"><div class="ttname"><a href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a></div><div class="ttdeci">float minimum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00025">GltfImporter.cpp:25</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a7600cb1e54c2a5b89ad934e9fc6f1399"><div class="ttname"><a href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a></div><div class="ttdeci">const char * defaultValue</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00020">PointGraph.cpp:20</a></div></div>
+<div class="ttc" id="aSoftBody3DDefinition_8h_html"><div class="ttname"><a href="SoftBody3DDefinition_8h.html">SoftBody3DDefinition.h</a></div></div>
+<div class="ttc" id="aSoftBody3DSchema_8h_html"><div class="ttname"><a href="SoftBody3DSchema_8h.html">SoftBody3DSchema.h</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6624d1de442bbcda2a15f1d01f704d05"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a></div><div class="ttdeci">std::vector&lt; UnitCandidate &gt; units</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00133">TacticsPersistence.cpp:133</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00287">TreeMesh.cpp:287</a></div></div>
+<div class="ttc" id="aUiThemeTokens_8cpp_html_a125628117df0d6a7dd6caa43f2afa61c"><div class="ttname"><a href="UiThemeTokens_8cpp.html#a125628117df0d6a7dd6caa43f2afa61c">category</a></div><div class="ttdeci">const char * category</div><div class="ttdef"><b>Definition</b> <a href="UiThemeTokens_8cpp_source.html#l00030">UiThemeTokens.cpp:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::editing::PropertyType</a></div><div class="ttdeci">PropertyType</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00018">EditingProperty.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a1686a6c336b71b36d77354cea19a8b52">eve::editing::PropertyType::Int</a></div><div class="ttdeci">@ Int</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311a22ae0e2b89e5e3d477f988cc36d3272b">eve::editing::PropertyType::Float</a></div><div class="ttdeci">@ Float</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311ac26f15e86e3de4c398a8273272aba034">eve::editing::PropertyType::Bool</a></div><div class="ttdeci">@ Bool</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics__editing_html"><div class="ttname"><a href="namespaceeve_1_1physics__editing.html">eve::physics_editing</a></div><div class="ttdef"><b>Definition</b> <a href="PhysicsColliderAsset_8cpp_source.html#l00005">PhysicsColliderAsset.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics__editing_html_ab6a86d4492593b0fb1a03879ec7b783f"><div class="ttname"><a href="namespaceeve_1_1physics__editing.html#ab6a86d4492593b0fb1a03879ec7b783f">eve::physics_editing::softBody3DDefinitionSchema</a></div><div class="ttdeci">editing::PropertySchema softBody3DDefinitionSchema()</div><div class="ttdoc">Return the UI-independent creation schema for physics:softbody3d v1.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DSchema_8cpp_source.html#l00035">SoftBody3DSchema.cpp:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html">eve::editing::PropertySchema</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00099">EditingProperty.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a4020b14546fac590b874f3decc6a1e3b"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a4020b14546fac590b874f3decc6a1e3b">eve::editing::PropertySchema::properties</a></div><div class="ttdeci">std::vector&lt; PropertyDescriptor &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00102">EditingProperty.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a90f289676e4f9869039bc1f0c2126457"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a90f289676e4f9869039bc1f0c2126457">eve::editing::PropertySchema::typeId</a></div><div class="ttdeci">std::string typeId</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00100">EditingProperty.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html_a9e2c892bbdbb65f4d58936214970866d"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html#a9e2c892bbdbb65f4d58936214970866d">eve::editing::PropertySchema::version</a></div><div class="ttdeci">std::uint32_t version</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00101">EditingProperty.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html">eve::physics::SoftBody3DDefinition</a></div><div class="ttdoc">Versioned, owning creation definition for one volumetric soft body.</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00019">SoftBody3DDefinition.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a08a9a622d79990bf9ec708f2aa6d6715"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a08a9a622d79990bf9ec708f2aa6d6715">eve::physics::SoftBody3DDefinition::rows</a></div><div class="ttdeci">int rows</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00023">SoftBody3DDefinition.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a287005dde2fe63cb2c7b03aee74cf86a"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a287005dde2fe63cb2c7b03aee74cf86a">eve::physics::SoftBody3DDefinition::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00025">SoftBody3DDefinition.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a2f118b9c43b80c8d0044896ffb8f8380"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a2f118b9c43b80c8d0044896ffb8f8380">eve::physics::SoftBody3DDefinition::iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00028">SoftBody3DDefinition.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a445dd64adf89d26943fb19892b751f16"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a445dd64adf89d26943fb19892b751f16">eve::physics::SoftBody3DDefinition::plasticCreep</a></div><div class="ttdeci">float plasticCreep</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a50dfa399b998b63d337d764aaeb758f7"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a50dfa399b998b63d337d764aaeb758f7">eve::physics::SoftBody3DDefinition::originZ</a></div><div class="ttdeci">float originZ</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00025">SoftBody3DDefinition.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a52017ad076c982695216bcc627180db2"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a52017ad076c982695216bcc627180db2">eve::physics::SoftBody3DDefinition::selfCollision</a></div><div class="ttdeci">bool selfCollision</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00031">SoftBody3DDefinition.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a5bb7fc83c9444fef0ec1f2ea72bf3686"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a5bb7fc83c9444fef0ec1f2ea72bf3686">eve::physics::SoftBody3DDefinition::spacing</a></div><div class="ttdeci">float spacing</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00024">SoftBody3DDefinition.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a77ce174821fadb4c848e0fdbdb531375"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a77ce174821fadb4c848e0fdbdb531375">eve::physics::SoftBody3DDefinition::plasticRecovery</a></div><div class="ttdeci">float plasticRecovery</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a7a1030cd67a4f5ac99acd124040c4fbb"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7a1030cd67a4f5ac99acd124040c4fbb">eve::physics::SoftBody3DDefinition::gravityZ</a></div><div class="ttdeci">float gravityZ</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00026">SoftBody3DDefinition.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a7bcd24b2dd24dea12ab43d3add5cb725"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a7bcd24b2dd24dea12ab43d3add5cb725">eve::physics::SoftBody3DDefinition::SchemaId</a></div><div class="ttdeci">static constexpr std::string_view SchemaId</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00020">SoftBody3DDefinition.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a89d2a085e98539a4715ffab3d817071e"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a89d2a085e98539a4715ffab3d817071e">eve::physics::SoftBody3DDefinition::layers</a></div><div class="ttdeci">int layers</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00023">SoftBody3DDefinition.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a97b57ee654f0dd48778f1a3a0e65c444"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a97b57ee654f0dd48778f1a3a0e65c444">eve::physics::SoftBody3DDefinition::particleRadius</a></div><div class="ttdeci">float particleRadius</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00029">SoftBody3DDefinition.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a9a0921bcd3fee63c89f245e6ec243638"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9a0921bcd3fee63c89f245e6ec243638">eve::physics::SoftBody3DDefinition::damping</a></div><div class="ttdeci">float damping</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00029">SoftBody3DDefinition.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_a9ea442dc5d0fda8a988b405595ca6b2c"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#a9ea442dc5d0fda8a988b405595ca6b2c">eve::physics::SoftBody3DDefinition::deformationResistance</a></div><div class="ttdeci">float deformationResistance</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00027">SoftBody3DDefinition.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_aa23e8cd534d98eb5062bbe429f99a828"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa23e8cd534d98eb5062bbe429f99a828">eve::physics::SoftBody3DDefinition::cols</a></div><div class="ttdeci">int cols</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00023">SoftBody3DDefinition.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_aa8f023c81531b2c585bd20aca2188f91"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#aa8f023c81531b2c585bd20aca2188f91">eve::physics::SoftBody3DDefinition::particleMass</a></div><div class="ttdeci">float particleMass</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00029">SoftBody3DDefinition.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ab9abcb1bb18d740f934b5f1d3808b0cb"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ab9abcb1bb18d740f934b5f1d3808b0cb">eve::physics::SoftBody3DDefinition::gravityX</a></div><div class="ttdeci">float gravityX</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00026">SoftBody3DDefinition.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ac360a4964aa00099f6ffd1bd04108bc1"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ac360a4964aa00099f6ffd1bd04108bc1">eve::physics::SoftBody3DDefinition::gravityY</a></div><div class="ttdeci">float gravityY</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00026">SoftBody3DDefinition.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ad578857560851f1633a75f0fd2fcdf97"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ad578857560851f1633a75f0fd2fcdf97">eve::physics::SoftBody3DDefinition::originY</a></div><div class="ttdeci">float originY</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00025">SoftBody3DDefinition.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_ae3a5419d21eac7861d425575889d7eac"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#ae3a5419d21eac7861d425575889d7eac">eve::physics::SoftBody3DDefinition::plasticYield</a></div><div class="ttdeci">float plasticYield</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_af95ad41b955fa096ca9cb8e296580349"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#af95ad41b955fa096ca9cb8e296580349">eve::physics::SoftBody3DDefinition::maxDeformation</a></div><div class="ttdeci">float maxDeformation</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00030">SoftBody3DDefinition.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SoftBody3DDefinition_html_afbf7bc23d08b821f7052e92c051d6ccb"><div class="ttname"><a href="structeve_1_1physics_1_1SoftBody3DDefinition.html#afbf7bc23d08b821f7052e92c051d6ccb">eve::physics::SoftBody3DDefinition::SchemaVersion</a></div><div class="ttdeci">static constexpr std::uint32_t SchemaVersion</div><div class="ttdef"><b>Definition</b> <a href="SoftBody3DDefinition_8h_source.html#l00021">SoftBody3DDefinition.h:21</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

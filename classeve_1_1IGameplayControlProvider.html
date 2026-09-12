@@ -1,0 +1,536 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::IGameplayControlProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1IGameplayControlProvider.html">IGameplayControlProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1IGameplayControlProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::IGameplayControlProvider类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Multi-provider gameplay boundary consumed by input, scripts and automation.  
+ <a href="classeve_1_1IGameplayControlProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GameplayControl_8h_source.html">GameplayControl.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::IGameplayControlProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1IGameplayControlProvider.png" usemap="#eve::IGameplayControlProvider_map" alt=""/>
+  <map id="eve::IGameplayControlProvider_map" name="eve::IGameplayControlProvider_map">
+<area href="classeve_1_1climbing_1_1ClimbingControl.html" title="Exposes server-probed climbing actions without accepting authored world targets." alt="eve::climbing::ClimbingControl" shape="rect" coords="0,56,188,80"/>
+<area href="classeve_1_1rpg_1_1BattleControl.html" title="Explicit stable-identity adapter over one caller-owned RPG battle." alt="eve::rpg::BattleControl" shape="rect" coords="198,56,386,80"/>
+<area href="classeve_1_1rpg_1_1ProductControl.html" title="Host-neutral adapter joining shop, quest-reward and world-loot transactions." alt="eve::rpg::ProductControl" shape="rect" coords="396,56,584,80"/>
+<area href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems." alt="eve::rts::RTS" shape="rect" coords="594,56,782,80"/>
+<area href="classeve_1_1tactics_1_1Tactics.html" title="Owns tactics short-root entities and coordinates checked battle setup." alt="eve::tactics::Tactics" shape="rect" coords="792,56,980,80"/>
+<area href="classeve_1_1weapon_1_1WeaponControl.html" title="Exposes one weapon through the shared gameplay command protocol." alt="eve::weapon::WeaponControl" shape="rect" coords="990,56,1178,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa35341669f898fd0b827036a1fb7361b" id="r_aa35341669f898fd0b827036a1fb7361b"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">~IGameplayControlProvider</a> ()=default</td></tr>
+<tr class="separator:aa35341669f898fd0b827036a1fb7361b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af87a275bcbf73986f4abe3345a5a7ccf" id="r_af87a275bcbf73986f4abe3345a5a7ccf"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#af87a275bcbf73986f4abe3345a5a7ccf">gameplayDomain</a> () const noexcept=0</td></tr>
+<tr class="memdesc:af87a275bcbf73986f4abe3345a5a7ccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable provider domain used for discovery and routing.  <br /></td></tr>
+<tr class="separator:af87a275bcbf73986f4abe3345a5a7ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a251767bc64d37a2e5c12f9c8db648df2" id="r_a251767bc64d37a2e5c12f9c8db648df2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#a251767bc64d37a2e5c12f9c8db648df2">observeGameplay</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance) const =0</td></tr>
+<tr class="memdesc:a251767bc64d37a2e5c12f9c8db648df2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe one provider-owned gameplay instance without mutation.  <br /></td></tr>
+<tr class="separator:a251767bc64d37a2e5c12f9c8db648df2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c391f621adf61ea07df02d4ad9668e" id="r_a21c391f621adf61ea07df02d4ad9668e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#a21c391f621adf61ea07df02d4ad9668e">availableGameplayActions</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> subject) const =0</td></tr>
+<tr class="memdesc:a21c391f621adf61ea07df02d4ad9668e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discover currently legal player-semantic actions for one subject.  <br /></td></tr>
+<tr class="separator:a21c391f621adf61ea07df02d4ad9668e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e07c001dc3c5551e5ea32c46322b22e" id="r_a0e07c001dc3c5551e5ea32c46322b22e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#a0e07c001dc3c5551e5ea32c46322b22e">submitGameplay</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, const <a class="el" href="structeve_1_1GameplayCommand.html">GameplayCommand</a> &amp;command)=0</td></tr>
+<tr class="memdesc:a0e07c001dc3c5551e5ea32c46322b22e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate authority and atomically submit one domain command.  <br /></td></tr>
+<tr class="separator:a0e07c001dc3c5551e5ea32c46322b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa46527b85a71c71075efde668dc997bd" id="r_aa46527b85a71c71075efde668dc997bd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aa46527b85a71c71075efde668dc997bd">advanceGameplay</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)=0</td></tr>
+<tr class="memdesc:aa46527b85a71c71075efde668dc997bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance one provider-owned instance using injected deterministic time.  <br /></td></tr>
+<tr class="separator:aa46527b85a71c71075efde668dc997bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bdfb78dac9e74f9e5f639018c3c2d27" id="r_a6bdfb78dac9e74f9e5f639018c3c2d27"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayEvent.html">GameplayEvent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#a6bdfb78dac9e74f9e5f639018c3c2d27">gameplayEvents</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, std::uint64_t afterSequence) const =0</td></tr>
+<tr class="memdesc:a6bdfb78dac9e74f9e5f639018c3c2d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return events strictly newer than an instance-local sequence cursor.  <br /></td></tr>
+<tr class="separator:a6bdfb78dac9e74f9e5f639018c3c2d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:aee803ca0d14eadea63f8788e13d10c2b" id="r_aee803ca0d14eadea63f8788e13d10c2b"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">capabilityName</a> = &quot;IGameplayControlProvider&quot;</td></tr>
+<tr class="separator:aee803ca0d14eadea63f8788e13d10c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Multi-provider gameplay boundary consumed by input, scripts and automation. </p>
+<p>Implementations are registered as Capability listeners because several gameplay domains may coexist. Registration and every method are owner-simulation-thread affine. Implementations must not retain argument references or invoke unknown callbacks. Domain objects remain the only mutable authorities; returned Values are owning projections. Missing providers are observable through an empty listener set. </p>
+
+<p class="definition">在文件 <a class="el" href="GameplayControl_8h_source.html">GameplayControl.h</a> 第 <a class="el" href="GameplayControl_8h_source.html#l00090">90</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa35341669f898fd0b827036a1fb7361b" name="aa35341669f898fd0b827036a1fb7361b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa35341669f898fd0b827036a1fb7361b">&#9670;&#160;</a></span>~IGameplayControlProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::IGameplayControlProvider::~IGameplayControlProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa46527b85a71c71075efde668dc997bd" name="aa46527b85a71c71075efde668dc997bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa46527b85a71c71075efde668dc997bd">&#9670;&#160;</a></span>advanceGameplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt; eve::IGameplayControlProvider::advanceGameplay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advance one provider-owned instance using injected deterministic time. </p>
+
+<p>在 <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a85c27933de1d1a8b8767d483a1f1fa23">eve::climbing::ClimbingControl</a>, <a class="el" href="classeve_1_1rpg_1_1BattleControl.html#a4a7605de0b173937afd628bfb59660cc">eve::rpg::BattleControl</a>, <a class="el" href="classeve_1_1rpg_1_1ProductControl.html#a18e6684c75357d33a5d18b0162c8de5d">eve::rpg::ProductControl</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html#aff4b0829bd3c5016ef58931df21b784b">eve::rts::RTS</a>, <a class="el" href="classeve_1_1tactics_1_1Tactics.html#a33be38f2456cae7b000bbd8c47cc3c72">eve::tactics::Tactics</a> , 以及 <a class="el" href="classeve_1_1weapon_1_1WeaponControl.html#a7122ad06ea9273e3446e23fc453fdef4">eve::weapon::WeaponControl</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a21c391f621adf61ea07df02d4ad9668e" name="a21c391f621adf61ea07df02d4ad9668e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21c391f621adf61ea07df02d4ad9668e">&#9670;&#160;</a></span>availableGameplayActions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a> &gt; &gt; eve::IGameplayControlProvider::availableGameplayActions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discover currently legal player-semantic actions for one subject. </p>
+
+<p>在 <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a236d6441656d6f8ed16aaf2cff38ce53">eve::climbing::ClimbingControl</a>, <a class="el" href="classeve_1_1rpg_1_1BattleControl.html#ae6a79254414c2ed97183dc637143dd6e">eve::rpg::BattleControl</a>, <a class="el" href="classeve_1_1rpg_1_1ProductControl.html#a2ce9df20b3971c2194be45767ba157e6">eve::rpg::ProductControl</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html#a56e0ee5daad8b8586f58e08cbb2bf33d">eve::rts::RTS</a>, <a class="el" href="classeve_1_1tactics_1_1Tactics.html#a9898b306d8fb7dfe927bce19013e1e3c">eve::tactics::Tactics</a> , 以及 <a class="el" href="classeve_1_1weapon_1_1WeaponControl.html#a071ebb71a5f130add6c538a414547a47">eve::weapon::WeaponControl</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af87a275bcbf73986f4abe3345a5a7ccf" name="af87a275bcbf73986f4abe3345a5a7ccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af87a275bcbf73986f4abe3345a5a7ccf">&#9670;&#160;</a></span>gameplayDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string_view eve::IGameplayControlProvider::gameplayDomain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable provider domain used for discovery and routing. </p>
+
+<p>在 <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a3b882353af3b676f14f46c668c68578f">eve::climbing::ClimbingControl</a>, <a class="el" href="classeve_1_1rpg_1_1BattleControl.html#a9372eaebfcf6c755b4caf25ea0506597">eve::rpg::BattleControl</a>, <a class="el" href="classeve_1_1rpg_1_1ProductControl.html#a5631455314cf29b73a05792a56fc6795">eve::rpg::ProductControl</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html#a7531efbd69172df8c6c0a2a35ed4db40">eve::rts::RTS</a>, <a class="el" href="classeve_1_1tactics_1_1Tactics.html#a31d55059cc7f43b0294e2ea36db9197a">eve::tactics::Tactics</a> , 以及 <a class="el" href="classeve_1_1weapon_1_1WeaponControl.html#aff3842fd626bb888d877077df54b6015">eve::weapon::WeaponControl</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a6bdfb78dac9e74f9e5f639018c3c2d27" name="a6bdfb78dac9e74f9e5f639018c3c2d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bdfb78dac9e74f9e5f639018c3c2d27">&#9670;&#160;</a></span>gameplayEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayEvent.html">GameplayEvent</a> &gt; &gt; eve::IGameplayControlProvider::gameplayEvents </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>afterSequence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return events strictly newer than an instance-local sequence cursor. </p>
+
+<p>在 <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a3a2d5c4fcf6c1674f5b62544ab3bd85c">eve::climbing::ClimbingControl</a>, <a class="el" href="classeve_1_1rpg_1_1BattleControl.html#aa8a145b45be10e4f1d0ea0376ea2e7fe">eve::rpg::BattleControl</a>, <a class="el" href="classeve_1_1rpg_1_1ProductControl.html#a04341a2a90d083138676aa34f35878a8">eve::rpg::ProductControl</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html#a30472e790016362d90a27a36473ef10b">eve::rts::RTS</a>, <a class="el" href="classeve_1_1tactics_1_1Tactics.html#a1ab70deb6b1afe0456933df9d9dd5cbf">eve::tactics::Tactics</a> , 以及 <a class="el" href="classeve_1_1weapon_1_1WeaponControl.html#a4f5e5e2c4ae33ec818ddde34fa1147d4">eve::weapon::WeaponControl</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a251767bc64d37a2e5c12f9c8db648df2" name="a251767bc64d37a2e5c12f9c8db648df2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a251767bc64d37a2e5c12f9c8db648df2">&#9670;&#160;</a></span>observeGameplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt; eve::IGameplayControlProvider::observeGameplay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe one provider-owned gameplay instance without mutation. </p>
+
+<p>在 <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a37c8d5f0ab7fe6dac4a2ea3bcd84337e">eve::climbing::ClimbingControl</a>, <a class="el" href="classeve_1_1rpg_1_1BattleControl.html#a419bf40e4c2ef12481acdec7c495ed88">eve::rpg::BattleControl</a>, <a class="el" href="classeve_1_1rpg_1_1ProductControl.html#a0b39b69d7c35209edba14cce474a3188">eve::rpg::ProductControl</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html#a0c3d5895d38c56841dc7f62a96d87212">eve::rts::RTS</a>, <a class="el" href="classeve_1_1tactics_1_1Tactics.html#a95e1af26af31dcd9f40d04da9e1172cb">eve::tactics::Tactics</a> , 以及 <a class="el" href="classeve_1_1weapon_1_1WeaponControl.html#ac8600211afa77e8946b68dea0a5074a4">eve::weapon::WeaponControl</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0e07c001dc3c5551e5ea32c46322b22e" name="a0e07c001dc3c5551e5ea32c46322b22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e07c001dc3c5551e5ea32c46322b22e">&#9670;&#160;</a></span>submitGameplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a> &gt; eve::IGameplayControlProvider::submitGameplay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplayCommand.html">GameplayCommand</a> &amp;&#160;</td>
+          <td class="paramname"><em>command</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate authority and atomically submit one domain command. </p>
+
+<p>在 <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#afbfff66f3cab7985d52948cded440613">eve::climbing::ClimbingControl</a>, <a class="el" href="classeve_1_1rpg_1_1BattleControl.html#add7fdf2c11227cb205bc772dc8498bd2">eve::rpg::BattleControl</a>, <a class="el" href="classeve_1_1rpg_1_1ProductControl.html#ac03cd2bca893d329ff562dd22df9ae77">eve::rpg::ProductControl</a>, <a class="el" href="classeve_1_1rts_1_1RTS.html#a22666ea6da0a25175e4dfbf88f5381a3">eve::rts::RTS</a>, <a class="el" href="classeve_1_1tactics_1_1Tactics.html#a285e869b992cce5c2d1540f9b89de00d">eve::tactics::Tactics</a> , 以及 <a class="el" href="classeve_1_1weapon_1_1WeaponControl.html#a1724d0f6b65f9634c359c94bab6ba1d7">eve::weapon::WeaponControl</a> 内被实现.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aee803ca0d14eadea63f8788e13d10c2b" name="aee803ca0d14eadea63f8788e13d10c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee803ca0d14eadea63f8788e13d10c2b">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::IGameplayControlProvider::capabilityName = &quot;IGameplayControlProvider&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameplayControl_8h_source.html">GameplayControl.h</a> 第 <a class="el" href="GameplayControl_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="GameplayControl_8h_source.html">GameplayControl.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

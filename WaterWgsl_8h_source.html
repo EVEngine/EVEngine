@@ -1,0 +1,235 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/shaders/WaterWgsl.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_c23ab40dcfc29266ef065bfa8ca0e572.html">shaders</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WaterWgsl.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WaterWgsl_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1shaders.html">eve::graphics::shaders</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a3c3f6667d35302e9861beb77c4fc312e">    6</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a3c3f6667d35302e9861beb77c4fc312e">kWaterVertWgsl</a>[] = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="stringliteral">struct Light3D{posRadius:vec4f,color:vec4f};</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="stringliteral">struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array&lt;Light3D,8&gt;,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f,envProbeCenter:vec4f,envProbeExtent:vec4f,skinInfo:vec4f,reflectionProbeCenter:array&lt;vec4f,2&gt;,reflectionProbeExtent:array&lt;vec4f,2&gt;};</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="stringliteral">struct Params{data:array&lt;vec4f,8&gt;};</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="stringliteral">struct VSIn{@location(0)pos:vec3f,@location(1)normal:vec3f,@location(2)uv:vec2f};</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="stringliteral">struct VSOut{@builtin(position)pos:vec4f,@location(0)normal:vec3f,@location(1)uv:vec2f,@location(2)tint:vec4f,@location(3)worldPos:vec3f,@location(4)cameraPos:vec3f,@location(5)viewPos:vec3f};</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="stringliteral">@group(0)@binding(0)var&lt;uniform&gt;frame:Frame;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="stringliteral">@group(0)@binding(15)var&lt;uniform&gt;params:Params;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="stringliteral">fn p(i:u32)-&gt;f32{return params.data[i/4u][i%4u];}</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="stringliteral">fn waveHeight(worldXZ:vec2f)-&gt;f32{</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="stringliteral"> let scale=max(p(3u),0.01)*0.72;let time=p(0u)*p(1u);</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="stringliteral"> let primary=sin(dot(worldXZ,vec2f(0.91,0.31))*scale+time*1.45);</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="stringliteral"> let crossWave=sin(dot(worldXZ,vec2f(-0.36,0.93))*scale*0.58-time*0.92);</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="stringliteral"> let swell=sin(dot(worldXZ,vec2f(0.22,0.98))*scale*0.24+time*0.37);</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="stringliteral"> return p(2u)*(primary*0.48+crossWave*0.34+swell*0.18);</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="stringliteral">@vertex fn vs_main(in:VSIn)-&gt;VSOut{</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="stringliteral"> let baseWorld=frame.model*vec4f(in.pos,1.0);let eps=0.025;let height=waveHeight(baseWorld.xz);</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="stringliteral"> let dx=(waveHeight(baseWorld.xz+vec2f(eps,0))-waveHeight(baseWorld.xz-vec2f(eps,0)))/(2.0*eps);</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="stringliteral"> let dz=(waveHeight(baseWorld.xz+vec2f(0,eps))-waveHeight(baseWorld.xz-vec2f(0,eps)))/(2.0*eps);</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="stringliteral"> let localPos=in.pos+vec3f(0,height,0);let world=frame.model*vec4f(localPos,1.0);</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="stringliteral"> var out:VSOut;out.pos=frame.mvp*vec4f(localPos,1.0);out.pos.y=-out.pos.y;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="stringliteral"> out.normal=normalize(mat3x3f(frame.model[0].xyz,frame.model[1].xyz,frame.model[2].xyz)*normalize(vec3f(-dx,1,-dz)));</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="stringliteral"> out.uv=in.uv;out.tint=frame.tint;out.worldPos=world.xyz;out.cameraPos=frame.cameraPos.xyz;out.viewPos=(frame.view*world).xyz;return out;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a36d9664e3cc31f87bd197e9e2bab64e3">   34</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a36d9664e3cc31f87bd197e9e2bab64e3">kWaterFragWgsl</a>[] = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="stringliteral">struct Light3D{posRadius:vec4f,color:vec4f};</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="stringliteral">struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array&lt;Light3D,8&gt;,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f,envProbeCenter:vec4f,envProbeExtent:vec4f,skinInfo:vec4f,reflectionProbeCenter:array&lt;vec4f,2&gt;,reflectionProbeExtent:array&lt;vec4f,2&gt;};</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="stringliteral">struct FSIn{@builtin(position)pos:vec4f,@location(0)normal:vec3f,@location(1)uv:vec2f,@location(2)tint:vec4f,@location(3)worldPos:vec3f,@location(4)cameraPos:vec3f,@location(5)viewPos:vec3f};</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="stringliteral">struct Params{data:array&lt;vec4f,8&gt;};</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="stringliteral">@group(0)@binding(0)var&lt;uniform&gt;frame:Frame;@group(0)@binding(1)var sceneColorTex:texture_2d&lt;f32&gt;;@group(0)@binding(3)var environment:texture_cube&lt;f32&gt;;@group(0)@binding(6)var ssrTex:texture_2d&lt;f32&gt;;@group(0)@binding(7)var samp:sampler;@group(0)@binding(9)var sceneDepthTex:texture_2d&lt;f32&gt;;@group(0)@binding(15)var&lt;uniform&gt;params:Params;@group(0)@binding(16)var reflectionProbe0:texture_cube&lt;f32&gt;;@group(0)@binding(17)var reflectionProbe1:texture_cube&lt;f32&gt;;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="stringliteral">fn p(i:u32)-&gt;f32{return params.data[i/4u][i%4u];}fn hash(n:f32)-&gt;f32{return fract(sin(n)*43758.5453123);}fn hash2(i:i32)-&gt;vec2f{return vec2f(hash(f32(i)*7.31),hash(f32(i)*13.17+1.0));}</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="stringliteral">fn shapedWave(phase:f32)-&gt;f32{let w=sin(phase);return sign(w)*pow(abs(w),max(p(31u),0.1));}</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="stringliteral">fn rippleRing(uv:vec2f,i:i32)-&gt;f32{let period=max(p(6u),0.05);let age=p(0u)-floor(p(0u)/period)*period-hash(f32(i)*3.7)*period;if(age&lt;0.0||age&gt;period*0.8){return 0.0;}let center=mix(vec2f(0.5),hash2(i),vec2f(0.72));let x=(length(uv-center)-age*0.22)/0.10;return p(4u)*exp(-(x*x)*0.9)*cos(x*6.2831853)*exp(-age*1.6);}</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="stringliteral">fn waterHeight(uv:vec2f)-&gt;f32{let scale=p(3u);let time=p(0u)*p(1u);let q=uv+vec2f(sin(uv.y*scale*0.31+time*0.37),sin(uv.x*scale*0.27-time*0.29))*0.018;let phase0=dot(q,vec2f(1.0,0.23))*scale*6.2831853+time*6.2831853;let phase1=dot(q,vec2f(-0.48,0.88))*scale*0.73*6.2831853-time*1.17*6.2831853;let phase2=dot(q,vec2f(0.37,0.93))*scale*1.31*6.2831853+time*0.61*6.2831853;var h=p(2u)*(shapedWave(phase0)*0.42+shapedWave(phase1)*0.34+shapedWave(phase2)*0.24);for(var i=0;i&lt;8;i++){if(f32(i)&gt;=p(5u)+0.5){break;}h+=rippleRing(q,i);}return h;}</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="stringliteral">fn caustics(pos:vec2f)-&gt;f32{let q=pos*max(p(30u),0.01);let t=p(0u)*p(1u);let a=sin(q.x*1.37+q.y*0.73+t*1.2);let b=sin(q.x*-0.62+q.y*1.51-t*0.93);let c=sin((q.x+q.y)*1.11+t*0.57);let ridge=1.0-abs((a+b+c)/3.0);return pow(clamp(ridge,0.0,1.0),5.0);}</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="stringliteral">fn foamCells(pos:vec2f)-&gt;f32{let cell=floor(pos);let f=fract(pos);var first=10.0;var second=10.0;for(var y=-1;y&lt;=1;y++){for(var x=-1;x&lt;=1;x++){let g=vec2f(f32(x),f32(y));let point=hash2(i32(cell.x+g.x)*131+i32(cell.y+g.y)*197);let distance=length(g+point-f);if(distance&lt;first){second=first;first=distance;}else if(distance&lt;second){second=distance;}}}return 1.0-smoothstep(0.025,0.18,second-first);}</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="stringliteral">fn flowNoise(pos:vec2f)-&gt;f32{let t=p(0u)*p(1u);let a=sin(pos.x*1.31+pos.y*0.73+t*1.17);let b=sin(pos.x*-0.67+pos.y*1.57-t*0.83);return 0.5+0.25*(a+b);}</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="stringliteral">fn crestLines(pos:vec2f)-&gt;f32{let t=p(0u)*p(1u);let scale=max(p(3u),0.01)*0.43;let phaseA=dot(pos,vec2f(0.96,0.28))*scale+sin(pos.y*0.72-t*0.31)*1.35+t*1.35;let phaseB=dot(pos,vec2f(-0.38,0.92))*scale*0.67+sin(pos.x*0.58+t*0.27)*1.15-t*0.82;let a=smoothstep(0.91,0.985,sin(phaseA));let b=smoothstep(0.935,0.992,sin(phaseB));let broken=smoothstep(0.52,0.70,flowNoise(pos*0.66+vec2f(4.7)));return max(a*0.58,b*0.38)*broken;}</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="stringliteral">fn probeWeight(i:u32,pos:vec3f)-&gt;f32{let edge=frame.reflectionProbeExtent[i].xyz-abs(pos-frame.reflectionProbeCenter[i].xyz);let inside=min(edge.x,min(edge.y,edge.z));return select(0.0,clamp(inside/max(frame.reflectionProbeExtent[i].w,0.0001),0.0,1.0),inside&gt;0.0&amp;&amp;frame.reflectionProbeCenter[i].w&gt;0.0);}</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="stringliteral">fn probeDirection(i:u32,direction:vec3f,pos:vec3f)-&gt;vec3f{let center=frame.reflectionProbeCenter[i].xyz;let extent=frame.reflectionProbeExtent[i].xyz;let safe=select(vec3f(0.00001),direction,abs(direction)&gt;vec3f(0.00001));let exitT=max((center-extent-pos)/safe,(center+extent-pos)/safe);let distance=min(exitT.x,min(exitT.y,exitT.z));return select(normalize(direction),normalize(pos+direction*distance-center),distance&gt;0.0);}</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="stringliteral">@fragment fn fs_main(in:FSIn)-&gt;@location(0)vec4f{</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="stringliteral"> let eps=0.001;let grad=vec2f(waterHeight(in.uv+vec2f(eps,0))-waterHeight(in.uv-vec2f(eps,0)),waterHeight(in.uv+vec2f(0,eps))-waterHeight(in.uv-vec2f(0,eps)))/(2.0*eps);let flowTime=p(0u)*p(1u);let normalLayerA=vec2f(sin(in.worldPos.x*1.7+in.worldPos.z*0.8+flowTime),cos(in.worldPos.z*1.5-in.worldPos.x*0.6-flowTime*0.83));let normalLayerB=vec2f(cos(in.worldPos.x*3.1-in.worldPos.z*1.2-flowTime*1.31),sin(in.worldPos.z*2.7+in.worldPos.x*0.9+flowTime*0.57));let layeredNormal=grad*0.11+normalLayerA*0.055+normalLayerB*0.025;let normal=normalize(in.normal+vec3f(-layeredNormal.x,0,-layeredNormal.y));let view=normalize(frame.cameraPos.xyz-in.worldPos);let reflected=reflect(-view,normal);let ndv=max(dot(view,normal),0.0);</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="stringliteral"> let size=vec2f(textureDimensions(sceneColorTex));let suv=in.pos.xy/max(size,vec2f(1));let nearZ=max(frame.clipInfo.x,0.0001);let farZ=max(frame.clipInfo.y,nearZ+0.001);let surface=clamp((-in.viewPos.z-nearZ)/(farZ-nearZ),0.0,1.0);let hasDepth=p(29u)&gt;=0.0;let opacity=select(-p(29u)-1.0,p(29u),hasDepth);let sceneSample=textureSample(sceneColorTex,samp,suv);var scene=surface+1.0;if(hasDepth){scene=textureSample(sceneDepthTex,samp,suv).r;}if(sceneSample.a&gt;surface+0.00001&amp;&amp;sceneSample.a&lt;0.9999){scene=sceneSample.a;}let depth=max((scene-surface)*(farZ-nearZ),0.0);let shallow=1.0-smoothstep(0.0,max(p(16u),0.0001),depth);let shallowColor=vec3f(p(13u),p(14u),p(15u));let water=mix(vec3f(p(10u),p(11u),p(12u)),shallowColor,vec3f(shallow));</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="stringliteral"> let flow=vec2f(flowNoise(in.worldPos.xz*1.8),flowNoise(in.worldPos.zx*2.3+vec2f(17.0)))-vec2f(0.5);let ruv=clamp(suv+(layeredNormal*0.75+flow*0.35)*p(28u)*(0.25+shallow*0.75),vec2f(0.001),vec2f(0.999));let behind=textureSample(sceneColorTex,samp,ruv).rgb;let absorption=select(1.0,1.0-exp(-depth/max(p(16u),0.001)*3.2),hasDepth);var waterAlpha=clamp(opacity*mix(0.35,1.0,absorption),0.0,1.0);var color=water;let causticMask=select(0.0,smoothstep(0.02,max(p(16u),0.03),depth)*shallow,hasDepth);color+=shallowColor*caustics(in.worldPos.xz)*causticMask*p(26u);</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="stringliteral"> let rough=clamp(0.08+length(layeredNormal)*0.35,0.05,0.34);let envLod=rough*f32(max(i32(textureNumLevels(environment))-2,0));var w0=probeWeight(0u,in.worldPos);var w1=probeWeight(1u,in.worldPos);var sum=w0+w1;if(sum&gt;1.0){w0/=sum;w1/=sum;sum=1.0;}var reflection=textureSampleLevel(environment,samp,reflected,envLod).rgb*frame.lightColor.w*(1.0-sum);if(w0&gt;0.0){reflection+=textureSampleLevel(reflectionProbe0,samp,probeDirection(0u,reflected,in.worldPos),rough*4.0).rgb*frame.reflectionProbeCenter[0].w*w0;}if(w1&gt;0.0){reflection+=textureSampleLevel(reflectionProbe1,samp,probeDirection(1u,reflected,in.worldPos),rough*4.0).rgb*frame.reflectionProbeCenter[1].w*w1;}reflection*=vec3f(p(21u),p(22u),p(23u));let fresnel=pow(1.0-ndv,max(p(25u),0.01));waterAlpha=max(waterAlpha,opacity*mix(0.35,1.0,fresnel));let reflectionWeight=clamp((0.08+0.92*fresnel)*p(20u),0.0,0.78);color=mix(color,reflection,vec3f(reflectionWeight));</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="stringliteral"> let light=normalize(frame.lightDir.xyz);let glint=pow(max(dot(normal,normalize(view+light)),0.0),mix(24.0,160.0,1.0-rough));color+=frame.lightColor.rgb*glint*max(dot(normal,light),0.0)*p(24u);</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="stringliteral"> let foamUv=in.worldPos.xz*0.80;let cells=foamCells(foamUv+vec2f(p(0u)*0.08,-p(0u)*0.05));let cells2=foamCells(foamUv*0.61+vec2f(-p(0u)*0.04,p(0u)*0.06));let curvedLines=smoothstep(0.72,0.96,max(cells,cells2*0.72));let crest=smoothstep(p(2u)*0.34,p(2u)*0.80,waterHeight(in.uv));let surfaceTint=mix(shallowColor,vec3f(p(17u),p(18u),p(19u)),vec3f(0.28));let surfacePattern=curvedLines*(0.07+crest*0.11)*p(9u);color=mix(color,surfaceTint,vec3f(surfacePattern));waterAlpha=max(waterAlpha,surfacePattern*0.42);</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="stringliteral"> let normalizedDepth=clamp(depth/max(p(7u),0.0001),0.0,1.0);let edge=1.0-smoothstep(max(p(7u)-p(8u),0.0),p(7u)+p(8u),depth);let bandCoord=normalizedDepth*3.4+flowNoise(foamUv*2.1)*0.34;let shoreBands=(1.0-smoothstep(0.035,0.12,abs(fract(bandCoord)-0.5)))*(1.0-normalizedDepth);let shoreFoam=max(edge*(0.52+0.48*cells),shoreBands*0.82)*p(9u);color=mix(color,vec3f(p(17u),p(18u),p(19u)),vec3f(clamp(shoreFoam,0.0,1.0)));waterAlpha=max(waterAlpha,clamp(shoreFoam,0.0,1.0));</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="stringliteral"> if(p(27u)&gt;0.0){let externalReflection=textureSample(ssrTex,samp,suv);let externalWeight=clamp(externalReflection.a*p(27u),0.0,1.0);color=mix(color,externalReflection.rgb,vec3f(externalWeight));waterAlpha=max(waterAlpha,externalWeight);}</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="stringliteral"> waterAlpha=max(waterAlpha,reflectionWeight*0.72);let transmission=(1.0-waterAlpha)*0.38;color=mix(color,behind,vec3f(transmission));return vec4f(color*in.tint.rgb,waterAlpha);</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="stringliteral">}  </span><span class="comment">// namespace eve::graphics::shaders</span></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html">eve::graphics::shaders</a></div><div class="ttdef"><b>Definition</b> <a href="AmbientOcclusionWgsl_8h_source.html#l00003">AmbientOcclusionWgsl.h:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a36d9664e3cc31f87bd197e9e2bab64e3"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a36d9664e3cc31f87bd197e9e2bab64e3">eve::graphics::shaders::kWaterFragWgsl</a></div><div class="ttdeci">constexpr char kWaterFragWgsl[]</div><div class="ttdoc">Backend-parity stylized-water WGSL source with depth foam and scene-color refraction.</div><div class="ttdef"><b>Definition</b> <a href="WaterWgsl_8h_source.html#l00034">WaterWgsl.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a3c3f6667d35302e9861beb77c4fc312e"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a3c3f6667d35302e9861beb77c4fc312e">eve::graphics::shaders::kWaterVertWgsl</a></div><div class="ttdeci">constexpr char kWaterVertWgsl[]</div><div class="ttdoc">Vertex-displaced low-frequency water layers for the WebGPU backend.</div><div class="ttdef"><b>Definition</b> <a href="WaterWgsl_8h_source.html#l00006">WaterWgsl.h:6</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

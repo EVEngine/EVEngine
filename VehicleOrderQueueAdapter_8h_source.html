@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/vehicle/VehicleOrderQueueAdapter.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_67e8cd4d52697e685f77c3533c06f8a6.html">vehicle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VehicleOrderQueueAdapter.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VehicleOrderQueueAdapter_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="VehicleTypes_8h.html">vehicle/VehicleTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1vehicle.html">eve::vehicle</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad75be671d810d9dc87f3285d422f24ba">VehicleOrderQueueAdapter</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a58117cea99e965af76ca440524081dc2">   32</a></span>    <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a58117cea99e965af76ca440524081dc2">~VehicleOrderQueueAdapter</a>();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad75be671d810d9dc87f3285d422f24ba">VehicleOrderQueueAdapter</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a>&amp;);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a>&amp; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#aa0e8b5f944799dda4b5b1586ae6af130">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a>&amp;);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a2b562d172811942e865c4d903d84145d">   39</a></span>    <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a2b562d172811942e865c4d903d84145d">VehicleOrderQueueAdapter</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#aed3fa2032a6652b75f60da67e956b005">   41</a></span>    <a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#adc64bffd632f01457b2f23481cbf06d2">append</a>(const <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a>&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                                  <span class="keywordtype">double</span> timeoutSeconds = 0.0);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a3114d12234b5837f3a3475407f717d46">replace</a>(const <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a>&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                                   <span class="keywordtype">double</span> timeoutSeconds = 0.0);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a36035ddb57686261f8564256730428dc">interrupt</a>(const <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a>&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                                     <span class="keywordtype">double</span> timeoutSeconds = 0.0);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af3da553089d3c266392242c30c48c917">completeCurrent</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a9753c8952b03e6aebc94fb1b5213d52c">failCurrent</a>(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; reason);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad93c1485cb07efb7aeda56ccc128c7cd">cancel</a>(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; <span class="keywordtype">id</span>, const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; reason = &quot;cancelled&quot;);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a7db07a3998218b818b855f7e04c9d894">update</a>(<span class="keywordtype">double</span> dtSeconds);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af8e0be2a15e7688895df35f8f8c31e7f">clear</a>();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[nodiscard]] const <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a>* <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a14386555a51fadc3e59b12126baff6e9">current</a>() const;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a4e7f8788009aeae9b19c92b15c7d71d1">activeOrQueuedCount</a>() const;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a038560e4e7de01592d0a7ba4b7aa9675">syncCompatibility</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>::Orders&amp; legacy) const;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>private:</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    struct <a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrderQueueAdapter_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> pruneTerminalPayloads();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_struct" href="structeve_1_1vehicle_1_1VehicleOrderQueueAdapter_1_1Impl.html">Impl</a>&gt; impl_;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>};</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}  <span class="comment">// namespace eve::vehicle</span></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aVehicleTypes_8h_html"><div class="ttname"><a href="VehicleTypes_8h.html">VehicleTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleEntity_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleEntity.html">eve::vehicle::VehicleEntity</a></div><div class="ttdoc">载具实体：数据全部在组件里，行为在 VehicleSystem。</div><div class="ttdef"><b>Definition</b> <a href="VehicleTypes_8h_source.html#l00172">VehicleTypes.h:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">eve::vehicle::VehicleOrderQueueAdapter</a></div><div class="ttdoc">Maps VehicleOrder domain payloads onto an orders::CommandQueue.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8h_source.html#l00027">VehicleOrderQueueAdapter.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a038560e4e7de01592d0a7ba4b7aa9675"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a038560e4e7de01592d0a7ba4b7aa9675">eve::vehicle::VehicleOrderQueueAdapter::syncCompatibility</a></div><div class="ttdeci">void syncCompatibility(VehicleEntity::Orders &amp;legacy) const</div><div class="ttdoc">Refreshes the legacy component projection.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00141">VehicleOrderQueueAdapter.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a14386555a51fadc3e59b12126baff6e9"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a14386555a51fadc3e59b12126baff6e9">eve::vehicle::VehicleOrderQueueAdapter::current</a></div><div class="ttdeci">const VehicleOrder * current() const</div><div class="ttdoc">Returns the Vehicle payload for the active generic order, or null.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00120">VehicleOrderQueueAdapter.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a2b562d172811942e865c4d903d84145d"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a2b562d172811942e865c4d903d84145d">eve::vehicle::VehicleOrderQueueAdapter::VehicleOrderQueueAdapter</a></div><div class="ttdeci">VehicleOrderQueueAdapter(VehicleOrderQueueAdapter &amp;&amp;) noexcept</div><div class="ttdoc">Transfers adapter ownership without copying queue state.</div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a3114d12234b5837f3a3475407f717d46"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a3114d12234b5837f3a3475407f717d46">eve::vehicle::VehicleOrderQueueAdapter::replace</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; replace(const VehicleOrder &amp;order, int priority=0, double timeoutSeconds=0.0)</div><div class="ttdoc">Cancels unfinished orders and starts a replacement.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00063">VehicleOrderQueueAdapter.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a36035ddb57686261f8564256730428dc"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a36035ddb57686261f8564256730428dc">eve::vehicle::VehicleOrderQueueAdapter::interrupt</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; interrupt(const VehicleOrder &amp;order, int priority=0, double timeoutSeconds=0.0)</div><div class="ttdoc">Interrupts the active order when the generic priority permits.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00073">VehicleOrderQueueAdapter.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a4e7f8788009aeae9b19c92b15c7d71d1"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a4e7f8788009aeae9b19c92b15c7d71d1">eve::vehicle::VehicleOrderQueueAdapter::activeOrQueuedCount</a></div><div class="ttdeci">int activeOrQueuedCount() const</div><div class="ttdoc">Returns the number of active and queued Vehicle orders.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00128">VehicleOrderQueueAdapter.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a58117cea99e965af76ca440524081dc2"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a58117cea99e965af76ca440524081dc2">eve::vehicle::VehicleOrderQueueAdapter::~VehicleOrderQueueAdapter</a></div><div class="ttdeci">~VehicleOrderQueueAdapter()</div><div class="ttdoc">Releases the owned generic queue and domain payloads.</div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a7db07a3998218b818b855f7e04c9d894"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a7db07a3998218b818b855f7e04c9d894">eve::vehicle::VehicleOrderQueueAdapter::update</a></div><div class="ttdeci">void update(double dtSeconds)</div><div class="ttdoc">Advances generic timeout handling.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00109">VehicleOrderQueueAdapter.cpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_a9753c8952b03e6aebc94fb1b5213d52c"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a9753c8952b03e6aebc94fb1b5213d52c">eve::vehicle::VehicleOrderQueueAdapter::failCurrent</a></div><div class="ttdeci">eve::Result&lt; void &gt; failCurrent(const std::string &amp;reason)</div><div class="ttdoc">Fails the current generic order and activates the next one.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00093">VehicleOrderQueueAdapter.cpp:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_aa0e8b5f944799dda4b5b1586ae6af130"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#aa0e8b5f944799dda4b5b1586ae6af130">eve::vehicle::VehicleOrderQueueAdapter::operator=</a></div><div class="ttdeci">VehicleOrderQueueAdapter &amp; operator=(const VehicleOrderQueueAdapter &amp;)</div><div class="ttdoc">Deep-copies generic lifecycle state and Vehicle payloads.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00045">VehicleOrderQueueAdapter.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_ad75be671d810d9dc87f3285d422f24ba"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad75be671d810d9dc87f3285d422f24ba">eve::vehicle::VehicleOrderQueueAdapter::VehicleOrderQueueAdapter</a></div><div class="ttdeci">VehicleOrderQueueAdapter()</div><div class="ttdoc">Creates an empty adapter with an owned generic queue.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00038">VehicleOrderQueueAdapter.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_ad93c1485cb07efb7aeda56ccc128c7cd"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad93c1485cb07efb7aeda56ccc128c7cd">eve::vehicle::VehicleOrderQueueAdapter::cancel</a></div><div class="ttdeci">eve::Result&lt; void &gt; cancel(const std::string &amp;id, const std::string &amp;reason=&quot;cancelled&quot;)</div><div class="ttdoc">Cancels an active or queued generic order by stable id.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00103">VehicleOrderQueueAdapter.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_adc64bffd632f01457b2f23481cbf06d2"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#adc64bffd632f01457b2f23481cbf06d2">eve::vehicle::VehicleOrderQueueAdapter::append</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; append(const VehicleOrder &amp;order, int priority=0, double timeoutSeconds=0.0)</div><div class="ttdoc">Appends a Vehicle domain order to the generic queue.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00054">VehicleOrderQueueAdapter.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_af3da553089d3c266392242c30c48c917"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af3da553089d3c266392242c30c48c917">eve::vehicle::VehicleOrderQueueAdapter::completeCurrent</a></div><div class="ttdeci">eve::Result&lt; void &gt; completeCurrent()</div><div class="ttdoc">Completes the current generic order and activates the next one.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00083">VehicleOrderQueueAdapter.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleOrderQueueAdapter_html_af8e0be2a15e7688895df35f8f8c31e7f"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af8e0be2a15e7688895df35f8f8c31e7f">eve::vehicle::VehicleOrderQueueAdapter::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clears generic queue history and Vehicle domain payloads.</div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00115">VehicleOrderQueueAdapter.cpp:115</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1vehicle_html"><div class="ttname"><a href="namespaceeve_1_1vehicle.html">eve::vehicle</a></div><div class="ttdoc">驾驶者接口与玩家控制状态。</div><div class="ttdef"><b>Definition</b> <a href="vehicle_2ContainerAdapters_8cpp_source.html#l00014">ContainerAdapters.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1vehicle_1_1VehicleOrderQueueAdapter_1_1Impl_html"><div class="ttname"><a href="structeve_1_1vehicle_1_1VehicleOrderQueueAdapter_1_1Impl.html">eve::vehicle::VehicleOrderQueueAdapter::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="VehicleOrderQueueAdapter_8cpp_source.html#l00020">VehicleOrderQueueAdapter.cpp:20</a></div></div>
+<div class="ttc" id="astructeve_1_1vehicle_1_1VehicleOrder_html"><div class="ttname"><a href="structeve_1_1vehicle_1_1VehicleOrder.html">eve::vehicle::VehicleOrder</a></div><div class="ttdoc">一条 Vehicle 领域命令（生命周期由 Vehicle order adapter 执行）。</div><div class="ttdef"><b>Definition</b> <a href="VehicleTypes_8h_source.html#l00057">VehicleTypes.h:57</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

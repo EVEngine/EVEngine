@@ -1,0 +1,592 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::FoliageClusterDesc结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html">FoliageClusterDesc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1FoliageClusterDesc-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::FoliageClusterDesc结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Recipe for one stylized leaf cluster ("foliage card bundle").  
+ <a href="structeve_1_1procgen_1_1FoliageClusterDesc.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a4112a89a65d58adc0628aa4da30ea4bc" id="r_a4112a89a65d58adc0628aa4da30ea4bc"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a4112a89a65d58adc0628aa4da30ea4bc">seed</a> = 0</td></tr>
+<tr class="memdesc:a4112a89a65d58adc0628aa4da30ea4bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RNG stream seed; the same seed and inputs reproduce the same leaves.  <br /></td></tr>
+<tr class="separator:a4112a89a65d58adc0628aa4da30ea4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5078c778b9b82f22a365558c7926f59" id="r_ab5078c778b9b82f22a365558c7926f59"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab5078c778b9b82f22a365558c7926f59">centerX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ab5078c778b9b82f22a365558c7926f59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cluster centre on X, in world units.  <br /></td></tr>
+<tr class="separator:ab5078c778b9b82f22a365558c7926f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e462a9cfc3a5ff10dd479183195d922" id="r_a6e462a9cfc3a5ff10dd479183195d922"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a6e462a9cfc3a5ff10dd479183195d922">centerY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a6e462a9cfc3a5ff10dd479183195d922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cluster centre on Y, in world units.  <br /></td></tr>
+<tr class="separator:a6e462a9cfc3a5ff10dd479183195d922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80b66afbdbb4389d9f6e6321a1a9297c" id="r_a80b66afbdbb4389d9f6e6321a1a9297c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a80b66afbdbb4389d9f6e6321a1a9297c">centerZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a80b66afbdbb4389d9f6e6321a1a9297c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cluster centre on Z, in world units.  <br /></td></tr>
+<tr class="separator:a80b66afbdbb4389d9f6e6321a1a9297c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae16cb7674d8830e9d039572802cb5186" id="r_ae16cb7674d8830e9d039572802cb5186"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ae16cb7674d8830e9d039572802cb5186">radius</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ae16cb7674d8830e9d039572802cb5186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cluster radius in world units; clamped to at least 1e-3.  <br /></td></tr>
+<tr class="separator:ae16cb7674d8830e9d039572802cb5186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46b5c5b81631b0406760dd30fac4ea8c" id="r_a46b5c5b81631b0406760dd30fac4ea8c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a46b5c5b81631b0406760dd30fac4ea8c">leafSize</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a46b5c5b81631b0406760dd30fac4ea8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaf length in world units; clamped to at least 1e-3.  <br /></td></tr>
+<tr class="separator:a46b5c5b81631b0406760dd30fac4ea8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aace26b170a47bf3e923ebc0ccac80dc3" id="r_aace26b170a47bf3e923ebc0ccac80dc3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aace26b170a47bf3e923ebc0ccac80dc3">leafSpacing</a> = 0.9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aace26b170a47bf3e923ebc0ccac80dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blue-noise centre distance, in <code>leafSize</code> units. Larger values spread the leaves out (sparser, more see-through foliage). Clamped to at least 0.05.  <br /></td></tr>
+<tr class="separator:aace26b170a47bf3e923ebc0ccac80dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac31b89b4c3a222a604dfc870a5165b5c" id="r_ac31b89b4c3a222a604dfc870a5165b5c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac31b89b4c3a222a604dfc870a5165b5c">planes</a> = 9</td></tr>
+<tr class="memdesc:ac31b89b4c3a222a604dfc870a5165b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaf planes rotated around the cluster's Y axis; clamped to <code>1..24</code>.  <br /></td></tr>
+<tr class="separator:ac31b89b4c3a222a604dfc870a5165b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92d28eef195a0436a94f9f5bb724afae" id="r_a92d28eef195a0436a94f9f5bb724afae"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a92d28eef195a0436a94f9f5bb724afae">capPlanes</a> = 2</td></tr>
+<tr class="memdesc:a92d28eef195a0436a94f9f5bb724afae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Near-horizontal planes that close the cluster's top and bottom. A pure ring of vertical planes leaves the poles empty. Clamped to <code>0..8</code>.  <br /></td></tr>
+<tr class="separator:a92d28eef195a0436a94f9f5bb724afae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a424cb7261a0309722cb16157ed8ffe61" id="r_a424cb7261a0309722cb16157ed8ffe61"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a424cb7261a0309722cb16157ed8ffe61">tiltDegrees</a> = 26.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a424cb7261a0309722cb16157ed8ffe61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum ring-plane tilt away from vertical, in degrees; clamped to <code>0..80</code>.  <br /></td></tr>
+<tr class="separator:a424cb7261a0309722cb16157ed8ffe61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab34832cdd35d57dbb0f753d8cc258365" id="r_ab34832cdd35d57dbb0f753d8cc258365"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ab34832cdd35d57dbb0f753d8cc258365">planeOffset</a> = 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ab34832cdd35d57dbb0f753d8cc258365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-plane translation inside the cluster, in <code>radius</code> units; clamped to <code>0..0.6</code>.  <br /></td></tr>
+<tr class="separator:ab34832cdd35d57dbb0f753d8cc258365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a646df49d003c1c7c57f56e91622928d5" id="r_a646df49d003c1c7c57f56e91622928d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a646df49d003c1c7c57f56e91622928d5">planeScaleVariation</a> = 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a646df49d003c1c7c57f56e91622928d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-plane radius variation; clamped to <code>0..0.6</code>.  <br /></td></tr>
+<tr class="separator:a646df49d003c1c7c57f56e91622928d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1995358aca4bfc188e7cad0b6a9f7d26" id="r_a1995358aca4bfc188e7cad0b6a9f7d26"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a1995358aca4bfc188e7cad0b6a9f7d26">leafJitter</a> = 0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a1995358aca4bfc188e7cad0b6a9f7d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-leaf offset along the plane normal, in <code>radius</code> units; clamped to <code>0..0.5</code>.  <br /></td></tr>
+<tr class="separator:a1995358aca4bfc188e7cad0b6a9f7d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b468fda7ed838b488f3f8d3530caad5" id="r_a5b468fda7ed838b488f3f8d3530caad5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a5b468fda7ed838b488f3f8d3530caad5">leafScaleVariation</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a5b468fda7ed838b488f3f8d3530caad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaf size variation as a fraction of <code>leafSize</code>; clamped to <code>0..0.6</code>.  <br /></td></tr>
+<tr class="separator:a5b468fda7ed838b488f3f8d3530caad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac394829b988d17114fab8fa12f0e7059" id="r_ac394829b988d17114fab8fa12f0e7059"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#ac394829b988d17114fab8fa12f0e7059">maxLeavesPerPlane</a> = 24</td></tr>
+<tr class="memdesc:ac394829b988d17114fab8fa12f0e7059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard cap on leaves per plane; clamped to <code>1..256</code>. When it binds, the sampler widens the blue-noise distance instead of truncating, so the retained leaves stay evenly distributed.  <br /></td></tr>
+<tr class="separator:ac394829b988d17114fab8fa12f0e7059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefc452771193be9647a6c00c0bc806bb" id="r_aefc452771193be9647a6c00c0bc806bb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#aefc452771193be9647a6c00c0bc806bb">normalRounding</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aefc452771193be9647a6c00c0bc806bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend from the flat plane normal (0) to the cluster sphere normal (1).  <br /></td></tr>
+<tr class="separator:aefc452771193be9647a6c00c0bc806bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851647416867ad1988bee2926359663a" id="r_a851647416867ad1988bee2926359663a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a851647416867ad1988bee2926359663a">uvMin</a> = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a851647416867ad1988bee2926359663a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start of the foliage band in the shared tree/bush atlas, on U.  <br /></td></tr>
+<tr class="separator:a851647416867ad1988bee2926359663a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b7ae10a4095f2ba255c826665b3ac2" id="r_a42b7ae10a4095f2ba255c826665b3ac2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a42b7ae10a4095f2ba255c826665b3ac2">uvMax</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a42b7ae10a4095f2ba255c826665b3ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight">End of the foliage band in the shared tree/bush atlas, on U.  <br /></td></tr>
+<tr class="separator:a42b7ae10a4095f2ba255c826665b3ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de225c3a79c36d1cf1ab9ff3e8af7eb" id="r_a7de225c3a79c36d1cf1ab9ff3e8af7eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1FoliageClusterDesc.html#a7de225c3a79c36d1cf1ab9ff3e8af7eb">doubleSided</a> = true</td></tr>
+<tr class="memdesc:a7de225c3a79c36d1cf1ab9ff3e8af7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit both windings per leaf. The engine's mesh3d pipelines cull back faces unless a <code>Material</code> opts into two-sided rasterization, so foliage has to carry both windings.  <br /></td></tr>
+<tr class="separator:a7de225c3a79c36d1cf1ab9ff3e8af7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Recipe for one stylized leaf cluster ("foliage card bundle"). </p>
+<p>A cluster is a spherical volume filled with a handful of leaf planes. Each plane is a disk whose leaf centres come from a blue-noise (Poisson-disk) sampler, so the leaves stay evenly spread instead of clumping the way an independent per-leaf random draw does. Only leaf quads are emitted, which is the geometric equivalent of "leaves opaque, everything else transparent": the gaps between leaves cost no geometry, no blending and no sort order.</p>
+<p>The planes are placed at stratified yaw angles around the cluster's Y axis with a small random tilt and offset, and vertex normals are transferred from the cluster sphere rather than taken from the leaf's own plane, so a bundle of flat cards still shades like a rounded mass of foliage. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a92d28eef195a0436a94f9f5bb724afae" name="a92d28eef195a0436a94f9f5bb724afae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92d28eef195a0436a94f9f5bb724afae">&#9670;&#160;</a></span>capPlanes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::FoliageClusterDesc::capPlanes = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Near-horizontal planes that close the cluster's top and bottom. A pure ring of vertical planes leaves the poles empty. Clamped to <code>0..8</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5078c778b9b82f22a365558c7926f59" name="ab5078c778b9b82f22a365558c7926f59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5078c778b9b82f22a365558c7926f59">&#9670;&#160;</a></span>centerX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::centerX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cluster centre on X, in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e462a9cfc3a5ff10dd479183195d922" name="a6e462a9cfc3a5ff10dd479183195d922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e462a9cfc3a5ff10dd479183195d922">&#9670;&#160;</a></span>centerY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::centerY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cluster centre on Y, in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80b66afbdbb4389d9f6e6321a1a9297c" name="a80b66afbdbb4389d9f6e6321a1a9297c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b66afbdbb4389d9f6e6321a1a9297c">&#9670;&#160;</a></span>centerZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::centerZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cluster centre on Z, in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7de225c3a79c36d1cf1ab9ff3e8af7eb" name="a7de225c3a79c36d1cf1ab9ff3e8af7eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de225c3a79c36d1cf1ab9ff3e8af7eb">&#9670;&#160;</a></span>doubleSided</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::FoliageClusterDesc::doubleSided = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Emit both windings per leaf. The engine's mesh3d pipelines cull back faces unless a <code>Material</code> opts into two-sided rasterization, so foliage has to carry both windings. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1995358aca4bfc188e7cad0b6a9f7d26" name="a1995358aca4bfc188e7cad0b6a9f7d26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1995358aca4bfc188e7cad0b6a9f7d26">&#9670;&#160;</a></span>leafJitter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::leafJitter = 0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-leaf offset along the plane normal, in <code>radius</code> units; clamped to <code>0..0.5</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b468fda7ed838b488f3f8d3530caad5" name="a5b468fda7ed838b488f3f8d3530caad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b468fda7ed838b488f3f8d3530caad5">&#9670;&#160;</a></span>leafScaleVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::leafScaleVariation = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Leaf size variation as a fraction of <code>leafSize</code>; clamped to <code>0..0.6</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46b5c5b81631b0406760dd30fac4ea8c" name="a46b5c5b81631b0406760dd30fac4ea8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46b5c5b81631b0406760dd30fac4ea8c">&#9670;&#160;</a></span>leafSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::leafSize = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Leaf length in world units; clamped to at least 1e-3. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aace26b170a47bf3e923ebc0ccac80dc3" name="aace26b170a47bf3e923ebc0ccac80dc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aace26b170a47bf3e923ebc0ccac80dc3">&#9670;&#160;</a></span>leafSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::leafSpacing = 0.9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Blue-noise centre distance, in <code>leafSize</code> units. Larger values spread the leaves out (sparser, more see-through foliage). Clamped to at least 0.05. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac394829b988d17114fab8fa12f0e7059" name="ac394829b988d17114fab8fa12f0e7059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac394829b988d17114fab8fa12f0e7059">&#9670;&#160;</a></span>maxLeavesPerPlane</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::FoliageClusterDesc::maxLeavesPerPlane = 24</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hard cap on leaves per plane; clamped to <code>1..256</code>. When it binds, the sampler widens the blue-noise distance instead of truncating, so the retained leaves stay evenly distributed. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefc452771193be9647a6c00c0bc806bb" name="aefc452771193be9647a6c00c0bc806bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc452771193be9647a6c00c0bc806bb">&#9670;&#160;</a></span>normalRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::normalRounding = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Blend from the flat plane normal (0) to the cluster sphere normal (1). </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab34832cdd35d57dbb0f753d8cc258365" name="ab34832cdd35d57dbb0f753d8cc258365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab34832cdd35d57dbb0f753d8cc258365">&#9670;&#160;</a></span>planeOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::planeOffset = 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-plane translation inside the cluster, in <code>radius</code> units; clamped to <code>0..0.6</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac31b89b4c3a222a604dfc870a5165b5c" name="ac31b89b4c3a222a604dfc870a5165b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31b89b4c3a222a604dfc870a5165b5c">&#9670;&#160;</a></span>planes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::FoliageClusterDesc::planes = 9</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Leaf planes rotated around the cluster's Y axis; clamped to <code>1..24</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a646df49d003c1c7c57f56e91622928d5" name="a646df49d003c1c7c57f56e91622928d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a646df49d003c1c7c57f56e91622928d5">&#9670;&#160;</a></span>planeScaleVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::planeScaleVariation = 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-plane radius variation; clamped to <code>0..0.6</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae16cb7674d8830e9d039572802cb5186" name="ae16cb7674d8830e9d039572802cb5186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae16cb7674d8830e9d039572802cb5186">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::radius = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cluster radius in world units; clamped to at least 1e-3. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4112a89a65d58adc0628aa4da30ea4bc" name="a4112a89a65d58adc0628aa4da30ea4bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4112a89a65d58adc0628aa4da30ea4bc">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::procgen::FoliageClusterDesc::seed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RNG stream seed; the same seed and inputs reproduce the same leaves. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a424cb7261a0309722cb16157ed8ffe61" name="a424cb7261a0309722cb16157ed8ffe61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a424cb7261a0309722cb16157ed8ffe61">&#9670;&#160;</a></span>tiltDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::tiltDegrees = 26.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum ring-plane tilt away from vertical, in degrees; clamped to <code>0..80</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a42b7ae10a4095f2ba255c826665b3ac2" name="a42b7ae10a4095f2ba255c826665b3ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42b7ae10a4095f2ba255c826665b3ac2">&#9670;&#160;</a></span>uvMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::uvMax = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>End of the foliage band in the shared tree/bush atlas, on U. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a851647416867ad1988bee2926359663a" name="a851647416867ad1988bee2926359663a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a851647416867ad1988bee2926359663a">&#9670;&#160;</a></span>uvMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::FoliageClusterDesc::uvMin = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start of the foliage band in the shared tree/bush atlas, on U. </p>
+
+<p class="definition">在文件 <a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a> 第 <a class="el" href="FoliageCluster_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/algorithms/<a class="el" href="FoliageCluster_8h_source.html">FoliageCluster.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

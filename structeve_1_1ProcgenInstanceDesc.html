@@ -1,0 +1,392 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ProcgenInstanceDesc结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html">ProcgenInstanceDesc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1ProcgenInstanceDesc-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ProcgenInstanceDesc结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Engine-neutral description of one procedural scene instance.  
+ <a href="structeve_1_1ProcgenInstanceDesc.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a7b202d3a61db80c2a25b8535a6c10c3f" id="r_a7b202d3a61db80c2a25b8535a6c10c3f"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#a7b202d3a61db80c2a25b8535a6c10c3f">sourcePointId</a> = 0</td></tr>
+<tr class="memdesc:a7b202d3a61db80c2a25b8535a6c10c3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable source PointId; zero denotes a legacy instance without delta identity.  <br /></td></tr>
+<tr class="separator:a7b202d3a61db80c2a25b8535a6c10c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a881352f05356fbe4bfa2b9ac27103245" id="r_a881352f05356fbe4bfa2b9ac27103245"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#a881352f05356fbe4bfa2b9ac27103245">id</a></td></tr>
+<tr class="separator:a881352f05356fbe4bfa2b9ac27103245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab577040b15e553a53ee8046ecfe4c24e" id="r_ab577040b15e553a53ee8046ecfe4c24e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#ab577040b15e553a53ee8046ecfe4c24e">asset</a></td></tr>
+<tr class="separator:ab577040b15e553a53ee8046ecfe4c24e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d852889038dfa448b62e53cf33e8b26" id="r_a9d852889038dfa448b62e53cf33e8b26"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#a9d852889038dfa448b62e53cf33e8b26">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9d852889038dfa448b62e53cf33e8b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad22ca1351faf1fdf129141886c06bec3" id="r_ad22ca1351faf1fdf129141886c06bec3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#ad22ca1351faf1fdf129141886c06bec3">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad22ca1351faf1fdf129141886c06bec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa020d3627d97d80a7bd99ead5b956366" id="r_aa020d3627d97d80a7bd99ead5b956366"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#aa020d3627d97d80a7bd99ead5b956366">z</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa020d3627d97d80a7bd99ead5b956366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ff744dece9b3e3f278b0ee7a1fc2e61" id="r_a6ff744dece9b3e3f278b0ee7a1fc2e61"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#a6ff744dece9b3e3f278b0ee7a1fc2e61">yaw</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6ff744dece9b3e3f278b0ee7a1fc2e61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac014db8b761e7bb116a6729109108df5" id="r_ac014db8b761e7bb116a6729109108df5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#ac014db8b761e7bb116a6729109108df5">scaleX</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac014db8b761e7bb116a6729109108df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ff8921d4abc62353ef0b6e0d08476f4" id="r_a9ff8921d4abc62353ef0b6e0d08476f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#a9ff8921d4abc62353ef0b6e0d08476f4">scaleY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9ff8921d4abc62353ef0b6e0d08476f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4540635c89aeab07f60822c4eccb16ac" id="r_a4540635c89aeab07f60822c4eccb16ac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#a4540635c89aeab07f60822c4eccb16ac">scaleZ</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4540635c89aeab07f60822c4eccb16ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa7517a9de4518e1a7dd195b990dadc" id="r_aafa7517a9de4518e1a7dd195b990dadc"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ProcgenInstanceDesc.html#aafa7517a9de4518e1a7dd195b990dadc">seed</a> = 1</td></tr>
+<tr class="separator:aafa7517a9de4518e1a7dd195b990dadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Engine-neutral description of one procedural scene instance. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ab577040b15e553a53ee8046ecfe4c24e" name="ab577040b15e553a53ee8046ecfe4c24e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab577040b15e553a53ee8046ecfe4c24e">&#9670;&#160;</a></span>asset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ProcgenInstanceDesc::asset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a881352f05356fbe4bfa2b9ac27103245" name="a881352f05356fbe4bfa2b9ac27103245"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a881352f05356fbe4bfa2b9ac27103245">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ProcgenInstanceDesc::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac014db8b761e7bb116a6729109108df5" name="ac014db8b761e7bb116a6729109108df5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac014db8b761e7bb116a6729109108df5">&#9670;&#160;</a></span>scaleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::scaleX = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ff8921d4abc62353ef0b6e0d08476f4" name="a9ff8921d4abc62353ef0b6e0d08476f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ff8921d4abc62353ef0b6e0d08476f4">&#9670;&#160;</a></span>scaleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::scaleY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4540635c89aeab07f60822c4eccb16ac" name="a4540635c89aeab07f60822c4eccb16ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4540635c89aeab07f60822c4eccb16ac">&#9670;&#160;</a></span>scaleZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::scaleZ = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafa7517a9de4518e1a7dd195b990dadc" name="aafa7517a9de4518e1a7dd195b990dadc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa7517a9de4518e1a7dd195b990dadc">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::ProcgenInstanceDesc::seed = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b202d3a61db80c2a25b8535a6c10c3f" name="a7b202d3a61db80c2a25b8535a6c10c3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b202d3a61db80c2a25b8535a6c10c3f">&#9670;&#160;</a></span>sourcePointId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ProcgenInstanceDesc::sourcePointId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable source PointId; zero denotes a legacy instance without delta identity. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d852889038dfa448b62e53cf33e8b26" name="a9d852889038dfa448b62e53cf33e8b26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d852889038dfa448b62e53cf33e8b26">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad22ca1351faf1fdf129141886c06bec3" name="ad22ca1351faf1fdf129141886c06bec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad22ca1351faf1fdf129141886c06bec3">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ff744dece9b3e3f278b0ee7a1fc2e61" name="a6ff744dece9b3e3f278b0ee7a1fc2e61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ff744dece9b3e3f278b0ee7a1fc2e61">&#9670;&#160;</a></span>yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::yaw = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa020d3627d97d80a7bd99ead5b956366" name="aa020d3627d97d80a7bd99ead5b956366"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa020d3627d97d80a7bd99ead5b956366">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ProcgenInstanceDesc::z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a> 第 <a class="el" href="ProcgenSceneSink_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ProcgenSceneSink_8h_source.html">ProcgenSceneSink.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

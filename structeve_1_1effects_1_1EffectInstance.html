@@ -1,0 +1,708 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::effects::EffectInstance结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1effects.html">effects</a></li><li class="navelem"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html">EffectInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1effects_1_1EffectInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::effects::EffectInstance结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One owned runtime effect fact.  
+ <a href="structeve_1_1effects_1_1EffectInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4bc54a56046c302b0d7783a34e817443" id="r_a4bc54a56046c302b0d7783a34e817443"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a4bc54a56046c302b0d7783a34e817443">addTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="memdesc:a4bc54a56046c302b0d7783a34e817443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a tag while retaining deterministic lexical order.  <br /></td></tr>
+<tr class="separator:a4bc54a56046c302b0d7783a34e817443"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3be0efd9cef5bb989744a29b5550b6ea" id="r_a3be0efd9cef5bb989744a29b5550b6ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a3be0efd9cef5bb989744a29b5550b6ea">removeTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="memdesc:a3be0efd9cef5bb989744a29b5550b6ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a tag; an absent tag is an explicit NoOp result.  <br /></td></tr>
+<tr class="separator:a3be0efd9cef5bb989744a29b5550b6ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a614c774a98a4ed75036696c1f383d6c7" id="r_a614c774a98a4ed75036696c1f383d6c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a614c774a98a4ed75036696c1f383d6c7">hasTag</a> (const std::string &amp;tag) const</td></tr>
+<tr class="memdesc:a614c774a98a4ed75036696c1f383d6c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this effect has a tag.  <br /></td></tr>
+<tr class="separator:a614c774a98a4ed75036696c1f383d6c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4efbf9ceb75078e015ea4edfcd4586a" id="r_aa4efbf9ceb75078e015ea4edfcd4586a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#aa4efbf9ceb75078e015ea4edfcd4586a">tagCount</a> () const</td></tr>
+<tr class="memdesc:aa4efbf9ceb75078e015ea4edfcd4586a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of tags.  <br /></td></tr>
+<tr class="separator:aa4efbf9ceb75078e015ea4edfcd4586a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3081c644741ffd2d2f3b2acc75cbb49b" id="r_a3081c644741ffd2d2f3b2acc75cbb49b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a3081c644741ffd2d2f3b2acc75cbb49b">tagAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3081c644741ffd2d2f3b2acc75cbb49b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a tag by lexical index, or an empty string.  <br /></td></tr>
+<tr class="separator:a3081c644741ffd2d2f3b2acc75cbb49b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a065d2c4f41ed53c5b0ef82ae279e6d90" id="r_a065d2c4f41ed53c5b0ef82ae279e6d90"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a065d2c4f41ed53c5b0ef82ae279e6d90">id</a></td></tr>
+<tr class="separator:a065d2c4f41ed53c5b0ef82ae279e6d90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2e81b1799f592cbed37eb92ba228373" id="r_ad2e81b1799f592cbed37eb92ba228373"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#ad2e81b1799f592cbed37eb92ba228373">subject</a></td></tr>
+<tr class="separator:ad2e81b1799f592cbed37eb92ba228373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1561a0faf866b1e4b98c21949ece71a" id="r_ab1561a0faf866b1e4b98c21949ece71a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#ab1561a0faf866b1e4b98c21949ece71a">type</a></td></tr>
+<tr class="separator:ab1561a0faf866b1e4b98c21949ece71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41638247ab08a755049c455ade9ec798" id="r_a41638247ab08a755049c455ade9ec798"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a41638247ab08a755049c455ade9ec798">source</a></td></tr>
+<tr class="separator:a41638247ab08a755049c455ade9ec798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0de1d7a26488f9305c93c181eb574ce7" id="r_a0de1d7a26488f9305c93c181eb574ce7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a0de1d7a26488f9305c93c181eb574ce7">stackKey</a></td></tr>
+<tr class="separator:a0de1d7a26488f9305c93c181eb574ce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a946212489655bf9185b129f19b30d302" id="r_a946212489655bf9185b129f19b30d302"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a946212489655bf9185b129f19b30d302">priority</a> = 0</td></tr>
+<tr class="separator:a946212489655bf9185b129f19b30d302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ab8da7bb8a3f27d0894dc1de0aa977" id="r_ac5ab8da7bb8a3f27d0894dc1de0aa977"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#ac5ab8da7bb8a3f27d0894dc1de0aa977">duration</a> = 0.0</td></tr>
+<tr class="separator:ac5ab8da7bb8a3f27d0894dc1de0aa977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab851141ca2adf1caf0f1b52692011fac" id="r_ab851141ca2adf1caf0f1b52692011fac"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#ab851141ca2adf1caf0f1b52692011fac">remaining</a> = -1.0</td></tr>
+<tr class="separator:ab851141ca2adf1caf0f1b52692011fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae84e7cb251de6bbeec61bbe94c3e0e35" id="r_ae84e7cb251de6bbeec61bbe94c3e0e35"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#ae84e7cb251de6bbeec61bbe94c3e0e35">period</a> = 0.0</td></tr>
+<tr class="memdesc:ae84e7cb251de6bbeec61bbe94c3e0e35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copied periodic interval; the common container owns its accumulator.  <br /></td></tr>
+<tr class="separator:ae84e7cb251de6bbeec61bbe94c3e0e35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d3603b691d8a0e85bcd601cf9040f0" id="r_a82d3603b691d8a0e85bcd601cf9040f0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a82d3603b691d8a0e85bcd601cf9040f0">periodElapsed</a> = 0.0</td></tr>
+<tr class="memdesc:a82d3603b691d8a0e85bcd601cf9040f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elapsed time since the last periodic tick, owned by the instance lifecycle.  <br /></td></tr>
+<tr class="separator:a82d3603b691d8a0e85bcd601cf9040f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a82491345bf4d8325e250412efdbb07" id="r_a9a82491345bf4d8325e250412efdbb07"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a9a82491345bf4d8325e250412efdbb07">magnitude</a> = 0.0</td></tr>
+<tr class="separator:a9a82491345bf4d8325e250412efdbb07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcb8a252cffb180bfc5669798b47c686" id="r_afcb8a252cffb180bfc5669798b47c686"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#afcb8a252cffb180bfc5669798b47c686">stackCount</a> = 1</td></tr>
+<tr class="separator:afcb8a252cffb180bfc5669798b47c686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4cacf72e40882c7794f16c8deeb2be" id="r_a3b4cacf72e40882c7794f16c8deeb2be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1effects_1_1EffectPayload.html">EffectPayload</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a3b4cacf72e40882c7794f16c8deeb2be">payload</a></td></tr>
+<tr class="separator:a3b4cacf72e40882c7794f16c8deeb2be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac45ac592a9fcdb99b9e0dda084c6e8a" id="r_aac45ac592a9fcdb99b9e0dda084c6e8a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#aac45ac592a9fcdb99b9e0dda084c6e8a">tags</a></td></tr>
+<tr class="separator:aac45ac592a9fcdb99b9e0dda084c6e8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a396f4d714288afe0609fcd86b4de2478" id="r_a396f4d714288afe0609fcd86b4de2478"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1effects_1_1EffectPolicy.html">EffectPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a396f4d714288afe0609fcd86b4de2478">policy</a></td></tr>
+<tr class="memdesc:a396f4d714288afe0609fcd86b4de2478"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed application policy projected from the current definition.  <br /></td></tr>
+<tr class="separator:a396f4d714288afe0609fcd86b4de2478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13e0968e62b7e885132941962c766a35" id="r_a13e0968e62b7e885132941962c766a35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#af528b6450aef4dce9e9ad9211a6d20c3">eve::EffectId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a13e0968e62b7e885132941962c766a35">identity</a></td></tr>
+<tr class="memdesc:a13e0968e62b7e885132941962c766a35"><td class="mdescLeft">&#160;</td><td class="mdescRight">UUID-backed identity for persistence/event boundaries; nil in the legacy facade.  <br /></td></tr>
+<tr class="separator:a13e0968e62b7e885132941962c766a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50e5e020f3079cdb45679012cf4ae9e2" id="r_a50e5e020f3079cdb45679012cf4ae9e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a50e5e020f3079cdb45679012cf4ae9e2">definitionIdentity</a></td></tr>
+<tr class="memdesc:a50e5e020f3079cdb45679012cf4ae9e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical definition link used by the typed definition adapter.  <br /></td></tr>
+<tr class="separator:a50e5e020f3079cdb45679012cf4ae9e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91918ba3c4a682077f7034050c6c3d42" id="r_a91918ba3c4a682077f7034050c6c3d42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1effects_1_1EffectInstance.html#a91918ba3c4a682077f7034050c6c3d42">reloadPolicy</a> = <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a></td></tr>
+<tr class="separator:a91918ba3c4a682077f7034050c6c3d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One owned runtime effect fact. </p>
+<p>This object has lifecycle state only. It does not know how magnitude is settled, how tags affect an actor, or how a period causes damage/healing. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00125">125</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4bc54a56046c302b0d7783a34e817443" name="a4bc54a56046c302b0d7783a34e817443"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc54a56046c302b0d7783a34e817443">&#9670;&#160;</a></span>addTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::effects::EffectInstance::addTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a tag while retaining deterministic lexical order. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a> 第 <a class="el" href="EffectTypes_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="EffectTypes_8h_source.html#l00141">tags</a>.</p>
+
+</div>
+</div>
+<a id="a614c774a98a4ed75036696c1f383d6c7" name="a614c774a98a4ed75036696c1f383d6c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a614c774a98a4ed75036696c1f383d6c7">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::effects::EffectInstance::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether this effect has a tag. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a> 第 <a class="el" href="EffectTypes_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectTypes_8h_source.html#l00141">tags</a>.</p>
+
+</div>
+</div>
+<a id="a3be0efd9cef5bb989744a29b5550b6ea" name="a3be0efd9cef5bb989744a29b5550b6ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3be0efd9cef5bb989744a29b5550b6ea">&#9670;&#160;</a></span>removeTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::effects::EffectInstance::removeTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a tag; an absent tag is an explicit NoOp result. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a> 第 <a class="el" href="EffectTypes_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="EffectTypes_8h_source.html#l00141">tags</a>.</p>
+
+</div>
+</div>
+<a id="a3081c644741ffd2d2f3b2acc75cbb49b" name="a3081c644741ffd2d2f3b2acc75cbb49b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3081c644741ffd2d2f3b2acc75cbb49b">&#9670;&#160;</a></span>tagAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectInstance::tagAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a tag by lexical index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a> 第 <a class="el" href="EffectTypes_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="EffectTypes_8h_source.html#l00141">tags</a>.</p>
+
+</div>
+</div>
+<a id="aa4efbf9ceb75078e015ea4edfcd4586a" name="aa4efbf9ceb75078e015ea4edfcd4586a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4efbf9ceb75078e015ea4edfcd4586a">&#9670;&#160;</a></span>tagCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::effects::EffectInstance::tagCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of tags. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a> 第 <a class="el" href="EffectTypes_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectTypes_8h_source.html#l00141">tags</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a50e5e020f3079cdb45679012cf4ae9e2" name="a50e5e020f3079cdb45679012cf4ae9e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50e5e020f3079cdb45679012cf4ae9e2">&#9670;&#160;</a></span>definitionIdentity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> eve::effects::EffectInstance::definitionIdentity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical definition link used by the typed definition adapter. </p>
+<p>The legacy <code>type</code> string remains a one-way projection for old callers; new code checks this identity against the current definition generation. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="ac5ab8da7bb8a3f27d0894dc1de0aa977" name="ac5ab8da7bb8a3f27d0894dc1de0aa977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ab8da7bb8a3f27d0894dc1de0aa977">&#9670;&#160;</a></span>duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectInstance::duration = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a065d2c4f41ed53c5b0ef82ae279e6d90" name="a065d2c4f41ed53c5b0ef82ae279e6d90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a065d2c4f41ed53c5b0ef82ae279e6d90">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectInstance::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a13e0968e62b7e885132941962c766a35" name="a13e0968e62b7e885132941962c766a35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13e0968e62b7e885132941962c766a35">&#9670;&#160;</a></span>identity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#af528b6450aef4dce9e9ad9211a6d20c3">eve::EffectId</a> eve::effects::EffectInstance::identity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>UUID-backed identity for persistence/event boundaries; nil in the legacy facade. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a9a82491345bf4d8325e250412efdbb07" name="a9a82491345bf4d8325e250412efdbb07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a82491345bf4d8325e250412efdbb07">&#9670;&#160;</a></span>magnitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectInstance::magnitude = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a3b4cacf72e40882c7794f16c8deeb2be" name="a3b4cacf72e40882c7794f16c8deeb2be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4cacf72e40882c7794f16c8deeb2be">&#9670;&#160;</a></span>payload</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1effects_1_1EffectPayload.html">EffectPayload</a> eve::effects::EffectInstance::payload</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="ae84e7cb251de6bbeec61bbe94c3e0e35" name="ae84e7cb251de6bbeec61bbe94c3e0e35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae84e7cb251de6bbeec61bbe94c3e0e35">&#9670;&#160;</a></span>period</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectInstance::period = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copied periodic interval; the common container owns its accumulator. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a82d3603b691d8a0e85bcd601cf9040f0" name="a82d3603b691d8a0e85bcd601cf9040f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d3603b691d8a0e85bcd601cf9040f0">&#9670;&#160;</a></span>periodElapsed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectInstance::periodElapsed = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Elapsed time since the last periodic tick, owned by the instance lifecycle. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a396f4d714288afe0609fcd86b4de2478" name="a396f4d714288afe0609fcd86b4de2478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a396f4d714288afe0609fcd86b4de2478">&#9670;&#160;</a></span>policy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1effects_1_1EffectPolicy.html">EffectPolicy</a> eve::effects::EffectInstance::policy</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Typed application policy projected from the current definition. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a946212489655bf9185b129f19b30d302" name="a946212489655bf9185b129f19b30d302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a946212489655bf9185b129f19b30d302">&#9670;&#160;</a></span>priority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::effects::EffectInstance::priority = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a91918ba3c4a682077f7034050c6c3d42" name="a91918ba3c4a682077f7034050c6c3d42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91918ba3c4a682077f7034050c6c3d42">&#9670;&#160;</a></span>reloadPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> eve::effects::EffectInstance::reloadPolicy = <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="ab851141ca2adf1caf0f1b52692011fac" name="ab851141ca2adf1caf0f1b52692011fac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab851141ca2adf1caf0f1b52692011fac">&#9670;&#160;</a></span>remaining</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::effects::EffectInstance::remaining = -1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a41638247ab08a755049c455ade9ec798" name="a41638247ab08a755049c455ade9ec798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41638247ab08a755049c455ade9ec798">&#9670;&#160;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectInstance::source</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="afcb8a252cffb180bfc5669798b47c686" name="afcb8a252cffb180bfc5669798b47c686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcb8a252cffb180bfc5669798b47c686">&#9670;&#160;</a></span>stackCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::effects::EffectInstance::stackCount = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a> , 以及 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a0de1d7a26488f9305c93c181eb574ce7" name="a0de1d7a26488f9305c93c181eb574ce7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0de1d7a26488f9305c93c181eb574ce7">&#9670;&#160;</a></span>stackKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectInstance::stackKey</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="ad2e81b1799f592cbed37eb92ba228373" name="ad2e81b1799f592cbed37eb92ba228373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2e81b1799f592cbed37eb92ba228373">&#9670;&#160;</a></span>subject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectInstance::subject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="aac45ac592a9fcdb99b9e0dda084c6e8a" name="aac45ac592a9fcdb99b9e0dda084c6e8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac45ac592a9fcdb99b9e0dda084c6e8a">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::effects::EffectInstance::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectTypes_8cpp_source.html#l00081">addTag()</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00096">hasTag()</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00089">removeTag()</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00100">tagAt()</a> , 以及 <a class="el" href="EffectTypes_8cpp_source.html#l00098">tagCount()</a>.</p>
+
+</div>
+</div>
+<a id="ab1561a0faf866b1e4b98c21949ece71a" name="ab1561a0faf866b1e4b98c21949ece71a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1561a0faf866b1e4b98c21949ece71a">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::effects::EffectInstance::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a> 第 <a class="el" href="EffectTypes_8h_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/effects/<a class="el" href="EffectTypes_8h_source.html">EffectTypes.h</a></li>
+<li>src/modules/effects/<a class="el" href="EffectTypes_8cpp_source.html">EffectTypes.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

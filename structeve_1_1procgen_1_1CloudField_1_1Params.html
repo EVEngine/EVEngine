@@ -1,0 +1,427 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::CloudField::Params结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html">Params</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1CloudField_1_1Params-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::CloudField::Params结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="CloudField_8h_source.html">CloudField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a07c791e9fc1d8ef3ae21fe2ef0ddc79a" id="r_a07c791e9fc1d8ef3ae21fe2ef0ddc79a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a07c791e9fc1d8ef3ae21fe2ef0ddc79a">seed</a> = 1337</td></tr>
+<tr class="separator:a07c791e9fc1d8ef3ae21fe2ef0ddc79a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa73c4ffb77ba10a272d0e38b14d41e1a" id="r_aa73c4ffb77ba10a272d0e38b14d41e1a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa73c4ffb77ba10a272d0e38b14d41e1a">worldScale</a> = 96.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa73c4ffb77ba10a272d0e38b14d41e1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a923955fa65b736e1601df5a30af00d60" id="r_a923955fa65b736e1601df5a30af00d60"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a923955fa65b736e1601df5a30af00d60">coverage</a> = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a923955fa65b736e1601df5a30af00d60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34453a733f5c425647a584288680fa18" id="r_a34453a733f5c425647a584288680fa18"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a34453a733f5c425647a584288680fa18">softness</a> = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a34453a733f5c425647a584288680fa18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac528d34926621053feccd7be5414d5e6" id="r_ac528d34926621053feccd7be5414d5e6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#ac528d34926621053feccd7be5414d5e6">detail</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac528d34926621053feccd7be5414d5e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66cad85e8098a37f4f24d67bf7e026bb" id="r_a66cad85e8098a37f4f24d67bf7e026bb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a66cad85e8098a37f4f24d67bf7e026bb">windSpeed</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a66cad85e8098a37f4f24d67bf7e026bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78e7080c248626b181097b89a7857ace" id="r_a78e7080c248626b181097b89a7857ace"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a78e7080c248626b181097b89a7857ace">windAngle</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a78e7080c248626b181097b89a7857ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6edbdec4b12dd2aea6a1cf98a75d8940" id="r_a6edbdec4b12dd2aea6a1cf98a75d8940"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a6edbdec4b12dd2aea6a1cf98a75d8940">octaves</a> = 4</td></tr>
+<tr class="separator:a6edbdec4b12dd2aea6a1cf98a75d8940"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56fc2bbcfe893638ced9bf5dc0dcd57b" id="r_a56fc2bbcfe893638ced9bf5dc0dcd57b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a56fc2bbcfe893638ced9bf5dc0dcd57b">lacunarity</a> = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a56fc2bbcfe893638ced9bf5dc0dcd57b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52c7b58d77cb81464eff3afbbbaff031" id="r_a52c7b58d77cb81464eff3afbbbaff031"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a52c7b58d77cb81464eff3afbbbaff031">gain</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a52c7b58d77cb81464eff3afbbbaff031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bc3e6c7b39114b1bf10e0e958ee50dd" id="r_a1bc3e6c7b39114b1bf10e0e958ee50dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a1bc3e6c7b39114b1bf10e0e958ee50dd">warp</a> = 2.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1bc3e6c7b39114b1bf10e0e958ee50dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6e49795c734d4405c71b1ac2b53688f" id="r_aa6e49795c734d4405c71b1ac2b53688f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa6e49795c734d4405c71b1ac2b53688f">seamless</a> = true</td></tr>
+<tr class="separator:aa6e49795c734d4405c71b1ac2b53688f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a923955fa65b736e1601df5a30af00d60" name="a923955fa65b736e1601df5a30af00d60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a923955fa65b736e1601df5a30af00d60">&#9670;&#160;</a></span>coverage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::coverage = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00070">eve::procgen::CloudField::setCoverage()</a>.</p>
+
+</div>
+</div>
+<a id="ac528d34926621053feccd7be5414d5e6" name="ac528d34926621053feccd7be5414d5e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac528d34926621053feccd7be5414d5e6">&#9670;&#160;</a></span>detail</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::detail = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00072">eve::procgen::CloudField::setDetail()</a>.</p>
+
+</div>
+</div>
+<a id="a52c7b58d77cb81464eff3afbbbaff031" name="a52c7b58d77cb81464eff3afbbbaff031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52c7b58d77cb81464eff3afbbbaff031">&#9670;&#160;</a></span>gain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::gain = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a>.</p>
+
+</div>
+</div>
+<a id="a56fc2bbcfe893638ced9bf5dc0dcd57b" name="a56fc2bbcfe893638ced9bf5dc0dcd57b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56fc2bbcfe893638ced9bf5dc0dcd57b">&#9670;&#160;</a></span>lacunarity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::lacunarity = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a>.</p>
+
+</div>
+</div>
+<a id="a6edbdec4b12dd2aea6a1cf98a75d8940" name="a6edbdec4b12dd2aea6a1cf98a75d8940"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6edbdec4b12dd2aea6a1cf98a75d8940">&#9670;&#160;</a></span>octaves</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::CloudField::Params::octaves = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00077">eve::procgen::CloudField::setOctaves()</a>.</p>
+
+</div>
+</div>
+<a id="aa6e49795c734d4405c71b1ac2b53688f" name="aa6e49795c734d4405c71b1ac2b53688f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6e49795c734d4405c71b1ac2b53688f">&#9670;&#160;</a></span>seamless</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::CloudField::Params::seamless = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00079">eve::procgen::CloudField::setSeamless()</a>.</p>
+
+</div>
+</div>
+<a id="a07c791e9fc1d8ef3ae21fe2ef0ddc79a" name="a07c791e9fc1d8ef3ae21fe2ef0ddc79a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c791e9fc1d8ef3ae21fe2ef0ddc79a">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::CloudField::Params::seed = 1337</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00068">eve::procgen::CloudField::setSeed()</a>.</p>
+
+</div>
+</div>
+<a id="a34453a733f5c425647a584288680fa18" name="a34453a733f5c425647a584288680fa18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34453a733f5c425647a584288680fa18">&#9670;&#160;</a></span>softness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::softness = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00071">eve::procgen::CloudField::setSoftness()</a>.</p>
+
+</div>
+</div>
+<a id="a1bc3e6c7b39114b1bf10e0e958ee50dd" name="a1bc3e6c7b39114b1bf10e0e958ee50dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc3e6c7b39114b1bf10e0e958ee50dd">&#9670;&#160;</a></span>warp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::warp = 2.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00078">eve::procgen::CloudField::setWarp()</a>.</p>
+
+</div>
+</div>
+<a id="a78e7080c248626b181097b89a7857ace" name="a78e7080c248626b181097b89a7857ace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78e7080c248626b181097b89a7857ace">&#9670;&#160;</a></span>windAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::windAngle = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00073">eve::procgen::CloudField::setWind()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00081">eve::procgen::CloudField::windVelocity()</a>.</p>
+
+</div>
+</div>
+<a id="a66cad85e8098a37f4f24d67bf7e026bb" name="a66cad85e8098a37f4f24d67bf7e026bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66cad85e8098a37f4f24d67bf7e026bb">&#9670;&#160;</a></span>windSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::windSpeed = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00073">eve::procgen::CloudField::setWind()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00081">eve::procgen::CloudField::windVelocity()</a>.</p>
+
+</div>
+</div>
+<a id="aa73c4ffb77ba10a272d0e38b14d41e1a" name="aa73c4ffb77ba10a272d0e38b14d41e1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa73c4ffb77ba10a272d0e38b14d41e1a">&#9670;&#160;</a></span>worldScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::CloudField::Params::worldScale = 96.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CloudField_8h_source.html">CloudField.h</a> 第 <a class="el" href="CloudField_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a> , 以及 <a class="el" href="CloudField_8cpp_source.html#l00069">eve::procgen::CloudField::setWorldScale()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/texture/<a class="el" href="CloudField_8h_source.html">CloudField.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

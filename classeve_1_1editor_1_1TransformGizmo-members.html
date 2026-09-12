@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">TransformGizmo</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::editor::TransformGizmo 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a8b37e212cfa7c445eb37b285d0dc1434">beginDrag</a>(const std::string &amp;axis, float ox, float oy, float oz, float dx, float dy, float dz)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a5d0dcccd2994566d6d888d4de036e43f">endDrag</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aa6975b58071d8b07f00a83d3caec7515">getActiveAxis</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad8bddad7c66974daae4b479efa992b38">getBoundsMaxX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#afccb818a7811d8434ad4efbefa8563e0">getBoundsMaxY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a6de09f6c6983c411a0afa353d317ae4a">getBoundsMaxZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a57e156fa08f7f58cdc04fabd39ac2bb5">getBoundsMinX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a15c8154a690df7486e666d91bc88b21e">getBoundsMinY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a34253f89ea434d095a0657c7f65e4afc">getBoundsMinZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a1435b7408737c605f06a366a8edd458e">getHoverAxis</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a6f9f466ab8b83ef488e4008dbab5c4d9">getMatrix</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a5cdc71ed4659a643de60ad306c5961cb">getMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ae8246b8fabaeb789148ff6ac373a7496">getPartAxis</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ac2b32c66de62c18b70018a6cce9fb9d1">getPartColorA</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a85c21470dad78023c863bd0ce205ce8b">getPartColorB</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a7c3ae1e1eab129e90c6695afaaf48adb">getPartColorG</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a2532ed9f26b11d9bc306dd6b17f498c7">getPartColorR</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#afdf1c83b7aa72e8b1a59987334800074">getPartCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a429959af02ef251ba7a34aadfbe5b7d8">getPartDirX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a0926ae49b78770a09e1dbdba417b5ef0">getPartDirY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4e21d31caa21e1728194b9fb787491ac">getPartDirZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a54875f132e5c99b3f0ad6d3f9a4e454e">getPartKind</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ab3802c21f888c0ddb5fa79be081ef995">getPartLength</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#acda927e636d46cd3530e6ba1fe0028f1">getPartOriginX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a9d33b6ce7c58f9dbe2edf9a502c58326">getPartOriginY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#af290f43e53e448b88bb01934f4e976b2">getPartOriginZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a67427066ab0f01cf02925497e090f84e">getPartRadius</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#afe167f4e7226243fb3bb3f8d1a3e9878">getPositionX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a2947fffe31eb0512d1328368e7cecb12">getPositionY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aa5dfaf4267399400393908a9174bac13">getPositionZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4d08c2ba3c8ae005650a8e4de0b30036">getRotationX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad8f01b432fea4cc9915369f6d5948caf">getRotationY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a286dfa92da62b70cdcba4bdce4781526">getRotationZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aab3737e49b5a23b4677183b5be154990">getScaleX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ab997df158a8cba26627589a089cf09b2">getScaleY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aa077f649e2f9126b0faac27414cd6043">getScaleZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a44ebbe0e01159f65a37856472c44b16b">getSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a7f50daed92bef0a8db45e288bd35eb49">getSnapRotate</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#adb30a3019525665b715eb638b84c9135">getSnapScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#acd00c941fb07c7c4f55a77561e4dec42">getSnapTranslateX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a1362a5b81834b039ec374a3d4a405b62">getSnapTranslateY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a1ff5898a70b71341363d649f8ff066be">getSnapTranslateZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#adb6e3374832ebe373c4de83ce9580cab">getSpace</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a31f7c1339117e3cd9ed7061b3382d40d">isDragging</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4a80a061c941d1ce8cc6284ed65aec6d">isHovered</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a49a82f7687104a21f2af861e631e89f7">pick</a>(float ox, float oy, float oz, float dx, float dy, float dz)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a323b3495282a2029458b2651795d9763">rebuildParts</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a83a29fe44c4dcdbd4f4b4169d72353ad">setBounds</a>(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad298d5e26d5cfb55e107fdae4f4fb3f3">setMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aba8e158ad91989a8fdfd7bc3622b57c8">setPosition</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad04cc1e6e4a58b10ab87a916ef5d227c">setRotationEuler</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#add06565a3658a0888c7f7d6df7ed4d76">setScale</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a7a86c1e8a8421fc515e019343e8bc36e">setSize</a>(float size)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a22c48e00f6c34f7085a25ed2a7658796">setSnapRotate</a>(float degrees)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a16e20da91572858da4e91732d94a8304">setSnapScale</a>(float s)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a9e565e5672514c6b0d80317168a36968">setSnapTranslate</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#affe9b7f451bc976163f54224936654dc">setSpace</a>(const std::string &amp;space)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a470a4433f5ad5403543bd49f6dba7c32">TransformGizmo</a>()</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ac45a0997ff8e93087a43f578550cfb58">updateDrag</a>(float ox, float oy, float oz, float dx, float dy, float dz)</td><td class="entry"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

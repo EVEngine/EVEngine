@@ -1,0 +1,421 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::SurfaceDropletParams结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html">SurfaceDropletParams</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1fluids_1_1SurfaceDropletParams-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::SurfaceDropletParams结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Material and integration parameters for surface-bound droplets.  
+ <a href="structeve_1_1fluids_1_1SurfaceDropletParams.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab9a83be5613aacaf832fcdcedb25b900" id="r_ab9a83be5613aacaf832fcdcedb25b900"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#ab9a83be5613aacaf832fcdcedb25b900">gravity</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, -9.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="memdesc:ab9a83be5613aacaf832fcdcedb25b900"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space gravity in units per second squared.  <br /></td></tr>
+<tr class="separator:ab9a83be5613aacaf832fcdcedb25b900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc55e114bdfc315c2338707eedec8104" id="r_acc55e114bdfc315c2338707eedec8104"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#acc55e114bdfc315c2338707eedec8104">friction</a> = 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:acc55e114bdfc315c2338707eedec8104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exponential damping of velocity relative to the surface.  <br /></td></tr>
+<tr class="separator:acc55e114bdfc315c2338707eedec8104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0b374b1406d2c3f2f8c8b1d1d6d214f" id="r_af0b374b1406d2c3f2f8c8b1d1d6d214f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#af0b374b1406d2c3f2f8c8b1d1d6d214f">maxSpeed</a> = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:af0b374b1406d2c3f2f8c8b1d1d6d214f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum relative droplet speed.  <br /></td></tr>
+<tr class="separator:af0b374b1406d2c3f2f8c8b1d1d6d214f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a374e7c31c719e029636bb52f9a7df6f1" id="r_a374e7c31c719e029636bb52f9a7df6f1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a374e7c31c719e029636bb52f9a7df6f1">adhesionAcceleration</a> = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a374e7c31c719e029636bb52f9a7df6f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum outward acceleration retained by adhesion.  <br /></td></tr>
+<tr class="separator:a374e7c31c719e029636bb52f9a7df6f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a2aac80721fab43c5584442ff04d87" id="r_a02a2aac80721fab43c5584442ff04d87"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a02a2aac80721fab43c5584442ff04d87">maxCrossings</a> = 16</td></tr>
+<tr class="memdesc:a02a2aac80721fab43c5584442ff04d87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of triangle edges crossed by one step.  <br /></td></tr>
+<tr class="separator:a02a2aac80721fab43c5584442ff04d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a946f5829604e173c8b451fd3456131be" id="r_a946f5829604e173c8b451fd3456131be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a946f5829604e173c8b451fd3456131be">contactAngleDegrees</a> = 72.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a946f5829604e173c8b451fd3456131be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Water contact angle in degrees, used to derive a visible cap radius.  <br /></td></tr>
+<tr class="separator:a946f5829604e173c8b451fd3456131be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a119b0f01b930c5d57d60bee80ec8bccf" id="r_a119b0f01b930c5d57d60bee80ec8bccf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a119b0f01b930c5d57d60bee80ec8bccf">mergeRadiusScale</a> = 0.72<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a119b0f01b930c5d57d60bee80ec8bccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiplier for the sum of cap radii used by droplet merging.  <br /></td></tr>
+<tr class="separator:a119b0f01b930c5d57d60bee80ec8bccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93117a9d8b6c741e30889f67547503f2" id="r_a93117a9d8b6c741e30889f67547503f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a93117a9d8b6c741e30889f67547503f2">trailDeposition</a> = 0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a93117a9d8b6c741e30889f67547503f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wet-film amount deposited per world-space unit travelled.  <br /></td></tr>
+<tr class="separator:a93117a9d8b6c741e30889f67547503f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d5eea60e51bbd66da4bea9a25c2bd72" id="r_a4d5eea60e51bbd66da4bea9a25c2bd72"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a4d5eea60e51bbd66da4bea9a25c2bd72">airDrag</a> = 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a4d5eea60e51bbd66da4bea9a25c2bd72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Air drag applied after a droplet leaves the surface.  <br /></td></tr>
+<tr class="separator:a4d5eea60e51bbd66da4bea9a25c2bd72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a005fa732cb8c333156d02915256cca57" id="r_a005fa732cb8c333156d02915256cca57"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html#a005fa732cb8c333156d02915256cca57">reattachDistance</a> = 0.035<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a005fa732cb8c333156d02915256cca57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum distance at which an airborne droplet can reattach.  <br /></td></tr>
+<tr class="separator:a005fa732cb8c333156d02915256cca57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Material and integration parameters for surface-bound droplets. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a374e7c31c719e029636bb52f9a7df6f1" name="a374e7c31c719e029636bb52f9a7df6f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a374e7c31c719e029636bb52f9a7df6f1">&#9670;&#160;</a></span>adhesionAcceleration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::adhesionAcceleration = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum outward acceleration retained by adhesion. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a4d5eea60e51bbd66da4bea9a25c2bd72" name="a4d5eea60e51bbd66da4bea9a25c2bd72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d5eea60e51bbd66da4bea9a25c2bd72">&#9670;&#160;</a></span>airDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::airDrag = 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Air drag applied after a droplet leaves the surface. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a946f5829604e173c8b451fd3456131be" name="a946f5829604e173c8b451fd3456131be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a946f5829604e173c8b451fd3456131be">&#9670;&#160;</a></span>contactAngleDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::contactAngleDegrees = 72.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Water contact angle in degrees, used to derive a visible cap radius. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00015">eve::fluids::SurfaceDropletSimulation::dropletRadius()</a> , 以及 <a class="el" href="SurfaceFluidRenderData_8cpp_source.html#l00010">eve::fluids::SurfaceFluidRenderData::update()</a>.</p>
+
+</div>
+</div>
+<a id="acc55e114bdfc315c2338707eedec8104" name="acc55e114bdfc315c2338707eedec8104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc55e114bdfc315c2338707eedec8104">&#9670;&#160;</a></span>friction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::friction = 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exponential damping of velocity relative to the surface. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="ab9a83be5613aacaf832fcdcedb25b900" name="ab9a83be5613aacaf832fcdcedb25b900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9a83be5613aacaf832fcdcedb25b900">&#9670;&#160;</a></span>gravity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::SurfaceDropletParams::gravity {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, -9.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space gravity in units per second squared. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a02a2aac80721fab43c5584442ff04d87" name="a02a2aac80721fab43c5584442ff04d87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02a2aac80721fab43c5584442ff04d87">&#9670;&#160;</a></span>maxCrossings</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::SurfaceDropletParams::maxCrossings = 16</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum number of triangle edges crossed by one step. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="af0b374b1406d2c3f2f8c8b1d1d6d214f" name="af0b374b1406d2c3f2f8c8b1d1d6d214f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0b374b1406d2c3f2f8c8b1d1d6d214f">&#9670;&#160;</a></span>maxSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::maxSpeed = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum relative droplet speed. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a119b0f01b930c5d57d60bee80ec8bccf" name="a119b0f01b930c5d57d60bee80ec8bccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a119b0f01b930c5d57d60bee80ec8bccf">&#9670;&#160;</a></span>mergeRadiusScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::mergeRadiusScale = 0.72<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Multiplier for the sum of cap radii used by droplet merging. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a005fa732cb8c333156d02915256cca57" name="a005fa732cb8c333156d02915256cca57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a005fa732cb8c333156d02915256cca57">&#9670;&#160;</a></span>reattachDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::reattachDistance = 0.035<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum distance at which an airborne droplet can reattach. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a93117a9d8b6c741e30889f67547503f2" name="a93117a9d8b6c741e30889f67547503f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93117a9d8b6c741e30889f67547503f2">&#9670;&#160;</a></span>trailDeposition</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::SurfaceDropletParams::trailDeposition = 0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wet-film amount deposited per world-space unit travelled. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a> 第 <a class="el" href="SurfaceDropletSimulation_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SurfaceFluidRuntime_8cpp_source.html#l00009">eve::fluids_editing::SurfaceFluidRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="SurfaceDropletSimulation_8h_source.html">SurfaceDropletSimulation.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

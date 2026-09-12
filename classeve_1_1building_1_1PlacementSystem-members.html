@@ -1,0 +1,265 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::building::PlacementSystem 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af6b9e7355333aef3621191a4d19dba46">canonicalEdge</a>(int cellX, int cellY, const std::string &amp;direction)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#afbaded2d0db2ecccf1ea7454a707eb49">canPlace</a>(PlacementWorld *world, const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.f, int excludeInstanceId=0, std::string *reason=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab3cc6d55b15cda7a93f5097118836efb">canPlaceCorner</a>(PlacementWorld *world, const std::string &amp;buildingId, int vertexX, int vertexY, int excludeInstanceId=0, std::string *reason=nullptr, int level=std::numeric_limits&lt; int &gt;::min())</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#affa785d9c52440131109d4a1cfb4f29c">canPlaceEdge</a>(PlacementWorld *world, const std::string &amp;buildingId, int cellX, int cellY, const std::string &amp;direction, int excludeInstanceId=0, std::string *reason=nullptr, int level=std::numeric_limits&lt; int &gt;::min())</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ad316dc75f907536d8d36417a81fc4e66">canPlaceElev</a>(PlacementWorld *world, const std::string &amp;buildingId, int cellX, int cellY, float elevation, float rotationDeg=0.f, int excludeInstanceId=0, std::string *reason=nullptr, int level=std::numeric_limits&lt; int &gt;::min())</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9186d4ffcc8feb2655646bea75563081">canPlaceFree</a>(PlacementWorld *world, const std::string &amp;buildingId, float worldX, float worldY, int excludeInstanceId=0, std::string *reason=nullptr, int level=std::numeric_limits&lt; int &gt;::min(), float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95c2832402a5cdaddc0bdf707da7be64">ChangeHook</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7979a6b899b5df3d4b8493248cebf1e8">clearBuildings</a>(PlacementWorld *world)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#abcd7a3d4f94af5d91347ae271de5eae5">clearEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a503a39a84fa9f96bf23a9563ea180c19">containsFreePoint</a>(const PlacedBuilding &amp;placed, float worldX, float worldY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ace41b50b6b45945b5ce0833e82cc9fcc">edgeConnectionMask</a>(const PlacementWorld &amp;world, int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a5efd1580de08f6a96e333bf21d892820">EdgeCurvePoint</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7e95a5dc2f3f87f3ca2ea851789e264e">edgeVariant</a>(const PlacementWorld &amp;world, int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a1089b47ff7780441c17471b1e4433f31">effectiveFootprint</a>(const BuildingDefinition &amp;def, float rotationDeg, int *outW, int *outH)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a8c7254a109d2a20c2b480006215178e6">ensureBuiltins</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6f19b3d011ee97948ffea9b43ec73225">events</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9985510a581f8e988ab5d15d4c69bf29">foreachFootprintCell</a>(const BuildingDefinition &amp;def, int originCellX, int originCellY, float rotationDeg, const std::function&lt; bool(int cx, int cy)&gt; &amp;fn)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7d4b8cf2530be33d6b3536c64251db4b">getPlaneSurfaceHeight</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a374118a2c0cb35d1c0fdf7dd8555cda8">Ghost</a></td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac88b93d718b337566b0cfac3be260751">hasChangeHook</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab6d8c3c4aa6ef4f2b90087e2b43359ec">hasSnapRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a92f87250e2449d9aadafafcba344ce2b">hasSurface</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ada9cc58c5d2c21e3c5591d4a8ff09116">hasValidateRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6ca0cb67f111123cf1066c92c3267507">inst</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac10c72900765ab6aaec541d6cef4c093">moveBuilding</a>(PlacementWorld *world, int instanceId, int cellX, int cellY, float rotationDeg=-1.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aeb61c5634a4617af0e3e9b278839eadc">moveBuildingResult</a>(PlacementWorld *world, int instanceId, int cellX, int cellY, float rotationDeg=-1.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a82291df1dd647a396b61376d201f54e9">moveCornerResult</a>(PlacementWorld *world, int instanceId, int vertexX, int vertexY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab188fc191b31cfcc9c386ff7f012b324">moveEdgeResult</a>(PlacementWorld *world, int instanceId, int cellX, int cellY, const std::string &amp;direction)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aa90e8f71d31c509ae320a9c8d1f851cb">moveFreeResult</a>(PlacementWorld *world, int instanceId, float worldX, float worldY, float elevation, float rotationDeg)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a4c5c6dd6d086f3aa0a378dc5811b2a64">moveFreeSurfaceResult</a>(PlacementWorld *world, int instanceId, const SurfacePatch &amp;patch, float rotationDeg)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af41b098ccd42631923d8d2d8247bf41f">nextInstanceId</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9bf0fe3d81c8af2977b71958b92e3ce9">normalizeRotation</a>(const std::string &amp;buildingId, float rotationDeg)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ad49fc9351318e2466335423d2b2d7901">PatternKind</a> 枚举名称</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a2226bf439e27d6301594cb5a24ebb4d0">placeAt</a>(PlacementWorld *world, const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac91c33310d07f9187ba67e337cba7b22">placeAtWorld</a>(PlacementWorld *world, const std::string &amp;buildingId, float worldX, float worldY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a52a597b6727997f476c275647bf1bd04">placeAtWorld3D</a>(PlacementWorld *world, const std::string &amp;buildingId, float worldX, float worldY, float worldZ, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a07badd9ff3021d6dcee80cf3e34185b8">placeBrush</a>(PlacementWorld *world, const std::string &amp;buildingId, int centerCellX, int centerCellY, int radius, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a3befaabb93dc97771a1e86651b1f4a4c">placeCorner</a>(PlacementWorld *world, const std::string &amp;buildingId, int vertexX, int vertexY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ace7190462ffc9af6417d89e7266a0c1d">placeCornerResult</a>(PlacementWorld *world, const std::string &amp;buildingId, int vertexX, int vertexY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aea038523f16830dbd45b3b35c1336217">placeEdge</a>(PlacementWorld *world, const std::string &amp;buildingId, int cellX, int cellY, const std::string &amp;direction)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a50fa7832e2108746ea48b4925a069991">placeEdgeCubicBezier</a>(PlacementWorld *world, const std::string &amp;buildingId, const std::vector&lt; EdgeCurvePoint &gt; &amp;controlPoints, int subdivisions)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9286ccdad592661c24aeb20e4851a143">placeEdgeCubicBezierOnSurface</a>(PlacementWorld *world, const std::string &amp;buildingId, const std::vector&lt; EdgeCurvePoint &gt; &amp;controlPoints, int subdivisions, const std::string &amp;surfaceName)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a0a8df2e0535427ce8474424545f6086e">placeEdgeLine</a>(PlacementWorld *world, const std::string &amp;buildingId, int startVertexX, int startVertexY, int endVertexX, int endVertexY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6aa531bf18ab71d1e09059968666dba5">placeEdgePath</a>(PlacementWorld *world, const std::string &amp;buildingId, const std::vector&lt; CornerAddress &gt; &amp;vertices)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a36a215d447c046bed6d1c96cc6f28490">placeFree</a>(PlacementWorld *world, const std::string &amp;buildingId, float worldX, float worldY, float elevation=0.f, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aab59af31ee79cabcf7f368dfb7720049">placeFreeResult</a>(PlacementWorld *world, const std::string &amp;buildingId, float worldX, float worldY, float elevation=0.f, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a44b5ba538a86c730c2998f8a3fc00541">placeFreeSurfaceResult</a>(PlacementWorld *world, const std::string &amp;buildingId, const SurfacePatch &amp;patch, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ae9928f900f97c93a0338b5c3b2ead232">placeGhost</a>(PlacementWorld *world, Ghost *ghost)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a15440449d8c2028992296a33a9078025">placePattern</a>(PlacementWorld *world, const std::string &amp;buildingId, const PatternRequest &amp;request)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6c3d5566e4dfef84ddb78fb9801380ca">placeRectangle</a>(PlacementWorld *world, const std::string &amp;buildingId, int minCellX, int minCellY, int maxCellX, int maxCellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af732da7073b4a745ea008c30f7fc02cb">placeRectangleOutline</a>(PlacementWorld *world, const std::string &amp;buildingId, int minCellX, int minCellY, int maxCellX, int maxCellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af275de13332d09138a85471101be3ec8">pollEvents</a>(std::vector&lt; BuildingChangeEvent &gt; &amp;out)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ae048658995ad1712a5bc1d37569213b1">previewBrush</a>(PlacementWorld *world, const std::string &amp;buildingId, int centerCellX, int centerCellY, int radius, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a40c72be26f00426816b542dc9ecf1cad">previewEdgeCubicBezier</a>(PlacementWorld *world, const std::string &amp;buildingId, const std::vector&lt; EdgeCurvePoint &gt; &amp;controlPoints, int subdivisions)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a42a57a7c6742cfbdce5e35f7eab79cac">previewEdgePath</a>(PlacementWorld *world, const std::string &amp;buildingId, const std::vector&lt; CornerAddress &gt; &amp;vertices)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a06acdde5865d08e7ddc732d400904295">previewPattern</a>(PlacementWorld *world, const std::string &amp;buildingId, const PatternRequest &amp;request)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a3ad2e859593bf63e255d54d782d7908f">previewRectangle</a>(PlacementWorld *world, const std::string &amp;buildingId, int minCellX, int minCellY, int maxCellX, int maxCellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a4ae66579e55cdd85da40bcd5b0c7152c">previewRectangleOutline</a>(PlacementWorld *world, const std::string &amp;buildingId, int minCellX, int minCellY, int maxCellX, int maxCellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95e6aabf5cdd1fbda556126780f93122">pushEvent</a>(BuildingChangeEvent ev)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac61c6e8e2a21fa63248317df11427f64">rebuildStructuralLinksResult</a>(PlacementWorld *world)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#afc2a7886817d266988f7b001a8b933b4">registerChangeHook</a>(const std::string &amp;name, ChangeHook fn)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a695304f1619049801112ed8999afb47c">registerHeightfieldSurface</a>(const std::string &amp;name, std::shared_ptr&lt; const HeightfieldSurface &gt; surface)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ad6868d757a0cb84db8f0e814c18ee4e2">registerSnapRule</a>(const std::string &amp;name, SnapFn fn)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aee49bb93e30f01e896dda460e35dcd67">registerStaticMeshSurface</a>(const std::string &amp;name, std::shared_ptr&lt; const StaticMeshSurface &gt; surface)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a502e54b80ab206803a13ff48d6e97a5d">registerSurface</a>(const std::string &amp;name, SurfaceFn fn)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a41d2bd7c493c6f2870414ab17a448e0f">registerSurfaceProvider</a>(const std::string &amp;name, SurfaceProviderFn fn)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aff9139063b97593d8f4d667600dd856b">registerValidateRule</a>(const std::string &amp;name, ValidateFn fn)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab0f6e552f15525212296e95a4e59d8c3">removeBuilding</a>(PlacementWorld *world, int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a59ad27fe17619e76c7971ea0d9fe0f0e">removeBuildingCascade</a>(PlacementWorld *world, int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a965c054485ba589e509516015187730b">removeBuildingCascadeResult</a>(PlacementWorld *world, int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aaeec549357ae29957becc78f00c6d5b3">replaceBuildingResult</a>(PlacementWorld *world, int instanceId, const std::string &amp;replacementBuildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ae23d144f549ae9af9fd0eca29afbb36c">restoreEdgeCurveGroupExact</a>(PlacementWorld *world, const EdgeCurveGroup &amp;group, const std::vector&lt; PlacedBuilding &gt; &amp;members)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a4b242d1f9c87fd75f3118e7a1d64f654">restoreExact</a>(PlacementWorld *world, const PlacedBuilding &amp;placed, std::string *reason=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a1aedaf06f61f693c32013c702cb7e836">sampleEdgeCubicBezier</a>(const std::vector&lt; EdgeCurvePoint &gt; &amp;controlPoints, int subdivisions)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a01f53eba78b13c286bceb0c644f84bbd">sampleEdgeCurveSurface</a>(const PlacementWorld &amp;world, const std::string &amp;surfaceName, const std::vector&lt; EdgeCurvePoint &gt; &amp;controlPoints, int subdivisions)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9a19071a184bb5c70cbcf48463a10342">sampleSurface</a>(const PlacementWorld &amp;world, const std::string &amp;name, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab508ad798c82f1579e2097a5b5cb3ef2">sampleSurfacePatch</a>(const PlacementWorld &amp;world, const std::string &amp;buildingId, const std::string &amp;surfaceName, float x, float y, float rotationDegrees=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a85dfd7acb73dc24781f8c1cd5beded69">setPlaneSurfaceHeight</a>(float h)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a06975edb41abf054f1c0d29346b41b4a">snap</a>(const PlacementWorld &amp;world, const std::string &amp;buildingId, float worldX, float worldY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a678db70cd36da3ed3201fd4ed8fb38b5">snap3D</a>(const PlacementWorld &amp;world, const std::string &amp;buildingId, float worldX, float worldY, float worldZ)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7cd5fadca52dab645836c2610c35a496">SnapFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#afd0a9390339efc4eae10348d6450ed88">snapWithMode</a>(const PlacementWorld &amp;world, const std::string &amp;mode, float worldX, float worldY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a34946f4d245338065c52709753e7e65e">SurfaceFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7367c85cf3c4fd04b372e5f005986ffd">surfaceHit</a>(const PlacementWorld &amp;world, const std::string &amp;name, float x, float y, PlacementHit *hit)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a3b9d32012a9265350062f48a737a84cd">surfaceNames</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a8980a43896a56c5b618607ccba6faa16">SurfaceProviderFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7f9b6486482168b15585eef437362975">unregisterChangeHook</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af826a8721fab61eaab90b6aa1efcfae0">unregisterSnapRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac0388b5302000521b0e4cfac2ebc05c4">unregisterSurface</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af2ec3cc59e6e5c8849261f5347cb651f">unregisterValidateRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a014401530a7b411e332554af8f0e1ce1">ValidateFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

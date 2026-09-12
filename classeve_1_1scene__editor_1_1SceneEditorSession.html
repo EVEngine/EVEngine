@@ -1,0 +1,1175 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editor::SceneEditorSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editor.html">scene_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1scene__editor_1_1SceneEditorSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editor::SceneEditorSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Composable scene command/history host with no UI or renderer dependency. Owns its target, command registry and history. Host supplies selection, input, rendering and file I/O; snapshot JSON contains hierarchy/TRS only. @thread Owner thread only. Live targets may notify host observers after publication, without locks. Observers must not destroy or reenter the active session.  
+ <a href="classeve_1_1scene__editor_1_1SceneEditorSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SceneEditorSession_8h_source.html">SceneEditorSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editor_1_1SceneEditorSession_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5e31d504aed43bcb41bfaa58127fd3eb" id="r_a5e31d504aed43bcb41bfaa58127fd3eb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a5e31d504aed43bcb41bfaa58127fd3eb">SceneEditorSession</a> (std::string targetId)</td></tr>
+<tr class="memdesc:a5e31d504aed43bcb41bfaa58127fd3eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Own a document target with a nonempty host-local identity.  <br /></td></tr>
+<tr class="separator:a5e31d504aed43bcb41bfaa58127fd3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf0989abce6617aabf3688b07a348c14" id="r_adf0989abce6617aabf3688b07a348c14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#adf0989abce6617aabf3688b07a348c14">SceneEditorSession</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">scene_editing::SceneTargetBase</a> &gt; <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:adf0989abce6617aabf3688b07a348c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer a non-null scene target into this session; target ownership is exclusive.  <br /></td></tr>
+<tr class="separator:adf0989abce6617aabf3688b07a348c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedf9d448dd4c91d3c4163d103169550c" id="r_aedf9d448dd4c91d3c4163d103169550c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#aedf9d448dd4c91d3c4163d103169550c">~SceneEditorSession</a> ()</td></tr>
+<tr class="separator:aedf9d448dd4c91d3c4163d103169550c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad07b7a160d8a96013a4a3149215473c1" id="r_ad07b7a160d8a96013a4a3149215473c1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ad07b7a160d8a96013a4a3149215473c1">SceneEditorSession</a> (const <a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> &amp;)=delete</td></tr>
+<tr class="separator:ad07b7a160d8a96013a4a3149215473c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17bc31722d39ec01b34a528a1d576d01" id="r_a17bc31722d39ec01b34a528a1d576d01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a17bc31722d39ec01b34a528a1d576d01">operator=</a> (const <a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> &amp;)=delete</td></tr>
+<tr class="separator:a17bc31722d39ec01b34a528a1d576d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6326ecf8eca05f3572e4fa1e28a59f32" id="r_a6326ecf8eca05f3572e4fa1e28a59f32"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a6326ecf8eca05f3572e4fa1e28a59f32">execute</a> (std::string command, <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> <a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:a6326ecf8eca05f3572e4fa1e28a59f32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a registered scene command through revision checks and one reversible transaction.  <br /></td></tr>
+<tr class="separator:a6326ecf8eca05f3572e4fa1e28a59f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3246f5a551477c000813e73b1b734aaa" id="r_a3246f5a551477c000813e73b1b734aaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a3246f5a551477c000813e73b1b734aaa">restrictCommands</a> (const std::vector&lt; std::string &gt; &amp;<a class="el" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>)</td></tr>
+<tr class="memdesc:a3246f5a551477c000813e73b1b734aaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict future commands to a host allow-list; empty denies all. Existing history remains undoable.  <br /></td></tr>
+<tr class="separator:a3246f5a551477c000813e73b1b734aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34ceacf83222c4a413742cbadbddce92" id="r_a34ceacf83222c4a413742cbadbddce92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a34ceacf83222c4a413742cbadbddce92">undo</a> ()</td></tr>
+<tr class="memdesc:a34ceacf83222c4a413742cbadbddce92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the last scene transaction; failures preserve history.  <br /></td></tr>
+<tr class="separator:a34ceacf83222c4a413742cbadbddce92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a145c3f9900c64d104b4602f7389013f5" id="r_a145c3f9900c64d104b4602f7389013f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a145c3f9900c64d104b4602f7389013f5">redo</a> ()</td></tr>
+<tr class="memdesc:a145c3f9900c64d104b4602f7389013f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reapply the last undone scene transaction.  <br /></td></tr>
+<tr class="separator:a145c3f9900c64d104b4602f7389013f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a754d7558333ab7d3c6aa84821639fc3f" id="r_a754d7558333ab7d3c6aa84821639fc3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a754d7558333ab7d3c6aa84821639fc3f">snapshot</a> () const</td></tr>
+<tr class="memdesc:a754d7558333ab7d3c6aa84821639fc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the versioned hierarchy/TRS snapshot; caller owns the returned tree.  <br /></td></tr>
+<tr class="separator:a754d7558333ab7d3c6aa84821639fc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c9732c1aa897638565f624f5327f93" id="r_a82c9732c1aa897638565f624f5327f93"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a82c9732c1aa897638565f624f5327f93">saveJson</a> () const</td></tr>
+<tr class="memdesc:a82c9732c1aa897638565f624f5327f93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode snapshot deterministically; file I/O and paths belong to the host.  <br /></td></tr>
+<tr class="separator:a82c9732c1aa897638565f624f5327f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ebaa298788f16398edee36a527458a3" id="r_a6ebaa298788f16398edee36a527458a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a6ebaa298788f16398edee36a527458a3">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a6ebaa298788f16398edee36a527458a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and restore schema-1 JSON as an undoable transaction; invalid input changes nothing.  <br /></td></tr>
+<tr class="separator:a6ebaa298788f16398edee36a527458a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc6371235b91ca8d07e925cf47fef54" id="r_a7bc6371235b91ca8d07e925cf47fef54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a7bc6371235b91ca8d07e925cf47fef54">revision</a> () const</td></tr>
+<tr class="memdesc:a7bc6371235b91ca8d07e925cf47fef54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current monotonic target revision.  <br /></td></tr>
+<tr class="separator:a7bc6371235b91ca8d07e925cf47fef54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6b54d23feadd68b1d18a24e57390d8e" id="r_af6b54d23feadd68b1d18a24e57390d8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#af6b54d23feadd68b1d18a24e57390d8e">cachePhysicsPlacementHull</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, std::vector&lt; float &gt; <a class="el" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>, int maxVertices=64)</td></tr>
+<tr class="memdesc:af6b54d23feadd68b1d18a24e57390d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache backend-neutral local-space mesh points for later automatic convex placement.  <br /></td></tr>
+<tr class="separator:af6b54d23feadd68b1d18a24e57390d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a153b6fe8eabede507998efb928c910fd" id="r_a153b6fe8eabede507998efb928c910fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a153b6fe8eabede507998efb928c910fd">cachePhysicsPlacementCompound</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, std::string resourceKey, std::vector&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementCollider.html">PhysicsPlacementCollider</a> &gt; colliders)</td></tr>
+<tr class="memdesc:a153b6fe8eabede507998efb928c910fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace one object's generated compound collider cache entry.  <br /></td></tr>
+<tr class="separator:a153b6fe8eabede507998efb928c910fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21b20ebf26565c4636df1e4c6316e4c8" id="r_a21b20ebf26565c4636df1e4c6316e4c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a21b20ebf26565c4636df1e4c6316e4c8">removePhysicsPlacementHull</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>)</td></tr>
+<tr class="memdesc:a21b20ebf26565c4636df1e4c6316e4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one cached automatic placement hull; missing entries return NoOp.  <br /></td></tr>
+<tr class="separator:a21b20ebf26565c4636df1e4c6316e4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a378ce764f60bb633cff43787ee890991" id="r_a378ce764f60bb633cff43787ee890991"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a378ce764f60bb633cff43787ee890991">savePhysicsPlacementColliderCacheJson</a> () const</td></tr>
+<tr class="memdesc:a378ce764f60bb633cff43787ee890991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode schema-2 generated collider cache; host owns file I/O and the returned string.  <br /></td></tr>
+<tr class="separator:a378ce764f60bb633cff43787ee890991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac032655baaa099d3c802d7401a27ff97" id="r_ac032655baaa099d3c802d7401a27ff97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ac032655baaa099d3c802d7401a27ff97">restorePhysicsPlacementColliderCacheJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:ac032655baaa099d3c802d7401a27ff97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace generated collider cache from schema-2 JSON.  <br /></td></tr>
+<tr class="separator:ac032655baaa099d3c802d7401a27ff97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f53d57fc6df7ac578295faab961db4d" id="r_a8f53d57fc6df7ac578295faab961db4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a8f53d57fc6df7ac578295faab961db4d">beginPhysicsPlacement</a> (<a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a> <a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a8f53d57fc6df7ac578295faab961db4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin an isolated Box3D placement preview using current scene transforms.  <br /></td></tr>
+<tr class="separator:a8f53d57fc6df7ac578295faab961db4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a795cc505869a9f53e570a190c9cff031" id="r_a795cc505869a9f53e570a190c9cff031"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a795cc505869a9f53e570a190c9cff031">updatePhysicsPlacement</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, double <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, double fixedDelta=1.0/60.0)</td></tr>
+<tr class="memdesc:a795cc505869a9f53e570a190c9cff031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the preview handle and advance one fixed simulation step.  <br /></td></tr>
+<tr class="separator:a795cc505869a9f53e570a190c9cff031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a243edb1bcffedf39f970c21f7782e0ab" id="r_a243edb1bcffedf39f970c21f7782e0ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a243edb1bcffedf39f970c21f7782e0ab">updatePhysicsPlacementPose</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, double <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, double rotationX, double rotationY, double rotationZ, double fixedDelta=1.0/60.0)</td></tr>
+<tr class="memdesc:a243edb1bcffedf39f970c21f7782e0ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move and rotate the preview handle, then advance one fixed simulation step.  <br /></td></tr>
+<tr class="separator:a243edb1bcffedf39f970c21f7782e0ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0d79bdbc19975c2e2cc7426837683d8" id="r_af0d79bdbc19975c2e2cc7426837683d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#af0d79bdbc19975c2e2cc7426837683d8">updatePhysicsPlacementTransform</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, double <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, double rotationX, double rotationY, double rotationZ, double scaleX, double scaleY, double scaleZ, double fixedDelta=1.0/60.0)</td></tr>
+<tr class="memdesc:af0d79bdbc19975c2e2cc7426837683d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move, rotate and scale the preview handle, then advance one fixed simulation step.  <br /></td></tr>
+<tr class="separator:af0d79bdbc19975c2e2cc7426837683d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c55468de4c03c82efd2679b3d9d3f37" id="r_a1c55468de4c03c82efd2679b3d9d3f37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a1c55468de4c03c82efd2679b3d9d3f37">alignPhysicsPlacementToSurface</a> (double fromX, double fromY, double fromZ, double toX, double toY, double toZ, double <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>=0.0, double fixedDelta=1.0/60.0)</td></tr>
+<tr class="memdesc:a1c55468de4c03c82efd2679b3d9d3f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Align the active selection to a non-selected preview surface and advance one step.  <br /></td></tr>
+<tr class="separator:a1c55468de4c03c82efd2679b3d9d3f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5e942b456cc5c349e68736a817840f" id="r_a3f5e942b456cc5c349e68736a817840f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#a3f5e942b456cc5c349e68736a817840f">commitPhysicsPlacement</a> ()</td></tr>
+<tr class="memdesc:a3f5e942b456cc5c349e68736a817840f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish selected preview transforms as one undoable transaction.  <br /></td></tr>
+<tr class="separator:a3f5e942b456cc5c349e68736a817840f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea9df59dfb8c0a30fda9a269b2baf1b" id="r_acea9df59dfb8c0a30fda9a269b2baf1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#acea9df59dfb8c0a30fda9a269b2baf1b">cancelPhysicsPlacement</a> ()</td></tr>
+<tr class="memdesc:acea9df59dfb8c0a30fda9a269b2baf1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard the isolated preview without changing scene state.  <br /></td></tr>
+<tr class="separator:acea9df59dfb8c0a30fda9a269b2baf1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac24a836b40824bcee8729ee74d846e48" id="r_ac24a836b40824bcee8729ee74d846e48"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html#ac24a836b40824bcee8729ee74d846e48">physicsPlacementActive</a> () const noexcept</td></tr>
+<tr class="memdesc:ac24a836b40824bcee8729ee74d846e48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether this session owns an active placement preview.  <br /></td></tr>
+<tr class="separator:ac24a836b40824bcee8729ee74d846e48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Composable scene command/history host with no UI or renderer dependency. Owns its target, command registry and history. Host supplies selection, input, rendering and file I/O; snapshot JSON contains hierarchy/TRS only. @thread Owner thread only. Live targets may notify host observers after publication, without locks. Observers must not destroy or reenter the active session. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8h_source.html">SceneEditorSession.h</a> 第 <a class="el" href="SceneEditorSession_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5e31d504aed43bcb41bfaa58127fd3eb" name="a5e31d504aed43bcb41bfaa58127fd3eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e31d504aed43bcb41bfaa58127fd3eb">&#9670;&#160;</a></span>SceneEditorSession() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::SceneEditorSession::SceneEditorSession </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Own a document target with a nonempty host-local identity. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf0989abce6617aabf3688b07a348c14" name="adf0989abce6617aabf3688b07a348c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0989abce6617aabf3688b07a348c14">&#9670;&#160;</a></span>SceneEditorSession() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::SceneEditorSession::SceneEditorSession </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">scene_editing::SceneTargetBase</a> &gt;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer a non-null scene target into this session; target ownership is exclusive. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aedf9d448dd4c91d3c4163d103169550c" name="aedf9d448dd4c91d3c4163d103169550c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedf9d448dd4c91d3c4163d103169550c">&#9670;&#160;</a></span>~SceneEditorSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::SceneEditorSession::~SceneEditorSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad07b7a160d8a96013a4a3149215473c1" name="ad07b7a160d8a96013a4a3149215473c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad07b7a160d8a96013a4a3149215473c1">&#9670;&#160;</a></span>SceneEditorSession() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::SceneEditorSession::SceneEditorSession </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1c55468de4c03c82efd2679b3d9d3f37" name="a1c55468de4c03c82efd2679b3d9d3f37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c55468de4c03c82efd2679b3d9d3f37">&#9670;&#160;</a></span>alignPhysicsPlacementToSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt; eve::scene_editor::SceneEditorSession::alignPhysicsPlacementToSurface </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fromX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fromY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fromZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>toX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>toY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>toZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>offset</em> = <code>0.0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fixedDelta</em> = <code>1.0&#160;/&#160;60.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Align the active selection to a non-selected preview surface and advance one step. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00539">539</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a8f53d57fc6df7ac578295faab961db4d" name="a8f53d57fc6df7ac578295faab961db4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f53d57fc6df7ac578295faab961db4d">&#9670;&#160;</a></span>beginPhysicsPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::beginPhysicsPlacement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementRequest.html">PhysicsPlacementRequest</a>&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begin an isolated Box3D placement preview using current scene transforms. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00449">449</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea06b9281e396db002010bde1de57262eb">eve::scene_editor::Auto</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea3cfce651e667ab85486dd42a8185f98a">eve::scene_editor::Box</a>, <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00214">eve::scene_editor::ScenePhysicsPlacementBackend::create()</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="UnityPrefabExpansion_8cpp_source.html#l00037">visiting</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a153b6fe8eabede507998efb928c910fd" name="a153b6fe8eabede507998efb928c910fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a153b6fe8eabede507998efb928c910fd">&#9670;&#160;</a></span>cachePhysicsPlacementCompound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::cachePhysicsPlacementCompound </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>resourceKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementCollider.html">PhysicsPlacementCollider</a> &gt;&#160;</td>
+          <td class="paramname"><em>colliders</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace one object's generated compound collider cache entry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>Stable scene object identity. </td></tr>
+    <tr><td class="paramname">resourceKey</td><td>Host-owned immutable mesh/content revision used for stale detection.</td></tr>
+  </table>
+  </dd>
+</dl>
+<ul>
+<li><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">colliders</td><td>One or more generated local-space convex or primitive parts; copied by the session. </td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
+</ul>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea06b9281e396db002010bde1de57262eb">eve::scene_editor::Auto</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea3e1ee9920ed982b5da9becaf4b5463e5">eve::scene_editor::ConvexHull</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#a981bb58bf85bd91a642fc92e731fdee0a5c5f06440fcb85cd5c8cfafe32e34b78">eve::scene_editor::Generated</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00330">cachePhysicsPlacementHull()</a> , 以及 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="af6b54d23feadd68b1d18a24e57390d8e" name="af6b54d23feadd68b1d18a24e57390d8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6b54d23feadd68b1d18a24e57390d8e">&#9670;&#160;</a></span>cachePhysicsPlacementHull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::cachePhysicsPlacementHull </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxVertices</em> = <code>64</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cache backend-neutral local-space mesh points for later automatic convex placement. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>Stable scene object identity; the session owns a copy of the points. </td></tr>
+    <tr><td class="paramname">vertices</td><td>At least four packed finite XYZ points. </td></tr>
+    <tr><td class="paramname">maxVertices</td><td>Convex hull simplification budget in [4, 254]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or Rejected without changing the previous cached entry. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneEditorSession_8cpp_source.html#l00346">cachePhysicsPlacementCompound()</a>, <a class="el" href="namespaceeve_1_1scene__editor.html#ada42828cc479ab7d49aea3012ef21dfea3e1ee9920ed982b5da9becaf4b5463e5">eve::scene_editor::ConvexHull</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00040">eve::scene_editor::PhysicsPlacementCollider::convexMaxVertices</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00039">eve::scene_editor::PhysicsPlacementCollider::convexVertices</a>, <a class="el" href="ScenePhysicsPlacement_8h_source.html#l00028">eve::scene_editor::PhysicsPlacementCollider::shape</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00046">vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="acea9df59dfb8c0a30fda9a269b2baf1b" name="acea9df59dfb8c0a30fda9a269b2baf1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea9df59dfb8c0a30fda9a269b2baf1b">&#9670;&#160;</a></span>cancelPhysicsPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::cancelPhysicsPlacement </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discard the isolated preview without changing scene state. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00610">610</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a3f5e942b456cc5c349e68736a817840f" name="a3f5e942b456cc5c349e68736a817840f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f5e942b456cc5c349e68736a817840f">&#9670;&#160;</a></span>commitPhysicsPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; eve::scene_editor::SceneEditorSession::commitPhysicsPlacement </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically publish selected preview transforms as one undoable transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00554">554</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneEditorSession_8cpp_source.html#l00296">execute()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a6326ecf8eca05f3572e4fa1e28a59f32" name="a6326ecf8eca05f3572e4fa1e28a59f32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6326ecf8eca05f3572e4fa1e28a59f32">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; eve::scene_editor::SceneEditorSession::execute </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a>&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a registered scene command through revision checks and one reversible transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00046">eve::editing::CommandRequest::id</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a> , 以及 <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00554">commitPhysicsPlacement()</a>, <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a> , 以及 <a class="el" href="SceneEditorSession_8cpp_source.html#l00622">restoreJson()</a>.</p>
+
+</div>
+</div>
+<a id="a17bc31722d39ec01b34a528a1d576d01" name="a17bc31722d39ec01b34a528a1d576d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17bc31722d39ec01b34a528a1d576d01">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> &amp; eve::scene_editor::SceneEditorSession::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1scene__editor_1_1SceneEditorSession.html">SceneEditorSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac24a836b40824bcee8729ee74d846e48" name="ac24a836b40824bcee8729ee74d846e48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac24a836b40824bcee8729ee74d846e48">&#9670;&#160;</a></span>physicsPlacementActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene_editor::SceneEditorSession::physicsPlacementActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Report whether this session owns an active placement preview. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00621">621</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a145c3f9900c64d104b4602f7389013f5" name="a145c3f9900c64d104b4602f7389013f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a145c3f9900c64d104b4602f7389013f5">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; eve::scene_editor::SceneEditorSession::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reapply the last undone scene transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a21b20ebf26565c4636df1e4c6316e4c8" name="a21b20ebf26565c4636df1e4c6316e4c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21b20ebf26565c4636df1e4c6316e4c8">&#9670;&#160;</a></span>removePhysicsPlacementHull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::removePhysicsPlacementHull </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one cached automatic placement hull; missing entries return NoOp. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a6ebaa298788f16398edee36a527458a3" name="a6ebaa298788f16398edee36a527458a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ebaa298788f16398edee36a527458a3">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; eve::scene_editor::SceneEditorSession::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse and restore schema-1 JSON as an undoable transaction; invalid input changes nothing. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00622">622</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00352">eve::editing::editorValueFromJson()</a>, <a class="el" href="SceneEditorSession_8cpp_source.html#l00296">execute()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="ac032655baaa099d3c802d7401a27ff97" name="ac032655baaa099d3c802d7401a27ff97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac032655baaa099d3c802d7401a27ff97">&#9670;&#160;</a></span>restorePhysicsPlacementColliderCacheJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::restorePhysicsPlacementColliderCacheJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace generated collider cache from schema-2 JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00352">eve::editing::editorValueFromJson()</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00018">key</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a3246f5a551477c000813e73b1b734aaa" name="a3246f5a551477c000813e73b1b734aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3246f5a551477c000813e73b1b734aaa">&#9670;&#160;</a></span>restrictCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editor::SceneEditorSession::restrictCommands </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>commands</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restrict future commands to a host allow-list; empty denies all. Existing history remains undoable. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00081">commands</a> , 以及 <a class="el" href="EditorHostProfile_8cpp_source.html#l00015">eve::editor::HostProfile::runtimeBuilder()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a7bc6371235b91ca8d07e925cf47fef54" name="a7bc6371235b91ca8d07e925cf47fef54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc6371235b91ca8d07e925cf47fef54">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a> eve::scene_editor::SceneEditorSession::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current monotonic target revision. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a82c9732c1aa897638565f624f5327f93" name="a82c9732c1aa897638565f624f5327f93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c9732c1aa897638565f624f5327f93">&#9670;&#160;</a></span>saveJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::scene_editor::SceneEditorSession::saveJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode snapshot deterministically; file I/O and paths belong to the host. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00346">eve::editing::editorValueToJson()</a> , 以及 <a class="el" href="SceneEditorSession_8cpp_source.html#l00326">snapshot()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a378ce764f60bb633cff43787ee890991" name="a378ce764f60bb633cff43787ee890991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a378ce764f60bb633cff43787ee890991">&#9670;&#160;</a></span>savePhysicsPlacementColliderCacheJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::scene_editor::SceneEditorSession::savePhysicsPlacementColliderCacheJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode schema-2 generated collider cache; host owns file I/O and the returned string. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00346">eve::editing::editorValueToJson()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a754d7558333ab7d3c6aa84821639fc3f" name="a754d7558333ab7d3c6aa84821639fc3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a754d7558333ab7d3c6aa84821639fc3f">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> eve::scene_editor::SceneEditorSession::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the versioned hierarchy/TRS snapshot; caller owns the returned tree. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a> , 以及 <a class="el" href="SceneEditorSession_8cpp_source.html#l00327">saveJson()</a>.</p>
+
+</div>
+</div>
+<a id="a34ceacf83222c4a413742cbadbddce92" name="a34ceacf83222c4a413742cbadbddce92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34ceacf83222c4a413742cbadbddce92">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; eve::scene_editor::SceneEditorSession::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Undo the last scene transaction; failures preserve history. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a795cc505869a9f53e570a190c9cff031" name="a795cc505869a9f53e570a190c9cff031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a795cc505869a9f53e570a190c9cff031">&#9670;&#160;</a></span>updatePhysicsPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt; eve::scene_editor::SceneEditorSession::updatePhysicsPlacement </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fixedDelta</em> = <code>1.0&#160;/&#160;60.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move the preview handle and advance one fixed simulation step. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00487">487</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="a243edb1bcffedf39f970c21f7782e0ab" name="a243edb1bcffedf39f970c21f7782e0ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a243edb1bcffedf39f970c21f7782e0ab">&#9670;&#160;</a></span>updatePhysicsPlacementPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt; eve::scene_editor::SceneEditorSession::updatePhysicsPlacementPose </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rotationX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rotationY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rotationZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fixedDelta</em> = <code>1.0&#160;/&#160;60.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move and rotate the preview handle, then advance one fixed simulation step. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00502">502</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<a id="af0d79bdbc19975c2e2cc7426837683d8" name="af0d79bdbc19975c2e2cc7426837683d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0d79bdbc19975c2e2cc7426837683d8">&#9670;&#160;</a></span>updatePhysicsPlacementTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editor_1_1PhysicsPlacementFrame.html">PhysicsPlacementFrame</a> &gt; eve::scene_editor::SceneEditorSession::updatePhysicsPlacementTransform </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rotationX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rotationY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rotationZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaleX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaleY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaleZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fixedDelta</em> = <code>1.0&#160;/&#160;60.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move, rotate and scale the preview handle, then advance one fixed simulation step. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a> 第 <a class="el" href="SceneEditorSession_8cpp_source.html#l00519">519</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorScriptBindings_8cpp_source.html#l00396">eve::scene_editor::exposeSceneEditorSessions()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/scene/editor/<a class="el" href="SceneEditorSession_8h_source.html">SceneEditorSession.h</a></li>
+<li>src/modules/scene/editor/<a class="el" href="SceneEditorSession_8cpp_source.html">SceneEditorSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/spatial/Bounds.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_13b5d118cdf9e2fac2bbe79fb4fa947a.html">spatial</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Bounds.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Bounds_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1spatial.html">eve::spatial</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="};">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html">    9</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">   10</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> = 0.f;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">   11</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> = 0.f;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">   12</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> = 0.f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">   13</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a> = 0.f;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#ac3490cb2f10fa75848cbb39e5385c0bc">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#ac3490cb2f10fa75848cbb39e5385c0bc">width</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> - <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a>; }</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#af803582b58adf181c76c068f375203aa">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#af803582b58adf181c76c068f375203aa">height</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a> - <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a>; }</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a37f95a21e790166858d7020a9fae158b">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#a37f95a21e790166858d7020a9fae158b">centerX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> + <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a>) * 0.5f; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#aaf34fec1fcfafb73ef63673a164ba5c2">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#aaf34fec1fcfafb73ef63673a164ba5c2">centerY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> + <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a>) * 0.5f; }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a256ddae5b87e9b155ba1c2e3e14e3bff">   20</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#a256ddae5b87e9b155ba1c2e3e14e3bff">valid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a>; }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a014c2e0f9e0346e2c1fed99f1f868c99">   22</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#a014c2e0f9e0346e2c1fed99f1f868c99">containsPoint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> &amp;&amp; x &lt;= maxX &amp;&amp; y &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> &amp;&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a79a004433d3777bd27e0359ce5eb06ab">   26</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#a79a004433d3777bd27e0359ce5eb06ab">containsAABB</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> &amp;o)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a7fb854634d0603c19179fcfc41f87eed">   30</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#a7fb854634d0603c19179fcfc41f87eed">intersectsAABB</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> &amp;o)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> &lt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a> &gt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a> &lt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a> &gt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB2.html#a8fa894b5b9afb23261d0558dad076467">   34</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB2.html#a8fa894b5b9afb23261d0558dad076467">intersectsCircle</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> nearestX = std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">minX</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">maxX</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> nearestY = std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">minY</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">maxY</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx       = <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - nearestX;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dy       = <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> - nearestY;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> dx * dx + dy * dy &lt;= <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">   44</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> = 0.f;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">   45</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> = 0.f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">   46</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> = 0.f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> = 0.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">   49</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a> = 0.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#ab6d4aa6662195703d70bdd59a7e5463a">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#ab6d4aa6662195703d70bdd59a7e5463a">width</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> - <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a>; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a031144fb149b1552a8a0c4c118c3f869">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#a031144fb149b1552a8a0c4c118c3f869">height</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> - <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a>; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#ac580815b0b44c91da548df678ad487cb">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#ac580815b0b44c91da548df678ad487cb">depth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a> - <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a>; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a4ff5a3fb7abff50e21e7501c449acfe0">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#a4ff5a3fb7abff50e21e7501c449acfe0">centerX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> + <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a>) * 0.5f; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#acfd53571964badee79d9c948e85ed8e1">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#acfd53571964badee79d9c948e85ed8e1">centerY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> + <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a>) * 0.5f; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a13ff59a87f8c88a67c79904abff362c5">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#a13ff59a87f8c88a67c79904abff362c5">centerZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> + <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>) * 0.5f; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#aa6c7d521292a23d179dec435f9e97803">   58</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#aa6c7d521292a23d179dec435f9e97803">valid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a808c26fe9727a50ab0ea5c55c6f43fc3">   60</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#a808c26fe9727a50ab0ea5c55c6f43fc3">containsPoint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> &amp;&amp; x &lt;= maxX &amp;&amp; y &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> &amp;&amp; y &lt;= maxY &amp;&amp; z &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> &amp;&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#aaf7eb3208d8663a9f61b0fdf7c1e5477">   64</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#aaf7eb3208d8663a9f61b0fdf7c1e5477">containsAABB</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a> &amp;o)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> &amp;&amp;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>               o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> &gt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> &amp;&amp; o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a> &lt;= <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#a90e733ca99c3a6e931e850c53b54fb49">   69</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#a90e733ca99c3a6e931e850c53b54fb49">intersectsAABB</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a> &amp;o)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> &lt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a> &gt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> &lt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a> &gt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a> &amp;&amp;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>               <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a> &lt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a> &amp;&amp; <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a> &gt;= o.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1spatial_1_1AABB3.html#acc37e45087b02c49c0bc4da217a8759e">   74</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1spatial_1_1AABB3.html#acc37e45087b02c49c0bc4da217a8759e">intersectsSphere</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> cz, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> nearestX = std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> nearestY = std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> nearestZ = std::clamp(cz, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a>, <a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx       = <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - nearestX;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dy       = <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> - nearestY;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dz       = cz - nearestZ;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> dx * dx + dy * dy + dz * dz &lt;= <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="namespaceeve_1_1spatial.html#a1129d107fe27e17c2c50558992b6e5ee">   85</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a> <a class="code hl_function" href="namespaceeve_1_1spatial.html#a1129d107fe27e17c2c50558992b6e5ee">makeAABB2</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (minX &gt; maxX) std::swap(minX, maxX);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (minY &gt; maxY) std::swap(minY, maxY);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB2.html">AABB2</a>{minX, minY, maxX, maxY};</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="namespaceeve_1_1spatial.html#a79b67acd289c0018b57aaec149ac87d9">   91</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a> <a class="code hl_function" href="namespaceeve_1_1spatial.html#a79b67acd289c0018b57aaec149ac87d9">makeAABB3</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (minX &gt; maxX) std::swap(minX, maxX);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (minY &gt; maxY) std::swap(minY, maxY);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (minZ &gt; maxZ) std::swap(minZ, maxZ);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a>{minX, minY, minZ, maxX, maxY, maxZ};</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="namespaceeve_1_1spatial.html#ab72c180fd0e4368f3c943ce1190fe05f">   99</a></span><span class="keyword">inline</span> uint64_t <a class="code hl_function" href="namespaceeve_1_1spatial.html#ab72c180fd0e4368f3c943ce1190fe05f">cellKey2</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> (uint64_t(uint32_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>)) &lt;&lt; 32) | uint64_t(uint32_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="namespaceeve_1_1spatial.html#a99e1e388779cd960950c4f464716e915">  103</a></span><span class="keyword">inline</span> uint64_t <a class="code hl_function" href="namespaceeve_1_1spatial.html#a99e1e388779cd960950c4f464716e915">cellKey3</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">// 21 bits per axis packed into 63 bits (signed via uint cast).</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> uint64_t <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = uint64_t(uint32_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) &amp; 0x1fffffu);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> uint64_t <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = uint64_t(uint32_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) &amp; 0x1fffffu);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> uint64_t <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = uint64_t(uint32_t(cz) &amp; 0x1fffffu);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">return</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt;&lt; 42) | (<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt;&lt; 21) | <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}  <span class="comment">// namespace eve::spatial</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html"><div class="ttname"><a href="namespaceeve_1_1spatial.html">eve::spatial</a></div><div class="ttdef"><b>Definition</b> <a href="Scene_8h_source.html#l00034">Scene.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html_a1129d107fe27e17c2c50558992b6e5ee"><div class="ttname"><a href="namespaceeve_1_1spatial.html#a1129d107fe27e17c2c50558992b6e5ee">eve::spatial::makeAABB2</a></div><div class="ttdeci">AABB2 makeAABB2(float minX, float minY, float maxX, float maxY)</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00085">Bounds.h:85</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html_a79b67acd289c0018b57aaec149ac87d9"><div class="ttname"><a href="namespaceeve_1_1spatial.html#a79b67acd289c0018b57aaec149ac87d9">eve::spatial::makeAABB3</a></div><div class="ttdeci">AABB3 makeAABB3(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00091">Bounds.h:91</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html_a99e1e388779cd960950c4f464716e915"><div class="ttname"><a href="namespaceeve_1_1spatial.html#a99e1e388779cd960950c4f464716e915">eve::spatial::cellKey3</a></div><div class="ttdeci">uint64_t cellKey3(int cx, int cy, int cz)</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00103">Bounds.h:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html_ab72c180fd0e4368f3c943ce1190fe05f"><div class="ttname"><a href="namespaceeve_1_1spatial.html#ab72c180fd0e4368f3c943ce1190fe05f">eve::spatial::cellKey2</a></div><div class="ttdeci">uint64_t cellKey2(int cx, int cy)</div><div class="ttdoc">Integer cell key for spatial hashing (stable across platforms for reasonable ranges).</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00099">Bounds.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html">eve::spatial::AABB2</a></div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00009">Bounds.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a014c2e0f9e0346e2c1fed99f1f868c99"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a014c2e0f9e0346e2c1fed99f1f868c99">eve::spatial::AABB2::containsPoint</a></div><div class="ttdeci">bool containsPoint(float x, float y) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00022">Bounds.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a213425d18e091f343ca578439cffe036"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a213425d18e091f343ca578439cffe036">eve::spatial::AABB2::maxY</a></div><div class="ttdeci">float maxY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00013">Bounds.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a256ddae5b87e9b155ba1c2e3e14e3bff"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a256ddae5b87e9b155ba1c2e3e14e3bff">eve::spatial::AABB2::valid</a></div><div class="ttdeci">bool valid() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00020">Bounds.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a37f95a21e790166858d7020a9fae158b"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a37f95a21e790166858d7020a9fae158b">eve::spatial::AABB2::centerX</a></div><div class="ttdeci">float centerX() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00017">Bounds.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a4504a37186019a69d4b5c814caae3bbe"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a4504a37186019a69d4b5c814caae3bbe">eve::spatial::AABB2::minY</a></div><div class="ttdeci">float minY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00011">Bounds.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a79a004433d3777bd27e0359ce5eb06ab"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a79a004433d3777bd27e0359ce5eb06ab">eve::spatial::AABB2::containsAABB</a></div><div class="ttdeci">bool containsAABB(const AABB2 &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00026">Bounds.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a7fb854634d0603c19179fcfc41f87eed"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a7fb854634d0603c19179fcfc41f87eed">eve::spatial::AABB2::intersectsAABB</a></div><div class="ttdeci">bool intersectsAABB(const AABB2 &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00030">Bounds.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_a8fa894b5b9afb23261d0558dad076467"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#a8fa894b5b9afb23261d0558dad076467">eve::spatial::AABB2::intersectsCircle</a></div><div class="ttdeci">bool intersectsCircle(float cx, float cy, float radius) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00034">Bounds.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_aa7365bc33d3f04ec4c9b8ef8b582ddf9"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#aa7365bc33d3f04ec4c9b8ef8b582ddf9">eve::spatial::AABB2::maxX</a></div><div class="ttdeci">float maxX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00012">Bounds.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_aaf34fec1fcfafb73ef63673a164ba5c2"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#aaf34fec1fcfafb73ef63673a164ba5c2">eve::spatial::AABB2::centerY</a></div><div class="ttdeci">float centerY() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00018">Bounds.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_ab77c5683901189e110a23471b61ce7bf"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#ab77c5683901189e110a23471b61ce7bf">eve::spatial::AABB2::minX</a></div><div class="ttdeci">float minX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00010">Bounds.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_ac3490cb2f10fa75848cbb39e5385c0bc"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#ac3490cb2f10fa75848cbb39e5385c0bc">eve::spatial::AABB2::width</a></div><div class="ttdeci">float width() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00015">Bounds.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB2_html_af803582b58adf181c76c068f375203aa"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB2.html#af803582b58adf181c76c068f375203aa">eve::spatial::AABB2::height</a></div><div class="ttdeci">float height() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00016">Bounds.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html">eve::spatial::AABB3</a></div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00043">Bounds.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a031144fb149b1552a8a0c4c118c3f869"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a031144fb149b1552a8a0c4c118c3f869">eve::spatial::AABB3::height</a></div><div class="ttdeci">float height() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00052">Bounds.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a13ff59a87f8c88a67c79904abff362c5"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a13ff59a87f8c88a67c79904abff362c5">eve::spatial::AABB3::centerZ</a></div><div class="ttdeci">float centerZ() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00056">Bounds.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a21eef7c1729c52ce6e74b47881db776c"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">eve::spatial::AABB3::minY</a></div><div class="ttdeci">float minY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00045">Bounds.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a4ff5a3fb7abff50e21e7501c449acfe0"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a4ff5a3fb7abff50e21e7501c449acfe0">eve::spatial::AABB3::centerX</a></div><div class="ttdeci">float centerX() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00054">Bounds.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a808c26fe9727a50ab0ea5c55c6f43fc3"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a808c26fe9727a50ab0ea5c55c6f43fc3">eve::spatial::AABB3::containsPoint</a></div><div class="ttdeci">bool containsPoint(float x, float y, float z) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00060">Bounds.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a80c74214171a3b7db1e7cd5d76f955ab"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">eve::spatial::AABB3::minZ</a></div><div class="ttdeci">float minZ</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00046">Bounds.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a88d9382c015265338385b9a90cdb7986"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">eve::spatial::AABB3::maxY</a></div><div class="ttdeci">float maxY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00048">Bounds.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a90e733ca99c3a6e931e850c53b54fb49"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a90e733ca99c3a6e931e850c53b54fb49">eve::spatial::AABB3::intersectsAABB</a></div><div class="ttdeci">bool intersectsAABB(const AABB3 &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00069">Bounds.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a93e178b8da81983797d7db776069a148"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">eve::spatial::AABB3::maxZ</a></div><div class="ttdeci">float maxZ</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00049">Bounds.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aa6c7d521292a23d179dec435f9e97803"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aa6c7d521292a23d179dec435f9e97803">eve::spatial::AABB3::valid</a></div><div class="ttdeci">bool valid() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00058">Bounds.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aa7300240fc2c08194393a6fd374fa364"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">eve::spatial::AABB3::maxX</a></div><div class="ttdeci">float maxX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00047">Bounds.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aacbce7e0812fb4fb71e5178af350c210"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">eve::spatial::AABB3::minX</a></div><div class="ttdeci">float minX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00044">Bounds.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aaf7eb3208d8663a9f61b0fdf7c1e5477"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aaf7eb3208d8663a9f61b0fdf7c1e5477">eve::spatial::AABB3::containsAABB</a></div><div class="ttdeci">bool containsAABB(const AABB3 &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00064">Bounds.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_ab6d4aa6662195703d70bdd59a7e5463a"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#ab6d4aa6662195703d70bdd59a7e5463a">eve::spatial::AABB3::width</a></div><div class="ttdeci">float width() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00051">Bounds.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_ac580815b0b44c91da548df678ad487cb"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#ac580815b0b44c91da548df678ad487cb">eve::spatial::AABB3::depth</a></div><div class="ttdeci">float depth() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00053">Bounds.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_acc37e45087b02c49c0bc4da217a8759e"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#acc37e45087b02c49c0bc4da217a8759e">eve::spatial::AABB3::intersectsSphere</a></div><div class="ttdeci">bool intersectsSphere(float cx, float cy, float cz, float radius) const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00074">Bounds.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_acfd53571964badee79d9c948e85ed8e1"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#acfd53571964badee79d9c948e85ed8e1">eve::spatial::AABB3::centerY</a></div><div class="ttdeci">float centerY() const</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00055">Bounds.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

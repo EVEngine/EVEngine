@@ -1,0 +1,222 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 逆运动学模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">逆运动学模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>逆运动学模块</h1>
+<p><b>脚本入口：</b> <code>eve.IK()</code></p>
+<p>创建 2D/3D 骨架和 FABRIK Solver，设置目标并逐帧求解；支持链式求解（固定链根）、 3D 极向量（磁铁/弯曲方向）与末端方向覆盖。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local ik = eve.IK();</div>
+<div class="line">local skeleton = ik.newSkeleton2D();</div>
+<div class="line">local solver = ik.newSolver2D(skeleton);</div>
+<div class="line">solver.addTarget(&quot;hand&quot;, 240, 180);</div>
+<div class="line">solver.solve();</div>
+</div><!-- fragment --><p>只解算肩到手的局部链（骨架根与其它分支保持不动）：</p>
+<div class="fragment"><div class="line">// 先创建完整骨架，再通过 getChild/getParent 获取最终 bone id</div>
+<div class="line">local shoulder = skeleton.getChild(0, 0);</div>
+<div class="line">local hand = skeleton.getChild(shoulder, 0);</div>
+<div class="line">solver.addTarget(hand, 240, 180);</div>
+<div class="line">solver.solveChain(shoulder, hand);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p>Skeleton2D/3D 保存骨骼层级；Solver2D/3D 引用骨架并保存目标、迭代参数； solve/solveChain 完整求解，step/stepChain 按帧软收敛；求解后读取骨骼位置/角度同步渲染。</p>
+<h2>目标导向指南</h2>
+<h3>让手臂追踪目标</h3>
+<p>创建 Skeleton2D 和骨骼链，建立 Solver2D，把末端骨骼绑定目标坐标；目标变化后调用 <code>solve()</code>，再读取骨骼位置/角度更新渲染。</p>
+<h3>控制求解稳定性</h3>
+<p>限制 iterations 和 tolerance，在目标不可达时接受最大伸展结果；连续动画使用 <code><a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step()</a></code> 逐帧收敛，瞬时编辑器操作使用 <code>solve()</code> 完整求解。</p>
+<h3>只解局部链（固定链根）</h3>
+<p><code>solveChain(rootBoneId, tipBoneId)</code> 只求解 root..tip 之间的骨骼：链根保持原位， 骨架根和其它分支不受影响（对应 Godot <code>root_bone</code>/<code>tip_bone</code> 与 Unity ChainIK 的 Root/Tip）。 只参与位于该链上的目标。<code>stepChain(root, tip, dt)</code> 是它的逐帧版本。</p>
+<h3>控制 3D 弯曲方向（极向量）</h3>
+<p><code>setPole(x, y, z, weight)</code> 把链中间骨骼拉向一个极点，用于控制手肘/膝盖的弯曲方向 （对应 Godot <code>magnet</code>/<code>use_magnet</code> 与 Unity TwoBoneIK 的 Hint）。仅对 <code>solveChain</code>/<code>stepChain</code> 生效；weight 越接近 1 弯曲越贴近极点。<code>clearPole()</code> 关闭，<code>hasPole()</code>/<code>getPoleWeight()</code> 查询状态。</p>
+<h3>覆盖末端方向</h3>
+<p><code>setTipRotation(boneId, yaw, pitch, weight)</code> 在求解后把末端骨骼的局部朝向混合到指定 yaw/pitch（对应 Godot <code>override_tip_basis</code> 与 Unity 的 Target Rotation Weight）， 常用于脚掌贴地、手掌朝向。<code>clearTipRotation()</code> 关闭。</p>
+<h3>部分影响（混合）</h3>
+<p><code>setInfluence(0..1)</code> 控制求解结果与求解前姿态的混合比例：1 为完全求解（默认）， 0 为保持原姿态，中间值用于动画过渡（对应 Godot <code>influence</code> 与 Unity 约束的 Weight）。</p>
+<h2>常见问题</h2>
+<ul>
+<li>创建 Solver 后销毁 Skeleton。</li>
+<li>骨链长度为 0 或父子关系错误。</li>
+<li>每帧高迭代求解大量角色，未做距离/可见性裁剪。</li>
+<li><code>createBone()</code> 每次都会按广度优先重排骨骼 id：先建完整个骨架，再通过 <code>getChild()</code>/<code>getParent()</code> 重新取得 id，不要沿用创建时返回的旧 id。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>addTarget()</code>、<code>bind()</code>、<code>clearConstraints()</code>、<code>clearPole()</code>、<code>clearTargets()</code>、<code>clearTipRotation()</code>、<code>clearTrace()</code>、<code>createBone()</code>、<code>forwardKinematics()</code>、<code>getBoneCount()</code></li>
+<li><code>getChild()</code>、<code>getChildCount()</code>、<code>getForce()</code>、<code>getInfluence()</code>、<code>getKeepTrace()</code>、<code>getLength()</code>、<code>getMaxIterations()</code>、<code>getName()</code>、<code>getOrientationX()</code></li>
+<li><code>getOrientationY()</code>、<code>getOrientationZ()</code>、<code>getParent()</code>、<code>getRootId()</code>、<code>getRotation()</code>、<code>getRotationPitch()</code>、<code>getRotationYaw()</code>、<code>getTargetCount()</code></li>
+<li><code>getTolerance()</code>、<code>getTraceSize()</code>、<code>getX()</code>、<code>getY()</code>、<code>getZ()</code>、<code>getPoleWeight()</code>、<code>getTipRotationWeight()</code>、<code>hasConstraints()</code>、<code>hasPole()</code>、<code>initStraightPose()</code>、<code>newSkeleton2D()</code></li>
+<li><code>newSkeleton3D()</code>、<code>newSolver2D()</code>、<code>newSolver3D()</code>、<code>setConstraints()</code>、<code>setForce()</code>、<code>setInfluence()</code>、<code>setKeepTrace()</code>、<code>setLength()</code>、<code>setMaxIterations()</code></li>
+<li><code>setOrientation()</code>、<code>setPole()</code>、<code>setPosition()</code>、<code>setRotation()</code>、<code>setTipRotation()</code>、<code>setTolerance()</code>、<code>solve()</code>、<code>solveChain()</code>、<code><a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step()</a></code>、<code>stepChain()</code>、<code>totalLengthTo()</code>、<code>updateRotations()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/ik/"><code>src/modules/ik/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>ik</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

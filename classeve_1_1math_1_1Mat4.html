@@ -1,0 +1,648 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::math::Mat4类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1math.html">math</a></li><li class="navelem"><a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1math_1_1Mat4-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::math::Mat4类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Column-major 4x4 matrix wrapping glm::mat4.  
+ <a href="classeve_1_1math_1_1Mat4.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Mat4_8h_source.html">Mat4.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a43fd8e60c6d4353e6a04b0484e75f3b1" id="r_a43fd8e60c6d4353e6a04b0484e75f3b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a43fd8e60c6d4353e6a04b0484e75f3b1">Mat4</a> ()</td></tr>
+<tr class="separator:a43fd8e60c6d4353e6a04b0484e75f3b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a568fbc914e7ae3b2d95f3e6188153a66" id="r_a568fbc914e7ae3b2d95f3e6188153a66"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a568fbc914e7ae3b2d95f3e6188153a66">Mat4</a> (const glm::mat4 &amp;<a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>)</td></tr>
+<tr class="separator:a568fbc914e7ae3b2d95f3e6188153a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6af568700ba38a5a2e7eaff48ff42933" id="r_a6af568700ba38a5a2e7eaff48ff42933"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a6af568700ba38a5a2e7eaff48ff42933">identity</a> ()</td></tr>
+<tr class="separator:a6af568700ba38a5a2e7eaff48ff42933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a461fa3162b01a31147f67e1bc8fbc94f" id="r_a461fa3162b01a31147f67e1bc8fbc94f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a461fa3162b01a31147f67e1bc8fbc94f">translate</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a461fa3162b01a31147f67e1bc8fbc94f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9101bcd73c57dd96d1088ab77845e425" id="r_a9101bcd73c57dd96d1088ab77845e425"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a9101bcd73c57dd96d1088ab77845e425">rotateX</a> (float radians)</td></tr>
+<tr class="separator:a9101bcd73c57dd96d1088ab77845e425"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec18b1685e3bcaa917c7cf913edc7a3f" id="r_aec18b1685e3bcaa917c7cf913edc7a3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#aec18b1685e3bcaa917c7cf913edc7a3f">rotateY</a> (float radians)</td></tr>
+<tr class="separator:aec18b1685e3bcaa917c7cf913edc7a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9703e71365a53027b9904e4acb7e671" id="r_ac9703e71365a53027b9904e4acb7e671"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#ac9703e71365a53027b9904e4acb7e671">rotateZ</a> (float radians)</td></tr>
+<tr class="separator:ac9703e71365a53027b9904e4acb7e671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7793de142864eb9fd3ee4760f078a3eb" id="r_a7793de142864eb9fd3ee4760f078a3eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a7793de142864eb9fd3ee4760f078a3eb">scale</a> (float sx, float sy, float sz)</td></tr>
+<tr class="separator:a7793de142864eb9fd3ee4760f078a3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fd3b04151c94b1bc423c42a99a4c26f" id="r_a7fd3b04151c94b1bc423c42a99a4c26f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a7fd3b04151c94b1bc423c42a99a4c26f">multiply</a> (const <a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> *other)</td></tr>
+<tr class="separator:a7fd3b04151c94b1bc423c42a99a4c26f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc862b409294b55210957f1eedc1f5c1" id="r_acc862b409294b55210957f1eedc1f5c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#acc862b409294b55210957f1eedc1f5c1">multiplied</a> (const <a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> *other) const</td></tr>
+<tr class="separator:acc862b409294b55210957f1eedc1f5c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20adeae0aa713ddcff46fceb78979f75" id="r_a20adeae0aa713ddcff46fceb78979f75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a20adeae0aa713ddcff46fceb78979f75">transformVec3</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) const</td></tr>
+<tr class="separator:a20adeae0aa713ddcff46fceb78979f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35f012dc3e592b3692a97f1d36eaec99" id="r_a35f012dc3e592b3692a97f1d36eaec99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec2.html">Vec2</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a35f012dc3e592b3692a97f1d36eaec99">transformPoint2</a> (const <a class="el" href="classeve_1_1math_1_1Vec2.html">Vec2</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) const</td></tr>
+<tr class="separator:a35f012dc3e592b3692a97f1d36eaec99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a670bf0cef13903d5db36aec71c78d18d" id="r_a670bf0cef13903d5db36aec71c78d18d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a670bf0cef13903d5db36aec71c78d18d">get</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a670bf0cef13903d5db36aec71c78d18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Column-major element 0..15.  <br /></td></tr>
+<tr class="separator:a670bf0cef13903d5db36aec71c78d18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae32d7e44203140092b0ae101954f6ed8" id="r_ae32d7e44203140092b0ae101954f6ed8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#ae32d7e44203140092b0ae101954f6ed8">set</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ae32d7e44203140092b0ae101954f6ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f638d08b08135ec72d6afaff2f13dfc" id="r_a8f638d08b08135ec72d6afaff2f13dfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a8f638d08b08135ec72d6afaff2f13dfc">clone</a> () const</td></tr>
+<tr class="separator:a8f638d08b08135ec72d6afaff2f13dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17ee2149d2a6602329d464aca5edcdaa" id="r_a17ee2149d2a6602329d464aca5edcdaa"><td class="memItemLeft" align="right" valign="top">const glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a17ee2149d2a6602329d464aca5edcdaa">raw</a> () const</td></tr>
+<tr class="separator:a17ee2149d2a6602329d464aca5edcdaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d5eeb2e274975b7e2a47b29f23b3fe9" id="r_a3d5eeb2e274975b7e2a47b29f23b3fe9"><td class="memItemLeft" align="right" valign="top">glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Mat4.html#a3d5eeb2e274975b7e2a47b29f23b3fe9">raw</a> ()</td></tr>
+<tr class="separator:a3d5eeb2e274975b7e2a47b29f23b3fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Column-major 4x4 matrix wrapping glm::mat4. </p>
+
+<p class="definition">在文件 <a class="el" href="Mat4_8h_source.html">Mat4.h</a> 第 <a class="el" href="Mat4_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a43fd8e60c6d4353e6a04b0484e75f3b1" name="a43fd8e60c6d4353e6a04b0484e75f3b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43fd8e60c6d4353e6a04b0484e75f3b1">&#9670;&#160;</a></span>Mat4() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::math::Mat4::Mat4 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mat4_8cpp_source.html#l00061">clone()</a> , 以及 <a class="el" href="Mat4_8cpp_source.html#l00034">multiplied()</a>.</p>
+
+</div>
+</div>
+<a id="a568fbc914e7ae3b2d95f3e6188153a66" name="a568fbc914e7ae3b2d95f3e6188153a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a568fbc914e7ae3b2d95f3e6188153a66">&#9670;&#160;</a></span>Mat4() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::math::Mat4::Mat4 </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8f638d08b08135ec72d6afaff2f13dfc" name="a8f638d08b08135ec72d6afaff2f13dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f638d08b08135ec72d6afaff2f13dfc">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> * eve::math::Mat4::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mat4_8cpp_source.html#l00012">Mat4()</a>.</p>
+
+</div>
+</div>
+<a id="a670bf0cef13903d5db36aec71c78d18d" name="a670bf0cef13903d5db36aec71c78d18d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a670bf0cef13903d5db36aec71c78d18d">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Mat4::get </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Column-major element 0..15. </p>
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a6af568700ba38a5a2e7eaff48ff42933" name="a6af568700ba38a5a2e7eaff48ff42933"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6af568700ba38a5a2e7eaff48ff42933">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::identity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc862b409294b55210957f1eedc1f5c1" name="acc862b409294b55210957f1eedc1f5c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc862b409294b55210957f1eedc1f5c1">&#9670;&#160;</a></span>multiplied()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> * eve::math::Mat4::multiplied </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mat4_8cpp_source.html#l00012">Mat4()</a>.</p>
+
+</div>
+</div>
+<a id="a7fd3b04151c94b1bc423c42a99a4c26f" name="a7fd3b04151c94b1bc423c42a99a4c26f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fd3b04151c94b1bc423c42a99a4c26f">&#9670;&#160;</a></span>multiply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::multiply </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Mat4.html">Mat4</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>this = this * other (column-vector convention). </p>
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d5eeb2e274975b7e2a47b29f23b3fe9" name="a3d5eeb2e274975b7e2a47b29f23b3fe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d5eeb2e274975b7e2a47b29f23b3fe9">&#9670;&#160;</a></span>raw() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 &amp; eve::math::Mat4::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8h_source.html">Mat4.h</a> 第 <a class="el" href="Mat4_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17ee2149d2a6602329d464aca5edcdaa" name="a17ee2149d2a6602329d464aca5edcdaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ee2149d2a6602329d464aca5edcdaa">&#9670;&#160;</a></span>raw() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const glm::mat4 &amp; eve::math::Mat4::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8h_source.html">Mat4.h</a> 第 <a class="el" href="Mat4_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9101bcd73c57dd96d1088ab77845e425" name="a9101bcd73c57dd96d1088ab77845e425"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9101bcd73c57dd96d1088ab77845e425">&#9670;&#160;</a></span>rotateX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::rotateX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec18b1685e3bcaa917c7cf913edc7a3f" name="aec18b1685e3bcaa917c7cf913edc7a3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec18b1685e3bcaa917c7cf913edc7a3f">&#9670;&#160;</a></span>rotateY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::rotateY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9703e71365a53027b9904e4acb7e671" name="ac9703e71365a53027b9904e4acb7e671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9703e71365a53027b9904e4acb7e671">&#9670;&#160;</a></span>rotateZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::rotateZ </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7793de142864eb9fd3ee4760f078a3eb" name="a7793de142864eb9fd3ee4760f078a3eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7793de142864eb9fd3ee4760f078a3eb">&#9670;&#160;</a></span>scale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::scale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae32d7e44203140092b0ae101954f6ed8" name="ae32d7e44203140092b0ae101954f6ed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae32d7e44203140092b0ae101954f6ed8">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::set </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a35f012dc3e592b3692a97f1d36eaec99" name="a35f012dc3e592b3692a97f1d36eaec99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35f012dc3e592b3692a97f1d36eaec99">&#9670;&#160;</a></span>transformPoint2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec2.html">Vec2</a> * eve::math::Mat4::transformPoint2 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec2.html">Vec2</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a20adeae0aa713ddcff46fceb78979f75" name="a20adeae0aa713ddcff46fceb78979f75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20adeae0aa713ddcff46fceb78979f75">&#9670;&#160;</a></span>transformVec3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Mat4::transformVec3 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a461fa3162b01a31147f67e1bc8fbc94f" name="a461fa3162b01a31147f67e1bc8fbc94f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a461fa3162b01a31147f67e1bc8fbc94f">&#9670;&#160;</a></span>translate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Mat4::translate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a> 第 <a class="el" href="Mat4_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/math/<a class="el" href="Mat4_8h_source.html">Mat4.h</a></li>
+<li>src/modules/math/<a class="el" href="Mat4_8cpp_source.html">Mat4.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

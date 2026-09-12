@@ -1,0 +1,258 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::map::Fov 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a61d4a74bb40db73b998af04014edb1e2">addRevealer</a>(int x, int y, int radius)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a84668cd98fa4510eb131d22a5ee5f680">addRevealer3</a>(int x, int y, int z, int radius)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a16baf290eae3d1e00e513dc420fb5a17">bindLayer</a>(TileLayer *layer)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a0a2243486d33c1ea94fb36ad408de7d1">blockOpaqueGid</a>(int gid)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#adffc41a79a956ff0f4b4e8186e0ce229">buildMaskTexture</a>(graphics::Graphics *gfx) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a6ce4a2d33bd6739865448c3a0a66e38c">buildMaskTextureSlice</a>(graphics::Graphics *gfx, int sliceZ) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a0ac0a3fd6d93d26744d7abdf65e8acd7">canDetect</a>(int revealerId, int x, int y, float targetStealth) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ac518f365818e3843e8996116a81e0b50">canDetect3</a>(int revealerId, int x, int y, int z, float targetStealth) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a6600e26f72928dea0fa9685a9a56a96c">clearMemory</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a6ab9855cb81e80ed3a6108aadd9e894a">clearOpaqueGids</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a9a88887c1cdf52be552b728d1e433552">clearRevealerFacing</a>(int id)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a96355828439e309340f737e465d10a59">clearRevealers</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a9da5bd9b5bbb623773763bbb56b091af">compute</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a4929d0177b2ed7e756e460d43155d9d2">fillMaskR8</a>(std::vector&lt; uint8_t &gt; &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a7fa8ab2e0b5baee17c000b3eac225608">fillMaskR8Slice</a>(std::vector&lt; uint8_t &gt; &amp;out, int sliceZ) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a337f0b52c1179c320c98acad6105593f">Fov</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ab5e7eed519378c5aed469c53250c341e">Fov</a>(TileLayer *layer)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a529f68daa40b64c94716b3366caef2a8">Fov</a>(int width, int height)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#abbe4707db25437b75f43caab5bb26478">Fov</a>(int width, int height, int depth)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ad9fd2c3b43179ecc3ec1e2452cea37cb">Fov</a>(Fov &amp;&amp;) noexcept</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a662cb6bffcd3159d0077bc27651c2aec">Fov</a>(const Fov &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a86af5145fe21049642ae68793edeca03">getAlgorithm</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#acfe5d5da1ba506b5002c444a1f359e89">getBlockEmpty</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a2bc2f63a3109345dc95b4a21f15f7650">getCliffBlock</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a95d6495fdb2eb60755ace0bf61c93b9e">getCornerPeek</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a5aad6cd76346b9ab8f494c99158a9aa1">getDepth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a1f51fe7da418f148b339a526e527dc4e">getDetectionMargin</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a3de67f20b2156e68a6197d82c098d2f7">getEffectiveRadius</a>(int id) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a0e4e7e23aff761f2389f15afba0218fb">getElevation</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a28e330955b1b6b100a1d675af54bb0c7">getEyeOffset</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a155eead6f539ea797f4c7318b49a379d">getHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#abc4f1ebba1f576d12e8faa7e231d1ba5">getMaskByte</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#af64295e997b8d7b64fc11668c1171413">getMaskByte3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a69e08c3368c17124b11fe96b2ebc6987">getMaskValue</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a564220d942a20a421201190edfd44b6b">getMaskValue3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a5f751f2310e42a18c33fac1ddf88f84d">getMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#accbc1b0fd905fdad06358ff5945d5573">getPerceptionRadiusScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a19caa0c0a0fd3ab55c490b216a0a9cd6">getRadiusMetric</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a6cb8c5ba40305f82ea881e9c5e14b63c">getRevealerCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a55d918442bd95c453bb2b9903600ab9f">getRevealerPerception</a>(int id) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ad2ec995510685bbbdc3fff7e46db2a05">getState</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a68c4d7af93f3ac516d7d0e610be589b5">getState3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a7e9692253ff4cfa1522ebb1a3150bc16">getTopology</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a148979668acb92e2457333f891437733">getVerticalRange</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a4d14b731e81c97773e3c8318426b640a">getWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a9d300487b882ed29db54cd8365274ea5">isDirty</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a0fc39cd8270b112644ce4022c2a4badf">isExplored</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a6bfd6bd8e72774535ef3d2f398ec8685">isExplored3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a113ac83eb1253b5acd57b8bf9fd8a5b1">isOpaque</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ace73878db4be2a1a40aed859981aa2dc">isOpaque3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a390111bc22f7d5a1e13501daa3d18b65">isVisible</a>(int x, int y) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a32ff2921c8f29cffd137da944f3f3345">isVisible3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#aafc03f9b7e063d7ecec72d0cc081f620">markDirty</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a2629a9551a69a2f5b6a3a497ddd86f33">operator=</a>(Fov &amp;&amp;) noexcept</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ae4d91745aa883cc47853834119430b23">operator=</a>(const Fov &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a927066fc49aa1f28bb4853381874159a">removeRevealer</a>(int id)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ae8c05b3569c1adb556f4b1e23513738b">resetVisibleOnly</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a4d7de7b2141a75124b15af8bfd46c78c">restore</a>(const Snapshot &amp;snapshot)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a19cc51557fbbf3060eedb8433331163f">setAlgorithm</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a5dae0aa6e27749ab3e7df6cf704d91a3">setBlockEmpty</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a6f04905f5325c69d3a2597910bb99a36">setCliffBlock</a>(float delta)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ad6c549e26aca90daa354b310fa296c4e">setCornerPeek</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a33554eb72c92239cd5e64a0583e9bac2">setDetectionMargin</a>(float margin)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a70b665b1f811795f3392c8f90be954cf">setElevation</a>(int x, int y, float elev)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a3541c90af2ffbde7b8c07b5dcdfcf562">setEyeOffset</a>(float offset)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#aa9b44ff192bcd4f4c886e691ba3e7836">setMode</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ad78f5027136e96835e9d2094cdbc1628">setOpaque</a>(int x, int y, bool opaque)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a2d9c1f258fc599fc07ef226bc2e74156">setOpaque3</a>(int x, int y, int z, bool opaque)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#aa4e7e8e711fe0f15cc363012726e2342">setPerceptionRadiusScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a29a23d4832bf345a35c06d028bf70b85">setRadiusMetric</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a2d3bef77f8c59e221fd158de26a4e475">setRevealerEnabled</a>(int id, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a8ebedf33db3ecceb6fba7d2df36cd471">setRevealerFacing</a>(int id, float facingDeg, float halfAngleDeg)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a8e7975fc377f86e9af9ec7efb3ea177e">setRevealerPerception</a>(int id, float perception)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a54e1c02407395b1aea6f41898ab158ca">setRevealerPosition</a>(int id, int x, int y)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a88d48862342ce32d27075a01d3d2a33c">setRevealerPosition3</a>(int id, int x, int y, int z)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a877bbfaab98ab63189bfc8dae3e2e3d2">setRevealerRadius</a>(int id, int radius)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a447195359af6e201b911908609f268a4">setSize</a>(int width, int height)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#aebce8cc66be41c85be33ab64f669c0ad">setTopology</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#ac1c6a32487275525084f5d431464ab42">setVerticalRange</a>(int range)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#af5ba197ceaf600267da987daffc5f92b">setVolumeSize</a>(int width, int height, int depth)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#a7d25d593a05044f879a72225b440cc2c">snapshot</a>() const</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#af08827199636b7a351b9b58ed84dd106">syncFromLayer</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#aacc8afc47317298db873829804358ee6">unblockOpaqueGid</a>(int gid)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html#afda87a2878a37855c2d00b0b06f2b5f1">~Fov</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

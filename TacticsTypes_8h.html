@@ -1,0 +1,373 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/TacticsTypes.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">TacticsTypes.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic board values and short-root ECS entities for tactics.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ECS_8h_source.html">common/ECS.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Identity_8h_source.html">common/Identity.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Revision_8h_source.html">common/Revision.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SubjectRef_8h_source.html">common/SubjectRef.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Time_8h_source.html">common/Time.h</a>&quot;</code><br />
+<code>#include &lt;compare&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="TacticsTypes_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Cell.html">eve::tactics::Cell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical board coordinate independent of rendering projection.  <a href="structeve_1_1tactics_1_1Cell.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1CellState.html">eve::tactics::CellState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One authoritative board cell fact.  <a href="structeve_1_1tactics_1_1CellState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BoardCellRecord.html">eve::tactics::BoardCellRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning persistent board record used by snapshots and replay inspection.  <a href="structeve_1_1tactics_1_1BoardCellRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TurnResourceSpec.html">eve::tactics::TurnResourceSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial and per-round tactical resource values for one unit.  <a href="structeve_1_1tactics_1_1TurnResourceSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BoardState.html">eve::tactics::BoardState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative board facts and occupancy indexes for one battle.  <a href="classeve_1_1tactics_1_1BoardState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticalSide.html">eve::tactics::TacticalSide</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tactical side short-root entity.  <a href="classeve_1_1tactics_1_1TacticalSide.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticalSide_1_1Identity.html">eve::tactics::TacticalSide::Identity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cold, persistent and authoritative identity component.  <a href="structeve_1_1tactics_1_1TacticalSide_1_1Identity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticalUnit.html">eve::tactics::TacticalUnit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tactical unit short-root entity.  <a href="classeve_1_1tactics_1_1TacticalUnit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticalUnit_1_1Identity.html">eve::tactics::TacticalUnit::Identity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cold, persistent and authoritative identity component.  <a href="structeve_1_1tactics_1_1TacticalUnit_1_1Identity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticalUnit_1_1Membership.html">eve::tactics::TacticalUnit::Membership</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linked battle and side identities; both are generation checked on use.  <a href="structeve_1_1tactics_1_1TacticalUnit_1_1Membership.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticalUnit_1_1Position.html">eve::tactics::TacticalUnit::Position</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hot authoritative tactical position and facing.  <a href="structeve_1_1tactics_1_1TacticalUnit_1_1Position.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticalUnit_1_1TurnResources.html">eve::tactics::TacticalUnit::TurnResources</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hot authoritative per-turn resources.  <a href="structeve_1_1tactics_1_1TacticalUnit_1_1TurnResources.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BattleEvent.html">eve::tactics::BattleEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One deterministic battle lifecycle event owned by <a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a>.  <a href="structeve_1_1tactics_1_1BattleEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReactionCandidate.html">eve::tactics::ReactionCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One eligible deterministic reaction choice.  <a href="structeve_1_1tactics_1_1ReactionCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReactionWindow.html">eve::tactics::ReactionWindow</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One open reaction window on the battle-owned LIFO stack.  <a href="structeve_1_1tactics_1_1ReactionWindow.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReactionReceipt.html">eve::tactics::ReactionReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted reaction identity and remaining resource snapshot.  <a href="structeve_1_1tactics_1_1ReactionReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BattleCommand.html">eve::tactics::BattleCommand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One accepted replay command using only persistent identities and values.  <a href="structeve_1_1tactics_1_1BattleCommand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ObjectiveSpec.html">eve::tactics::ObjectiveSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persistent objective definition using stable side identities.  <a href="structeve_1_1tactics_1_1ObjectiveSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ObjectiveState.html">eve::tactics::ObjectiveState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable objective projection and completion revision.  <a href="structeve_1_1tactics_1_1ObjectiveState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1Battle.html">eve::tactics::Battle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a> short-root and authoritative owner of board and turn state.  <a href="classeve_1_1tactics_1_1Battle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Identity.html">eve::tactics::Battle::Identity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cold, persistent and authoritative battle identity.  <a href="structeve_1_1tactics_1_1Battle_1_1Identity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Board.html">eve::tactics::Battle::Board</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative board component.  <a href="structeve_1_1tactics_1_1Battle_1_1Board.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html">eve::tactics::Battle::TurnState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative deterministic lifecycle and scheduling state.  <a href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Events.html">eve::tactics::Battle::Events</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transient deterministic event projection; not a second state authority.  <a href="structeve_1_1tactics_1_1Battle_1_1Events.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Reactions.html">eve::tactics::Battle::Reactions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative transient reaction stack and root-chain cycle guard.  <a href="structeve_1_1tactics_1_1Battle_1_1Reactions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Commands.html">eve::tactics::Battle::Commands</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted external commands in deterministic sequence order.  <a href="structeve_1_1tactics_1_1Battle_1_1Commands.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Objectives.html">eve::tactics::Battle::Objectives</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative objective definitions and completion state.  <a href="structeve_1_1tactics_1_1Battle_1_1Objectives.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1RandomStreamState.html">eve::tactics::Battle::RandomStreamState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One named deterministic random stream's serializable state.  <a href="structeve_1_1tactics_1_1Battle_1_1RandomStreamState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1Random.html">eve::tactics::Battle::Random</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Battle-owned named random streams; previews never mutate this component.  <a href="structeve_1_1tactics_1_1Battle_1_1Random.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tactics" id="r_namespaceeve_1_1tactics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html">eve::tactics</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:aec8e04afd6bc8becda95f117c43dedb3" id="r_aec8e04afd6bc8becda95f117c43dedb3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3">eve::tactics::BoardTopology</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3a476e503adaf90e2fd77cd47ca9be49cd">eve::tactics::Square4</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3a92fdb36c7b7fc64f1a3871f1948b4f43">eve::tactics::Square8</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3af63ee21e1e9cd84a1d964c14dc42eb46">eve::tactics::HexAxial</a>
+ }</td></tr>
+<tr class="memdesc:aec8e04afd6bc8becda95f117c43dedb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported deterministic board-neighbour topologies.  <a href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3">更多...</a><br /></td></tr>
+<tr class="separator:aec8e04afd6bc8becda95f117c43dedb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8fc99e5215995b92d41e72a10dd5ba" id="r_a2c8fc99e5215995b92d41e72a10dd5ba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">eve::tactics::BattleStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">eve::tactics::Running</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622">eve::tactics::Ended</a>
+ }</td></tr>
+<tr class="memdesc:a2c8fc99e5215995b92d41e72a10dd5ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tactical battle lifecycle.  <a href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">更多...</a><br /></td></tr>
+<tr class="separator:a2c8fc99e5215995b92d41e72a10dd5ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad179be517f946678fdf8b276786a2bde" id="r_ad179be517f946678fdf8b276786a2bde"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">eve::tactics::BattlePhase</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">eve::tactics::Setup</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea5805f5641fb7cdc6e12163b7849cba98">eve::tactics::BattleStart</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeae279ccaa0940305fd66b36348b823963">eve::tactics::RoundStart</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeab0a8a1979409102f824db0a1a8484802">eve::tactics::TurnStart</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">eve::tactics::Acting</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4">eve::tactics::Reaction</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f">eve::tactics::TurnEnd</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea85f2151e51ce5218e9eccdf9e421a824">eve::tactics::RoundEnd</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44">eve::tactics::BattleEnd</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ad179be517f946678fdf8b276786a2bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit, externally observable battle phase.  <a href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">更多...</a><br /></td></tr>
+<tr class="separator:ad179be517f946678fdf8b276786a2bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2768be910195d0312da73547f9d372be" id="r_a2768be910195d0312da73547f9d372be"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">eve::tactics::TurnPolicyKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372beacee327da59d9f97c6e84dd206c8a2fa5">eve::tactics::SideAlternating</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372beae3478f6c1f76130c05863489c5b79bb9">eve::tactics::Initiative</a>
+ }</td></tr>
+<tr class="memdesc:a2768be910195d0312da73547f9d372be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in deterministic turn scheduling policy.  <a href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">更多...</a><br /></td></tr>
+<tr class="separator:a2768be910195d0312da73547f9d372be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68a416c4caa9901c69f15df7de0e3a9e" id="r_a68a416c4caa9901c69f15df7de0e3a9e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">eve::tactics::BattleCommandKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37">eve::tactics::Start</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee">eve::tactics::Advance</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">eve::tactics::Move</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f">eve::tactics::Face</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652">eve::tactics::Wait</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb">eve::tactics::EndTurn</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061">eve::tactics::Finish</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f">eve::tactics::OpenReaction</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a">eve::tactics::AcceptReaction</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e">eve::tactics::DeclineReaction</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7">eve::tactics::DefeatUnit</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea">eve::tactics::RollRandom</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a68a416c4caa9901c69f15df7de0e3a9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted deterministic command kinds recorded for replay.  <a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">更多...</a><br /></td></tr>
+<tr class="separator:a68a416c4caa9901c69f15df7de0e3a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a804b262365352869cc4608967bce2cc7" id="r_a804b262365352869cc4608967bce2cc7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7">eve::tactics::ObjectiveKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7abe7c35d305151e63f67bb1c800fa4bb1">eve::tactics::EliminateSide</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7ab7f3298e431ec4ed12e16e8ab7cd8da0">eve::tactics::SurviveRounds</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7aaa14823cfa57fcc9ede8b95213cdf1e9">eve::tactics::OccupyCells</a>
+ }</td></tr>
+<tr class="memdesc:a804b262365352869cc4608967bce2cc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in deterministic objective rules.  <a href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7">更多...</a><br /></td></tr>
+<tr class="separator:a804b262365352869cc4608967bce2cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a108e9195df2270a1008cc86c8ab4be42" id="r_a108e9195df2270a1008cc86c8ab4be42"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42">eve::tactics::ObjectiveStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42a2d13df6f8b5e4c5af9f87e0dc39df69d">eve::tactics::Pending</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42a07ca5050e697392c9ed47e6453f1453f">eve::tactics::Completed</a>
+ }</td></tr>
+<tr class="memdesc:a108e9195df2270a1008cc86c8ab4be42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Objective lifecycle owned by its battle.  <a href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42">更多...</a><br /></td></tr>
+<tr class="separator:a108e9195df2270a1008cc86c8ab4be42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aeab04c627d64fc0b85fdc8fcda28a73f" id="r_aeab04c627d64fc0b85fdc8fcda28a73f"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aeab04c627d64fc0b85fdc8fcda28a73f">eve::tactics::phaseName</a> (<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a> <a class="el" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>) noexcept</td></tr>
+<tr class="memdesc:aeab04c627d64fc0b85fdc8fcda28a73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable protocol spelling of a battle phase.  <br /></td></tr>
+<tr class="separator:aeab04c627d64fc0b85fdc8fcda28a73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d79210b8666201065a6be2a27d9e2c2" id="r_a2d79210b8666201065a6be2a27d9e2c2"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2d79210b8666201065a6be2a27d9e2c2">eve::tactics::statusName</a> (<a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a> <a class="el" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>) noexcept</td></tr>
+<tr class="memdesc:a2d79210b8666201065a6be2a27d9e2c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable protocol spelling of a battle status.  <br /></td></tr>
+<tr class="separator:a2d79210b8666201065a6be2a27d9e2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic board values and short-root ECS entities for tactics. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

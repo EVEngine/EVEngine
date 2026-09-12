@@ -1,0 +1,638 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::IPlayHostRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html">IPlayHostRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1dev_1_1IPlayHostRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::IPlayHostRuntime类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Injected runtime used by Play Host. Tests supply a fake; MCP uses the engine adapter. Implementations must not retain request pointers and must not invoke unknown callbacks. @thread Owner simulation / game-loop thread only.  
+ <a href="classeve_1_1dev_1_1IPlayHostRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PlayHost_8h_source.html">PlayHost.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a17d687710d40efacfe529f906df1899c" id="r_a17d687710d40efacfe529f906df1899c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a17d687710d40efacfe529f906df1899c">~IPlayHostRuntime</a> ()=default</td></tr>
+<tr class="separator:a17d687710d40efacfe529f906df1899c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e4b214f5569049c5f1937c1af7c21eb" id="r_a3e4b214f5569049c5f1937c1af7c21eb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a3e4b214f5569049c5f1937c1af7c21eb">paused</a> () const =0</td></tr>
+<tr class="memdesc:a3e4b214f5569049c5f1937c1af7c21eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the host clock is paused.  <br /></td></tr>
+<tr class="separator:a3e4b214f5569049c5f1937c1af7c21eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95cbb13f0c9ef500d240ea1867dfb0ee" id="r_a95cbb13f0c9ef500d240ea1867dfb0ee"><td class="memItemLeft" align="right" valign="top">virtual std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a95cbb13f0c9ef500d240ea1867dfb0ee">hostFrame</a> () const =0</td></tr>
+<tr class="memdesc:a95cbb13f0c9ef500d240ea1867dfb0ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic host-frame counter owned by this runtime (0 if unknown).  <br /></td></tr>
+<tr class="separator:a95cbb13f0c9ef500d240ea1867dfb0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643149c69c18d18531ff6ab941c414a9" id="r_a643149c69c18d18531ff6ab941c414a9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a643149c69c18d18531ff6ab941c414a9">pause</a> ()=0</td></tr>
+<tr class="memdesc:a643149c69c18d18531ff6ab941c414a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause the host clock.  <br /></td></tr>
+<tr class="separator:a643149c69c18d18531ff6ab941c414a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7da2f06e7bfc90cf1b256fa76cbb5c8" id="r_ad7da2f06e7bfc90cf1b256fa76cbb5c8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#ad7da2f06e7bfc90cf1b256fa76cbb5c8">play</a> ()=0</td></tr>
+<tr class="memdesc:ad7da2f06e7bfc90cf1b256fa76cbb5c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume free-running host clock.  <br /></td></tr>
+<tr class="separator:ad7da2f06e7bfc90cf1b256fa76cbb5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f7843f79a49c51b030dba58acd64388" id="r_a2f7843f79a49c51b030dba58acd64388"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a2f7843f79a49c51b030dba58acd64388">stepFrames</a> (std::int64_t count)=0</td></tr>
+<tr class="memdesc:a2f7843f79a49c51b030dba58acd64388"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request <code>count</code> host frames then pause.  <br /></td></tr>
+<tr class="separator:a2f7843f79a49c51b030dba58acd64388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f705252cf21d7bfb5475ce8d05be39" id="r_a63f705252cf21d7bfb5475ce8d05be39"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a63f705252cf21d7bfb5475ce8d05be39">loadContract</a> () const =0</td></tr>
+<tr class="memdesc:a63f705252cf21d7bfb5475ce8d05be39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load <code>game.agent.json</code> as an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> object.  <br /></td></tr>
+<tr class="separator:a63f705252cf21d7bfb5475ce8d05be39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2258e9e318271f244bf8c816de4e4c6a" id="r_a2258e9e318271f244bf8c816de4e4c6a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a2258e9e318271f244bf8c816de4e4c6a">observeScriptRoot</a> (std::string_view root, const std::vector&lt; std::string &gt; &amp;<a class="el" href="PlayHost_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>) const =0</td></tr>
+<tr class="memdesc:a2258e9e318271f244bf8c816de4e4c6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one marked script root without evaluating arbitrary code.  <br /></td></tr>
+<tr class="separator:a2258e9e318271f244bf8c816de4e4c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a555d044dfb6cb2172d11c44e7d060d27" id="r_a555d044dfb6cb2172d11c44e7d060d27"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a555d044dfb6cb2172d11c44e7d060d27">capturePng</a> (std::string <a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)=0</td></tr>
+<tr class="memdesc:a555d044dfb6cb2172d11c44e7d060d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the last presented frame through <a class="el" href="classeve_1_1IRenderCapture.html" title="Frame capture + camera + visible-entity inspection (graphics).">IRenderCapture</a>.  <br /></td></tr>
+<tr class="separator:a555d044dfb6cb2172d11c44e7d060d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef9f9a753369a1c16b759538a957b598" id="r_aef9f9a753369a1c16b759538a957b598"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#aef9f9a753369a1c16b759538a957b598">captureCheckpoint</a> ()=0</td></tr>
+<tr class="memdesc:aef9f9a753369a1c16b759538a957b598"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture marked script snapshot JSON.  <br /></td></tr>
+<tr class="separator:aef9f9a753369a1c16b759538a957b598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bbe8254443c92139e7b7f3124b27e3f" id="r_a4bbe8254443c92139e7b7f3124b27e3f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a4bbe8254443c92139e7b7f3124b27e3f">restoreCheckpoint</a> (std::string_view json)=0</td></tr>
+<tr class="memdesc:a4bbe8254443c92139e7b7f3124b27e3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore a previously captured checkpoint.  <br /></td></tr>
+<tr class="separator:a4bbe8254443c92139e7b7f3124b27e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a557289e57b87386db43d407f6c29e37e" id="r_a557289e57b87386db43d407f6c29e37e"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#a557289e57b87386db43d407f6c29e37e">gameplayDomains</a> () const =0</td></tr>
+<tr class="memdesc:a557289e57b87386db43d407f6c29e37e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Published gameplay-control domain names, sorted.  <br /></td></tr>
+<tr class="separator:a557289e57b87386db43d407f6c29e37e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa764ea97f26d54af8a66fac7d6b9cca8" id="r_aa764ea97f26d54af8a66fac7d6b9cca8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1IPlayHostRuntime.html#aa764ea97f26d54af8a66fac7d6b9cca8">invokeScriptAction</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string_view <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)=0</td></tr>
+<tr class="memdesc:aa764ea97f26d54af8a66fac7d6b9cca8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run one contract-mapped script snippet. Not an open eval surface.  <br /></td></tr>
+<tr class="separator:aa764ea97f26d54af8a66fac7d6b9cca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Injected runtime used by Play Host. Tests supply a fake; MCP uses the engine adapter. Implementations must not retain request pointers and must not invoke unknown callbacks. @thread Owner simulation / game-loop thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="PlayHost_8h_source.html">PlayHost.h</a> 第 <a class="el" href="PlayHost_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a17d687710d40efacfe529f906df1899c" name="a17d687710d40efacfe529f906df1899c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d687710d40efacfe529f906df1899c">&#9670;&#160;</a></span>~IPlayHostRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::dev::IPlayHostRuntime::~IPlayHostRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aef9f9a753369a1c16b759538a957b598" name="aef9f9a753369a1c16b759538a957b598"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef9f9a753369a1c16b759538a957b598">&#9670;&#160;</a></span>captureCheckpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::dev::IPlayHostRuntime::captureCheckpoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture marked script snapshot JSON. </p>
+
+</div>
+</div>
+<a id="a555d044dfb6cb2172d11c44e7d060d27" name="a555d044dfb6cb2172d11c44e7d060d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555d044dfb6cb2172d11c44e7d060d27">&#9670;&#160;</a></span>capturePng()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::dev::IPlayHostRuntime::capturePng </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture the last presented frame through <a class="el" href="classeve_1_1IRenderCapture.html" title="Frame capture + camera + visible-entity inspection (graphics).">IRenderCapture</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>Destination PNG path. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> with path/width/height, or Unsupported when capture is absent. </dd></dl>
+
+</div>
+</div>
+<a id="a557289e57b87386db43d407f6c29e37e" name="a557289e57b87386db43d407f6c29e37e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a557289e57b87386db43d407f6c29e37e">&#9670;&#160;</a></span>gameplayDomains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; std::string &gt; eve::dev::IPlayHostRuntime::gameplayDomains </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Published gameplay-control domain names, sorted. </p>
+
+</div>
+</div>
+<a id="a95cbb13f0c9ef500d240ea1867dfb0ee" name="a95cbb13f0c9ef500d240ea1867dfb0ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95cbb13f0c9ef500d240ea1867dfb0ee">&#9670;&#160;</a></span>hostFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::uint64_t eve::dev::IPlayHostRuntime::hostFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic host-frame counter owned by this runtime (0 if unknown). </p>
+
+</div>
+</div>
+<a id="aa764ea97f26d54af8a66fac7d6b9cca8" name="aa764ea97f26d54af8a66fac7d6b9cca8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa764ea97f26d54af8a66fac7d6b9cca8">&#9670;&#160;</a></span>invokeScriptAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::dev::IPlayHostRuntime::invokeScriptAction </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run one contract-mapped script snippet. Not an open eval surface. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Action id declared in <code>game.agent.json</code>. </td></tr>
+    <tr><td class="paramname">source</td><td>Exact snippet from the contract map; implementations must not substitute caller-supplied script. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a63f705252cf21d7bfb5475ce8d05be39" name="a63f705252cf21d7bfb5475ce8d05be39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63f705252cf21d7bfb5475ce8d05be39">&#9670;&#160;</a></span>loadContract()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::dev::IPlayHostRuntime::loadContract </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load <code>game.agent.json</code> as an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> object. </p>
+<dl class="section return"><dt>返回</dt><dd>The contract object, or NotFound / ParseError / Failed. </dd></dl>
+
+</div>
+</div>
+<a id="a2258e9e318271f244bf8c816de4e4c6a" name="a2258e9e318271f244bf8c816de4e4c6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2258e9e318271f244bf8c816de4e4c6a">&#9670;&#160;</a></span>observeScriptRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::dev::IPlayHostRuntime::observeScriptRoot </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>fields</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Project one marked script root without evaluating arbitrary code. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">root</td><td>Root table slot declared in the contract <code>path</code>. </td></tr>
+    <tr><td class="paramname">fields</td><td>Dotted field paths; empty means the whole root object. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a643149c69c18d18531ff6ab941c414a9" name="a643149c69c18d18531ff6ab941c414a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a643149c69c18d18531ff6ab941c414a9">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::dev::IPlayHostRuntime::pause </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pause the host clock. </p>
+
+</div>
+</div>
+<a id="a3e4b214f5569049c5f1937c1af7c21eb" name="a3e4b214f5569049c5f1937c1af7c21eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e4b214f5569049c5f1937c1af7c21eb">&#9670;&#160;</a></span>paused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::dev::IPlayHostRuntime::paused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the host clock is paused. </p>
+
+</div>
+</div>
+<a id="ad7da2f06e7bfc90cf1b256fa76cbb5c8" name="ad7da2f06e7bfc90cf1b256fa76cbb5c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7da2f06e7bfc90cf1b256fa76cbb5c8">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::dev::IPlayHostRuntime::play </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resume free-running host clock. </p>
+
+</div>
+</div>
+<a id="a4bbe8254443c92139e7b7f3124b27e3f" name="a4bbe8254443c92139e7b7f3124b27e3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bbe8254443c92139e7b7f3124b27e3f">&#9670;&#160;</a></span>restoreCheckpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::dev::IPlayHostRuntime::restoreCheckpoint </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restore a previously captured checkpoint. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td><a class="el" href="classeve_1_1dev_1_1Snapshot.html" title="Script + native state snapshot for state hot reload.">Snapshot</a> JSON produced by captureCheckpoint. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2f7843f79a49c51b030dba58acd64388" name="a2f7843f79a49c51b030dba58acd64388"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f7843f79a49c51b030dba58acd64388">&#9670;&#160;</a></span>stepFrames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::dev::IPlayHostRuntime::stepFrames </td>
+          <td>(</td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Request <code>count</code> host frames then pause. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">count</td><td>Frames to run; callers must pass a positive value. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="PlayHost_8h_source.html">PlayHost.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

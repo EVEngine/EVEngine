@@ -1,0 +1,546 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sensing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sensing.html">sensing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::sensing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1Candidate.html">Candidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A deterministic candidate returned by a spatial query.  <a href="structeve_1_1sensing_1_1Candidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1GridArea.html">GridArea</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An integer grid area constraint, kept separate from <a class="el" href="classeve_1_1sensing_1_1WorldArea.html" title="A world-space area constraint.">WorldArea</a>.  <a href="classeve_1_1sensing_1_1GridArea.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1GridPoint.html">GridPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer grid point tagged as Grid2D or Grid3D.  <a href="classeve_1_1sensing_1_1GridPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ILineOfSightQuery.html">ILineOfSightQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumer-owned line-of-sight capability.  <a href="classeve_1_1sensing_1_1ILineOfSightQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ISensingCandidateProvider.html">ISensingCandidateProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1sensing_1_1Candidate.html" title="A deterministic candidate returned by a spatial query.">Candidate</a> discovery capability consumed by <a class="el" href="classeve_1_1sensing_1_1TargetingResolver.html" title="Generic constraint evaluator that composes candidate and LOS capabilities.">TargetingResolver</a>.  <a href="classeve_1_1sensing_1_1ISensingCandidateProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1LineOfSightResult.html">LineOfSightResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of one injected line-of-sight query.  <a href="structeve_1_1sensing_1_1LineOfSightResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1ScriptSensingWorld.html">ScriptSensingWorld</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script factory for independent sensing worlds.  <a href="classeve_1_1sensing_1_1Sensing.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingCandidateProvider.html">SensingCandidateProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure CPU sensing candidate provider with deterministic map-backed storage.  <a href="classeve_1_1sensing_1_1SensingCandidateProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gameplay-facing 2D candidate query service; it never values or selects targets.  <a href="classeve_1_1sensing_1_1SensingWorld.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle domain for module-owned sensing worlds.  <a href="structeve_1_1sensing_1_1SensingWorldHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1Subject.html">Subject</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrored gameplay facts used by candidate queries.  <a href="structeve_1_1sensing_1_1Subject.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetCandidate.html">TargetCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1sensing_1_1Candidate.html" title="A deterministic candidate returned by a spatial query.">Candidate</a> facts returned by sensing.  <a href="structeve_1_1sensing_1_1TargetCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingQuery.html">TargetingQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A query passed from a domain targeting algorithm to sensing.  <a href="structeve_1_1sensing_1_1TargetingQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1TargetingResolver.html">TargetingResolver</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic constraint evaluator that composes candidate and LOS capabilities.  <a href="classeve_1_1sensing_1_1TargetingResolver.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingSpec.html">TargetingSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A checked target-count and spatial constraint description.  <a href="structeve_1_1sensing_1_1TargetingSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1TargetSet.html">TargetSet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning target result containing primary-independent subjects and optional geometry.  <a href="classeve_1_1sensing_1_1TargetSet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A world-space area constraint.  <a href="classeve_1_1sensing_1_1WorldArea.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite world-space point tagged as either World2D or World3D.  <a href="classeve_1_1sensing_1_1WorldPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ZoneRef.html">ZoneRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong reference to a named spatial zone.  <a href="classeve_1_1sensing_1_1ZoneRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a3c44a225d596c34383dd5c422b94796d" id="r_a3c44a225d596c34383dd5c422b94796d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a3c44a225d596c34383dd5c422b94796d">SensingWorldHandleRef</a> = <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt; <a class="el" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:a3c44a225d596c34383dd5c422b94796d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation- and module-epoch-qualified sensing-world reference.  <br /></td></tr>
+<tr class="separator:a3c44a225d596c34383dd5c422b94796d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a070c050c984b3f451a7aba3b399dad3d" id="r_a070c050c984b3f451a7aba3b399dad3d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a070c050c984b3f451a7aba3b399dad3d">SubjectRef</a> = <a class="el" href="classeve_1_1SubjectRef.html">::eve::SubjectRef</a></td></tr>
+<tr class="memdesc:a070c050c984b3f451a7aba3b399dad3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong reference to a runtime subject.  <br /></td></tr>
+<tr class="separator:a070c050c984b3f451a7aba3b399dad3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ab946bebc2c46570a1c777473564d98" id="r_a1ab946bebc2c46570a1c777473564d98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">TargetLocation</a> = std::variant&lt; <a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>, <a class="el" href="classeve_1_1sensing_1_1GridPoint.html">GridPoint</a> &gt;</td></tr>
+<tr class="memdesc:a1ab946bebc2c46570a1c777473564d98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Either a world point or a grid point, with the tag retained.  <br /></td></tr>
+<tr class="separator:a1ab946bebc2c46570a1c777473564d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8d25e6dbefdd45f90131cc4a7ae039ba" id="r_a8d25e6dbefdd45f90131cc4a7ae039ba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac">World2D</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f">World3D</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">Grid2D</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">Grid3D</a>
+ }</td></tr>
+<tr class="memdesc:a8d25e6dbefdd45f90131cc4a7ae039ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinate spaces are not interchangeable, even when dimensions match.  <a href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">更多...</a><br /></td></tr>
+<tr class="separator:a8d25e6dbefdd45f90131cc4a7ae039ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8dd552077f872e762f6d827d05d8589" id="r_ab8dd552077f872e762f6d827d05d8589"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">TargetDomain</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589aed36a1ef76a59ee3f15180e0441188ad">Any</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589aad6e7652b1bdfb38783486c2c3d5e806">Self</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589a0dd87782600574e2f791bcfe639d4fcc">Ally</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589a8c6d21187fb58b7a079d70030686b33e">Enemy</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589ae9bb5320b3890b6747c91b5a71ae5a01">Neutral</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ab8dd552077f872e762f6d827d05d8589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable relationship class used by generic domain constraints.  <a href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">更多...</a><br /></td></tr>
+<tr class="separator:ab8dd552077f872e762f6d827d05d8589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5b76e95dbc733c8788c54c8b1a6f48f" id="r_ae5b76e95dbc733c8788c54c8b1a6f48f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48f">LineOfSightMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48fa3c841b03acb069eccf34fa1e6898c992">NotRequired</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48fab651efdb98a5d6bd2b3935d0c3f4a5e2">Required</a>
+ }</td></tr>
+<tr class="memdesc:ae5b76e95dbc733c8788c54c8b1a6f48f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a candidate must be visible from the query origin.  <a href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48f">更多...</a><br /></td></tr>
+<tr class="separator:ae5b76e95dbc733c8788c54c8b1a6f48f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a626121392a3cd28bc920db243b4ab338" id="r_a626121392a3cd28bc920db243b4ab338"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a626121392a3cd28bc920db243b4ab338">Module_IMPL</a> (<a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>, new <a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>())</td></tr>
+<tr class="separator:a626121392a3cd28bc920db243b4ab338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f290b01c247d8e294cf37ece65039f4" id="r_a1f290b01c247d8e294cf37ece65039f4"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a1f290b01c247d8e294cf37ece65039f4">coordinateSpaceName</a> (<a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> space) noexcept</td></tr>
+<tr class="memdesc:a1f290b01c247d8e294cf37ece65039f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable protocol name for a coordinate space.  <br /></td></tr>
+<tr class="separator:a1f290b01c247d8e294cf37ece65039f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab875a33549887a61cb49d3138d911211" id="r_ab875a33549887a61cb49d3138d911211"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab875a33549887a61cb49d3138d911211">operator&lt;&lt;</a> (std::ostream &amp;stream, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> space)</td></tr>
+<tr class="memdesc:ab875a33549887a61cb49d3138d911211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the stable coordinate-space protocol name.  <br /></td></tr>
+<tr class="separator:ab875a33549887a61cb49d3138d911211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a3c44a225d596c34383dd5c422b94796d" name="a3c44a225d596c34383dd5c422b94796d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c44a225d596c34383dd5c422b94796d">&#9670;&#160;</a></span>SensingWorldHandleRef</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#a3c44a225d596c34383dd5c422b94796d">eve::sensing::SensingWorldHandleRef</a> = typedef <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt;<a class="el" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation- and module-epoch-qualified sensing-world reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a070c050c984b3f451a7aba3b399dad3d" name="a070c050c984b3f451a7aba3b399dad3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a070c050c984b3f451a7aba3b399dad3d">&#9670;&#160;</a></span>SubjectRef</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#a070c050c984b3f451a7aba3b399dad3d">eve::sensing::SubjectRef</a> = typedef <a class="el" href="classeve_1_1SubjectRef.html">::eve::SubjectRef</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Strong reference to a runtime subject. </p>
+<p>This is a persistent identity, not an ECS entity handle. The nil value is rejected by all targeting operations. There is no implicit conversion to or from PersistentId, which prevents an AssetId/SubjectRef mix at call sites.</p>
+<p>Compatibility spelling for the common subject reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ab946bebc2c46570a1c777473564d98" name="a1ab946bebc2c46570a1c777473564d98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ab946bebc2c46570a1c777473564d98">&#9670;&#160;</a></span>TargetLocation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">eve::sensing::TargetLocation</a> = typedef std::variant&lt;<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>, <a class="el" href="classeve_1_1sensing_1_1GridPoint.html">GridPoint</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Either a world point or a grid point, with the tag retained. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00194">194</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a8d25e6dbefdd45f90131cc4a7ae039ba" name="a8d25e6dbefdd45f90131cc4a7ae039ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d25e6dbefdd45f90131cc4a7ae039ba">&#9670;&#160;</a></span>CoordinateSpace</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">eve::sensing::CoordinateSpace</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Coordinate spaces are not interchangeable, even when dimensions match. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac" name="a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac"></a>World2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f" name="a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f"></a>World3D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172" name="a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172"></a>Grid2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878" name="a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878"></a>Grid3D&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5b76e95dbc733c8788c54c8b1a6f48f" name="ae5b76e95dbc733c8788c54c8b1a6f48f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b76e95dbc733c8788c54c8b1a6f48f">&#9670;&#160;</a></span>LineOfSightMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48f">eve::sensing::LineOfSightMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a candidate must be visible from the query origin. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ae5b76e95dbc733c8788c54c8b1a6f48fa3c841b03acb069eccf34fa1e6898c992" name="ae5b76e95dbc733c8788c54c8b1a6f48fa3c841b03acb069eccf34fa1e6898c992"></a>NotRequired&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae5b76e95dbc733c8788c54c8b1a6f48fab651efdb98a5d6bd2b3935d0c3f4a5e2" name="ae5b76e95dbc733c8788c54c8b1a6f48fab651efdb98a5d6bd2b3935d0c3f4a5e2"></a>Required&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8dd552077f872e762f6d827d05d8589" name="ab8dd552077f872e762f6d827d05d8589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8dd552077f872e762f6d827d05d8589">&#9670;&#160;</a></span>TargetDomain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">eve::sensing::TargetDomain</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable relationship class used by generic domain constraints. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589aed36a1ef76a59ee3f15180e0441188ad" name="ab8dd552077f872e762f6d827d05d8589aed36a1ef76a59ee3f15180e0441188ad"></a>Any&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589aad6e7652b1bdfb38783486c2c3d5e806" name="ab8dd552077f872e762f6d827d05d8589aad6e7652b1bdfb38783486c2c3d5e806"></a>Self&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589a0dd87782600574e2f791bcfe639d4fcc" name="ab8dd552077f872e762f6d827d05d8589a0dd87782600574e2f791bcfe639d4fcc"></a>Ally&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589a8c6d21187fb58b7a079d70030686b33e" name="ab8dd552077f872e762f6d827d05d8589a8c6d21187fb58b7a079d70030686b33e"></a>Enemy&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589ae9bb5320b3890b6747c91b5a71ae5a01" name="ab8dd552077f872e762f6d827d05d8589ae9bb5320b3890b6747c91b5a71ae5a01"></a>Neutral&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a1f290b01c247d8e294cf37ece65039f4" name="a1f290b01c247d8e294cf37ece65039f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f290b01c247d8e294cf37ece65039f4">&#9670;&#160;</a></span>coordinateSpaceName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::sensing::coordinateSpaceName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the stable protocol name for a coordinate space. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">Grid2D</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">Grid3D</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac">World2D</a> , 以及 <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f">World3D</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Targeting_8h_source.html#l00045">operator&lt;&lt;()</a>.</p>
+
+</div>
+</div>
+<a id="a626121392a3cd28bc920db243b4ab338" name="a626121392a3cd28bc920db243b4ab338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626121392a3cd28bc920db243b4ab338">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Sensing</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab875a33549887a61cb49d3138d911211" name="ab875a33549887a61cb49d3138d911211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab875a33549887a61cb49d3138d911211">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; eve::sensing::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes the stable coordinate-space protocol name. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Targeting_8cpp_source.html#l00376">coordinateSpaceName()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

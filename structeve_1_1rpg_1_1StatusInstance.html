@@ -1,0 +1,365 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::StatusInstance结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html">StatusInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rpg_1_1StatusInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::StatusInstance结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Legacy <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> projection of one <a class="el" href="structeve_1_1effects_1_1EffectInstance.html" title="One owned runtime effect fact.">effects::EffectInstance</a>.  
+ <a href="structeve_1_1rpg_1_1StatusInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a913a9a77b8f5916808ebf413b4791073" id="r_a913a9a77b8f5916808ebf413b4791073"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a913a9a77b8f5916808ebf413b4791073">instanceId</a> = 0</td></tr>
+<tr class="separator:a913a9a77b8f5916808ebf413b4791073"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fdc582e7447d6dece700576f67e2ce6" id="r_a7fdc582e7447d6dece700576f67e2ce6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a7fdc582e7447d6dece700576f67e2ce6">effectId</a></td></tr>
+<tr class="separator:a7fdc582e7447d6dece700576f67e2ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ffbc7a959ca4bda2d28990b23413324" id="r_a4ffbc7a959ca4bda2d28990b23413324"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a4ffbc7a959ca4bda2d28990b23413324">source</a></td></tr>
+<tr class="memdesc:a4ffbc7a959ca4bda2d28990b23413324"><td class="mdescLeft">&#160;</td><td class="mdescRight">施加来源标签（施法者 id / 技能 id / 自定义），供查询与批量移除  <br /></td></tr>
+<tr class="separator:a4ffbc7a959ca4bda2d28990b23413324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab01069fe89f545563c2e715998b32a29" id="r_ab01069fe89f545563c2e715998b32a29"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#ab01069fe89f545563c2e715998b32a29">stacks</a> = 1</td></tr>
+<tr class="separator:ab01069fe89f545563c2e715998b32a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a166a4a74a58140b0d92504f3e43e903b" id="r_a166a4a74a58140b0d92504f3e43e903b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a166a4a74a58140b0d92504f3e43e903b">remaining</a> = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a166a4a74a58140b0d92504f3e43e903b"><td class="mdescLeft">&#160;</td><td class="mdescRight">剩余时间（秒）；-1 表示 infinite（永久，直到手动移除）  <br /></td></tr>
+<tr class="separator:a166a4a74a58140b0d92504f3e43e903b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae84d7c0cd4e1698b875a2199b92ca310" id="r_ae84d7c0cd4e1698b875a2199b92ca310"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#ae84d7c0cd4e1698b875a2199b92ca310">periodAccum</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ae84d7c0cd4e1698b875a2199b92ca310"><td class="mdescLeft">&#160;</td><td class="mdescRight">周期效果：距离上次 tick 的累积时间  <br /></td></tr>
+<tr class="separator:ae84d7c0cd4e1698b875a2199b92ca310"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a782727aa6a426623d44ac64ee6ac3e0e" id="r_a782727aa6a426623d44ac64ee6ac3e0e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a782727aa6a426623d44ac64ee6ac3e0e">appliedModifiers</a></td></tr>
+<tr class="memdesc:a782727aa6a426623d44ac64ee6ac3e0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">若该效果在 apply 时直接写入了属性修改器，记录 (属性名, 修改器 id) 以便精确撤销。  <br /></td></tr>
+<tr class="separator:a782727aa6a426623d44ac64ee6ac3e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b31a5c56b590e873e06557db596717e" id="r_a8b31a5c56b590e873e06557db596717e"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a8b31a5c56b590e873e06557db596717e">props</a></td></tr>
+<tr class="memdesc:a8b31a5c56b590e873e06557db596717e"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行时自定义键值（图标路径、UI 着色、脚本标记……）。 与 EffectDefinition::extra（定义侧）互补：extra 是模板数据，props 是实例数据。  <br /></td></tr>
+<tr class="separator:a8b31a5c56b590e873e06557db596717e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Legacy <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> projection of one <a class="el" href="structeve_1_1effects_1_1EffectInstance.html" title="One owned runtime effect fact.">effects::EffectInstance</a>. </p>
+<p>The projection is created on demand for compatibility callbacks and never becomes the lifecycle source of truth. <code>instanceId</code> is an adapter-owned per-actor integer mapping; the string effect instance id remains canonical. </p>
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a782727aa6a426623d44ac64ee6ac3e0e" name="a782727aa6a426623d44ac64ee6ac3e0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a782727aa6a426623d44ac64ee6ac3e0e">&#9670;&#160;</a></span>appliedModifiers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::pair&lt;std::string, std::string&gt; &gt; eve::rpg::StatusInstance::appliedModifiers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>若该效果在 apply 时直接写入了属性修改器，记录 (属性名, 修改器 id) 以便精确撤销。 </p>
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7fdc582e7447d6dece700576f67e2ce6" name="a7fdc582e7447d6dece700576f67e2ce6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fdc582e7447d6dece700576f67e2ce6">&#9670;&#160;</a></span>effectId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::StatusInstance::effectId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00573">eve::rpg::StatusSystem::remove()</a>.</p>
+
+</div>
+</div>
+<a id="a913a9a77b8f5916808ebf413b4791073" name="a913a9a77b8f5916808ebf413b4791073"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a913a9a77b8f5916808ebf413b4791073">&#9670;&#160;</a></span>instanceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::StatusInstance::instanceId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00573">eve::rpg::StatusSystem::remove()</a>.</p>
+
+</div>
+</div>
+<a id="ae84d7c0cd4e1698b875a2199b92ca310" name="ae84d7c0cd4e1698b875a2199b92ca310"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae84d7c0cd4e1698b875a2199b92ca310">&#9670;&#160;</a></span>periodAccum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::StatusInstance::periodAccum = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>周期效果：距离上次 tick 的累积时间 </p>
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a8b31a5c56b590e873e06557db596717e" name="a8b31a5c56b590e873e06557db596717e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b31a5c56b590e873e06557db596717e">&#9670;&#160;</a></span>props</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::string&gt; eve::rpg::StatusInstance::props</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>运行时自定义键值（图标路径、UI 着色、脚本标记……）。 与 EffectDefinition::extra（定义侧）互补：extra 是模板数据，props 是实例数据。 </p>
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a166a4a74a58140b0d92504f3e43e903b" name="a166a4a74a58140b0d92504f3e43e903b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a166a4a74a58140b0d92504f3e43e903b">&#9670;&#160;</a></span>remaining</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::StatusInstance::remaining = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>剩余时间（秒）；-1 表示 infinite（永久，直到手动移除） </p>
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a4ffbc7a959ca4bda2d28990b23413324" name="a4ffbc7a959ca4bda2d28990b23413324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ffbc7a959ca4bda2d28990b23413324">&#9670;&#160;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::StatusInstance::source</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>施加来源标签（施法者 id / 技能 id / 自定义），供查询与批量移除 </p>
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a> , 以及 <a class="el" href="StatusSystem_8cpp_source.html#l00573">eve::rpg::StatusSystem::remove()</a>.</p>
+
+</div>
+</div>
+<a id="ab01069fe89f545563c2e715998b32a29" name="ab01069fe89f545563c2e715998b32a29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab01069fe89f545563c2e715998b32a29">&#9670;&#160;</a></span>stacks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::StatusInstance::stacks = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a> 第 <a class="el" href="StatusTypes_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a> , 以及 <a class="el" href="StatusSystem_8cpp_source.html#l00573">eve::rpg::StatusSystem::remove()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="StatusTypes_8h_source.html">StatusTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

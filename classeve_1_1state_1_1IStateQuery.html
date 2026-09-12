@@ -1,0 +1,532 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::state::IStateQuery类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1state.html">state</a></li><li class="navelem"><a class="el" href="classeve_1_1state_1_1IStateQuery.html">IStateQuery</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1state_1_1IStateQuery-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::state::IStateQuery类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Read-only world-state boundary owned by consumers such as Dialogue.  
+ <a href="classeve_1_1state_1_1IStateQuery.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StateAccess_8h_source.html">StateAccess.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::state::IStateQuery 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1state_1_1IStateQuery.png" usemap="#eve::state::IStateQuery_map" alt=""/>
+  <map id="eve::state::IStateQuery_map" name="eve::state::IStateQuery_map">
+<area href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html" title="Adapts one AttributeSet to numeric world reads and volatile writes." alt="eve::attributes::AttributeSetStateAdapter" shape="rect" coords="0,56,235,80"/>
+<area href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html" title="Adapts one persistent Store to state queries and transactional writes." alt="eve::statepatch::StatePatchStateAdapter" shape="rect" coords="245,56,480,80"/>
+<area href="classeve_1_1tags_1_1TagStoreStateAdapter.html" title="Adapts one TagStore to read tags and apply volatile tag mutations." alt="eve::tags::TagStoreStateAdapter" shape="rect" coords="490,56,725,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a47014047a2e06ce72269e51ec93c07eb" id="r_a47014047a2e06ce72269e51ec93c07eb"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a47014047a2e06ce72269e51ec93c07eb">~IStateQuery</a> ()=default</td></tr>
+<tr class="separator:a47014047a2e06ce72269e51ec93c07eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e5c167e98937a8ad98ab9ed6ba3c41d" id="r_a4e5c167e98937a8ad98ab9ed6ba3c41d"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a4e5c167e98937a8ad98ab9ed6ba3c41d">value</a> (std::string_view subject, std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a4e5c167e98937a8ad98ab9ed6ba3c41d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a generic world value.  <br /></td></tr>
+<tr class="separator:a4e5c167e98937a8ad98ab9ed6ba3c41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42eed774b0375a82ee4f5ba80340dd2d" id="r_a42eed774b0375a82ee4f5ba80340dd2d"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a42eed774b0375a82ee4f5ba80340dd2d">hasTag</a> (std::string_view subject, std::string_view tag) const =0</td></tr>
+<tr class="memdesc:a42eed774b0375a82ee4f5ba80340dd2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query exact tag membership.  <br /></td></tr>
+<tr class="separator:a42eed774b0375a82ee4f5ba80340dd2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceef07f904c1f4e42bcf4960c55e9276" id="r_aceef07f904c1f4e42bcf4960c55e9276"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#aceef07f904c1f4e42bcf4960c55e9276">attribute</a> (std::string_view subject, std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:aceef07f904c1f4e42bcf4960c55e9276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a numeric or structured attribute.  <br /></td></tr>
+<tr class="separator:aceef07f904c1f4e42bcf4960c55e9276"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb366f71d297d83b848619f797d0522" id="r_a4cb366f71d297d83b848619f797d0522"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a4cb366f71d297d83b848619f797d0522">resource</a> (std::string_view subject, std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a4cb366f71d297d83b848619f797d0522"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a resource value or marker.  <br /></td></tr>
+<tr class="separator:a4cb366f71d297d83b848619f797d0522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f31dda5cfb1c2a6951279785c007a34" id="r_a3f31dda5cfb1c2a6951279785c007a34"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a3f31dda5cfb1c2a6951279785c007a34">state</a> (std::string_view subject, std::string_view <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const =0</td></tr>
+<tr class="memdesc:a3f31dda5cfb1c2a6951279785c007a34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a persistent/world state value.  <br /></td></tr>
+<tr class="separator:a3f31dda5cfb1c2a6951279785c007a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cba0442b5cb0ad5d96f070184252c29" id="r_a4cba0442b5cb0ad5d96f070184252c29"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a4cba0442b5cb0ad5d96f070184252c29">authority</a> (std::string_view subject, std::string_view <a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) const =0</td></tr>
+<tr class="memdesc:a4cba0442b5cb0ad5d96f070184252c29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query read-only authority for a scope.  <br /></td></tr>
+<tr class="separator:a4cba0442b5cb0ad5d96f070184252c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a96318be37ede68c4ffb6906640f57bbe" id="r_a96318be37ede68c4ffb6906640f57bbe"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1state_1_1IStateQuery.html#a96318be37ede68c4ffb6906640f57bbe">capabilityName</a> = &quot;eve.state.IStateQuery&quot;</td></tr>
+<tr class="separator:a96318be37ede68c4ffb6906640f57bbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Read-only world-state boundary owned by consumers such as Dialogue. </p>
+<p>Implementations are synchronous and must not retain query arguments or invoke unknown callbacks while holding a lock. <code>nullopt</code> means that this provider does not own the requested domain/key. A returned <code>false</code> is a known negative answer. The provider is borrowed by the caller and must outlive the query context; it is not retained by the capability registry after <code>revoke</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="StateAccess_8h_source.html">StateAccess.h</a> 第 <a class="el" href="StateAccess_8h_source.html#l00079">79</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a47014047a2e06ce72269e51ec93c07eb" name="a47014047a2e06ce72269e51ec93c07eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47014047a2e06ce72269e51ec93c07eb">&#9670;&#160;</a></span>~IStateQuery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::state::IStateQuery::~IStateQuery </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aceef07f904c1f4e42bcf4960c55e9276" name="aceef07f904c1f4e42bcf4960c55e9276"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceef07f904c1f4e42bcf4960c55e9276">&#9670;&#160;</a></span>attribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::state::IStateQuery::attribute </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a numeric or structured attribute. </p>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#a489bb02154a4ce24115be9a2ff5987be">eve::attributes::AttributeSetStateAdapter</a>, <a class="el" href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html#ade720b9c5b93a0350478926a2a203a7c">eve::statepatch::StatePatchStateAdapter</a> , 以及 <a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html#a0d3705124bb354ae71c6b05c49db37e6">eve::tags::TagStoreStateAdapter</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00263">eve::dialogue::StateEvaluationContext::attribute()</a>.</p>
+
+</div>
+</div>
+<a id="a4cba0442b5cb0ad5d96f070184252c29" name="a4cba0442b5cb0ad5d96f070184252c29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cba0442b5cb0ad5d96f070184252c29">&#9670;&#160;</a></span>authority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; bool &gt; eve::state::IStateQuery::authority </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>scope</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query read-only authority for a scope. </p>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#ab5e014f7dcbc0fe6020565cde5a0f6f2">eve::attributes::AttributeSetStateAdapter</a>, <a class="el" href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html#a37c3a778b1ccce6f3c61479ed0467b09">eve::statepatch::StatePatchStateAdapter</a> , 以及 <a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html#a37d0b009eace43db19d67536fabc4368">eve::tags::TagStoreStateAdapter</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00285">eve::dialogue::StateEvaluationContext::authority()</a>.</p>
+
+</div>
+</div>
+<a id="a42eed774b0375a82ee4f5ba80340dd2d" name="a42eed774b0375a82ee4f5ba80340dd2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42eed774b0375a82ee4f5ba80340dd2d">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; bool &gt; eve::state::IStateQuery::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query exact tag membership. </p>
+
+<p>在 <a class="el" href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html#a8e894b520535ec8a0ca747015e99e031">eve::statepatch::StatePatchStateAdapter</a>, <a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html#af449dc559d40309412904df7efb830b9">eve::tags::TagStoreStateAdapter</a> , 以及 <a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#a524913bbc7785a9d3dd17904f2db4f71">eve::attributes::AttributeSetStateAdapter</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00257">eve::dialogue::StateEvaluationContext::hasTag()</a>.</p>
+
+</div>
+</div>
+<a id="a4cb366f71d297d83b848619f797d0522" name="a4cb366f71d297d83b848619f797d0522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cb366f71d297d83b848619f797d0522">&#9670;&#160;</a></span>resource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::state::IStateQuery::resource </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a resource value or marker. </p>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#ae737e2acfa86aa333c8f5e6c6d2be7d0">eve::attributes::AttributeSetStateAdapter</a>, <a class="el" href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html#aa721b55b5db222f494b558f9b1aa2db2">eve::statepatch::StatePatchStateAdapter</a> , 以及 <a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html#aa4c22d7bdc805d2e5479614f0e325fae">eve::tags::TagStoreStateAdapter</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00271">eve::dialogue::StateEvaluationContext::resource()</a>.</p>
+
+</div>
+</div>
+<a id="a3f31dda5cfb1c2a6951279785c007a34" name="a3f31dda5cfb1c2a6951279785c007a34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f31dda5cfb1c2a6951279785c007a34">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::state::IStateQuery::state </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a persistent/world state value. </p>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#a5feb8bcd06e4afe7d2c5ea916c2513d3">eve::attributes::AttributeSetStateAdapter</a>, <a class="el" href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html#a03eb79b303a23ff2a1340ee71b39d653">eve::statepatch::StatePatchStateAdapter</a> , 以及 <a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html#a779878ae8c4b626267db7e50fd3b39d3">eve::tags::TagStoreStateAdapter</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00277">eve::dialogue::StateEvaluationContext::state()</a>.</p>
+
+</div>
+</div>
+<a id="a4e5c167e98937a8ad98ab9ed6ba3c41d" name="a4e5c167e98937a8ad98ab9ed6ba3c41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e5c167e98937a8ad98ab9ed6ba3c41d">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::state::IStateQuery::value </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query a generic world value. </p>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#a6b52d9a34f6da32a5ee99a25741a5b46">eve::attributes::AttributeSetStateAdapter</a>, <a class="el" href="classeve_1_1statepatch_1_1StatePatchStateAdapter.html#a56ed1e9e3230f0d8db2ecf11e32d1916">eve::statepatch::StatePatchStateAdapter</a> , 以及 <a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html#aa0fbb2b26577530c613d123604409d56">eve::tags::TagStoreStateAdapter</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00251">eve::dialogue::StateEvaluationContext::value()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a96318be37ede68c4ffb6906640f57bbe" name="a96318be37ede68c4ffb6906640f57bbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96318be37ede68c4ffb6906640f57bbe">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::state::IStateQuery::capabilityName = &quot;eve.state.IStateQuery&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccess_8h_source.html">StateAccess.h</a> 第 <a class="el" href="StateAccess_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="StateAccess_8h_source.html">StateAccess.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

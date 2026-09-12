@@ -1,0 +1,306 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/npc_ai/NpcAi.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_1d85145493eb9fd9583517bcbaa3b05c.html">npc_ai</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a>  </div>
+  <div class="headertitle"><div class="title">NpcAi.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="RuntimeHandle_8h_source.html">common/RuntimeHandle.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;deque&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;variant&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="NpcAi_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1BlackboardKeySpec.html">eve::npc_ai::BlackboardKeySpec</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1BlackboardPredicate.html">eve::npc_ai::BlackboardPredicate</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1TaskSpec.html">eve::npc_ai::TaskSpec</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1Transition.html">eve::npc_ai::Transition</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1StateDefinition.html">eve::npc_ai::StateDefinition</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1BehaviorDefinition.html">eve::npc_ai::BehaviorDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable, validated source data for one hierarchical NPC state tree.  <a href="structeve_1_1npc__ai_1_1BehaviorDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1AgentHandleTag.html">eve::npc_ai::AgentHandleTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1PerceptionMemory.html">eve::npc_ai::PerceptionMemory</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One bounded, expiring item of NPC perception memory.  <a href="structeve_1_1npc__ai_1_1PerceptionMemory.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1TraceEvent.html">eve::npc_ai::TraceEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1NpcAiWorldConfig.html">eve::npc_ai::NpcAiWorldConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1TickContext.html">eve::npc_ai::TickContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input time and work limits for one deterministic simulation update.  <a href="structeve_1_1npc__ai_1_1TickContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1TickReport.html">eve::npc_ai::TickReport</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1AgentSnapshot.html">eve::npc_ai::AgentSnapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1TaskArchive.html">eve::npc_ai::TaskArchive</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Portable task state stored inside an NPC archive.  <a href="structeve_1_1npc__ai_1_1TaskArchive.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1AgentArchive.html">eve::npc_ai::AgentArchive</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versioned, owning NPC state used for save/load and hot-reload handoff.  <a href="structeve_1_1npc__ai_1_1AgentArchive.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1npc__ai_1_1TaskContext.html">eve::npc_ai::TaskContext</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1ITaskService.html">eve::npc_ai::ITaskService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned extension point for navigation, animation, combat and gameplay tasks. @thread All calls are simulation-thread-affine. @reentrancy Implementations must not call back into the owning <a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html" title="Authoritative owner and deterministic scheduler for NPC AI agents.">NpcAiWorld</a>.  <a href="classeve_1_1npc__ai_1_1ITaskService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">eve::npc_ai::NpcAiWorld</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative owner and deterministic scheduler for NPC AI agents.  <a href="classeve_1_1npc__ai_1_1NpcAiWorld.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1npc__ai" id="r_namespaceeve_1_1npc__ai"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html">eve::npc_ai</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a992dff770820bd475b18837f49511434" id="r_a992dff770820bd475b18837f49511434"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#a992dff770820bd475b18837f49511434">eve::npc_ai::BlackboardValue</a> = std::variant&lt; bool, std::int64_t, double, std::string &gt;</td></tr>
+<tr class="separator:a992dff770820bd475b18837f49511434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79ec568946db19a9b54e4ed4d6333d09" id="r_a79ec568946db19a9b54e4ed4d6333d09"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">eve::npc_ai::AgentHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1AgentHandleTag.html">AgentHandleTag</a> &gt;</td></tr>
+<tr class="separator:a79ec568946db19a9b54e4ed4d6333d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:acc79c5cc3ff6d45e5a83410f3fd1ffa0" id="r_acc79c5cc3ff6d45e5a83410f3fd1ffa0"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#acc79c5cc3ff6d45e5a83410f3fd1ffa0">eve::npc_ai::BlackboardType</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1npc__ai.html#acc79c5cc3ff6d45e5a83410f3fd1ffa0a27226c864bac7454a8504f8edb15d95b">eve::npc_ai::Boolean</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#acc79c5cc3ff6d45e5a83410f3fd1ffa0aa0faef0851b4294c06f2b94bb1cb2044">eve::npc_ai::Integer</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#acc79c5cc3ff6d45e5a83410f3fd1ffa0ab2ee912b91d69b435159c7c3f6df7f5f">eve::npc_ai::Number</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#acc79c5cc3ff6d45e5a83410f3fd1ffa0a27118326006d3829667a400ad23d5d98">eve::npc_ai::String</a>
+ }</td></tr>
+<tr class="separator:acc79c5cc3ff6d45e5a83410f3fd1ffa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9597843b2fbb2a66bad663b9f289cd8" id="r_af9597843b2fbb2a66bad663b9f289cd8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8">eve::npc_ai::CompareOp</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8a2a8eb028670e972535e8e246be645821">eve::npc_ai::Exists</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8af5f286e73bda105e538310b3190f75c5">eve::npc_ai::Equal</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8a19bb0af2c3c530538cb41aff7f235b96">eve::npc_ai::NotEqual</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8a1cfdf0e8d0c87a228c1f40d9bee7888b">eve::npc_ai::Less</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8ad3e6fdac55bb7b0edd7834c968ba1f38">eve::npc_ai::LessEqual</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8a8768a6821cd735aea4f5b0df88c1fc6a">eve::npc_ai::Greater</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#af9597843b2fbb2a66bad663b9f289cd8a758b05d899def79c9eb864ad4f96be1f">eve::npc_ai::GreaterEqual</a>
+<br />
+ }</td></tr>
+<tr class="separator:af9597843b2fbb2a66bad663b9f289cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35beba4a214ad4844fee97669f884106" id="r_a35beba4a214ad4844fee97669f884106"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#a35beba4a214ad4844fee97669f884106">eve::npc_ai::TaskStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1npc__ai.html#a35beba4a214ad4844fee97669f884106a5bda814c4aedb126839228f1a3d92f09">eve::npc_ai::Running</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a35beba4a214ad4844fee97669f884106a66d02c2f8a582446f8dd8752366002b5">eve::npc_ai::Succeeded</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a35beba4a214ad4844fee97669f884106ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::npc_ai::Failed</a>
+ }</td></tr>
+<tr class="separator:a35beba4a214ad4844fee97669f884106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace18a9a34cea42d09fb9e7372ce79039" id="r_ace18a9a34cea42d09fb9e7372ce79039"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039">eve::npc_ai::StopReason</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039a07ca5050e697392c9ed47e6453f1453f">eve::npc_ai::Completed</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039aafedf9afee367f51f98d7cf030c976a6">eve::npc_ai::Transition</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039a425f7eabce3c3dcf34067fc13693b105">eve::npc_ai::StartupRollback</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039acbde989c08b28c4fbbf992b884434043">eve::npc_ai::AgentDestroyed</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039a6f12cb44b3ff38bb01e38d39fac43973">eve::npc_ai::DefinitionReplaced</a>
+<br />
+ }</td></tr>
+<tr class="separator:ace18a9a34cea42d09fb9e7372ce79039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a135665d4667db817432c708230ae3a08" id="r_a135665d4667db817432c708230ae3a08"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08">eve::npc_ai::TraceKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a0ca5d69cbd8183f68a392bec45974fdc">eve::npc_ai::AgentCreated</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08acbde989c08b28c4fbbf992b884434043">eve::npc_ai::AgentDestroyed</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a6dea38303e8b1d8eb679f3a87678ba59">eve::npc_ai::AgentRestored</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a9d51adbeb5e7f53102690a4806f80187">eve::npc_ai::BlackboardChanged</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a643256d53ecd5012c6a864a4a4b39dc4">eve::npc_ai::SignalQueued</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08acb56d3c73834c54df8c4539d54bef764">eve::npc_ai::TransitionApplied</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a6b55e72207d4790950fa00bcc9adab15">eve::npc_ai::TaskStarted</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a9d37d8829985a682d4198dcefe80380a">eve::npc_ai::TaskCompleted</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a0e5dc8cf60a360bd61374c26aea935bc">eve::npc_ai::TaskFailed</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a81bbc3a53282bfcb6a9f68bcaf68d414">eve::npc_ai::PerceptionUpdated</a>
+, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a63a90f02bd88510b21e0df0e0d0bb943">eve::npc_ai::PerceptionForgotten</a>
+<br />
+ }</td></tr>
+<tr class="separator:a135665d4667db817432c708230ae3a08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

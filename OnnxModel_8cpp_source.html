@@ -1,0 +1,314 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tensor/OnnxModel.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_782bbf0976eacdfd5fcf4a27f0d60777.html">tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">OnnxModel.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="OnnxModel_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="OnnxCompute_8h.html">tensor/OnnxCompute.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="OnnxInternal_8h.html">tensor/OnnxInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tensor.html">eve::tensor</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structeve_1_1tensor_1_1OnnxModel_1_1Impl.html">    7</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1tensor_1_1OnnxModel_1_1Impl.html">OnnxModel::Impl</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1tensor_1_1OnnxModel_1_1Impl.html#a74332d5a55791393abe8e6788c200200">    8</a></span>    <a class="code hl_struct" href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">onnx_detail::ModelData</a> <a class="code hl_variable" href="structeve_1_1tensor_1_1OnnxModel_1_1Impl.html#a74332d5a55791393abe8e6788c200200">model</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>};</div>
+</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>OnnxModel::OnnxModel(std::unique_ptr&lt;Impl&gt; <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>) : impl_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)) {}</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><a class="code hl_function" href="classeve_1_1tensor_1_1OnnxModel.html#ae2aa3c9bce1f0e95a793084585c449e3">OnnxModel::~OnnxModel</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classeve_1_1tensor_1_1OnnxModel.html#a3f48c35cb78ee3dc884eaaf38f4bbc7d">   12</a></span><a class="code hl_struct" href="structeve_1_1tensor_1_1OnnxModelInfo.html">OnnxModelInfo</a>                      <a class="code hl_function" href="classeve_1_1tensor_1_1OnnxModel.html#a3f48c35cb78ee3dc884eaaf38f4bbc7d">OnnxModel::info</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> impl_-&gt;model.info; }</div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1tensor_1_1OnnxModel.html#ad7c92c7c2338248d144414991143287e">   13</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;OnnxModel&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1tensor_1_1OnnxModel.html#ad7c92c7c2338248d144414991143287e">OnnxModel::load</a>(std::span&lt;const uint8_t&gt; <a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>   = std::make_unique&lt;Impl&gt;();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>-&gt;model = <a class="code hl_function" href="namespaceeve_1_1tensor_1_1onnx__detail.html#ac600f199697b72485ff45085c92a4bd3">onnx_detail::parse</a>(<a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;OnnxModel&gt;</a>&gt;::success(std::unique_ptr&lt;OnnxModel&gt;(<span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1tensor_1_1OnnxModel.html">OnnxModel</a>(std::move(<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>))));</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1onnx__detail_1_1Failure.html">onnx_detail::Failure</a>&amp; e) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;OnnxModel&gt;</a>&gt;::failure(</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(e.<a class="code hl_variable" href="structeve_1_1tensor_1_1onnx__detail_1_1Failure.html#aa8168feb5f581729acd1293db0c2885e">code</a>, e.what(), {}, {}, <span class="stringliteral">&quot;tensor.onnx.import&quot;</span>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;OnnxModel&gt;</a>&gt;::failure(</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, e.what(), {}, {}, <span class="stringliteral">&quot;tensor.onnx.import&quot;</span>));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1tensor_1_1OnnxModel.html#a2ed3f45e969b09b7b97cfec26f2bb9ae">   26</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;OnnxNamedTensor&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1tensor_1_1OnnxModel.html#a2ed3f45e969b09b7b97cfec26f2bb9ae">OnnxModel::run</a>(std::span&lt;const OnnxNamedTensor&gt; feeds,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                                    std::span&lt;const std::string&gt;     requested,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                                    <a class="code hl_struct" href="structeve_1_1tensor_1_1OnnxRunOptions.html">OnnxRunOptions</a>                   <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> runInternal(feeds, requested, <span class="keyword">nullptr</span>, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1tensor_1_1OnnxModel.html#a3cda3748f692342245076ed5174c7beb">   31</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;OnnxGpuResult&gt;</a> <a class="code hl_function" href="classeve_1_1tensor_1_1OnnxModel.html#a3cda3748f692342245076ed5174c7beb">OnnxModel::runGpu</a>(std::span&lt;const OnnxNamedTensor&gt; feeds, <a class="code hl_class" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a>&amp; <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                        std::span&lt;const std::string&gt; requested, <a class="code hl_struct" href="structeve_1_1tensor_1_1OnnxRunOptions.html">OnnxRunOptions</a> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">class </span>Counter final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_class" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">size_t</span>       count = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">explicit</span> Counter(<a class="code hl_class" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) : <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) {}</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;uint8_t&gt;</a>&gt; dispatch(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1OnnxKernel.html">OnnxKernel</a>&amp; k)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.dispatch(k);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.ok()) ++count;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;OnnxBuffer&gt;</a> enqueue(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::span&lt;const OnnxBuffer&gt; <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                   uint32_t work)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.enqueue(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="code hl_variable" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>, <a class="code hl_variable" href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a>, work);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.ok()) ++count;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    } counter(<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>.beginRun();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">struct </span>RunScope {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_class" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a>&amp; <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        ~RunScope() { <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.<a class="code hl_function" href="classeve_1_1tensor_1_1OnnxCompute.html#aed919e2975a3db8fe1550bcd184f0c57">endRun</a>(); }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    } <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>{<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = runInternal(feeds, requested, &amp;counter, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;OnnxGpuResult&gt;::failure</a>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.status());</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;OnnxGpuResult&gt;::success</a>({std::move(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>.value()), counter.count, <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>.transferStats()});</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;OnnxNamedTensor&gt;</a>&gt; OnnxModel::runInternal(std::span&lt;const OnnxNamedTensor&gt; feeds,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                                                            std::span&lt;const std::string&gt;     requested,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                                            <a class="code hl_class" href="classeve_1_1tensor_1_1OnnxCompute.html">OnnxCompute</a>* <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>, <a class="code hl_struct" href="structeve_1_1tensor_1_1OnnxRunOptions.html">OnnxRunOptions</a> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">using namespace </span>onnx_detail;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::string nodeName;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp;                    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a> = impl_-&gt;model;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> std::vector&lt;std::string&gt; targets =</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            requested.empty() ? <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>.info.outputs : std::vector&lt;std::string&gt;(requested.begin(), requested.end());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        std::set&lt;std::string&gt; seenFeeds;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> : feeds) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            nodeName = <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.name;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">if</span> (count(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.shape) * elementSize(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.element) != <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.bytes.size())</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">throw</span> Failure(<span class="stringliteral">&quot;Tensor byte count mismatch&quot;</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>.inputs.find(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.name);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> == <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>.inputs.end() || !seenFeeds.insert(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.name).second)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keywordflow">throw</span> Failure(<span class="stringliteral">&quot;Unknown or duplicate feed&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.element) != <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>-&gt;second.type ||</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.shape.size() != <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>-&gt;second.shape.size())</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordflow">throw</span> Failure(<span class="stringliteral">&quot;Feed type/rank mismatch&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.shape.size(); ++i)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>-&gt;second.shape[i] &gt;= 0 &amp;&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>-&gt;second.shape[i] != <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.tensor.shape[i])</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                    <span class="keywordflow">throw</span> Failure(<span class="stringliteral">&quot;Feed dimension mismatch&quot;</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        nodeName.clear();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">auto</span> result = evaluate(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, feeds, targets, <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a>, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;OnnxNamedTensor&gt;</a>&gt;::success(std::move(result));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> Failure&amp; e) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">return</span> Result&lt;std::vector&lt;OnnxNamedTensor&gt;&gt;::failure(</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(e.code, e.what(), e.path.empty() ? nodeName : e.<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, {}, <span class="stringliteral">&quot;tensor.onnx.run&quot;</span>));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> Result&lt;std::vector&lt;OnnxNamedTensor&gt;&gt;::failure(</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, e.what(), nodeName, {}, <span class="stringliteral">&quot;tensor.onnx.run&quot;</span>));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::tensor</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aCapability_8cpp_html_ad55031c6556322124ec04be72e3244de"><div class="ttname"><a href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a></div><div class="ttdeci">void * impl</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00014">Capability.cpp:14</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a06dd41ecb2d0928d25f7c8180156197f"><div class="ttname"><a href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a></div><div class="ttdeci">vkb::Device &amp; device</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00288">GraphicsInternal.h:288</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_acca1405ad8722c85f51c891decedadda"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a></div><div class="ttdeci">JobScope scope</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00158">JobSystemThreadPool.cpp:158</a></div></div>
+<div class="ttc" id="aOnnxCompute_8h_html"><div class="ttname"><a href="OnnxCompute_8h.html">OnnxCompute.h</a></div></div>
+<div class="ttc" id="aOnnxInternal_8h_html"><div class="ttname"><a href="OnnxInternal_8h.html">OnnxInternal.h</a></div></div>
+<div class="ttc" id="aOnnxRuntime_8cpp_html_a1929a447701caf6c637dbe4ec60e8a57"><div class="ttname"><a href="OnnxRuntime_8cpp.html#a1929a447701caf6c637dbe4ec60e8a57">compute</a></div><div class="ttdeci">OnnxCompute * compute</div><div class="ttdef"><b>Definition</b> <a href="OnnxRuntime_8cpp_source.html#l00024">OnnxRuntime.cpp:24</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a0bf444cb227a40151be0b5220b5b92bf"><div class="ttname"><a href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a></div><div class="ttdeci">int inputs</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00024">PointGraph.cpp:24</a></div></div>
+<div class="ttc" id="aPreparedFile_8cpp_html_abd334a1a9ee04d4f3f143e881f9cdb3f"><div class="ttname"><a href="PreparedFile_8cpp.html#abd334a1a9ee04d4f3f143e881f9cdb3f">bytes</a></div><div class="ttdeci">std::shared_ptr&lt; const FileData &gt; bytes</div><div class="ttdef"><b>Definition</b> <a href="PreparedFile_8cpp_source.html#l00017">PreparedFile.cpp:17</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ade56622421c713a8290c025626759118"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00552">RenderSystem3D.cpp:552</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00017">SquirrelBinding.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxCompute_html"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxCompute.html">eve::tensor::OnnxCompute</a></div><div class="ttdoc">GPU execution boundary for native ONNX; retains no model and retains compiled resources for the lifet...</div><div class="ttdef"><b>Definition</b> <a href="OnnxCompute_8h_source.html#l00025">OnnxCompute.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxCompute_html_aed919e2975a3db8fe1550bcd184f0c57"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxCompute.html#aed919e2975a3db8fe1550bcd184f0c57">eve::tensor::OnnxCompute::endRun</a></div><div class="ttdeci">virtual void endRun() noexcept</div><div class="ttdoc">Retire temporary activations/recordings; compiled resources may survive for later calls.</div><div class="ttdef"><b>Definition</b> <a href="OnnxCompute_8h_source.html#l00068">OnnxCompute.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxModel_html"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxModel.html">eve::tensor::OnnxModel</a></div><div class="ttdoc">Native ONNX import and CPU/GPU execution using tensor kernels, without ONNX Runtime.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8h_source.html#l00061">OnnxModel.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxModel_html_a2ed3f45e969b09b7b97cfec26f2bb9ae"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxModel.html#a2ed3f45e969b09b7b97cfec26f2bb9ae">eve::tensor::OnnxModel::run</a></div><div class="ttdeci">Result&lt; std::vector&lt; OnnxNamedTensor &gt; &gt; run(std::span&lt; const OnnxNamedTensor &gt; feeds, std::span&lt; const std::string &gt; requested={}, OnnxRunOptions options={}) const</div><div class="ttdoc">Execute selected named values, or graph outputs when requested is empty.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8cpp_source.html#l00026">OnnxModel.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxModel_html_a3cda3748f692342245076ed5174c7beb"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxModel.html#a3cda3748f692342245076ed5174c7beb">eve::tensor::OnnxModel::runGpu</a></div><div class="ttdeci">Result&lt; OnnxGpuResult &gt; runGpu(std::span&lt; const OnnxNamedTensor &gt; feeds, OnnxCompute &amp;compute, std::span&lt; const std::string &gt; requested={}, OnnxRunOptions options={}) const</div><div class="ttdoc">Execute with GPU matrix, convolution, normalization, activation and resampling kernels.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8cpp_source.html#l00031">OnnxModel.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxModel_html_a3f48c35cb78ee3dc884eaaf38f4bbc7d"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxModel.html#a3f48c35cb78ee3dc884eaaf38f4bbc7d">eve::tensor::OnnxModel::info</a></div><div class="ttdeci">OnnxModelInfo info() const</div><div class="ttdoc">Return owning graph diagnostics; importing does not imply full operator support.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8cpp_source.html#l00012">OnnxModel.cpp:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxModel_html_ad7c92c7c2338248d144414991143287e"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxModel.html#ad7c92c7c2338248d144414991143287e">eve::tensor::OnnxModel::load</a></div><div class="ttdeci">static Result&lt; std::unique_ptr&lt; OnnxModel &gt; &gt; load(std::span&lt; const uint8_t &gt; bytes)</div><div class="ttdoc">Import bounded in-memory ONNX ModelProto; copies all retained data.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8cpp_source.html#l00013">OnnxModel.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1OnnxModel_html_ae2aa3c9bce1f0e95a793084585c449e3"><div class="ttname"><a href="classeve_1_1tensor_1_1OnnxModel.html#ae2aa3c9bce1f0e95a793084585c449e3">eve::tensor::OnnxModel::~OnnxModel</a></div><div class="ttdeci">~OnnxModel()</div><div class="ttdoc">Destroy model-owned graph and packed initializers; outputs remain valid.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1onnx__detail_html_ac600f199697b72485ff45085c92a4bd3"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1onnx__detail.html#ac600f199697b72485ff45085c92a4bd3">eve::tensor::onnx_detail::parse</a></div><div class="ttdeci">ModelData parse(std::span&lt; const uint8_t &gt; bytes)</div><div class="ttdef"><b>Definition</b> <a href="OnnxReader_8cpp_source.html#l00316">OnnxReader.cpp:316</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_html"><div class="ttname"><a href="namespaceeve_1_1tensor.html">eve::tensor</a></div><div class="ttdef"><b>Definition</b> <a href="AffineQuant_8cpp_source.html#l00009">AffineQuant.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1OnnxKernel_html"><div class="ttname"><a href="structeve_1_1tensor_1_1OnnxKernel.html">eve::tensor::OnnxKernel</a></div><div class="ttdoc">Synchronous GPU kernel request; all inputs are borrowed only until dispatch returns.</div><div class="ttdef"><b>Definition</b> <a href="OnnxCompute_8h_source.html#l00012">OnnxCompute.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1OnnxModelInfo_html"><div class="ttname"><a href="structeve_1_1tensor_1_1OnnxModelInfo.html">eve::tensor::OnnxModelInfo</a></div><div class="ttdoc">Owning admission report; unsupported nodes remain inspectable but cannot execute.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8h_source.html#l00046">OnnxModel.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1OnnxModel_1_1Impl_html"><div class="ttname"><a href="structeve_1_1tensor_1_1OnnxModel_1_1Impl.html">eve::tensor::OnnxModel::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8cpp_source.html#l00007">OnnxModel.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1OnnxModel_1_1Impl_html_a74332d5a55791393abe8e6788c200200"><div class="ttname"><a href="structeve_1_1tensor_1_1OnnxModel_1_1Impl.html#a74332d5a55791393abe8e6788c200200">eve::tensor::OnnxModel::Impl::model</a></div><div class="ttdeci">onnx_detail::ModelData model</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8cpp_source.html#l00008">OnnxModel.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1OnnxRunOptions_html"><div class="ttname"><a href="structeve_1_1tensor_1_1OnnxRunOptions.html">eve::tensor::OnnxRunOptions</a></div><div class="ttdoc">Per-call deterministic RNG and optional strict finite-output diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="OnnxModel_8h_source.html#l00035">OnnxModel.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1onnx__detail_1_1Failure_html"><div class="ttname"><a href="structeve_1_1tensor_1_1onnx__detail_1_1Failure.html">eve::tensor::onnx_detail::Failure</a></div><div class="ttdef"><b>Definition</b> <a href="OnnxInternal_8h_source.html#l00011">OnnxInternal.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1onnx__detail_1_1Failure_html_aa8168feb5f581729acd1293db0c2885e"><div class="ttname"><a href="structeve_1_1tensor_1_1onnx__detail_1_1Failure.html#aa8168feb5f581729acd1293db0c2885e">eve::tensor::onnx_detail::Failure::code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="OnnxInternal_8h_source.html#l00012">OnnxInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1onnx__detail_1_1ModelData_html"><div class="ttname"><a href="structeve_1_1tensor_1_1onnx__detail_1_1ModelData.html">eve::tensor::onnx_detail::ModelData</a></div><div class="ttdef"><b>Definition</b> <a href="OnnxInternal_8h_source.html#l00038">OnnxInternal.h:38</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">GraphicsGpuDriven.cpp:77</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

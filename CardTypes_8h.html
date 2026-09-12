@@ -1,0 +1,298 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/card/CardTypes.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b6d14880155a7b1832962a5fc46a0e3c.html">card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">CardTypes.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="AttributeProjection_8h_source.html">attributes/AttributeProjection.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CardEffects_8h_source.html">card/CardEffects.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ECS_8h_source.html">common/ECS.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="DefinitionRuntime_8h_source.html">common/definitions/DefinitionRuntime.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Condition_8h_source.html">decision/Condition.h</a>&quot;</code><br />
+<code>#include &lt;glm/vec3.hpp&gt;</code><br />
+<code>#include &lt;glm/vec4.hpp&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="CardTypes_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">eve::card::LayoutConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UiCard 风格的布局配置（脚本可实时修改，对应 UiCard 的 Configs 面板）。  <a href="structeve_1_1card_1_1LayoutConfig.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardDefinition.html">eve::card::CardDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌类型定义（registerCardsFromJson 注册）。  <a href="structeve_1_1card_1_1CardDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1CardData.html">eve::card::CardData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">单张卡牌：ECS 实体，数据拆成 <a class="el" href="structeve_1_1card_1_1CardData_1_1Identity.html" title="稳定实例 id、显示名、种类。">Identity</a> / <a class="el" href="structeve_1_1card_1_1CardData_1_1Stats.html" title="费用 / 攻击 / 生命。">Stats</a> / <a class="el" href="structeve_1_1card_1_1CardData_1_1Visual.html" title="朝向、禁用、色调、卡图。">Visual</a> / <a class="el" href="structeve_1_1card_1_1CardData_1_1Layout.html" title="运行时布局（由 Hand 维护）：中心坐标与变换。">Layout</a> / State。  <a href="classeve_1_1card_1_1CardData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1Identity.html">eve::card::CardData::Identity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">稳定实例 id、显示名、种类。  <a href="structeve_1_1card_1_1CardData_1_1Identity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1Stats.html">eve::card::CardData::Stats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">费用 / 攻击 / 生命。  <a href="structeve_1_1card_1_1CardData_1_1Stats.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1Attributes.html">eve::card::CardData::Attributes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical selected card stats backed by the attributes module.  <a href="structeve_1_1card_1_1CardData_1_1Attributes.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1Effects.html">eve::card::CardData::Effects</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical effect lifecycle and card combat target state.  <a href="structeve_1_1card_1_1CardData_1_1Effects.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1Visual.html">eve::card::CardData::Visual</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">朝向、禁用、色调、卡图。  <a href="structeve_1_1card_1_1CardData_1_1Visual.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1Layout.html">eve::card::CardData::Layout</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行时布局（由 <a class="el" href="classeve_1_1card_1_1Hand.html" title="手牌：扇形布局 + 悬浮 + 拖拽 + 落区判定 + 渲染。">Hand</a> 维护）：中心坐标与变换。  <a href="structeve_1_1card_1_1CardData_1_1Layout.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1State.html">eve::card::CardData::State</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行时交互状态。  <a href="structeve_1_1card_1_1CardData_1_1State.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardData_1_1DefinitionBinding.html">eve::card::CardData::DefinitionBinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Definition link and reload policy for this card instance.  <a href="structeve_1_1card_1_1CardData_1_1DefinitionBinding.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Deck.html">eve::card::Deck</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">牌库（栈顶在末尾）。  <a href="classeve_1_1card_1_1Deck.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1Deck_1_1Membership.html">eve::card::Deck::Membership</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">有序牌堆；栈顶在 vector 末尾。  <a href="structeve_1_1card_1_1Deck_1_1Membership.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Zone.html">eve::card::Zone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">落牌区（手牌区 / 出牌区 / 弃牌区），用于拖放命中判定。  <a href="classeve_1_1card_1_1Zone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1Zone_1_1Rect.html">eve::card::Zone::Rect</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">区域矩形与绘制参数。  <a href="structeve_1_1card_1_1Zone_1_1Rect.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1Zone_1_1Filter.html">eve::card::Zone::Filter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">接受的卡牌 kind；空 = 接受任意 kind。  <a href="structeve_1_1card_1_1Zone_1_1Filter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1CardEvent.html">eve::card::CardEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">一次交互事件。  <a href="structeve_1_1card_1_1CardEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Hand.html">eve::card::Hand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">手牌：扇形布局 + 悬浮 + 拖拽 + 落区判定 + 渲染。  <a href="classeve_1_1card_1_1Hand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1Hand_1_1Meta.html">eve::card::Hand::Meta</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">所有者与布局/交互开关。  <a href="structeve_1_1card_1_1Hand_1_1Meta.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1Hand_1_1Membership.html">eve::card::Hand::Membership</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">有序手牌列表。  <a href="structeve_1_1card_1_1Hand_1_1Membership.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1card_1_1Hand_1_1Drag.html">eve::card::Hand::Drag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">拖拽内部状态（勿直接修改）。  <a href="structeve_1_1card_1_1Hand_1_1Drag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics" id="r_namespaceeve_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html">eve::graphics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1card" id="r_namespaceeve_1_1card"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html">eve::card</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a642062e9cce7e18736dc90063850a7ab" id="r_a642062e9cce7e18736dc90063850a7ab"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7ab">eve::card::CardState</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba2b487b0f260da950751013344a2e4cdc">eve::card::Deck</a>
+, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604">eve::card::Hand</a>
+, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba3ef193e1ac8f2bc3d7226a29d6b09875">eve::card::Hovered</a>
+, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba7c0a2f343108fd64dbd0b5e97a75f145">eve::card::Dragging</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba6300e0c307ee17a1e9ae7bf72d279468">eve::card::Returning</a>
+, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba0332c6e2b8c4737cc5236cf76acc069e">eve::card::Played</a>
+, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba5d5fbe880f62680a14a5e3979a19c861">eve::card::Discarded</a>
+, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7abab9f5c797ebbf55adccdd8539a65a0241">eve::card::Disabled</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a642062e9cce7e18736dc90063850a7ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">单张卡牌的运行时状态。  <a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7ab">更多...</a><br /></td></tr>
+<tr class="separator:a642062e9cce7e18736dc90063850a7ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a9dc4d4aa0764201e04217862c30d248e" id="r_a9dc4d4aa0764201e04217862c30d248e"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html#a9dc4d4aa0764201e04217862c30d248e">eve::card::cardStateName</a> (<a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7ab">CardState</a> state)</td></tr>
+<tr class="memdesc:a9dc4d4aa0764201e04217862c30d248e"><td class="mdescLeft">&#160;</td><td class="mdescRight">状态枚举的字符串名（用于脚本/调试）。  <br /></td></tr>
+<tr class="separator:a9dc4d4aa0764201e04217862c30d248e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9d924fe67eaf975a09976261a6f7ca0" id="r_ae9d924fe67eaf975a09976261a6f7ca0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html#ae9d924fe67eaf975a09976261a6f7ca0">eve::card::printCentered</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, const glm::vec4 &amp;<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>)</td></tr>
+<tr class="memdesc:ae9d924fe67eaf975a09976261a6f7ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">渲染辅助（也供 <a class="el" href="classeve_1_1card_1_1Zone.html" title="落牌区（手牌区 / 出牌区 / 弃牌区），用于拖放命中判定。">Zone</a> / <a class="el" href="classeve_1_1card_1_1Deck.html" title="牌库（栈顶在末尾）。">Deck</a> 复用）。  <br /></td></tr>
+<tr class="separator:ae9d924fe67eaf975a09976261a6f7ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1ae80b5b54a9768d041c29013db6bb" id="r_a0b1ae80b5b54a9768d041c29013db6bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html#a0b1ae80b5b54a9768d041c29013db6bb">eve::card::renderCardBack</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="memdesc:a0b1ae80b5b54a9768d041c29013db6bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">绘制牌背。  <br /></td></tr>
+<tr class="separator:a0b1ae80b5b54a9768d041c29013db6bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0b050b6d4d35e39385b50e85138baaf" id="r_af0b050b6d4d35e39385b50e85138baaf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html#af0b050b6d4d35e39385b50e85138baaf">eve::card::renderCard</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, const <a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> &amp;card, const <a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> &amp;cfg, bool back)</td></tr>
+<tr class="memdesc:af0b050b6d4d35e39385b50e85138baaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">绘制单张卡牌（正面或牌背）。  <br /></td></tr>
+<tr class="separator:af0b050b6d4d35e39385b50e85138baaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

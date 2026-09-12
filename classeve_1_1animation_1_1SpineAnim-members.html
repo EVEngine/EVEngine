@@ -1,0 +1,226 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::SpineAnim 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3a8b689724e833b0e1de9052b2699ee4">advance</a>(const eve::SimulationStep &amp;step)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">Animation</a></td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a01e9ba33bad49b0f4f426e206d4fb338">apply</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a66608f196fb6b3f44e78b15ad6b8040e">collectDrawItems</a>(std::vector&lt; graphics::DrawItem2D &gt; &amp;out)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a42b008c92dc30b499465c33ef9c83a5c">currentTick</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aec1b4b824c1ab17968dd7f05d266526e">draw</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae30ba4e8c3f4a493e46b9c2f0fa1787f">getAnimation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a4773144afc71845031ef0d537e43fc69">getAnimationDuration</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a064febfc2dea87c13507c335c379d9d3">getAtlas</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a45c6e11ddf1689769b204c2c0fe0076d">getDrawSlotCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a0c8bb5e25c042d58e9832344029b6dff">getDrawSlotHeight</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aeedf16930ea10e23c2cd5f2bd2fae6fb">getDrawSlotPage</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aa8b041c64bca140e751a2bc9465adf6e">getDrawSlotRegion</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a5120645b13f619c96e5309cd4e824712">getDrawSlotRotation</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a9a70c327f5603dd4cab54835edf48e9b">getDrawSlotWidth</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a2387427afc9d91c6c98287808438b724">getDrawSlotX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a59e087ed76d67af8168c7e5c161bc75e">getDrawSlotY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a839b03caaefbe65ae90938386418536c">getFlipY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ad6e4850d9dad039e60680c74e6b7b8d0">getLayer</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a70b2c70a124ada392e1286748aaa6cd8">getLoop</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a0710d00c50b0211db3d6cbd89eac5450">getPageTexture</a>(int pageIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a42bfc6d9452fbb1854f26f63a7735b16">getScaleX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ad4a27fcf0110e359d6b57743d6a492ab">getScaleY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a42d2ca341885433e9ba62601edc9c336">getSkeleton</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a698864c3f58cc00aa1a06e98b339c4cd">getSpeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ab531e92586e10210ad2742fd17902897">getTime</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a467a5906f77cd1b2289c5fdf702f9187">getX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a53bf468b68d5ef2e1a7d6547a5f71c24">getY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ac7a528bed2cb2fb29942e4b866741153">hasCurrentTick</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a66d7490195151d4b84f0f4fddaa21f47">isFinished</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3d775b24a9719e5ebde22e9945a55bd8">isPaused</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae1cef663907eaa0364d5e444ac33a43c">isPlaying</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aef435d5b662b6f0953da6a9ec7789053">operator=</a>(const SpineAnim &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aa81f8474de6014c016a45dbcdd282010">pause</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a6e851e8bd34631293125b47d36cb79b2">play</a>(const std::string &amp;animationName)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae4bf5bf91310c92d6008fe08ff041371">resume</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a2e088e3481cfdd25707823a55ba46ef4">setAtlas</a>(SpineAtlas *atlas)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ab1602e2a3dea0f6fdc151e04a0c48055">setColor</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ab5acaa257a83301be65772f0c474f758">setFlipY</a>(bool flip)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a461b46c67974fa22e3f03d2d2375f957">setLayer</a>(int layer)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a5fea1163a025ee6977a6b11599211156">setLoop</a>(bool loop)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a0619c975b6045b19b5d9fd082eaf4c65">setPageTexture</a>(int pageIndex, graphics::Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a1679d215e1be74f965c22dc7ea2b3ef3">setPageTextureByName</a>(const std::string &amp;pageName, graphics::Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a6a52d68f9afb342f4f5dd63a0ec9e79a">setPosition</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a39f77917a07fb72adf5b984ee7fe5b97">setScale</a>(float sx, float sy)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a1126c56a256b9d2f49a97450f0bbbf4b">setSpeed</a>(float speed)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae785d77cde59f2da10bb115c97075b51">setTime</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#aa4e4d5f351e1b577bcaaa8435172e19b">SpineAnim</a>(SpineSkeleton *skeleton)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a715e4e1505cc3cbf374698dbd75f5e65">SpineAnim</a>(const SpineAnim &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a21161acb1c37322448ead448518905d4">stop</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a2aa6d43b0d13072fb52a80d6ebe862df">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a9eb5352b447be41f96a4660f799a605f">~SpineAnim</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

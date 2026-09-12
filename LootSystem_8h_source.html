@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/LootSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">LootSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="LootSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;random&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">Bag</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootEntry.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1LootEntry.html">LootEntry</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootEntry.html#aa1135fad30ec8d65f097ca0bcdf9ebfc">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1LootEntry.html#aa1135fad30ec8d65f097ca0bcdf9ebfc">itemId</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootEntry.html#a0ee162fa5510b098447f7d6bfb4ecd7e">   26</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1LootEntry.html#a0ee162fa5510b098447f7d6bfb4ecd7e">chance</a> = 0.0;  </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootEntry.html#acf9f96ae4d4b73f0edb8746b54e70ed1">   27</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1LootEntry.html#acf9f96ae4d4b73f0edb8746b54e70ed1">minQty</a> = 1;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootEntry.html#ad29508dfea6cc61d172b97179c9a9373">   28</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1LootEntry.html#ad29508dfea6cc61d172b97179c9a9373">maxQty</a> = 1;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootTableDefinition.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1LootTableDefinition.html">LootTableDefinition</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootTableDefinition.html#ad2ef2a46e98256e9c5247370e3b840b9">   33</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1LootTableDefinition.html#ad2ef2a46e98256e9c5247370e3b840b9">id</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1LootTableDefinition.html#a5d48f4c01740c7421e21bd4d9a6b3526">   34</a></span>    std::vector&lt;LootEntry&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1LootTableDefinition.html#a5d48f4c01740c7421e21bd4d9a6b3526">entries</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1LootSystem.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1LootSystem.html">LootSystem</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1LootSystem.html#a71bfc2ed6facb5316a99fe41a8eb7ba0">registerTable</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1LootTableDefinition.html">LootTableDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1LootSystem.html#a17354143cba2daa3b1c781db242d53f4">registerTablesFromJson</a>(<span class="keyword">const</span> std::string &amp;json);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1LootTableDefinition.html">LootTableDefinition</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1LootSystem.html#a3eee74786debad82f7d8f98fea66b213">find</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1LootSystem.html#ad9b5c7c0d606ad0538c05cc458958c18">clear</a>();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1LootSystem.html#a85a0beeb35d3f593be785b3636531480">count</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1LootSystem.html#ae3b402622bf9d7e629c9552d3fc6107a">roll</a>(<span class="keyword">const</span> std::string &amp;tableId, <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a> *bag, std::mt19937 &amp;rng);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1Bag_html"><div class="ttname"><a href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a></div><div class="ttdoc">格子型物品容器（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="Bag_8h_source.html#l00019">Bag.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html">eve::rpg::LootSystem</a></div><div class="ttdoc">掉落系统：进程级掉落表 + 随机 roll 入包。 @thread roll 使用调用方提供的 rng（命名随机流），可在任意线程执行。</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00041">LootSystem.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html_a17354143cba2daa3b1c781db242d53f4"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html#a17354143cba2daa3b1c781db242d53f4">eve::rpg::LootSystem::registerTablesFromJson</a></div><div class="ttdeci">static int registerTablesFromJson(const std::string &amp;json)</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8cpp_source.html#l00024">LootSystem.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html_a3eee74786debad82f7d8f98fea66b213"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html#a3eee74786debad82f7d8f98fea66b213">eve::rpg::LootSystem::find</a></div><div class="ttdeci">static const LootTableDefinition * find(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8cpp_source.html#l00060">LootSystem.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html_a71bfc2ed6facb5316a99fe41a8eb7ba0"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html#a71bfc2ed6facb5316a99fe41a8eb7ba0">eve::rpg::LootSystem::registerTable</a></div><div class="ttdeci">static void registerTable(const LootTableDefinition &amp;def)</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8cpp_source.html#l00019">LootSystem.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html_a85a0beeb35d3f593be785b3636531480"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html#a85a0beeb35d3f593be785b3636531480">eve::rpg::LootSystem::count</a></div><div class="ttdeci">static int count()</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8cpp_source.html#l00068">LootSystem.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html_ad9b5c7c0d606ad0538c05cc458958c18"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html#ad9b5c7c0d606ad0538c05cc458958c18">eve::rpg::LootSystem::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8cpp_source.html#l00066">LootSystem.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LootSystem_html_ae3b402622bf9d7e629c9552d3fc6107a"><div class="ttname"><a href="classeve_1_1rpg_1_1LootSystem.html#ae3b402622bf9d7e629c9552d3fc6107a">eve::rpg::LootSystem::roll</a></div><div class="ttdeci">static int roll(const std::string &amp;tableId, eve::inventory::Bag *bag, std::mt19937 &amp;rng)</div><div class="ttdoc">按掉落表 roll 一次，把命中的物品加入 bag。</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8cpp_source.html#l00070">LootSystem.cpp:70</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00035">AvatarInstance.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html_aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca"><div class="ttname"><a href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">eve::inventory::InventoryContainerKind::Bag</a></div><div class="ttdeci">@ Bag</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootEntry_html"><div class="ttname"><a href="structeve_1_1rpg_1_1LootEntry.html">eve::rpg::LootEntry</a></div><div class="ttdoc">掉落表里的一条掉落。</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00024">LootSystem.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootEntry_html_a0ee162fa5510b098447f7d6bfb4ecd7e"><div class="ttname"><a href="structeve_1_1rpg_1_1LootEntry.html#a0ee162fa5510b098447f7d6bfb4ecd7e">eve::rpg::LootEntry::chance</a></div><div class="ttdeci">double chance</div><div class="ttdoc">[0,1]，roll 值小于 chance 才掉落</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00026">LootSystem.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootEntry_html_aa1135fad30ec8d65f097ca0bcdf9ebfc"><div class="ttname"><a href="structeve_1_1rpg_1_1LootEntry.html#aa1135fad30ec8d65f097ca0bcdf9ebfc">eve::rpg::LootEntry::itemId</a></div><div class="ttdeci">std::string itemId</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00025">LootSystem.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootEntry_html_acf9f96ae4d4b73f0edb8746b54e70ed1"><div class="ttname"><a href="structeve_1_1rpg_1_1LootEntry.html#acf9f96ae4d4b73f0edb8746b54e70ed1">eve::rpg::LootEntry::minQty</a></div><div class="ttdeci">int minQty</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00027">LootSystem.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootEntry_html_ad29508dfea6cc61d172b97179c9a9373"><div class="ttname"><a href="structeve_1_1rpg_1_1LootEntry.html#ad29508dfea6cc61d172b97179c9a9373">eve::rpg::LootEntry::maxQty</a></div><div class="ttdeci">int maxQty</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00028">LootSystem.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootTableDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1LootTableDefinition.html">eve::rpg::LootTableDefinition</a></div><div class="ttdoc">掉落表定义。</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00032">LootSystem.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootTableDefinition_html_a5d48f4c01740c7421e21bd4d9a6b3526"><div class="ttname"><a href="structeve_1_1rpg_1_1LootTableDefinition.html#a5d48f4c01740c7421e21bd4d9a6b3526">eve::rpg::LootTableDefinition::entries</a></div><div class="ttdeci">std::vector&lt; LootEntry &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00034">LootSystem.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1LootTableDefinition_html_ad2ef2a46e98256e9c5247370e3b840b9"><div class="ttname"><a href="structeve_1_1rpg_1_1LootTableDefinition.html#ad2ef2a46e98256e9c5247370e3b840b9">eve::rpg::LootTableDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="LootSystem_8h_source.html#l00033">LootSystem.h:33</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

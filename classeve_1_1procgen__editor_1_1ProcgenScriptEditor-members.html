@@ -1,0 +1,226 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editor.html">procgen_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">ProcgenScriptEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen_editor::ProcgenScriptEditor 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a49dbd34bffb9b04e3722e29ee39fffdd">canRedo</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a6f28c012a445e8715ead7723f1309f4b">canUndo</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#af97ab5ac9aa50410a714100535e72c09">configureWorkspace</a>(editor::EditorWorkspace &amp;workspace) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a3bb323584382fec199a5e43b60467db1">displayName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a8a9f593811d6bbf1d18d8c3730822ac6">failPreview</a>(std::string message, std::uint64_t expectedRevision)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ab991ad686fe47b81ac84b9c508438765">getBool</a>(const std::string &amp;key) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a7c54c21f7ceb82242c8cf6ecc4c8465f">getFloat</a>(const std::string &amp;key) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a10c5101ad20d0027829b090182fd50bd">getInt</a>(const std::string &amp;key) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2e2e73f148c9732622b98bfc0d7be40a">getString</a>(const std::string &amp;key) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a28c2510cc863a3765aed03b1cf97f006">isContinuousRebuild</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#abbdfd972cd2e240f5fc7309d0a9f9fd2">isDirty</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ae481f68df543e2da86959d9c808d5c0d">kind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac43cea3da5a8752d66fb49f6a9b342d8">loadModule</a>(procgen_editing::ProcgenScriptModuleSpec spec)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ab7305a246fc491e3937d06bfc0829575">loadModule</a>(std::string uri, std::string id, std::string displayName, std::string kind, const procgen_editing::EditorValue &amp;schema)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ad3f2f8f6b426628f3882e2a1c77a3a16">moduleId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a1bf67383ee5d27f8db947cd1c7b1f140">moduleUri</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ad09ca3138a55e60fa4742bcdca7985db">operator=</a>(const ProcgenScriptEditor &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a4d701ce4682fa5fd1baf28781d72c405">paramChoice</a>(int paramIndex, int choiceIndex) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#adc3b0aff81c01a1135e1bc7c712192f3">paramChoiceCount</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2a49bc6533dc21a556c93fc3564b4e7c">paramCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a46db73c49b6b814f5f7870e4efa246c5">paramKey</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac0b1c43d7c943866d6e81200898d2048">paramKind</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ab5bbcbc961cc9696b8f936ad2314f573">paramLabel</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a4d46674259f1c27dd570471c87ad26a6">paramMaximum</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a8b5b4b83114ea139c83c6a09244485a4">paramMinimum</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a0d70712503dd63e6e713d8e197cb3baa">paramStep</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a8d2d270f51d6cf723d3323326e0dc27e">pointBudget</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a465100fb131ef95753b28f9c51afdc88">pointCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a89223a4f111790ce2eefb6ef762ea307">pointSeed</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2827d7a16d71c0b6881636a4d37ddefe">pointX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a626e722f04eeeda39d27bd5c3956093f">pointZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a610d986bebe13d0cab3b19b020d16821">previewFailureSummary</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a58d6cf23ca64ca01e166230d4ef15540">previewRevision</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ad6770d86ab4a7a1fdd2fa1b59a048b11">ProcgenScriptEditor</a>(std::string targetId)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a842e8a45f9611084e1d962a62d9d3434">ProcgenScriptEditor</a>(const ProcgenScriptEditor &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#aabd332733e3dca8f2d784972cc6c02db">publishPreview</a>(const procgen::PointSet *points, std::string stage, std::uint64_t expectedRevision)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a66b60ed4c1f99aa3f1582247cc01941a">publishStage</a>(const procgen::PointSet *points, std::string stage)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ace5611349be4726592f8b1e62c729a90">redo</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a605e17015d10c2446ae1c98908a9ba7a">revision</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2384c029207bc60c66073e2b2578494b">selectedStage</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a2e8e2309e26a1bdc42a70740f674eeec">selectStage</a>(std::string stage)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#af19d2c91c2682218299bca09b06998ca">setBool</a>(std::string key, bool value)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#afb0ce5941d5610c1b5cec7c17db3dff7">setFloat</a>(std::string key, double value)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac277da59c6c9c39877b2a29064227c36">setInt</a>(std::string key, int value)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#aea7da7352818c06c808a52e7ef25e696">setLive</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a4cb19f6ad8bdff38f2e30f7647686920">setParam</a>(std::string key, procgen_editing::EditorValue value)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#abf2b860bf896173a2061a5e9b3469678">setPointBudget</a>(int budget)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a13c5499085c8e965bdccfcb8318cc635">setString</a>(std::string key, std::string value)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a7ae344857b98006d82e35f59b6de02db">stageCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a37a080484e341b085793b29208de8a90">stageName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#ac3800688b2d02c94f8097223d3f1bfae">target</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html#a057df1b4a32923dd80b37d11d859ef31">undo</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen__editor_1_1ProcgenScriptEditor.html">eve::procgen_editor::ProcgenScriptEditor</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

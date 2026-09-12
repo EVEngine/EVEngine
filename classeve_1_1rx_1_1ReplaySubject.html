@@ -1,0 +1,447 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rx::ReplaySubject&lt; T &gt; 模板类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rx.html">rx</a></li><li class="navelem"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">ReplaySubject</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rx_1_1ReplaySubject-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rx::ReplaySubject&lt; T &gt; 模板类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1rx_1_1Subject.html" title="Multicast push-based stream: both an Observable and a push source. Thread-safe: onNext/onError/onComp...">Subject</a> that buffers up to <code>capacity</code> values (0 = unlimited) and replays the buffer to every new subscriber.  
+ <a href="classeve_1_1rx_1_1ReplaySubject.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Rx_8h_source.html">Rx.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::rx::ReplaySubject&lt; T &gt; 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1rx_1_1ReplaySubject.png" usemap="#eve::rx::ReplaySubject_3C_20T_20_3E_map" alt=""/>
+  <map id="eve::rx::ReplaySubject_3C_20T_20_3E_map" name="eve::rx::ReplaySubject_3C_20T_20_3E_map">
+<area href="classeve_1_1rx_1_1Observable.html" title="Push-based stream source. Operators return a new (caller-owned) Observable; subscribe() returns a Sub..." alt="eve::rx::Observable&lt; T &gt;" shape="rect" coords="0,0,168,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0769ee5fb45bf8500931e29140374f21" id="r_a0769ee5fb45bf8500931e29140374f21"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html#a0769ee5fb45bf8500931e29140374f21">ReplaySubject</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">int</a> <a class="el" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>=0)</td></tr>
+<tr class="memdesc:a0769ee5fb45bf8500931e29140374f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a replaying subject with the given buffer capacity.  <br /></td></tr>
+<tr class="separator:a0769ee5fb45bf8500931e29140374f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e0780e9a72528d3b53e0bafec01a45d" id="r_a6e0780e9a72528d3b53e0bafec01a45d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Subscription.html">Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html#a6e0780e9a72528d3b53e0bafec01a45d">subscribe</a> (<a class="el" href="classeve_1_1rx_1_1Observer.html">Observer</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">obs</a>) <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">override</a></td></tr>
+<tr class="memdesc:a6e0780e9a72528d3b53e0bafec01a45d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replays buffered values, then subscribes the observer.  <br /></td></tr>
+<tr class="separator:a6e0780e9a72528d3b53e0bafec01a45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e59ba0db19b5b8ad3534ac5608cf29" id="r_a11e59ba0db19b5b8ad3534ac5608cf29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html#a11e59ba0db19b5b8ad3534ac5608cf29">onNext</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:a11e59ba0db19b5b8ad3534ac5608cf29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffers and pushes a new value to observers.  <br /></td></tr>
+<tr class="separator:a11e59ba0db19b5b8ad3534ac5608cf29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12c59438d6f9defad2bf9481d3e7cc3" id="r_ae12c59438d6f9defad2bf9481d3e7cc3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html#ae12c59438d6f9defad2bf9481d3e7cc3">onError</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">const</a> std::string &amp;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">e</a>)</td></tr>
+<tr class="memdesc:ae12c59438d6f9defad2bf9481d3e7cc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delivers a terminal error to observers.  <br /></td></tr>
+<tr class="separator:ae12c59438d6f9defad2bf9481d3e7cc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa75080357e6bfab75d002193784587be" id="r_aa75080357e6bfab75d002193784587be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html#aa75080357e6bfab75d002193784587be">onCompleted</a> ()</td></tr>
+<tr class="memdesc:aa75080357e6bfab75d002193784587be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delivers a terminal completion to observers.  <br /></td></tr>
+<tr class="separator:aa75080357e6bfab75d002193784587be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6dc0a0526f3145c56e29eacb71d1bb7" id="r_ae6dc0a0526f3145c56e29eacb71d1bb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html#ae6dc0a0526f3145c56e29eacb71d1bb7">hasObservers</a> () <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">const</a></td></tr>
+<tr class="memdesc:ae6dc0a0526f3145c56e29eacb71d1bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while at least one live observer is registered.  <br /></td></tr>
+<tr class="separator:ae6dc0a0526f3145c56e29eacb71d1bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1rx_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1rx_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1rx_1_1Observable.html">eve::rx::Observable&lt; T &gt;</a></td></tr>
+<tr class="memitem:a4f57ce34717bb9c396f41279a012b32a inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a4f57ce34717bb9c396f41279a012b32a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4f57ce34717bb9c396f41279a012b32a">~Observable</a> ()=<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">default</a></td></tr>
+<tr class="separator:a4f57ce34717bb9c396f41279a012b32a inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a607a61a6ec5fb990eb6154ec85ea7c34 inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a607a61a6ec5fb990eb6154ec85ea7c34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Subscription.html">Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a607a61a6ec5fb990eb6154ec85ea7c34">subscribe</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observer.html">Observer</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::NextFn next)</td></tr>
+<tr class="memdesc:a607a61a6ec5fb990eb6154ec85ea7c34 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscribes with a value callback only.  <br /></td></tr>
+<tr class="separator:a607a61a6ec5fb990eb6154ec85ea7c34 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbec68fce99f78a81084f6e91b63c566 inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_afbec68fce99f78a81084f6e91b63c566"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Subscription.html">Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#afbec68fce99f78a81084f6e91b63c566">subscribe</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observer.html">Observer</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::NextFn next, <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observer.html">Observer</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::ErrorFn <a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>, <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observer.html">Observer</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::CompletedFn completed)</td></tr>
+<tr class="memdesc:afbec68fce99f78a81084f6e91b63c566 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscribes with value/error/completed callbacks.  <br /></td></tr>
+<tr class="separator:afbec68fce99f78a81084f6e91b63c566 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ed82e277dd27ccfaddcb75a8d2bf2bc inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a0ed82e277dd27ccfaddcb75a8d2bf2bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a0ed82e277dd27ccfaddcb75a8d2bf2bc">filter</a> (std::function&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">bool</a>(<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">const</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &amp;)&gt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">pred</a>)</td></tr>
+<tr class="memdesc:a0ed82e277dd27ccfaddcb75a8d2bf2bc inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Passes values through only when pred(v) is true.  <br /></td></tr>
+<tr class="separator:a0ed82e277dd27ccfaddcb75a8d2bf2bc inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4be7edbce7daf26a25060ad88913f09e inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a4be7edbce7daf26a25060ad88913f09e"><td class="memTemplParams" colspan="2">template&lt;typename R &gt; </td></tr>
+<tr class="memitem:a4be7edbce7daf26a25060ad88913f09e inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; R &gt; *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">map</a> (std::function&lt; R(const T &amp;)&gt; <a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="memdesc:a4be7edbce7daf26a25060ad88913f09e inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms each value with fn.  <br /></td></tr>
+<tr class="separator:a4be7edbce7daf26a25060ad88913f09e inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa97aabcb0e369cdb71aa09070b9fa236 inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_aa97aabcb0e369cdb71aa09070b9fa236"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#aa97aabcb0e369cdb71aa09070b9fa236">take</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">int</a> <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="memdesc:aa97aabcb0e369cdb71aa09070b9fa236 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits at most the first n values, then completes.  <br /></td></tr>
+<tr class="separator:aa97aabcb0e369cdb71aa09070b9fa236 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a984aa93139a5e4178f9c654fa03229e3 inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a984aa93139a5e4178f9c654fa03229e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a984aa93139a5e4178f9c654fa03229e3">skip</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">int</a> <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="memdesc:a984aa93139a5e4178f9c654fa03229e3 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops the first n values.  <br /></td></tr>
+<tr class="separator:a984aa93139a5e4178f9c654fa03229e3 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9ae1c11ceaee723a5e6b4fcfa33295c inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_ab9ae1c11ceaee723a5e6b4fcfa33295c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#ab9ae1c11ceaee723a5e6b4fcfa33295c">first</a> ()</td></tr>
+<tr class="memdesc:ab9ae1c11ceaee723a5e6b4fcfa33295c inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits only the first value, then completes.  <br /></td></tr>
+<tr class="separator:ab9ae1c11ceaee723a5e6b4fcfa33295c inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4566c364cdfc5718575a1f21fdcd4b09 inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a4566c364cdfc5718575a1f21fdcd4b09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4566c364cdfc5718575a1f21fdcd4b09">takeUntil</a> (<a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *other)</td></tr>
+<tr class="memdesc:a4566c364cdfc5718575a1f21fdcd4b09 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops the stream when <code>other</code> emits or completes.  <br /></td></tr>
+<tr class="separator:a4566c364cdfc5718575a1f21fdcd4b09 inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13bdafa0c9354a622ddbecf86aefec6e inherit pub_methods_classeve_1_1rx_1_1Observable" id="r_a13bdafa0c9354a622ddbecf86aefec6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rx_1_1Observable.html">Observable</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rx_1_1Observable.html#a13bdafa0c9354a622ddbecf86aefec6e">distinctUntilChanged</a> ()</td></tr>
+<tr class="memdesc:a13bdafa0c9354a622ddbecf86aefec6e inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suppresses consecutive duplicate values (uses operator==).  <br /></td></tr>
+<tr class="separator:a13bdafa0c9354a622ddbecf86aefec6e inherit pub_methods_classeve_1_1rx_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a>&gt;<br />
+class eve::rx::ReplaySubject&lt; T &gt;</div><p><a class="el" href="classeve_1_1rx_1_1Subject.html" title="Multicast push-based stream: both an Observable and a push source. Thread-safe: onNext/onError/onComp...">Subject</a> that buffers up to <code>capacity</code> values (0 = unlimited) and replays the buffer to every new subscriber. </p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00532">532</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0769ee5fb45bf8500931e29140374f21" name="a0769ee5fb45bf8500931e29140374f21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0769ee5fb45bf8500931e29140374f21">&#9670;&#160;</a></span>ReplaySubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">eve::rx::ReplaySubject</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::ReplaySubject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">int</a>&#160;</td>
+          <td class="paramname"><em>capacity</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a replaying subject with the given buffer capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00536">536</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae6dc0a0526f3145c56e29eacb71d1bb7" name="ae6dc0a0526f3145c56e29eacb71d1bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6dc0a0526f3145c56e29eacb71d1bb7">&#9670;&#160;</a></span>hasObservers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">bool</a> <a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">eve::rx::ReplaySubject</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::hasObservers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True while at least one live observer is registered. </p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00570">570</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa75080357e6bfab75d002193784587be" name="aa75080357e6bfab75d002193784587be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa75080357e6bfab75d002193784587be">&#9670;&#160;</a></span>onCompleted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">void</a> <a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">eve::rx::ReplaySubject</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::onCompleted </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delivers a terminal completion to observers. </p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00566">566</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae12c59438d6f9defad2bf9481d3e7cc3" name="ae12c59438d6f9defad2bf9481d3e7cc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12c59438d6f9defad2bf9481d3e7cc3">&#9670;&#160;</a></span>onError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">void</a> <a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">eve::rx::ReplaySubject</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::onError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">const</a> std::string &amp;&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delivers a terminal error to observers. </p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00562">562</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11e59ba0db19b5b8ad3534ac5608cf29" name="a11e59ba0db19b5b8ad3534ac5608cf29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e59ba0db19b5b8ad3534ac5608cf29">&#9670;&#160;</a></span>onNext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">void</a> <a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">eve::rx::ReplaySubject</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::onNext </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a>&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Buffers and pushes a new value to observers. </p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00551">551</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a6e0780e9a72528d3b53e0bafec01a45d" name="a6e0780e9a72528d3b53e0bafec01a45d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e0780e9a72528d3b53e0bafec01a45d">&#9670;&#160;</a></span>subscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">typename</a> <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rx_1_1Subscription.html">Subscription</a> <a class="el" href="classeve_1_1rx_1_1ReplaySubject.html">eve::rx::ReplaySubject</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;::subscribe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rx_1_1Observer.html">Observer</a>&lt; <a class="el" href="classeve_1_1rx_1_1Observable.html#a4be7edbce7daf26a25060ad88913f09e">T</a> &gt;&#160;</td>
+          <td class="paramname"><em>obs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replays buffered values, then subscribes the observer. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1rx_1_1Observable.html#a0626860c74c2079958230b9db30d01b5">eve::rx::Observable&lt; T &gt;</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Rx_8h_source.html">Rx.h</a> 第 <a class="el" href="Rx_8h_source.html#l00539">539</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Rx_8h_source.html#l00150">eve::rx::Observer&lt; T &gt;::isStopped()</a>, <a class="el" href="Rx_8h_source.html#l00155">eve::rx::Observer&lt; T &gt;::next()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rx/<a class="el" href="Rx_8h_source.html">Rx.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

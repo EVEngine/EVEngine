@@ -1,0 +1,224 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorIds.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorIds.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorIds_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingIds_8h.html">editing/EditingIds.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Tag&gt;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a9e95d3cfdb83dca9a1fc95c3770d420e">   12</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongEditorId</a> = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">eve::editing::StrongId&lt;Tag&gt;</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Id&gt;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a58dd503c1443b74ce3c3e6301ca16518">   16</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1StrongIdHash.html">StrongEditorIdHash</a> = <a class="code hl_struct" href="structeve_1_1editing_1_1StrongIdHash.html">eve::editing::StrongIdHash&lt;Id&gt;</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">using </span><a class="code hl_function" href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">eve::editing::canonicalUuid</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a303dd6569dbeffc28182c66738a4fa63">   28</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">SessionId</a>     = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#ad1e987167a7524aa0e9fdee20818de5c">eve::editing::SessionId</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">   29</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>      = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">   30</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CommandId</a>     = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">eve::editing::CommandId</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ab2beca4b7db22f47afbaf0e5f5a7c420">   31</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">ToolId</a>        = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a8dae4cea7066ce4242fe52a567b7e506">eve::editing::ToolId</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">   32</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>        = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a833aebc8223a13bb0cd9d0b384c907db">   33</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>  = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">   34</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TransactionId</a> = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">eve::editing::TransactionId</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">   35</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">PlanId</a>        = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a07f0133613fc769596fb921d57920a56">eve::editing::PlanId</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">   36</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>      = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a241db4084a0ec8f332caa11a3ae26baf">   37</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>  = <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#af2ed97277be67cd3650fd900b5dd922f">   38</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">ObjectId</a>      = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">eve::editing::ObjectId</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">   39</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">AssetGuid</a>     = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">eve::editing::AssetGuid</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">   40</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>    = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#aeb5bcefee9d0ff487dfa0fa12db08013">eve::editing::DocumentId</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a572286b52b6c370a9614ee5c4c383c55">   41</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>   = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">eve::editing::GraphNodeId</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a783a44c240ae224e9fb209fe206491c1">   42</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphPinId</a>    = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">eve::editing::GraphPinId</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a2b11676c24b2172481ad38100860f395">   43</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>        = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#aba1406ca4adac6f39880b3e63b1788f3">eve::editing::TaskId</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditingIds_8h_html"><div class="ttname"><a href="EditingIds_8h.html">EditingIds.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a07f0133613fc769596fb921d57920a56"><div class="ttname"><a href="namespaceeve_1_1editing.html#a07f0133613fc769596fb921d57920a56">eve::editing::PlanId</a></div><div class="ttdeci">StrongId&lt; PlanIdTag &gt; PlanId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00060">EditingIds.h:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a1b7e1c9d6625a2d65aa65893bd1a3b18"><div class="ttname"><a href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">eve::editing::canonicalUuid</a></div><div class="ttdeci">eve::StrongUuid&lt; Tag &gt; canonicalUuid(const StrongId&lt; Tag &gt; &amp;id) noexcept</div><div class="ttdoc">Project an authoring identifier to its canonical UUID value.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00033">EditingIds.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00054">EditingIds.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2d916283d8333abd61ff13f34344f5d6"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">eve::editing::ObjectId</a></div><div class="ttdeci">StrongId&lt; ObjectIdTag &gt; ObjectId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00062">EditingIds.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a39e0554f8a5dce7fdebf1fe770b8c078"><div class="ttname"><a href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">eve::editing::AssetGuid</a></div><div class="ttdeci">StrongId&lt; AssetGuidTag &gt; AssetGuid</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00063">EditingIds.h:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a574edbcd85274c1df908ce3c43bcf939"><div class="ttname"><a href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">eve::editing::TransactionId</a></div><div class="ttdeci">StrongId&lt; TransactionIdTag &gt; TransactionId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00059">EditingIds.h:59</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a60962f18b15404d7942fbae13fd833be"><div class="ttname"><a href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a></div><div class="ttdeci">StrongId&lt; StableIdTag &gt; StableId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00061">EditingIds.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a80e450b5eb4cf0da7c013972cc572568"><div class="ttname"><a href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a></div><div class="ttdeci">StrongId&lt; CapabilityIdTag &gt; CapabilityId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00058">EditingIds.h:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a81debce673234f46d7ab5705ba7cead2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">eve::editing::GraphPinId</a></div><div class="ttdeci">StrongId&lt; GraphPinIdTag &gt; GraphPinId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00066">EditingIds.h:66</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a8dae4cea7066ce4242fe52a567b7e506"><div class="ttname"><a href="namespaceeve_1_1editing.html#a8dae4cea7066ce4242fe52a567b7e506">eve::editing::ToolId</a></div><div class="ttdeci">StrongId&lt; ToolIdTag &gt; ToolId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00056">EditingIds.h:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a90a3849ec29f2fe1ce5c2322b5c1f3f6"><div class="ttname"><a href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">eve::editing::GraphNodeId</a></div><div class="ttdeci">StrongId&lt; GraphNodeIdTag &gt; GraphNodeId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00065">EditingIds.h:65</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_aba1406ca4adac6f39880b3e63b1788f3"><div class="ttname"><a href="namespaceeve_1_1editing.html#aba1406ca4adac6f39880b3e63b1788f3">eve::editing::TaskId</a></div><div class="ttdeci">StrongId&lt; TaskIdTag &gt; TaskId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00067">EditingIds.h:67</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_abab06456c15fc263bb2c585849371eea"><div class="ttname"><a href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">eve::editing::CommandId</a></div><div class="ttdeci">StrongId&lt; CommandIdTag &gt; CommandId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00055">EditingIds.h:55</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ad1e987167a7524aa0e9fdee20818de5c"><div class="ttname"><a href="namespaceeve_1_1editing.html#ad1e987167a7524aa0e9fdee20818de5c">eve::editing::SessionId</a></div><div class="ttdeci">StrongId&lt; SessionIdTag &gt; SessionId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00053">EditingIds.h:53</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_aeb5bcefee9d0ff487dfa0fa12db08013"><div class="ttname"><a href="namespaceeve_1_1editing.html#aeb5bcefee9d0ff487dfa0fa12db08013">eve::editing::DocumentId</a></div><div class="ttdeci">StrongId&lt; DocumentIdTag &gt; DocumentId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00064">EditingIds.h:64</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1StrongIdHash_html"><div class="ttname"><a href="structeve_1_1editing_1_1StrongIdHash.html">eve::editing::StrongIdHash</a></div><div class="ttdoc">Hash functor for a strong authoring identifier.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00022">EditingIds.h:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

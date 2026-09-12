@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::DistanceField3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7c0f44071b5375565ed2a2041b792240">castCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float deltaX, float deltaY, float deltaZ)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a85f907937365ab5ee0771ec86cf4325e">castSphere</a>(float x, float y, float z, float radius, float deltaX, float deltaY, float deltaZ)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a5a7f8bfe19d16d442e71f2a8990bfa72">checkCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ace405889e90e6cbbc891e5219a18649c">checkSphere</a>(float x, float y, float z, float radius)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a8e7b58c122be07a93a5a382fd752994b">didCastStartInside</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aa89395b811e99ad11e338d748050659e">didMoverHitWall</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a8f4e1de07c0483254029390dc671893b">DistanceField3D</a>(int width, int height, int depth, float cellSize, float originX, float originY, float originZ, float outsideDistance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a18fec3e071d6c31af79f796cc364bd7e">fill</a>(float distance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a2f94667415fa4e81f253fabc0313904a">fillRegion</a>(int x, int y, int z, int width, int height, int depth, float distance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1313b605d19ba3a0abe47cc0b2c82d7b">getCastDistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab28d1073f2e41ca106c98a21234300eb">getCastFraction</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a6cad1bf20dc6c7d089c7725c918f08df">getCellSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1159e9515bcdb5916ac3618e40374c70">getCollisionDistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a91ac87f554371d70ac4d97ea867beaab">getCollisionX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a281c57dd30b7b5adf6537d2b93a5a6c0">getCollisionY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab588e3a8730189fdcc01a8b480411650">getCollisionZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ae0bdc3dda5d4ffda973b9c1027c068d1">getDepth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aee56aa2e506a39619ec7c35e4f24f12b">getDistance</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a70bb21ce0ca9cc4e7ae452cac1db6f85">getHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a72cba6201009bbd4fd8c0fa5077f3558">getMoverDeltaX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab2b7989ba11032264c06e76f1dd77542">getMoverDeltaY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a8ae3d2e8faa7948111b158458f613bdb">getMoverDeltaZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a07228b2201b30d7e3ae3ef9385b80341">getMoverGroundDot</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a3cf0032dae8ffd54606dcdfd4c2ed00f">getMoverGroundSnap</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a9e74576da9307a7611b53c9f91724598">getMoverIterations</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a888885e95278b8494e03b13907b5f6ab">getMoverNormalX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aff18827ddac20cd8fb6008cd2c96b14c">getMoverNormalY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ad3e5e67464ad86de551e839158cfd180">getMoverNormalZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ae104b1376f73ec08b645aa74c86a15c2">getMoverSkinWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a4c599d1b704a837801652b7e8cbb14d2">getMoverStepHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7e553e3e56b7ff5e39486b211449b67b">getNormalX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aa1d6ba3de31ed88f4b5612a141c28c68">getNormalY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7153bcbc4dcc1e8fd052a2f5bae9f92e">getNormalZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a46f4805dc5aaa5f7935c67738636f20f">getOriginX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a63f28099b53a3a18569dd9fac44fdf0d">getOriginY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aed867a8652fcb4ba080632e51c053640">getOriginZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a714d06141650e65a6af127110d88311f">getOutsideDistance</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#acfbffd08b6cb6a6b732549c829ae5cde">getPenetrationDepth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a730d47416ae5811d0171eedf3ab57b31">getRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1add73b540ec0183cb8a812dfc2ed655">getSampleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab5ac87cad3383d8384cc86e36a996712">getShapeContactX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7346a05b32f497a0d368de8fd3afc631">getShapeContactY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a9fa6a74a6b9758bcf48061fa8acc6f16">getShapeContactZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab1f103218d7f1a407b5cff48ace68f48">getSurfaceX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ad1a649a8d74111a2adef761c4b22bc33">getSurfaceY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ad1525ba23d7597126fe02139f03cd359">getSurfaceZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a9fb8dbdd14c6e965f2ff31372e38f2d6">getWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a2fe2bd8f62d9e5320f3d78a45931d0b4">isMoverGrounded</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1ed8d6250b16de3e252f2959aaa75231">moveCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float deltaX, float deltaY, float deltaZ)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ae364e3757f77579b65a5a1f025c6e407">sample</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a4533b40d9bdf4143537cd847630b9d78">sampleNormal</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab3a01e3bd2fd0bb4ead1989df35a9625">setDistance</a>(int x, int y, int z, float distance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aa698a6f889baf74d0d71a685f626b2da">setDistanceRegion</a>(int x, int y, int z, int width, int height, int depth, const std::vector&lt; float &gt; &amp;distances)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a491008fa70c6ad149fd59241d5744340">setDistances</a>(const std::vector&lt; float &gt; &amp;distances)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1087b45cd0721bef36c02de0a90a650e">setMoverGroundSnap</a>(float distance)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aac6cee4eea5a3383620dfab1374824dc">setMoverSkinWidth</a>(float width)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a75860699f31346ce4d6217b20a5856e0">setMoverSlopeLimit</a>(float degrees)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#adb821ab92e25ee057ca0fc4e1dd73a4a">setMoverStepHeight</a>(float height)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a2d1f85f36a9335bc156436f59b54a180">setMoverUp</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
