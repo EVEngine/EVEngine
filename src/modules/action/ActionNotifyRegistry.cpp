@@ -1,5 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
 
+#include "common/Capability.h"
+
 #include <utility>
 
 namespace eve::action {
@@ -24,7 +26,9 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"gameplay:event", "Gameplay Event", "Gameplay", ActionNotifyShape::Instant, {"tag"}},
         {"combat:damage", "Apply Damage", "Combat", ActionNotifyShape::Instant, {"damageType", "amount"}},
         {"presentation:vfx", "Spawn VFX", "Presentation", ActionNotifyShape::Instant, {"uri"}},
+        {"presentation:vfx-state", "VFX State", "Presentation", ActionNotifyShape::State, {"uri"}},
         {"presentation:audio", "Play Audio", "Presentation", ActionNotifyShape::Instant, {"uri"}},
+        {"presentation:audio-state", "Audio State", "Presentation", ActionNotifyShape::State, {"uri"}},
         {"presentation:camera", "Camera Cue", "Presentation", ActionNotifyShape::Instant, {"cue"}},
         {"combat:hitbox-window", "Hitbox Window", "Combat", ActionNotifyShape::State, {"hitbox"}},
         {"combat:invulnerability-window", "Invulnerability Window", "Combat", ActionNotifyShape::State, {}},
@@ -36,6 +40,12 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         auto registered = registry.registerDescriptor(std::move(descriptor));
         if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
     }
+    Result<void> providers = Result<void>::success(Status::success(StatusCode::NoOp));
+    cap::forEach<IActionNotifyProvider>([&](IActionNotifyProvider* provider) {
+        if (!providers) return;
+        providers = provider->install(registry);
+    });
+    if (!providers) return Result<ActionNotifyRegistry>::failure(providers.status());
     return Result<ActionNotifyRegistry>::success(std::move(registry));
 }
 

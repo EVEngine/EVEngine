@@ -12,6 +12,8 @@
 
 namespace eve::action {
 
+class ActionNotifyRegistry;
+
 /** @brief Declares whether a notify is instantaneous or an enter/exit state. */
 enum class ActionNotifyShape : std::uint8_t { Instant, State };
 
@@ -76,6 +78,26 @@ public:
     [[nodiscard]] virtual Result<void> sample(const ActionActiveBlock&, const ActionNotifyContext&) const {
         return Result<void>::success(Status::success(StatusCode::NoOp));
     }
+};
+
+/**
+ * @brief Optional module provider that installs handlers into a new registry.
+ *
+ * Providers are discovered through the capability listener registry while
+ * `withBuiltins()` is constructing its candidate. The callback is synchronous,
+ * owner-thread-only and must not retain the borrowed registry reference.
+ */
+class IActionNotifyProvider {
+public:
+    static constexpr const char* capabilityName = "eve.action.notify-provider";
+    virtual ~IActionNotifyProvider() = default;
+
+    /**
+     * @brief Install provider-owned handler instances for known descriptors.
+     * @param registry Borrowed candidate registry valid only for this call.
+     * @return Applied/NoOp or a structured installation failure.
+     */
+    [[nodiscard]] virtual Result<void> install(ActionNotifyRegistry& registry) = 0;
 };
 
 /**

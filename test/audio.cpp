@@ -3,9 +3,12 @@
 
 #include "audio/Audio.h"
 #include "audio/Source.h"
+#include "action/ActionBlockRuntime.h"
+#include "action/ActionNotifyRegistry.h"
 #include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "sound/Decoder.h"
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
@@ -33,6 +36,12 @@ std::vector<char> readBinaryFile(const std::string &path) {
 }
 
 }  // namespace
+
+static eve::LogicalId actionLogicalId(std::string_view value) {
+    auto parsed = eve::LogicalId::parse(value);
+    REQUIRE(parsed.has_value());
+    return std::move(*parsed);
+}
 
 static eve::audio::Audio *tryCreateAudio() {
     try {
@@ -92,6 +101,32 @@ TEST_CASE("audio.staticSource.playStop") {
     CHECK(!src->isPlaying());
     delete src;
     delete sd;
+}
+
+TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    eve::action::ActionAdvance advance;
+    advance.id = eve::action::ActionExecutionId{92};
+    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
+                               {"volume", 0.25}, {"pitch", 1.0}, {"looping", true}};
+    advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
+                                      actionLogicalId("presentation-track:audio"),
+                                      actionLogicalId("presentation-audio:loop"),
+                                      actionLogicalId("presentation:audio-state"), eve::Duration::zero(), payload});
+    advance.activeBlocks.push_back({actionLogicalId("presentation-track:audio"),
+                                    actionLogicalId("presentation-audio:loop"),
+                                    actionLogicalId("presentation:audio-state"), eve::Duration::zero(),
+                                    eve::Duration::fromNanoseconds(100), payload});
+    eve::action::ActionNotifyContext context;
+    context.executionId = advance.id;
+    REQUIRE(runtime.apply(advance, context).ok());
+    REQUIRE(runtime.interrupt(context).ok());
 }
 
 TEST_CASE("audio.streamSource.pump") {

@@ -1,9 +1,12 @@
+#include "action/ActionBlockRuntime.h"
+#include "action/ActionNotifyRegistry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "particles/ParticleEffect.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
+#include "filesystem/Filesystem.h"
 
 #include <cmath>
 #include <fstream>
@@ -11,6 +14,16 @@
 #include <string>
 
 using namespace eve::particles;
+
+namespace {
+
+eve::LogicalId logicalId(std::string_view value) {
+    auto parsed = eve::LogicalId::parse(value);
+    REQUIRE(parsed.has_value());
+    return std::move(*parsed);
+}
+
+}  // namespace
 
 TEST_CASE("particles.effectAsset.versionedMultiEmitterContract") {
     const char* json = R"({
@@ -134,4 +147,39 @@ TEST_CASE("particles.effectAsset.playbackLabAssetIsConsumable") {
     CHECK(effect->getEmitterByName("sparks") != nullptr);
     CHECK(effect->hasFloatParameter("intensity"));
     delete effect;
+}
+
+TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto* particles = Particles::create();
+    auto  registry  = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    const int                       before = particles->getEmitterCount();
+
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId{91};
+    advance.totalElapsed = eve::Duration::fromNanoseconds(10);
+    eve::Value::Object payload{
+        {"uri", "examples/particle-playback-lab/impact.effect.json"},
+        {"positionOffset", eve::Value::Array{12.0, 34.0, 0.0}},
+        {"rotationOffsetDegrees", eve::Value::Array{0.0, 0.0, 90.0}},
+        {"scale", eve::Value::Array{2.0, 2.0, 2.0}},
+    };
+    advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
+                                      logicalId("presentation-track:vfx"), logicalId("presentation-vfx:impact"),
+                                      logicalId("presentation:vfx-state"), advance.totalElapsed, payload});
+    advance.activeBlocks.push_back({logicalId("presentation-track:vfx"), logicalId("presentation-vfx:impact"),
+                                    logicalId("presentation:vfx-state"), eve::Duration::zero(),
+                                    eve::Duration::fromNanoseconds(100), payload});
+    eve::action::ActionNotifyContext context;
+    context.executionId = advance.id;
+    auto applied = runtime.apply(advance, context);
+    REQUIRE(applied.ok());
+    CHECK_EQ(particles->getEmitterCount(), before + 2);
+
+    context.time = eve::Duration::fromNanoseconds(20);
+    REQUIRE(runtime.interrupt(context).ok());
+    CHECK_EQ(particles->getEmitterCount(), before);
 }

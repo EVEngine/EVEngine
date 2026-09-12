@@ -61,9 +61,9 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     const auto descriptors = registry.value().descriptors();
-    REQUIRE_EQ(descriptors.size(), 10u);
+    REQUIRE_EQ(descriptors.size(), 12u);
     CHECK_EQ(descriptors.front().type, "collision:ignore-window");
-    CHECK_EQ(descriptors.back().type, "presentation:vfx");
+    CHECK_EQ(descriptors.back().type, "presentation:vfx-state");
 
     auto damage = registry.value().descriptor("combat:damage");
     REQUIRE(damage.ok());
