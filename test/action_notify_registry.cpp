@@ -1,5 +1,6 @@
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionSpatialBlock.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -111,6 +112,33 @@ TEST_CASE("actionBlockRuntime.routesEnterUpdateExitAndSideEffectFreeSample") {
     auto noOp = runtime.interrupt(context);
     REQUIRE(noOp.ok());
     CHECK_EQ(noOp.status().code(), eve::StatusCode::NoOp);
+}
+
+TEST_CASE("actionSpatialBlock.decodesSharedAttachmentContractTransactionally") {
+    eve::Value::Object payload{
+        {"attachment", "follow_position_only"},
+        {"spatialTarget", "target"},
+        {"targetIndex", 2},
+        {"bone", "hand_r"},
+        {"positionOffset", eve::Value::Array{1.0, 2, 3.5}},
+        {"rotationOffsetDegrees", eve::Value::Array{0, 90.0, 0}},
+        {"scale", eve::Value::Array{1.0, 2.0, 1.0}},
+        {"uri", "asset://vfx/sword-trail"},
+    };
+    auto binding = eve::action::ActionSpatialBinding::fromPayload(payload);
+    REQUIRE(binding.ok());
+    CHECK_EQ(binding.value().mode, eve::action::ActionSpatialAttachmentMode::FollowPositionOnly);
+    CHECK_EQ(binding.value().target, eve::action::ActionSpatialTarget::Target);
+    CHECK_EQ(binding.value().targetIndex, 2u);
+    CHECK_EQ(binding.value().bone, "hand_r");
+    CHECK_EQ(binding.value().positionOffset.z, 3.5);
+    CHECK_EQ(binding.value().rotationOffsetDegrees.y, 90.0);
+    CHECK_EQ(binding.value().scale.y, 2.0);
+
+    payload["scale"] = eve::Value::Array{1.0, 0.0, 1.0};
+    auto rejected = eve::action::ActionSpatialBinding::fromPayload(payload);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.status().diagnostics().front().path(), "scale");
 }
 
 TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
