@@ -97,11 +97,23 @@ public:
     std::string getFaction(VehicleEntity* v);
     void        setFaction(VehicleEntity* v, const std::string& faction);
 
-    /** @brief 物理绑定（physics 模块开启时可用；返回是否成功）。 */
+    /**
+     * @brief 将载具绑定到 physics world 拥有的 2D 刚体。
+     * @return physics 可用且刚体与 generation link 均创建成功时返回 true。
+     * @remarks 重复绑定会先解除旧绑定；world 先销毁时 link 自动失效。
+     */
     bool        attachPhysics2D(VehicleEntity* v, eve::physics::World* world);
+    /**
+     * @brief 将载具绑定到 physics world 拥有的 3D 刚体。
+     * @return physics 可用且刚体与 generation link 均创建成功时返回 true。
+     * @remarks 载具不保留跨帧刚体指针；所有解析均在 owner thread 上检查 world 生命期与 generation。
+     */
     bool        attachPhysics3D(VehicleEntity* v, eve::physics::World3D* world, float heightY = 1.f);
+    /** @brief 解除绑定，并在 world 仍存活时销毁由载具创建的刚体。 */
     bool        detachPhysics(VehicleEntity* v);
+    /** @brief 查询当前绑定是否仍能解析为存活刚体。 */
     bool        hasPhysics(VehicleEntity* v);
+    /** @brief 返回存活绑定的 "2d"/"3d"；缺失或 stale 时返回空字符串。 */
     std::string getPhysicsSpace(VehicleEntity* v);
     /** @brief 3D 车身高度（无 3D 物理时返回 0）。 */
     float getHeight(VehicleEntity* v);

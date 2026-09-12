@@ -487,6 +487,7 @@ struct PixelTerrainCollisionCache::Impl {
     std::map<Coord, eve::physics::PhysicsLink> bodies;
     eve::pixelworld::PixelWorldLink pixelWorld;
     eve::physics::PhysicsWorldHandle physicsWorld = eve::physics::PhysicsWorldHandle::invalid();
+    std::weak_ptr<const void> physicsLifetime;
     std::uint64_t revision = 0;
 };
 
@@ -504,6 +505,11 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
                                                     "maximumFixturesPerChunk");
     const bool samePixelWorld = impl_->pixelWorld == pixelWorld.worldLink();
     const bool samePhysicsWorld = impl_->physicsWorld == physicsWorld.runtimeHandle();
+    if (!samePhysicsWorld && !impl_->bodies.empty() && !impl_->physicsLifetime.expired())
+        return failure<TerrainCollisionSyncReceipt>(
+            eve::DiagnosticCode::Conflict,
+            "terrain collision cache must be cleared from its live physics world before rebinding",
+            "physicsWorld");
     const std::uint64_t since = (samePixelWorld && samePhysicsWorld) ? impl_->revision : 0;
     const auto changed = pixelWorld.snapshotChangedChunks(since);
     std::set<Impl::Coord> rebuildCoords;
@@ -601,6 +607,7 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
     }
     impl_->pixelWorld = pixelWorld.worldLink();
     impl_->physicsWorld = physicsWorld.runtimeHandle();
+    impl_->physicsLifetime = physicsWorld.lifetimeToken();
     impl_->revision = pixelWorld.revision();
     return eve::Result<TerrainCollisionSyncReceipt>::success(receipt);
 }
@@ -617,6 +624,7 @@ eve::Result<void> PixelTerrainCollisionCache::clearPhysics(eve::physics::World& 
     impl_->bodies.clear();
     impl_->pixelWorld = {};
     impl_->physicsWorld = eve::physics::PhysicsWorldHandle::invalid();
+    impl_->physicsLifetime.reset();
     impl_->revision = 0;
     return eve::Result<void>::success();
 }

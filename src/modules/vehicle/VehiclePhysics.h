@@ -31,6 +31,8 @@ public:
     [[nodiscard]] static VehiclePhysicsStatus attach3D(VehicleEntity* v, eve::physics::World3D* world, float heightY);
     /** @brief Destroy attached bodies if any. */
     [[nodiscard]] static VehiclePhysicsStatus detach(VehicleEntity* v);
+    /** @brief Whether the entity has a live, resolvable physics body. */
+    [[nodiscard]] static bool isAttached(VehicleEntity* v);
     /** @brief 3D body height, or 0 when no 3D body is attached. */
     static float height(VehicleEntity* v);
     /** @brief Step wheel/ship mobility from an attached body. */
