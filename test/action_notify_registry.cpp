@@ -1,3 +1,4 @@
+#include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 
 #include "zeroerr/assert.h"
@@ -29,9 +30,28 @@ public:
         return eve::Result<void>::success();
     }
 
+    eve::Result<void> update(const eve::action::ActionActiveBlock& block,
+                             const eve::action::ActionNotifyContext&) override {
+        ++updates;
+        lastLocalTime = block.localTime;
+        return eve::Result<void>::success();
+    }
+
+    eve::Result<void> sample(const eve::action::ActionActiveBlock&,
+                             const eve::action::ActionNotifyContext& context) const override {
+        if (!context.preview || !context.scrubbing)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "sample context is not preview", "context"));
+        ++samples;
+        return eve::Result<void>::success();
+    }
+
     int                            calls = 0;
+    int                            updates = 0;
+    mutable int                    samples = 0;
     std::string                    lastType;
     eve::action::ActionExecutionId lastExecution;
+    eve::Duration                  lastLocalTime = eve::Duration::zero();
 };
 
 }  // namespace
@@ -52,6 +72,45 @@ TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
     auto hitbox = registry.value().descriptor("combat:hitbox-window");
     REQUIRE(hitbox.ok());
     CHECK(static_cast<int>(hitbox.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
+}
+
+TEST_CASE("actionBlockRuntime.routesEnterUpdateExitAndSideEffectFreeSample") {
+    eve::action::ActionNotifyRegistry registry;
+    REQUIRE(registry
+                .registerDescriptor({"project:combat.window", "Window", "Project",
+                                     eve::action::ActionNotifyShape::State, {}})
+                .ok());
+    auto handler = std::make_shared<RecordingHandler>();
+    REQUIRE(registry.registerHandler("project:combat.window", handler).ok());
+    eve::action::ActionBlockRuntime runtime(registry);
+
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId{7};
+    advance.totalElapsed = eve::Duration::fromNanoseconds(25);
+    advance.timelineEvents.push_back(event(eve::action::ActionTimelineEventKind::StateEnter,
+                                           "project:combat.window"));
+    advance.activeBlocks.push_back({id("combat-track:gameplay"), id("combat-notify:test"),
+                                    id("project:combat.window"), eve::Duration::fromNanoseconds(15),
+                                    eve::Duration::fromNanoseconds(40), {}});
+    eve::action::ActionNotifyContext context;
+    context.executionId = advance.id;
+    REQUIRE(runtime.apply(advance, context).ok());
+    CHECK_EQ(handler->calls, 1);
+    CHECK_EQ(handler->updates, 1);
+    CHECK_EQ(handler->lastLocalTime, eve::Duration::fromNanoseconds(15));
+    CHECK_EQ(runtime.executionCount(), 1u);
+
+    REQUIRE(runtime.sample(advance.activeBlocks, context).ok());
+    CHECK_EQ(handler->samples, 1);
+    CHECK_EQ(runtime.executionCount(), 1u);
+
+    context.time = eve::Duration::fromNanoseconds(30);
+    REQUIRE(runtime.interrupt(context).ok());
+    CHECK_EQ(handler->calls, 2);
+    CHECK_EQ(runtime.executionCount(), 0u);
+    auto noOp = runtime.interrupt(context);
+    REQUIRE(noOp.ok());
+    CHECK_EQ(noOp.status().code(), eve::StatusCode::NoOp);
 }
 
 TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {

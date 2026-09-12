@@ -209,6 +209,9 @@ TEST_CASE("actionMontage.jumpSectionProgressAndInterruptedBlendOutKeepBlockPairs
     advance.id           = execution;
     advance.phase        = eve::action::ActionPhase::Active;
     advance.totalElapsed = eve::Duration::fromSeconds(0.9).takeValue();
+    auto activeBlocks     = timeline.activeBlocks(advance.totalElapsed);
+    REQUIRE(activeBlocks.ok());
+    advance.activeBlocks = std::move(activeBlocks).takeValue();
     auto entered         = player.present(advance, eve::SimulationTick(1));
     REQUIRE(entered.ok());
     REQUIRE_EQ(entered.value().activeBlocks.size(), 1U);

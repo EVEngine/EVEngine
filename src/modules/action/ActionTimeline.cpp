@@ -295,6 +295,32 @@ Result<std::vector<ActionTimelineEvent>> ActionTimeline::sample(Duration previou
     return Result<std::vector<ActionTimelineEvent>>::success(std::move(out));
 }
 
+Result<std::vector<ActionActiveBlock>> ActionTimeline::activeBlocks(Duration time) const {
+    auto valid = validate();
+    if (!valid) return Result<std::vector<ActionActiveBlock>>::failure(valid.status());
+    if (time < Duration::zero() || time > duration)
+        return invalid<std::vector<ActionActiveBlock>>("active-block sample is outside the timeline", "time");
+
+    std::vector<ActionActiveBlock> out;
+    for (const auto& track : tracks) {
+        if (track.muted) continue;
+        for (const auto& state : track.states) {
+            if (time < state.start || time >= state.end) continue;
+            out.push_back({track.id,
+                           state.id,
+                           state.type,
+                           Duration::fromNanoseconds(time.nanoseconds() - state.start.nanoseconds()),
+                           Duration::fromNanoseconds(state.end.nanoseconds() - state.start.nanoseconds()),
+                           state.payload});
+        }
+    }
+    std::stable_sort(out.begin(), out.end(), [](const auto& left, const auto& right) {
+        if (left.trackId != right.trackId) return left.trackId.format() < right.trackId.format();
+        return left.itemId.format() < right.itemId.format();
+    });
+    return Result<std::vector<ActionActiveBlock>>::success(std::move(out));
+}
+
 Result<Value> ActionTimeline::toValue() const {
     auto valid = validate();
     if (!valid) return Result<Value>::failure(valid.status());

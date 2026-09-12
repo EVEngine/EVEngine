@@ -71,15 +71,8 @@ public:
     virtual void applyMontageRootMotion(const TransformTRS& delta) noexcept = 0;
 };
 
-/** @brief Owning per-step update context for one active timeline state block. */
-struct MontageActiveBlock {
-    LogicalId     trackId;
-    LogicalId     itemId;
-    LogicalId     type;
-    Duration      localTime = Duration::zero();
-    Duration      duration  = Duration::zero();
-    Value::Object payload;
-};
+/** @brief Compatibility name for the canonical action-owned active block projection. */
+using MontageActiveBlock = action::ActionActiveBlock;
 
 /** @brief Owning observation returned by one montage presentation step. */
 struct MontageAdvance {
@@ -201,7 +194,7 @@ private:
     void activate(const action::ActionAnimationSection& section, Duration localTime);
     void accumulateRootMotion(TransformTRS& total) const;
     [[nodiscard]] std::vector<action::ActionTimelineEvent> realignStateEvents(Duration target) const;
-    [[nodiscard]] std::vector<MontageActiveBlock>          activeBlocksAt(Duration target) const;
+    [[nodiscard]] Result<std::vector<MontageActiveBlock>>  activeBlocksAt(Duration target) const;
 
     AnimSkeleton&                         skeleton_;
     std::unique_ptr<AnimPlayer>           player_;

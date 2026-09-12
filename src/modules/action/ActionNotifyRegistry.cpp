@@ -113,4 +113,29 @@ Result<void> ActionNotifyRegistry::dispatch(const ActionTimelineEvent& event, co
     return handler->second->handle(event, context);
 }
 
+Result<void> ActionNotifyRegistry::dispatchUpdate(const ActionActiveBlock& block, const ActionNotifyContext& context) {
+    ActionTimelineEvent event{ActionTimelineEventKind::StateEnter, block.trackId, block.itemId, block.type,
+                              context.time, block.payload};
+    auto                valid = validate(event);
+    if (!valid) return valid;
+    const auto handler = handlers_.find(block.type.format());
+    if (handler == handlers_.end())
+        return failure(DiagnosticCode::NotFound, "No runtime handler is registered for notify type",
+                       block.type.format());
+    return handler->second->update(block, context);
+}
+
+Result<void> ActionNotifyRegistry::dispatchSample(const ActionActiveBlock& block,
+                                                  const ActionNotifyContext& context) const {
+    ActionTimelineEvent event{ActionTimelineEventKind::StateEnter, block.trackId, block.itemId, block.type,
+                              context.time, block.payload};
+    auto                valid = validate(event);
+    if (!valid) return valid;
+    const auto handler = handlers_.find(block.type.format());
+    if (handler == handlers_.end())
+        return failure(DiagnosticCode::NotFound, "No preview handler is registered for notify type",
+                       block.type.format());
+    return handler->second->sample(block, context);
+}
+
 }  // namespace eve::action

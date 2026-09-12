@@ -280,7 +280,7 @@ Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advan
     }
 
     result.events               = advance.timelineEvents;
-    result.activeBlocks         = activeBlocksAt(result.current);
+    result.activeBlocks         = advance.activeBlocks;
     result.sectionId            = activeSection_ ? std::optional<LogicalId>(activeSection_->id) : std::nullopt;
     result.completed            = advance.phase == action::ActionPhase::Completed;
     const double currentSeconds = result.current.seconds();
@@ -328,19 +328,8 @@ std::vector<action::ActionTimelineEvent> MontagePlayer::realignStateEvents(Durat
     return events;
 }
 
-std::vector<MontageActiveBlock> MontagePlayer::activeBlocksAt(Duration target) const {
-    std::vector<MontageActiveBlock> blocks;
-    for (const auto& track : timeline_->tracks) {
-        if (track.muted) continue;
-        for (const auto& state : track.states) {
-            if (target < state.start || target >= state.end) continue;
-            blocks.push_back({track.id, state.id, state.type,
-                              Duration::fromNanoseconds(target.nanoseconds() - state.start.nanoseconds()),
-                              Duration::fromNanoseconds(state.end.nanoseconds() - state.start.nanoseconds()),
-                              state.payload});
-        }
-    }
-    return blocks;
+Result<std::vector<MontageActiveBlock>> MontagePlayer::activeBlocksAt(Duration target) const {
+    return timeline_->activeBlocks(target);
 }
 
 Result<MontageAdvance> MontagePlayer::jumpToTime(action::ActionExecutionId executionId, Duration target,
@@ -358,7 +347,9 @@ Result<MontageAdvance> MontagePlayer::jumpToTime(action::ActionExecutionId execu
     result.previous     = time_;
     result.current      = target;
     result.events       = realignStateEvents(target);
-    result.activeBlocks = activeBlocksAt(target);
+    auto active         = activeBlocksAt(target);
+    if (!active) return Result<MontageAdvance>::failure(active.status());
+    result.activeBlocks = std::move(active).takeValue();
     player_->stop();
     activeSection_ = nullptr;
     if (const auto* section = sectionAt(target)) {

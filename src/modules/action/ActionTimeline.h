@@ -144,6 +144,18 @@ struct ActionTimelineEvent {
     auto operator<=>(const ActionTimelineEvent&) const = default;
 };
 
+/** @brief Owning per-step sample of one currently active timeline state. */
+struct ActionActiveBlock {
+    LogicalId     trackId;
+    LogicalId     itemId;
+    LogicalId     type;
+    Duration      localTime = Duration::zero();
+    Duration      duration  = Duration::zero();
+    Value::Object payload;
+
+    auto operator<=>(const ActionActiveBlock&) const = default;
+};
+
 /**
  * @brief Canonical action timeline asset shared by runtime and editor.
  *
@@ -178,6 +190,13 @@ struct ActionTimeline {
      */
     [[nodiscard]] Result<std::vector<ActionTimelineEvent>> sample(Duration previous, Duration current,
                                                                   bool includePrevious = false) const;
+
+    /**
+     * @brief Sample every unmuted state active at one authoritative timeline time.
+     * @param time Timestamp in the closed timeline range; state ends remain exclusive.
+     * @return Owning blocks in stable track/item order, or a validation/range diagnostic.
+     */
+    [[nodiscard]] Result<std::vector<ActionActiveBlock>> activeBlocks(Duration time) const;
 
     /** @brief Encode the canonical schema as an owning deterministic Value. */
     [[nodiscard]] Result<Value> toValue() const;

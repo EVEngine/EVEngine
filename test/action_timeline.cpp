@@ -68,6 +68,17 @@ TEST_CASE("actionTimeline.versionedRoundTripAndDeterministicSampling") {
     CHECK_EQ(sampled.value()[2].itemId, id("combat-notify:hit"));
     CHECK_EQ(static_cast<int>(sampled.value()[3].kind),
              static_cast<int>(eve::action::ActionTimelineEventKind::StateExit));
+
+    auto active = decoded.value().activeBlocks(eve::Duration::fromNanoseconds(20));
+    REQUIRE(active.ok());
+    REQUIRE_EQ(active.value().size(), 1u);
+    CHECK_EQ(active.value()[0].itemId, id("combat-state:buffer"));
+    CHECK_EQ(active.value()[0].localTime, eve::Duration::fromNanoseconds(10));
+    CHECK_EQ(active.value()[0].duration, eve::Duration::fromNanoseconds(20));
+    auto ended = decoded.value().activeBlocks(eve::Duration::fromNanoseconds(30));
+    REQUIRE(ended.ok());
+    CHECK(ended.value().empty());
+    CHECK(!decoded.value().activeBlocks(eve::Duration::fromNanoseconds(101)).ok());
 }
 
 TEST_CASE("gameplayAction.advanceProjectsAuthoredTimelineBoundaries") {
@@ -93,6 +104,9 @@ TEST_CASE("gameplayAction.advanceProjectsAuthoredTimelineBoundaries") {
     REQUIRE_EQ(crossed.value().timelineEvents.size(), 2u);
     CHECK_EQ(crossed.value().timelineEvents[0].itemId, id("combat-state:buffer"));
     CHECK_EQ(crossed.value().timelineEvents[1].itemId, id("combat-notify:hit"));
+    REQUIRE_EQ(crossed.value().activeBlocks.size(), 1u);
+    CHECK_EQ(crossed.value().activeBlocks[0].itemId, id("combat-state:buffer"));
+    CHECK_EQ(crossed.value().activeBlocks[0].localTime, eve::Duration::fromNanoseconds(10));
 }
 
 TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
