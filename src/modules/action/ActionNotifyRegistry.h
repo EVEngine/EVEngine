@@ -3,6 +3,8 @@
 /** @file ActionNotifyRegistry.h @brief Extensible notify descriptors, validation and runtime routing. */
 
 #include "action/Action.h"
+#include "common/AttachmentPoint.h"
+#include "common/BorrowedRef.h"
 
 #include <map>
 #include <memory>
@@ -34,6 +36,13 @@ struct ActionNotifyContext {
     std::optional<ecs::EntityHandle> source;
     /** @brief Owning target handle list for this synchronous dispatch. */
     std::vector<ecs::EntityHandle>   targets;
+    /** @brief Optional borrowed animated attachment source corresponding to source. */
+    OptionalRef<const IAttachmentPointSource> sourceAttachment;
+    /**
+     * @brief Borrowed animated attachment sources indexed like targets; empty entries are valid.
+     * @remarks References are valid only during synchronous dispatch and are never retained by handlers.
+     */
+    std::vector<OptionalRef<const IAttachmentPointSource>> targetAttachments;
     /** @brief Authoritative timeline time associated with this dispatch. */
     Duration                         time = Duration::zero();
     /** @brief Whether the callback is an editor/runtime preview projection. */

@@ -111,24 +111,49 @@ private:
     static eve::Result<eve::EntitySpatialPose> resolvePose(
         const eve::action::ActionSpatialBinding& spatial, const eve::action::ActionNotifyContext& context) {
         std::optional<ecs::EntityHandle> handle;
+        eve::OptionalRef<const eve::IAttachmentPointSource> attachments;
         if (spatial.target == eve::action::ActionSpatialTarget::Source) {
-            handle = context.source;
+            handle      = context.source;
+            attachments = context.sourceAttachment;
         } else {
             if (spatial.targetIndex >= context.targets.size())
                 return eve::Result<eve::EntitySpatialPose>::failure(
                     eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
                                            "audio target index is unavailable", "targetIndex"));
             handle = context.targets[spatial.targetIndex];
+            if (spatial.targetIndex < context.targetAttachments.size())
+                attachments = context.targetAttachments[spatial.targetIndex];
         }
-        if (!handle) return eve::Result<eve::EntitySpatialPose>::success({});
-        return eve::resolveEntitySpatialPose(*handle, spatial.bone);
+        eve::EntitySpatialPose pose;
+        if (handle) {
+            auto root = eve::resolveEntitySpatialPose(*handle);
+            if (!root) return root;
+            pose = std::move(root).takeValue();
+        }
+        if (spatial.bone.empty()) return eve::Result<eve::EntitySpatialPose>::success(std::move(pose));
+        if (!attachments)
+            return eve::Result<eve::EntitySpatialPose>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                       "audio bone requires an attachment source", "bone"));
+        auto point = attachments->get().sampleAttachmentPoint(
+            spatial.bone, {static_cast<float>(spatial.positionOffset.x),
+                           static_cast<float>(spatial.positionOffset.y),
+                           static_cast<float>(spatial.positionOffset.z)});
+        if (!point) return eve::Result<eve::EntitySpatialPose>::failure(point.status());
+        pose.positionX = point.value().x;
+        pose.positionY = point.value().y;
+        pose.positionZ = point.value().z;
+        return eve::Result<eve::EntitySpatialPose>::success(std::move(pose));
     }
 
     static void applyPosition(Source& source, const eve::action::ActionSpatialBinding& spatial,
                               const eve::EntitySpatialPose& pose) {
-        source.setPosition(static_cast<float>(pose.positionX + spatial.positionOffset.x),
-                           static_cast<float>(pose.positionY + spatial.positionOffset.y),
-                           static_cast<float>(pose.positionZ + spatial.positionOffset.z));
+        const double offsetX = spatial.bone.empty() ? spatial.positionOffset.x : 0.0;
+        const double offsetY = spatial.bone.empty() ? spatial.positionOffset.y : 0.0;
+        const double offsetZ = spatial.bone.empty() ? spatial.positionOffset.z : 0.0;
+        source.setPosition(static_cast<float>(pose.positionX + offsetX),
+                           static_cast<float>(pose.positionY + offsetY),
+                           static_cast<float>(pose.positionZ + offsetZ));
     }
 
     static eve::Result<void> fail(eve::DiagnosticCode code, std::string message, std::string path) {

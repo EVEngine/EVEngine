@@ -38,6 +38,20 @@ std::vector<char> readBinaryFile(const std::string &path) {
     return std::vector<char>((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 }
 
+class TestAudioAttachmentSource final : public eve::IAttachmentPointSource {
+public:
+    eve::Result<eve::AttachmentPoint> sampleAttachmentPoint(
+        std::string_view name, eve::AttachmentPoint localOffset) const override {
+        ++calls;
+        if (name != "hand_r")
+            return eve::Result<eve::AttachmentPoint>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "missing test bone", "bone"));
+        return eve::Result<eve::AttachmentPoint>::success(
+            {20.f + localOffset.x, 30.f + localOffset.y, 40.f + localOffset.z});
+    }
+    mutable int calls = 0;
+};
+
 }  // namespace
 
 static eve::LogicalId actionLogicalId(std::string_view value) {
@@ -121,7 +135,7 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
     eve::action::ActionBlockRuntime runtime(registry.value());
     eve::action::ActionAdvance advance;
     advance.id = eve::action::ActionExecutionId{92};
-    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
+    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"}, {"bone", "hand_r"},
                                {"volume", 0.25}, {"pitch", 1.0}, {"looping", true}};
     advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
                                       actionLogicalId("presentation-track:audio"),
@@ -134,7 +148,10 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
     eve::action::ActionNotifyContext context;
     context.executionId = advance.id;
     context.source = ecs::handle_of(source.value());
+    TestAudioAttachmentSource attachmentSource;
+    context.sourceAttachment = std::cref(attachmentSource);
     REQUIRE(runtime.apply(advance, context).ok());
+    CHECK_EQ(attachmentSource.calls, 2);
     REQUIRE(runtime.interrupt(context).ok());
 }
 

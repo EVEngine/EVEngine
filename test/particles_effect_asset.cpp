@@ -26,6 +26,20 @@ eve::LogicalId logicalId(std::string_view value) {
     return std::move(*parsed);
 }
 
+class TestVfxAttachmentSource final : public eve::IAttachmentPointSource {
+public:
+    eve::Result<eve::AttachmentPoint> sampleAttachmentPoint(
+        std::string_view name, eve::AttachmentPoint localOffset) const override {
+        ++calls;
+        if (name != "hand_r")
+            return eve::Result<eve::AttachmentPoint>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "missing test bone", "bone"));
+        return eve::Result<eve::AttachmentPoint>::success(
+            {50.f + localOffset.x, 60.f + localOffset.y, 70.f + localOffset.z});
+    }
+    mutable int calls = 0;
+};
+
 }  // namespace
 
 TEST_CASE("particles.effectAsset.versionedMultiEmitterContract") {
@@ -171,6 +185,7 @@ TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {
     advance.totalElapsed = eve::Duration::fromNanoseconds(10);
     eve::Value::Object payload{
         {"uri", "examples/particle-playback-lab/impact.effect.json"},
+        {"bone", "hand_r"},
         {"positionOffset", eve::Value::Array{12.0, 34.0, 0.0}},
         {"rotationOffsetDegrees", eve::Value::Array{0.0, 0.0, 90.0}},
         {"scale", eve::Value::Array{2.0, 2.0, 2.0}},
@@ -184,8 +199,11 @@ TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {
     eve::action::ActionNotifyContext context;
     context.executionId = advance.id;
     context.source = ecs::handle_of(source.value());
+    TestVfxAttachmentSource attachmentSource;
+    context.sourceAttachment = std::cref(attachmentSource);
     auto applied = runtime.apply(advance, context);
     REQUIRE(applied.ok());
+    CHECK_EQ(attachmentSource.calls, 2);
     CHECK_EQ(particles->getEmitterCount(), before + 2);
 
     context.time = eve::Duration::fromNanoseconds(20);
