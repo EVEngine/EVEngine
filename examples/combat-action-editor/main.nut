@@ -5,6 +5,7 @@ const HITBOX_ID = "kaykit-state:hitbox";
 
 persist combatEditor = {
     workspace = null, timeline = null, camera = null, cameraController = null, skeleton = null,
+    actionModule = null, tabs = [], activeTab = 0, closeArmed = -1, tabUiSignature = "",
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -14,7 +15,7 @@ persist combatEditor = {
     selectedAsset = "Melee 1H Attack Chop", selectedItem = "Nothing selected",
     previewOrbiting = false, previewLastX = 0.0, previewLastY = 0.0,
     previewYaw = 0.65, previewPitch = 0.28, previewDistance = 5.3,
-    spaceWas = false, undoWas = false, redoWas = false,
+    spaceWas = false, undoWas = false, redoWas = false, saveWas = false,
     frame = 0, screenshotSaved = false,
 };
 
@@ -186,29 +187,97 @@ function buildCharacterPreview() {
     combatEditor.fillLight.setColor(0.55, 0.70, 1.0, 1.3);
 }
 
-function startMontageRuntime() {
+function startMontageRuntime(timeline) {
     local idle = findAnimation(combatEditor.generalLibrary, "Idle_A");
     local attack = findAnimation(combatEditor.meleeLibrary, "Melee_1H_Attack_Chop");
     local block = findAnimation(combatEditor.meleeLibrary, "Melee_Block");
     if (idle < 0 || attack < 0 || block < 0) throw "KayKit montage source clips are incomplete";
-    requireResult(combatEditor.timeline.registerRuntimeClip(
+    requireResult(timeline.registerRuntimeClip(
         "asset://kaykit/Rig_Medium_General.glb#Idle_A", combatEditor.generalLibrary,
         combatEditor.skeleton, idle), "Register anticipation clip");
-    requireResult(combatEditor.timeline.registerRuntimeClip(
+    requireResult(timeline.registerRuntimeClip(
         "asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_1H_Attack_Chop", combatEditor.meleeLibrary,
         combatEditor.skeleton, attack), "Register strike clip");
-    requireResult(combatEditor.timeline.registerRuntimeClip(
+    requireResult(timeline.registerRuntimeClip(
         "asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_Block", combatEditor.meleeLibrary,
         combatEditor.skeleton, block), "Register recovery clip");
-    requireResult(combatEditor.timeline.beginRuntime(combatEditor.skeleton), "Start action montage runtime");
+    requireResult(timeline.beginRuntime(combatEditor.skeleton), "Start action montage runtime");
+}
+
+function openActionDocument(assetGuid, title, resourceUri, timelineData) {
+    local timeline = requireResult(combatEditor.actionModule.openDocument(
+        ".", assetGuid, title, resourceUri, timelineData), "Open " + title);
+    startMontageRuntime(timeline);
+    combatEditor.tabs.push({ title=title, assetGuid=assetGuid, resourceUri=resourceUri, editor=timeline });
+    return timeline;
+}
+
+function findOpenAsset(assetGuid) {
+    for (local i = 0; i < combatEditor.tabs.len(); ++i)
+        if (combatEditor.tabs[i].assetGuid == assetGuid) return i;
+    return -1;
+}
+
+function openBundledDocument(assetGuid) {
+    local existing = findOpenAsset(assetGuid);
+    if (existing >= 0) { activateTab(existing); return; }
+    local timelineData = attackTimeline(combatEditor.clip.getDuration());
+    if (assetGuid == "asset.kaykit.light-attack") {
+        openActionDocument(assetGuid, "Light Attack", "content://Actions/KayKitLightAttack.action", timelineData);
+    } else {
+        timelineData.actionId = "combat:follow-up-kaykit";
+        timelineData.metadata.variant <- "follow-up";
+        openActionDocument(assetGuid, "Follow-up", "content://Actions/KayKitFollowUp.action", timelineData);
+    }
+    activateTab(combatEditor.tabs.len() - 1);
+}
+
+function activateTab(index) {
+    if (index < 0 || index >= combatEditor.tabs.len()) return;
+    combatEditor.activeTab = index;
+    combatEditor.timeline = combatEditor.tabs[index].editor;
+    combatEditor.closeArmed = -1;
+    requireResult(combatEditor.timeline.setViewport(combatEditor.workspace.getRegionW("bottom") - 20.0,
+                                                    36.0, 145.0), "Configure active timeline viewport");
+    requireResult(combatEditor.timeline.setSnapSeconds(1.0 / 30.0), "Configure active frame snapping");
+    combatEditor.status = "Active document · " + combatEditor.tabs[index].title;
+    combatEditor.tabUiSignature = "";
+}
+
+function closeTab(index) {
+    if (index < 0 || index >= combatEditor.tabs.len()) return;
+    if (combatEditor.tabs.len() == 1) {
+        combatEditor.status = "Keep at least one montage document open";
+        return;
+    }
+    local tab = combatEditor.tabs[index];
+    if (tab.editor.isDirty() && combatEditor.closeArmed != index) {
+        combatEditor.closeArmed = index;
+        combatEditor.status = "Unsaved changes in " + tab.title + " · click close again to discard";
+        combatEditor.tabUiSignature = "";
+        return;
+    }
+    combatEditor.tabs.remove(index);
+    local next = combatEditor.activeTab;
+    if (index < next) next -= 1;
+    if (next >= combatEditor.tabs.len()) next = combatEditor.tabs.len() - 1;
+    activateTab(next);
 }
 
 function buildWorkspace() {
     combatEditor.workspace = editor.newWorkspace("kaykit.combat", "KayKit Combat Action Editor");
+    combatEditor.actionModule = eve.ActionEditorModule();
+    combatEditor.tabs = [];
     local timelineData = attackTimeline(combatEditor.clip.getDuration());
-    combatEditor.timeline = requireResult(
-        eve.ActionEditorModule().create("asset.kaykit.light-attack", timelineData),
-        "Create action timeline editor");
+    openActionDocument("asset.kaykit.light-attack", "Light Attack",
+                       "content://Actions/KayKitLightAttack.action", timelineData);
+    local alternate = attackTimeline(combatEditor.clip.getDuration());
+    alternate.actionId = "combat:follow-up-kaykit";
+    alternate.metadata.variant <- "follow-up";
+    openActionDocument("asset.kaykit.follow-up", "Follow-up",
+                       "content://Actions/KayKitFollowUp.action", alternate);
+    combatEditor.activeTab = 0;
+    combatEditor.timeline = combatEditor.tabs[0].editor;
     combatEditor.clipEditor = requireResult(
         eve.AnimationEditorModule().create("asset.kaykit.light-attack.clip"),
         "Create KayKit clip editor");
@@ -220,7 +289,6 @@ function buildWorkspace() {
     combatEditor.workspace.setRegionSize("right", 340.0 / dpi);
     combatEditor.workspace.setRegionSize("bottom", 330.0 / dpi);
     combatEditor.workspace.layout(win.getWidth().tofloat() / dpi, win.getHeight().tofloat() / dpi);
-    startMontageRuntime();
 }
 
 function panelAssets() {
@@ -265,6 +333,16 @@ function panelInspector() {
 }
 
 function panelTimeline() {
+    ui.beginToolbar("documents");
+    ui.iconButton("folder-open", "Open Asset", "open-document");
+    ui.iconButton("save", "Save", "save-document");
+    for (local i = 0; i < combatEditor.tabs.len(); ++i) {
+        local tab = combatEditor.tabs[i];
+        ui.iconButton("file", tab.title + (tab.editor.isDirty() ? " *" : ""), "tab-" + i);
+        ui.setItemSelected(i == combatEditor.activeTab);
+        ui.iconButton("close", combatEditor.closeArmed == i ? "Discard" : "", "close-tab-" + i);
+    }
+    ui.end();
     ui.beginToolbar("transport");
     ui.iconButton("home", "", "first-frame"); ui.iconButton("chevron-left", "", "previous-frame");
     ui.iconButton("play", "", "play-pause"); ui.iconButton("stop", "", "stop");
@@ -301,6 +379,27 @@ function mountPanels() {
     requireResult(combatEditor.timeline.setSnapSeconds(1.0 / 30.0), "Configure frame snapping");
 }
 
+function mountTimelinePanel() {
+    ui.beginBuild(); ui.beginWindow("Timeline", "root"); panelTimeline(); ui.end();
+    ui.mountBuildAs("action.timeline"); ui.select("action.timeline");
+    ui.setHostPos(combatEditor.workspace.getRegionX("bottom"), combatEditor.workspace.getRegionY("bottom"), 0.0, 0.0);
+    ui.setHostSize(combatEditor.workspace.getRegionW("bottom"), combatEditor.workspace.getRegionH("bottom"));
+    ui.setHostMovable(false); ui.setHostResizable(false); ui.setHostOverlay(false);
+}
+
+function tabUiSignature() {
+    local value = combatEditor.activeTab + ":" + combatEditor.closeArmed;
+    foreach (tab in combatEditor.tabs) value += ":" + tab.title + ":" + (tab.editor.isDirty() ? "1" : "0");
+    return value;
+}
+
+function refreshDocumentToolbar() {
+    local signature = tabUiSignature();
+    if (signature == combatEditor.tabUiSignature) return;
+    combatEditor.tabUiSignature = signature;
+    mountTimelinePanel();
+}
+
 function applyHistory(command) {
     local result = command == "undo" ? combatEditor.timeline.undo() : combatEditor.timeline.redo();
     combatEditor.status = result.ok ? command + " applied" : command + ": " + result.status.summary;
@@ -317,7 +416,22 @@ function handleUiEvents() {
     local click = ui.consumeClick();
     while (click != "") {
         local event = eventParts(click); local host = event[0]; local id = event[1];
-        if (id == "play-pause") {
+        if (id == "save-document") {
+            local result = combatEditor.timeline.saveDocument();
+            combatEditor.status = result.ok ? "Saved · " + combatEditor.timeline.getDocumentUri()
+                                            : "Save failed · " + result.status.summary;
+            combatEditor.closeArmed = -1; combatEditor.tabUiSignature = "";
+        } else if (id == "open-document") {
+            local light = findOpenAsset("asset.kaykit.light-attack");
+            local followUp = findOpenAsset("asset.kaykit.follow-up");
+            if (light < 0) openBundledDocument("asset.kaykit.light-attack");
+            else if (followUp < 0) openBundledDocument("asset.kaykit.follow-up");
+            else combatEditor.status = "Both bundled montage assets are already open";
+        } else if (id.find("close-tab-") == 0) {
+            closeTab(id.slice(10).tointeger());
+        } else if (id.find("tab-") == 0) {
+            activateTab(id.slice(4).tointeger());
+        } else if (id == "play-pause") {
             if (combatEditor.timeline.isPlaying()) {
                 combatEditor.timeline.pause(); combatEditor.status = "Preview paused";
             } else {
@@ -452,9 +566,15 @@ function updateKeyboardShortcuts() {
     local control = keyboard.isDown("lctrl") || keyboard.isDown("rctrl") || keyboard.isDown("ctrl");
     local undo = control && (keyboard.isDown("z") || keyboard.isDown("Z"));
     local redo = control && (keyboard.isDown("y") || keyboard.isDown("Y"));
+    local save = control && (keyboard.isDown("s") || keyboard.isDown("S"));
     if (undo && !combatEditor.undoWas) applyHistory("undo");
     if (redo && !combatEditor.redoWas) applyHistory("redo");
-    combatEditor.undoWas = undo; combatEditor.redoWas = redo;
+    if (save && !combatEditor.saveWas) {
+        local result = combatEditor.timeline.saveDocument();
+        combatEditor.status = result.ok ? "Saved · " + combatEditor.timeline.getDocumentUri()
+                                        : "Save failed · " + result.status.summary;
+    }
+    combatEditor.undoWas = undo; combatEditor.redoWas = redo; combatEditor.saveWas = save;
 }
 
 function updatePose() {
@@ -555,7 +675,7 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
-    handleUiEvents(); updateTimelinePointer(); updateBoneTimelinePointer(); updatePreviewCamera(dt); updateKeyboardShortcuts();
+    handleUiEvents(); refreshDocumentToolbar(); updateTimelinePointer(); updateBoneTimelinePointer(); updatePreviewCamera(dt); updateKeyboardShortcuts();
     requireResult(combatEditor.clipEditor.seekSeconds(combatEditor.timeline.getPreviewTime()), "Sync animation playhead");
     if (combatEditor.timeline.isPlaying()) {
         local advanced = combatEditor.timeline.update(dt);
