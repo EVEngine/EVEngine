@@ -30,8 +30,10 @@ Controls:
 - Selecting an animation section, instant notify, or state window automatically
   opens the **Action Block** inspector. Its timing sliders commit validated,
   undoable transactions; the toolbar deletes the selected block and exposes the
-  same undo/redo history. The **Joint** tab retains skeleton transform and key
-  editing in the same compact side panel.
+  same undo/redo history. Notify type and payload JSON are editable for advanced
+  authoring; registered type, Instant/State shape and typed payload contracts are
+  validated before the document changes. The **Joint** tab retains skeleton
+  transform and key editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its
   sampled shape is drawn inside the block; native inspector/script APIs edit
   its keys through the same undoable timeline transaction.

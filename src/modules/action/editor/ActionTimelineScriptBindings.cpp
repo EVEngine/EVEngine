@@ -274,6 +274,7 @@ public:
 
     const ActionTimelineEditor& editor() const noexcept { return editor_; }
     const ActionTimelineWidget& widget() const noexcept { return widget_; }
+    const action::ActionNotifyRegistry& registry() const noexcept { return registry_; }
 
     [[nodiscard]] bool hasPreviewHost() const noexcept { return previewController_ != nullptr; }
 
@@ -887,6 +888,54 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
         return project(vm, self->editor().removeItem(*parsedItemId));
     });
+    actionEditor.addFunc("editItemDetails", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                  const std::string& type, const std::string& payloadJson) {
+        auto parsedItemId = LogicalId::parse(itemId);
+        auto parsedType   = LogicalId::parse(type);
+        if (!self || !parsedItemId || !parsedType)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item identity or type is invalid",
+                                  "itemDetails");
+        auto parsedPayload = Value::fromJson(payloadJson);
+        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status(), false, false);
+        const auto* payload = parsedPayload.value().getIf<Value::Object>();
+        if (!payload)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item payload must be a JSON object",
+                                  "payloadJson");
+        const auto& timeline = self->editor().target().timeline();
+        const auto* state    = findState(timeline, itemId);
+        const auto* notify   = findNotify(timeline, itemId);
+        if (!state && !notify)
+            return bindingFailure(vm, DiagnosticCode::NotFound, "editable notify item was not found", "itemId");
+        auto descriptor = self->registry().descriptor(type);
+        if (!descriptor) return script::projectStatusResult(vm, descriptor.status(), false, false);
+        const auto expected = state ? action::ActionNotifyShape::State : action::ActionNotifyShape::Instant;
+        if (descriptor.value().shape != expected)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "notify type shape does not match the selected item", "type");
+        const LogicalId* trackId = nullptr;
+        for (const auto& track : timeline.tracks) {
+            const auto contains = state ? std::any_of(track.states.begin(), track.states.end(),
+                                                      [&](const auto& value) { return value.id == *parsedItemId; })
+                                        : std::any_of(track.notifies.begin(), track.notifies.end(),
+                                                      [&](const auto& value) { return value.id == *parsedItemId; });
+            if (contains) {
+                trackId = &track.id;
+                break;
+            }
+        }
+        if (!trackId)
+            return bindingFailure(vm, DiagnosticCode::NotFound, "timeline item track was not found", "itemId");
+        action::ActionTimelineEvent event{state ? action::ActionTimelineEventKind::StateEnter
+                                                : action::ActionTimelineEventKind::Notify,
+                                          *trackId,
+                                          *parsedItemId,
+                                          *parsedType,
+                                          state ? state->start : notify->time,
+                                          *payload};
+        auto valid = self->registry().validate(event);
+        if (!valid) return script::projectStatusResult(vm, valid.status(), false, false);
+        return project(vm, self->editor().updateItem(*parsedItemId, *parsedType, *payload));
+    });
     actionEditor.addFunc("addParameterKey", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                   float time, float value, float inTangent, float outTangent,
                                                   const std::string& interpolation) {
@@ -1350,6 +1399,16 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (const auto* state = findState(timeline, itemId)) return static_cast<float>(state->end.seconds());
         if (const auto* notify = findNotify(timeline, itemId)) return static_cast<float>(notify->time.seconds());
         return 0.0f;
+    });
+    actionEditor.addFunc("getItemPayloadJson", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self) return std::string("{}");
+        const auto& timeline = self->editor().target().timeline();
+        const Value::Object* payload = nullptr;
+        if (const auto* state = findState(timeline, itemId)) payload = &state->payload;
+        if (const auto* notify = findNotify(timeline, itemId)) payload = &notify->payload;
+        if (!payload) return std::string("{}");
+        auto encoded = Value(*payload).toJson();
+        return encoded ? encoded.value() : std::string("{}");
     });
     actionEditor.addFunc("getParameterKeyCount", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
         const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;

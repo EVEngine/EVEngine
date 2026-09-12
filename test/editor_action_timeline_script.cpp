@@ -52,6 +52,13 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         inspectorStart <- actionEditor.getItemStart("test-state:hitbox");
         inspectorEnd <- actionEditor.getItemEnd("test-state:hitbox");
         invalidInspectorTiming <- actionEditor.setItemTiming("test-state:hitbox", 0.7, 0.2);
+        detailsResult <- actionEditor.editItemDetails(
+            "test-state:hitbox", "combat:hitbox-window", "{\"hitbox\":\"weapon.alt\"}");
+        payloadAfterDetails <- actionEditor.getItemPayloadJson("test-state:hitbox");
+        shapeMismatch <- actionEditor.editItemDetails(
+            "test-state:hitbox", "combat:damage", "{\"damageType\":\"slash\",\"amount\":2}");
+        invalidPayload <- actionEditor.editItemDetails(
+            "test-state:hitbox", "combat:hitbox-window", "{}");
         removeItemResult <- actionEditor.removeItem("test-state:hitbox");
         itemCountAfterRemove <- actionEditor.getItemCount();
         restoreRemovedResult <- actionEditor.undo();
@@ -90,6 +97,10 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_LT(std::abs(vm.find("inspectorStart").toFloat() - 0.1F), 0.0001F);
     CHECK_LT(std::abs(vm.find("inspectorEnd").toFloat() - 0.6F), 0.0001F);
     CHECK(!vm.find("invalidInspectorTiming").toTable().get<bool>("ok"));
+    CHECK(vm.find("detailsResult").toTable().get<bool>("ok"));
+    CHECK_NE(vm.find("payloadAfterDetails").toString().find("weapon.alt"), std::string::npos);
+    CHECK(!vm.find("shapeMismatch").toTable().get<bool>("ok"));
+    CHECK(!vm.find("invalidPayload").toTable().get<bool>("ok"));
     CHECK(vm.find("removeItemResult").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("itemCountAfterRemove").toInt(), 0);
     CHECK(vm.find("restoreRemovedResult").toTable().get<bool>("ok"));

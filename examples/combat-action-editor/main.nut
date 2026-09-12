@@ -380,7 +380,11 @@ function panelInspector() {
     ui.text("", "action-uri"); ui.text("", "revision");
     if (combatEditor.inspectorMode == "action") {
         ui.text("Action Block", "action-block-title"); ui.text("No Action Block selected", "action-block-id");
-        ui.text("", "action-block-type"); ui.text("", "action-block-kind");
+        ui.text("", "action-block-kind");
+        ui.text("Type", "action-type-label"); ui.inputText("##Type", "", "action-type");
+        ui.setItemSize(300.0, 0.0);
+        ui.text("Payload JSON", "action-payload-label"); ui.inputText("##Payload", "{}", "action-payload");
+        ui.setItemSize(300.0, 0.0);
         ui.slider("Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-start");
         ui.slider("End", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-end");
         ui.beginToolbar("action-tools"); ui.iconButton("trash", "Delete Block", "delete-action");
@@ -588,6 +592,10 @@ function handleUiEvents() {
                 local finish = combatEditor.selectedActionState ? ui.getValue("action-end") : start;
                 result = combatEditor.timeline.setItemTiming(combatEditor.selectedActionId, start, finish);
                 combatEditor.status = result.ok ? "Action Block timing committed" : result.status.summary;
+            } else if ((id == "action-type" || id == "action-payload") && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.editItemDetails(combatEditor.selectedActionId,
+                    ui.getValueText("action-type"), ui.getValueText("action-payload"));
+                combatEditor.status = result.ok ? "Action Block details committed" : result.status.summary;
             } else if (id.find("position-") == 0) result = combatEditor.clipEditor.setSelectedPosition(
                 ui.getValue("position-x"), ui.getValue("position-y"), ui.getValue("position-z"));
             else if (id.find("rotation-") == 0) result = combatEditor.clipEditor.setSelectedRotation(
@@ -712,18 +720,22 @@ function updateLabels() {
             combatEditor.selectedActionState = combatEditor.timeline.getItemState(selected);
             local selectedType = combatEditor.timeline.getItemType(selected);
             ui.setText("action-block-id", combatEditor.selectedActionId);
-            ui.setText("action-block-type", "Type: " + selectedType);
             ui.setText("action-block-kind", selectedType == "animation:section" ? "Animation section" :
                        (combatEditor.selectedActionState ? "State window" : "Instant notify"));
+            ui.setValueText("action-type", selectedType);
+            ui.setValueText("action-payload", combatEditor.timeline.getItemPayloadJson(combatEditor.selectedActionId));
             ui.setValue("action-start", combatEditor.timeline.getItemStart(combatEditor.selectedActionId));
             ui.setValue("action-end", combatEditor.timeline.getItemEnd(combatEditor.selectedActionId));
             ui.setEnabled("action-start", true); ui.setEnabled("action-end", combatEditor.selectedActionState);
+            ui.setEnabled("action-type", selectedType != "animation:section");
+            ui.setEnabled("action-payload", selectedType != "animation:section");
             ui.setEnabled("delete-action", true);
         } else {
             combatEditor.selectedActionId = "";
-            ui.setText("action-block-id", "No Action Block selected"); ui.setText("action-block-type", "");
+            ui.setText("action-block-id", "No Action Block selected");
             ui.setText("action-block-kind", "Select a block in the montage timeline");
-            ui.setEnabled("action-start", false); ui.setEnabled("action-end", false); ui.setEnabled("delete-action", false);
+            ui.setEnabled("action-start", false); ui.setEnabled("action-end", false);
+            ui.setEnabled("action-type", false); ui.setEnabled("action-payload", false); ui.setEnabled("delete-action", false);
         }
         ui.setEnabled("action-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("action-redo", combatEditor.timeline.canRedo());
