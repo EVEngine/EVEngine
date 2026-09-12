@@ -29,7 +29,7 @@ persist mapW = 0.0
 persist mapH = 0.0
 persist cellW = 0.0
 persist cellH = 0.0
-persist fogAlpha = 0.78
+persist fogAlpha = 0.90
 persist prevLeft = false
 persist status = "LMB select · Space unlock · R reset"
 
@@ -137,10 +137,13 @@ function screenToCell(mx, my) {
 }
 
 function terrainColor(x, y) {
+    // Slightly richer underlay so the unlock hole reads against real map tones.
     local h = ((x * 13 + y * 7) % 5).tofloat() / 5.0;
-    if ((x + y) % 7 == 0) return [0.55, 0.82, 0.42];
-    if ((x * 3 + y) % 11 == 0) return [0.82, 0.70, 0.38];
-    return [0.50 + h * 0.18, 0.68 + h * 0.16, 0.36 + h * 0.10];
+    local road = ((x + y * 3) % 17 == 0) || ((x * 2 + y) % 19 == 0);
+    if (road) return [0.62, 0.58, 0.42];
+    if ((x + y) % 7 == 0) return [0.42, 0.72, 0.38];
+    if ((x * 3 + y) % 11 == 0) return [0.78, 0.68, 0.34];
+    return [0.38 + h * 0.22, 0.58 + h * 0.20, 0.30 + h * 0.12];
 }
 
 eve_init = function() {
@@ -157,23 +160,23 @@ eve_init = function() {
     gfx.setTextureSampler(maskTex, "linear", "none", 1.0, 0.0);
 
     fog = gfx.newMapFog();
-    fog.setCloudTexture(fog.makeCloudTexture(256));
+    fog.setCloudTexture(fog.makeCloudTexture(512));
     fog.setMaskTexture(maskTex);
-    // Low tiling + aspect-corrected UVs => large soft billows, not wallpaper.
-    fog.setCloudTiling(0.55, 0.80);
-    fog.setCloudSpeed(0.010, 0.016);
-    fog.setCloudMix(0.40);
-    fog.setDistort(0.11);
-    fog.setDistortFix(-0.008, 0.005);
-    fog.setFogColor(0.80, 0.84, 0.90);
+    // Distinct dual-layer tiling/speed (article): large soft billows, living scroll.
+    fog.setCloudTiling(0.55, 0.95);
+    fog.setCloudSpeed(0.008, 0.015);
+    fog.setCloudMix(0.35);
+    fog.setDistort(0.16);
+    fog.setDistortFix(-0.012, 0.008);
+    fog.setFogColor(0.92, 0.94, 0.98);
     fog.setFogAlpha(fogAlpha);
-    // Mask is already soft-stamped; mild edge remap + strong UV warp = organic rim.
+    // Soft-stamped mask + UV warp => wispy cloudy unlock rim.
     fog.setEdgeSoftness(0.16);
-    fog.setShadow(0.016, 0.022, 0.36);
+    fog.setShadow(0.026, 0.036, 0.62);
     fog.setSelectStrength(0.90);
-    fog.setDissolveScale(1.6);
-    // Mild density shaping — sheet stays readable; mask cuts the hole.
-    fog.setCloudDensity(0.50, 0.16);
+    fog.setDissolveScale(1.5);
+    // Thickness from lit cloud luminance; mask still owns the hole.
+    fog.setCloudDensity(0.42, 0.16);
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };

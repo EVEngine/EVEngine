@@ -111,21 +111,27 @@ fn luma(c: vec3<f32>) -> f32 {
   let cloudUv = vec2<f32>(input.uv.x * aspect, input.uv.y);
   let sampleA = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileA, speedA, time, 1.0)).rgb;
   let sampleB = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileB, speedB, time, -1.0)).rgb;
-  let cloudMul = clamp(sampleA * sampleB * 1.35, vec3<f32>(0.0), vec3<f32>(1.0));
-  let cloudAvg = mix(sampleA, sampleB, cloudMix);
-  let cloud = mix(cloudAvg, cloudMul, 0.40);
+  let cloudScreen = clamp(vec3<f32>(1.0) - (vec3<f32>(1.0) - sampleA) * (vec3<f32>(1.0) - sampleB), vec3<f32>(0.0), vec3<f32>(1.0));
+  let cloudMul = clamp(sampleA * sampleB * 1.40, vec3<f32>(0.0), vec3<f32>(1.0));
+  let cloudBase = mix(sampleA, sampleB, cloudMix);
+  let cloudRich = mix(cloudScreen, cloudMul, 0.38);
+  let cloud = mix(cloudBase, cloudRich, 0.62);
   let noise = luma(cloud);
 
   let warpNoise = luma(mix(
-    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileA * 0.22, 0.15), speedA * 0.30, time, 1.0)).rgb,
-    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileB * 0.22, 0.15), speedB * 0.30, time, -1.0)).rgb,
+    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileA * 0.20, 0.12), speedA * 0.28, time, 1.0)).rgb,
+    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileB * 0.20, 0.12), speedB * 0.28, time, -1.0)).rgb,
     0.5));
-  let maskUv = input.uv + (warpNoise - 0.5) * distort + fix;
+  let warpFine = luma(mix(
+    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileA * 0.55, 0.25), speedA * 0.55, time, 1.0)).rgb,
+    textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileB * 0.55, 0.25), speedB * 0.55, time, -1.0)).rgb,
+    0.5));
+  let maskUv = input.uv + (warpNoise - 0.5) * distort + (warpFine - 0.5) * (distort * 0.35) + fix;
   let maskSample = textureSample(maskTex, maskSampler, maskUv);
   let unlocked = maskSample.r;
   let selected = maskSample.g;
   let dissolve = maskSample.b;
-  let softRadius = max(edgeSoft * 0.55, 0.012);
+  let softRadius = max(edgeSoft * 0.40, 0.008);
   let unlockedSoft = (unlocked
     + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(softRadius, 0.0)).r
     + textureSample(maskTex, maskSampler, maskUv - vec2<f32>(softRadius, 0.0)).r
@@ -136,12 +142,13 @@ fn luma(c: vec3<f32>) -> f32 {
     + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(softRadius, -softRadius) * 0.707).r
     + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(-softRadius, -softRadius) * 0.707).r) * (1.0 / 9.0);
   var fogKeep = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, unlockedSoft);
+  let edgeBand = 4.0 * fogKeep * (1.0 - fogKeep);
+  fogKeep = fogKeep * mix(1.0, smoothstep(0.18, 0.68, noise), edgeBand * 1.05);
   let dissolveNoise = luma(textureSample(mainTex, mainSampler,
       cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
-  fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.10, dissolve + 0.10, dissolveNoise) * step(1e-4, dissolve));
+  fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
   let density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-  // Soft translucent cloud sheet — valleys thinner, peaks denser (not swiss cheese).
-  let body = mix(0.52, 1.0, density);
+  let body = mix(0.28, 1.0, density);
 
   if (passMode < 0.5) {
     let sUv = maskUv + shadowOff;
@@ -152,19 +159,24 @@ fn luma(c: vec3<f32>) -> f32 {
       + textureSample(maskTex, maskSampler, sUv + vec2<f32>(0.0, softRadius)).r
       + textureSample(maskTex, maskSampler, sUv - vec2<f32>(0.0, softRadius)).r) * 0.2;
     var sFog = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, sUnlocked);
+    let sBand = 4.0 * sFog * (1.0 - sFog);
+    sFog = sFog * mix(1.0, smoothstep(0.18, 0.68, noise), sBand * 0.95);
     let sDissolveNoise = luma(textureSample(mainTex, mainSampler,
         (cloudUv + shadowOff * vec2<f32>(aspect, 1.0)) * dissolveScale).rgb);
-    sFog = sFog * (1.0 - smoothstep(sMask.b - 0.10, sMask.b + 0.10, sDissolveNoise) * step(1e-4, sMask.b));
-    let a = sFog * body * shadowStrength * fogAlpha * input.color.a;
+    sFog = sFog * (1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b));
+    let a = sFog * mix(0.48, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 
-  var col = fogRgb * mix(vec3<f32>(0.62), cloud, 0.88);
+  var col = mix(cloud, fogRgb * cloud, 0.22);
+  col = mix(col, fogRgb, 0.06);
+  col = col + cloud * (density * 0.10);
   let blink = selected * selectStrength * selectPulse;
-  col = mix(col, col * 1.22 + vec3<f32>(0.18, 0.22, 0.30), clamp(blink, 0.0, 1.0));
+  col = mix(col, col * 1.14 + vec3<f32>(0.12, 0.16, 0.24), clamp(blink, 0.0, 1.0));
   let a = fogKeep * body * fogAlpha * input.color.a;
   return vec4<f32>(col, a);
-})";
+}
+)";
         shader_ = graphics_->newShaderFromWgsl({}, fragment);
     } else {
         std::vector<uint32_t> fragment(map_fog_frag_spv, map_fog_frag_spv + map_fog_frag_spv_count);
@@ -263,32 +275,82 @@ void MapFog::setCloudDensity(float contrast, float bias) {
 
 Texture *MapFog::makeCloudTexture(int size) {
     const int            n = std::clamp(size, 16, 512);
+    std::vector<float>   height(size_t(n * n));
     std::vector<uint8_t> rgba(size_t(n * n * 4));
-    // Integer-period wrap fBm is seamless by construction. Prefer LOW base
-    // periods so one tile reads as a few large soft billows (article look),
-    // not wallpaper static. Do NOT scale UV by non-integers here.
+    // Article uses an artist cloud color map. Approximate that look with a
+    // seamless domain-warped height field + soft key light (cool valleys /
+    // warm peaks) so dual-scroll multiply reads as painted billows, not noise.
     for (int y = 0; y < n; ++y) {
         for (int x = 0; x < n; ++x) {
             const float u = float(x) / float(n);
             const float v = float(y) / float(n);
 
-            // Period 1/2/3 => a few huge soft masses per tile (not wallpaper micro-noise).
-            const float large = fbmSeamless(u, v, 1, 0xA11CE001u, 5);
-            const float mid   = fbmSeamless(u, v, 2, 0xBEEF42u, 4);
-            const float fine  = fbmSeamless(u, v, 3, 0xC0FFEEu, 3);
+            // Domain warp stays seamless because fbmSeamless(u+1,v)==fbmSeamless(u,v).
+            const float wu = u + 0.18f * (fbmSeamless(u, v, 2, 0x1111u, 3) - 0.5f);
+            const float wv = v + 0.18f * (fbmSeamless(u, v, 2, 0x2222u, 3) - 0.5f);
 
-            // Soft puffy volumes: billow dominates, fine ridge only for breakup.
-            const float soft = billow(large) * 0.68f + billow(mid) * 0.24f + ridged(fine) * 0.08f;
-            // Lift into a pale cloud range so dual-scroll multiply stays readable.
-            const float c = std::clamp(0.38f + soft * 0.55f, 0.f, 1.f);
+            // period>=2 (hashWrap period-1 collapses). Large soft masses.
+            const float large = fbmSeamless(wu, wv, 2, 0xA11CE001u, 5);
+            const float mid   = fbmSeamless(wu, wv, 3, 0xBEEF42u, 4);
+            const float fine  = fbmSeamless(wu, wv, 5, 0xC0FFEEu, 3);
 
-            const float cool = std::clamp(c * 0.96f + 0.03f, 0.f, 1.f);
-            const float warm = std::clamp(c * 1.02f - 0.01f, 0.f, 1.f);
-            const size_t i   = size_t((y * n + x) * 4);
-            rgba[i + 0]      = uint8_t(warm * 255.f + 0.5f);
-            rgba[i + 1]      = uint8_t(c * 255.f + 0.5f);
-            rgba[i + 2]      = uint8_t(cool * 255.f + 0.5f);
-            rgba[i + 3]      = 255;
+            float soft = billow(large) * 0.62f + billow(mid) * 0.26f + ridged(fine) * 0.12f;
+            soft       = soft * soft * (3.f - 2.f * soft);
+            soft       = std::pow(std::clamp(soft, 0.f, 1.f), 1.35f);
+            height[size_t(y * n + x)] = soft;
+        }
+    }
+
+    auto sampleH = [&](int x, int y) {
+        x = ((x % n) + n) % n;
+        y = ((y % n) + n) % n;
+        return height[size_t(y * n + x)];
+    };
+
+    // Soft key light from upper-left (typical SLG map lighting).
+    const float lx     = 0.55f, ly = 0.70f, lz = 0.45f;
+    const float invLen = 1.f / std::sqrt(lx * lx + ly * ly + lz * lz);
+    const float Lx = lx * invLen, Ly = ly * invLen, Lz = lz * invLen;
+
+    for (int y = 0; y < n; ++y) {
+        for (int x = 0; x < n; ++x) {
+            const float h  = sampleH(x, y);
+            const float hx = sampleH(x + 1, y) - sampleH(x - 1, y);
+            const float hy = sampleH(x, y + 1) - sampleH(x, y - 1);
+
+            // Cheap local AO so valleys read darker than a flat height remap.
+            float ao = 0.f;
+            for (int dy = -2; dy <= 2; dy += 2) {
+                for (int dx = -2; dx <= 2; dx += 2) {
+                    ao += sampleH(x + dx, y + dy);
+                }
+            }
+            ao = std::clamp(1.15f - (ao * (1.f / 9.f) - h) * 2.2f, 0.f, 1.f);
+
+            float nx = -hx * 3.2f, ny = -hy * 3.2f, nz = 0.42f;
+            const float nlen = std::sqrt(nx * nx + ny * ny + nz * nz);
+            nx /= nlen;
+            ny /= nlen;
+            nz /= nlen;
+            const float ndotl = std::max(nx * Lx + ny * Ly + nz * Lz, 0.f);
+            const float lit   = 0.28f + 0.72f * ndotl;
+
+            // Cool blue-gray valleys → warm cream peaks (painted cloud palette).
+            const float shade = std::clamp(0.08f + h * h * lit * 0.95f * ao, 0.f, 1.f);
+            const float t     = std::clamp(shade * 1.05f, 0.f, 1.f);
+            const float coolR = 0.55f, coolG = 0.62f, coolB = 0.78f;
+            const float warmR = 0.98f, warmG = 0.96f, warmB = 0.92f;
+            const float r =
+                std::clamp(coolR * (1.f - t) + warmR * t + ndotl * 0.08f * h, 0.f, 1.f);
+            const float g =
+                std::clamp(coolG * (1.f - t) + warmG * t + ndotl * 0.04f * h, 0.f, 1.f);
+            const float b = std::clamp(coolB * (1.f - t) + warmB * t, 0.f, 1.f);
+
+            const size_t i = size_t((y * n + x) * 4);
+            rgba[i + 0]    = uint8_t(r * 255.f + 0.5f);
+            rgba[i + 1]    = uint8_t(g * 255.f + 0.5f);
+            rgba[i + 2]    = uint8_t(b * 255.f + 0.5f);
+            rgba[i + 3]    = 255;
         }
     }
     return graphics_->newTexture(n, n, rgba.data(), true, true);
