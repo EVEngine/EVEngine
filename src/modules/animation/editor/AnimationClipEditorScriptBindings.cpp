@@ -2,6 +2,8 @@
 
 #include "animation/editor/AnimationClipEditor.h"
 #include "animation/editor/AnimationEditorModule.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimSkeleton.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
@@ -68,6 +70,20 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
                                                      "workspace");
                            return project(vm, self->editor().configureWorkspace(*workspace));
                        });
+    clipEditor.addFunc("loadRuntimeClip", [vm](ScriptAnimationClipEditor* self, animation::AnimSkeleton* skeleton,
+                                                animation::AnimClip* clip) {
+        if (!self || !skeleton || !clip)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "animation clip editor, skeleton and clip must not be null");
+        return project(vm, self->editor().loadRuntimeClip(*skeleton, *clip));
+    });
+    clipEditor.addFunc("writeRuntimeClip", [vm](ScriptAnimationClipEditor* self, animation::AnimClip* clip,
+                                                 animation::AnimSkeleton* skeleton) {
+        if (!self || !skeleton || !clip)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "animation clip editor, clip and skeleton must not be null");
+        return project(vm, self->editor().writeRuntimeClip(*clip, *skeleton));
+    });
     clipEditor.addFunc("setViewport",
                        [vm](ScriptAnimationClipEditor* self, float width, float rowHeight, float labelWidth) {
                            if (!self)
@@ -119,6 +135,26 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
         return project(vm, self->editor().moveSelectedKey(static_cast<double>(time)));
+    });
+    clipEditor.addFunc("keySelectedBone", [vm](ScriptAnimationClipEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
+        return project(vm, self->editor().keySelectedBone());
+    });
+    clipEditor.addFunc("deleteSelectedKey", [vm](ScriptAnimationClipEditor* self) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
+        return project(vm, self->editor().deleteSelectedKey());
+    });
+    clipEditor.addFunc("setSelectedPosition", [vm](ScriptAnimationClipEditor* self, float x, float y, float z) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
+        return project(vm, self->editor().setSelectedPosition(x, y, z));
+    });
+    clipEditor.addFunc("setSelectedRotation", [vm](ScriptAnimationClipEditor* self, float x, float y, float z) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
+        return project(vm, self->editor().setSelectedRotation(x, y, z));
+    });
+    clipEditor.addFunc("setSelectedScale", [vm](ScriptAnimationClipEditor* self, float x, float y, float z) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
+        return project(vm, self->editor().setSelectedScale(x, y, z));
     });
     clipEditor.addFunc("undo", [vm](ScriptAnimationClipEditor* self) {
         if (!self)
@@ -183,6 +219,20 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     clipEditor.addFunc("getSelectedMaskWeight", [](ScriptAnimationClipEditor* self) {
         return self ? static_cast<float>(self->editor().selectedMaskWeight()) : 1.0f;
     });
+    clipEditor.addFunc("hasSelectedKey", [](ScriptAnimationClipEditor* self) { return self && self->editor().hasSelectedKey(); });
+    clipEditor.addFunc("getSelectedKeyTime", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedKeyTime()) : 0.0f; });
+    clipEditor.addFunc("getSelectedPositionX", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedPositionX()) : 0.0f; });
+    clipEditor.addFunc("getSelectedPositionY", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedPositionY()) : 0.0f; });
+    clipEditor.addFunc("getSelectedPositionZ", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedPositionZ()) : 0.0f; });
+    clipEditor.addFunc("getSelectedRotationX", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedRotationX()) : 0.0f; });
+    clipEditor.addFunc("getSelectedRotationY", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedRotationY()) : 0.0f; });
+    clipEditor.addFunc("getSelectedRotationZ", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedRotationZ()) : 0.0f; });
+    clipEditor.addFunc("getSelectedScaleX", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedScaleX()) : 1.0f; });
+    clipEditor.addFunc("getSelectedScaleY", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedScaleY()) : 1.0f; });
+    clipEditor.addFunc("getSelectedScaleZ", [](ScriptAnimationClipEditor* self) { return self ? static_cast<float>(self->editor().selectedScaleZ()) : 1.0f; });
+    clipEditor.addFunc("getBoneCount", [](ScriptAnimationClipEditor* self) { return self ? self->editor().boneCount() : 0; });
+    clipEditor.addFunc("getBoneName", [](ScriptAnimationClipEditor* self, int index) { return self ? self->editor().boneName(index) : std::string{}; });
+    clipEditor.addFunc("getBoneParent", [](ScriptAnimationClipEditor* self, int index) { return self ? self->editor().boneParent(index) : std::string{}; });
     clipEditor.addFunc("getTrackCount", [](ScriptAnimationClipEditor* self) {
         return self ? self->editor().trackCount() : 0;
     });

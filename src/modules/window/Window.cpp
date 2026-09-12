@@ -26,6 +26,9 @@ void Window::expose(ssq::Class& cls) {
     cls.addFunc("getWidth", &Window::getWidth);
     cls.addFunc("getHeight", &Window::getHeight);
     cls.addFunc("hasFocus", &Window::hasFocus);
+    cls.addFunc("getPixelWidth", [](Window* self) { return self ? self->getPixelWidth() : 0; });
+    cls.addFunc("getPixelHeight", [](Window* self) { return self ? self->getPixelHeight() : 0; });
+    cls.addFunc("getDPIScale", [](Window* self) { return self ? static_cast<float>(self->getDPIScale()) : 1.0f; });
 
     cls.addFunc("setWindowSettings", &Window::setWindowSettings);
     cls.addFunc("getWindowSettings", &Window::getWindowSettings);

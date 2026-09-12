@@ -3,10 +3,17 @@
 #include "animation/AnimPose.h"
 #include "common/Time.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 namespace eve::animation {
+
+/** @brief Deterministic built-in curve used by cross-fade pose interpolation. */
+enum class AnimBlendCurve : std::uint8_t {
+    Linear,
+    EaseInOut,
+};
 
 class AnimClip;
 class AnimSkeleton;
@@ -28,6 +35,8 @@ public:
     void play(AnimClip* clip);
     /** @brief Cross-fade to clip over blendSeconds (keeps sampling previous until done). */
     void crossFade(AnimClip* clip, float blendSeconds);
+    /** @brief Select the curve used by subsequent and active cross-fades. */
+    void setBlendCurve(AnimBlendCurve curve) noexcept { blendCurve_ = curve; }
 
     void stop();
     void pause();
@@ -103,6 +112,7 @@ private:
     float                    blendDuration_   = 0.f;
     float                    blendElapsed_    = 0.f;
     bool                     blending_        = false;
+    AnimBlendCurve           blendCurve_      = AnimBlendCurve::Linear;
     bool                     playing_         = false;
     bool                     paused_          = false;
     bool                     hasLoopOverride_ = false;
