@@ -1057,6 +1057,18 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
+    cls.addFunc(
+        "setRenderableTextureFromImageData",
+        [](Graphics *self, Renderable3D *renderable, image::ImageData *data, bool repeatU,
+           bool repeatV) -> Texture * {
+            if (!renderable) throw eve::Exception("setRenderableTextureFromImageData: null Renderable3D");
+            Texture *texture = self->newTextureFromImageData(data, repeatU, repeatV);
+            if (Material *material = renderable->getMaterial())
+                material->setAlbedoTexture(texture);
+            else
+                renderable->setTexture(texture);
+            return texture;
+        });
     cls.addFunc("updateTextureFromImageData", [](Graphics *self, Texture *texture,
                                                   image::ImageData *data) {
         auto updated = self->updateTextureFromImageData(texture, data);
