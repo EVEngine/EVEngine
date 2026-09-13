@@ -478,6 +478,10 @@ Renderable 的 tint、metallic、roughness、parallax、lighting 和 shadow 参�
 从 complex static collider 同时切换为 non-static primitive 时，应拆成两笔提交：先换 primitive，再改 Body
 type，避免 Box3D 在旧 complex shape 仍存活时拒绝类型转换。
 
+启用 `physics_editor` 时，模块启动会把 `physics.editing` provider 发布到当前 `Editor` 的
+`ExtensionProviderRegistry`；宿主可取得 `physics.editing.factory` lease 来创建上述 publishing target。
+模块卸载会撤销对应 generation，旧 lease/handle 不得跨卸载继续使用。
+
 2D 使用同一 `PhysicsColliderPublishingTarget`，将 dimensions 设为 `2` 并绑定
 `PhysicsCollider2DRuntimeSink`。AssetDB 的 polygon metadata 使用 3–8 个有限、严格凸的 packed XY
 顶点；chain 使用至少两个顶点，并可用 `loop: true` 闭合。Resolver 会在触碰 Box2D 前拒绝凹多边形、

@@ -3,6 +3,7 @@
 
 #include "common/Capability.h"
 #include "physics/ArtifactProvider.h"
+#include "physics/World3D.h"
 #include "procgen/ArtifactPublish.h"
 #include "procgen/GeneratedArtifact.h"
 #include "procgen/Params.h"
@@ -76,15 +77,21 @@ TEST_CASE("physics.artifact.stageUsesRealBox3DAndRayQuery") {
 
 TEST_CASE("physics.artifact.rollbackAndValidationLeaveNoCollider") {
     eve::physics::PhysicsArtifactProvider provider;
+    eve::physics::World3D                 sharedWorld(0.f, 0.f, 0.f, true);
+    REQUIRE(provider.bindWorld(sharedWorld).ok());
     const auto                            artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0202");
     ColliderPublication                   input(artifactId);
 
     auto prepared = provider.prepare(input.publication);
     REQUIRE(prepared.ok());
     auto stage = std::move(prepared).takeValue();
+    CHECK_EQ(sharedWorld.getBodyCount(), 1);
+    sharedWorld.rayCast(0.f, 2.f, 0.f, 0.f, -2.f, 0.f);
+    CHECK(!sharedWorld.hasRayHit());
     stage->rollback();
     stage.reset();
     CHECK(provider.emptyState());
+    CHECK_EQ(sharedWorld.getBodyCount(), 0);
 
     provider.setPrepareFailure(true);
     auto injected = provider.prepare(input.publication);
@@ -148,6 +155,8 @@ TEST_CASE("physics.artifact.compositeColliderUsesPublicProcgenPublication") {
     eve::cap::detail::clearAllRaw();
     auto& provider = eve::physics::physicsArtifactProvider();
     provider.clear();
+    eve::physics::World3D sharedWorld(0.f, 0.f, 0.f, true);
+    REQUIRE(provider.bindWorld(sharedWorld).ok());
     eve::physics::registerPhysicsArtifactProvider();
 
     eve::procgen::Params params;
@@ -171,6 +180,9 @@ TEST_CASE("physics.artifact.compositeColliderUsesPublicProcgenPublication") {
     CHECK_EQ(provider.size(), std::size_t(1));
     CHECK(provider.find(persistentId) != nullptr);
     CHECK(provider.isBox3DBacked(persistentId));
+    CHECK(provider.isSharedWorldBacked(persistentId));
+    CHECK_EQ(provider.boundWorld(), sharedWorld.runtimeHandle());
+    CHECK_EQ(sharedWorld.getBodyCount(), 1);
     const auto* collider = provider.find(persistentId);
     REQUIRE(collider != nullptr);
     REQUIRE_GE(collider->indices.size(), std::size_t(3));
@@ -182,4 +194,48 @@ TEST_CASE("physics.artifact.compositeColliderUsesPublicProcgenPublication") {
     const auto  hit  = provider.rayCast(persistentId, rayX, collider->bounds.maxY + 10.f, rayZ, 0.f,
                                         -((collider->bounds.maxY - collider->bounds.minY) + 20.f), 0.f);
     CHECK(hit.hit);
+
+    sharedWorld.rayCast(rayX, collider->bounds.maxY + 10.f, rayZ, rayX,
+                        collider->bounds.minY - 10.f, rayZ);
+    CHECK(sharedWorld.hasRayHit());
+    provider.clear();
+    CHECK_EQ(sharedWorld.getBodyCount(), 0);
+    REQUIRE(provider.unbindWorld(sharedWorld.runtimeHandle()).ok());
+}
+
+TEST_CASE("physics.artifact.destroyedSharedWorldMakesPublicationStale") {
+    eve::physics::PhysicsArtifactProvider provider;
+    const auto artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0205");
+    ColliderPublication input(artifactId);
+    auto world = std::make_unique<eve::physics::World3D>(0.f, 0.f, 0.f, true);
+    REQUIRE(provider.bindWorld(*world).ok());
+    auto prepared = provider.prepare(input.publication);
+    REQUIRE(prepared.ok());
+    auto stage = std::move(prepared).takeValue();
+    stage->commit();
+    const auto colliderHandle = provider.find(artifactId)->handle;
+
+    world.reset();
+    CHECK(provider.boundWorld().isInvalid());
+    CHECK(!provider.isBox3DBacked(artifactId));
+    CHECK(!provider.isSharedWorldBacked(artifactId));
+    CHECK(!provider.isHandleLive(colliderHandle));
+    CHECK(!provider.rayCast(artifactId, 0.f, 2.f, 0.f, 0.f, -4.f, 0.f).hit);
+    provider.clear();
+}
+
+TEST_CASE("physics.artifact.preparedStageOutlivesProviderWithoutOwnerCallback") {
+    eve::physics::World3D sharedWorld(0.f, 0.f, 0.f, true);
+    std::unique_ptr<eve::artifact::PreparedPublication> stage;
+    {
+        auto provider = std::make_unique<eve::physics::PhysicsArtifactProvider>();
+        REQUIRE(provider->bindWorld(sharedWorld).ok());
+        ColliderPublication input(id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0206"));
+        auto prepared = provider->prepare(input.publication);
+        REQUIRE(prepared.ok());
+        stage = std::move(prepared).takeValue();
+        CHECK_EQ(sharedWorld.getBodyCount(), 1);
+    }
+    stage.reset();
+    CHECK_EQ(sharedWorld.getBodyCount(), 0);
 }

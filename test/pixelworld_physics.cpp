@@ -119,6 +119,29 @@ TEST_CASE("pixelworld_physics.terrain_cache_rebuilds_dirty_chunks_and_rolls_back
     CHECK_EQ(cache.sourceRevision(), std::uint64_t(0));
 }
 
+TEST_CASE("pixelworld_physics.terrain_cache_rejects_live_world_rebind_without_orphaning_bodies") {
+    PixelWorld pixels(506);
+    for (int x = 0; x < 16; ++x) pixels.setMaterial(x, 12, "stone");
+    eve::physics::World first(0.f, 100.f, true, 64.f);
+    eve::physics::World second(0.f, 100.f, true, 64.f);
+    PixelTerrainCollisionCache cache;
+
+    cache.sync(first, pixels).expect("initial terrain projection");
+    REQUIRE(first.rayCast(8.f, 0.f, 8.f, 20.f) >= 0);
+    auto rejected = cache.sync(second, pixels);
+    CHECK(!rejected.ok());
+    CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::Conflict));
+    CHECK(first.rayCast(8.f, 0.f, 8.f, 20.f) >= 0);
+    CHECK(second.rayCast(8.f, 0.f, 8.f, 20.f) < 0);
+    CHECK_EQ(cache.bodyCount(), std::size_t(1));
+
+    cache.clearPhysics(first).expect("clear original projection before rebind");
+    cache.sync(second, pixels).expect("rebind after explicit clear");
+    CHECK(first.rayCast(8.f, 0.f, 8.f, 20.f) < 0);
+    CHECK(second.rayCast(8.f, 0.f, 8.f, 20.f) >= 0);
+    cache.clearPhysics(second).expect("clear replacement projection");
+}
+
 TEST_CASE("pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams") {
     PixelWorld pixels(504);
     for (int y = 10; y < 12; ++y)

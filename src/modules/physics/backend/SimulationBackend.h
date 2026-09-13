@@ -45,6 +45,20 @@ enum class SimulationBackendDomain {
     SurfaceFluid,
 };
 
+/** @brief Returns the stable diagnostic spelling for an accelerated simulation domain. */
+[[nodiscard]] constexpr std::string_view simulationBackendDomainName(SimulationBackendDomain domain) noexcept {
+    switch (domain) {
+        case SimulationBackendDomain::World2D: return "world2d";
+        case SimulationBackendDomain::World3D: return "world3d";
+        case SimulationBackendDomain::Cloth2D: return "cloth2d";
+        case SimulationBackendDomain::Cloth3D: return "cloth3d";
+        case SimulationBackendDomain::Rope3D: return "rope3d";
+        case SimulationBackendDomain::SoftBody3D: return "softbody3d";
+        case SimulationBackendDomain::SurfaceFluid: return "surface_fluid";
+    }
+    return "unknown";
+}
+
 /** @brief Determinism guarantee made by a simulation backend. */
 enum class SimulationDeterminism {
     /** @brief Same inputs produce identical bits under the declared runtime. */
@@ -217,6 +231,48 @@ public:
      */
     [[nodiscard("inspect provider creation or explicitly fall back")]]
     virtual eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain domain, void* state) = 0;
+};
+
+/**
+ * @brief Move-only lifetime token for one independently registered accelerator provider.
+ *
+ * Registration is main-thread/module-startup affine. The provider remains externally
+ * owned and must outlive this token and every backend it created. Destroying or resetting
+ * the token removes only this provider; other domain providers remain registered. A lower
+ * priority value is attempted first when multiple providers support the same domain.
+ * The legacy single-provider `eve::cap::provide<IAcceleratorBackendProvider>()` entry remains
+ * supported and is considered after independently registered providers.
+ */
+class AcceleratorBackendProviderRegistration {
+public:
+    /**
+     * @brief Registers an externally owned provider for multi-provider selection.
+     * @param provider Provider that outlives this registration.
+     * @param priority Stable selection priority; lower values are attempted first.
+     * @return An owning registration token, or Conflict when this provider already
+     *         has a live registration.
+     */
+    [[nodiscard("retain and check the accelerator provider registration")]]
+    static eve::Result<AcceleratorBackendProviderRegistration> registerProvider(
+        IAcceleratorBackendProvider& provider, int priority = 0);
+
+    /** @brief Removes this registration without affecting other providers. */
+    ~AcceleratorBackendProviderRegistration();
+
+    AcceleratorBackendProviderRegistration(const AcceleratorBackendProviderRegistration&)            = delete;
+    AcceleratorBackendProviderRegistration& operator=(const AcceleratorBackendProviderRegistration&) = delete;
+
+    /** @brief Transfers responsibility for unregistering the provider. */
+    AcceleratorBackendProviderRegistration(AcceleratorBackendProviderRegistration&& other) noexcept;
+    /** @brief Removes the current registration, then transfers another registration. */
+    AcceleratorBackendProviderRegistration& operator=(AcceleratorBackendProviderRegistration&& other) noexcept;
+
+    /** @brief Removes this provider immediately; safe to call more than once. */
+    void reset() noexcept;
+
+private:
+    AcceleratorBackendProviderRegistration() = default;
+    IAcceleratorBackendProvider* provider_ = nullptr;
 };
 
 /**

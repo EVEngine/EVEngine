@@ -68,8 +68,10 @@ public:
      * @param gravityX/gravityY  Gravity vector in pixels/s^2.
      * @param sleep              Whether bodies may sleep when idle.
      * @param meter              Pixels per meter conversion factor.
+     * @param instanceId Stable save/network identity; nil creates a process-local generated identity.
      */
-    World(float gravityX, float gravityY, bool sleep, float meter);
+    World(float gravityX, float gravityY, bool sleep, float meter,
+          eve::PersistentId instanceId = eve::PersistentId::nil());
     ~World();
 
     World(const World &)            = delete;
@@ -100,6 +102,17 @@ public:
     [[nodiscard]] eve::SimulationTick simulationTick() const noexcept { return simulationTick_; }
     /** @brief Process-local identity used by PhysicsLink; invalid after destruction. */
     [[nodiscard]] PhysicsWorldHandle runtimeHandle() const noexcept { return runtimeHandle_; }
+    /**
+     * @brief Weak lifetime token for guarded cross-domain world observers.
+     * @return A weak token that expires before world teardown invalidates borrowed objects.
+     * @ownership The world owns the token; callers may retain only the weak projection.
+     * @lifetime Locking succeeds only while this wrapper is alive and has not been destroyed.
+     * @thread Acquire and lock on the owning physics thread; it is a lifetime guard, not a synchronization primitive.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] std::weak_ptr<const void> lifetimeToken() const noexcept { return lifetime_; }
+    /** @brief Stable non-nil identity written to snapshot envelopes. */
+    [[nodiscard]] eve::PersistentId persistentId() const noexcept { return instanceId_; }
     /** @brief Whether optional accelerator selection fell back to CPU. */
     [[nodiscard]] bool usedBackendFallback() const noexcept { return backendFallback_; }
     /**
@@ -112,8 +125,8 @@ public:
     /**
      * @brief Captures a versioned, integrity-checked world snapshot.
      * @param hashProvider Injected digest provider used to seal the envelope.
-     * @return A snapshot containing the exact SimulationTick and body state.
-     * @remarks The provider is not retained; this call is owner-thread-only.
+     * @return A snapshot containing the exact SimulationTick, body state, and fixture geometry topology.
+     * @remarks Schema v2 rejects unknown fields. The provider is not retained; this call is owner-thread-only.
      */
     [[nodiscard("check or persist the physics snapshot")]]
     eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
@@ -122,9 +135,11 @@ public:
      * @brief Restores a verified snapshot without exposing partial state.
      * @param snapshot Versioned envelope produced for this world schema.
      * @param hashProvider Provider used to verify its content hash.
-     * @return Applied when all body identities and tick metadata match.
+     * @return Applied after replacing the live bodies and supported fixture geometry with the prepared snapshot state.
      * @remarks The snapshot is borrowed for this call and runtime handles are
-     *          never persisted or reused from its payload.
+     *          never persisted or reused from its payload. Preparation is detached and failure leaves the live world unchanged.
+     *          Schema v2 reconstructs circle, polygon, and chain geometry; edge fixtures and fixture material/filter metadata
+     *          are not represented by this schema and unsupported input is rejected.
      */
     [[nodiscard("check the physics snapshot restore outcome")]]
     eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
@@ -251,6 +266,7 @@ public:
     PhysicsBodyHandle nextBodyRuntimeHandle();
 
 private:
+    friend struct WorldSnapshotAccess;
     friend class Body;
     friend class Fixture;
 
@@ -258,6 +274,8 @@ private:
     ContactRelay *relay_ = nullptr;
     std::unique_ptr<ISimulationBackend> simulation_;
     PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
+    std::shared_ptr<const void>         lifetime_               = std::make_shared<int>(0);
+    eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
     float         meter_ = 30.f;
     int           nextId_ = 1;
     std::uint32_t                       nextBodyHandleIndex_    = 1u;
@@ -289,6 +307,10 @@ private:
     std::vector<ContactEvent> beginContacts_;
     std::vector<ContactEvent> endContacts_;
     std::vector<ImpactEvent> impacts_;
+
+    [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh() const;
+    void refreshRuntimeHandlesAfterRestore();
+    void adoptPreparedTopology(World &prepared);
 };
 
 }  // namespace eve::physics

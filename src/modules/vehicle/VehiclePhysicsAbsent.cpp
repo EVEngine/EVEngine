@@ -12,6 +12,8 @@ VehiclePhysicsStatus VehiclePhysics::attach3D(VehicleEntity*, eve::physics::Worl
 
 VehiclePhysicsStatus VehiclePhysics::detach(VehicleEntity*) { return VehiclePhysicsStatus::Unavailable; }
 
+bool VehiclePhysics::isAttached(VehicleEntity*) { return false; }
+
 float VehiclePhysics::height(VehicleEntity*) { return 0.f; }
 
 VehiclePhysicsStatus VehiclePhysics::tryWheelMove(VehicleEntity&, float) {
