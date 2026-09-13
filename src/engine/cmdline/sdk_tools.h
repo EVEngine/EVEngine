@@ -48,7 +48,11 @@ std::string eveSdkInstallRoot();
  */
 std::string eveSdkBaseUrl();
 
-/** @brief 计算文件的 SHA-256（小写十六进制）；失败返回空串。 */
+/** @brief 流式计算文件的 SHA-256（小写十六进制）；保留失败返回空串的既有契约。
+ * @param path 同步调用期间借用的文件路径；不保留引用。
+ * @return 摘要文本；文件无法读取时为空。
+ * @note 可重入，各调用独立持有摘要状态，不生成临时文件或启动子进程。
+ */
 std::string fileSha256(const std::string& path);
 
 /**

@@ -268,7 +268,7 @@ TEST_CASE("audio.modplug.midi.play") {
         return;
     }
     REQUIRE(src != nullptr);
-    std::cerr << "Playing angel.mid stream for ~4s (duration=" << src->getDuration() << "s)\n";
+    std::cerr << "Checking angel.mid stream (4s deadline) (duration=" << src->getDuration() << "s)\n";
     std::cerr << "(ModPlug may warn about missing timidity.cfg / instrument patches)\n";
 
     src->setVolume(1.0f);
@@ -279,17 +279,19 @@ TEST_CASE("audio.modplug.midi.play") {
     src->play();
     bool heardPlaying = false;
     double maxTell = 0.0;
-    for (int i = 0; i < 400; ++i) {
+    const auto streamDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(4);
+    while (std::chrono::steady_clock::now() < streamDeadline) {
         audio->pump();
         if (src->isPlaying())
             heardPlaying = true;
         maxTell = std::max(maxTell, src->tell());
+        if (heardPlaying && maxTell > 0.05) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     std::cerr << "stream: isPlayingSeen=" << (heardPlaying ? "yes" : "no")
               << " maxTell=" << maxTell << "s\n";
-    CHECK(heardPlaying);
-    CHECK(maxTell > 0.05); // stream path currently underfills; static path is the reliable play test
+    REQUIRE(heardPlaying);
+    REQUIRE(maxTell > 0.05);  // stream path currently underfills; static path is the reliable play test
     src->stop();
     audio->pump();
     delete src;
@@ -302,13 +304,16 @@ TEST_CASE("audio.modplug.midi.play") {
     REQUIRE(sd != nullptr);
     CHECK(sd->getSampleCount() > 0);
     auto *staticSrc = audio->newSource(sd);
-    std::cerr << "Playing angel.mid static for ~2s (samples=" << sd->getSampleCount() << ")\n";
+    std::cerr << "Checking angel.mid static (2s deadline) (samples=" << sd->getSampleCount() << ")\n";
     staticSrc->setVolume(1.0f);
     staticSrc->play();
-    CHECK(staticSrc->isPlaying());
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    audio->pump();
-    CHECK(staticSrc->tell() > 0.5);
+    REQUIRE(staticSrc->isPlaying());
+    const auto staticDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+    while (staticSrc->tell() <= 0.5 && std::chrono::steady_clock::now() < staticDeadline) {
+        audio->pump();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    REQUIRE(staticSrc->tell() > 0.5);
     staticSrc->stop();
     delete staticSrc;
     delete sd;

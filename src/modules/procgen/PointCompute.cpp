@@ -1,6 +1,7 @@
 #include "procgen/PointCompute.h"
 
 #include "common/Module.h"
+#include "common/config.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
