@@ -131,6 +131,8 @@ foreach (tool in ["select", "whitebox", "spawn"]) {
 smokeCheck("panels build in every tool and selection state", panelFailure == "");
 if (panelFailure != "") print("    panel failure: " + panelFailure + "\n");
 smokeCheck("panel build clears the dirty flag", !level.panelsDirty);
+smokeCheck("workspace shell mounted", level.workspace != null && level.workspace.getPanelCount() >= 5);
+
 level.tool = "whitebox";
 level.selected = spawnObject;
 

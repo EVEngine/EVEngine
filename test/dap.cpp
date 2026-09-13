@@ -882,9 +882,11 @@ TEST_CASE("devtools.dap.caughtErrorPausesAtReportSite") {
         // Never detach a thread that captures this test's stack. Release a
         // possible late debugger stop and wait for deterministic teardown.
         dbg.setBreakOnError(false);
-        dbg.resume();
-        for (int i = 0; i < 200 && !scriptDone.load(); ++i)
+        if (dbg.isPaused()) dbg.resume();
+        for (int i = 0; i < 200 && !scriptDone.load(); ++i) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            dap.poll();
+        }
     }
     if (scriptThread.joinable()) scriptThread.join();
     CHECK(scriptDone.load());

@@ -7,19 +7,35 @@
 这个例子把已有的可组合组件装配成一个 3D 关卡设计工具：引用地形数据 → 放置白盒快速模型 →
 调整模型 → 放置玩家出生点 → 用 Motion Matching 控制器在关卡里自由跑动。
 
+## 编辑器布局
+
+界面按常见关卡 / 场景编辑器壳（Unity / Godot / Unreal 一类）拆成五个区域，由
+`editor.newWorkspace` 排布、每个区域一个 UI host（与 `examples/composable-editor` 同壳）：
+
+| 区域 | 面板 | 内容 |
+| --- | --- | --- |
+| 顶栏 | Toolbar | New / Save / Load · Select / Whitebox / Spawn · Move / Rotate / Scale · Undo / Redo · Play · Frame / Focus |
+| 左侧 | Outliner | 地形引用与 Rebuild · 场景层级 |
+| 中央 | Viewport | 嵌入式 3D 视口（`ui.viewport` + `renderScene3DToCanvas`）· 状态行 |
+| 右侧 | Inspector | 选中物体的名字 / TRS · 白盒 recipe 参数或出生点朝向/人物 |
+| 底栏 | Assets | 白盒调色板（Whitebox 工具）或当前工具说明 |
+
+选中物体时会画出可见的 Transform Gizmo（旧版只有拾取、没有绘制）。
+
 ## 操作
 
 | 输入 | 作用 |
 | --- | --- |
 | `1` / `2` / `3` | 切换 选择 / 白盒 / 出生点 工具 |
-| 左键 | 选择工具：拾取物体并开始 Gizmo 拖动；白盒与出生点工具：在鼠标射线与地形交点处放置 |
-| 右键拖动 | 环绕相机（绕当前焦点旋转） |
-| 中键拖动 | **平移相机焦点**（在关卡里横向移动视角） |
-| `Q` / `E` | 拉远 / 拉近 |
+| `W` / `R` / `T` | Gizmo：移动 / 旋转 / 缩放 |
+| 左键（视口内） | 选择工具：拾取物体并开始 Gizmo 拖动；白盒与出生点工具：在鼠标射线与地形交点处放置 |
+| 右键拖动（视口内） | 环绕相机（绕当前焦点旋转） |
+| 中键拖动（视口内） | **平移相机焦点**（在关卡里横向移动视角） |
+| 滚轮 / `Q` / `E` | 拉远 / 拉近 |
 | `F` | 聚焦当前选中物体；没有选中时框住整块地形 |
 | `Delete` | 删除当前选中节点 |
 | `F5` | 进入 / 退出 Play |
-| Play 中移动鼠标 | **视角转动**（第三人称跟随相机绕角色旋转） |
+| Play 中在视口内移动鼠标 | **视角转动**（第三人称跟随相机绕角色旋转） |
 | Play 中 `WASD` + `Shift` | 走 / 跑（方向相对当前视角） |
 | Play 中 `Q` / `E` | 拉远 / 拉近跟随距离 |
 | Play 中 `F1` / `F2` | 切换玩家人物 / motion 集合 |
@@ -30,15 +46,16 @@
 编辑视角是「绕一个可平移焦点旋转」的轨道相机：`focusX/Y/Z` 是唯一权威，眼位由
 `focus + distance * (cosPitch*sinYaw, sinPitch, cosPitch*cosYaw)` 推出。右键绕焦点转，
 中键沿视线的地面基（`forward = (-sinYaw, -cosYaw)`、`right = (cosYaw, -sinYaw)`）平移焦点，
-`Q/E` 改距离；平移步长按当前距离缩放，因此在任意缩放下手感一致。`F` 把焦点与距离框到选中物体
-（按缩放估算距离），未选中时退回框住整块地形。
+滚轮与 `Q/E` 改距离；平移步长按当前距离缩放，因此在任意缩放下手感一致。`F` 把焦点与距离框到选中物体
+（按缩放估算距离），未选中时退回框住整块地形。射线与相机交互都相对**中央视口**的本地坐标
+（`ui.viewportMouse*` + `canvas` 尺寸），侧栏不会挡住拾取。
 
 Play 视角是第三人称跟随：`CameraController` 的 `follow` 模式求值 `eye = target + offset`，
 所以视角完全用一个 offset 表达：
 `offset = (-sinYaw * cosPitch, sinPitch, -cosYaw * cosPitch) * distance`。
 `cameraYaw` 同时是**移动方向的基准**（`levelPlayInputYaw`），因此转视角就是转 WASD 的前方；
-角色自身仍朝向实际移动方向。鼠标用绝对光标位置做差分（引擎没有提供 delta API），
-超过 200px 的跳变（进出窗口、切换程序）会被忽略以免视角被甩飞；指针悬停在编辑面板上时不转视角。
+角色自身仍朝向实际移动方向。鼠标用视口内绝对光标差分（引擎没有提供 delta API），
+超过 200px 的跳变会被忽略；指针不在视口上时不转视角。
 
 
 ## 地形数据引用

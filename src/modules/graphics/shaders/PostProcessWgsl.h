@@ -122,4 +122,21 @@ fn viewz(z:f32)->f32{let n=max(p(10),.0001);let f=max(p(11),n+.001);return n*f/m
  let nt=clamp(p(3),0,2);let edge=max(de,smoothstep(nt*(1-clamp(p(4),0,1)),nt+clamp(p(4),0,1),ne));return vec4f(color,clamp(edge,0,1))*i.color;}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
+inline constexpr const char *kDofGaussian = R"wgsl(
+fn viewz(z:f32)->f32{let n=max(p(7),.0001);let f=max(p(8),n+.001);return n*f/max(f-z*(f-n),.000001);}
+fn coc(viewZ:f32)->f32{let focus=max(p(4),0);let range=max(p(5),.001);let maxBlur=max(p(6),0);var t=clamp(abs(viewZ-focus)/range,0,1);t=t*t*(3-2*t);return t*maxBlur;}
+@fragment fn fs_main(i:FSIn)->@location(0) vec4f{
+ let maxBlur=max(p(6),0);if maxBlur<=.0001{return tex(i.uv)*i.color;}
+ let ndc=aux_load(i.uv).r;let vz=viewz(ndc);let radius=coc(vz);
+ if radius<.35||ndc>=.9999{return tex(i.uv)*i.color;}
+ let stepUv=vec2f(p(2),p(3))*vec2f(p(0),p(1))*radius;
+ let kw=array<f32,5>(.227027,.1945946,.1216216,.054054,.016216);
+ var color=tex(i.uv).rgb*kw[0];var weight=kw[0];
+ for(var s=1;s<5;s++){let off=stepUv*f32(s);let uvA=clamp(i.uv+off,vec2f(0),vec2f(1));let uvB=clamp(i.uv-off,vec2f(0),vec2f(1));
+  let wA=kw[s]*select(0.0,1.0,coc(viewz(aux_load(uvA).r))>=radius*.35);let wB=kw[s]*select(0.0,1.0,coc(viewz(aux_load(uvB).r))>=radius*.35);
+  color+=tex(uvA).rgb*wA;color+=tex(uvB).rgb*wB;weight+=wA+wB;}
+ return vec4f(color/max(weight,.0001),1)*i.color;}
+)wgsl";
+
 }  // namespace eve::graphics::shaders

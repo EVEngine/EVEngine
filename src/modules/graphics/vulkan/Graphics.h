@@ -609,6 +609,19 @@ public:
     }
     float getSceneBloomIntensity() const override { return sceneBloomIntensity; }
     float getSceneBloomThreshold() const override { return sceneBloomThreshold; }
+    void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange, float nearZ,
+                              float farZ) override {
+        sceneDofFocusDistance = focusDistance;
+        sceneDofMaxBlurPx = maxBlurPx;
+        sceneDofFocusRange = focusRange;
+        sceneDofNearZ = nearZ;
+        sceneDofFarZ = farZ;
+    }
+    float getSceneDofFocusDistance() const override { return sceneDofFocusDistance; }
+    float getSceneDofMaxBlur() const override { return sceneDofMaxBlurPx; }
+    float getSceneDofFocusRange() const override { return sceneDofFocusRange; }
+    float getSceneDofNearZ() const override { return sceneDofNearZ; }
+    float getSceneDofFarZ() const override { return sceneDofFarZ; }
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
@@ -945,6 +958,11 @@ private:
     float sceneAutoExposureMaxEV = 8.f;
     float sceneBloomIntensity = 0.f;
     float sceneBloomThreshold = 1.f;
+    float sceneDofFocusDistance = 0.f;
+    float sceneDofMaxBlurPx = 0.f;
+    float sceneDofFocusRange = 8.f;
+    float sceneDofNearZ = 0.1f;
+    float sceneDofFarZ = 100.f;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;

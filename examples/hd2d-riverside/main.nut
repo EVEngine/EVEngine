@@ -131,6 +131,16 @@ eve_init = function() {
     camera.setClipPlanes(1.0, 3000.0);
     camera.setActive(true);
     camera.setAmbient(0.25, 0.28, 0.34);
+    // HD2DURP-style miniature look: shallow DOF + mild bloom. Sprites keep
+    // depth write via masked cutout so characters stay sharp in the focus band.
+    local look = hd2d.newLook();
+    look.setFocusDistance(900.0);
+    look.setFocusRange(420.0);
+    look.setMaxBlur(5.0);
+    look.setBloomIntensity(0.28);
+    look.setBloomThreshold(1.25);
+    look.apply(camera);
+    look.applyPixelSampler(gfx, atlas);
     sun = eve.Light3D();
     sun.setType("dir");
     sun.setDirection(-0.6, 1.0, 0.5);
@@ -157,7 +167,9 @@ eve_init = function() {
     foreach (spawn in riversideData.spawns) {
         local sprite = hd2d.newSprite(gfx);
         sprite.setTexture(gfx.newTextureFromFile("assets/" + spawn.id + "/64/final/walk-sheet-clean.png"));
-        gfx.setTextureSampler(sprite.getTexture(), "nearest", "none", 1.0, 0.0);
+        look.applyPixelSampler(gfx, sprite.getTexture());
+        sprite.setAlphaCutoff(0.5);
+        sprite.setDepthWrite(true);
         sprite.setFrameGrid(6, 4);
         sprite.setSize(64.0, 64.0);
         sprite.setPivot(0.5, 60.0/64.0);
