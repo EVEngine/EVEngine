@@ -481,14 +481,14 @@ build/linux-asan: build/linux-asan/Makefile
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
-# Keep sanitizer instrumentation and engine assertions, but use modest
-# optimization so the monolithic unit_test stays within x86-64's PC-relative
-# relocation range. Disabling linker relaxation also avoids GOTPCREL overflows
-# against static third-party libraries near that limit.
+# Keep heap, stack and undefined-behavior instrumentation plus engine assertions,
+# but omit per-global ASan redzones: the monolithic unit_test has enough globals
+# for those redzones alone to exceed x86-64's PC-relative relocation range.
+# Disabling linker relaxation also avoids GOTPCREL overflows near that limit.
 build/linux-asan/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
-		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
-		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
+		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
 		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
