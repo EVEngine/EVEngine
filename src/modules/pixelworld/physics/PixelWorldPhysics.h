@@ -181,6 +181,8 @@ public:
      * @param pixelWorld Borrowed authoritative material world.
      * @param maximumFixturesPerChunk Positive deterministic complexity budget.
      * @return Applied counters; failure destroys staged candidates and preserves prior cache entries.
+     * @remarks A live physics-world binding must be cleared explicitly before rebinding. If the old world has already
+     * expired, synchronization may safely discard its stale links and bind the replacement world.
      */
     [[nodiscard]] eve::Result<TerrainCollisionSyncReceipt> sync(
         eve::physics::World& physicsWorld, const eve::pixelworld::PixelWorld& pixelWorld,

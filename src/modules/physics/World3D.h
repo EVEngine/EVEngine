@@ -91,7 +91,16 @@ public:
         float forceX = 0.f, forceY = 0.f, forceZ = 0.f;
         float torqueX = 0.f, torqueY = 0.f, torqueZ = 0.f;
     };
-    World3D(float gravityX, float gravityY, float gravityZ, bool sleep);
+    /**
+     * @brief Creates a 3D physics world.
+     * @param gravityX Gravity along the x axis in world units per second squared.
+     * @param gravityY Gravity along the y axis in world units per second squared.
+     * @param gravityZ Gravity along the z axis in world units per second squared.
+     * @param sleep Whether bodies may sleep when idle.
+     * @param instanceId Stable save/network identity; nil creates a process-local generated identity.
+     */
+    World3D(float gravityX, float gravityY, float gravityZ, bool sleep,
+            eve::PersistentId instanceId = eve::PersistentId::nil());
     ~World3D();
 
     World3D(const World3D &)            = delete;
@@ -122,6 +131,17 @@ public:
     [[nodiscard]] eve::SimulationTick simulationTick() const noexcept { return simulationTick_; }
     /** @brief Process-local identity used by PhysicsLink; invalid after destruction. */
     [[nodiscard]] PhysicsWorldHandle runtimeHandle() const noexcept { return runtimeHandle_; }
+    /**
+     * @brief Return a weak lifetime token for owner-thread runtime integrations.
+     * @return Weak token that expires before this world invalidates backend objects.
+     * @ownership The world owns the token; callers may retain only the weak reference.
+     * @lifetime The token expires on destroy() or world destruction and is never renewed.
+     * @thread Capture and inspect on the world's owning simulation thread.
+     * @reentrancy This query invokes no callbacks.
+     */
+    [[nodiscard]] std::weak_ptr<const void> lifetimeToken() const noexcept { return queryLifetime_; }
+    /** @brief Stable non-nil identity written to snapshot envelopes. */
+    [[nodiscard]] eve::PersistentId persistentId() const noexcept { return instanceId_; }
     /** @brief Whether optional accelerator selection fell back to CPU. */
     [[nodiscard]] bool usedBackendFallback() const noexcept { return backendFallback_; }
     /** @brief Selection status, including a structured absent-capability warning. */
@@ -131,8 +151,8 @@ public:
     /**
      * @brief Captures a versioned, integrity-checked 3D world snapshot.
      * @param hashProvider Injected digest provider used to seal the envelope.
-     * @return A snapshot containing the exact SimulationTick and body state.
-     * @remarks The provider is not retained; this call is owner-thread-only.
+     * @return A snapshot containing bodies plus shape and joint topology, including mesh and height-field sources.
+     * @remarks Schema v2 rejects unknown fields. The provider is not retained; this call is owner-thread-only.
      */
     [[nodiscard("check or persist the physics snapshot")]]
     eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
@@ -141,9 +161,11 @@ public:
      * @brief Restores a verified snapshot without exposing partial state.
      * @param snapshot Versioned envelope produced for this world schema.
      * @param hashProvider Provider used to verify its content hash.
-     * @return Applied when all body identities and tick metadata match.
+     * @return Applied after replacing live bodies, supported shapes, and supported joint topology from detached prepared state.
      * @remarks The snapshot is borrowed for this call and runtime handles are
-     *          never persisted or reused from its payload.
+     *          never persisted or reused from its payload. Preparation is detached and failure leaves the live world unchanged.
+     *          Schema v2 reconstructs shape sources and joint kind/local frames; joint motor, spring, limit, threshold, and
+     *          collide-connected runtime settings are not represented and therefore restore to constructor defaults.
      */
     [[nodiscard("check the physics snapshot restore outcome")]]
     eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
@@ -873,15 +895,20 @@ public:
     void emitContactEvents();
 
 private:
+    friend struct WorldSnapshotAccess;
     friend class Body3D;
     friend class Joint3D;
     friend class Shape3D;
     friend class TargetingLineOfSightAdapter;
     friend void registerCameraObstructionWorld(World3D *world);
 
+    World3D(float gravityX, float gravityY, float gravityZ, bool sleep,
+            eve::PersistentId instanceId, bool registerQueries);
+
     b3WorldId worldId_{};
     std::unique_ptr<ISimulationBackend> simulation_;
     PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
+    eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
     std::shared_ptr<const void>         queryLifetime_          = std::make_shared<int>(0);
     bool      destroyed_ = false;
     int       nextId_    = 1;
@@ -926,6 +953,9 @@ private:
         bool persisted = false;
     };
     std::vector<ContactPointResult> contactPoints_;
+    [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh() const;
+    void refreshRuntimeHandlesAfterRestore();
+    void adoptPreparedTopology(World3D &prepared);
     const ContactPointResult &contactPointAt(int index, const char *operation) const;
     static bool preSolveCallback(b3ShapeId shapeIdA, b3ShapeId shapeIdB, b3Pos point,
                                  b3Vec3 normal, void *context);

@@ -1508,19 +1508,7 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
         win->close();
         win = nullptr;
         return true;
-    } catch (const std::exception &ex) {
-        const std::string msg = ex.what();
-        const bool gpuTransient = msg.find("swapchain") != std::string::npos ||
-                                  msg.find("SurfaceLost") != std::string::npos ||
-                                  msg.find("OutOfDate") != std::string::npos ||
-                                  msg.find("DeviceLost") != std::string::npos;
-        if (gpuTransient) {
-            // Chaining many large glTF scenes can exhaust device memory / lose the surface.
-            std::printf("ClassicScenes.%s: soft-skip after GPU/surface error: %s\n", tag,
-                        msg.c_str());
-            if (win) win->close();
-            return false;
-        }
+    } catch (...) {
         if (win) win->close();
         throw;
     }

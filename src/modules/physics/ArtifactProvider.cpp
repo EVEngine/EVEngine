@@ -29,7 +29,9 @@ namespace eve::physics {
 struct PhysicsArtifactProvider::State {
     struct RuntimeCollider {
         PhysicsArtifactCollider  descriptor;
-        std::unique_ptr<World3D> world;
+        std::unique_ptr<World3D> ownedWorld;
+        World3D*                 world = nullptr;
+        std::weak_ptr<const void> worldLifetime;
         std::unique_ptr<Body3D>  body;
         std::unique_ptr<Shape3D> shape;
     };
@@ -190,6 +192,7 @@ public:
     PhysicsArtifactStage(PhysicsArtifactProvider& owner, PhysicsArtifactCollider collider,
                          std::unique_ptr<World3D> world, std::unique_ptr<Body3D> body, std::unique_ptr<Shape3D> shape)
         : owner_(&owner),
+          ownerLifetime_(owner.providerLifetime_),
           collider_(std::move(collider)),
           world_(std::move(world)),
           body_(std::move(body)),
@@ -199,12 +202,22 @@ public:
 
     void commit() noexcept override {
         if (!owner_) return;
+        if (ownerLifetime_.expired()) {
+            owner_ = nullptr;
+            collider_ = {};
+            return;
+        }
         owner_->commit(std::move(collider_), std::move(world_), std::move(body_), std::move(shape_));
         owner_ = nullptr;
     }
 
     void rollback() noexcept override {
         if (!owner_) return;
+        if (ownerLifetime_.expired()) {
+            owner_ = nullptr;
+            collider_ = {};
+            return;
+        }
         owner_->release(collider_, world_, body_, shape_);
         owner_    = nullptr;
         collider_ = {};
@@ -212,6 +225,7 @@ public:
 
 private:
     PhysicsArtifactProvider* owner_ = nullptr;
+    std::weak_ptr<const void> ownerLifetime_;
     PhysicsArtifactCollider  collider_;
     std::unique_ptr<World3D> world_;
     std::unique_ptr<Body3D>  body_;
@@ -220,7 +234,10 @@ private:
 
 PhysicsArtifactProvider::PhysicsArtifactProvider() : state_(std::make_unique<State>()) {}
 
-PhysicsArtifactProvider::~PhysicsArtifactProvider() { clear(); }
+PhysicsArtifactProvider::~PhysicsArtifactProvider() {
+    providerLifetime_.reset();
+    clear();
+}
 
 eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> PhysicsArtifactProvider::prepare(
     const eve::artifact::PublicationView& publication) {
@@ -266,14 +283,30 @@ eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> PhysicsArtifact
         ++nextIndex_;
         state_->records.reserve(state_->records.size() + state_->pendingStages + 1u);
 
-        auto world = std::make_unique<World3D>(0.f, 0.f, 0.f, true);
-        auto body  = std::unique_ptr<Body3D>(world->newBody("static", 0.f, 0.f, 0.f));
+        std::unique_ptr<World3D> world;
+        World3D*                 targetWorld = nullptr;
+        if (boundWorldHandle_.isValid()) {
+            if (!boundWorld_ || boundWorldLifetime_.expired() || !boundWorld_->isValid() ||
+                boundWorld_->runtimeHandle() != boundWorldHandle_)
+                return prepareFailure(eve::DiagnosticCode::Conflict,
+                                      "physics artifact target world binding is stale");
+            targetWorld    = boundWorld_;
+            collider.world = boundWorldHandle_;
+        } else {
+            world          = std::make_unique<World3D>(0.f, 0.f, 0.f, true);
+            targetWorld    = world.get();
+            collider.world = world->runtimeHandle();
+        }
+        auto body = std::unique_ptr<Body3D>(targetWorld->newBody("static", 0.f, 0.f, 0.f));
         if (!body)
             return prepareFailure(eve::DiagnosticCode::Failed, "Box3D did not create the generated collider body");
         auto mesh  = signedIndices(collider.indices);
         auto shape = std::unique_ptr<Shape3D>(body->newTriangleMeshShape(collider.vertices, mesh));
         if (!body || !shape)
             return prepareFailure(eve::DiagnosticCode::Failed, "Box3D did not create the generated collider");
+        // Shared-world resources are fully allocated during prepare, but stay
+        // disabled until the transaction's noexcept visibility boundary.
+        if (!world) body->setActive(false);
         auto stage = std::make_unique<PhysicsArtifactStage>(*this, std::move(collider), std::move(world),
                                                             std::move(body), std::move(shape));
         ++state_->pendingStages;
@@ -290,8 +323,21 @@ void PhysicsArtifactProvider::commit(PhysicsArtifactCollider collider, std::uniq
                                      std::unique_ptr<Body3D> body, std::unique_ptr<Shape3D> shape) noexcept {
     State::RuntimeCollider runtime;
     if (state_->pendingStages > 0) --state_->pendingStages;
+    if (collider.world == boundWorldHandle_) {
+        // prepare performed every potentially failing allocation. Enabling an
+        // already-created body is the only shared-world visibility mutation.
+        if (!boundWorld_ || boundWorldLifetime_.expired() || !boundWorld_->isValid() ||
+            boundWorld_->runtimeHandle() != boundWorldHandle_ || !body || !shape)
+            std::terminate();
+        body->setActive(true);
+        runtime.world         = boundWorld_;
+        runtime.worldLifetime = boundWorldLifetime_;
+    } else {
+        runtime.world         = world.get();
+        runtime.worldLifetime = world->lifetimeToken();
+        runtime.ownedWorld    = std::move(world);
+    }
     runtime.descriptor = std::move(collider);
-    runtime.world      = std::move(world);
     runtime.body       = std::move(body);
     runtime.shape      = std::move(shape);
     state_->records.push_back(std::move(runtime));
@@ -325,7 +371,13 @@ const PhysicsArtifactCollider* PhysicsArtifactProvider::find(PhysicsArtifactHand
 }
 
 bool PhysicsArtifactProvider::isHandleLive(PhysicsArtifactHandle handle) const noexcept {
-    return find(handle) != nullptr;
+    if (handle.isInvalid()) return false;
+    const auto found = std::find_if(state_->records.begin(), state_->records.end(),
+                                    [handle](const auto& record) { return record.descriptor.handle == handle; });
+    if (found == state_->records.end()) return false;
+    const auto& runtime = *found;
+    return !runtime.worldLifetime.expired() && runtime.world && runtime.body && runtime.shape &&
+           runtime.world->isValid() && runtime.body->isValid() && runtime.shape->isValid();
 }
 
 PhysicsArtifactRayHit PhysicsArtifactProvider::rayCast(eve::PersistentId id, float ox, float oy, float oz, float dx,
@@ -335,7 +387,8 @@ PhysicsArtifactRayHit PhysicsArtifactProvider::rayCast(eve::PersistentId id, flo
                                                [id](const auto& record) { return record.descriptor.id == id; });
     if (found == state_->records.end()) return result;
     const auto& runtime = *found;
-    if (!runtime.world || !runtime.body || !runtime.shape || !runtime.world->isValid() || !runtime.body->isValid() ||
+    if (runtime.worldLifetime.expired() || !runtime.world || !runtime.body || !runtime.shape ||
+        !runtime.world->isValid() || !runtime.body->isValid() ||
         !runtime.shape->isValid())
         return result;
     if (!std::isfinite(ox) || !std::isfinite(oy) || !std::isfinite(oz) || !std::isfinite(dx) || !std::isfinite(dy) ||
@@ -376,8 +429,62 @@ bool PhysicsArtifactProvider::isBox3DBacked(eve::PersistentId id) const noexcept
                                     [id](const auto& record) { return record.descriptor.id == id; });
     if (found == state_->records.end()) return false;
     const auto& runtime = *found;
-    return runtime.world && runtime.body && runtime.shape && runtime.world->isValid() && runtime.body->isValid() &&
+    return !runtime.worldLifetime.expired() && runtime.world && runtime.body && runtime.shape &&
+           runtime.world->isValid() && runtime.body->isValid() &&
            runtime.shape->isValid() && runtime.shape->getKind() == "triangleMesh";
+}
+
+eve::Result<void> PhysicsArtifactProvider::bindWorld(World3D& world) {
+    if (!world.isValid() || world.runtimeHandle().isInvalid())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "physics artifact target world must be live", "physics.artifact.world"));
+    if (!state_->records.empty() || state_->pendingStages != 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "clear committed and prepared colliders before rebinding the target world",
+                                   "physics.artifact.world"));
+    if (boundWorldHandle_ == world.runtimeHandle() && !boundWorldLifetime_.expired())
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    if (boundWorldHandle_.isValid() && !boundWorldLifetime_.expired())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "physics artifact provider already has another live target world",
+                                   "physics.artifact.world"));
+    boundWorld_         = &world;
+    boundWorldHandle_   = world.runtimeHandle();
+    boundWorldLifetime_ = world.lifetimeToken();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> PhysicsArtifactProvider::unbindWorld(PhysicsWorldHandle world) {
+    if (!state_->records.empty() || state_->pendingStages != 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "clear committed and prepared colliders before unbinding the target world",
+                                   "physics.artifact.world"));
+    if (world.isInvalid() || world != boundWorldHandle_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                   "physics artifact target world binding is stale or does not match",
+                                   "physics.artifact.world"));
+    boundWorld_ = nullptr;
+    boundWorldHandle_ = PhysicsWorldHandle::invalid();
+    boundWorldLifetime_.reset();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+PhysicsWorldHandle PhysicsArtifactProvider::boundWorld() const noexcept {
+    if (!boundWorld_ || boundWorldLifetime_.expired() || !boundWorld_->isValid() ||
+        boundWorld_->runtimeHandle() != boundWorldHandle_)
+        return PhysicsWorldHandle::invalid();
+    return boundWorldHandle_;
+}
+
+bool PhysicsArtifactProvider::isSharedWorldBacked(eve::PersistentId id) const noexcept {
+    const auto* collider = find(id);
+    const auto liveWorld = boundWorld();
+    return collider && liveWorld.isValid() && collider->world == liveWorld && isBox3DBacked(id);
 }
 
 bool PhysicsArtifactProvider::emptyState() const noexcept { return state_->records.empty(); }
@@ -431,6 +538,9 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
     if (!object || !providerName || *providerName != "physics.box3d-collider" || !hasSupportedVersion(*object) ||
         !colliders)
         return restoreFailure(eve::DiagnosticCode::ParseError, "invalid physics artifact provider state");
+    if (boundWorld().isValid() && !colliders->empty())
+        return restoreFailure(eve::DiagnosticCode::Unsupported,
+                              "restore into a shared physics world requires explicit republishing");
 
     std::vector<State::RuntimeCollider>   candidate;
     std::unordered_set<eve::PersistentId> identities;
@@ -472,6 +582,7 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
             collider.handle = PhysicsArtifactHandle(next++, 1u);
 
             auto world = std::make_unique<World3D>(0.f, 0.f, 0.f, true);
+            collider.world = world->runtimeHandle();
             auto body  = std::unique_ptr<Body3D>(world->newBody("static", 0.f, 0.f, 0.f));
             if (!body)
                 return restoreFailure(eve::DiagnosticCode::Failed, "Box3D did not recreate the restored collider body");
@@ -481,7 +592,9 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
                 return restoreFailure(eve::DiagnosticCode::Failed, "Box3D did not recreate a restored collider");
             State::RuntimeCollider runtime;
             runtime.descriptor = std::move(collider);
-            runtime.world      = std::move(world);
+            runtime.world         = world.get();
+            runtime.worldLifetime = world->lifetimeToken();
+            runtime.ownedWorld    = std::move(world);
             runtime.body       = std::move(body);
             runtime.shape      = std::move(shapeObject);
             candidate.push_back(std::move(runtime));

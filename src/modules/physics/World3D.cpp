@@ -158,7 +158,12 @@ eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick cu
 
 }  // namespace
 
-World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
+World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve::PersistentId instanceId)
+    : World3D(gravityX, gravityY, gravityZ, sleep, instanceId, true) {}
+
+World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve::PersistentId instanceId,
+                 bool registerQueries)
+    : instanceId_(instanceId) {
     b3WorldDef def = b3DefaultWorldDef();
     def.gravity    = b3Vec3{gravityX, gravityY, gravityZ};
     def.enableSleep = sleep;
@@ -166,6 +171,7 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     contactDampingRatio_ = def.contactDampingRatio;
     contactPushOutSpeed_ = def.contactSpeed;
     runtimeHandle_       = detail::allocatePhysicsWorldHandle();
+    if (instanceId_.isNil()) instanceId_ = detail::makePhysicsWorldPersistentId(runtimeHandle_);
     worldId_        = b3CreateWorld(&def);
     auto selection       = detail::selectSimulationBackend(
         SimulationBackendDomain::World3D,
@@ -180,9 +186,12 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     auto selected           = std::move(selection).takeValue();
     backendFallback_        = selected.usedFallback;
     simulation_             = std::move(selected.backend);
-    registerCameraObstructionWorld(this);
-    auto targetingRegistration = registerTargetingLineOfSightWorld(this);
-    if (!targetingRegistration) {
+    if (registerQueries) registerCameraObstructionWorld(this);
+    auto targetingRegistration = registerQueries ? registerTargetingLineOfSightWorld(this)
+                                                  : eve::Result<void>::success();
+    if (!registerQueries) {
+        targetingRegistration.ignore("detached topology candidate does not publish targeting queries");
+    } else if (!targetingRegistration) {
         // Physics supports multiple worlds; targeting LOS deliberately exposes
         // only one, so an explicitly consumed Conflict leaves this world valid
         // without making its query context ambiguous.
@@ -377,6 +386,31 @@ EV_PROFILE_GETTER(getProfileSensorsMs, sensors)
 #undef EV_PROFILE_GETTER
 
 World3D::~World3D() { destroy(); }
+
+void World3D::adoptPreparedTopology(World3D &prepared) {
+    std::swap(worldId_, prepared.worldId_);
+    std::swap(nextId_, prepared.nextId_);
+    std::swap(nextShapeId_, prepared.nextShapeId_);
+    std::swap(nextJointId_, prepared.nextJointId_);
+    std::swap(bodies_, prepared.bodies_);
+    std::swap(shapes_, prepared.shapes_);
+    std::swap(joints_, prepared.joints_);
+    std::swap(shapeRecords_, prepared.shapeRecords_);
+    std::swap(shapeHandles_, prepared.shapeHandles_);
+    std::swap(shapeRawHandles_, prepared.shapeRawHandles_);
+    std::swap(jointHandles_, prepared.jointHandles_);
+    std::swap(simulationTick_, prepared.simulationTick_);
+    for (Body3D *body : bodies_) body->world_ = this;
+    for (Shape3D *shape : shapes_) shape->world_ = this;
+    for (Joint3D *joint : joints_) joint->world_ = this;
+    for (Body3D *body : prepared.bodies_) body->world_ = &prepared;
+    for (Shape3D *shape : prepared.shapes_) shape->world_ = &prepared;
+    for (Joint3D *joint : prepared.joints_) joint->world_ = &prepared;
+    b3World_SetCustomFilterCallback(worldId_, &World3D::customFilterCallback, this);
+    b3World_SetPreSolveCallback(worldId_, &World3D::preSolveCallback, this);
+    b3World_SetCustomFilterCallback(prepared.worldId_, &World3D::customFilterCallback, &prepared);
+    b3World_SetPreSolveCallback(prepared.worldId_, &World3D::preSolveCallback, &prepared);
+}
 
 bool World3D::isValid() const { return !destroyed_ && b3World_IsValid(worldId_); }
 
@@ -674,13 +708,13 @@ eve::Result<void> World3D::step(const eve::SimulationStep &stepValue, const Simu
     }
     auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
-    clearContactEvents();
     for (Shape3D *shape : shapes_) {
         if (shape && shape->isOneWay()) shape->refreshOneWayWorldData();
     }
     auto result = simulation_->step(stepValue, settings);
     if (!result) return result;
     simulationTick_ = stepValue.tick;
+    clearContactEvents();
     emitContactEvents();
     return result;
 }
