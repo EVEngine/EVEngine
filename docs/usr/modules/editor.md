@@ -671,6 +671,9 @@ if (actionEditor.hasPreviewHost())
 `addSectionSplit` 在播放头或指定时间插入边界，`setSectionSplit` 移动边界，`removeSectionSplit` 删除边界。
 三种修改都通过 Timeline 的规范替换事务提交，拒绝 0、末尾、重复或越界时间，并立即更新同一编辑器拥有的
 Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`syncRuntimeSection` 和磁吸目标因此共享一份边界事实。
+运行中的预览还可用 `setRuntimeRate/getRuntimeRate` 设置和读取严格为正的倍率；倍率只缩放调用者注入的
+delta，不读取墙钟，也不写回资产的 `basePlayRate`。`getRuntimePhysicalSection`、
+`getRuntimeSectionProgress` 和 `getRuntimeWeight` 可直接驱动运行诊断 HUD。
 
 选中的 Audio、VFX 与 Prefab Block 会显示类型化属性：资源 URI、播放参数、停止或生命周期策略，以及
 attachment、source/target anchor、bone 和位置/旋转/缩放偏移。Audio 还提供分号分隔的随机 URI 池、

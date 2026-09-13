@@ -83,6 +83,9 @@ Controls:
   deterministic position, rotation and FOV impulse.
 - **Undo / Redo** (or Ctrl+Z / Ctrl+Y) operates on the native timeline
   transaction history.
+- Use the transport speed controls or `Q` / `E` / `R` for 0.5x / 1.0x / 1.5x
+  playback. The HUD shows the authoritative physical section, section progress,
+  mixer weight and current rate.
 - Hold the right mouse button over the preview to orbit; use the mouse wheel to
   zoom.
 - Use WASD to move the player through `CombatLocomotionRuntime`. When playback

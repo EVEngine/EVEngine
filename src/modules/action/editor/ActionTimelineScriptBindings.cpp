@@ -662,6 +662,21 @@ public:
     void               setRuntimePaused(bool paused) noexcept { runtimePaused_ = paused; }
     [[nodiscard]] bool runtimePaused() const noexcept { return runtimePaused_; }
 
+    [[nodiscard]] Result<void> setRuntimeRate(double rate) {
+        if (!runtimeTimeline_)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        if (!std::isfinite(rate) || rate <= 0.0)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "montage runtime rate must be finite and positive", "rate"));
+        if (runtimeRate_ == rate) return Result<void>::success(Status::success(StatusCode::NoOp));
+        runtimeRate_ = rate;
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] double runtimeRate() const noexcept { return runtimeRate_; }
+
     [[nodiscard]] Result<void> cancelRuntime() {
         if (!runtime_ || !montage_) return Result<void>::success(Status::success(StatusCode::NoOp));
         tick_          = SimulationTick(tick_.value() + 1);
@@ -1307,6 +1322,15 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("isRuntimePaused",
                          [](ScriptActionTimelineEditor* self) { return self && self->runtimePaused(); });
+    actionEditor.addFunc("setRuntimeRate", [vm](ScriptActionTimelineEditor* self, float rate) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        return script::projectResult(vm, self->setRuntimeRate(rate));
+    });
+    actionEditor.addFunc("getRuntimeRate", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->runtimeRate()) : 0.0f;
+    });
     actionEditor.addFunc("cancelRuntime", [vm](ScriptActionTimelineEditor* self) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");

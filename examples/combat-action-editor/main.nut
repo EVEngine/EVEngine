@@ -17,6 +17,7 @@ persist combatEditor = {
     combatRuntime = null, combatTick = 0,
     abilityGrantId = 0, abilityActivationId = 0, abilityPhase = "ready", abilityCooldown = 0.0,
     comboWindowOpen = false, comboInputTag = "", attackWas = false, comboCount = 0,
+    playbackRate = 1.0, slowWas = false, normalWas = false, fastWas = false,
     playerSubject = "01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject = "11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth = 100.0, enemyHealth = 80.0, enemyReaction = "none",
@@ -40,6 +41,7 @@ local editorUiDefaults = {
     enemySkeleton=null, enemyPlayer=null, enemyParts=[], enemySkins=[], combatRuntime=null, combatTick=0,
     abilityGrantId=0, abilityActivationId=0, abilityPhase="ready", abilityCooldown=0.0,
     comboWindowOpen=false, comboInputTag="", attackWas=false, comboCount=0,
+    playbackRate=1.0, slowWas=false, normalWas=false, fastWas=false,
     playerSubject="01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject="11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth=100.0, enemyHealth=80.0, enemyReaction="none",
@@ -344,6 +346,14 @@ function hotReloadPlaytestAbility() {
     return true;
 }
 
+function setPlaybackRate(rate) {
+    local changed = combatEditor.timeline.setRuntimeRate(rate);
+    if (!changed.ok) { combatEditor.status = changed.status.summary; return false; }
+    combatEditor.playbackRate = rate;
+    combatEditor.status = format("Runtime playback · %.1fx", rate);
+    return true;
+}
+
 function advanceCombatPlaytest(dt) {
     local x = 0.0; local z = 0.0;
     if (keyboard.isDown("a") || keyboard.isDown("A")) x -= 1.0;
@@ -521,6 +531,8 @@ function activateTab(index) {
     requireResult(combatEditor.timeline.setViewport(combatEditor.workspace.getRegionW("bottom") - 20.0,
                                                     36.0, 145.0), "Configure active timeline viewport");
     requireResult(combatEditor.timeline.setSnapSeconds(1.0 / 30.0), "Configure active frame snapping");
+    requireResult(combatEditor.timeline.setRuntimeRate(combatEditor.playbackRate),
+                  "Restore montage playback rate");
     combatEditor.status = "Active document · " + combatEditor.tabs[index].title;
     combatEditor.tabUiSignature = "";
 }
@@ -894,6 +906,9 @@ function panelTimeline() {
     ui.iconButton("play", "", "play-pause"); ui.iconButton("stop", "", "stop");
     ui.iconButton("chevron-right", "", "next-frame"); ui.iconButton("refresh", "", "last-frame");
     ui.iconButton("layers", "Strike", "jump-strike"); ui.iconButton("close", "Blend Out", "blend-out");
+    ui.iconButton("chevron-left", "0.5x", "speed-slow");
+    ui.iconButton("play", "1.0x", "speed-normal");
+    ui.iconButton("chevron-right", "1.5x", "speed-fast");
     ui.iconButton("undo", "", "undo"); ui.iconButton("redo", "", "redo"); ui.end();
     ui.text("Animation keys · click a diamond to select, empty space to scrub", "bone-timeline-label");
     ui.viewport("bone-timeline", combatEditor.workspace.getRegionW("bottom") - 20.0, 118.0);
@@ -1010,6 +1025,8 @@ function handleUiEvents() {
         } else if (id == "blend-out") {
             requireResult(combatEditor.timeline.beginRuntimeBlendOut(0.20), "Blend out montage runtime");
             combatEditor.status = "Runtime interruption · paired state exits + 0.20 s blend";
+        } else if (id == "speed-slow" || id == "speed-normal" || id == "speed-fast") {
+            setPlaybackRate(id == "speed-slow" ? 0.5 : (id == "speed-fast" ? 1.5 : 1.0));
         } else if (id == "undo" || id == "redo") {
             applyHistory(id);
         } else if (id == "inspect-joint" || id == "inspect-action" || id == "inspect-track" ||
@@ -1380,6 +1397,13 @@ function updateKeyboardShortcuts() {
             combatEditor.status = "Attack input ignored · outside authored combo window";
     }
     combatEditor.attackWas = attack;
+    local slow = keyboard.isDown("q") || keyboard.isDown("Q");
+    local normal = keyboard.isDown("e") || keyboard.isDown("E");
+    local fast = keyboard.isDown("r") || keyboard.isDown("R");
+    if (slow && !combatEditor.slowWas) setPlaybackRate(0.5);
+    if (normal && !combatEditor.normalWas) setPlaybackRate(1.0);
+    if (fast && !combatEditor.fastWas) setPlaybackRate(1.5);
+    combatEditor.slowWas = slow; combatEditor.normalWas = normal; combatEditor.fastWas = fast;
     combatEditor.undoWas = undo; combatEditor.redoWas = redo; combatEditor.saveWas = save;
 }
 
@@ -1399,10 +1423,14 @@ function updateLabels() {
     ui.setText("preview-status", format("%s  %.3f / %.3f s",
         combatEditor.timeline.isPlaying() ? "PLAYING" : "PAUSED",
         combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration()));
-    ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs) · Combo %s x%d",
+    local runtimeSection = combatEditor.timeline.getRuntimePhysicalSection();
+    local runtimeProgress = runtimeSection >= 0 ? combatEditor.timeline.getRuntimeSectionProgress(runtimeSection) : 0.0;
+    ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs) · Combo %s x%d · Sec %d %.0f%% · W %.2f · %.1fx",
         combatEditor.playerHealth, combatEditor.enemyHealth, combatEditor.enemyReaction,
         combatEditor.abilityPhase, combatEditor.abilityCooldown,
-        combatEditor.comboWindowOpen ? "OPEN [J]" : "closed", combatEditor.comboCount));
+        combatEditor.comboWindowOpen ? "OPEN [J]" : "closed", combatEditor.comboCount,
+        runtimeSection, runtimeProgress * 100.0, combatEditor.timeline.getRuntimeWeight(),
+        combatEditor.playbackRate));
     ui.select("action.inspector"); ui.setText("action-uri", "Clip: Melee_1H_Attack_Chop");
     ui.setText("revision", "Revision " + combatEditor.clipEditor.getRevision());
     if (combatEditor.inspectorMode == "action") {
@@ -1680,7 +1708,7 @@ eve_update = function(dt) {
     handleUiEvents(); refreshDocumentToolbar(); updateTimelinePointer(); updateBoneTimelinePointer(); updatePreviewCamera(dt); updateKeyboardShortcuts();
     requireResult(combatEditor.clipEditor.seekSeconds(combatEditor.timeline.getPreviewTime()), "Sync animation playhead");
     if (combatEditor.timeline.isPlaying()) {
-        local advanced = combatEditor.timeline.update(dt);
+        local advanced = combatEditor.timeline.update(dt * combatEditor.playbackRate);
         if (!advanced.ok) combatEditor.status = advanced.status.summary;
         if (combatEditor.timeline.isRuntimePlaying()) {
             local runtimeAdvanced = combatEditor.timeline.advanceRuntime(dt);
