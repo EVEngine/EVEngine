@@ -118,6 +118,18 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         sectionCurve <- actionEditor.getAnimationSectionBlendCurve(0);
         removeSectionResult <- actionEditor.removeAnimationSection("test-section:attack");
         sectionCountAfterCleanup <- actionEditor.getAnimationSectionCount();
+        montageSettingsResult <- actionEditor.setMontageSettings(
+            1.5, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+        montageRate <- actionEditor.getMontageBasePlayRate();
+        montageLooping <- actionEditor.getMontageLooping();
+        montageFootIk <- actionEditor.getMontageFootIk();
+        montageLayer <- actionEditor.getMontageAnimationLayer();
+        montageBlendOffset <- actionEditor.getMontageBlendOutOffset();
+        montageRootRotation <- actionEditor.getMontageRootMotionRotation();
+        invalidMontageSettings <- actionEditor.setMontageSettings(
+            0.0, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+        undoMontageSettings <- actionEditor.undo();
+        restoredMontageRate <- actionEditor.getMontageBasePlayRate();
         invalidResult <- eve.ActionEditorModule().create("test.asset.invalid", {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:invalid", durationNs=-1,
@@ -192,6 +204,16 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_EQ(vm.find("sectionCurve").toString(), std::string("linear"));
     CHECK(vm.find("removeSectionResult").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("sectionCountAfterCleanup").toInt(), 0);
+    CHECK(vm.find("montageSettingsResult").toTable().get<bool>("ok"));
+    CHECK(std::fabs(vm.find("montageRate").toFloat() - 1.5f) < 1e-5f);
+    CHECK(vm.find("montageLooping").toBool());
+    CHECK(vm.find("montageFootIk").toBool());
+    CHECK_EQ(vm.find("montageLayer").toInt(), 2);
+    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() + 0.03f) < 1e-5f);
+    CHECK(!vm.find("montageRootRotation").toBool());
+    CHECK(!vm.find("invalidMontageSettings").toTable().get<bool>("ok"));
+    CHECK(vm.find("undoMontageSettings").toTable().get<bool>("ok"));
+    CHECK(std::fabs(vm.find("restoredMontageRate").toFloat() - 1.0f) < 1e-5f);
     CHECK(!vm.find("invalidResult").toTable().get<bool>("ok"));
 }
 

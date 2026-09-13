@@ -175,6 +175,8 @@ public:
     [[nodiscard]] EditorResult<void> removeTrack(const LogicalId& trackId);
     /** @brief Rename one track without changing its stable identity. */
     [[nodiscard]] EditorResult<void> renameTrack(const LogicalId& trackId, std::string label);
+    /** @brief Replace montage-wide playback, blending, layer and root-motion settings in one undo step. */
+    [[nodiscard]] EditorResult<void> setMontageSettings(action::ActionMontageSettings settings);
     /** @brief Add one objective animation section to the montage lane. */
     [[nodiscard]] EditorResult<void> addAnimationSection(action::ActionAnimationSection section);
     /** @brief Move an animation section while preserving its duration. */

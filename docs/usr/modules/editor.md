@@ -636,6 +636,11 @@ actionEditor.editAnimationSection("combat-section:strike", 0.30, 0.70, 0.10,
 actionEditor.editAnimationSectionSource("combat-section:strike", 0.05, 0.40,
                                         "ease-in-out");
 
+// Montage-wide settings commit atomically and update a prepared preview.
+actionEditor.setMontageSettings(1.25, false, true, 2,
+                                0.12, 0.15, 0.0,
+                                true, false, true);
+
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());

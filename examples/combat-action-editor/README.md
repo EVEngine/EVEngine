@@ -45,6 +45,9 @@ Controls:
   blend-in duration, source trim range and blend curve. **New Section** creates
   validated sections at explicit timeline ranges. Persisted UI state is migrated
   when newer editor controls are introduced, preserving open document state.
+  The **Montage** tab edits play rate, looping, Foot IK, animation layer,
+  default blend windows and Root Motion masks. Valid changes update both the
+  persisted timeline and the already prepared runtime preview.
   The **Joint** tab retains skeleton
   transform and key editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its

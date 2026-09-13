@@ -166,6 +166,29 @@ TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
     CHECK_EQ(migrated.value().animationSections[0].animationUri, "memory://clips/legacy");
 }
 
+TEST_CASE("actionMontage.settingsUpdateIsValidatedAndPreservesPreparedPlayback") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontagePlayer player(skeleton);
+    REQUIRE(player.prepare(montageTimeline(), montageClips()).ok());
+    REQUIRE(player.play(eve::action::ActionExecutionId(77)).ok());
+
+    auto settings                    = montageTimeline().montage;
+    settings.basePlayRate            = 1.5;
+    settings.animationLayer          = 3;
+    settings.footIk                  = true;
+    settings.rootMotionVertical = true;
+    REQUIRE(player.setSettings(settings).ok());
+    CHECK(player.isPlaying());
+    CHECK_EQ(player.animationLayer(), 3U);
+    CHECK(player.footIkEnabled());
+
+    settings.basePlayRate = 0.0;
+    CHECK(!player.setSettings(settings).ok());
+    CHECK_EQ(player.animationLayer(), 3U);
+    CHECK(player.footIkEnabled());
+}
+
 TEST_CASE("actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration") {
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");

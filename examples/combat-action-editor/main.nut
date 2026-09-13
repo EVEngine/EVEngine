@@ -434,8 +434,29 @@ function panelInspector() {
     ui.iconButton("bone", "Joint", "inspect-joint"); ui.setItemSelected(combatEditor.inspectorMode == "joint");
     ui.iconButton("layers", "Action Block", "inspect-action"); ui.setItemSelected(combatEditor.inspectorMode == "action");
     ui.iconButton("list", "Track", "inspect-track"); ui.setItemSelected(combatEditor.inspectorMode == "track");
+    ui.iconButton("settings", "Montage", "inspect-montage"); ui.setItemSelected(combatEditor.inspectorMode == "montage");
     ui.end();
     ui.text("", "action-uri"); ui.text("", "revision");
+    if (combatEditor.inspectorMode == "montage") {
+        ui.text("Montage Settings", "montage-title");
+        ui.slider("Play Rate", 1.0, 0.05, 4.0, "montage-rate");
+        ui.checkbox("Looping", false, "montage-looping");
+        ui.checkbox("Foot IK", false, "montage-foot-ik");
+        ui.slider("Animation Layer", 0.0, 0.0, 8.0, "montage-layer");
+        ui.slider("Default Blend In", 0.0, 0.0, combatEditor.timeline.getDuration(), "montage-blend-in");
+        ui.slider("Default Blend Out", 0.0, 0.0, combatEditor.timeline.getDuration(), "montage-blend-out");
+        ui.slider("Blend Out Offset", 0.0, -combatEditor.timeline.getDuration(),
+                  combatEditor.timeline.getDuration(), "montage-blend-offset");
+        ui.text("Root Motion", "montage-root-title");
+        ui.checkbox("Horizontal", true, "montage-root-horizontal");
+        ui.checkbox("Vertical", true, "montage-root-vertical");
+        ui.checkbox("Rotation", true, "montage-root-rotation");
+        ui.beginToolbar("montage-tools"); ui.iconButton("undo", "", "montage-undo");
+        ui.iconButton("redo", "", "montage-redo"); ui.end();
+        ui.textWrapped("Settings update the authoritative asset and the running preview without rebuilding clips.",
+                       245.0, "montage-help");
+        return;
+    }
     if (combatEditor.inspectorMode == "track") {
         if (combatEditor.newTrackOpen) {
             ui.text("New Track", "new-track-title");
@@ -551,6 +572,15 @@ function animationSectionIndex(itemId) {
 
 function blendCurveIndex(name) { return name == "linear" ? 0 : 1; }
 function blendCurveAt(index) { return index == 0 ? "linear" : "ease-in-out"; }
+
+function commitMontageSettings() {
+    return combatEditor.timeline.setMontageSettings(
+        ui.getValue("montage-rate"), ui.getChecked("montage-looping"), ui.getChecked("montage-foot-ik"),
+        ui.getValue("montage-layer").tointeger(), ui.getValue("montage-blend-in"),
+        ui.getValue("montage-blend-out"), ui.getValue("montage-blend-offset"),
+        ui.getChecked("montage-root-horizontal"), ui.getChecked("montage-root-vertical"),
+        ui.getChecked("montage-root-rotation"));
+}
 
 function panelTimeline() {
     ui.beginToolbar("documents");
@@ -686,8 +716,10 @@ function handleUiEvents() {
             combatEditor.status = "Runtime interruption · paired state exits + 0.20 s blend";
         } else if (id == "undo" || id == "redo") {
             applyHistory(id);
-        } else if (id == "inspect-joint" || id == "inspect-action" || id == "inspect-track") {
-            combatEditor.inspectorMode = id == "inspect-action" ? "action" : (id == "inspect-track" ? "track" : "joint");
+        } else if (id == "inspect-joint" || id == "inspect-action" || id == "inspect-track" ||
+                   id == "inspect-montage") {
+            combatEditor.inspectorMode = id == "inspect-action" ? "action" :
+                (id == "inspect-track" ? "track" : (id == "inspect-montage" ? "montage" : "joint"));
             combatEditor.insertPanelOpen = false;
             combatEditor.newSectionOpen = false;
             combatEditor.newTrackOpen = false;
@@ -733,6 +765,8 @@ function handleUiEvents() {
                 combatEditor.selectedTrack = combatEditor.timeline.getTrackCount() - 1;
         } else if (id == "track-undo" || id == "track-redo") {
             applyHistory(id == "track-undo" ? "undo" : "redo");
+        } else if (id == "montage-undo" || id == "montage-redo") {
+            applyHistory(id == "montage-undo" ? "undo" : "redo");
         } else if (id == "delete-action" && combatEditor.selectedActionId != "") {
             local result = combatEditor.timeline.removeItem(combatEditor.selectedActionId);
             combatEditor.status = result.ok ? "Action Block deleted" : result.status.summary;
@@ -784,7 +818,10 @@ function handleUiEvents() {
         } else if (host == "action.inspector") {
             ui.select("action.inspector");
             local result = { ok=true, status={summary=""} };
-            if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
+            if (id.find("montage-") == 0 && id != "montage-tools") {
+                result = commitMontageSettings();
+                combatEditor.status = result.ok ? "Montage settings committed" : result.status.summary;
+            } else if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
             else if (id == "track-selector")
                 combatEditor.selectedTrack = ui.getValue("track-selector").tointeger();
             else if (id == "new-track-kind")
@@ -1005,6 +1042,19 @@ function updateLabels() {
         ui.setEnabled("delete-track", combatEditor.timeline.getTrackCount() > 1);
         ui.setEnabled("track-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("track-redo", combatEditor.timeline.canRedo());
+    } else if (combatEditor.inspectorMode == "montage") {
+        ui.setValue("montage-rate", combatEditor.timeline.getMontageBasePlayRate());
+        ui.setChecked("montage-looping", combatEditor.timeline.getMontageLooping());
+        ui.setChecked("montage-foot-ik", combatEditor.timeline.getMontageFootIk());
+        ui.setValue("montage-layer", combatEditor.timeline.getMontageAnimationLayer().tofloat());
+        ui.setValue("montage-blend-in", combatEditor.timeline.getMontageBlendIn());
+        ui.setValue("montage-blend-out", combatEditor.timeline.getMontageBlendOut());
+        ui.setValue("montage-blend-offset", combatEditor.timeline.getMontageBlendOutOffset());
+        ui.setChecked("montage-root-horizontal", combatEditor.timeline.getMontageRootMotionHorizontal());
+        ui.setChecked("montage-root-vertical", combatEditor.timeline.getMontageRootMotionVertical());
+        ui.setChecked("montage-root-rotation", combatEditor.timeline.getMontageRootMotionRotation());
+        ui.setEnabled("montage-undo", combatEditor.timeline.canUndo());
+        ui.setEnabled("montage-redo", combatEditor.timeline.canRedo());
     }
     ui.setText("selected-item", "Joint: " + combatEditor.clipEditor.getSelectedBone());
     ui.setText("last-event", combatEditor.lastEvent);

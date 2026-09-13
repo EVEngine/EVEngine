@@ -119,6 +119,12 @@ public:
      * @param provider Borrowed synchronous provider; no replacement is committed unless all clips validate.
      */
     [[nodiscard]] Result<void> reloadClips(IMontageClipProvider& provider);
+    /**
+     * @brief Apply validated montage-wide settings without rebuilding clip topology or playback time.
+     * @param settings Candidate settings validated against the prepared timeline before publication.
+     * @return Applied, or a structured validation/state failure with no observable mutation.
+     */
+    [[nodiscard]] Result<void> setSettings(action::ActionMontageSettings settings);
     /** @brief Transactionally replace one URI-backed clip and preserve the current cursor and slot weight. */
     [[nodiscard]] Result<void> replaceClip(std::string_view uri, std::unique_ptr<AnimClip> clip);
     /** @brief Bind presentation playback to one authoritative ActionRuntime execution. */

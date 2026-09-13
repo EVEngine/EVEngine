@@ -293,6 +293,26 @@ public:
         return !snapshot.ok() || snapshot.value().dirty() || editor_.target().revision() != savedEditorRevision_;
     }
 
+    [[nodiscard]] EditorResult<void> setMontageSettings(action::ActionMontageSettings settings) {
+        const auto previous = editor_.target().timeline().montage;
+        auto       edited   = editor_.setMontageSettings(settings);
+        if (!edited.ok()) return edited;
+        if (montage_) {
+            auto applied = montage_->setSettings(settings);
+            if (!applied) {
+                auto rolledBack = editor_.undo();
+                if (rolledBack.ok()) {
+                    runtimeRate_ = previous.basePlayRate;
+                    if (runtimeTimeline_) runtimeTimeline_->montage = previous;
+                }
+                return EditorResult<void>::failure(applied.status());
+            }
+        }
+        runtimeRate_ = settings.basePlayRate;
+        if (runtimeTimeline_) runtimeTimeline_->montage = std::move(settings);
+        return edited;
+    }
+
     [[nodiscard]] EditorResult<DocumentSnapshot> saveDocument() {
         auto synchronized = synchronizeDocument();
         if (!synchronized.ok()) return synchronized;
@@ -1232,6 +1252,63 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("getRevision", [](ScriptActionTimelineEditor* self) {
         return self ? static_cast<std::int64_t>(self->editor().target().revision()) : std::int64_t{0};
+    });
+    actionEditor.addFunc("setMontageSettings", [vm](ScriptActionTimelineEditor* self, float basePlayRate,
+                                                     bool looping, bool footIk, int animationLayer,
+                                                     float blendInSeconds, float blendOutSeconds,
+                                                     float blendOutOffsetSeconds, bool rootHorizontal,
+                                                     bool rootVertical, bool rootRotation) {
+        if (!self || animationLayer < 0)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "montage editor and non-negative animation layer are required", "montage");
+        auto blendIn        = seconds(blendInSeconds);
+        auto blendOut       = seconds(blendOutSeconds);
+        auto blendOutOffset = seconds(blendOutOffsetSeconds);
+        if (!blendIn) return script::projectStatusResult(vm, blendIn.status(), false, false);
+        if (!blendOut) return script::projectStatusResult(vm, blendOut.status(), false, false);
+        if (!blendOutOffset) return script::projectStatusResult(vm, blendOutOffset.status(), false, false);
+        action::ActionMontageSettings settings;
+        settings.basePlayRate         = basePlayRate;
+        settings.looping              = looping;
+        settings.footIk               = footIk;
+        settings.animationLayer       = static_cast<std::uint32_t>(animationLayer);
+        settings.defaultBlendIn       = blendIn.value();
+        settings.defaultBlendOut      = blendOut.value();
+        settings.blendOutOffset       = blendOutOffset.value();
+        settings.rootMotionHorizontal = rootHorizontal;
+        settings.rootMotionVertical   = rootVertical;
+        settings.rootMotionRotation   = rootRotation;
+        return project(vm, self->setMontageSettings(std::move(settings)));
+    });
+    actionEditor.addFunc("getMontageBasePlayRate", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->editor().target().timeline().montage.basePlayRate) : 1.0f;
+    });
+    actionEditor.addFunc("getMontageLooping", [](ScriptActionTimelineEditor* self) {
+        return self && self->editor().target().timeline().montage.looping;
+    });
+    actionEditor.addFunc("getMontageFootIk", [](ScriptActionTimelineEditor* self) {
+        return self && self->editor().target().timeline().montage.footIk;
+    });
+    actionEditor.addFunc("getMontageAnimationLayer", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<int>(self->editor().target().timeline().montage.animationLayer) : 0;
+    });
+    actionEditor.addFunc("getMontageBlendIn", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->editor().target().timeline().montage.defaultBlendIn.seconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getMontageBlendOut", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->editor().target().timeline().montage.defaultBlendOut.seconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getMontageBlendOutOffset", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->editor().target().timeline().montage.blendOutOffset.seconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getMontageRootMotionHorizontal", [](ScriptActionTimelineEditor* self) {
+        return self && self->editor().target().timeline().montage.rootMotionHorizontal;
+    });
+    actionEditor.addFunc("getMontageRootMotionVertical", [](ScriptActionTimelineEditor* self) {
+        return self && self->editor().target().timeline().montage.rootMotionVertical;
+    });
+    actionEditor.addFunc("getMontageRootMotionRotation", [](ScriptActionTimelineEditor* self) {
+        return self && self->editor().target().timeline().montage.rootMotionRotation;
     });
     actionEditor.addFunc("getAnimationUri", [](ScriptActionTimelineEditor* self) {
         return self ? self->editor().target().timeline().animationUri : std::string{};
