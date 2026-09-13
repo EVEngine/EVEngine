@@ -15,6 +15,7 @@ persist combatEditor = {
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     enemySkeleton = null, enemyPlayer = null, enemyParts = [], enemySkins = [],
     combatRuntime = null, combatTick = 0,
+    abilityGrantId = 0, abilityActivationId = 0, abilityPhase = "ready", abilityCooldown = 0.0,
     playerSubject = "01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject = "11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth = 100.0, enemyHealth = 80.0, enemyReaction = "none",
@@ -36,6 +37,7 @@ local editorUiDefaults = {
     insertTrack=0, insertNotifyType=0, insertStateType=2,
     selectedTrack=0, selectedSplit=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
     enemySkeleton=null, enemyPlayer=null, enemyParts=[], enemySkins=[], combatRuntime=null, combatTick=0,
+    abilityGrantId=0, abilityActivationId=0, abilityPhase="ready", abilityCooldown=0.0,
     playerSubject="01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject="11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth=100.0, enemyHealth=80.0, enemyReaction="none",
@@ -295,6 +297,22 @@ function buildCombatPlaytest() {
         combatEditor.playerSubject, "player", 0.0, 0.0, 100.0, 40.0, 3.5, 18.0), "Register player");
     requireResult(combatEditor.combatRuntime.registerFighter(
         combatEditor.enemySubject, "enemy", -1.65, 0.0, 80.0, 30.0, 0.1, 0.1), "Register enemy");
+    local timelineJson = requireResult(combatEditor.timeline.snapshotJson(), "Snapshot authored ability");
+    requireResult(combatEditor.combatRuntime.registerTimelineAbility(
+        "combat-ability:editor-light", timelineJson, 0.25, "per-execution",
+        "exclusive-replaceable", "Ability.Combat.Attack.Light"), "Register authored ability");
+    local grant = requireResult(combatEditor.combatRuntime.grantAbility(
+        "fighter:player", "combat-ability:editor-light"), "Grant authored ability");
+    combatEditor.abilityGrantId = grant.grantId;
+}
+
+function activatePlaytestAbility() {
+    local activated = combatEditor.combatRuntime.activateAbility(
+        combatEditor.abilityGrantId, combatEditor.combatTick);
+    if (!activated.ok) { combatEditor.status = activated.status.summary; return false; }
+    combatEditor.abilityActivationId = activated.value.activationId;
+    combatEditor.abilityPhase = "requested";
+    return true;
 }
 
 function advanceCombatPlaytest(dt) {
@@ -310,6 +328,15 @@ function advanceCombatPlaytest(dt) {
         requireResult(combatEditor.combatRuntime.stop(combatEditor.playerSubject), "Stop playtest movement");
     combatEditor.combatTick += 1;
     requireResult(combatEditor.combatRuntime.advance(combatEditor.combatTick, dt), "Advance combat playtest");
+    local abilities = requireResult(combatEditor.combatRuntime.advanceAbilities(
+        combatEditor.combatTick, dt), "Advance authored ability");
+    if (abilities.advances.len() > 0)
+        combatEditor.abilityPhase = abilities.advances[abilities.advances.len() - 1].phase;
+    local grant = requireResult(combatEditor.combatRuntime.abilityGrant(
+        combatEditor.abilityGrantId), "Read authored ability");
+    combatEditor.abilityCooldown = grant.cooldownSeconds;
+    if (abilities.activeCount == 0 && combatEditor.abilityCooldown <= 0.0)
+        combatEditor.abilityPhase = "ready";
     local playerState = requireResult(combatEditor.combatRuntime.state(combatEditor.playerSubject), "Read player");
     local enemyState = requireResult(combatEditor.combatRuntime.state(combatEditor.enemySubject), "Read enemy");
     combatEditor.playerHealth = playerState.health; combatEditor.enemyHealth = enemyState.health;
@@ -1322,8 +1349,9 @@ function updateLabels() {
     ui.setText("preview-status", format("%s  %.3f / %.3f s",
         combatEditor.timeline.isPlaying() ? "PLAYING" : "PAUSED",
         combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration()));
-    ui.setText("combat-status", format("Player %.0f HP  ·  Target %.0f HP  ·  %s",
-        combatEditor.playerHealth, combatEditor.enemyHealth, combatEditor.enemyReaction));
+    ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs)",
+        combatEditor.playerHealth, combatEditor.enemyHealth, combatEditor.enemyReaction,
+        combatEditor.abilityPhase, combatEditor.abilityCooldown));
     ui.select("action.inspector"); ui.setText("action-uri", "Clip: Melee_1H_Attack_Chop");
     ui.setText("revision", "Revision " + combatEditor.clipEditor.getRevision());
     if (combatEditor.inspectorMode == "action") {
@@ -1588,9 +1616,10 @@ function drawBoneTimeline() {
 }
 
 eve_init = function() {
-    buildCharacterPreview(); buildCombatPlaytest(); buildWorkspace(); ui.setTheme("dark"); ui.setScale(0.75);
+    buildCharacterPreview(); buildWorkspace(); buildCombatPlaytest(); ui.setTheme("dark"); ui.setScale(0.75);
     ui.setNavKeyboard(true); mountPanels();
     combatEditor.timeline.play();
+    activatePlaytestAbility();
     combatEditor.status = "KayKit clip loaded · drag timeline items or use the inspector";
     print("combat-action-editor: clip=" + combatEditor.clip.getDuration() + "s tracks=" +
           combatEditor.timeline.getTrackCount() + " items=" + combatEditor.timeline.getItemCount() + "\n");

@@ -7,6 +7,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+
 TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
     ssq::VM vm(1024, ssq::Libs::STRING | ssq::Libs::MATH);
     auto eve = vm.addTable("eve");

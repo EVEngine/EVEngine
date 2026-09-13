@@ -593,6 +593,7 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 local created = eve.ActionEditorModule().create("ability.light-attack", timelineAsset);
 if (!created.ok) throw created.status.summary;
 local actionEditor = created.value; // ownership == "owned"
+local canonicalJson = actionEditor.snapshotJson(); // same schema as snapshot(), suitable for runtime transfer
 
 // A project-owned target adapter may claim selected block types. The Montage
 // still emits their events, but the preview runtime does not require a native

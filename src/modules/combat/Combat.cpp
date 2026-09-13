@@ -197,6 +197,77 @@ public:
         return abilityGrantValue(granted.value());
     }
 
+    Result<Value> registerTimelineAbility(const std::string& definitionText,
+                                          const std::string& timelineJson, double cooldownSeconds,
+                                          const std::string& instancingText,
+                                          const std::string& groupText,
+                                          const std::string& triggerTag) {
+        auto definitionId = LogicalId::parse(definitionText);
+        if (!definitionId)
+            return failure<Value>(DiagnosticCode::InvalidArgument, "ability definition id is invalid",
+                                  "definitionId");
+        auto decoded = Value::fromJson(timelineJson);
+        if (!decoded) return Result<Value>::failure(decoded.status());
+        auto timeline = action::ActionTimeline::fromValue(decoded.value());
+        if (!timeline) return Result<Value>::failure(timeline.status());
+        auto cooldown = Duration::fromSeconds(cooldownSeconds);
+        if (!cooldown) return Result<Value>::failure(cooldown.status());
+
+        action::AbilityDefinition definition;
+        definition.id                  = *definitionId;
+        definition.action.id           = timeline.value().actionId;
+        definition.action.timeline     = timeline.value();
+        definition.cooldown            = cooldown.value();
+        if (instancingText == "non-instanced")
+            definition.instancing = action::AbilityInstancingPolicy::NonInstanced;
+        else if (instancingText == "per-owner")
+            definition.instancing = action::AbilityInstancingPolicy::PerOwner;
+        else if (instancingText == "per-execution")
+            definition.instancing = action::AbilityInstancingPolicy::PerExecution;
+        else
+            return failure<Value>(DiagnosticCode::InvalidArgument, "ability instancing policy is invalid",
+                                  "instancing");
+        if (groupText == "independent")
+            definition.activationGroup = action::AbilityActivationGroup::Independent;
+        else if (groupText == "exclusive-replaceable")
+            definition.activationGroup = action::AbilityActivationGroup::ExclusiveReplaceable;
+        else if (groupText == "exclusive-blocking")
+            definition.activationGroup = action::AbilityActivationGroup::ExclusiveBlocking;
+        else
+            return failure<Value>(DiagnosticCode::InvalidArgument, "ability activation group is invalid",
+                                  "activationGroup");
+        if (!triggerTag.empty()) {
+            if (!tags::isValidGameplayTagName(triggerTag))
+                return failure<Value>(DiagnosticCode::InvalidArgument, "ability trigger tag is invalid",
+                                      "triggerTag");
+            definition.triggers.push_back({triggerTag, tags::GameplayTagMatch::Exact});
+        }
+
+        const auto& splits = timeline.value().splitTimestamps;
+        if (splits.empty()) {
+            definition.action.timing.active = timeline.value().duration;
+        } else if (splits.size() == 1) {
+            definition.action.timing.windup = splits[0];
+            definition.action.timing.active = Duration::fromNanoseconds(
+                timeline.value().duration.nanoseconds() - splits[0].nanoseconds());
+        } else {
+            definition.action.timing.windup = splits[0];
+            definition.action.timing.active = Duration::fromNanoseconds(
+                splits[1].nanoseconds() - splits[0].nanoseconds());
+            definition.action.timing.recover = Duration::fromNanoseconds(
+                timeline.value().duration.nanoseconds() - splits[1].nanoseconds());
+        }
+        auto registered = abilities_.registerDefinition(definition);
+        if (!registered) return Result<Value>::failure(registered.status());
+        abilityActions_[definitionText] = definition.action.id;
+        Value::Object result;
+        result["definitionId"] = definitionText;
+        result["actionId"] = definition.action.id.format();
+        result["durationSeconds"] = timeline.value().duration.seconds();
+        result["sectionCount"] = static_cast<std::int64_t>(timeline.value().sectionCount());
+        return Result<Value>::success(Value(std::move(result)), Status::success(StatusCode::Applied));
+    }
+
     Result<Value> activateAbility(std::int64_t grantValue, std::int64_t tickValue) {
         auto grant = parseGrant(grantValue);
         if (!grant) return Result<Value>::failure(grant.status());
@@ -412,6 +483,16 @@ void Combat::expose(ssq::Table& table) {
     runtime.addFunc("grantAbility", [vm](ScriptCombatRuntime* self, const std::string& owner,
                                            const std::string& definitionId) {
         return project(vm, self ? self->grantAbility(owner, definitionId)
+                                : failure<Value>(DiagnosticCode::InvalidArgument,
+                                                 "combat runtime must not be null", "runtime"));
+    });
+    runtime.addFunc("registerTimelineAbility",
+                    [vm](ScriptCombatRuntime* self, const std::string& definitionId,
+                         const std::string& timelineJson, float cooldownSeconds,
+                         const std::string& instancing, const std::string& activationGroup,
+                         const std::string& triggerTag) {
+        return project(vm, self ? self->registerTimelineAbility(definitionId, timelineJson, cooldownSeconds,
+                                                                 instancing, activationGroup, triggerTag)
                                 : failure<Value>(DiagnosticCode::InvalidArgument,
                                                  "combat runtime must not be null", "runtime"));
     });

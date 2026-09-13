@@ -15,6 +15,9 @@ runtime 内部复用下述 C++ 权威实现，不在脚本层复制生命值或�
 `activateAbility`、`advanceAbilities`、`cancelAbility`、`abilityGrant` 和 `matchingAbilities` 直接投影
 `AbilityRuntime`；冷却与 Action phase 只使用调用者注入的 tick/delta，不读取墙钟。`advanceAbilities`
 推进所有活跃 execution、递减冷却并同步终态链接，脚本不应另外保存 active/cooldown 状态。
+`registerTimelineAbility` 接收 `ActionTimelineEditor.snapshotJson()` 的规范 schema，将 timeline 的 actionId、
+总时长和 physical split 映射为同一个 `ActionDefinition` 的 phase timing；同时显式设置 cooldown、
+instancing、activation group 和可选 gameplay-event trigger。注册失败不会留下部分 definition。
 
 ## 角色移动与导航
 

@@ -1234,6 +1234,16 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         return script::projectResult(vm, self->editor().target().timeline().toValue(),
                                      [](Value value) { return value; });
     });
+    actionEditor.addFunc("snapshotJson", [vm](ScriptActionTimelineEditor* self) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        auto snapshot = self->editor().target().timeline().toValue();
+        if (!snapshot) return script::projectStatusResult(vm, snapshot.status(), false, false);
+        auto encoded = snapshot.value().toJson();
+        return script::projectResult(vm, std::move(encoded),
+                                     [](std::string value) { return Value(std::move(value)); });
+    });
     actionEditor.addFunc(
         "registerRuntimeClip", [vm](ScriptActionTimelineEditor* self, const std::string& uri, model3d::ModelData* model,
                                     animation::AnimSkeleton* skeleton, int animationIndex) {

@@ -91,6 +91,32 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         advanced <- actionEditor.update(1.0);
         previewEventCount <- actionEditor.getEventCount();
         snapshotResult <- actionEditor.snapshot();
+        timelineAbilitySplitA <- actionEditor.addSectionSplit(0.2);
+        timelineAbilitySplitB <- actionEditor.addSectionSplit(0.6);
+        snapshotJsonResult <- actionEditor.snapshotJson();
+        combatRuntime <- eve.Combat().newRuntime().value;
+        timelineAbility <- combatRuntime.registerTimelineAbility(
+            "combat-ability:authored-light", snapshotJsonResult.value, 0.25,
+            "per-execution", "exclusive-replaceable", "Ability.Combat.Attack.Light");
+        duplicateTimelineAbility <- combatRuntime.registerTimelineAbility(
+            "combat-ability:authored-light", snapshotJsonResult.value, 0.25,
+            "per-execution", "exclusive-replaceable", "Ability.Combat.Attack.Light");
+        invalidTimelineAbility <- combatRuntime.registerTimelineAbility(
+            "combat-ability:invalid-policy", snapshotJsonResult.value, 0.25,
+            "per-execution", "invalid", "Ability.Combat.Attack.Light");
+        invalidTimelineGrant <- combatRuntime.grantAbility("fighter:player", "combat-ability:invalid-policy");
+        timelineGrant <- combatRuntime.grantAbility("fighter:player", "combat-ability:authored-light");
+        timelineMatches <- combatRuntime.matchingAbilities("fighter:player", "Ability.Combat.Attack.Light");
+        timelineActivation <- combatRuntime.activateAbility(timelineGrant.value.grantId, 1);
+        timelineAbilityAdvance <- combatRuntime.advanceAbilities(2, 1.0);
+        timelineAbilityAction <- timelineAbility.value.actionId;
+        timelineAbilityDuration <- timelineAbility.value.durationSeconds;
+        timelineAbilitySections <- timelineAbility.value.sectionCount;
+        timelineMatchedGrant <- timelineMatches.value[0];
+        timelineGrantedId <- timelineGrant.value.grantId;
+        timelineActiveAfterAdvance <- timelineAbilityAdvance.value.activeCount;
+        actionEditor.removeSectionSplit(1);
+        actionEditor.removeSectionSplit(0);
         instantTypeCount <- actionEditor.getInsertableTypeCount(false);
         stateTypeCount <- actionEditor.getInsertableTypeCount(true);
         damageTypeIndex <- -1;
@@ -207,6 +233,19 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("advanced").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("previewEventCount").toInt(), 2);
     CHECK(vm.find("snapshotResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("snapshotJsonResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("timelineAbilitySplitA").toTable().get<bool>("ok"));
+    CHECK(vm.find("timelineAbilitySplitB").toTable().get<bool>("ok"));
+    CHECK(vm.find("timelineAbility").toTable().get<bool>("ok"));
+    CHECK(!vm.find("duplicateTimelineAbility").toTable().get<bool>("ok"));
+    CHECK(!vm.find("invalidTimelineAbility").toTable().get<bool>("ok"));
+    CHECK(!vm.find("invalidTimelineGrant").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("timelineAbilityAction").toString(), std::string("test:light-attack"));
+    CHECK_LT(std::abs(vm.find("timelineAbilityDuration").toFloat() - 1.0f), 1e-5f);
+    CHECK_EQ(vm.find("timelineAbilitySections").toInt(), 3);
+    CHECK_EQ(vm.find("timelineMatchedGrant").toInt(), vm.find("timelineGrantedId").toInt());
+    CHECK(vm.find("timelineActivation").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("timelineActiveAfterAdvance").toInt(), 0);
     CHECK(vm.find("instantTypeCount").toInt() > 0);
     CHECK(vm.find("stateTypeCount").toInt() > 0);
     CHECK(vm.find("damageTypeIndex").toInt() >= 0);
