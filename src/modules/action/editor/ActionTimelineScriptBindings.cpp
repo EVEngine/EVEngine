@@ -498,6 +498,21 @@ public:
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
+    [[nodiscard]] Result<void> replaceRuntimeClip(std::string uri, const animation::AnimClip& clip) {
+        if (uri.empty())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "montage clip URI must not be empty", "uri"));
+        auto replacement = clip.clone();
+        if (montage_) return montage_->replaceClip(uri, std::move(replacement));
+        const auto found = std::find_if(runtimeClips_.begin(), runtimeClips_.end(),
+                                        [&](const auto& asset) { return asset.uri == uri; });
+        if (found == runtimeClips_.end())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "montage runtime clip was not registered", uri));
+        found->clip = std::move(replacement);
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
     [[nodiscard]] Result<void> beginRuntime(animation::AnimSkeleton& skeleton) {
         auto montage  = std::make_unique<animation::MontagePlayer>(skeleton);
         auto timeline = editor_.target().timeline();
@@ -1267,6 +1282,14 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                       "editor, model and skeleton must not be null", "runtimeClip");
             return script::projectResult(vm, self->registerRuntimeClip(uri, *model, *skeleton, animationIndex));
         });
+    actionEditor.addFunc("replaceRuntimeClip",
+                         [vm](ScriptActionTimelineEditor* self, const std::string& uri,
+                              animation::AnimClip* clip) {
+        if (!self || !clip)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "editor and animation clip must not be null", "runtimeClip");
+        return script::projectResult(vm, self->replaceRuntimeClip(uri, *clip));
+    });
     actionEditor.addFunc("beginRuntime", [vm](ScriptActionTimelineEditor* self, animation::AnimSkeleton* skeleton) {
         if (!self || !skeleton)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "editor and skeleton must not be null",

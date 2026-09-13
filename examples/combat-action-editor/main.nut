@@ -441,6 +441,16 @@ function startMontageRuntime(timeline) {
     requireResult(timeline.beginRuntime(combatEditor.skeleton), "Start action montage runtime");
 }
 
+function refreshEditedMontageClip() {
+    requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
+                  "Rebuild edited KayKit clip");
+    requireResult(combatEditor.timeline.replaceRuntimeClip(
+        "asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_1H_Attack_Chop", combatEditor.clip),
+        "Hot-reload edited clip into montage");
+    requireResult(combatEditor.timeline.jumpRuntimeSeconds(combatEditor.timeline.getPreviewTime()),
+                  "Resample edited montage pose");
+}
+
 function openActionDocument(assetGuid, title, resourceUri, timelineData) {
     local timeline = requireResult(combatEditor.actionModule.openDocument(
         ".", assetGuid, title, resourceUri, timelineData), "Open " + title);
@@ -1140,8 +1150,7 @@ function handleUiEvents() {
             local result = id == "set-key" ? combatEditor.clipEditor.keySelectedBone() :
                 id == "delete-key" ? combatEditor.clipEditor.deleteSelectedKey() :
                 id == "clip-undo" ? combatEditor.clipEditor.undo() : combatEditor.clipEditor.redo();
-            if (result.ok) requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
-                                         "Rebuild edited KayKit clip");
+            if (result.ok) refreshEditedMontageClip();
             combatEditor.status = result.ok ? "Animation key edit committed" : result.status.summary;
         } else if (host == "action.assets" && id.find("bone-") == 0) {
             local index = id.slice(5).tointeger();
@@ -1289,9 +1298,7 @@ function handleUiEvents() {
             else if (id == "key-time") result = combatEditor.clipEditor.moveSelectedKey(ui.getValue("key-time"));
             local jointChange = id.find("position-") == 0 || id.find("rotation-") == 0 ||
                                 id.find("scale-") == 0 || id == "key-time";
-            if (jointChange && result.ok)
-                requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
-                              "Rebuild edited KayKit clip");
+            if (jointChange && result.ok) refreshEditedMontageClip();
             if (jointChange)
                 combatEditor.status = result.ok ? "Joint transform keyed · revision " + combatEditor.clipEditor.getRevision()
                                                 : result.status.summary;
@@ -1408,8 +1415,11 @@ function updateKeyboardShortcuts() {
 }
 
 function updatePose(dt) {
-    combatEditor.player.setTime(combatEditor.clipEditor.getPlayhead());
-    local pose = combatEditor.player.getPose();
+    local pose = combatEditor.timeline.getRuntimePose();
+    if (pose == null) {
+        combatEditor.player.setTime(combatEditor.clipEditor.getPlayhead());
+        pose = combatEditor.player.getPose();
+    }
     pose.computeWorld(combatEditor.skeleton);
     foreach (binding in combatEditor.skins) binding.skin.applyToMesh(gfx, binding.part.getMesh(), pose);
     combatEditor.enemyPlayer.update(dt);

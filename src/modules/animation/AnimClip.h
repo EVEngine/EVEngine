@@ -3,6 +3,7 @@
 #include "animation/AnimMath.h"
 #include "common/Result.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -223,6 +224,9 @@ public:
 
     /** @brief Wrap or clamp time according to loop flag. */
     float wrapTime(float time) const;
+
+    /** @brief Return a fully owning deep copy suitable for runtime hot replacement. */
+    [[nodiscard]] std::unique_ptr<AnimClip> clone() const;
 
     /**
      * @brief Replace this clip's content with `other`'s (payload moved, not

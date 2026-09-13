@@ -95,6 +95,10 @@ Controls:
 The active editor snapshot is also registered as an `AbilityDefinition`; its
 physical sections become action phases, and the preview HUD reports the native
 Ability phase and cooldown instead of maintaining script timers.
+The skinned KayKit character consumes the Montage runtime pose directly, so
+section cross-fades, jumps and blend-out are visible on the real skeleton.
+Joint/key edits deep-copy the rebuilt clip into the running Montage and resample
+the current cursor without retaining editor-owned clip pointers.
 Saving hot-reloads that definition without revoking its grant. Press `J` while
 the authored `input:combo-window` is open to resolve its gameplay tag through
 `matchingAbilities`, replace the active exclusive Ability, and replay the

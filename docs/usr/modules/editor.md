@@ -658,6 +658,11 @@ actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());
 
+// Publish an edited owning clip into the prepared Montage without retaining
+// the editor clip pointer, then skin the real preview mesh from its pose.
+actionEditor.replaceRuntimeClip("asset://combat.glb#Strike", editedClip);
+local montagePose = actionEditor.getRuntimePose();
+
 // SceneLoader 等可选模块注册真实预览层后，seek/update 会原子更新表现实例。
 if (actionEditor.hasPreviewHost())
     actionEditor.refreshPreview(); // 参数事务提交后刷新当前位置

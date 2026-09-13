@@ -497,7 +497,12 @@ TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {
     CHECK(!player.replaceClip("memory://clips/anticipation", std::move(invalidClip)).ok());
     CHECK(std::fabs(player.pose().local(0).px - 0.5f) < 1e-4f);
 
-    REQUIRE(player.replaceClip("memory://clips/anticipation", rootClip("replacement", 3.0f)).ok());
+    auto replacement = rootClip("replacement", 3.0f);
+    auto cloned      = replacement->clone();
+    replacement->setDuration(2.0f);
+    CHECK_EQ(cloned->getName(), std::string("replacement"));
+    CHECK(std::fabs(cloned->getDuration() - 1.0f) < 1e-5f);
+    REQUIRE(player.replaceClip("memory://clips/anticipation", std::move(cloned)).ok());
     CHECK_EQ(player.time(), eve::Duration::fromSeconds(0.5).takeValue());
     CHECK(std::fabs(player.pose().local(0).px - 1.5f) < 1e-4f);
 }
