@@ -46,6 +46,11 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         testBoneMask <- testAnimation.newBoneMask(testSkeleton);
         setBoneMaskBeforeStart <- actionEditor.setRuntimeBoneMask(testBoneMask);
         clearBoneMaskBeforeStart <- actionEditor.clearRuntimeBoneMask();
+        runtimeStateBeforeStart <- actionEditor.getRuntimeState();
+        runtimeElapsedBeforeStart <- actionEditor.getRuntimeElapsedSeconds();
+        runtimeDurationBeforeStart <- actionEditor.getRuntimeDurationSeconds();
+        runtimeLayerBeforeStart <- actionEditor.getRuntimeLayer();
+        runtimeSlotBeforeStart <- actionEditor.getRuntimeSlot();
         configured <- actionEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
         viewport <- actionEditor.setViewport(800.0, 36.0, 120.0);
@@ -217,6 +222,11 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(!vm.find("clearSectionSyncBeforeStart").toTable().get<bool>("ok"));
     CHECK(!vm.find("setBoneMaskBeforeStart").toTable().get<bool>("ok"));
     CHECK(!vm.find("clearBoneMaskBeforeStart").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("runtimeStateBeforeStart").toString(), std::string("not-started"));
+    CHECK_EQ(vm.find("runtimeElapsedBeforeStart").toFloat(), 0.0f);
+    CHECK_EQ(vm.find("runtimeDurationBeforeStart").toFloat(), 0.0f);
+    CHECK_EQ(vm.find("runtimeLayerBeforeStart").toInt(), -1);
+    CHECK_EQ(vm.find("runtimeSlotBeforeStart").toInt(), -1);
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));

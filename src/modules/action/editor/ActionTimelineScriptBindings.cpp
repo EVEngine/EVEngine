@@ -782,6 +782,34 @@ public:
         return montage && montage->isPlaying();
     }
 
+    [[nodiscard]] std::string runtimeState() const {
+        if (!runtimeTimeline_) return "not-started";
+        if (runtimeAdvance_ && runtimeAdvance_->completed) return "finished";
+        const auto* montage = activeMontage();
+        if (!montage) return "finished";
+        if (montage->isBlendingOut()) return "stopping";
+        if (runtimePaused_) return "paused";
+        return montage->isPlaying() ? "playing" : "finished";
+    }
+
+    [[nodiscard]] double runtimeElapsedSeconds() const noexcept {
+        const auto* montage = activeMontage();
+        if (montage) return montage->time().seconds();
+        return runtimeAdvance_ ? runtimeAdvance_->current.seconds() : 0.0;
+    }
+
+    [[nodiscard]] double runtimeDurationSeconds() const noexcept {
+        return runtimeTimeline_ ? runtimeTimeline_->duration.seconds() : 0.0;
+    }
+
+    [[nodiscard]] int runtimeLayer() const noexcept {
+        return montageHandle_.isValid() ? static_cast<int>(activeLayer_) : -1;
+    }
+
+    [[nodiscard]] int runtimeSlot() const noexcept {
+        return montageHandle_.isValid() ? static_cast<int>(montageHandle_.index() % 2U) : -1;
+    }
+
     [[nodiscard]] Result<std::size_t> runtimePhysicalSection() const {
         const auto* montage = activeMontage();
         if (!montage)
@@ -1525,6 +1553,18 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                          [](ScriptActionTimelineEditor* self) { return self ? self->runtimePose() : nullptr; });
     actionEditor.addFunc("isRuntimePlaying",
                          [](ScriptActionTimelineEditor* self) { return self && self->runtimePlaying(); });
+    actionEditor.addFunc("getRuntimeState",
+                         [](ScriptActionTimelineEditor* self) { return self ? self->runtimeState() : "not-started"; });
+    actionEditor.addFunc("getRuntimeElapsedSeconds", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->runtimeElapsedSeconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getRuntimeDurationSeconds", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<float>(self->runtimeDurationSeconds()) : 0.0f;
+    });
+    actionEditor.addFunc("getRuntimeLayer",
+                         [](ScriptActionTimelineEditor* self) { return self ? self->runtimeLayer() : -1; });
+    actionEditor.addFunc("getRuntimeSlot",
+                         [](ScriptActionTimelineEditor* self) { return self ? self->runtimeSlot() : -1; });
     actionEditor.addFunc("getRuntimeSectionId", [](ScriptActionTimelineEditor* self) {
         if (!self || !self->runtimeAdvance() || !self->runtimeAdvance()->sectionId) return std::string{};
         return self->runtimeAdvance()->sectionId->format();

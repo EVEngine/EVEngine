@@ -1455,9 +1455,12 @@ function updatePose(dt) {
 
 function updateLabels() {
     ui.select("action.preview");
-    ui.setText("preview-status", format("%s  %.3f / %.3f s",
+    ui.setText("preview-status", format("%s  %.3f / %.3f s · Montage %s L%d/S%d %.3f / %.3f s",
         combatEditor.timeline.isPlaying() ? "PLAYING" : "PAUSED",
-        combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration()));
+        combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration(),
+        combatEditor.timeline.getRuntimeState(), combatEditor.timeline.getRuntimeLayer(),
+        combatEditor.timeline.getRuntimeSlot(), combatEditor.timeline.getRuntimeElapsedSeconds(),
+        combatEditor.timeline.getRuntimeDurationSeconds()));
     local runtimeSection = combatEditor.timeline.getRuntimePhysicalSection();
     local runtimeProgress = runtimeSection >= 0 ? combatEditor.timeline.getRuntimeSectionProgress(runtimeSection) : 0.0;
     ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs) · Combo %s x%d · Sec %d %.0f%% · W %.2f · %.1fx",

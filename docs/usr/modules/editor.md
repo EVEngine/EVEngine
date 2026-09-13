@@ -686,6 +686,8 @@ Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`evaluateRuntimeSec
 `setRuntimeBoneMask` 会同步复制一个与预览骨架匹配的 `AnimBoneMask` 到当前层，调用方随后可以安全销毁或修改
 原 Mask；`clearRuntimeBoneMask` 恢复全骨骼影响。示例的 Montage Inspector 可从当前选中关节生成 Mask，选择是否
 包含子关节，并提供紧凑的 Apply/Clear 工具栏。
+`getRuntimeState/getRuntimeElapsedSeconds/getRuntimeDurationSeconds/getRuntimeLayer/getRuntimeSlot` 提供只读句柄诊断；
+示例把它们投影到已有状态行，不增加窗口或面板尺寸。
 运行中的预览还可用 `setRuntimeRate/getRuntimeRate` 设置和读取严格为正的倍率；倍率只缩放调用者注入的
 delta，不读取墙钟，也不写回资产的 `basePlayRate`。`getRuntimePhysicalSection`、
 `getRuntimeSectionProgress` 和 `getRuntimeWeight` 可直接驱动运行诊断 HUD。
