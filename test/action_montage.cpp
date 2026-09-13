@@ -410,6 +410,46 @@ TEST_CASE("actionMontage.coordinatorPingPongsSlotsAndRejectsStaleHandles") {
     CHECK_NE(third.value().generation(), first.value().generation());
 }
 
+TEST_CASE("actionMontage.coordinatorRetainsCompletedPoseUntilNextCrossFade") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontageCoordinator coordinator(skeleton);
+    auto first = coordinator.play(0, montageTimeline(), montageClips(), eve::action::ActionExecutionId(41),
+                                  eve::SimulationTick(1));
+    REQUIRE(first.ok());
+    eve::action::ActionAdvance completed;
+    completed.id           = eve::action::ActionExecutionId(41);
+    completed.phase        = eve::action::ActionPhase::Completed;
+    completed.totalElapsed = eve::Duration::fromSeconds(2.0).takeValue();
+    REQUIRE(coordinator.present(first.value(), completed, eve::SimulationTick(2)).ok());
+    REQUIRE(coordinator.advanceBlendOuts(eve::Duration::zero(), eve::SimulationTick(3)).ok());
+    auto retained = coordinator.resolve(first.value());
+    REQUIRE(retained.ok());
+    CHECK(retained.value().get().isFinished());
+    auto retainedPose = coordinator.pose(0);
+    REQUIRE(retainedPose.ok());
+    CHECK(std::fabs(retainedPose.value().get().local(0).px - 2.0f) < 1e-5f);
+
+    auto nextTimeline = montageTimeline();
+    nextTimeline.montage.defaultBlendIn = eve::Duration::fromSeconds(0.2).takeValue();
+    auto second = coordinator.play(0, nextTimeline, montageClips(), eve::action::ActionExecutionId(42),
+                                   eve::SimulationTick(4));
+    REQUIRE(second.ok());
+    eve::action::ActionAdvance entering;
+    entering.id           = eve::action::ActionExecutionId(42);
+    entering.phase        = eve::action::ActionPhase::Active;
+    entering.totalElapsed = eve::Duration::fromSeconds(0.1).takeValue();
+    REQUIRE(coordinator.present(second.value(), entering, eve::SimulationTick(5)).ok());
+    REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(),
+                                         eve::SimulationTick(5), second.value()).ok());
+    auto blendedPose = coordinator.pose(0);
+    REQUIRE(blendedPose.ok());
+    CHECK(std::fabs(blendedPose.value().get().local(0).px - 1.05f) < 1e-5f);
+    REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(),
+                                         eve::SimulationTick(6), second.value()).ok());
+    CHECK(!coordinator.resolve(first.value()).ok());
+}
+
 TEST_CASE("actionMontage.coordinatorLayerMaskRestrictsCompositionPerBone") {
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");

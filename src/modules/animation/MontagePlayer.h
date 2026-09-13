@@ -189,6 +189,10 @@ public:
     [[nodiscard]] bool isPlaying() const noexcept { return playing_; }
     /** @brief Whether playback is in externally requested blend-out. */
     [[nodiscard]] bool isBlendingOut() const noexcept { return blendingOut_; }
+    /** @brief Whether playback completed naturally while retaining its final weighted pose. */
+    [[nodiscard]] bool isFinished() const noexcept {
+        return timeline_ && !executionId_.isZero() && !playing_ && !blendingOut_ && weight_ > 0.0;
+    }
     /** @brief Current continuous montage slot weight. */
     [[nodiscard]] double weight() const noexcept { return weight_; }
     /** @brief Authored output layer requested by the prepared montage, or zero before preparation. */

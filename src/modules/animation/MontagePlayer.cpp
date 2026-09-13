@@ -457,15 +457,28 @@ Result<MontageAdvance> MontagePlayer::interrupt(SimulationTick tick) {
 Result<MontageAdvance> MontagePlayer::beginBlendOut(Duration duration, SimulationTick tick) {
     if (duration < Duration::zero())
         return invalid<MontageAdvance>("montage blend-out duration must be non-negative", "duration");
-    if (duration.isZero()) return interrupt(tick);
     if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
-    if (!playing_) return Result<MontageAdvance>::success(MontageAdvance{}, Status::success(StatusCode::NoOp));
+    if (duration.isZero() && playing_) return interrupt(tick);
+    if (!playing_ && weight_ <= 0.0)
+        return Result<MontageAdvance>::success(MontageAdvance{}, Status::success(StatusCode::NoOp));
     if (hasLastTick_ && tick <= lastTick_)
         return Result<MontageAdvance>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "montage tick must advance monotonically", "tick"));
     MontageAdvance result;
     result.previous = result.current = time_;
     result.weight                    = weight_;
+    if (duration.isZero()) {
+        player_->stop();
+        activeSection_ = nullptr;
+        playing_       = false;
+        blendingOut_   = false;
+        weight_        = 0.0;
+        result.weight  = 0.0;
+        result.completed = true;
+        lastTick_      = tick;
+        hasLastTick_   = true;
+        return Result<MontageAdvance>::success(std::move(result), Status::success(StatusCode::Applied));
+    }
     for (const auto& track : timeline_->tracks) {
         if (track.muted) continue;
         for (const auto& state : track.states)

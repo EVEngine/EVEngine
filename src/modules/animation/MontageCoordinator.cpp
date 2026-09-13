@@ -62,7 +62,7 @@ Result<MontageHandle> MontageCoordinator::play(std::size_t layer, action::Action
     auto started = candidate->play(executionId);
     if (!started) return Result<MontageHandle>::failure(started.status());
     Slot& previous = entry.slots[entry.active];
-    if (previous.player && previous.player->isPlaying()) {
+    if (previous.player && (previous.player->isPlaying() || previous.player->isFinished())) {
         auto fading = previous.player->beginBlendOut(blendOut, tick);
         if (!fading) return Result<MontageHandle>::failure(fading.status());
     }
@@ -235,7 +235,9 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t la
 void MontageCoordinator::collectFinished() noexcept {
     for (Layer& layer : layers_)
         for (Slot& slot : layer.slots)
-            if (slot.player && !slot.player->isPlaying()) retireSlot(slot);
+            if (slot.player && !slot.player->isPlaying() && !slot.player->isBlendingOut() &&
+                slot.player->weight() <= 0.0)
+                retireSlot(slot);
 }
 
 }  // namespace eve::animation

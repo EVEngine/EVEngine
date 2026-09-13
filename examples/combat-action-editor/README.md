@@ -105,6 +105,8 @@ the authored `input:combo-window` is open to resolve its gameplay tag through
 montage through the fixed dual-slot coordinator. The outgoing execution keeps
 its clip snapshot and fades out while the replacement fades in, so combo
 transitions remain continuous. Input outside the authored window is rejected.
+Naturally completed montages retain their final weighted pose until another
+montage cross-fades it out, avoiding a one-frame snap back to the bind pose.
 
 The preview and timeline headers show the current selection, playback state,
 edit revision and the last emitted event so every interaction has visible
