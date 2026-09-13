@@ -6,6 +6,7 @@
 #include "action/editor/ActionEditorModule.h"
 #include "action/editor/ActionPreviewController.h"
 #include "action/editor/ActionTimelineEditor.h"
+#include "action/editor/ActionTimelinePayloadEditor.h"
 #include "action/editor/ActionTimelineWidget.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
@@ -685,6 +686,33 @@ private:
     std::uint64_t                            synchronizedEditorRevision_ = 0;
     std::uint64_t                            savedEditorRevision_        = 0;
 };
+
+std::optional<Value> itemPayloadField(ScriptActionTimelineEditor* self, const std::string& itemId,
+                                      const std::string& field) {
+    if (!self) return std::nullopt;
+    auto parsed = LogicalId::parse(itemId);
+    if (!parsed) return std::nullopt;
+    ActionTimelinePayloadEditor payloads(self->editor(), self->registry());
+    auto                        payload = payloads.payload(*parsed);
+    if (!payload.ok()) return std::nullopt;
+    const auto found = payload.value().find(field);
+    return found == payload.value().end() ? std::nullopt : std::optional<Value>(found->second);
+}
+
+EditorResult<void> patchItemPayload(ScriptActionTimelineEditor* self, const std::string& itemId,
+                                    Value::Object fields) {
+    if (!self)
+        return eve::editing::failed<void>(EditorStatus::Rejected,
+                                          RuleId("editor.action.timeline.payload-editor-null"),
+                                          "Action timeline editor is null");
+    auto parsed = LogicalId::parse(itemId);
+    if (!parsed)
+        return eve::editing::failed<void>(EditorStatus::Rejected,
+                                          RuleId("editor.action.timeline.payload-item-invalid"),
+                                          "Action-block identity is invalid");
+    ActionTimelinePayloadEditor payloads(self->editor(), self->registry());
+    return payloads.patch(*parsed, std::move(fields));
+}
 
 std::string eventKind(action::ActionTimelineEventKind kind) {
     switch (kind) {
@@ -1563,6 +1591,68 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!payload) return std::string("{}");
         auto encoded = Value(*payload).toJson();
         return encoded ? encoded.value() : std::string("{}");
+    });
+    actionEditor.addFunc("patchItemPayload", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                   const std::string& fieldsJson) {
+        auto parsed = Value::fromJson(fieldsJson);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status(), false, false);
+        const auto* fields = parsed.value().getIf<Value::Object>();
+        if (!fields)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "payload patch must be a JSON object",
+                                  "fieldsJson");
+        return project(vm, patchItemPayload(self, itemId, *fields));
+    });
+    actionEditor.addFunc("setItemPayloadText", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                     const std::string& field, const std::string& value) {
+        return project(vm, patchItemPayload(self, itemId, {{field, value}}));
+    });
+    actionEditor.addFunc("setItemPayloadNumber", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                       const std::string& field, float value) {
+        return project(vm, patchItemPayload(self, itemId, {{field, static_cast<double>(value)}}));
+    });
+    actionEditor.addFunc("setItemPayloadInteger", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                        const std::string& field, int value) {
+        return project(vm, patchItemPayload(self, itemId, {{field, static_cast<std::int64_t>(value)}}));
+    });
+    actionEditor.addFunc("setItemPayloadBool", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                     const std::string& field, bool value) {
+        return project(vm, patchItemPayload(self, itemId, {{field, value}}));
+    });
+    actionEditor.addFunc("setItemPayloadVector3", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                        const std::string& field, float x, float y, float z) {
+        return project(vm, patchItemPayload(self, itemId,
+                                            {{field, Value::Array{static_cast<double>(x), static_cast<double>(y),
+                                                                  static_cast<double>(z)}}}));
+    });
+    actionEditor.addFunc("getItemPayloadText", [](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                   const std::string& field, const std::string& fallback) {
+        const auto value = itemPayloadField(self, itemId, field);
+        const auto* text = value ? value->getIf<std::string>() : nullptr;
+        return text ? *text : fallback;
+    });
+    actionEditor.addFunc("getItemPayloadNumber", [](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                     const std::string& field, float fallback) {
+        const auto value = itemPayloadField(self, itemId, field);
+        if (!value) return fallback;
+        if (const auto* decimal = value->getIf<double>()) return static_cast<float>(*decimal);
+        if (const auto* integer = value->getIf<std::int64_t>()) return static_cast<float>(*integer);
+        return fallback;
+    });
+    actionEditor.addFunc("getItemPayloadBool", [](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                   const std::string& field, bool fallback) {
+        const auto value = itemPayloadField(self, itemId, field);
+        const auto* boolean = value ? value->getIf<bool>() : nullptr;
+        return boolean ? *boolean : fallback;
+    });
+    actionEditor.addFunc("getItemPayloadVector", [](ScriptActionTimelineEditor* self, const std::string& itemId,
+                                                     const std::string& field, int component, float fallback) {
+        const auto value = itemPayloadField(self, itemId, field);
+        const auto* array = value ? value->getIf<Value::Array>() : nullptr;
+        if (!array || component < 0 || component >= static_cast<int>(array->size())) return fallback;
+        const auto& entry = (*array)[static_cast<std::size_t>(component)];
+        if (const auto* decimal = entry.getIf<double>()) return static_cast<float>(*decimal);
+        if (const auto* integer = entry.getIf<std::int64_t>()) return static_cast<float>(*integer);
+        return fallback;
     });
     actionEditor.addFunc("getParameterKeyCount", [](ScriptActionTimelineEditor* self, const std::string& itemId) {
         const auto* state = self ? findState(self->editor().target().timeline(), itemId) : nullptr;

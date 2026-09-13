@@ -30,9 +30,13 @@ Controls:
 - Selecting an animation section, instant notify, or state window automatically
   opens the **Action Block** inspector. Its timing sliders commit validated,
   undoable transactions; the toolbar deletes the selected block and exposes the
-  same undo/redo history. Notify type and payload JSON are editable for advanced
-  authoring; registered type, Instant/State shape and typed payload contracts are
-  validated before the document changes. **Enabled** persists in schema v4;
+  same undo/redo history. Audio, VFX and Prefab blocks expose typed resource,
+  playback, lifecycle and shared spatial controls; the advanced payload JSON
+  remains available for extensions. Each typed edit merges only its fields,
+  preserves unknown payload data, validates the complete result through the
+  notify registry, and commits one undo step. Notify type and payload JSON are
+  also editable for advanced authoring; registered type, Instant/State shape and
+  typed payload contracts are validated before the document changes. **Enabled** persists in schema v4;
   disabled blocks remain visible and editable but do not emit preview/runtime
   events. **New Block** opens a compact registry-backed picker for the target
   track, Instant/State type, duration and payload; valid starter payloads make

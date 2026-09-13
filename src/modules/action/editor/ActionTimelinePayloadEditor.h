@@ -1,0 +1,38 @@
+#pragma once
+
+/** @file ActionTimelinePayloadEditor.h @brief Validated partial editing for action-block payloads. */
+
+#include "action/ActionNotifyRegistry.h"
+#include "action/editor/ActionTimelineEditor.h"
+
+namespace eve::editor {
+
+/**
+ * @brief Applies typed partial payload changes through the canonical timeline transaction authority.
+ *
+ * The adapter borrows an editor and registry that must outlive it. Calls are owner-thread-only.
+ * Existing and unknown payload fields are preserved; the merged payload is validated before publication.
+ */
+class ActionTimelinePayloadEditor {
+public:
+    /** @brief Construct a transient payload editor over borrowed authoritative services. */
+    ActionTimelinePayloadEditor(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)
+        : editor_(editor), registry_(registry) {}
+
+    /** @brief Return an owning copy of one editable notify or state payload. */
+    [[nodiscard]] EditorResult<Value::Object> payload(const LogicalId& itemId) const;
+
+    /**
+     * @brief Merge fields into one payload and commit exactly one validated undo step.
+     * @param itemId Stable notify or state identity.
+     * @param fields Fields to replace or append; omitted fields remain unchanged.
+     * @return Applied or a structured lookup, registry, validation, or transaction failure.
+     */
+    [[nodiscard]] EditorResult<void> patch(const LogicalId& itemId, Value::Object fields);
+
+private:
+    ActionTimelineEditor&               editor_;
+    const action::ActionNotifyRegistry& registry_;
+};
+
+}  // namespace eve::editor

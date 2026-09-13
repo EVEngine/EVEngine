@@ -654,6 +654,14 @@ if (actionEditor.hasPreviewHost())
 8 像素阈值内磁吸到 0 点、当前播放头、物理分段、动画 Section 边界和其他轨道 Block 边界。
 多选拖动会排除选择集自身的边界，避免整组被自己的成员吸住。
 
+选中的 Audio、VFX 与 Prefab Block 会显示类型化属性：资源 URI、播放参数、停止或生命周期策略，以及
+attachment、source/target anchor、bone 和位置/旋转/缩放偏移。脚本也可用
+`setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用 `patchItemPayload` 原子提交一组字段；
+`getItemPayloadText/Number/Bool/Vector` 用于把权威 payload 投射回 UI。所有入口先合并到 payload 的拥有型
+副本，保留未识别扩展字段，再通过 `ActionNotifyRegistry` 校验完整候选值，最后交给
+`ActionTimelineEditor` 产生一个撤销步骤。校验失败不会增加 revision 或留下部分修改；Advanced JSON 仍是
+自定义类型和扩展字段的显式逃生口。
+
 工厂与所有可能失败的编辑操作返回通用 Result 表：`ok`、`value`、`status.code`、
 `status.summary` 和 `status.diagnostics`。返回的动作编辑器由 Squirrel VM release hook 拥有，
 仅可在创建它的线程使用；`configureWorkspace` 不保留传入的 Workspace 指针，`snapshot`

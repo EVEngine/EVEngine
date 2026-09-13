@@ -524,8 +524,40 @@ function panelInspector() {
         ui.end();
         ui.checkbox("Enabled", true, "action-enabled");
         ui.text("Type", "action-type-label"); ui.inputText("##Type", "", "action-type");
+        ui.text("Resource", "typed-resource-title");
+        ui.inputText("URI", "", "payload-uri");
+        ui.text("Audio", "typed-audio-title");
+        ui.slider("Volume", 1.0, 0.0, 2.0, "audio-volume");
+        ui.slider("Pitch", 1.0, 0.05, 4.0, "audio-pitch");
+        ui.checkbox("Looping", false, "audio-looping");
+        ui.text("VFX", "typed-vfx-title");
+        ui.combo("Stop", "Stop Emitting\nClear Immediately", 0, "vfx-stop");
+        ui.checkbox("Sync Rate", true, "vfx-sync-rate");
+        ui.slider("Clip Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "vfx-clip-start");
+        ui.slider("Clip End", 0.5, 0.0, combatEditor.timeline.getDuration(), "vfx-clip-end");
+        ui.slider("Lifetime", 1.0, 0.01, 10.0, "vfx-lifetime");
+        ui.text("Prefab", "typed-prefab-title");
+        ui.combo("Lifecycle", "Recycle on Exit\nCustom Duration\nIndependent", 0, "prefab-lifecycle");
+        ui.slider("Custom Duration", 1.0, 0.01, 10.0, "prefab-duration");
+        ui.text("Spatial Attachment", "typed-spatial-title");
+        ui.combo("Attachment", "Follow Target\nFollow Position\nWorld at Start", 0, "spatial-attachment");
+        ui.combo("Anchor", "Source\nTarget", 0, "spatial-target");
+        ui.slider("Target Index", 0.0, 0.0, 8.0, "spatial-target-index");
+        ui.inputText("Bone", "", "spatial-bone");
+        ui.text("Position Offset", "spatial-position-title");
+        ui.slider("X", 0.0, -5.0, 5.0, "spatial-position-x");
+        ui.slider("Y", 0.0, -5.0, 5.0, "spatial-position-y");
+        ui.slider("Z", 0.0, -5.0, 5.0, "spatial-position-z");
+        ui.text("Rotation Offset", "spatial-rotation-title");
+        ui.slider("X", 0.0, -180.0, 180.0, "spatial-rotation-x");
+        ui.slider("Y", 0.0, -180.0, 180.0, "spatial-rotation-y");
+        ui.slider("Z", 0.0, -180.0, 180.0, "spatial-rotation-z");
+        ui.text("Spawn Scale", "spatial-scale-title");
+        ui.slider("X", 1.0, 0.05, 4.0, "spatial-scale-x");
+        ui.slider("Y", 1.0, 0.05, 4.0, "spatial-scale-y");
+        ui.slider("Z", 1.0, 0.05, 4.0, "spatial-scale-z");
         ui.setItemSize(300.0, 0.0);
-        ui.text("Payload JSON", "action-payload-label"); ui.inputText("##Payload", "{}", "action-payload");
+        ui.text("Advanced Payload JSON", "action-payload-label"); ui.inputText("##Payload", "{}", "action-payload");
         ui.setItemSize(300.0, 0.0);
         ui.slider("Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-start");
         ui.slider("End", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-end");
@@ -598,6 +630,50 @@ function animationSectionIndex(itemId) {
 
 function blendCurveIndex(name) { return name == "linear" ? 0 : 1; }
 function blendCurveAt(index) { return index == 0 ? "linear" : "ease-in-out"; }
+function isAudioType(type) { return type == "presentation:audio" || type == "presentation:audio-state"; }
+function isVfxType(type) { return type == "presentation:vfx" || type == "presentation:vfx-state"; }
+function isPrefabType(type) { return type == "gameplay:prefab-spawn"; }
+function isSpatialType(type) { return isAudioType(type) || isVfxType(type) || isPrefabType(type); }
+function attachmentIndex(value) {
+    return value == "follow_position_only" ? 1 : (value == "world_transform_at_start" ? 2 : 0);
+}
+function attachmentAt(index) {
+    return index == 1 ? "follow_position_only" : (index == 2 ? "world_transform_at_start" : "follow_target");
+}
+function lifecycleIndex(value) {
+    return value == "custom_duration" ? 1 : (value == "independent" ? 2 : 0);
+}
+function lifecycleAt(index) {
+    return index == 1 ? "custom_duration" : (index == 2 ? "independent" : "recycle_on_block_exit");
+}
+function stopBehaviorIndex(value) { return value == "clear_immediately" ? 1 : 0; }
+function stopBehaviorAt(index) { return index == 1 ? "clear_immediately" : "stop_emitting"; }
+
+function setTypedPayloadVisibility(type, single) {
+    local audio = single && isAudioType(type);
+    local vfx = single && isVfxType(type);
+    local prefab = single && isPrefabType(type);
+    local spatial = single && isSpatialType(type);
+    foreach (field in ["typed-resource-title", "payload-uri"]) ui.setVisible(field, spatial);
+    foreach (field in ["typed-audio-title", "audio-volume", "audio-pitch"])
+        ui.setVisible(field, audio);
+    ui.setVisible("audio-looping", audio && type == "presentation:audio-state");
+    foreach (field in ["typed-vfx-title", "vfx-stop", "vfx-sync-rate", "vfx-clip-start", "vfx-clip-end"])
+        ui.setVisible(field, vfx);
+    ui.setVisible("vfx-lifetime", vfx && type == "presentation:vfx");
+    foreach (field in ["typed-prefab-title", "prefab-lifecycle", "prefab-duration"])
+        ui.setVisible(field, prefab);
+    foreach (field in ["typed-spatial-title", "spatial-attachment", "spatial-target", "spatial-target-index",
+                       "spatial-bone", "spatial-position-title", "spatial-position-x", "spatial-position-y",
+                       "spatial-position-z", "spatial-rotation-title", "spatial-rotation-x", "spatial-rotation-y",
+                       "spatial-rotation-z", "spatial-scale-title", "spatial-scale-x", "spatial-scale-y",
+                       "spatial-scale-z"]) ui.setVisible(field, spatial);
+}
+
+function commitPayloadVector(field, prefix) {
+    return combatEditor.timeline.setItemPayloadVector3(combatEditor.selectedActionId, field,
+        ui.getValue(prefix + "-x"), ui.getValue(prefix + "-y"), ui.getValue(prefix + "-z"));
+}
 
 function commitMontageSettings() {
     return combatEditor.timeline.setMontageSettings(
@@ -876,6 +952,52 @@ function handleUiEvents() {
                 combatEditor.insertStateType = ui.getValue("insert-state-type").tointeger();
                 ui.setValueText("insert-state-payload", defaultPayloadForType(
                     combatEditor.timeline.getInsertableType(true, combatEditor.insertStateType)));
+            } else if (id == "payload-uri" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadText(
+                    combatEditor.selectedActionId, "uri", ui.getValueText(id));
+            } else if ((id == "audio-volume" || id == "audio-pitch") && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadNumber(combatEditor.selectedActionId,
+                    id == "audio-volume" ? "volume" : "pitch", ui.getValue(id));
+            } else if (id == "audio-looping" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadBool(
+                    combatEditor.selectedActionId, "looping", ui.getChecked(id));
+            } else if (id == "vfx-stop" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadText(combatEditor.selectedActionId,
+                    "stopBehavior", stopBehaviorAt(ui.getValue(id).tointeger()));
+            } else if (id == "vfx-sync-rate" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadBool(
+                    combatEditor.selectedActionId, "playbackRateSynced", ui.getChecked(id));
+            } else if ((id == "vfx-clip-start" || id == "vfx-clip-end" || id == "vfx-lifetime") &&
+                       combatEditor.selectedActionId != "") {
+                local field = id == "vfx-clip-start" ? "clipStartTime" :
+                    (id == "vfx-clip-end" ? "clipEndTime" : "lifetimeSeconds");
+                result = combatEditor.timeline.setItemPayloadNumber(
+                    combatEditor.selectedActionId, field, ui.getValue(id));
+            } else if (id == "prefab-lifecycle" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.patchItemPayload(combatEditor.selectedActionId,
+                    format("{\"lifecycle\":\"%s\",\"customDurationSeconds\":%.6f}",
+                           lifecycleAt(ui.getValue(id).tointeger()), ui.getValue("prefab-duration")));
+            } else if (id == "prefab-duration" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadNumber(
+                    combatEditor.selectedActionId, "customDurationSeconds", ui.getValue(id));
+            } else if (id == "spatial-attachment" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadText(combatEditor.selectedActionId,
+                    "attachment", attachmentAt(ui.getValue(id).tointeger()));
+            } else if (id == "spatial-target" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadText(combatEditor.selectedActionId,
+                    "spatialTarget", ui.getValue(id).tointeger() == 1 ? "target" : "source");
+            } else if (id == "spatial-target-index" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadInteger(
+                    combatEditor.selectedActionId, "targetIndex", ui.getValue(id).tointeger());
+            } else if (id == "spatial-bone" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadText(
+                    combatEditor.selectedActionId, "bone", ui.getValueText(id));
+            } else if (id.find("spatial-position-") == 0) {
+                result = commitPayloadVector("positionOffset", "spatial-position");
+            } else if (id.find("spatial-rotation-") == 0) {
+                result = commitPayloadVector("rotationOffsetDegrees", "spatial-rotation");
+            } else if (id.find("spatial-scale-") == 0) {
+                result = commitPayloadVector("scale", "spatial-scale");
             } else if ((id == "action-start" || id == "action-end") && combatEditor.selectedActionId != "") {
                 local start = ui.getValue("action-start");
                 local finish = combatEditor.selectedActionState ? ui.getValue("action-end") : start;
@@ -908,11 +1030,18 @@ function handleUiEvents() {
             else if (id.find("scale-") == 0) result = combatEditor.clipEditor.setSelectedScale(
                 ui.getValue("scale-x"), ui.getValue("scale-y"), ui.getValue("scale-z"));
             else if (id == "key-time") result = combatEditor.clipEditor.moveSelectedKey(ui.getValue("key-time"));
-            if (id.find("action-") != 0 && result.ok) requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
-                                         "Rebuild edited KayKit clip");
-            if (id.find("action-") != 0)
+            local jointChange = id.find("position-") == 0 || id.find("rotation-") == 0 ||
+                                id.find("scale-") == 0 || id == "key-time";
+            if (jointChange && result.ok)
+                requireResult(combatEditor.clipEditor.writeRuntimeClip(combatEditor.clip, combatEditor.skeleton),
+                              "Rebuild edited KayKit clip");
+            if (jointChange)
                 combatEditor.status = result.ok ? "Joint transform keyed · revision " + combatEditor.clipEditor.getRevision()
                                                 : result.status.summary;
+            else if (!result.ok) combatEditor.status = result.status.summary;
+            else if (id.find("payload-") == 0 || id.find("audio-") == 0 || id.find("vfx-") == 0 ||
+                     id.find("prefab-") == 0 || id.find("spatial-") == 0)
+                combatEditor.status = "Typed Action Block properties committed";
         }
         changed = ui.consumeChange();
     }
@@ -1034,6 +1163,8 @@ function updateLabels() {
             local selectedType = combatEditor.timeline.getItemType(selected);
             local sectionIndex = animationSectionIndex(combatEditor.selectedActionId);
             local isSection = sectionIndex >= 0;
+            local single = selectionCount == 1;
+            setTypedPayloadVisibility(selectedType, single && !isSection);
             ui.setText("action-block-id", combatEditor.selectedActionId);
             ui.setText("action-block-kind", isSection ? "Animation section" :
                        (combatEditor.selectedActionState ? "State window" : "Instant notify"));
@@ -1042,7 +1173,6 @@ function updateLabels() {
             ui.setChecked("action-enabled", combatEditor.timeline.getItemEnabled(combatEditor.selectedActionId));
             ui.setValue("action-start", combatEditor.timeline.getItemStart(combatEditor.selectedActionId));
             ui.setValue("action-end", combatEditor.timeline.getItemEnd(combatEditor.selectedActionId));
-            local single = selectionCount == 1;
             ui.setEnabled("action-start", single);
             ui.setEnabled("action-end", single && (combatEditor.selectedActionState || isSection));
             ui.setEnabled("action-enabled", single && !isSection);
@@ -1060,10 +1190,50 @@ function updateLabels() {
                 ui.setValue("section-source-end", combatEditor.timeline.getAnimationSectionSourceEnd(sectionIndex));
                 ui.setValue("section-curve", blendCurveIndex(
                     combatEditor.timeline.getAnimationSectionBlendCurve(sectionIndex)).tofloat());
+            } else if (single && isSpatialType(selectedType)) {
+                local itemId = combatEditor.selectedActionId;
+                ui.setValueText("payload-uri", combatEditor.timeline.getItemPayloadText(itemId, "uri", ""));
+                ui.setValue("spatial-attachment", attachmentIndex(
+                    combatEditor.timeline.getItemPayloadText(itemId, "attachment", "follow_target")).tofloat());
+                ui.setValue("spatial-target", combatEditor.timeline.getItemPayloadText(
+                    itemId, "spatialTarget", "source") == "target" ? 1.0 : 0.0);
+                ui.setValue("spatial-target-index", combatEditor.timeline.getItemPayloadNumber(
+                    itemId, "targetIndex", 0.0));
+                ui.setValueText("spatial-bone", combatEditor.timeline.getItemPayloadText(itemId, "bone", ""));
+                foreach (axis, component in { x=0, y=1, z=2 }) {
+                    ui.setValue("spatial-position-" + axis, combatEditor.timeline.getItemPayloadVector(
+                        itemId, "positionOffset", component, 0.0));
+                    ui.setValue("spatial-rotation-" + axis, combatEditor.timeline.getItemPayloadVector(
+                        itemId, "rotationOffsetDegrees", component, 0.0));
+                    ui.setValue("spatial-scale-" + axis, combatEditor.timeline.getItemPayloadVector(
+                        itemId, "scale", component, 1.0));
+                }
+                if (isAudioType(selectedType)) {
+                    ui.setValue("audio-volume", combatEditor.timeline.getItemPayloadNumber(itemId, "volume", 1.0));
+                    ui.setValue("audio-pitch", combatEditor.timeline.getItemPayloadNumber(itemId, "pitch", 1.0));
+                    ui.setChecked("audio-looping", combatEditor.timeline.getItemPayloadBool(itemId, "looping", false));
+                } else if (isVfxType(selectedType)) {
+                    ui.setValue("vfx-stop", stopBehaviorIndex(combatEditor.timeline.getItemPayloadText(
+                        itemId, "stopBehavior", "stop_emitting")).tofloat());
+                    ui.setChecked("vfx-sync-rate", combatEditor.timeline.getItemPayloadBool(
+                        itemId, "playbackRateSynced", true));
+                    ui.setValue("vfx-clip-start", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "clipStartTime", 0.0));
+                    ui.setValue("vfx-clip-end", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "clipEndTime", 0.5));
+                    ui.setValue("vfx-lifetime", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "lifetimeSeconds", 1.0));
+                } else if (isPrefabType(selectedType)) {
+                    ui.setValue("prefab-lifecycle", lifecycleIndex(combatEditor.timeline.getItemPayloadText(
+                        itemId, "lifecycle", "recycle_on_block_exit")).tofloat());
+                    ui.setValue("prefab-duration", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "customDurationSeconds", 1.0));
+                }
             }
             ui.setEnabled("delete-action", true);
         } else {
             combatEditor.selectedActionId = "";
+            setTypedPayloadVisibility("", false);
             ui.setText("action-block-id", "No Action Block selected");
             ui.setText("action-block-kind", "Select a block in the montage timeline");
             ui.setEnabled("action-start", false); ui.setEnabled("action-end", false);
