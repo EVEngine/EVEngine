@@ -619,6 +619,15 @@ actionEditor.addStateAtCursor("combat-track:gameplay", stateType, 0.25,
 actionEditor.handleTimelineShortcut("Ctrl+C");
 actionEditor.handleTimelineShortcut("Ctrl+V");
 
+// Whole-track authoring uses the same canonical timeline transaction history.
+actionEditor.addTrack("combat-track:camera", "Camera", "camera");
+actionEditor.renameTrack("combat-track:camera", "Camera Cues");
+actionEditor.setTrackMuted("combat-track:camera", true);
+actionEditor.setTrackLocked("combat-track:camera", true);
+local locked = actionEditor.getTrackLocked(1);
+actionEditor.copyTrack("combat-track:camera");
+local pastedTrack = actionEditor.pasteTrack();
+
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());

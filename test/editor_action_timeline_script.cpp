@@ -94,6 +94,17 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         invalidInsertedNotify <- actionEditor.addNotifyAtCursor(
             "test-track:gameplay", "combat:damage", "{}");
         itemCountAfterInsert <- actionEditor.getItemCount();
+        initialTrackLocked <- actionEditor.getTrackLocked(0);
+        lockTrack <- actionEditor.setTrackLocked("test-track:gameplay", true);
+        lockedTrackValue <- actionEditor.getTrackLocked(0);
+        unlockTrack <- actionEditor.setTrackLocked("test-track:gameplay", false);
+        renameTrack <- actionEditor.renameTrack("test-track:gameplay", "Combat Events");
+        renamedTrackLabel <- actionEditor.getTrackLabel(0);
+        copyTrackResult <- actionEditor.copyTrack("test-track:gameplay");
+        pasteTrackResult <- actionEditor.pasteTrack();
+        trackCountAfterPaste <- actionEditor.getTrackCount();
+        removePastedTrack <- actionEditor.removeTrack(pasteTrackResult.value);
+        trackCountAfterTrackCleanup <- actionEditor.getTrackCount();
         invalidResult <- eve.ActionEditorModule().create("test.asset.invalid", {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:invalid", durationNs=-1,
@@ -147,6 +158,17 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("insertedState").toTable().get<bool>("ok"));
     CHECK(!vm.find("invalidInsertedNotify").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("itemCountAfterInsert").toInt(), 3);
+    CHECK(!vm.find("initialTrackLocked").toBool());
+    CHECK(vm.find("lockTrack").toTable().get<bool>("ok"));
+    CHECK(vm.find("lockedTrackValue").toBool());
+    CHECK(vm.find("unlockTrack").toTable().get<bool>("ok"));
+    CHECK(vm.find("renameTrack").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("renamedTrackLabel").toString(), std::string("Combat Events"));
+    CHECK(vm.find("copyTrackResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("pasteTrackResult").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("trackCountAfterPaste").toInt(), 2);
+    CHECK(vm.find("removePastedTrack").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("trackCountAfterTrackCleanup").toInt(), 1);
     CHECK(!vm.find("invalidResult").toTable().get<bool>("ok"));
 }
 

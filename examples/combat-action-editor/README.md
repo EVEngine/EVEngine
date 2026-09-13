@@ -38,6 +38,9 @@ Controls:
   track, Instant/State type, duration and payload; valid starter payloads make
   every built-in type immediately insertable at the playhead. Copy/paste uses
   the native deep-copy clipboard and pastes relative to the current playhead.
+  The **Track** tab selects and renames tracks, toggles mute/lock state, creates
+  all eight semantic track kinds, deletes tracks, and deep-copies whole tracks
+  across the open document tabs.
   The **Joint** tab retains skeleton
   transform and key editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its

@@ -1353,6 +1353,10 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         const auto* track = self ? trackAt(self->editor().target().timeline(), index) : nullptr;
         return track && track->muted;
     });
+    actionEditor.addFunc("getTrackLocked", [](ScriptActionTimelineEditor* self, int index) {
+        const auto* track = self ? trackAt(self->editor().target().timeline(), index) : nullptr;
+        return track && track->locked;
+    });
     actionEditor.addFunc("getInsertableTypeCount", [](ScriptActionTimelineEditor* self, bool state) {
         if (!self) return 0;
         return static_cast<int>(self->widget()

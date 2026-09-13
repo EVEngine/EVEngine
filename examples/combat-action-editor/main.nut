@@ -9,6 +9,7 @@ persist combatEditor = {
     assetPickerOpen = false, assetSearch = "",
     inspectorMode = "joint", selectedActionId = "", selectedActionState = false, insertPanelOpen = false,
     insertTrack = 0, insertNotifyType = 0, insertStateType = 2,
+    selectedTrack = 0, newTrackOpen = false, newTrackKind = 0, nextTrackId = 0,
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -32,6 +33,12 @@ function trackChoices() {
         choices += combatEditor.timeline.getTrackLabel(i) + " [" + combatEditor.timeline.getTrackKind(i) + "]";
     }
     return choices;
+}
+
+function trackKindChoices() { return "Animation\nGameplay\nEffect\nAudio\nCamera\nMovement\nTag\nCustom"; }
+function trackKindAt(index) {
+    local kinds = ["animation", "gameplay", "effect", "audio", "camera", "movement", "tag", "custom"];
+    return kinds[clampf(index, 0, kinds.len() - 1).tointeger()];
 }
 
 function insertTypeChoices(state) {
@@ -415,8 +422,34 @@ function panelInspector() {
     ui.beginToolbar("inspector-tabs");
     ui.iconButton("bone", "Joint", "inspect-joint"); ui.setItemSelected(combatEditor.inspectorMode == "joint");
     ui.iconButton("layers", "Action Block", "inspect-action"); ui.setItemSelected(combatEditor.inspectorMode == "action");
+    ui.iconButton("list", "Track", "inspect-track"); ui.setItemSelected(combatEditor.inspectorMode == "track");
     ui.end();
     ui.text("", "action-uri"); ui.text("", "revision");
+    if (combatEditor.inspectorMode == "track") {
+        if (combatEditor.newTrackOpen) {
+            ui.text("New Track", "new-track-title");
+            ui.inputText("Name", "New Track", "new-track-label");
+            ui.combo("Kind", trackKindChoices(), combatEditor.newTrackKind, "new-track-kind");
+            ui.beginToolbar("new-track-actions"); ui.iconButton("plus", "Create", "add-track");
+            ui.iconButton("close", "Cancel", "cancel-new-track"); ui.end();
+            ui.textWrapped("Track creation is validated and committed as one undoable transaction.",
+                           245.0, "new-track-help");
+            return;
+        }
+        ui.text("Track Inspector", "track-title");
+        ui.combo("Track", trackChoices(), combatEditor.selectedTrack, "track-selector");
+        ui.text("", "track-id"); ui.text("", "track-kind");
+        ui.inputText("Name", "", "track-label");
+        ui.checkbox("Muted", false, "track-muted"); ui.checkbox("Locked", false, "track-locked");
+        ui.beginToolbar("track-tools"); ui.iconButton("plus", "New Track", "new-track");
+        ui.iconButton("copy", "Copy Track", "copy-track");
+        ui.iconButton("clipboard", "Paste Track", "paste-track");
+        ui.iconButton("trash", "Delete Track", "delete-track");
+        ui.iconButton("undo", "", "track-undo"); ui.iconButton("redo", "", "track-redo"); ui.end();
+        ui.textWrapped("Muted tracks do not emit events. Locked tracks reject item edits and paste operations.",
+                       245.0, "track-help");
+        return;
+    }
     if (combatEditor.inspectorMode == "action") {
         if (combatEditor.insertPanelOpen) {
             ui.text("New Block at Playhead", "insert-title");
@@ -612,13 +645,40 @@ function handleUiEvents() {
             combatEditor.status = "Runtime interruption · paired state exits + 0.20 s blend";
         } else if (id == "undo" || id == "redo") {
             applyHistory(id);
-        } else if (id == "inspect-joint" || id == "inspect-action") {
-            combatEditor.inspectorMode = id == "inspect-action" ? "action" : "joint";
+        } else if (id == "inspect-joint" || id == "inspect-action" || id == "inspect-track") {
+            combatEditor.inspectorMode = id == "inspect-action" ? "action" : (id == "inspect-track" ? "track" : "joint");
             combatEditor.insertPanelOpen = false;
+            combatEditor.newTrackOpen = false;
             mountInspectorPanel();
         } else if (id == "new-action" || id == "cancel-insert") {
             combatEditor.insertPanelOpen = id == "new-action";
             mountInspectorPanel();
+        } else if (id == "new-track" || id == "cancel-new-track") {
+            combatEditor.newTrackOpen = id == "new-track";
+            mountInspectorPanel();
+        } else if (id == "add-track") {
+            ui.select("action.inspector");
+            combatEditor.nextTrackId += 1;
+            local trackId = "editor-track:custom-" + combatEditor.nextTrackId;
+            local result = combatEditor.timeline.addTrack(trackId, ui.getValueText("new-track-label"),
+                                                          trackKindAt(combatEditor.newTrackKind));
+            combatEditor.status = result.ok ? "Track created" : result.status.summary;
+            if (result.ok) {
+                combatEditor.selectedTrack = combatEditor.timeline.getTrackCount() - 1;
+                combatEditor.newTrackOpen = false; mountInspectorPanel();
+            }
+        } else if (id == "copy-track" || id == "paste-track" || id == "delete-track") {
+            local result = id == "paste-track" ? combatEditor.timeline.pasteTrack() :
+                (id == "copy-track" ? combatEditor.timeline.copyTrack(
+                    combatEditor.timeline.getTrackId(combatEditor.selectedTrack)) :
+                    combatEditor.timeline.removeTrack(combatEditor.timeline.getTrackId(combatEditor.selectedTrack)));
+            combatEditor.status = result.ok ? (id == "copy-track" ? "Track copied" :
+                (id == "paste-track" ? "Track pasted" : "Track deleted")) : result.status.summary;
+            if (result.ok && id == "paste-track") combatEditor.selectedTrack = combatEditor.timeline.getTrackCount() - 1;
+            if (combatEditor.selectedTrack >= combatEditor.timeline.getTrackCount())
+                combatEditor.selectedTrack = combatEditor.timeline.getTrackCount() - 1;
+        } else if (id == "track-undo" || id == "track-redo") {
+            applyHistory(id == "track-undo" ? "undo" : "redo");
         } else if (id == "delete-action" && combatEditor.selectedActionId != "") {
             local result = combatEditor.timeline.removeItem(combatEditor.selectedActionId);
             combatEditor.status = result.ok ? "Action Block deleted" : result.status.summary;
@@ -671,6 +731,20 @@ function handleUiEvents() {
             ui.select("action.inspector");
             local result = { ok=true, status={summary=""} };
             if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
+            else if (id == "track-selector")
+                combatEditor.selectedTrack = ui.getValue("track-selector").tointeger();
+            else if (id == "new-track-kind")
+                combatEditor.newTrackKind = ui.getValue("new-track-kind").tointeger();
+            else if (id == "track-label" && combatEditor.timeline.getTrackCount() > 0) {
+                result = combatEditor.timeline.renameTrack(combatEditor.timeline.getTrackId(combatEditor.selectedTrack),
+                                                           ui.getValueText("track-label"));
+                combatEditor.status = result.ok ? "Track renamed" : result.status.summary;
+            } else if ((id == "track-muted" || id == "track-locked") && combatEditor.timeline.getTrackCount() > 0) {
+                local trackId = combatEditor.timeline.getTrackId(combatEditor.selectedTrack);
+                result = id == "track-muted" ? combatEditor.timeline.setTrackMuted(trackId, ui.getChecked(id)) :
+                                               combatEditor.timeline.setTrackLocked(trackId, ui.getChecked(id));
+                combatEditor.status = result.ok ? "Track flags committed" : result.status.summary;
+            }
             else if (id == "insert-notify-type") {
                 combatEditor.insertNotifyType = ui.getValue("insert-notify-type").tointeger();
                 ui.setValueText("insert-notify-payload", defaultPayloadForType(
@@ -838,6 +912,18 @@ function updateLabels() {
         }
         ui.setEnabled("action-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("action-redo", combatEditor.timeline.canRedo());
+    } else if (combatEditor.inspectorMode == "track" && !combatEditor.newTrackOpen &&
+               combatEditor.timeline.getTrackCount() > 0) {
+        combatEditor.selectedTrack = clampf(combatEditor.selectedTrack, 0,
+                                             combatEditor.timeline.getTrackCount() - 1).tointeger();
+        ui.setText("track-id", combatEditor.timeline.getTrackId(combatEditor.selectedTrack));
+        ui.setText("track-kind", "Kind: " + combatEditor.timeline.getTrackKind(combatEditor.selectedTrack));
+        ui.setValueText("track-label", combatEditor.timeline.getTrackLabel(combatEditor.selectedTrack));
+        ui.setChecked("track-muted", combatEditor.timeline.getTrackMuted(combatEditor.selectedTrack));
+        ui.setChecked("track-locked", combatEditor.timeline.getTrackLocked(combatEditor.selectedTrack));
+        ui.setEnabled("delete-track", combatEditor.timeline.getTrackCount() > 1);
+        ui.setEnabled("track-undo", combatEditor.timeline.canUndo());
+        ui.setEnabled("track-redo", combatEditor.timeline.canRedo());
     }
     ui.setText("selected-item", "Joint: " + combatEditor.clipEditor.getSelectedBone());
     ui.setText("last-event", combatEditor.lastEvent);
