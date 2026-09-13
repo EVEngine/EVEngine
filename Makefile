@@ -1158,7 +1158,7 @@ sdk/ios-debug: build/ios-debug
 
 sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
 sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug:
-	@plat=$@; plat=$${plat#sdk/}; \
+	@set -e; plat=$@; plat=$${plat#sdk/}; \
 	  cmake --install "build/$$plat" --prefix "dist/eve-sdk/$$plat"; \
 	  echo "Installed target SDK -> dist/eve-sdk/$$plat"
 
