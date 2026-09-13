@@ -12,7 +12,7 @@ persist combatEditor = {
     insertTrack = 0, insertNotifyType = 0, insertStateType = 2,
     selectedTrack = 0, selectedSplit = 0, newTrackOpen = false, newTrackKind = 0, nextTrackId = 0,
     clipEditor = null, boneMouseDown = false,
-    clip = null, player = null, knight = null, knightParts = [], skins = [],
+    clip = null, player = null, basePlayer = null, knight = null, knightParts = [], skins = [],
     enemySkeleton = null, enemyPlayer = null, enemyParts = [], enemySkins = [],
     combatRuntime = null, combatTick = 0,
     abilityGrantId = 0, abilityActivationId = 0, abilityPhase = "ready", abilityCooldown = 0.0,
@@ -38,7 +38,8 @@ local editorUiDefaults = {
     insertPanelOpen=false, newSectionOpen=false, nextSectionId=0,
     insertTrack=0, insertNotifyType=0, insertStateType=2,
     selectedTrack=0, selectedSplit=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
-    enemySkeleton=null, enemyPlayer=null, enemyParts=[], enemySkins=[], combatRuntime=null, combatTick=0,
+    basePlayer=null, enemySkeleton=null, enemyPlayer=null, enemyParts=[], enemySkins=[], combatRuntime=null,
+    combatTick=0,
     abilityGrantId=0, abilityActivationId=0, abilityPhase="ready", abilityCooldown=0.0,
     comboWindowOpen=false, comboInputTag="", attackWas=false, comboCount=0,
     playbackRate=1.0, slowWas=false, normalWas=false, fastWas=false,
@@ -234,6 +235,13 @@ function buildCharacterPreview() {
     combatEditor.player = anim.newPlayer(combatEditor.skeleton);
     combatEditor.player.play(combatEditor.clip);
     combatEditor.player.setLoop(false);
+
+    local playerIdleIndex = findAnimation(combatEditor.generalLibrary, "Idle_A");
+    if (playerIdleIndex < 0) throw "KayKit idle clip Idle_A was not found";
+    local playerIdle = anim.newClipFromModel(combatEditor.generalLibrary, combatEditor.skeleton, playerIdleIndex);
+    playerIdle.setLoop(true);
+    combatEditor.basePlayer = anim.newPlayer(combatEditor.skeleton);
+    combatEditor.basePlayer.play(playerIdle); combatEditor.basePlayer.setLoop(true);
 
     combatEditor.enemySkeleton = anim.newSkeletonFromModel(combatEditor.knight);
     local idleIndex = findAnimation(combatEditor.generalLibrary, "Idle_A");
@@ -644,6 +652,8 @@ function panelInspector() {
         ui.checkbox("Vertical", true, "montage-root-vertical");
         ui.checkbox("Rotation", true, "montage-root-rotation");
         ui.text("Layer Bone Mask", "montage-mask-title");
+        ui.slider("Layer Weight", 1.0, 0.0, 1.0, "montage-runtime-weight");
+        ui.checkbox("Additive", false, "montage-runtime-additive");
         ui.slider("Selected Joint", 1.0, 0.0, 1.0, "montage-mask-weight");
         ui.checkbox("Include Children", true, "montage-mask-children");
         ui.beginToolbar("montage-mask-tools");
@@ -1203,8 +1213,14 @@ function handleUiEvents() {
                 result = combatEditor.timeline.setSectionSplit(combatEditor.selectedSplit, splitTime);
                 if (result.ok) combatEditor.selectedSplit = sectionSplitIndexAt(splitTime);
                 combatEditor.status = result.ok ? "Physical section split moved" : result.status.summary;
+            } else if (id == "montage-runtime-weight") {
+                result = combatEditor.timeline.setRuntimeLayerWeight(ui.getValue(id));
+                combatEditor.status = result.ok ? "Runtime layer weight updated" : result.status.summary;
+            } else if (id == "montage-runtime-additive") {
+                result = combatEditor.timeline.setRuntimeLayerAdditive(ui.getChecked(id));
+                combatEditor.status = result.ok ? "Runtime layer mode updated" : result.status.summary;
             } else if (id.find("montage-") == 0 && id != "montage-tools" &&
-                       id.find("montage-mask-") != 0) {
+                       id.find("montage-mask-") != 0 && id.find("montage-runtime-") != 0) {
                 result = commitMontageSettings();
                 combatEditor.status = result.ok ? "Montage settings committed" : result.status.summary;
             } else if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
@@ -1440,7 +1456,8 @@ function updateKeyboardShortcuts() {
 }
 
 function updatePose(dt) {
-    local pose = combatEditor.timeline.getRuntimePose();
+    combatEditor.basePlayer.update(dt);
+    local pose = combatEditor.timeline.getRuntimePoseOverBase(combatEditor.basePlayer.getPose());
     if (pose == null) {
         combatEditor.player.setTime(combatEditor.clipEditor.getPlayhead());
         pose = combatEditor.player.getPose();
@@ -1605,6 +1622,8 @@ function updateLabels() {
         ui.setChecked("montage-root-horizontal", combatEditor.timeline.getMontageRootMotionHorizontal());
         ui.setChecked("montage-root-vertical", combatEditor.timeline.getMontageRootMotionVertical());
         ui.setChecked("montage-root-rotation", combatEditor.timeline.getMontageRootMotionRotation());
+        ui.setValue("montage-runtime-weight", combatEditor.timeline.getRuntimeLayerWeight());
+        ui.setChecked("montage-runtime-additive", combatEditor.timeline.getRuntimeLayerAdditive());
         local splitCount = combatEditor.timeline.getSectionSplitCount();
         combatEditor.selectedSplit = splitCount > 0 ? clampf(combatEditor.selectedSplit, 0, splitCount - 1).tointeger() : 0;
         ui.setValue("section-split-selector", combatEditor.selectedSplit.tofloat());

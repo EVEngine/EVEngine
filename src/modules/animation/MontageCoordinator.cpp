@@ -19,13 +19,20 @@ Result<T> coordinatorError(DiagnosticCode code, std::string message, std::string
 
 }  // namespace
 
-MontageCoordinator::MontageCoordinator(AnimSkeleton& skeleton) : skeleton_(skeleton) {}
+MontageCoordinator::MontageCoordinator(AnimSkeleton& skeleton)
+    : skeleton_(skeleton), composedPose_(std::make_unique<AnimPose>(skeleton.getBoneCount())) {
+    skeleton_.applyBindPose(composedPose_.get());
+}
 
 void MontageCoordinator::ensureLayer(std::size_t layer) {
     while (layers_.size() <= layer) {
         Layer entry;
-        entry.pose = std::make_unique<AnimPose>(skeleton_.getBoneCount());
+        entry.pose         = std::make_unique<AnimPose>(skeleton_.getBoneCount());
+        entry.rawPose      = std::make_unique<AnimPose>(skeleton_.getBoneCount());
+        entry.blendScratch = std::make_unique<AnimPose>(skeleton_.getBoneCount());
         skeleton_.applyBindPose(entry.pose.get());
+        skeleton_.applyBindPose(entry.rawPose.get());
+        skeleton_.applyBindPose(entry.blendScratch.get());
         layers_.push_back(std::move(entry));
     }
 }
@@ -172,6 +179,39 @@ Result<std::vector<float>> MontageCoordinator::layerBoneMask(std::size_t layer) 
     return Result<std::vector<float>>::success(layers_[layer].boneMask);
 }
 
+Result<void> MontageCoordinator::setLayerWeight(std::size_t layer, float weight) {
+    if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+    if (!std::isfinite(weight) || weight < 0.0f || weight > 1.0f)
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
+                                      "montage layer weight must be finite and within [0,1]", "weight");
+    ensureLayer(layer);
+    if (layers_[layer].weight == weight) return Result<void>::success(Status::success(StatusCode::NoOp));
+    layers_[layer].weight = weight;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<float> MontageCoordinator::layerWeight(std::size_t layer) const {
+    if (layer >= layers_.size())
+        return coordinatorError<float>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+    return Result<float>::success(layers_[layer].weight);
+}
+
+Result<void> MontageCoordinator::setLayerAdditive(std::size_t layer, bool additive) {
+    if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+    ensureLayer(layer);
+    if (layers_[layer].additive == additive) return Result<void>::success(Status::success(StatusCode::NoOp));
+    layers_[layer].additive = additive;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<bool> MontageCoordinator::layerAdditive(std::size_t layer) const {
+    if (layer >= layers_.size())
+        return coordinatorError<bool>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+    return Result<bool>::success(layers_[layer].additive);
+}
+
 Result<void> MontageCoordinator::setLayerRootMotionReceiver(std::size_t layer,
                                                             IMontageRootMotionReceiver& receiver) {
     if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
@@ -195,41 +235,73 @@ Result<void> MontageCoordinator::clearLayerRootMotionReceiver(std::size_t layer)
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+double MontageCoordinator::evaluateLayerPose(Layer& layer) const {
+    const Slot* first  = nullptr;
+    const Slot* second = nullptr;
+    double      total  = 0.0;
+    for (const Slot& slot : layer.slots) {
+        if (!slot.player || slot.player->weight() <= 0.0) continue;
+        total += slot.player->weight();
+        if (!first) first = &slot;
+        else second = &slot;
+    }
+    if (!first) {
+        skeleton_.applyBindPose(layer.rawPose.get());
+        return 0.0;
+    }
+
+    layer.rawPose->copyFrom(&first->player->pose());
+    if (second) {
+        if (total > 0.0) {
+            layer.blendScratch->copyFrom(layer.rawPose.get());
+            layer.rawPose->blendFrom(layer.blendScratch.get(), &second->player->pose(),
+                                     static_cast<float>(second->player->weight() / total));
+        }
+    }
+    return total;
+}
+
 Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t layerIndex) {
     if (layerIndex >= layers_.size())
         return coordinatorError<std::reference_wrapper<AnimPose>>(DiagnosticCode::NotFound,
                                                                   "montage layer does not exist", "layer");
     Layer& layer = layers_[layerIndex];
+    (void)evaluateLayerPose(layer);
     skeleton_.applyBindPose(layer.pose.get());
-    const Slot* first  = nullptr;
-    const Slot* second = nullptr;
-    for (const Slot& slot : layer.slots) {
-        if (!slot.player || slot.player->weight() <= 0.0) continue;
-        if (!first) first = &slot;
-        else second = &slot;
-    }
-    if (!first) return Result<std::reference_wrapper<AnimPose>>::success(std::ref(*layer.pose));
-
-    AnimPose composed;
-    composed.copyFrom(&first->player->pose());
-    if (second) {
-        const double total = first->player->weight() + second->player->weight();
-        if (total > 0.0) {
-            AnimPose base;
-            base.copyFrom(&composed);
-            composed.blendFrom(&base, &second->player->pose(),
-                               static_cast<float>(second->player->weight() / total));
-        }
-    }
     if (layer.boneMask.empty()) {
-        layer.pose->copyFrom(&composed);
+        layer.pose->copyFrom(layer.rawPose.get());
     } else {
         for (int bone = 0; bone < layer.pose->getBoneCount(); ++bone) {
             const float weight = layer.boneMask[static_cast<std::size_t>(bone)];
-            layer.pose->local(bone) = blendTRS(layer.pose->local(bone), composed.local(bone), weight);
+            layer.pose->local(bone) = blendTRS(layer.pose->local(bone), layer.rawPose->local(bone), weight);
         }
     }
     return Result<std::reference_wrapper<AnimPose>>::success(std::ref(*layer.pose));
+}
+
+Result<std::reference_wrapper<AnimPose>> MontageCoordinator::compose(const AnimPose& basePose) {
+    if (basePose.getBoneCount() != skeleton_.getBoneCount())
+        return coordinatorError<std::reference_wrapper<AnimPose>>(
+            DiagnosticCode::InvalidArgument, "montage base pose must match the coordinator skeleton", "basePose");
+    composedPose_->copyFrom(&basePose);
+    for (Layer& layer : layers_) {
+        const double rawWeight   = evaluateLayerPose(layer);
+        const float  layerWeight = clampf(static_cast<float>(rawWeight), 0.0f, 1.0f) * layer.weight;
+        if (layerWeight <= 0.0f) continue;
+        for (int bone = 0; bone < composedPose_->getBoneCount(); ++bone) {
+            const float maskWeight = layer.boneMask.empty() ? 1.0f : layer.boneMask[static_cast<std::size_t>(bone)];
+            const float weight     = clampf(layerWeight * maskWeight, 0.0f, 1.0f);
+            if (weight <= 0.0f) continue;
+            if (layer.additive) {
+                applyAdditiveTRS(composedPose_->local(bone), layer.rawPose->local(bone), skeleton_.bindLocal(bone),
+                                 weight);
+            } else {
+                composedPose_->local(bone) = blendTRS(composedPose_->local(bone), layer.rawPose->local(bone), weight);
+            }
+        }
+    }
+    composedPose_->computeWorld(&skeleton_);
+    return Result<std::reference_wrapper<AnimPose>>::success(std::ref(*composedPose_));
 }
 
 void MontageCoordinator::collectFinished() noexcept {

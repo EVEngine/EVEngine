@@ -728,6 +728,32 @@ public:
         return coordinator_->clearLayerBoneMask(activeLayer_);
     }
 
+    [[nodiscard]] Result<void> setRuntimeLayerWeight(float weight) {
+        if (!coordinator_ || !activeMontage())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        return coordinator_->setLayerWeight(activeLayer_, weight);
+    }
+
+    [[nodiscard]] float runtimeLayerWeight() const {
+        if (!coordinator_ || !activeMontage()) return 0.0f;
+        auto weight = coordinator_->layerWeight(activeLayer_);
+        return weight ? weight.value() : 0.0f;
+    }
+
+    [[nodiscard]] Result<void> setRuntimeLayerAdditive(bool additive) {
+        if (!coordinator_ || !activeMontage())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        return coordinator_->setLayerAdditive(activeLayer_, additive);
+    }
+
+    [[nodiscard]] bool runtimeLayerAdditive() const {
+        if (!coordinator_ || !activeMontage()) return false;
+        auto additive = coordinator_->layerAdditive(activeLayer_);
+        return additive ? additive.value() : false;
+    }
+
     [[nodiscard]] Result<animation::MontageAdvance> beginRuntimeBlendOut(Duration duration) {
         auto* montage = activeMontage();
         if (!montage)
@@ -772,6 +798,11 @@ public:
     [[nodiscard]] animation::AnimPose* runtimePose() noexcept {
         if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
         auto pose = coordinator_->pose(activeLayer_);
+        return pose ? &pose.value().get() : nullptr;
+    }
+    [[nodiscard]] animation::AnimPose* runtimePoseOverBase(const animation::AnimPose& basePose) {
+        if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
+        auto pose = coordinator_->compose(basePose);
         return pose ? &pose.value().get() : nullptr;
     }
     [[nodiscard]] const std::optional<animation::MontageAdvance>& runtimeAdvance() const noexcept {
@@ -1515,6 +1546,20 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                   "action timeline editor must not be null");
         return script::projectResult(vm, self->clearRuntimeBoneMask());
     });
+    actionEditor.addFunc("setRuntimeLayerWeight", [vm](ScriptActionTimelineEditor* self, float weight) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        return script::projectResult(vm, self->setRuntimeLayerWeight(weight));
+    });
+    actionEditor.addFunc("getRuntimeLayerWeight",
+                         [](ScriptActionTimelineEditor* self) { return self ? self->runtimeLayerWeight() : 0.0f; });
+    actionEditor.addFunc("setRuntimeLayerAdditive", [vm](ScriptActionTimelineEditor* self, bool additive) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        return script::projectResult(vm, self->setRuntimeLayerAdditive(additive));
+    });
+    actionEditor.addFunc("getRuntimeLayerAdditive",
+                         [](ScriptActionTimelineEditor* self) { return self && self->runtimeLayerAdditive(); });
     actionEditor.addFunc("beginRuntimeBlendOut", [vm](ScriptActionTimelineEditor* self, float durationSeconds) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
@@ -1551,6 +1596,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("getRuntimePose",
                          [](ScriptActionTimelineEditor* self) { return self ? self->runtimePose() : nullptr; });
+    actionEditor.addFunc("getRuntimePoseOverBase", [](ScriptActionTimelineEditor* self, animation::AnimPose* basePose) {
+        return self && basePose ? self->runtimePoseOverBase(*basePose) : nullptr;
+    });
     actionEditor.addFunc("isRuntimePlaying",
                          [](ScriptActionTimelineEditor* self) { return self && self->runtimePlaying(); });
     actionEditor.addFunc("getRuntimeState",

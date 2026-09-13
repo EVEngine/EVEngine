@@ -44,8 +44,14 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         testAnimation <- eve.Animation();
         testSkeleton <- testAnimation.newSkeleton();
         testBoneMask <- testAnimation.newBoneMask(testSkeleton);
+        testPose <- testAnimation.newPose(testSkeleton.getBoneCount());
         setBoneMaskBeforeStart <- actionEditor.setRuntimeBoneMask(testBoneMask);
         clearBoneMaskBeforeStart <- actionEditor.clearRuntimeBoneMask();
+        setLayerWeightBeforeStart <- actionEditor.setRuntimeLayerWeight(0.5);
+        setLayerAdditiveBeforeStart <- actionEditor.setRuntimeLayerAdditive(true);
+        runtimeLayerWeightBeforeStart <- actionEditor.getRuntimeLayerWeight();
+        runtimeLayerAdditiveBeforeStart <- actionEditor.getRuntimeLayerAdditive();
+        runtimePoseOverBaseBeforeStart <- actionEditor.getRuntimePoseOverBase(testPose);
         runtimeStateBeforeStart <- actionEditor.getRuntimeState();
         runtimeElapsedBeforeStart <- actionEditor.getRuntimeElapsedSeconds();
         runtimeDurationBeforeStart <- actionEditor.getRuntimeDurationSeconds();

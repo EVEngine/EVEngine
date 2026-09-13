@@ -496,6 +496,56 @@ TEST_CASE("actionMontage.coordinatorLayerMaskRestrictsCompositionPerBone") {
     CHECK(std::fabs(unmasked.value().get().local(1).py - 2.0f) < 1e-5f);
 }
 
+TEST_CASE("actionMontage.coordinatorComposesWeightedOverrideAndAdditiveLayersOverBasePose") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    skeleton.addBone("upper", 0);
+    skeleton.setBindPosition(1, 0.0f, 1.0f, 0.0f);
+    eve::animation::MontageCoordinator coordinator(skeleton);
+
+    CHECK(!coordinator.setLayerWeight(0, -0.1f).ok());
+    CHECK(!coordinator.setLayerWeight(0, std::numeric_limits<float>::infinity()).ok());
+    REQUIRE(coordinator.setLayerWeight(0, 0.5f).ok());
+    REQUIRE(coordinator.setLayerBoneMask(0, {0.0f, 1.0f}).ok());
+    auto overrideHandle = coordinator.play(0, montageTimeline(), maskedMontageClips(),
+                                           eve::action::ActionExecutionId(51), eve::SimulationTick(1));
+    REQUIRE(overrideHandle.ok());
+    eve::action::ActionAdvance overrideAdvance;
+    overrideAdvance.id           = eve::action::ActionExecutionId(51);
+    overrideAdvance.phase        = eve::action::ActionPhase::Active;
+    overrideAdvance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(overrideHandle.value(), overrideAdvance, eve::SimulationTick(2)).ok());
+
+    REQUIRE(coordinator.setLayerWeight(1, 0.5f).ok());
+    REQUIRE(coordinator.setLayerAdditive(1, true).ok());
+    auto additiveHandle = coordinator.play(1, montageTimeline(), montageClips(), eve::action::ActionExecutionId(52),
+                                           eve::SimulationTick(3));
+    REQUIRE(additiveHandle.ok());
+    eve::action::ActionAdvance additiveAdvance;
+    additiveAdvance.id           = eve::action::ActionExecutionId(52);
+    additiveAdvance.phase        = eve::action::ActionPhase::Active;
+    additiveAdvance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(additiveHandle.value(), additiveAdvance, eve::SimulationTick(4)).ok());
+
+    eve::animation::AnimPose base(skeleton.getBoneCount());
+    skeleton.applyBindPose(&base);
+    base.setLocalPosition(0, 10.0f, 0.0f, 0.0f);
+    base.setLocalPosition(1, 0.0f, 10.0f, 0.0f);
+    auto composed = coordinator.compose(base);
+    REQUIRE(composed.ok());
+    CHECK(std::fabs(composed.value().get().local(0).px - 10.25f) < 1e-5f);
+    CHECK(std::fabs(composed.value().get().local(1).py - 6.0f) < 1e-5f);
+
+    auto weight = coordinator.layerWeight(0);
+    REQUIRE(weight.ok());
+    CHECK_EQ(weight.value(), 0.5f);
+    auto additive = coordinator.layerAdditive(1);
+    REQUIRE(additive.ok());
+    CHECK(additive.value());
+    eve::animation::AnimPose foreignBase(1);
+    CHECK(!coordinator.compose(foreignBase).ok());
+}
+
 TEST_CASE("actionMontage.coordinatorRootMotionReceiverFollowsLayerSlots") {
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");

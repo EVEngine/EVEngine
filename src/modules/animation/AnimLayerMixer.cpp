@@ -16,14 +16,6 @@ float layerBoneWeight(const AnimBoneMask* mask, float layerWeight, int boneIndex
     return clampf(layerWeight * maskWeight, 0.f, 1.f);
 }
 
-void multiplyQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw, float& ox, float& oy,
-                  float& oz, float& ow) {
-    ow = aw * bw - ax * bx - ay * by - az * bz;
-    ox = aw * bx + ax * bw + ay * bz - az * by;
-    oy = aw * by - ax * bz + ay * bw + az * bx;
-    oz = aw * bz + ax * by - ay * bx + az * bw;
-}
-
 }  // namespace
 
 AnimBoneMask::AnimBoneMask(AnimSkeleton* skeleton) : skeleton_(skeleton) {
@@ -139,28 +131,7 @@ void AnimLayerMixer::applyAdditive(const Layer& layer) {
     for (int bone = 0; bone < pose_.getBoneCount(); ++bone) {
         const float weight = layerBoneWeight(layer.mask, layer.weight, bone);
         if (weight <= 0.f) continue;
-        TransformTRS&       base      = pose_.local(bone);
-        const TransformTRS& sample    = layerPose->local(bone);
-        const TransformTRS& reference = skeleton_->bindLocal(bone);
-        base.px += (sample.px - reference.px) * weight;
-        base.py += (sample.py - reference.py) * weight;
-        base.pz += (sample.pz - reference.pz) * weight;
-        base.sx *= lerpf(1.f, std::fabs(reference.sx) > 1e-8f ? sample.sx / reference.sx : 1.f, weight);
-        base.sy *= lerpf(1.f, std::fabs(reference.sy) > 1e-8f ? sample.sy / reference.sy : 1.f, weight);
-        base.sz *= lerpf(1.f, std::fabs(reference.sz) > 1e-8f ? sample.sz / reference.sz : 1.f, weight);
-
-        float dx, dy, dz, dw;
-        multiplyQuat(sample.qx, sample.qy, sample.qz, sample.qw, -reference.qx, -reference.qy, -reference.qz,
-                     reference.qw, dx, dy, dz, dw);
-        float ax, ay, az, aw;
-        slerpQuat(0.f, 0.f, 0.f, 1.f, dx, dy, dz, dw, weight, ax, ay, az, aw);
-        float qx, qy, qz, qw;
-        multiplyQuat(base.qx, base.qy, base.qz, base.qw, ax, ay, az, aw, qx, qy, qz, qw);
-        base.qx = qx;
-        base.qy = qy;
-        base.qz = qz;
-        base.qw = qw;
-        base.normalizeRotation();
+        applyAdditiveTRS(pose_.local(bone), layerPose->local(bone), skeleton_->bindLocal(bone), weight);
     }
 }
 

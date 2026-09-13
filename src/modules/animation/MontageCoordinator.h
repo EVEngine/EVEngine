@@ -66,6 +66,24 @@ public:
     /** @brief Return an owning copy of one configured layer mask. */
     [[nodiscard]] Result<std::vector<float>> layerBoneMask(std::size_t layer) const;
     /**
+     * @brief Set one layer's finite global influence.
+     * @param layer Layer index, created on demand.
+     * @param weight Influence in [0,1].
+     * @return Applied, NoOp, or InvalidArgument without partially changing configuration.
+     */
+    [[nodiscard]] Result<void> setLayerWeight(std::size_t layer, float weight);
+    /** @brief Return one configured layer's global influence, or NotFound for an absent layer. */
+    [[nodiscard]] Result<float> layerWeight(std::size_t layer) const;
+    /**
+     * @brief Select bind-pose-relative additive or ordered override composition for one layer.
+     * @param layer Layer index, created on demand.
+     * @param additive True for additive; false for override.
+     * @return Applied or NoOp, or InvalidArgument for an unrepresentable layer index.
+     */
+    [[nodiscard]] Result<void> setLayerAdditive(std::size_t layer, bool additive);
+    /** @brief Return whether one configured layer uses additive composition, or NotFound for an absent layer. */
+    [[nodiscard]] Result<bool> layerAdditive(std::size_t layer) const;
+    /**
      * @brief Install one root-motion receiver shared by current and future slots of a layer.
      * @param layer Layer index.
      * @param receiver Receiver that must outlive the coordinator or be explicitly cleared.
@@ -77,6 +95,15 @@ public:
     [[nodiscard]] Result<void> clearLayerRootMotionReceiver(std::size_t layer);
     /** @brief Borrow the normalized full layer pose; invalid layers return a structured failure. */
     [[nodiscard]] Result<std::reference_wrapper<AnimPose>> pose(std::size_t layer);
+    /**
+     * @brief Compose every configured montage layer over an immediate borrowed base pose.
+     * @param basePose Base pose for this synchronous evaluation; it is never retained and must match the skeleton.
+     * @return Borrowed coordinator-owned pose, valid until the next composition or coordinator destruction.
+     * @details Layers are applied in ascending index order. Slot weights are normalized within each layer; their
+     * clamped sum, the layer weight, and the optional bone mask determine top-level influence. Additive layers use
+     * bind-pose-relative deltas. Owner-thread-only, deterministic for identical poses and weights, and non-reentrant.
+     */
+    [[nodiscard]] Result<std::reference_wrapper<AnimPose>> compose(const AnimPose& basePose);
     /** @brief Reclaim finished slots and invalidate their handles. */
     void collectFinished() noexcept;
 
@@ -90,7 +117,11 @@ private:
         Slot                      slots[2];
         std::size_t               active = 1;
         std::unique_ptr<AnimPose> pose;
+        std::unique_ptr<AnimPose>   rawPose;
+        std::unique_ptr<AnimPose>   blendScratch;
         std::vector<float>        boneMask;
+        float                       weight             = 1.0f;
+        bool                        additive           = false;
         IMontageRootMotionReceiver* rootMotionReceiver = nullptr;
     };
 
@@ -103,9 +134,11 @@ private:
     [[nodiscard]] const Slot* slotFor(MontageHandle handle) const noexcept;
     void                      ensureLayer(std::size_t layer);
     void                      retireSlot(Slot& slot) noexcept;
+    [[nodiscard]] double      evaluateLayerPose(Layer& layer) const;
 
     AnimSkeleton&      skeleton_;
     std::vector<Layer> layers_;
+    std::unique_ptr<AnimPose> composedPose_;
 };
 
 }  // namespace eve::animation
