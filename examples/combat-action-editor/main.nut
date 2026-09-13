@@ -330,7 +330,7 @@ function activateTriggeredAbility(eventTag) {
     combatEditor.abilityActivationId = activated.value.activationId;
     combatEditor.abilityPhase = "requested";
     combatEditor.comboCount += 1;
-    requireResult(combatEditor.timeline.jumpRuntimeSeconds(0.0), "Replay combo montage");
+    requireResult(combatEditor.timeline.replayRuntimeCrossFade(), "Cross-fade combo montage");
     combatEditor.status = "Combo accepted · " + eventTag + " · chain " + combatEditor.comboCount;
     return true;
 }

@@ -102,7 +102,9 @@ the current cursor without retaining editor-owned clip pointers.
 Saving hot-reloads that definition without revoking its grant. Press `J` while
 the authored `input:combo-window` is open to resolve its gameplay tag through
 `matchingAbilities`, replace the active exclusive Ability, and replay the
-montage. Input outside the authored window is rejected.
+montage through the fixed dual-slot coordinator. The outgoing execution keeps
+its clip snapshot and fades out while the replacement fades in, so combo
+transitions remain continuous. Input outside the authored window is rejected.
 
 The preview and timeline headers show the current selection, playback state,
 edit revision and the last emitted event so every interaction has visible

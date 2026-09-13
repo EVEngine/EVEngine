@@ -663,6 +663,10 @@ animationPlayer.setTime(actionEditor.getPreviewTime());
 actionEditor.replaceRuntimeClip("asset://combat.glb#Strike", editedClip);
 local montagePose = actionEditor.getRuntimePose();
 
+// Restart through the fixed dual-slot coordinator. The previous pose fades out
+// while the new execution fades in using the authored default blend-in time.
+actionEditor.replayRuntimeCrossFade();
+
 // SceneLoader 等可选模块注册真实预览层后，seek/update 会原子更新表现实例。
 if (actionEditor.hasPreviewHost())
     actionEditor.refreshPreview(); // 参数事务提交后刷新当前位置

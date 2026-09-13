@@ -11,6 +11,7 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
+#include "animation/MontageCoordinator.h"
 #include "animation/MontagePlayer.h"
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
@@ -267,7 +268,8 @@ public:
 
     ~ScriptActionTimelineEditor() {
         if (executionId_.isZero()) return;
-        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage_ ? montage_->time() : Duration::zero()));
+        const auto* montage = activeMontage();
+        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
         interrupted.ignore();
     }
 
@@ -299,8 +301,8 @@ public:
         const auto previous = editor_.target().timeline().montage;
         auto       edited   = editor_.setMontageSettings(settings);
         if (!edited.ok()) return edited;
-        if (montage_) {
-            auto applied = montage_->setSettings(settings);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->setSettings(settings);
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok()) {
@@ -320,8 +322,8 @@ public:
         auto edited = editor_.addSectionSplit(time);
         if (!edited.ok()) return edited;
         const auto& splits = editor_.target().timeline().splitTimestamps;
-        if (montage_) {
-            auto applied = montage_->setSectionSplits(splits);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->setSectionSplits(splits);
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
@@ -337,8 +339,8 @@ public:
         auto edited = editor_.setSectionSplit(index, time);
         if (!edited.ok()) return edited;
         const auto& splits = editor_.target().timeline().splitTimestamps;
-        if (montage_) {
-            auto applied = montage_->setSectionSplits(splits);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->setSectionSplits(splits);
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
@@ -354,8 +356,8 @@ public:
         auto edited = editor_.removeSectionSplit(index);
         if (!edited.ok()) return edited;
         const auto& splits = editor_.target().timeline().splitTimestamps;
-        if (montage_) {
-            auto applied = montage_->setSectionSplits(splits);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->setSectionSplits(splits);
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
@@ -371,8 +373,8 @@ public:
         auto       undone   = editor_.undo();
         if (!undone.ok()) return undone;
         const auto& splits = editor_.target().timeline().splitTimestamps;
-        if (montage_) {
-            auto applied = montage_->setSectionSplits(splits);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->setSectionSplits(splits);
             if (!applied) {
                 auto rolledBack = editor_.redo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
@@ -388,8 +390,8 @@ public:
         auto       redone   = editor_.redo();
         if (!redone.ok()) return redone;
         const auto& splits = editor_.target().timeline().splitTimestamps;
-        if (montage_) {
-            auto applied = montage_->setSectionSplits(splits);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->setSectionSplits(splits);
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
@@ -488,13 +490,14 @@ public:
         if (!clip)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::Failed, "montage clip import produced no animation", uri));
-        if (montage_) return montage_->replaceClip(uri, std::move(clip));
         const auto found = std::find_if(runtimeClips_.begin(), runtimeClips_.end(),
                                         [&](const auto& asset) { return asset.uri == uri; });
-        if (found == runtimeClips_.end())
-            runtimeClips_.push_back({std::move(uri), std::move(clip)});
-        else
-            found->clip = std::move(clip);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->replaceClip(uri, clip->clone());
+            if (!applied) return applied;
+        }
+        if (found == runtimeClips_.end()) runtimeClips_.push_back({std::move(uri), std::move(clip)});
+        else found->clip = std::move(clip);
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
@@ -502,24 +505,24 @@ public:
         if (uri.empty())
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument, "montage clip URI must not be empty", "uri"));
-        auto replacement = clip.clone();
-        if (montage_) return montage_->replaceClip(uri, std::move(replacement));
         const auto found = std::find_if(runtimeClips_.begin(), runtimeClips_.end(),
                                         [&](const auto& asset) { return asset.uri == uri; });
         if (found == runtimeClips_.end())
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::NotFound, "montage runtime clip was not registered", uri));
-        found->clip = std::move(replacement);
+        if (auto* montage = activeMontage()) {
+            auto applied = montage->replaceClip(uri, clip.clone());
+            if (!applied) return applied;
+        }
+        found->clip = clip.clone();
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
     [[nodiscard]] Result<void> beginRuntime(animation::AnimSkeleton& skeleton) {
-        auto montage  = std::make_unique<animation::MontagePlayer>(skeleton);
         auto timeline = editor_.target().timeline();
-        auto prepared = montage->prepare(timeline, std::move(runtimeClips_));
-        if (!prepared) return Result<void>::failure(prepared.status());
         runtimeTimeline_ = timeline;
-        montage_         = std::move(montage);
+        coordinator_     = std::make_unique<animation::MontageCoordinator>(skeleton);
+        montageHandle_   = animation::MontageHandle::invalid();
         tick_            = SimulationTick::zero();
         runtimeAdvance_.reset();
         runtimeRate_   = timeline.montage.basePlayRate;
@@ -529,23 +532,24 @@ public:
     }
 
     [[nodiscard]] Result<animation::MontageAdvance> advanceRuntime(Duration delta) {
-        if (!runtime_ || !montage_)
+        auto* montage = activeMontage();
+        if (!runtime_ || !montage)
             return Result<animation::MontageAdvance>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
-        if (montage_->isBlendingOut()) {
+        if (montage->isBlendingOut()) {
             tick_        = SimulationTick(tick_.value() + 1);
-            auto settled = montage_->advanceBlendOut(delta, tick_);
+            auto settled = montage->advanceBlendOut(delta, tick_);
             if (settled) runtimeAdvance_ = settled.value();
             return settled;
         }
         if (runtimePaused_) {
             animation::MontageAdvance paused;
-            paused.previous = paused.current = montage_->time();
-            paused.weight                    = montage_->weight();
+            paused.previous = paused.current = montage->time();
+            paused.weight                    = montage->weight();
             return Result<animation::MontageAdvance>::success(std::move(paused), Status::success(StatusCode::NoOp));
         }
         double sectionRate  = 1.0;
-        auto   sectionIndex = montage_->physicalSectionIndex();
+        auto   sectionIndex = montage->physicalSectionIndex();
         if (sectionIndex) {
             const auto found = sectionRates_.find(sectionIndex.value());
             if (found != sectionRates_.end()) sectionRate = found->second;
@@ -554,14 +558,15 @@ public:
         if (!scaledDelta) return Result<animation::MontageAdvance>::failure(scaledDelta.status());
         Duration                  remainingDelta = std::move(scaledDelta).takeValue();
         animation::MontageAdvance combined;
-        combined.previous = montage_->time();
+        combined.previous = montage->time();
         bool firstSlice   = true;
         while (true) {
             Duration remainingTimeline =
-                Duration::fromNanoseconds(runtimeTimeline_->duration.nanoseconds() - montage_->time().nanoseconds());
+                Duration::fromNanoseconds(runtimeTimeline_->duration.nanoseconds() - montage->time().nanoseconds());
             if (runtimeTimeline_->montage.looping && remainingTimeline.isZero()) {
                 auto restarted = restartExecution();
                 if (!restarted) return Result<animation::MontageAdvance>::failure(restarted.status());
+                montage = activeMontage();
                 remainingTimeline = runtimeTimeline_->duration;
             }
             const Duration slice =
@@ -571,8 +576,10 @@ public:
             if (!actionAdvance) return Result<animation::MontageAdvance>::failure(actionAdvance.status());
             auto routed = routeAvailableBlocks(actionAdvance.value());
             if (!routed) return Result<animation::MontageAdvance>::failure(routed.status());
-            auto presented = montage_->present(actionAdvance.value(), tick_);
+            auto presented = coordinator_->present(montageHandle_, actionAdvance.value(), tick_);
             if (!presented) return Result<animation::MontageAdvance>::failure(presented.status());
+            auto faded = coordinator_->advanceBlendOuts(slice, tick_, montageHandle_);
+            if (!faded) return Result<animation::MontageAdvance>::failure(faded.status());
             auto value = std::move(presented).takeValue();
             if (firstSlice) {
                 combined   = std::move(value);
@@ -600,7 +607,8 @@ public:
             combined.sectionId.reset();
             combined.activeBlocks.clear();
             combined.completed = false;
-            combined.weight    = montage_->weight();
+            montage            = activeMontage();
+            combined.weight    = montage ? montage->weight() : 0.0;
         }
         runtimeAdvance_ = combined;
         return Result<animation::MontageAdvance>::success(std::move(combined), Status::success(StatusCode::Pending));
@@ -624,19 +632,20 @@ public:
     }
 
     [[nodiscard]] Result<animation::MontageAdvance> jumpRuntime(Duration target) {
-        if (!runtimeTimeline_ || !montage_)
+        auto* montage = activeMontage();
+        if (!runtimeTimeline_ || !montage)
             return Result<animation::MontageAdvance>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
         auto restarted = restartExecution(false);
         if (!restarted) return Result<animation::MontageAdvance>::failure(restarted.status());
-        auto rebound = montage_->rebindExecution(executionId_);
+        auto rebound = montage->rebindExecution(executionId_);
         if (!rebound) return Result<animation::MontageAdvance>::failure(rebound.status());
         tick_         = SimulationTick(tick_.value() + 1);
         auto advanced = runtime_->advance(executionId_, tick_, target);
         if (!advanced) return Result<animation::MontageAdvance>::failure(advanced.status());
         auto routed = routeAvailableBlocks(advanced.value());
         if (!routed) return Result<animation::MontageAdvance>::failure(routed.status());
-        auto jumped = montage_->jumpToTime(executionId_, target, tick_);
+        auto jumped = montage->jumpToTime(executionId_, target, tick_);
         if (jumped) runtimeAdvance_ = jumped.value();
         return jumped;
     }
@@ -648,6 +657,13 @@ public:
         auto range = runtimeTimeline_->sectionRange(index);
         if (!range) return Result<animation::MontageAdvance>::failure(range.status());
         return jumpRuntime(range.value().first);
+    }
+
+    [[nodiscard]] Result<void> replayRuntimeCrossFade() {
+        if (!runtimeTimeline_ || !activeMontage())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        return restartExecution();
     }
 
     [[nodiscard]] Result<void> syncRuntimeSection(std::size_t index, Duration targetDuration) {
@@ -665,11 +681,12 @@ public:
     }
 
     [[nodiscard]] Result<animation::MontageAdvance> beginRuntimeBlendOut(Duration duration) {
-        if (!montage_)
+        auto* montage = activeMontage();
+        if (!montage)
             return Result<animation::MontageAdvance>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
         tick_        = SimulationTick(tick_.value() + 1);
-        auto stopped = montage_->beginBlendOut(duration, tick_);
+        auto stopped = montage->beginBlendOut(duration, tick_);
         if (stopped) runtimeAdvance_ = stopped.value();
         return stopped;
     }
@@ -693,37 +710,67 @@ public:
     [[nodiscard]] double runtimeRate() const noexcept { return runtimeRate_; }
 
     [[nodiscard]] Result<void> cancelRuntime() {
-        if (!runtime_ || !montage_) return Result<void>::success(Status::success(StatusCode::NoOp));
+        auto* montage = activeMontage();
+        if (!runtime_ || !montage) return Result<void>::success(Status::success(StatusCode::NoOp));
         tick_          = SimulationTick(tick_.value() + 1);
         auto cancelled = runtime_->cancel(executionId_, tick_);
         if (!cancelled) return cancelled;
-        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage_->time()));
+        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage->time()));
         if (!interrupted) return interrupted;
-        montage_->stop();
+        montage->stop();
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
-    [[nodiscard]] animation::AnimPose* runtimePose() noexcept { return montage_ ? &montage_->pose() : nullptr; }
+    [[nodiscard]] animation::AnimPose* runtimePose() noexcept {
+        if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
+        auto pose = coordinator_->pose(0);
+        return pose ? &pose.value().get() : nullptr;
+    }
     [[nodiscard]] const std::optional<animation::MontageAdvance>& runtimeAdvance() const noexcept {
         return runtimeAdvance_;
     }
-    [[nodiscard]] bool runtimePlaying() const noexcept { return montage_ && montage_->isPlaying(); }
+    [[nodiscard]] bool runtimePlaying() const noexcept {
+        const auto* montage = activeMontage();
+        return montage && montage->isPlaying();
+    }
 
     [[nodiscard]] Result<std::size_t> runtimePhysicalSection() const {
-        if (!montage_)
+        const auto* montage = activeMontage();
+        if (!montage)
             return Result<std::size_t>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
-        return montage_->physicalSectionIndex();
+        return montage->physicalSectionIndex();
     }
 
     [[nodiscard]] Result<double> runtimeSectionProgress(std::size_t index) const {
-        if (!montage_)
+        const auto* montage = activeMontage();
+        if (!montage)
             return Result<double>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
-        return montage_->physicalSectionProgress(index);
+        return montage->physicalSectionProgress(index);
     }
 
 private:
+    [[nodiscard]] animation::MontagePlayer* activeMontage() noexcept {
+        if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
+        auto resolved = coordinator_->resolve(montageHandle_);
+        return resolved ? &resolved.value().get() : nullptr;
+    }
+
+    [[nodiscard]] const animation::MontagePlayer* activeMontage() const noexcept {
+        if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
+        auto resolved = static_cast<const animation::MontageCoordinator&>(*coordinator_).resolve(montageHandle_);
+        return resolved ? &resolved.value().get() : nullptr;
+    }
+
+    [[nodiscard]] std::vector<animation::MontageClipAsset> cloneRuntimeClips() const {
+        std::vector<animation::MontageClipAsset> clips;
+        clips.reserve(runtimeClips_.size());
+        for (const auto& asset : runtimeClips_)
+            clips.push_back({asset.uri, asset.clip ? asset.clip->clone() : nullptr});
+        return clips;
+    }
+
     [[nodiscard]] EditorResult<DocumentSnapshot> synchronizeDocument() {
         if (!documents_ || document_.id.empty())
             return eve::editing::failed<DocumentSnapshot>(EditorStatus::Unsupported,
@@ -757,8 +804,10 @@ private:
     }
 
     [[nodiscard]] Result<void> restartExecution(bool playMontage = true) {
+        const bool hasActiveMontage = activeMontage() != nullptr;
         if (!executionId_.isZero()) {
-            auto interrupted = blockRuntime_.interrupt(runtimeContext(montage_ ? montage_->time() : Duration::zero()));
+            const auto* montage = activeMontage();
+            auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
             if (!interrupted) return interrupted;
         }
         auto                  runtime    = std::make_unique<action::ActionRuntime>();
@@ -768,8 +817,13 @@ private:
         auto submitted   = runtime->submit(std::move(definition), std::move(request));
         if (!submitted) return Result<void>::failure(submitted.status());
         if (playMontage) {
-            auto played = montage_->play(submitted.value());
+            if (!coordinator_)
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "montage coordinator has not been started", "runtime"));
+            if (hasActiveMontage) tick_ = SimulationTick(tick_.value() + 1);
+            auto played = coordinator_->play(0, *runtimeTimeline_, cloneRuntimeClips(), submitted.value(), tick_);
             if (!played) return Result<void>::failure(played.status());
+            montageHandle_ = played.value();
         }
         runtime_     = std::move(runtime);
         executionId_ = submitted.value();
@@ -809,7 +863,8 @@ private:
     std::optional<Status>                       previewInitializationFailure_;
     std::vector<animation::MontageClipAsset>  runtimeClips_;
     std::unique_ptr<action::ActionRuntime>    runtime_;
-    std::unique_ptr<animation::MontagePlayer> montage_;
+    std::unique_ptr<animation::MontageCoordinator> coordinator_;
+    animation::MontageHandle                       montageHandle_ = animation::MontageHandle::invalid();
     action::ActionExecutionId                 executionId_{};
     SimulationTick                            tick_ = SimulationTick::zero();
     std::optional<animation::MontageAdvance>  runtimeAdvance_;
@@ -1315,6 +1370,12 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "runtime section index is invalid", "index");
         return script::projectResult(vm, self->jumpRuntimeSection(static_cast<std::size_t>(sectionIndex)),
                                      montageAdvanceValue);
+    });
+    actionEditor.addFunc("replayRuntimeCrossFade", [vm](ScriptActionTimelineEditor* self) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        return script::projectResult(vm, self->replayRuntimeCrossFade());
     });
     actionEditor.addFunc(
         "syncRuntimeSection", [vm](ScriptActionTimelineEditor* self, int sectionIndex, float targetSeconds) {
