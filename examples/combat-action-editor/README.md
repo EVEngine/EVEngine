@@ -31,7 +31,9 @@ Controls:
   opens the **Action Block** inspector. Its timing sliders commit validated,
   undoable transactions; the toolbar deletes the selected block and exposes the
   same undo/redo history. Audio, VFX and Prefab blocks expose typed resource,
-  playback, lifecycle and shared spatial controls; the advanced payload JSON
+  playback, lifecycle and shared spatial controls. Audio additionally exposes
+  a random clip URI pool, deterministic pitch variation, spatial blend and
+  attenuation distances; the advanced payload JSON
   remains available for extensions. Each typed edit merges only its fields,
   preserves unknown payload data, validates the complete result through the
   notify registry, and commits one undo step. Notify type and payload JSON are

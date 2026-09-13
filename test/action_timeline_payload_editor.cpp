@@ -35,12 +35,17 @@ TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtom
     eve::editor::ActionTimelinePayloadEditor payloads(editor, registry.value());
     const auto itemId = payloadId("test-state:audio");
 
-    REQUIRE(payloads.patch(itemId, {{"volume", 0.5}, {"looping", true}}).ok());
+    REQUIRE(payloads.patch(itemId, {{"volume", 0.5}, {"looping", true},
+                                    {"randomUris", eve::Value::Array{"asset://audio/a.wav",
+                                                                      "asset://audio/b.wav"}},
+                                    {"randomPitchOffset", 0.08}, {"spatialBlend", 0.5},
+                                    {"minDistance", 2.0}, {"maxDistance", 24.0}}).ok());
     auto edited = payloads.payload(itemId);
     REQUIRE(edited.ok());
     CHECK_EQ(*edited.value().at("extensionField").getIf<std::string>(), "preserved");
     CHECK_EQ(*edited.value().at("volume").getIf<double>(), 0.5);
     CHECK(*edited.value().at("looping").getIf<bool>());
+    CHECK_EQ(edited.value().at("randomUris").getIf<eve::Value::Array>()->size(), 2U);
 
     const auto revision = editor.target().revision();
     CHECK(!payloads.patch(itemId, {{"pitch", 0.0}}).ok());
@@ -48,6 +53,7 @@ TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtom
     auto unchanged = payloads.payload(itemId);
     REQUIRE(unchanged.ok());
     CHECK(!unchanged.value().contains("pitch"));
+    CHECK_EQ(*unchanged.value().at("maxDistance").getIf<double>(), 24.0);
     REQUIRE(editor.undo().ok());
     CHECK_EQ(*payloads.payload(itemId).value().at("extensionField").getIf<std::string>(), "preserved");
 }

@@ -63,6 +63,9 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
             "test-state:hitbox", "positionOffset", 1.0, 2.0, 3.0);
         typedPositionY <- actionEditor.getItemPayloadVector(
             "test-state:hitbox", "positionOffset", 1, -1.0);
+        payloadTextListPatch <- actionEditor.setItemPayloadTextList(
+            "test-state:hitbox", "relatedAssets", "asset://audio/a.wav; asset://audio/b.wav");
+        typedTextList <- actionEditor.getItemPayloadTextList("test-state:hitbox", "relatedAssets");
         invalidPayloadPatch <- actionEditor.setItemPayloadText(
             "test-state:hitbox", "hitbox", "");
         shapeMismatch <- actionEditor.editItemDetails(
@@ -179,6 +182,9 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_EQ(vm.find("typedHitbox").toString(), std::string("weapon.typed"));
     CHECK(vm.find("payloadVectorPatch").toTable().get<bool>("ok"));
     CHECK(std::fabs(vm.find("typedPositionY").toFloat() - 2.0f) < 1e-5f);
+    CHECK(vm.find("payloadTextListPatch").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("typedTextList").toString(),
+             std::string("asset://audio/a.wav; asset://audio/b.wav"));
     CHECK(!vm.find("invalidPayloadPatch").toTable().get<bool>("ok"));
     CHECK(!vm.find("shapeMismatch").toTable().get<bool>("ok"));
     CHECK(!vm.find("invalidPayload").toTable().get<bool>("ok"));

@@ -660,9 +660,11 @@ if (actionEditor.hasPreviewHost())
 Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`syncRuntimeSection` 和磁吸目标因此共享一份边界事实。
 
 选中的 Audio、VFX 与 Prefab Block 会显示类型化属性：资源 URI、播放参数、停止或生命周期策略，以及
-attachment、source/target anchor、bone 和位置/旋转/缩放偏移。脚本也可用
-`setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用 `patchItemPayload` 原子提交一组字段；
-`getItemPayloadText/Number/Bool/Vector` 用于把权威 payload 投射回 UI。所有入口先合并到 payload 的拥有型
+attachment、source/target anchor、bone 和位置/旋转/缩放偏移。Audio 还提供分号分隔的随机 URI 池、
+音高扰动、2D/3D 混合及最小/最大衰减距离；运行时按 execution/item 的稳定 seed 选片段和音高。
+脚本也可用 `setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用
+`setItemPayloadTextList` 把分号分隔文本写成字符串数组，`patchItemPayload` 原子提交一组字段；
+`getItemPayloadText/Number/Bool/Vector/TextList` 用于把权威 payload 投射回 UI。所有入口先合并到 payload 的拥有型
 副本，保留未识别扩展字段，再通过 `ActionNotifyRegistry` 校验完整候选值，最后交给
 `ActionTimelineEditor` 产生一个撤销步骤。校验失败不会增加 revision 或留下部分修改；Advanced JSON 仍是
 自定义类型和扩展字段的显式逃生口。

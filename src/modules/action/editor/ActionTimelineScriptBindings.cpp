@@ -1739,6 +1739,26 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                             {{field, Value::Array{static_cast<double>(x), static_cast<double>(y),
                                                                   static_cast<double>(z)}}}));
     });
+    actionEditor.addFunc("setItemPayloadTextList", [vm](ScriptActionTimelineEditor* self,
+                                                         const std::string& itemId, const std::string& field,
+                                                         const std::string& delimitedValues) {
+        Value::Array values;
+        std::size_t  cursor = 0;
+        while (cursor <= delimitedValues.size()) {
+            const auto separator = delimitedValues.find(';', cursor);
+            auto value = delimitedValues.substr(cursor, separator == std::string::npos
+                                                             ? std::string::npos
+                                                             : separator - cursor);
+            const auto first = value.find_first_not_of(" \t\r\n");
+            if (first != std::string::npos) {
+                const auto last = value.find_last_not_of(" \t\r\n");
+                values.emplace_back(value.substr(first, last - first + 1));
+            }
+            if (separator == std::string::npos) break;
+            cursor = separator + 1;
+        }
+        return project(vm, patchItemPayload(self, itemId, {{field, std::move(values)}}));
+    });
     actionEditor.addFunc("getItemPayloadText", [](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                    const std::string& field, const std::string& fallback) {
         const auto value = itemPayloadField(self, itemId, field);
@@ -1758,6 +1778,20 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         const auto value = itemPayloadField(self, itemId, field);
         const auto* boolean = value ? value->getIf<bool>() : nullptr;
         return boolean ? *boolean : fallback;
+    });
+    actionEditor.addFunc("getItemPayloadTextList", [](ScriptActionTimelineEditor* self,
+                                                       const std::string& itemId, const std::string& field) {
+        const auto value = itemPayloadField(self, itemId, field);
+        const auto* array = value ? value->getIf<Value::Array>() : nullptr;
+        if (!array) return std::string{};
+        std::string result;
+        for (const auto& entry : *array) {
+            const auto* text = entry.getIf<std::string>();
+            if (!text) return std::string{};
+            if (!result.empty()) result += "; ";
+            result += *text;
+        }
+        return result;
     });
     actionEditor.addFunc("getItemPayloadVector", [](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                      const std::string& field, int component, float fallback) {

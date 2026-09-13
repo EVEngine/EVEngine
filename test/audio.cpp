@@ -141,7 +141,10 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
     eve::action::ActionAdvance advance;
     advance.id = eve::action::ActionExecutionId{92};
     eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"}, {"bone", "hand_r"},
-                               {"volume", 0.25}, {"pitch", 1.0}, {"looping", true}};
+                               {"randomUris", eve::Value::Array{"test/fixtures/resource_formats/tone.wav"}},
+                               {"volume", 0.25}, {"pitch", 1.0}, {"randomPitchOffset", 0.05},
+                               {"spatialBlend", 1.0}, {"minDistance", 2.0}, {"maxDistance", 30.0},
+                               {"looping", true}};
     advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
                                       actionLogicalId("presentation-track:audio"),
                                       actionLogicalId("presentation-audio:loop"),

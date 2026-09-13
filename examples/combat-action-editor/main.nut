@@ -552,8 +552,13 @@ function panelInspector() {
         ui.text("Resource", "typed-resource-title");
         ui.inputText("URI", "", "payload-uri");
         ui.text("Audio", "typed-audio-title");
+        ui.inputText("Random URIs (; separated)", "", "audio-random-uris");
         ui.slider("Volume", 1.0, 0.0, 2.0, "audio-volume");
         ui.slider("Pitch", 1.0, 0.05, 4.0, "audio-pitch");
+        ui.slider("Pitch Variation", 0.0, 0.0, 0.5, "audio-random-pitch");
+        ui.slider("Spatial Blend", 1.0, 0.0, 1.0, "audio-spatial-blend");
+        ui.slider("Min Distance", 1.0, 0.01, 50.0, "audio-min-distance");
+        ui.slider("Max Distance", 35.0, 0.1, 200.0, "audio-max-distance");
         ui.checkbox("Looping", false, "audio-looping");
         ui.text("VFX", "typed-vfx-title");
         ui.combo("Stop", "Stop Emitting\nClear Immediately", 0, "vfx-stop");
@@ -680,7 +685,8 @@ function setTypedPayloadVisibility(type, single) {
     local prefab = single && isPrefabType(type);
     local spatial = single && isSpatialType(type);
     foreach (field in ["typed-resource-title", "payload-uri"]) ui.setVisible(field, spatial);
-    foreach (field in ["typed-audio-title", "audio-volume", "audio-pitch"])
+    foreach (field in ["typed-audio-title", "audio-random-uris", "audio-volume", "audio-pitch",
+                       "audio-random-pitch", "audio-spatial-blend", "audio-min-distance", "audio-max-distance"])
         ui.setVisible(field, audio);
     ui.setVisible("audio-looping", audio && type == "presentation:audio-state");
     foreach (field in ["typed-vfx-title", "vfx-stop", "vfx-sync-rate", "vfx-clip-start", "vfx-clip-end"])
@@ -1003,9 +1009,18 @@ function handleUiEvents() {
             } else if (id == "payload-uri" && combatEditor.selectedActionId != "") {
                 result = combatEditor.timeline.setItemPayloadText(
                     combatEditor.selectedActionId, "uri", ui.getValueText(id));
-            } else if ((id == "audio-volume" || id == "audio-pitch") && combatEditor.selectedActionId != "") {
-                result = combatEditor.timeline.setItemPayloadNumber(combatEditor.selectedActionId,
-                    id == "audio-volume" ? "volume" : "pitch", ui.getValue(id));
+            } else if (id == "audio-random-uris" && combatEditor.selectedActionId != "") {
+                result = combatEditor.timeline.setItemPayloadTextList(
+                    combatEditor.selectedActionId, "randomUris", ui.getValueText(id));
+            } else if ((id == "audio-volume" || id == "audio-pitch" || id == "audio-random-pitch" ||
+                        id == "audio-spatial-blend" || id == "audio-min-distance" || id == "audio-max-distance") &&
+                       combatEditor.selectedActionId != "") {
+                local field = id == "audio-volume" ? "volume" : (id == "audio-pitch" ? "pitch" :
+                    (id == "audio-random-pitch" ? "randomPitchOffset" :
+                    (id == "audio-spatial-blend" ? "spatialBlend" :
+                    (id == "audio-min-distance" ? "minDistance" : "maxDistance"))));
+                result = combatEditor.timeline.setItemPayloadNumber(
+                    combatEditor.selectedActionId, field, ui.getValue(id));
             } else if (id == "audio-looping" && combatEditor.selectedActionId != "") {
                 result = combatEditor.timeline.setItemPayloadBool(
                     combatEditor.selectedActionId, "looping", ui.getChecked(id));
@@ -1257,8 +1272,18 @@ function updateLabels() {
                         itemId, "scale", component, 1.0));
                 }
                 if (isAudioType(selectedType)) {
+                    ui.setValueText("audio-random-uris", combatEditor.timeline.getItemPayloadTextList(
+                        itemId, "randomUris"));
                     ui.setValue("audio-volume", combatEditor.timeline.getItemPayloadNumber(itemId, "volume", 1.0));
                     ui.setValue("audio-pitch", combatEditor.timeline.getItemPayloadNumber(itemId, "pitch", 1.0));
+                    ui.setValue("audio-random-pitch", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "randomPitchOffset", 0.0));
+                    ui.setValue("audio-spatial-blend", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "spatialBlend", 1.0));
+                    ui.setValue("audio-min-distance", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "minDistance", 1.0));
+                    ui.setValue("audio-max-distance", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "maxDistance", 35.0));
                     ui.setChecked("audio-looping", combatEditor.timeline.getItemPayloadBool(itemId, "looping", false));
                 } else if (isVfxType(selectedType)) {
                     ui.setValue("vfx-stop", stopBehaviorIndex(combatEditor.timeline.getItemPayloadText(

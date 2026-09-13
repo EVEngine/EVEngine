@@ -353,13 +353,23 @@ TEST_CASE("actionPrefabBlock.validatesLifecycleDurationAndSpatialContract") {
 
 TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
     eve::Value::Object payload{{"uri", "asset://audio/sword.wav"},
-                               {"volume", 0.5}, {"pitch", 1.25}, {"looping", true}};
+                               {"randomUris", eve::Value::Array{"asset://audio/sword-a.wav",
+                                                                 "asset://audio/sword-b.wav"}},
+                               {"volume", 0.5}, {"pitch", 1.25}, {"randomPitchOffset", 0.1},
+                               {"spatialBlend", 0.75}, {"minDistance", 2.0}, {"maxDistance", 28.0},
+                               {"looping", true}};
     auto state = eve::action::ActionAudioBinding::fromPayload(
         payload, eve::action::ActionAudioShape::State);
     REQUIRE(state.ok());
     CHECK_EQ(state.value().uri, "asset://audio/sword.wav");
     CHECK_EQ(state.value().volume, 0.5);
     CHECK_EQ(state.value().pitch, 1.25);
+    REQUIRE_EQ(state.value().randomUris.size(), 2U);
+    CHECK_EQ(state.value().randomUris[1], "asset://audio/sword-b.wav");
+    CHECK_EQ(state.value().randomPitchOffset, 0.1);
+    CHECK_EQ(state.value().spatialBlend, 0.75);
+    CHECK_EQ(state.value().minDistance, 2.0);
+    CHECK_EQ(state.value().maxDistance, 28.0);
     CHECK(state.value().looping);
 
     auto instant = eve::action::ActionAudioBinding::fromPayload(
@@ -372,6 +382,25 @@ TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
         payload, eve::action::ActionAudioShape::Instant);
     CHECK(!invalidPitch.ok());
     CHECK_EQ(invalidPitch.status().diagnostics().front().path(), "pitch");
+
+    payload["pitch"] = 1.0;
+    payload["randomPitchOffset"] = 0.6;
+    auto invalidVariation = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::Instant);
+    CHECK(!invalidVariation.ok());
+    CHECK_EQ(invalidVariation.status().diagnostics().front().path(), "randomPitchOffset");
+    payload["randomPitchOffset"] = 0.1;
+    payload["maxDistance"] = 1.0;
+    auto invalidAttenuation = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::Instant);
+    CHECK(!invalidAttenuation.ok());
+    CHECK_EQ(invalidAttenuation.status().diagnostics().front().path(), "maxDistance");
+    payload["maxDistance"] = 28.0;
+    payload["randomUris"] = eve::Value::Array{"asset://audio/repeated.wav", "asset://audio/repeated.wav"};
+    auto duplicateUri = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::Instant);
+    CHECK(!duplicateUri.ok());
+    CHECK_EQ(duplicateUri.status().diagnostics().front().path(), "randomUris[1]");
 }
 
 TEST_CASE("actionVfxBlock.validatesTrimStopAndLifetimeContract") {

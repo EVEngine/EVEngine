@@ -29,6 +29,38 @@
 namespace eve::audio {
 namespace {
 
+std::uint64_t stableAudioSeed(eve::action::ActionExecutionId executionId,
+                              const eve::LogicalId& itemId, std::uint64_t salt = 0) {
+    std::uint64_t hash = 1469598103934665603ULL ^ executionId.value() ^ salt;
+    for (const unsigned char value : itemId.format()) {
+        hash ^= value;
+        hash *= 1099511628211ULL;
+    }
+    return hash;
+}
+
+const std::string& selectAudioUri(const eve::action::ActionAudioBinding& binding, std::uint64_t seed) {
+    if (binding.randomUris.empty()) return binding.uri;
+    return binding.randomUris[static_cast<std::size_t>(seed % binding.randomUris.size())];
+}
+
+double selectAudioPitch(const eve::action::ActionAudioBinding& binding, std::uint64_t seed) {
+    if (binding.randomPitchOffset <= 0.0) return binding.pitch;
+    constexpr double divisor = static_cast<double>(std::numeric_limits<std::uint64_t>::max());
+    const double unit = static_cast<double>(seed) / divisor;
+    return std::clamp(binding.pitch + (unit * 2.0 - 1.0) * binding.randomPitchOffset, 0.1, 3.0);
+}
+
+void configureAudioSource(Source& source, const eve::action::ActionAudioBinding& binding,
+                          double pitch) {
+    source.setVolume(static_cast<float>(binding.volume));
+    source.setPitch(static_cast<float>(pitch));
+    source.setLooping(binding.looping);
+    source.setRelative(binding.spatialBlend <= 0.01);
+    source.setAttenuationDistances(static_cast<float>(binding.minDistance),
+                                   static_cast<float>(binding.maxDistance));
+}
+
 class AudioQueryImpl final : public eve::IAudioQuery {
 public:
     float volume() const override {
@@ -248,11 +280,10 @@ public:
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
         if (!audio) return fail(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio");
         try {
-            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(binding.value().uri);
+            const auto seed = stableAudioSeed(context.executionId, event.itemId);
+            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding.value(), seed));
             std::unique_ptr<Source> source(audio->newSource(data));
-            source->setVolume(static_cast<float>(binding.value().volume));
-            source->setPitch(static_cast<float>(binding.value().pitch));
-            source->setLooping(binding.value().looping);
+            configureAudioSource(*source, binding.value(), selectAudioPitch(binding.value(), seed ^ 0x9e3779b97f4a7c15ULL));
             applyPosition(*source, binding.value().spatial, pose.value());
             source->play();
             ActiveSource owned{data, std::move(source),
@@ -405,7 +436,8 @@ public:
                 preparedRetained_.insert(key);
                 continue;
             }
-            auto audio = makeAudio(binding.value(), block.localTime);
+            auto audio = makeAudio(binding.value(), block.localTime,
+                                   stableAudioSeed(eve::action::ActionExecutionId::zero(), block.itemId));
             if (!audio) return failPrepared(audio.status());
             if (audio.value())
                 preparedStates_.emplace(key, PreviewAudio{block.payload, std::move(*audio.value())});
@@ -417,7 +449,8 @@ public:
             auto binding = eve::action::ActionAudioBinding::fromPayload(
                 cue.payload, eve::action::ActionAudioShape::Instant);
             if (!binding) return failPrepared(binding.status());
-            auto audio = makeAudio(binding.value(), eve::Duration::zero());
+            auto audio = makeAudio(binding.value(), eve::Duration::zero(),
+                                   stableAudioSeed(eve::action::ActionExecutionId::zero(), cue.itemId));
             if (!audio) return failPrepared(audio.status());
             if (audio.value()) preparedInstants_.push_back(std::move(*audio.value()));
         }
@@ -471,23 +504,22 @@ private:
     }
 
     static eve::Result<std::optional<OwnedAudio>> makeAudio(
-        const eve::action::ActionAudioBinding& binding, eve::Duration localTime) {
+        const eve::action::ActionAudioBinding& binding, eve::Duration localTime, std::uint64_t seed) {
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
         if (!audio)
             return previewFailure<std::optional<OwnedAudio>>(
                 eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio");
         try {
-            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(binding.uri);
+            auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding, seed));
             std::unique_ptr<Source> source(audio->newSource(data));
             OwnedAudio owned(data, std::move(source));
-            owned.source->setVolume(static_cast<float>(binding.volume));
-            owned.source->setPitch(static_cast<float>(binding.pitch));
-            owned.source->setLooping(binding.looping);
+            configureAudioSource(*owned.source, binding,
+                                 selectAudioPitch(binding, seed ^ 0x9e3779b97f4a7c15ULL));
             owned.source->setPosition(static_cast<float>(binding.spatial.positionOffset.x),
                                       static_cast<float>(binding.spatial.positionOffset.y),
                                       static_cast<float>(binding.spatial.positionOffset.z));
             const double duration = owned.source->getDuration();
-            double       mediaTime = localTime.seconds() * binding.pitch;
+            double       mediaTime = localTime.seconds() * owned.source->getPitch();
             if (duration > 0.0) {
                 if (binding.looping)
                     mediaTime = std::fmod(mediaTime, duration);
