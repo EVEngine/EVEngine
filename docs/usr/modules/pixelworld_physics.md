@@ -9,6 +9,10 @@ owned projection with `pixelworldPhysics.newTerrainCache()`, then call
 `cache.sync(physicsWorld, pixelWorld, maximumFixturesPerChunk)` after authoritative
 PixelWorld edits or steps. The shipped `examples/pixelworld` game exercises this
 production path; the cache is a projection and never becomes the material authority.
+`cache.clear(physicsWorld)` removes every projected body from that same live physics
+world. `cache.getSourceRevision()` reports the authoritative PixelWorld revision
+represented by the cache, while `cache.getBodyCount()` reports the current number of
+projected static bodies; both accessors return zero for an empty cache.
 
 `PixelFragmentBody::create()` performs deterministic top-left greedy rectangle
 decomposition, creating one fixture per maximal rectangle under an explicit fixture
