@@ -21,9 +21,9 @@ persist imYaw = 0.35
 persist imPitch = 0.18
 persist imOrbit = true
 persist imRoomDepth = 0.55
-persist imPerspective = 1.15
+persist imPerspective = 1.0
 persist imRandomRoom = 1.0
-persist imShowFg = 1.0
+persist imShowFg = 0.0
 persist imFgSteps = 16.0
 persist imStatus = "orbit on"
 
@@ -48,7 +48,7 @@ function pushUniforms() {
     imShader.sendFloat("fgSteps", imFgSteps);
     imShader.sendFloat("time", imTime);
     imShader.sendFloat("showFg", imShowFg);
-    imShader.sendFloat("frameWidth", 0.055);
+    imShader.sendFloat("frameWidth", 0.04);
 }
 
 function buildAtlas() {
@@ -94,15 +94,15 @@ function updateCamera() {
 function applyPreset(which) {
     if (which == 1) {
         imRoomDepth = 0.35;
-        imPerspective = 0.85;
+        imPerspective = 1.2;
         imStatus = "preset shallow";
     } else if (which == 2) {
         imRoomDepth = 0.55;
-        imPerspective = 1.15;
+        imPerspective = 1.0;
         imStatus = "preset default";
     } else {
-        imRoomDepth = 0.78;
-        imPerspective = 1.6;
+        imRoomDepth = 0.75;
+        imPerspective = 0.65;
         imStatus = "preset deep";
     }
 }
@@ -190,11 +190,11 @@ eve_update = function(dt) {
         imStatus = "depth " + imRoomDepth;
     }
     if (key_just_pressed("-") || key_just_pressed("_")) {
-        imPerspective = clampf(imPerspective - 0.1, 0.2, 3.0);
+        imPerspective = clampf(imPerspective - 0.1, 0.2, 2.0);
         imStatus = "perspective " + imPerspective;
     }
     if (key_just_pressed("=") || key_just_pressed("+")) {
-        imPerspective = clampf(imPerspective + 0.1, 0.2, 3.0);
+        imPerspective = clampf(imPerspective + 0.1, 0.2, 2.0);
         imStatus = "perspective " + imPerspective;
     }
     if (key_just_pressed("f") || key_just_pressed("F")) {

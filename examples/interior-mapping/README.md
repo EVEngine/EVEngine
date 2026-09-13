@@ -39,3 +39,14 @@ cd examples/interior-mapping && ../../build/linux-debug/src/engine/eve run
 - `assets/room_atlas.png` — 预投影房间图集（4×4）
 - `scripts/gen_room_atlas.py` — 重新生成图集
 - `config.nut` — 窗口配置
+
+## Mapping notes
+
+The fragment shader builds a **per-window room space** (window on `z=+1`, back wall on `z=-1`)
+from tiled mesh UVs, casts a view ray with Joost’s far-hit box test, then samples the
+pre-projected atlas with `scale = B / (B + d)`.
+
+Debug: set `fgSteps` to `99` via the live uniform path to visualize face hits
+(floor=red, ceiling=cyan, walls=green/blue, back=yellow).
+
+Controls: O orbit, A/D yaw, W/S pitch, [/] depth, -/= perspective, F furniture, R random rooms.
