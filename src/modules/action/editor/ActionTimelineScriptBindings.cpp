@@ -659,6 +659,22 @@ public:
         return jumpRuntime(range.value().first);
     }
 
+    [[nodiscard]] Result<animation::MontageAdvance> evaluateRuntimeSectionProgress(std::size_t index,
+                                                                                    double progress) {
+        if (!runtimeTimeline_)
+            return Result<animation::MontageAdvance>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        if (!std::isfinite(progress) || progress < 0.0 || progress > 1.0)
+            return Result<animation::MontageAdvance>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "runtime section progress must be finite and within [0,1]", "progress"));
+        auto range = runtimeTimeline_->sectionRange(index);
+        if (!range) return Result<animation::MontageAdvance>::failure(range.status());
+        const auto span = range.value().second.nanoseconds() - range.value().first.nanoseconds();
+        return jumpRuntime(Duration::fromNanoseconds(
+            range.value().first.nanoseconds() + static_cast<std::int64_t>(std::llround(span * progress))));
+    }
+
     [[nodiscard]] Result<void> replayRuntimeCrossFade() {
         if (!runtimeTimeline_ || !activeMontage())
             return Result<void>::failure(
@@ -678,6 +694,23 @@ public:
         const double raw     = (range.value().second.seconds() - range.value().first.seconds());
         sectionRates_[index] = raw / targetDuration.seconds();
         return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] Result<animation::MontageAdvance> syncRuntimeSectionAndJump(std::size_t index,
+                                                                              Duration targetDuration) {
+        auto synchronized = syncRuntimeSection(index, targetDuration);
+        if (!synchronized) return Result<animation::MontageAdvance>::failure(synchronized.status());
+        return jumpRuntimeSection(index);
+    }
+
+    [[nodiscard]] Result<void> clearRuntimeSectionSync(std::size_t index) {
+        if (!runtimeTimeline_)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        auto range = runtimeTimeline_->sectionRange(index);
+        if (!range) return Result<void>::failure(range.status());
+        return Result<void>::success(Status::success(sectionRates_.erase(index) > 0 ? StatusCode::Applied
+                                                                                   : StatusCode::NoOp));
     }
 
     [[nodiscard]] Result<animation::MontageAdvance> beginRuntimeBlendOut(Duration duration) {
@@ -723,7 +756,7 @@ public:
 
     [[nodiscard]] animation::AnimPose* runtimePose() noexcept {
         if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
-        auto pose = coordinator_->pose(0);
+        auto pose = coordinator_->pose(activeLayer_);
         return pose ? &pose.value().get() : nullptr;
     }
     [[nodiscard]] const std::optional<animation::MontageAdvance>& runtimeAdvance() const noexcept {
@@ -805,6 +838,8 @@ private:
 
     [[nodiscard]] Result<void> restartExecution(bool playMontage = true) {
         const bool hasActiveMontage = activeMontage() != nullptr;
+        const auto previousHandle   = montageHandle_;
+        const auto previousLayer    = activeLayer_;
         if (!executionId_.isZero()) {
             const auto* montage = activeMontage();
             auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
@@ -821,9 +856,16 @@ private:
                 return Result<void>::failure(
                     Diagnostic::error(DiagnosticCode::Conflict, "montage coordinator has not been started", "runtime"));
             if (hasActiveMontage) tick_ = SimulationTick(tick_.value() + 1);
-            auto played = coordinator_->play(0, *runtimeTimeline_, cloneRuntimeClips(), submitted.value(), tick_);
+            const std::size_t layer = runtimeTimeline_->montage.animationLayer;
+            auto played = coordinator_->play(layer, *runtimeTimeline_, cloneRuntimeClips(), submitted.value(), tick_);
             if (!played) return Result<void>::failure(played.status());
             montageHandle_ = played.value();
+            activeLayer_   = layer;
+            if (hasActiveMontage && previousLayer != layer) {
+                auto previous = coordinator_->resolve(previousHandle);
+                if (previous) previous.value().get().stop();
+                coordinator_->collectFinished();
+            }
         }
         runtime_     = std::move(runtime);
         executionId_ = submitted.value();
@@ -865,6 +907,7 @@ private:
     std::unique_ptr<action::ActionRuntime>    runtime_;
     std::unique_ptr<animation::MontageCoordinator> coordinator_;
     animation::MontageHandle                       montageHandle_ = animation::MontageHandle::invalid();
+    std::size_t                                    activeLayer_   = 0;
     action::ActionExecutionId                 executionId_{};
     SimulationTick                            tick_ = SimulationTick::zero();
     std::optional<animation::MontageAdvance>  runtimeAdvance_;
@@ -1371,6 +1414,16 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         return script::projectResult(vm, self->jumpRuntimeSection(static_cast<std::size_t>(sectionIndex)),
                                      montageAdvanceValue);
     });
+    actionEditor.addFunc(
+        "evaluateRuntimeSectionProgress",
+        [vm](ScriptActionTimelineEditor* self, int sectionIndex, float progress) {
+            if (!self || sectionIndex < 0)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "runtime section index is invalid", "index");
+            return script::projectResult(
+                vm, self->evaluateRuntimeSectionProgress(static_cast<std::size_t>(sectionIndex), progress),
+                montageAdvanceValue);
+        });
     actionEditor.addFunc("replayRuntimeCrossFade", [vm](ScriptActionTimelineEditor* self) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument,
@@ -1386,6 +1439,26 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return script::projectResult(
                 vm, self->syncRuntimeSection(static_cast<std::size_t>(sectionIndex), std::move(target).takeValue()));
         });
+    actionEditor.addFunc(
+        "syncRuntimeSectionAndJump", [vm](ScriptActionTimelineEditor* self, int sectionIndex, float targetSeconds) {
+            if (!self || sectionIndex < 0)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "runtime section index is invalid", "index");
+            auto target = seconds(targetSeconds);
+            if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+            return script::projectResult(
+                vm,
+                self->syncRuntimeSectionAndJump(static_cast<std::size_t>(sectionIndex),
+                                                std::move(target).takeValue()),
+                montageAdvanceValue);
+        });
+    actionEditor.addFunc("clearRuntimeSectionSync", [vm](ScriptActionTimelineEditor* self, int sectionIndex) {
+        if (!self || sectionIndex < 0)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "runtime section index is invalid", "index");
+        return script::projectResult(vm,
+                                     self->clearRuntimeSectionSync(static_cast<std::size_t>(sectionIndex)));
+    });
     actionEditor.addFunc("beginRuntimeBlendOut", [vm](ScriptActionTimelineEditor* self, float durationSeconds) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");

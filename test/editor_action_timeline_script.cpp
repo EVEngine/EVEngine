@@ -38,6 +38,9 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         previewHostAvailable <- actionEditor.hasPreviewHost();
         previewRefresh <- actionEditor.refreshPreview();
         runtimeRateBeforeStart <- actionEditor.setRuntimeRate(1.5);
+        sectionProgressBeforeStart <- actionEditor.evaluateRuntimeSectionProgress(0, 0.5);
+        sectionSyncJumpBeforeStart <- actionEditor.syncRuntimeSectionAndJump(0, 0.25);
+        clearSectionSyncBeforeStart <- actionEditor.clearRuntimeSectionSync(0);
         configured <- actionEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
         viewport <- actionEditor.setViewport(800.0, 36.0, 120.0);
@@ -204,6 +207,9 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(!vm.find("previewHostAvailable").toBool());
     CHECK(vm.find("previewRefresh").toTable().get<bool>("ok"));
     CHECK(!vm.find("runtimeRateBeforeStart").toTable().get<bool>("ok"));
+    CHECK(!vm.find("sectionProgressBeforeStart").toTable().get<bool>("ok"));
+    CHECK(!vm.find("sectionSyncJumpBeforeStart").toTable().get<bool>("ok"));
+    CHECK(!vm.find("clearSectionSyncBeforeStart").toTable().get<bool>("ok"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));

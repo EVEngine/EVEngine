@@ -679,7 +679,10 @@ if (actionEditor.hasPreviewHost())
 物理 Section 分割不是只读装饰。`getSectionSplitCount/getSectionSplitTime` 读取严格排序的边界，
 `addSectionSplit` 在播放头或指定时间插入边界，`setSectionSplit` 移动边界，`removeSectionSplit` 删除边界。
 三种修改都通过 Timeline 的规范替换事务提交，拒绝 0、末尾、重复或越界时间，并立即更新同一编辑器拥有的
-Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`syncRuntimeSection` 和磁吸目标因此共享一份边界事实。
+Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`evaluateRuntimeSectionProgress`、
+`syncRuntimeSection`、`syncRuntimeSectionAndJump`、`clearRuntimeSectionSync` 和磁吸目标因此共享一份边界事实。
+归一化求值把 `[0,1]` 映射到物理 Section；同步倍率可以只配置，也可以配置后立即跳到该段起点，并可明确清除。
+运行时按资产的 `animationLayer` 选择协调器层，视口读取该层的双槽归一化合成姿态。
 运行中的预览还可用 `setRuntimeRate/getRuntimeRate` 设置和读取严格为正的倍率；倍率只缩放调用者注入的
 delta，不读取墙钟，也不写回资产的 `basePlayRate`。`getRuntimePhysicalSection`、
 `getRuntimeSectionProgress` 和 `getRuntimeWeight` 可直接驱动运行诊断 HUD。
