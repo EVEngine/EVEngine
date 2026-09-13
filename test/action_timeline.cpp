@@ -171,6 +171,32 @@ TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
     CHECK_EQ(editor.previewEvents()[2].itemId, id("combat-notify:hit"));
 }
 
+TEST_CASE("actionTimelineEditor.editsPhysicalSectionSplitsAtomically") {
+    eve::editor::ActionTimelineEditor editor("asset.combat.sections", timelineFixture());
+
+    REQUIRE(editor.addSectionSplit(eve::Duration::fromNanoseconds(60)).ok());
+    REQUIRE(editor.addSectionSplit(eve::Duration::fromNanoseconds(30)).ok());
+    REQUIRE_EQ(editor.target().timeline().splitTimestamps.size(), 2U);
+    CHECK_EQ(editor.target().timeline().splitTimestamps[0], eve::Duration::fromNanoseconds(30));
+    CHECK_EQ(editor.target().timeline().splitTimestamps[1], eve::Duration::fromNanoseconds(60));
+
+    const auto duplicateRevision = editor.target().revision();
+    CHECK(!editor.addSectionSplit(eve::Duration::fromNanoseconds(30)).ok());
+    CHECK_EQ(editor.target().revision(), duplicateRevision);
+    REQUIRE(editor.setSectionSplit(0, eve::Duration::fromNanoseconds(80)).ok());
+    CHECK_EQ(editor.target().timeline().splitTimestamps[0], eve::Duration::fromNanoseconds(60));
+    CHECK_EQ(editor.target().timeline().splitTimestamps[1], eve::Duration::fromNanoseconds(80));
+
+    const auto collisionRevision = editor.target().revision();
+    CHECK(!editor.setSectionSplit(0, eve::Duration::fromNanoseconds(80)).ok());
+    CHECK_EQ(editor.target().revision(), collisionRevision);
+    REQUIRE(editor.removeSectionSplit(1).ok());
+    REQUIRE_EQ(editor.target().timeline().splitTimestamps.size(), 1U);
+    REQUIRE(editor.undo().ok());
+    REQUIRE_EQ(editor.target().timeline().splitTimestamps.size(), 2U);
+    CHECK_EQ(editor.target().timeline().splitTimestamps[1], eve::Duration::fromNanoseconds(80));
+}
+
 TEST_CASE("actionTimelineEditor.movesAlignsAndScalesSelectionAtomically") {
     eve::editor::ActionTimelineEditor editor("asset.combat.selection", timelineFixture());
     REQUIRE(editor.selectItem(id("combat-notify:hit")).ok());

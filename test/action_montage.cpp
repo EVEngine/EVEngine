@@ -189,6 +189,27 @@ TEST_CASE("actionMontage.settingsUpdateIsValidatedAndPreservesPreparedPlayback")
     CHECK(player.footIkEnabled());
 }
 
+TEST_CASE("actionMontage.sectionSplitUpdateIsAtomicAndPreservesPreparedPlayback") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontagePlayer player(skeleton);
+    REQUIRE(player.prepare(montageTimeline(), montageClips()).ok());
+    REQUIRE(player.play(eve::action::ActionExecutionId(78)).ok());
+
+    REQUIRE(player.setSectionSplits({eve::Duration::fromSeconds(0.25).takeValue(),
+                                     eve::Duration::fromSeconds(1.5).takeValue()})
+                .ok());
+    REQUIRE(player.jumpToSection(eve::action::ActionExecutionId(78), 1, eve::SimulationTick(1)).ok());
+    REQUIRE(player.physicalSectionIndex().ok());
+    CHECK_EQ(player.physicalSectionIndex().value(), 1U);
+
+    CHECK(!player.setSectionSplits({eve::Duration::zero()}).ok());
+    REQUIRE(player.jumpToSection(eve::action::ActionExecutionId(78), 2, eve::SimulationTick(2)).ok());
+    REQUIRE(player.physicalSectionIndex().ok());
+    CHECK_EQ(player.physicalSectionIndex().value(), 2U);
+    CHECK(player.isPlaying());
+}
+
 TEST_CASE("actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration") {
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");

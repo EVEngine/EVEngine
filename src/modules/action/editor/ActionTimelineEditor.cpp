@@ -468,6 +468,40 @@ EditorResult<void> ActionTimelineEditor::renameTrack(const LogicalId& trackId, s
     return commit(std::move(candidate), "Rename action track", "action.timeline.track.rename");
 }
 
+EditorResult<void> ActionTimelineEditor::addSectionSplit(Duration time) {
+    if (time <= Duration::zero() || time >= target_.timeline().duration)
+        return rejected("editor.action.timeline.section-split-range",
+                        "Physical section split must be strictly inside the timeline");
+    action::ActionTimeline candidate = target_.timeline();
+    if (std::find(candidate.splitTimestamps.begin(), candidate.splitTimestamps.end(), time) !=
+        candidate.splitTimestamps.end())
+        return rejected("editor.action.timeline.section-split-duplicate",
+                        "Physical section split already exists at this time");
+    candidate.splitTimestamps.push_back(time);
+    std::sort(candidate.splitTimestamps.begin(), candidate.splitTimestamps.end());
+    return commit(std::move(candidate), "Add physical section split", "action.timeline.section-split.add");
+}
+
+EditorResult<void> ActionTimelineEditor::setSectionSplit(std::size_t index, Duration time) {
+    if (index >= target_.timeline().splitTimestamps.size())
+        return rejected("editor.action.timeline.section-split-not-found", "Physical section split was not found");
+    if (time <= Duration::zero() || time >= target_.timeline().duration)
+        return rejected("editor.action.timeline.section-split-range",
+                        "Physical section split must be strictly inside the timeline");
+    action::ActionTimeline candidate = target_.timeline();
+    candidate.splitTimestamps[index] = time;
+    std::sort(candidate.splitTimestamps.begin(), candidate.splitTimestamps.end());
+    return commit(std::move(candidate), "Move physical section split", "action.timeline.section-split.move");
+}
+
+EditorResult<void> ActionTimelineEditor::removeSectionSplit(std::size_t index) {
+    if (index >= target_.timeline().splitTimestamps.size())
+        return rejected("editor.action.timeline.section-split-not-found", "Physical section split was not found");
+    action::ActionTimeline candidate = target_.timeline();
+    candidate.splitTimestamps.erase(candidate.splitTimestamps.begin() + static_cast<std::ptrdiff_t>(index));
+    return commit(std::move(candidate), "Remove physical section split", "action.timeline.section-split.remove");
+}
+
 EditorResult<void> ActionTimelineEditor::addAnimationSection(action::ActionAnimationSection section) {
     action::ActionTimeline candidate = target_.timeline();
     candidate.animationSections.push_back(std::move(section));

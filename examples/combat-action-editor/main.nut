@@ -10,7 +10,7 @@ persist combatEditor = {
     inspectorMode = "joint", selectedActionId = "", selectedActionState = false,
     insertPanelOpen = false, newSectionOpen = false, nextSectionId = 0,
     insertTrack = 0, insertNotifyType = 0, insertStateType = 2,
-    selectedTrack = 0, newTrackOpen = false, newTrackKind = 0, nextTrackId = 0,
+    selectedTrack = 0, selectedSplit = 0, newTrackOpen = false, newTrackKind = 0, nextTrackId = 0,
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -29,7 +29,7 @@ persist combatEditor = {
 local editorUiDefaults = {
     insertPanelOpen=false, newSectionOpen=false, nextSectionId=0,
     insertTrack=0, insertNotifyType=0, insertStateType=2,
-    selectedTrack=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
+    selectedTrack=0, selectedSplit=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
 };
 foreach (key, value in editorUiDefaults)
     if (!(key in combatEditor)) combatEditor[key] <- value;
@@ -44,6 +44,24 @@ function trackChoices() {
         choices += combatEditor.timeline.getTrackLabel(i) + " [" + combatEditor.timeline.getTrackKind(i) + "]";
     }
     return choices;
+}
+
+function sectionSplitChoices() {
+    local choices = "";
+    for (local i = 0; i < combatEditor.timeline.getSectionSplitCount(); ++i) {
+        if (i > 0) choices += "\n";
+        choices += "Split " + (i + 1);
+    }
+    return choices == "" ? "No physical splits" : choices;
+}
+
+function sectionSplitIndexAt(time) {
+    local nearest = 0; local distance = combatEditor.timeline.getDuration();
+    for (local i = 0; i < combatEditor.timeline.getSectionSplitCount(); ++i) {
+        local delta = fabs(combatEditor.timeline.getSectionSplitTime(i) - time);
+        if (delta < distance) { nearest = i; distance = delta; }
+    }
+    return nearest;
 }
 
 function trackKindChoices() { return "Animation\nGameplay\nEffect\nAudio\nCamera\nMovement\nTag\nCustom"; }
@@ -451,6 +469,13 @@ function panelInspector() {
         ui.checkbox("Horizontal", true, "montage-root-horizontal");
         ui.checkbox("Vertical", true, "montage-root-vertical");
         ui.checkbox("Rotation", true, "montage-root-rotation");
+        ui.text("Physical Sections", "physical-sections-title");
+        ui.combo("Split", sectionSplitChoices(), combatEditor.selectedSplit, "section-split-selector");
+        ui.slider("Split Time", 0.5, 0.0, combatEditor.timeline.getDuration(), "section-split-time");
+        ui.beginToolbar("section-split-tools");
+        ui.iconButton("plus", "Add at Playhead", "add-section-split");
+        ui.iconButton("trash", "Delete Split", "delete-section-split");
+        ui.end();
         ui.beginToolbar("montage-tools"); ui.iconButton("undo", "", "montage-undo");
         ui.iconButton("redo", "", "montage-redo"); ui.end();
         ui.textWrapped("Settings update the authoritative asset and the running preview without rebuilding clips.",
@@ -869,6 +894,22 @@ function handleUiEvents() {
             applyHistory(id == "track-undo" ? "undo" : "redo");
         } else if (id == "montage-undo" || id == "montage-redo") {
             applyHistory(id == "montage-undo" ? "undo" : "redo");
+        } else if (id == "add-section-split") {
+            local splitTime = combatEditor.timeline.getPreviewTime();
+            local result = combatEditor.timeline.addSectionSplit(splitTime);
+            if (result.ok) {
+                combatEditor.selectedSplit = sectionSplitIndexAt(splitTime);
+                mountInspectorPanel();
+            }
+            combatEditor.status = result.ok ? "Physical section split added" : result.status.summary;
+        } else if (id == "delete-section-split") {
+            local result = combatEditor.timeline.removeSectionSplit(combatEditor.selectedSplit);
+            if (result.ok) {
+                combatEditor.selectedSplit = combatEditor.timeline.getSectionSplitCount() > 0 ?
+                    clampf(combatEditor.selectedSplit, 0, combatEditor.timeline.getSectionSplitCount() - 1).tointeger() : 0;
+                mountInspectorPanel();
+            }
+            combatEditor.status = result.ok ? "Physical section split deleted" : result.status.summary;
         } else if (id == "align-selection-start" || id == "align-selection-end") {
             local result = combatEditor.timeline.handleTimelineShortcut(
                 id == "align-selection-start" ? "Shift+[" : "Shift+]");
@@ -926,7 +967,14 @@ function handleUiEvents() {
         } else if (host == "action.inspector") {
             ui.select("action.inspector");
             local result = { ok=true, status={summary=""} };
-            if (id.find("montage-") == 0 && id != "montage-tools") {
+            if (id == "section-split-selector") {
+                combatEditor.selectedSplit = ui.getValue(id).tointeger();
+            } else if (id == "section-split-time" && combatEditor.timeline.getSectionSplitCount() > 0) {
+                local splitTime = ui.getValue(id);
+                result = combatEditor.timeline.setSectionSplit(combatEditor.selectedSplit, splitTime);
+                if (result.ok) combatEditor.selectedSplit = sectionSplitIndexAt(splitTime);
+                combatEditor.status = result.ok ? "Physical section split moved" : result.status.summary;
+            } else if (id.find("montage-") == 0 && id != "montage-tools") {
                 result = commitMontageSettings();
                 combatEditor.status = result.ok ? "Montage settings committed" : result.status.summary;
             } else if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
@@ -1267,6 +1315,14 @@ function updateLabels() {
         ui.setChecked("montage-root-horizontal", combatEditor.timeline.getMontageRootMotionHorizontal());
         ui.setChecked("montage-root-vertical", combatEditor.timeline.getMontageRootMotionVertical());
         ui.setChecked("montage-root-rotation", combatEditor.timeline.getMontageRootMotionRotation());
+        local splitCount = combatEditor.timeline.getSectionSplitCount();
+        combatEditor.selectedSplit = splitCount > 0 ? clampf(combatEditor.selectedSplit, 0, splitCount - 1).tointeger() : 0;
+        ui.setValue("section-split-selector", combatEditor.selectedSplit.tofloat());
+        ui.setValue("section-split-time", splitCount > 0 ?
+            combatEditor.timeline.getSectionSplitTime(combatEditor.selectedSplit) : 0.0);
+        ui.setEnabled("section-split-selector", splitCount > 0);
+        ui.setEnabled("section-split-time", splitCount > 0);
+        ui.setEnabled("delete-section-split", splitCount > 0);
         ui.setEnabled("montage-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("montage-redo", combatEditor.timeline.canRedo());
     }

@@ -125,6 +125,12 @@ public:
      * @return Applied, or a structured validation/state failure with no observable mutation.
      */
     [[nodiscard]] Result<void> setSettings(action::ActionMontageSettings settings);
+    /**
+     * @brief Atomically replace objective physical-section split timestamps without rebuilding clip topology.
+     * @param splitTimestamps Strictly ordered boundaries inside the prepared montage duration.
+     * @return Applied, or a structured validation/state failure with the previous boundaries preserved.
+     */
+    [[nodiscard]] Result<void> setSectionSplits(std::vector<Duration> splitTimestamps);
     /** @brief Transactionally replace one URI-backed clip and preserve the current cursor and slot weight. */
     [[nodiscard]] Result<void> replaceClip(std::string_view uri, std::unique_ptr<AnimClip> clip);
     /** @brief Bind presentation playback to one authoritative ActionRuntime execution. */

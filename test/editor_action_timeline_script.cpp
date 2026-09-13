@@ -140,6 +140,14 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
             0.0, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
         undoMontageSettings <- actionEditor.undo();
         restoredMontageRate <- actionEditor.getMontageBasePlayRate();
+        splitCountBefore <- actionEditor.getSectionSplitCount();
+        addSplit <- actionEditor.addSectionSplit(0.25);
+        splitTimeAfterAdd <- actionEditor.getSectionSplitTime(0);
+        moveSplit <- actionEditor.setSectionSplit(0, 0.35);
+        splitTimeAfterMove <- actionEditor.getSectionSplitTime(0);
+        duplicateSplit <- actionEditor.addSectionSplit(0.35);
+        removeSplit <- actionEditor.removeSectionSplit(0);
+        splitCountAfterRemove <- actionEditor.getSectionSplitCount();
         invalidResult <- eve.ActionEditorModule().create("test.asset.invalid", {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:invalid", durationNs=-1,
@@ -226,6 +234,14 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_EQ(vm.find("montageLayer").toInt(), 2);
     CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() + 0.03f) < 1e-5f);
     CHECK(!vm.find("montageRootRotation").toBool());
+    CHECK_EQ(vm.find("splitCountBefore").toInt(), 0);
+    CHECK(vm.find("addSplit").toTable().get<bool>("ok"));
+    CHECK(std::fabs(vm.find("splitTimeAfterAdd").toFloat() - 0.25f) < 1e-5f);
+    CHECK(vm.find("moveSplit").toTable().get<bool>("ok"));
+    CHECK(std::fabs(vm.find("splitTimeAfterMove").toFloat() - 0.35f) < 1e-5f);
+    CHECK(!vm.find("duplicateSplit").toTable().get<bool>("ok"));
+    CHECK(vm.find("removeSplit").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("splitCountAfterRemove").toInt(), 0);
     CHECK(!vm.find("invalidMontageSettings").toTable().get<bool>("ok"));
     CHECK(vm.find("undoMontageSettings").toTable().get<bool>("ok"));
     CHECK(std::fabs(vm.find("restoredMontageRate").toFloat() - 1.0f) < 1e-5f);

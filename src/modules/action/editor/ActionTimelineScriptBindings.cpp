@@ -314,6 +314,91 @@ public:
         return edited;
     }
 
+    [[nodiscard]] EditorResult<void> addSectionSplit(Duration time) {
+        const auto previous = editor_.target().timeline().splitTimestamps;
+        auto edited = editor_.addSectionSplit(time);
+        if (!edited.ok()) return edited;
+        const auto& splits = editor_.target().timeline().splitTimestamps;
+        if (montage_) {
+            auto applied = montage_->setSectionSplits(splits);
+            if (!applied) {
+                auto rolledBack = editor_.undo();
+                if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
+                return EditorResult<void>::failure(applied.status());
+            }
+        }
+        if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
+        return edited;
+    }
+
+    [[nodiscard]] EditorResult<void> setSectionSplit(std::size_t index, Duration time) {
+        const auto previous = editor_.target().timeline().splitTimestamps;
+        auto edited = editor_.setSectionSplit(index, time);
+        if (!edited.ok()) return edited;
+        const auto& splits = editor_.target().timeline().splitTimestamps;
+        if (montage_) {
+            auto applied = montage_->setSectionSplits(splits);
+            if (!applied) {
+                auto rolledBack = editor_.undo();
+                if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
+                return EditorResult<void>::failure(applied.status());
+            }
+        }
+        if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
+        return edited;
+    }
+
+    [[nodiscard]] EditorResult<void> removeSectionSplit(std::size_t index) {
+        const auto previous = editor_.target().timeline().splitTimestamps;
+        auto edited = editor_.removeSectionSplit(index);
+        if (!edited.ok()) return edited;
+        const auto& splits = editor_.target().timeline().splitTimestamps;
+        if (montage_) {
+            auto applied = montage_->setSectionSplits(splits);
+            if (!applied) {
+                auto rolledBack = editor_.undo();
+                if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
+                return EditorResult<void>::failure(applied.status());
+            }
+        }
+        if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
+        return edited;
+    }
+
+    [[nodiscard]] EditorResult<TransactionReceipt> undo() {
+        const auto previous = editor_.target().timeline().splitTimestamps;
+        auto       undone   = editor_.undo();
+        if (!undone.ok()) return undone;
+        const auto& splits = editor_.target().timeline().splitTimestamps;
+        if (montage_) {
+            auto applied = montage_->setSectionSplits(splits);
+            if (!applied) {
+                auto rolledBack = editor_.redo();
+                if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
+                return EditorResult<TransactionReceipt>::failure(applied.status());
+            }
+        }
+        if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
+        return undone;
+    }
+
+    [[nodiscard]] EditorResult<TransactionReceipt> redo() {
+        const auto previous = editor_.target().timeline().splitTimestamps;
+        auto       redone   = editor_.redo();
+        if (!redone.ok()) return redone;
+        const auto& splits = editor_.target().timeline().splitTimestamps;
+        if (montage_) {
+            auto applied = montage_->setSectionSplits(splits);
+            if (!applied) {
+                auto rolledBack = editor_.undo();
+                if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
+                return EditorResult<TransactionReceipt>::failure(applied.status());
+            }
+        }
+        if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
+        return redone;
+    }
+
     [[nodiscard]] EditorResult<DocumentSnapshot> saveDocument() {
         auto synchronized = synchronizeDocument();
         if (!synchronized.ok()) return synchronized;
@@ -1061,13 +1146,13 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("undo", [vm](ScriptActionTimelineEditor* self) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
-        auto result = self->editor().undo();
+        auto result = self->undo();
         return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
     });
     actionEditor.addFunc("redo", [vm](ScriptActionTimelineEditor* self) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
-        auto result = self->editor().redo();
+        auto result = self->redo();
         return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
     });
     actionEditor.addFunc("update", [vm](ScriptActionTimelineEditor* self, float deltaSeconds) {
@@ -1340,6 +1425,36 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("getAnimationUri", [](ScriptActionTimelineEditor* self) {
         return self ? self->editor().target().timeline().animationUri : std::string{};
+    });
+    actionEditor.addFunc("getSectionSplitCount", [](ScriptActionTimelineEditor* self) {
+        return self ? static_cast<int>(self->editor().target().timeline().splitTimestamps.size()) : 0;
+    });
+    actionEditor.addFunc("getSectionSplitTime", [](ScriptActionTimelineEditor* self, int index) {
+        if (!self || index < 0 || static_cast<std::size_t>(index) >=
+                                      self->editor().target().timeline().splitTimestamps.size())
+            return 0.0f;
+        return static_cast<float>(
+            self->editor().target().timeline().splitTimestamps[static_cast<std::size_t>(index)].seconds());
+    });
+    actionEditor.addFunc("addSectionSplit", [vm](ScriptActionTimelineEditor* self, float timeSeconds) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto time = seconds(timeSeconds);
+        if (!time) return script::projectStatusResult(vm, time.status(), false, false);
+        return project(vm, self->addSectionSplit(time.value()));
+    });
+    actionEditor.addFunc("setSectionSplit", [vm](ScriptActionTimelineEditor* self, int index, float timeSeconds) {
+        if (!self || index < 0)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor and non-negative split index are required");
+        auto time = seconds(timeSeconds);
+        if (!time) return script::projectStatusResult(vm, time.status(), false, false);
+        return project(vm, self->setSectionSplit(static_cast<std::size_t>(index), time.value()));
+    });
+    actionEditor.addFunc("removeSectionSplit", [vm](ScriptActionTimelineEditor* self, int index) {
+        if (!self || index < 0)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor and non-negative split index are required");
+        return project(vm, self->removeSectionSplit(static_cast<std::size_t>(index)));
     });
     actionEditor.addFunc("getAnimationSectionCount", [](ScriptActionTimelineEditor* self) {
         return self ? static_cast<int>(self->editor().target().timeline().animationSections.size()) : 0;

@@ -177,6 +177,12 @@ public:
     [[nodiscard]] EditorResult<void> renameTrack(const LogicalId& trackId, std::string label);
     /** @brief Replace montage-wide playback, blending, layer and root-motion settings in one undo step. */
     [[nodiscard]] EditorResult<void> setMontageSettings(action::ActionMontageSettings settings);
+    /** @brief Insert one physical-section split strictly inside the montage duration. */
+    [[nodiscard]] EditorResult<void> addSectionSplit(Duration time);
+    /** @brief Move one indexed physical-section split while preserving strict ordering. */
+    [[nodiscard]] EditorResult<void> setSectionSplit(std::size_t index, Duration time);
+    /** @brief Remove one indexed physical-section split. */
+    [[nodiscard]] EditorResult<void> removeSectionSplit(std::size_t index);
     /** @brief Add one objective animation section to the montage lane. */
     [[nodiscard]] EditorResult<void> addAnimationSection(action::ActionAnimationSection section);
     /** @brief Move an animation section while preserving its duration. */

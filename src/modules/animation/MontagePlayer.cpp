@@ -149,6 +149,16 @@ Result<void> MontagePlayer::setSettings(action::ActionMontageSettings settings) 
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+Result<void> MontagePlayer::setSectionSplits(std::vector<Duration> splitTimestamps) {
+    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
+    auto candidate            = *timeline_;
+    candidate.splitTimestamps = std::move(splitTimestamps);
+    auto valid                = candidate.validate();
+    if (!valid) return Result<void>::failure(valid.status());
+    timeline_->splitTimestamps = std::move(candidate.splitTimestamps);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<void> MontagePlayer::replaceClip(std::string_view uri, std::unique_ptr<AnimClip> clip) {
     if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
     if (uri.empty() || !clip) return invalid<void>("replacement montage clip is incomplete", "clip");

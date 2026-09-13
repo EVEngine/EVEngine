@@ -654,6 +654,11 @@ if (actionEditor.hasPreviewHost())
 8 像素阈值内磁吸到 0 点、当前播放头、物理分段、动画 Section 边界和其他轨道 Block 边界。
 多选拖动会排除选择集自身的边界，避免整组被自己的成员吸住。
 
+物理 Section 分割不是只读装饰。`getSectionSplitCount/getSectionSplitTime` 读取严格排序的边界，
+`addSectionSplit` 在播放头或指定时间插入边界，`setSectionSplit` 移动边界，`removeSectionSplit` 删除边界。
+三种修改都通过 Timeline 的规范替换事务提交，拒绝 0、末尾、重复或越界时间，并立即更新同一编辑器拥有的
+Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`syncRuntimeSection` 和磁吸目标因此共享一份边界事实。
+
 选中的 Audio、VFX 与 Prefab Block 会显示类型化属性：资源 URI、播放参数、停止或生命周期策略，以及
 attachment、source/target anchor、bone 和位置/旋转/缩放偏移。脚本也可用
 `setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用 `patchItemPayload` 原子提交一组字段；
