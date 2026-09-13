@@ -7,7 +7,8 @@ persist combatEditor = {
     workspace = null, timeline = null, camera = null, cameraController = null, skeleton = null,
     actionModule = null, assetCatalog = null, tabs = [], activeTab = 0, closeArmed = -1, tabUiSignature = "",
     assetPickerOpen = false, assetSearch = "",
-    inspectorMode = "joint", selectedActionId = "", selectedActionState = false,
+    inspectorMode = "joint", selectedActionId = "", selectedActionState = false, insertPanelOpen = false,
+    insertTrack = 0, insertNotifyType = 0, insertStateType = 2,
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
     generalLibrary = null, meleeLibrary = null,
@@ -24,6 +25,44 @@ persist combatEditor = {
 function ns(seconds) { return (seconds * 1000000000.0).tointeger(); }
 function clampf(value, minimum, maximum) { return value < minimum ? minimum : (value > maximum ? maximum : value); }
 
+function trackChoices() {
+    local choices = "";
+    for (local i = 0; i < combatEditor.timeline.getTrackCount(); ++i) {
+        if (i > 0) choices += "\n";
+        choices += combatEditor.timeline.getTrackLabel(i) + " [" + combatEditor.timeline.getTrackKind(i) + "]";
+    }
+    return choices;
+}
+
+function insertTypeChoices(state) {
+    local choices = "";
+    for (local i = 0; i < combatEditor.timeline.getInsertableTypeCount(state); ++i) {
+        if (i > 0) choices += "\n";
+        choices += combatEditor.timeline.getInsertableTypeLabel(state, i);
+    }
+    return choices;
+}
+
+function defaultPayloadForType(type) {
+    local payloads = {
+        ["combat:damage"]="{\"damageType\":\"Damage.Physical\",\"amount\":1}",
+        ["gameplay:event"]="{\"tag\":\"Gameplay.Event\"}",
+        ["presentation:vfx"]="{\"uri\":\"asset://vfx/effect\",\"lifetimeSeconds\":1.0}",
+        ["presentation:audio"]="{\"uri\":\"asset://audio/clip\"}",
+        ["presentation:camera"]="{\"cue\":\"camera:impact\"}",
+        ["collision:ignore-window"]="{\"channel\":\"default\"}",
+        ["combat:hitbox-window"]="{\"hitbox\":\"weapon.main\"}",
+        ["combat:invulnerability-window"]="{}",
+        ["gameplay:prefab-spawn"]="{\"uri\":\"asset://prefabs/object\"}",
+        ["input:combo-window"]="{\"input\":\"Ability.Attack\"}",
+        ["movement:root-motion-window"]="{\"mode\":\"animation\"}",
+        ["presentation:audio-state"]="{\"uri\":\"asset://audio/clip\"}",
+        ["presentation:vfx-state"]="{\"uri\":\"asset://vfx/effect\"}",
+        ["presentation:parameter-curve"]="{\"target\":\"audio:master-volume\",\"keys\":[]}",
+    };
+    return type in payloads ? payloads[type] : "{}";
+}
+
 function requireResult(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
     return result.value;
@@ -31,7 +70,7 @@ function requireResult(result, context) {
 
 function attackTimeline(duration) {
     return {
-        schema="eve.action.timeline", schemaVersion=3,
+        schema="eve.action.timeline", schemaVersion=4,
         actionId="combat:light-attack-kaykit", durationNs=ns(duration),
         animationUri="asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_1H_Attack_Chop",
         animationSections=[
@@ -58,24 +97,24 @@ function attackTimeline(duration) {
             { id="kaykit-track:gameplay", label="Gameplay", kind="gameplay", muted=false, locked=false,
               notifies=[
                 { id="kaykit-notify:damage", type="combat:damage", timeNs=ns(duration * 0.46),
-                  payload={ damageType="Damage.Physical.Slash", amount=18 } },
+                  payload={ damageType="Damage.Physical.Slash", amount=18 }, enabled=true },
               ],
               states=[
                 { id=HITBOX_ID, type="combat:hitbox-window", startNs=ns(duration * 0.30),
-                  endNs=ns(duration * 0.62), payload={ hitbox="weapon.main" } },
+                  endNs=ns(duration * 0.62), payload={ hitbox="weapon.main" }, enabled=true },
                 { id="kaykit-state:combo", type="input:combo-window", startNs=ns(duration * 0.65),
-                  endNs=ns(duration * 0.86), payload={ input="Ability.Combat.Attack.Light" } },
+                  endNs=ns(duration * 0.86), payload={ input="Ability.Combat.Attack.Light" }, enabled=true },
               ] },
             { id="kaykit-track:presentation", label="Presentation", kind="effect", muted=false, locked=false,
               notifies=[
                 { id="kaykit-notify:swing-audio", type="presentation:audio", timeNs=ns(duration * 0.32),
-                  payload={ uri="asset://audio/sword-whoosh" } },
+                  payload={ uri="asset://audio/sword-whoosh" }, enabled=true },
                 { id="kaykit-notify:swing-vfx", type="presentation:vfx", timeNs=ns(duration * 0.34),
-                  payload={ uri="asset://vfx/sword-arc", lifetimeSeconds=0.45 } },
+                  payload={ uri="asset://vfx/sword-arc", lifetimeSeconds=0.45 }, enabled=true },
                 { id="kaykit-notify:impact-camera", type="presentation:camera", timeNs=ns(duration * 0.46),
                   payload={ cue="combat:light-impact", positionAmplitude=0.08,
                             rotationAmplitude=1.8, fovAmplitude=2.0,
-                            durationSeconds=0.24, seed=47 } },
+                            durationSeconds=0.24, seed=47 }, enabled=true },
               ], states=[
                 { id="kaykit-state:volume-curve", type="presentation:parameter-curve",
                   startNs=ns(duration * 0.20), endNs=ns(duration * 0.75),
@@ -83,12 +122,12 @@ function attackTimeline(duration) {
                       { time=0.0, value=0.35, inTangent=0.0, outTangent=2.2, interpolation="cubic" },
                       { time=0.35, value=1.0, inTangent=0.0, outTangent=0.0, interpolation="cubic" },
                       { time=1.0, value=0.55, inTangent=-0.8, outTangent=0.0, interpolation="linear" },
-                  ] } },
+                  ] }, enabled=true },
               ] },
             { id="kaykit-track:movement", label="Root Motion", kind="movement", muted=false, locked=false,
               notifies=[], states=[
                 { id="kaykit-state:root-motion", type="movement:root-motion-window", startNs=0,
-                  endNs=ns(duration), payload={ mode="animation" } },
+                  endNs=ns(duration), payload={ mode="animation" }, enabled=true },
               ] },
         ],
     };
@@ -379,6 +418,24 @@ function panelInspector() {
     ui.end();
     ui.text("", "action-uri"); ui.text("", "revision");
     if (combatEditor.inspectorMode == "action") {
+        if (combatEditor.insertPanelOpen) {
+            ui.text("New Block at Playhead", "insert-title");
+            ui.combo("Track", trackChoices(), combatEditor.insertTrack, "insert-track");
+            ui.combo("Instant", insertTypeChoices(false), combatEditor.insertNotifyType, "insert-notify-type");
+            ui.inputText("Payload", defaultPayloadForType(
+                combatEditor.timeline.getInsertableType(false, combatEditor.insertNotifyType)), "insert-notify-payload");
+            ui.iconButton("plus", "Add Notify", "insert-notify");
+            ui.separator("insert-separator");
+            ui.combo("State", insertTypeChoices(true), combatEditor.insertStateType, "insert-state-type");
+            ui.slider("Duration", 0.25, 1.0 / 30.0, combatEditor.timeline.getDuration(), "insert-state-duration");
+            ui.inputText("Payload", defaultPayloadForType(
+                combatEditor.timeline.getInsertableType(true, combatEditor.insertStateType)), "insert-state-payload");
+            ui.beginToolbar("insert-actions"); ui.iconButton("plus", "Add State", "insert-state");
+            ui.iconButton("close", "Cancel", "cancel-insert"); ui.end();
+            ui.textWrapped("Types come from the native registry. Payload contracts are validated before commit.",
+                           245.0, "insert-help");
+            return;
+        }
         ui.text("Action Block", "action-block-title"); ui.text("No Action Block selected", "action-block-id");
         ui.text("", "action-block-kind");
         ui.checkbox("Enabled", true, "action-enabled");
@@ -388,7 +445,10 @@ function panelInspector() {
         ui.setItemSize(300.0, 0.0);
         ui.slider("Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-start");
         ui.slider("End", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-end");
-        ui.beginToolbar("action-tools"); ui.iconButton("trash", "Delete Block", "delete-action");
+        ui.beginToolbar("action-tools"); ui.iconButton("plus", "New Block", "new-action");
+        ui.iconButton("copy", "Copy", "copy-action");
+        ui.iconButton("clipboard", "Paste at playhead", "paste-action");
+        ui.iconButton("trash", "Delete Block", "delete-action");
         ui.iconButton("undo", "", "action-undo"); ui.iconButton("redo", "", "action-redo"); ui.end();
         ui.textWrapped("Timing edits are validated and committed as undoable timeline transactions.",
                        245.0, "action-help");
@@ -554,11 +614,33 @@ function handleUiEvents() {
             applyHistory(id);
         } else if (id == "inspect-joint" || id == "inspect-action") {
             combatEditor.inspectorMode = id == "inspect-action" ? "action" : "joint";
+            combatEditor.insertPanelOpen = false;
+            mountInspectorPanel();
+        } else if (id == "new-action" || id == "cancel-insert") {
+            combatEditor.insertPanelOpen = id == "new-action";
             mountInspectorPanel();
         } else if (id == "delete-action" && combatEditor.selectedActionId != "") {
             local result = combatEditor.timeline.removeItem(combatEditor.selectedActionId);
             combatEditor.status = result.ok ? "Action Block deleted" : result.status.summary;
             if (result.ok) combatEditor.selectedActionId = "";
+        } else if (id == "copy-action") {
+            local result = combatEditor.timeline.handleTimelineShortcut("Ctrl+C");
+            combatEditor.status = result.ok ? "Action Block copied" : result.status.summary;
+        } else if (id == "paste-action") {
+            local result = combatEditor.timeline.handleTimelineShortcut("Ctrl+V");
+            combatEditor.status = result.ok ? "Action Block pasted at playhead" : result.status.summary;
+        } else if (id == "insert-notify" || id == "insert-state") {
+            ui.select("action.inspector");
+            local state = id == "insert-state";
+            local typeIndex = state ? combatEditor.insertStateType : combatEditor.insertNotifyType;
+            local trackId = combatEditor.timeline.getTrackId(combatEditor.insertTrack);
+            local type = combatEditor.timeline.getInsertableType(state, typeIndex);
+            local payload = ui.getValueText(state ? "insert-state-payload" : "insert-notify-payload");
+            local result = state ? combatEditor.timeline.addStateAtCursor(
+                trackId, type, ui.getValue("insert-state-duration"), payload) :
+                combatEditor.timeline.addNotifyAtCursor(trackId, type, payload);
+            combatEditor.status = result.ok ? (state ? "Notify State inserted" : "Notify inserted")
+                                            : result.status.summary;
         } else if (id == "action-undo" || id == "action-redo") {
             applyHistory(id == "action-undo" ? "undo" : "redo");
         } else if (id == "set-key" || id == "delete-key" || id == "clip-undo" || id == "clip-redo") {
@@ -588,7 +670,16 @@ function handleUiEvents() {
         } else if (host == "action.inspector") {
             ui.select("action.inspector");
             local result = { ok=true, status={summary=""} };
-            if ((id == "action-start" || id == "action-end") && combatEditor.selectedActionId != "") {
+            if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
+            else if (id == "insert-notify-type") {
+                combatEditor.insertNotifyType = ui.getValue("insert-notify-type").tointeger();
+                ui.setValueText("insert-notify-payload", defaultPayloadForType(
+                    combatEditor.timeline.getInsertableType(false, combatEditor.insertNotifyType)));
+            } else if (id == "insert-state-type") {
+                combatEditor.insertStateType = ui.getValue("insert-state-type").tointeger();
+                ui.setValueText("insert-state-payload", defaultPayloadForType(
+                    combatEditor.timeline.getInsertableType(true, combatEditor.insertStateType)));
+            } else if ((id == "action-start" || id == "action-end") && combatEditor.selectedActionId != "") {
                 local start = ui.getValue("action-start");
                 local finish = combatEditor.selectedActionState ? ui.getValue("action-end") : start;
                 result = combatEditor.timeline.setItemTiming(combatEditor.selectedActionId, start, finish);

@@ -609,6 +609,16 @@ actionEditor.setItemEnabled("combat-state:hitbox", false);
 actionEditor.editItemDetails("combat-state:hitbox", "combat:hitbox-window",
                              "{\"hitbox\":\"weapon.main\"}");
 
+// Build insertion pickers from the registered semantic notify types, then
+// insert through the same validation and transaction authority as dragging.
+local stateCount = actionEditor.getInsertableTypeCount(true);
+local stateType = actionEditor.getInsertableType(true, 0);
+local stateLabel = actionEditor.getInsertableTypeLabel(true, 0);
+actionEditor.addStateAtCursor("combat-track:gameplay", stateType, 0.25,
+                              "{\"channel\":\"default\"}");
+actionEditor.handleTimelineShortcut("Ctrl+C");
+actionEditor.handleTimelineShortcut("Ctrl+V");
+
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());

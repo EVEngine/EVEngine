@@ -76,6 +76,24 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         advanced <- actionEditor.update(1.0);
         previewEventCount <- actionEditor.getEventCount();
         snapshotResult <- actionEditor.snapshot();
+        instantTypeCount <- actionEditor.getInsertableTypeCount(false);
+        stateTypeCount <- actionEditor.getInsertableTypeCount(true);
+        damageTypeIndex <- -1;
+        invulnerabilityTypeIndex <- -1;
+        for (local i = 0; i < instantTypeCount; ++i)
+            if (actionEditor.getInsertableType(false, i) == "combat:damage") damageTypeIndex = i;
+        for (local i = 0; i < stateTypeCount; ++i)
+            if (actionEditor.getInsertableType(true, i) == "combat:invulnerability-window")
+                invulnerabilityTypeIndex = i;
+        damageTypeLabel <- actionEditor.getInsertableTypeLabel(false, damageTypeIndex);
+        actionEditor.seekSeconds(0.7);
+        insertedNotify <- actionEditor.addNotifyAtCursor(
+            "test-track:gameplay", "combat:damage", "{\"damageType\":\"slash\",\"amount\":3}");
+        insertedState <- actionEditor.addStateAtCursor(
+            "test-track:gameplay", "combat:invulnerability-window", 0.1, "{}");
+        invalidInsertedNotify <- actionEditor.addNotifyAtCursor(
+            "test-track:gameplay", "combat:damage", "{}");
+        itemCountAfterInsert <- actionEditor.getItemCount();
         invalidResult <- eve.ActionEditorModule().create("test.asset.invalid", {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:invalid", durationNs=-1,
@@ -120,6 +138,15 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("advanced").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("previewEventCount").toInt(), 2);
     CHECK(vm.find("snapshotResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("instantTypeCount").toInt() > 0);
+    CHECK(vm.find("stateTypeCount").toInt() > 0);
+    CHECK(vm.find("damageTypeIndex").toInt() >= 0);
+    CHECK(vm.find("invulnerabilityTypeIndex").toInt() >= 0);
+    CHECK_NE(vm.find("damageTypeLabel").toString().find("Apply Damage"), std::string::npos);
+    CHECK(vm.find("insertedNotify").toTable().get<bool>("ok"));
+    CHECK(vm.find("insertedState").toTable().get<bool>("ok"));
+    CHECK(!vm.find("invalidInsertedNotify").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("itemCountAfterInsert").toInt(), 3);
     CHECK(!vm.find("invalidResult").toTable().get<bool>("ok"));
 }
 

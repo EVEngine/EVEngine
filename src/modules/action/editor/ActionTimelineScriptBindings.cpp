@@ -725,6 +725,42 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                 return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
             return project(vm, self->widget().setViewport(width, rowHeight, labelWidth));
         });
+    actionEditor.addFunc("addNotifyAtCursor", [vm](ScriptActionTimelineEditor* self, const std::string& trackId,
+                                                     const std::string& type, const std::string& payloadJson) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto parsedTrack = LogicalId::parse(trackId);
+        if (!parsedTrack)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
+        auto parsedPayload = Value::fromJson(payloadJson);
+        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status(), false, false);
+        const auto* payload = parsedPayload.value().getIf<Value::Object>();
+        if (!payload)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "notify payload must be a JSON object",
+                                  "payloadJson");
+        return project(vm, self->widget().addNotifyAtCursor(*parsedTrack, type, *payload));
+    });
+    actionEditor.addFunc("addStateAtCursor", [vm](ScriptActionTimelineEditor* self, const std::string& trackId,
+                                                    const std::string& type, float durationSeconds,
+                                                    const std::string& payloadJson) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        auto parsedTrack = LogicalId::parse(trackId);
+        auto duration    = seconds(durationSeconds);
+        if (!parsedTrack)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
+        if (!duration) return script::projectStatusResult(vm, duration.status(), false, false);
+        auto parsedPayload = Value::fromJson(payloadJson);
+        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status(), false, false);
+        const auto* payload = parsedPayload.value().getIf<Value::Object>();
+        if (!payload)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "notify-state payload must be a JSON object",
+                                  "payloadJson");
+        return project(vm, self->widget().addStateAtCursor(*parsedTrack, type, duration.value(), *payload));
+    });
+    actionEditor.addFunc("handleTimelineShortcut", [vm](ScriptActionTimelineEditor* self,
+                                                         const std::string& shortcut) {
+        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
+        return project(vm, self->widget().handleShortcut(shortcut));
+    });
     actionEditor.addFunc("addTrack", [vm](ScriptActionTimelineEditor* self, const std::string& trackId,
                                           const std::string& label, const std::string& kind) {
         if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
@@ -1316,6 +1352,28 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("getTrackMuted", [](ScriptActionTimelineEditor* self, int index) {
         const auto* track = self ? trackAt(self->editor().target().timeline(), index) : nullptr;
         return track && track->muted;
+    });
+    actionEditor.addFunc("getInsertableTypeCount", [](ScriptActionTimelineEditor* self, bool state) {
+        if (!self) return 0;
+        return static_cast<int>(self->widget()
+                                    .insertableTypes(state ? action::ActionNotifyShape::State
+                                                           : action::ActionNotifyShape::Instant)
+                                    .size());
+    });
+    actionEditor.addFunc("getInsertableType", [](ScriptActionTimelineEditor* self, bool state, int index) {
+        if (!self || index < 0) return std::string{};
+        const auto types = self->widget().insertableTypes(state ? action::ActionNotifyShape::State
+                                                                : action::ActionNotifyShape::Instant);
+        return static_cast<std::size_t>(index) < types.size() ? types[static_cast<std::size_t>(index)].type
+                                                              : std::string{};
+    });
+    actionEditor.addFunc("getInsertableTypeLabel", [](ScriptActionTimelineEditor* self, bool state, int index) {
+        if (!self || index < 0) return std::string{};
+        const auto types = self->widget().insertableTypes(state ? action::ActionNotifyShape::State
+                                                                : action::ActionNotifyShape::Instant);
+        if (static_cast<std::size_t>(index) >= types.size()) return std::string{};
+        const auto& descriptor = types[static_cast<std::size_t>(index)];
+        return descriptor.category + " / " + descriptor.displayName;
     });
 
     actionEditor.addFunc("getLayoutWidth",

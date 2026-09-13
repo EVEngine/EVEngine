@@ -34,7 +34,11 @@ Controls:
   authoring; registered type, Instant/State shape and typed payload contracts are
   validated before the document changes. **Enabled** persists in schema v4;
   disabled blocks remain visible and editable but do not emit preview/runtime
-  events. The **Joint** tab retains skeleton
+  events. **New Block** opens a compact registry-backed picker for the target
+  track, Instant/State type, duration and payload; valid starter payloads make
+  every built-in type immediately insertable at the playhead. Copy/paste uses
+  the native deep-copy clipboard and pastes relative to the current playhead.
+  The **Joint** tab retains skeleton
   transform and key editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its
   sampled shape is drawn inside the block; native inspector/script APIs edit
