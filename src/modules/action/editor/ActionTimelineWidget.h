@@ -153,10 +153,12 @@ private:
         bool            state = false;
     };
 
-    [[nodiscard]] float              timeToX(Duration time) const noexcept;
-    [[nodiscard]] Duration           xToTime(float x) const noexcept;
-    [[nodiscard]] EditorResult<void> updateDrag(float x);
-    [[nodiscard]] LogicalId          generatedItemId();
+    [[nodiscard]] float                   timeToX(Duration time) const noexcept;
+    [[nodiscard]] Duration                xToTime(float x) const noexcept;
+    [[nodiscard]] std::optional<Duration> magneticSnap(Duration candidate,
+                                                       const LogicalId& excludedItem) const noexcept;
+    [[nodiscard]] EditorResult<void>      updateDrag(float x);
+    [[nodiscard]] LogicalId               generatedItemId();
 
     ActionTimelineEditor&               editor_;
     const action::ActionNotifyRegistry& registry_;

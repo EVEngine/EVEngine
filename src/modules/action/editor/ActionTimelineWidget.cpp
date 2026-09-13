@@ -161,6 +161,51 @@ Duration ActionTimelineWidget::xToTime(float x) const noexcept {
     return Duration::fromNanoseconds(time);
 }
 
+std::optional<Duration> ActionTimelineWidget::magneticSnap(Duration candidate,
+                                                           const LogicalId& excludedItem) const noexcept {
+    constexpr double kSnapPixels = 8.0;
+    const auto&      timeline    = editor_.target().timeline();
+    const auto       start       = visibleEnd_ > visibleStart_ ? visibleStart_ : Duration::zero();
+    const auto       end         = visibleEnd_ > visibleStart_ ? visibleEnd_ : timeline.duration;
+    const auto       selected    = editor_.selectedItemIds();
+    const auto       excluded    = [&](const LogicalId& id) {
+        return id == excludedItem || std::find(selected.begin(), selected.end(), id) != selected.end();
+    };
+    const auto pixels = static_cast<double>(width_ - labelWidth_);
+    if (pixels <= 0.0) return std::nullopt;
+    const auto threshold = static_cast<std::int64_t>(
+        std::llround(static_cast<double>(end.nanoseconds() - start.nanoseconds()) * kSnapPixels / pixels));
+    std::optional<Duration> best;
+    auto bestDelta = threshold + 1;
+    const auto consider = [&](Duration target) {
+        const auto delta = target > candidate ? target.nanoseconds() - candidate.nanoseconds()
+                                              : candidate.nanoseconds() - target.nanoseconds();
+        if (delta <= threshold && delta < bestDelta) {
+            best      = target;
+            bestDelta = delta;
+        }
+    };
+    consider(Duration::zero());
+    consider(editor_.previewTime());
+    for (const auto split : timeline.splitTimestamps) consider(split);
+    for (const auto& section : timeline.animationSections) {
+        if (excluded(section.id)) continue;
+        consider(section.start);
+        consider(section.end);
+    }
+    for (const auto& track : timeline.tracks) {
+        for (const auto& notify : track.notifies) {
+            if (!excluded(notify.id)) consider(notify.time);
+        }
+        for (const auto& state : track.states) {
+            if (excluded(state.id)) continue;
+            consider(state.start);
+            consider(state.end);
+        }
+    }
+    return best;
+}
+
 TimelineWidgetLayout ActionTimelineWidget::layout() const {
     TimelineWidgetLayout result;
     result.width                       = width_;
@@ -382,30 +427,52 @@ EditorResult<void> ActionTimelineWidget::updateDrag(float x) {
     if (!drag_->state) {
         auto moved = drag_->originalStart.tryAdd(delta);
         if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "Notify drag overflowed");
-        drag_->previewStart = std::clamp(moved.value(), Duration::zero(), duration);
+        const auto candidate = std::clamp(moved.value(), Duration::zero(), duration);
+        drag_->previewStart  = magneticSnap(candidate, drag_->itemId).value_or(candidate);
         drag_->previewEnd   = drag_->previewStart;
         return eve::editing::applied<void>();
     }
     if (drag_->part == TimelineHitPart::StartHandle) {
         auto moved = drag_->originalStart.tryAdd(delta);
         if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "State start drag overflowed");
-        drag_->previewStart = std::clamp(moved.value(), Duration::zero(), drag_->originalEnd);
-        drag_->previewEnd   = drag_->originalEnd;
+        const auto candidate = std::clamp(moved.value(), Duration::zero(), drag_->originalEnd);
+        drag_->previewStart  = magneticSnap(candidate, drag_->itemId).value_or(candidate);
+        drag_->previewStart  = std::min(drag_->previewStart, drag_->originalEnd);
+        drag_->previewEnd    = drag_->originalEnd;
         return eve::editing::applied<void>();
     }
     if (drag_->part == TimelineHitPart::EndHandle) {
         auto moved = drag_->originalEnd.tryAdd(delta);
         if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "State end drag overflowed");
         drag_->previewStart = drag_->originalStart;
-        drag_->previewEnd   = std::clamp(moved.value(), drag_->originalStart, duration);
+        const auto candidate = std::clamp(moved.value(), drag_->originalStart, duration);
+        drag_->previewEnd    = magneticSnap(candidate, drag_->itemId).value_or(candidate);
+        drag_->previewEnd = std::max(drag_->previewEnd, drag_->originalStart);
         return eve::editing::applied<void>();
     }
     const auto span  = drag_->originalEnd.nanoseconds() - drag_->originalStart.nanoseconds();
     auto       moved = drag_->originalStart.tryAdd(delta);
     if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "State drag overflowed");
     const auto latestStart = Duration::fromNanoseconds(duration.nanoseconds() - span);
-    drag_->previewStart    = std::clamp(moved.value(), Duration::zero(), latestStart);
-    drag_->previewEnd      = Duration::fromNanoseconds(drag_->previewStart.nanoseconds() + span);
+    drag_->previewStart = std::clamp(moved.value(), Duration::zero(), latestStart);
+    drag_->previewEnd   = Duration::fromNanoseconds(drag_->previewStart.nanoseconds() + span);
+    const auto snappedStart = magneticSnap(drag_->previewStart, drag_->itemId);
+    const auto snappedEnd   = magneticSnap(drag_->previewEnd, drag_->itemId);
+    Duration adjustment     = Duration::zero();
+    if (snappedStart && snappedEnd) {
+        const auto startDelta = difference(*snappedStart, drag_->previewStart);
+        const auto endDelta   = difference(*snappedEnd, drag_->previewEnd);
+        adjustment = std::abs(startDelta.nanoseconds()) <= std::abs(endDelta.nanoseconds()) ? startDelta : endDelta;
+    } else if (snappedStart) {
+        adjustment = difference(*snappedStart, drag_->previewStart);
+    } else if (snappedEnd) {
+        adjustment = difference(*snappedEnd, drag_->previewEnd);
+    }
+    const auto adjustedStart = drag_->previewStart.tryAdd(adjustment);
+    if (adjustedStart && adjustedStart.value() >= Duration::zero() && adjustedStart.value() <= latestStart) {
+        drag_->previewStart = adjustedStart.value();
+        drag_->previewEnd   = Duration::fromNanoseconds(drag_->previewStart.nanoseconds() + span);
+    }
     return eve::editing::applied<void>();
 }
 

@@ -650,6 +650,10 @@ if (actionEditor.hasPreviewHost())
     actionEditor.refreshPreview(); // 参数事务提交后刷新当前位置
 ```
 
+拖动与 Seek 先按 `setSnapSeconds()` 指定的确定性帧网格离散；拖动 Block 或边界时，还会在
+8 像素阈值内磁吸到 0 点、当前播放头、物理分段、动画 Section 边界和其他轨道 Block 边界。
+多选拖动会排除选择集自身的边界，避免整组被自己的成员吸住。
+
 工厂与所有可能失败的编辑操作返回通用 Result 表：`ok`、`value`、`status.code`、
 `status.summary` 和 `status.diagnostics`。返回的动作编辑器由 Squirrel VM release hook 拥有，
 仅可在创建它的线程使用；`configureWorkspace` 不保留传入的 Workspace 指针，`snapshot`

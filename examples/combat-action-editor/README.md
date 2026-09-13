@@ -42,6 +42,9 @@ Controls:
   complete selection range and aligns starts or ends. Dragging one selected
   body moves the whole selection, while copy and delete operate on every
   selected block in one undoable transaction.
+  Dragging also uses an eight-pixel magnetic threshold to snap against the
+  playhead, physical splits, animation-section edges and other block edges,
+  after applying the deterministic frame grid.
   The **Track** tab selects and renames tracks, toggles mute/lock state, creates
   all eight semantic track kinds, deletes tracks, and deep-copies whole tracks
   across the open document tabs.

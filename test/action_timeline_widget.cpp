@@ -263,6 +263,20 @@ TEST_CASE("actionTimelineWidget.dragPreviewCommitsOnceAndUndoRestores") {
     CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(30));
 }
 
+TEST_CASE("actionTimelineWidget.magneticSnapUsesCrossTrackBlockEdges") {
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-magnetic-snap", timelineFixture());
+    auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::editor::ActionTimelineWidget view(editor, registry.value());
+    REQUIRE(view.setViewport(220.0f, 24.0f, 120.0f).ok());
+
+    REQUIRE(view.pointerDown(140.0f, 12.0f).ok());
+    REQUIRE(view.pointerUp(145.0f).ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(30));
+    REQUIRE(editor.undo().ok());
+    CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(20));
+}
+
 TEST_CASE("actionTimelineWidget.draggingSelectedBodyMovesWholeSelectionOnce") {
     eve::editor::ActionTimelineEditor editor("asset.combat.widget-selection", timelineFixture());
     auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
