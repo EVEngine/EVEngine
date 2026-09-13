@@ -1,5 +1,6 @@
 #include "combat/Combat.h"
 
+#include "action/ActionDamageBlock.h"
 #include "combat/CombatLocomotion.h"
 #include "combat/Damage.h"
 #include "common/SquirrelBinding.h"
@@ -151,6 +152,21 @@ public:
         return Result<Value>::success(Value(std::move(result)), Status::success(StatusCode::Applied));
     }
 
+    Result<Value> applyTimelineDamage(const std::string& sourceText, const std::string& targetText,
+                                      const std::string& payloadJson) {
+        auto decoded = Value::fromJson(payloadJson);
+        if (!decoded) return Result<Value>::failure(decoded.status());
+        const auto* payload = decoded.value().getIf<Value::Object>();
+        if (!payload)
+            return failure<Value>(DiagnosticCode::InvalidArgument,
+                                  "combat timeline damage payload must be an object", "payload");
+        auto binding = action::ActionDamageBinding::fromPayload(*payload);
+        if (!binding) return Result<Value>::failure(binding.status());
+        return applyDamage(sourceText, targetText, binding.value().damageType, binding.value().amount,
+                           binding.value().poiseAmount, binding.value().knockback.x,
+                           binding.value().knockback.y, binding.value().knockback.z);
+    }
+
     Result<Value> state(const std::string& subjectText) const {
         auto subject = parseSubject(subjectText, "subject");
         if (!subject) return Result<Value>::failure(subject.status());
@@ -236,6 +252,13 @@ void Combat::expose(ssq::Table& table) {
                                          const std::string& target, const std::string& type,
                                          float health, float poise, float x, float y, float z) {
         return project(vm, self ? self->applyDamage(source, target, type, health, poise, x, y, z)
+                                : failure<Value>(DiagnosticCode::InvalidArgument,
+                                                 "combat runtime must not be null", "runtime"));
+    });
+    runtime.addFunc("applyTimelineDamage",
+                    [vm](ScriptCombatRuntime* self, const std::string& source,
+                         const std::string& target, const std::string& payloadJson) {
+        return project(vm, self ? self->applyTimelineDamage(source, target, payloadJson)
                                 : failure<Value>(DiagnosticCode::InvalidArgument,
                                                  "combat runtime must not be null", "runtime"));
     });

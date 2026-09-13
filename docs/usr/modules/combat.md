@@ -5,7 +5,9 @@ Combat 模块提供不依赖具体角色类的伤害、韧性、战斗属性、�
 
 脚本入口 `eve.Combat()` 提供 `getName`，并可通过 `newRuntime()` 创建一个 Squirrel-owned
 `CombatRuntime`。`registerFighter`、
-`setMoveIntent`、`navigateTo`、`stop`、`advance`、`applyDamage` 和 `state` 全部返回统一 Result 投影；
+`setMoveIntent`、`navigateTo`、`stop`、`advance`、`applyDamage`、`applyTimelineDamage` 和 `state`
+全部返回统一 Result 投影；`applyTimelineDamage` 直接消费 Montage runtime event 的 payload JSON，并复用
+`ActionDamageBinding` 校验，不会在示例脚本中复制伤害字段解析规则。
 runtime 内部复用下述 C++ 权威实现，不在脚本层复制生命值或移动状态。runtime 随脚本对象 GC 销毁，
 `ownership()` 返回 `owned`。
 

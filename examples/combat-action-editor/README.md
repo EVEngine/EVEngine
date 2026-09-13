@@ -6,7 +6,9 @@ native hit testing and drag preview, one-step transactions, undo/redo, and
 deterministic preview events. Its document toolbar opens two independently
 persisted montage assets, projects dirty state into tabs, and protects unsaved
 work when a tab is closed. The 3D viewport is driven by the same preview cursor
-as the active timeline.
+as the active timeline. The viewport also runs a two-fighter playtest: edited
+`combat:damage` payloads flow from Montage runtime events into the canonical
+Combat damage runtime, while movement and health stay owned by that runtime.
 
 Run on Windows:
 
@@ -83,6 +85,10 @@ Controls:
   transaction history.
 - Hold the right mouse button over the preview to orbit; use the mouse wheel to
   zoom.
+- Use WASD to move the player through `CombatLocomotionRuntime`. When playback
+  crosses the damage notify, target health and reaction update above the
+  viewport. Editing that block changes the next hit without a demo-only damage
+  model.
 
 The preview and timeline headers show the current selection, playback state,
 edit revision and the last emitted event so every interaction has visible

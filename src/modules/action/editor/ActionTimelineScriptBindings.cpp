@@ -29,6 +29,7 @@
 #include <filesystem>
 #include <iterator>
 #include <memory>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -590,6 +591,23 @@ public:
         return Result<animation::MontageAdvance>::success(std::move(combined), Status::success(StatusCode::Pending));
     }
 
+    [[nodiscard]] Result<void> setRuntimeBlockExternallyHandled(const std::string& type, bool external) {
+        auto parsed = LogicalId::parse(type);
+        if (!parsed)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "externally handled runtime block type is invalid", "type"));
+        if (!registry_.hasHandler(type))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound,
+                                  "runtime block type has no registered handler", type));
+        if (external)
+            externallyHandledTypes_.insert(type);
+        else
+            externallyHandledTypes_.erase(type);
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
     [[nodiscard]] Result<animation::MontageAdvance> jumpRuntime(Duration target) {
         if (!runtimeTimeline_ || !montage_)
             return Result<animation::MontageAdvance>::failure(
@@ -742,9 +760,13 @@ private:
         handled.phaseElapsed = advance.phaseElapsed;
         handled.totalElapsed = advance.totalElapsed;
         for (const auto& event : advance.timelineEvents)
-            if (registry_.hasHandler(event.type.format())) handled.timelineEvents.push_back(event);
+            if (registry_.hasHandler(event.type.format()) &&
+                !externallyHandledTypes_.contains(event.type.format()))
+                handled.timelineEvents.push_back(event);
         for (const auto& block : advance.activeBlocks)
-            if (registry_.hasHandler(block.type.format())) handled.activeBlocks.push_back(block);
+            if (registry_.hasHandler(block.type.format()) &&
+                !externallyHandledTypes_.contains(block.type.format()))
+                handled.activeBlocks.push_back(block);
         return blockRuntime_.apply(handled, runtimeContext(advance.totalElapsed));
     }
 
@@ -763,6 +785,7 @@ private:
     std::optional<animation::MontageAdvance>  runtimeAdvance_;
     std::optional<action::ActionTimeline>     runtimeTimeline_;
     std::unordered_map<std::size_t, double>   sectionRates_;
+    std::set<std::string, std::less<>>        externallyHandledTypes_;
     double                                    runtimeRate_   = 1.0;
     bool                                      runtimePaused_ = false;
     std::unique_ptr<DiskAtomicDocumentStore>  documentStore_;
@@ -1265,6 +1288,13 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("setRuntimePaused", [](ScriptActionTimelineEditor* self, bool paused) {
         if (self) self->setRuntimePaused(paused);
     });
+    actionEditor.addFunc("setRuntimeBlockExternallyHandled",
+                         [vm](ScriptActionTimelineEditor* self, const std::string& type, bool external) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        return script::projectResult(vm, self->setRuntimeBlockExternallyHandled(type, external));
+    });
     actionEditor.addFunc("isRuntimePaused",
                          [](ScriptActionTimelineEditor* self) { return self && self->runtimePaused(); });
     actionEditor.addFunc("cancelRuntime", [vm](ScriptActionTimelineEditor* self) {
@@ -1301,6 +1331,12 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return std::string{};
         return eventKind(self->runtimeAdvance()->events[static_cast<std::size_t>(index)].kind);
     });
+    actionEditor.addFunc("getRuntimeEventId", [](ScriptActionTimelineEditor* self, int index) {
+        if (!self || !self->runtimeAdvance() || index < 0 ||
+            static_cast<std::size_t>(index) >= self->runtimeAdvance()->events.size())
+            return std::string{};
+        return self->runtimeAdvance()->events[static_cast<std::size_t>(index)].itemId.format();
+    });
     actionEditor.addFunc("getRuntimeEventType", [](ScriptActionTimelineEditor* self, int index) {
         if (!self || !self->runtimeAdvance() || index < 0 ||
             static_cast<std::size_t>(index) >= self->runtimeAdvance()->events.size())
@@ -1312,6 +1348,13 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             static_cast<std::size_t>(index) >= self->runtimeAdvance()->events.size())
             return 0.0f;
         return static_cast<float>(self->runtimeAdvance()->events[static_cast<std::size_t>(index)].time.seconds());
+    });
+    actionEditor.addFunc("getRuntimeEventPayloadJson", [](ScriptActionTimelineEditor* self, int index) {
+        if (!self || !self->runtimeAdvance() || index < 0 ||
+            static_cast<std::size_t>(index) >= self->runtimeAdvance()->events.size())
+            return std::string("{}");
+        auto encoded = Value(self->runtimeAdvance()->events[static_cast<std::size_t>(index)].payload).toJson();
+        return encoded ? encoded.value() : std::string("{}");
     });
     actionEditor.addFunc("getRuntimeActiveBlockCount", [](ScriptActionTimelineEditor* self) {
         return self && self->runtimeAdvance() ? static_cast<int>(self->runtimeAdvance()->activeBlocks.size()) : 0;

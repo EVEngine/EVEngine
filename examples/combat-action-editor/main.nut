@@ -13,6 +13,11 @@ persist combatEditor = {
     selectedTrack = 0, selectedSplit = 0, newTrackOpen = false, newTrackKind = 0, nextTrackId = 0,
     clipEditor = null, boneMouseDown = false,
     clip = null, player = null, knight = null, knightParts = [], skins = [],
+    enemySkeleton = null, enemyPlayer = null, enemyParts = [], enemySkins = [],
+    combatRuntime = null, combatTick = 0,
+    playerSubject = "01020304-0506-4708-890a-0b0c0d0e0f10",
+    enemySubject = "11121314-1516-4718-991a-1b1c1d1e1f20",
+    playerHealth = 100.0, enemyHealth = 80.0, enemyReaction = "none",
     generalLibrary = null, meleeLibrary = null,
     swordParts = [], knightTexture = null, ground = null, mouseDown = false,
     keyLight = null, fillLight = null,
@@ -30,6 +35,10 @@ local editorUiDefaults = {
     insertPanelOpen=false, newSectionOpen=false, nextSectionId=0,
     insertTrack=0, insertNotifyType=0, insertStateType=2,
     selectedTrack=0, selectedSplit=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
+    enemySkeleton=null, enemyPlayer=null, enemyParts=[], enemySkins=[], combatRuntime=null, combatTick=0,
+    playerSubject="01020304-0506-4708-890a-0b0c0d0e0f10",
+    enemySubject="11121314-1516-4718-991a-1b1c1d1e1f20",
+    playerHealth=100.0, enemyHealth=80.0, enemyReaction="none",
 };
 foreach (key, value in editorUiDefaults)
     if (!(key in combatEditor)) combatEditor[key] <- value;
@@ -220,6 +229,14 @@ function buildCharacterPreview() {
     combatEditor.player.play(combatEditor.clip);
     combatEditor.player.setLoop(false);
 
+    combatEditor.enemySkeleton = anim.newSkeletonFromModel(combatEditor.knight);
+    local idleIndex = findAnimation(combatEditor.generalLibrary, "Idle_A");
+    if (idleIndex < 0) throw "KayKit idle clip Idle_A was not found";
+    local enemyIdle = anim.newClipFromModel(combatEditor.generalLibrary, combatEditor.enemySkeleton, idleIndex);
+    enemyIdle.setLoop(true);
+    combatEditor.enemyPlayer = anim.newPlayer(combatEditor.enemySkeleton);
+    combatEditor.enemyPlayer.play(enemyIdle); combatEditor.enemyPlayer.setLoop(true);
+
     for (local i = 0; i < combatEditor.knight.getMeshCount(); ++i) {
         local part = model3d.createRenderable(gfx, combatEditor.knight, i);
         part.setPosition(0.0, 0.02, 0.0); part.setYaw(-0.25);
@@ -228,6 +245,14 @@ function buildCharacterPreview() {
         if (combatEditor.knight.hasBones(i))
             combatEditor.skins.push({ skin=anim.newSkinFromModel(combatEditor.knight, i, combatEditor.skeleton),
                                       part=part });
+
+        local enemyPart = model3d.createRenderable(gfx, combatEditor.knight, i);
+        enemyPart.setPosition(-1.65, 0.02, 0.0); enemyPart.setYaw(0.25);
+        enemyPart.setCastShadow(true); configurePreviewMaterial(enemyPart, combatEditor.knightTexture);
+        combatEditor.enemyParts.push(enemyPart);
+        if (combatEditor.knight.hasBones(i))
+            combatEditor.enemySkins.push({
+                skin=anim.newSkinFromModel(combatEditor.knight, i, combatEditor.enemySkeleton), part=enemyPart });
     }
 
     // Import the weapon independently too; the same character + weapon + clip
@@ -264,6 +289,53 @@ function buildCharacterPreview() {
     combatEditor.fillLight.setColor(0.55, 0.70, 1.0, 1.3);
 }
 
+function buildCombatPlaytest() {
+    combatEditor.combatRuntime = requireResult(eve.Combat().newRuntime(), "Create combat playtest runtime");
+    requireResult(combatEditor.combatRuntime.registerFighter(
+        combatEditor.playerSubject, "player", 0.0, 0.0, 100.0, 40.0, 3.5, 18.0), "Register player");
+    requireResult(combatEditor.combatRuntime.registerFighter(
+        combatEditor.enemySubject, "enemy", -1.65, 0.0, 80.0, 30.0, 0.1, 0.1), "Register enemy");
+}
+
+function advanceCombatPlaytest(dt) {
+    local x = 0.0; local z = 0.0;
+    if (keyboard.isDown("a") || keyboard.isDown("A")) x -= 1.0;
+    if (keyboard.isDown("d") || keyboard.isDown("D")) x += 1.0;
+    if (keyboard.isDown("w") || keyboard.isDown("W")) z -= 1.0;
+    if (keyboard.isDown("s") || keyboard.isDown("S")) z += 1.0;
+    if (x != 0.0 || z != 0.0)
+        requireResult(combatEditor.combatRuntime.setMoveIntent(combatEditor.playerSubject, x, z, 1.0),
+                      "Set playtest movement");
+    else
+        requireResult(combatEditor.combatRuntime.stop(combatEditor.playerSubject), "Stop playtest movement");
+    combatEditor.combatTick += 1;
+    requireResult(combatEditor.combatRuntime.advance(combatEditor.combatTick, dt), "Advance combat playtest");
+    local playerState = requireResult(combatEditor.combatRuntime.state(combatEditor.playerSubject), "Read player");
+    local enemyState = requireResult(combatEditor.combatRuntime.state(combatEditor.enemySubject), "Read enemy");
+    combatEditor.playerHealth = playerState.health; combatEditor.enemyHealth = enemyState.health;
+    foreach (part in combatEditor.knightParts)
+        part.setPosition(playerState.position.x, 0.02, playerState.position.z);
+    foreach (part in combatEditor.enemyParts)
+        part.setPosition(enemyState.position.x, 0.02, enemyState.position.z);
+}
+
+function routeRuntimeCombatEvents() {
+    for (local i = 0; i < combatEditor.timeline.getRuntimeEventCount(); ++i) {
+        if (combatEditor.timeline.getRuntimeEventKind(i) != "notify" ||
+            combatEditor.timeline.getRuntimeEventType(i) != "combat:damage") continue;
+        local outcome = combatEditor.combatRuntime.applyTimelineDamage(
+            combatEditor.playerSubject, combatEditor.enemySubject,
+            combatEditor.timeline.getRuntimeEventPayloadJson(i));
+        if (!outcome.ok) { combatEditor.status = outcome.status.summary; continue; }
+        combatEditor.enemyHealth = outcome.value.health;
+        combatEditor.enemyReaction = outcome.value.reaction;
+        combatEditor.lastEvent = combatEditor.timeline.getRuntimeEventId(i) + " · " +
+            outcome.value.appliedHealthDamage + " damage · " + outcome.value.reaction;
+        print("combat-action-editor: runtime damage=" + outcome.value.appliedHealthDamage +
+              " targetHealth=" + outcome.value.health + " reaction=" + outcome.value.reaction + "\n");
+    }
+}
+
 function startMontageRuntime(timeline) {
     local idle = findAnimation(combatEditor.generalLibrary, "Idle_A");
     local attack = findAnimation(combatEditor.meleeLibrary, "Melee_1H_Attack_Chop");
@@ -278,6 +350,16 @@ function startMontageRuntime(timeline) {
     requireResult(timeline.registerRuntimeClip(
         "asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_Block", combatEditor.meleeLibrary,
         combatEditor.skeleton, block), "Register recovery clip");
+    requireResult(timeline.setRuntimeBlockExternallyHandled("combat:damage", true),
+                  "Route combat damage to playtest runtime");
+    requireResult(timeline.setRuntimeBlockExternallyHandled("combat:hitbox-window", true),
+                  "Route hitbox window to playtest UI");
+    requireResult(timeline.setRuntimeBlockExternallyHandled("input:combo-window", true),
+                  "Route combo window to playtest UI");
+    requireResult(timeline.setRuntimeBlockExternallyHandled("presentation:audio", true),
+                  "Route placeholder audio to playtest UI");
+    requireResult(timeline.setRuntimeBlockExternallyHandled("presentation:vfx", true),
+                  "Route placeholder VFX to playtest UI");
     requireResult(timeline.beginRuntime(combatEditor.skeleton), "Start action montage runtime");
 }
 
@@ -440,8 +522,9 @@ function panelAssets() {
 }
 
 function panelPreview() {
-    ui.text("RMB orbit · wheel zoom · timeline drives pose", "preview-help");
+    ui.text("WASD move · RMB orbit · wheel zoom", "preview-help");
     ui.text("", "preview-status");
+    ui.text("", "combat-status");
     ui.viewport("combat-preview", combatEditor.workspace.getRegionW("center") - 20.0,
                 combatEditor.workspace.getRegionH("center") - 92.0);
 }
@@ -1223,11 +1306,15 @@ function updateKeyboardShortcuts() {
     combatEditor.undoWas = undo; combatEditor.redoWas = redo; combatEditor.saveWas = save;
 }
 
-function updatePose() {
+function updatePose(dt) {
     combatEditor.player.setTime(combatEditor.clipEditor.getPlayhead());
     local pose = combatEditor.player.getPose();
     pose.computeWorld(combatEditor.skeleton);
     foreach (binding in combatEditor.skins) binding.skin.applyToMesh(gfx, binding.part.getMesh(), pose);
+    combatEditor.enemyPlayer.update(dt);
+    local enemyPose = combatEditor.enemyPlayer.getPose(); enemyPose.computeWorld(combatEditor.enemySkeleton);
+    foreach (binding in combatEditor.enemySkins)
+        binding.skin.applyToMesh(gfx, binding.part.getMesh(), enemyPose);
 }
 
 function updateLabels() {
@@ -1235,6 +1322,8 @@ function updateLabels() {
     ui.setText("preview-status", format("%s  %.3f / %.3f s",
         combatEditor.timeline.isPlaying() ? "PLAYING" : "PAUSED",
         combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration()));
+    ui.setText("combat-status", format("Player %.0f HP  ·  Target %.0f HP  ·  %s",
+        combatEditor.playerHealth, combatEditor.enemyHealth, combatEditor.enemyReaction));
     ui.select("action.inspector"); ui.setText("action-uri", "Clip: Melee_1H_Attack_Chop");
     ui.setText("revision", "Revision " + combatEditor.clipEditor.getRevision());
     if (combatEditor.inspectorMode == "action") {
@@ -1499,7 +1588,7 @@ function drawBoneTimeline() {
 }
 
 eve_init = function() {
-    buildCharacterPreview(); buildWorkspace(); ui.setTheme("dark"); ui.setScale(0.75);
+    buildCharacterPreview(); buildCombatPlaytest(); buildWorkspace(); ui.setTheme("dark"); ui.setScale(0.75);
     ui.setNavKeyboard(true); mountPanels();
     combatEditor.timeline.play();
     combatEditor.status = "KayKit clip loaded · drag timeline items or use the inspector";
@@ -1515,7 +1604,10 @@ eve_update = function(dt) {
         if (!advanced.ok) combatEditor.status = advanced.status.summary;
         if (combatEditor.timeline.isRuntimePlaying()) {
             local runtimeAdvanced = combatEditor.timeline.advanceRuntime(dt);
-            if (!runtimeAdvanced.ok) combatEditor.status = runtimeAdvanced.status.summary;
+            if (!runtimeAdvanced.ok) {
+                combatEditor.status = runtimeAdvanced.status.summary;
+                print("combat-action-editor: runtime error=" + runtimeAdvanced.status.summary + "\n");
+            }
             else {
                 if (runtimeAdvanced.value.sectionId != "")
                     combatEditor.status = "Runtime · " + runtimeAdvanced.value.sectionId;
@@ -1526,6 +1618,7 @@ eve_update = function(dt) {
                         combatEditor.timeline.getRuntimeEventType(eventIndex) + " @ " +
                         format("%.3f s", combatEditor.timeline.getRuntimeEventSeconds(eventIndex));
                 }
+                routeRuntimeCombatEvents();
             }
         }
     }
@@ -1534,7 +1627,7 @@ eve_update = function(dt) {
         combatEditor.lastEvent = combatEditor.timeline.getEventKind(i) + " · " +
             combatEditor.timeline.getEventType(i) + " @ " + format("%.3f s", combatEditor.timeline.getEventTime(i));
     }
-    updatePose(); updateLabels();
+    advanceCombatPlaytest(dt); updatePose(dt); updateLabels();
 };
 
 eve_render = function() {

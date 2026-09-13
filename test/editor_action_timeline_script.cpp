@@ -33,6 +33,8 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         };
         created <- eve.ActionEditorModule().create("test.asset.light-attack", timelineAsset);
         actionEditor <- created.value;
+        externalDamage <- actionEditor.setRuntimeBlockExternallyHandled("combat:damage", true);
+        externalUnknown <- actionEditor.setRuntimeBlockExternallyHandled("test:unknown", true);
         previewHostAvailable <- actionEditor.hasPreviewHost();
         previewRefresh <- actionEditor.refreshPreview();
         configured <- actionEditor.configureWorkspace(workspace);
@@ -160,6 +162,8 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
 
     CHECK(vm.find("created").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK(vm.find("externalDamage").toTable().get<bool>("ok"));
+    CHECK(!vm.find("externalUnknown").toTable().get<bool>("ok"));
     CHECK(!vm.find("previewHostAvailable").toBool());
     CHECK(vm.find("previewRefresh").toTable().get<bool>("ok"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));

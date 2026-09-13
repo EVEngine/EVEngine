@@ -24,6 +24,8 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         advanced <- arena.advance(1, 0.25);
         playerState <- arena.state(player);
         damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0);
+        timelineDamage <- arena.applyTimelineDamage(player, enemy,
+            "{\"damageType\":\"Damage.Physical.Slash\",\"amount\":7,\"poiseAmount\":2}");
         enemyState <- arena.state(enemy);
         invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0);
         playerX <- playerState.value.position.x;
@@ -37,7 +39,8 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
     CHECK(vm.find("moved").toTable().get<bool>("ok"));
     CHECK(vm.find("advanced").toTable().get<bool>("ok"));
     CHECK(vm.find("playerX").toFloat() > 0.0f);
-    CHECK_EQ(vm.find("enemyHealth").toFloat(), 62.0f);
+    CHECK_EQ(vm.find("enemyHealth").toFloat(), 55.0f);
+    CHECK(vm.find("timelineDamage").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("damageReaction").toString(), std::string("flinch"));
     CHECK(!vm.find("invalid").toTable().get<bool>("ok"));
 }

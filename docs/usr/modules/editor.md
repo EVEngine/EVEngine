@@ -594,6 +594,11 @@ local created = eve.ActionEditorModule().create("ability.light-attack", timeline
 if (!created.ok) throw created.status.summary;
 local actionEditor = created.value; // ownership == "owned"
 
+// A project-owned target adapter may claim selected block types. The Montage
+// still emits their events, but the preview runtime does not require a native
+// sink for those types.
+actionEditor.setRuntimeBlockExternallyHandled("combat:damage", true);
+
 local ws = editor.newWorkspace("combat", "Combat Action Editor");
 local composed = actionEditor.configureWorkspace(ws); // Assets/Preview/Inspector/Timeline
 actionEditor.setViewport(900.0, 36.0, 145.0);
@@ -608,6 +613,13 @@ actionEditor.pointerUp(mouseX);
 actionEditor.setItemEnabled("combat-state:hitbox", false);
 actionEditor.editItemDetails("combat-state:hitbox", "combat:hitbox-window",
                              "{\"hitbox\":\"weapon.main\"}");
+
+// Runtime crossings preserve the canonical item identity and owning payload.
+// Consumers can route the exact edited data into a target-domain adapter.
+for (local i = 0; i < actionEditor.getRuntimeEventCount(); ++i) {
+    print(actionEditor.getRuntimeEventId(i) + " " +
+          actionEditor.getRuntimeEventPayloadJson(i) + "\n");
+}
 
 // Build insertion pickers from the registered semantic notify types, then
 // insert through the same validation and transaction authority as dragging.
