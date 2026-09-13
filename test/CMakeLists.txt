@@ -121,13 +121,21 @@ endif()
 
 # GCC's ASan metadata makes the full test runner's data segment exceed the
 # x86-64 PC-relative relocation range. Keep the sanitizer suite complete while
-# giving the procgen/editor feature group its own runner. Sources are exclusive
-# between the runners, so CTest still registers every case exactly once.
-set(_eve_asan_procgen_test_cpp "")
+# dividing independent test translation units between two runners. Sources are
+# exclusive between the runners, so CTest still registers every case once.
+option(EVENGINE_SPLIT_TEST_RUNNERS "Split the desktop test suite into two executables" OFF)
 if(UNIX AND NOT APPLE AND CMAKE_CXX_FLAGS MATCHES "-fsanitize=[^ ]*address")
+  set(EVENGINE_SPLIT_TEST_RUNNERS ON)
+endif()
+set(_eve_asan_procgen_test_cpp "")
+if(EVENGINE_SPLIT_TEST_RUNNERS)
   foreach(_eve_test_cpp IN LISTS all_test_cpp)
     get_filename_component(_eve_test_name "${_eve_test_cpp}" NAME)
-    if(_eve_test_name MATCHES "^(procgen_.*|editor_mesh_modifier_.*|editor_spline_.*|gpgpu)\\.cpp$")
+    file(READ "${_eve_test_cpp}" _eve_test_source)
+    if((_eve_test_name MATCHES "^(procgen_.*|editor_mesh_modifier_.*|editor_spline_.*|gpgpu)\\.cpp$"
+        OR _eve_test_name MATCHES "^[A-Ma-m].*\\.cpp$")
+       AND NOT _eve_test_name MATCHES "^(main|RenderImageAudit|RenderImageIo)\\.cpp$"
+       AND NOT _eve_test_source MATCHES "RenderImageAudit\\.h")
       list(APPEND _eve_asan_procgen_test_cpp "${_eve_test_cpp}")
     endif()
   endforeach()
@@ -193,7 +201,11 @@ else()
   )
   target_link_libraries(unit_test eve_engine_includes)
   if(_eve_asan_procgen_test_cpp)
-    add_executable(unit_test_procgen main.cpp RenderImageIo.cpp ${_eve_asan_procgen_test_cpp})
+    add_executable(unit_test_procgen
+      main.cpp
+      RenderImageIo.cpp
+      ${_eve_asan_procgen_test_cpp}
+      ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
     target_link_libraries(unit_test_procgen eve_engine_includes)
   endif()
 endif()
