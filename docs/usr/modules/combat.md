@@ -11,6 +11,11 @@ Combat 模块提供不依赖具体角色类的伤害、韧性、战斗属性、�
 runtime 内部复用下述 C++ 权威实现，不在脚本层复制生命值或移动状态。runtime 随脚本对象 GC 销毁，
 `ownership()` 返回 `owned`。
 
+同一个 runtime 还内建并注册 `standardCombatAbilities()` 的 20 个定义。`grantAbility`、
+`activateAbility`、`advanceAbilities`、`cancelAbility`、`abilityGrant` 和 `matchingAbilities` 直接投影
+`AbilityRuntime`；冷却与 Action phase 只使用调用者注入的 tick/delta，不读取墙钟。`advanceAbilities`
+推进所有活跃 execution、递减冷却并同步终态链接，脚本不应另外保存 active/cooldown 状态。
+
 ## 角色移动与导航
 
 `CombatLocomotionRuntime` 以 `SubjectRef` 注册角色，并唯一拥有水平位置、速度、朝向、移动意图和导航目标：

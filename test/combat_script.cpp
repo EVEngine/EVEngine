@@ -28,6 +28,19 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
             "{\"damageType\":\"Damage.Physical.Slash\",\"amount\":7,\"poiseAmount\":2}");
         enemyState <- arena.state(enemy);
         invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0);
+        grantedAbility <- arena.grantAbility("fighter:player", "combat-ability:light-attack");
+        grantId <- grantedAbility.value.grantId;
+        activatedAbility <- arena.activateAbility(grantId, 2);
+        blockedAbility <- arena.activateAbility(grantId, 2);
+        abilityStep <- arena.advanceAbilities(3, 0.10);
+        coolingGrant <- arena.abilityGrant(grantId);
+        abilityFinished <- arena.advanceAbilities(4, 0.40);
+        readyGrant <- arena.abilityGrant(grantId);
+        reactivatedAbility <- arena.activateAbility(grantId, 5);
+        invalidAbility <- arena.grantAbility("fighter:player", "combat-ability:missing");
+        coolingSeconds <- coolingGrant.value.cooldownSeconds;
+        finishedActiveCount <- abilityFinished.value.activeCount;
+        readySeconds <- readyGrant.value.cooldownSeconds;
         playerX <- playerState.value.position.x;
         enemyHealth <- enemyState.value.health;
         damageReaction <- damaged.value.reaction;
@@ -43,4 +56,13 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
     CHECK(vm.find("timelineDamage").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("damageReaction").toString(), std::string("flinch"));
     CHECK(!vm.find("invalid").toTable().get<bool>("ok"));
+    CHECK(vm.find("grantedAbility").toTable().get<bool>("ok"));
+    CHECK(vm.find("activatedAbility").toTable().get<bool>("ok"));
+    CHECK(!vm.find("blockedAbility").toTable().get<bool>("ok"));
+    CHECK(vm.find("abilityStep").toTable().get<bool>("ok"));
+    CHECK(vm.find("coolingSeconds").toFloat() > 0.0f);
+    CHECK_EQ(vm.find("finishedActiveCount").toInt(), 0);
+    CHECK_EQ(vm.find("readySeconds").toFloat(), 0.0f);
+    CHECK(vm.find("reactivatedAbility").toTable().get<bool>("ok"));
+    CHECK(!vm.find("invalidAbility").toTable().get<bool>("ok"));
 }
