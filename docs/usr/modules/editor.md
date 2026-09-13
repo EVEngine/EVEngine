@@ -683,6 +683,9 @@ Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`evaluateRuntimeSec
 `syncRuntimeSection`、`syncRuntimeSectionAndJump`、`clearRuntimeSectionSync` 和磁吸目标因此共享一份边界事实。
 归一化求值把 `[0,1]` 映射到物理 Section；同步倍率可以只配置，也可以配置后立即跳到该段起点，并可明确清除。
 运行时按资产的 `animationLayer` 选择协调器层，视口读取该层的双槽归一化合成姿态。
+`setRuntimeBoneMask` 会同步复制一个与预览骨架匹配的 `AnimBoneMask` 到当前层，调用方随后可以安全销毁或修改
+原 Mask；`clearRuntimeBoneMask` 恢复全骨骼影响。示例的 Montage Inspector 可从当前选中关节生成 Mask，选择是否
+包含子关节，并提供紧凑的 Apply/Clear 工具栏。
 运行中的预览还可用 `setRuntimeRate/getRuntimeRate` 设置和读取严格为正的倍率；倍率只缩放调用者注入的
 delta，不读取墙钟，也不写回资产的 `basePlayRate`。`getRuntimePhysicalSection`、
 `getRuntimeSectionProgress` 和 `getRuntimeWeight` 可直接驱动运行诊断 HUD。

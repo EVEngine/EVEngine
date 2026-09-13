@@ -10,6 +10,7 @@
 #include "action/editor/ActionTimelineWidget.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPose.h"
 #include "animation/MontageCoordinator.h"
 #include "animation/MontagePlayer.h"
@@ -711,6 +712,20 @@ public:
         if (!range) return Result<void>::failure(range.status());
         return Result<void>::success(Status::success(sectionRates_.erase(index) > 0 ? StatusCode::Applied
                                                                                    : StatusCode::NoOp));
+    }
+
+    [[nodiscard]] Result<void> setRuntimeBoneMask(const animation::AnimBoneMask& mask) {
+        if (!coordinator_ || !activeMontage())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        return coordinator_->setLayerBoneMask(activeLayer_, mask);
+    }
+
+    [[nodiscard]] Result<void> clearRuntimeBoneMask() {
+        if (!coordinator_ || !activeMontage())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        return coordinator_->clearLayerBoneMask(activeLayer_);
     }
 
     [[nodiscard]] Result<animation::MontageAdvance> beginRuntimeBlendOut(Duration duration) {
@@ -1458,6 +1473,19 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                   "runtime section index is invalid", "index");
         return script::projectResult(vm,
                                      self->clearRuntimeSectionSync(static_cast<std::size_t>(sectionIndex)));
+    });
+    actionEditor.addFunc("setRuntimeBoneMask",
+                         [vm](ScriptActionTimelineEditor* self, animation::AnimBoneMask* mask) {
+        if (!self || !mask)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor and bone mask must not be null", "mask");
+        return script::projectResult(vm, self->setRuntimeBoneMask(*mask));
+    });
+    actionEditor.addFunc("clearRuntimeBoneMask", [vm](ScriptActionTimelineEditor* self) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        return script::projectResult(vm, self->clearRuntimeBoneMask());
     });
     actionEditor.addFunc("beginRuntimeBlendOut", [vm](ScriptActionTimelineEditor* self, float durationSeconds) {
         if (!self)

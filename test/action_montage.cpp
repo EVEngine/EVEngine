@@ -430,6 +430,10 @@ TEST_CASE("actionMontage.coordinatorLayerMaskRestrictsCompositionPerBone") {
     REQUIRE(configured.ok());
     REQUIRE_EQ(configured.value().size(), 2U);
     CHECK_EQ(configured.value()[1], 0.5f);
+    upperBody.setAll(0.0f);
+    configured = coordinator.layerBoneMask(0);
+    REQUIRE(configured.ok());
+    CHECK_EQ(configured.value()[1], 0.5f);
 
     auto handle = coordinator.play(0, montageTimeline(), maskedMontageClips(),
                                    eve::action::ActionExecutionId(21), eve::SimulationTick(1));

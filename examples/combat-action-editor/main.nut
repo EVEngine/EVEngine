@@ -643,6 +643,13 @@ function panelInspector() {
         ui.checkbox("Horizontal", true, "montage-root-horizontal");
         ui.checkbox("Vertical", true, "montage-root-vertical");
         ui.checkbox("Rotation", true, "montage-root-rotation");
+        ui.text("Layer Bone Mask", "montage-mask-title");
+        ui.slider("Selected Joint", 1.0, 0.0, 1.0, "montage-mask-weight");
+        ui.checkbox("Include Children", true, "montage-mask-children");
+        ui.beginToolbar("montage-mask-tools");
+        ui.iconButton("save", "Apply", "apply-montage-mask");
+        ui.iconButton("close", "Clear", "clear-montage-mask");
+        ui.end();
         ui.text("Physical Sections", "physical-sections-title");
         ui.combo("Split", sectionSplitChoices(), combatEditor.selectedSplit, "section-split-selector");
         ui.slider("Split Time", 0.5, 0.0, combatEditor.timeline.getDuration(), "section-split-time");
@@ -1090,6 +1097,23 @@ function handleUiEvents() {
             applyHistory(id == "track-undo" ? "undo" : "redo");
         } else if (id == "montage-undo" || id == "montage-redo") {
             applyHistory(id == "montage-undo" ? "undo" : "redo");
+        } else if (id == "apply-montage-mask") {
+            ui.select("action.inspector");
+            local mask = anim.newBoneMask(combatEditor.skeleton);
+            mask.setAll(0.0);
+            local bone = combatEditor.clipEditor.getSelectedBone();
+            local applied = ui.getChecked("montage-mask-children") ?
+                mask.setBoneAndChildren(bone, ui.getValue("montage-mask-weight")) :
+                mask.setBoneWeightByName(bone, ui.getValue("montage-mask-weight"));
+            if (!applied) combatEditor.status = "Bone mask joint was not found · " + bone;
+            else {
+                local result = combatEditor.timeline.setRuntimeBoneMask(mask);
+                combatEditor.status = result.ok ? "Layer mask applied from joint · " + bone
+                                                : result.status.summary;
+            }
+        } else if (id == "clear-montage-mask") {
+            local result = combatEditor.timeline.clearRuntimeBoneMask();
+            combatEditor.status = result.ok ? "Layer bone mask cleared" : result.status.summary;
         } else if (id == "add-section-split") {
             local splitTime = combatEditor.timeline.getPreviewTime();
             local result = combatEditor.timeline.addSectionSplit(splitTime);
@@ -1179,7 +1203,8 @@ function handleUiEvents() {
                 result = combatEditor.timeline.setSectionSplit(combatEditor.selectedSplit, splitTime);
                 if (result.ok) combatEditor.selectedSplit = sectionSplitIndexAt(splitTime);
                 combatEditor.status = result.ok ? "Physical section split moved" : result.status.summary;
-            } else if (id.find("montage-") == 0 && id != "montage-tools") {
+            } else if (id.find("montage-") == 0 && id != "montage-tools" &&
+                       id.find("montage-mask-") != 0) {
                 result = commitMontageSettings();
                 combatEditor.status = result.ok ? "Montage settings committed" : result.status.summary;
             } else if (id == "insert-track") combatEditor.insertTrack = ui.getValue("insert-track").tointeger();
