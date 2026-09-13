@@ -35,6 +35,7 @@ Result<void> ActionBlockRuntime::apply(const ActionAdvance& advance, ActionNotif
 Result<void> ActionBlockRuntime::interrupt(ActionNotifyContext context) {
     const auto found = active_.find(context.executionId);
     if (found == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));
+    context.interrupted = true;
     auto& blocks = found->second;
     while (!blocks.empty()) {
         const auto& block = blocks.front();

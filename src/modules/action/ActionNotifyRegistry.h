@@ -53,6 +53,8 @@ struct ActionNotifyContext {
     bool                             preview = false;
     /** @brief Whether preview time was positioned discontinuously. */
     bool                             scrubbing = false;
+    /** @brief Whether state exits are being synthesized because the execution was interrupted. */
+    bool                             interrupted = false;
 };
 
 /**

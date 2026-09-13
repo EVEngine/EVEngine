@@ -357,7 +357,7 @@ TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
                                                                  "asset://audio/sword-b.wav"}},
                                {"volume", 0.5}, {"pitch", 1.25}, {"randomPitchOffset", 0.1},
                                {"spatialBlend", 0.75}, {"minDistance", 2.0}, {"maxDistance", 28.0},
-                               {"looping", true}};
+                               {"looping", true}, {"fadeOutOnExit", true}, {"fadeOutDuration", 0.25}};
     auto state = eve::action::ActionAudioBinding::fromPayload(
         payload, eve::action::ActionAudioShape::State);
     REQUIRE(state.ok());
@@ -370,6 +370,8 @@ TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
     CHECK_EQ(state.value().spatialBlend, 0.75);
     CHECK_EQ(state.value().minDistance, 2.0);
     CHECK_EQ(state.value().maxDistance, 28.0);
+    CHECK(state.value().fadeOutOnExit);
+    CHECK_EQ(state.value().fadeOutDuration, 0.25);
     CHECK(state.value().looping);
 
     auto instant = eve::action::ActionAudioBinding::fromPayload(
@@ -401,6 +403,12 @@ TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
         payload, eve::action::ActionAudioShape::Instant);
     CHECK(!duplicateUri.ok());
     CHECK_EQ(duplicateUri.status().diagnostics().front().path(), "randomUris[1]");
+    payload["randomUris"] = eve::Value::Array{};
+    payload["fadeOutDuration"] = 0.0;
+    auto invalidFade = eve::action::ActionAudioBinding::fromPayload(
+        payload, eve::action::ActionAudioShape::Instant);
+    CHECK(!invalidFade.ok());
+    CHECK_EQ(invalidFade.status().diagnostics().front().path(), "fadeOutDuration");
 }
 
 TEST_CASE("actionVfxBlock.validatesTrimStopAndLifetimeContract") {

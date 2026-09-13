@@ -25,6 +25,8 @@ struct ActionAudioBinding {
     double               minDistance = 1.0;
     double               maxDistance = 35.0;
     bool                 looping = false;
+    bool                 fadeOutOnExit = true;
+    double               fadeOutDuration = 0.1;
 
     auto operator<=>(const ActionAudioBinding&) const = default;
 

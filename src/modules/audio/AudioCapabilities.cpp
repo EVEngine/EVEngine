@@ -263,7 +263,16 @@ public:
             const auto found = active_.find(key);
             if (found == active_.end())
                 return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
-            found->second.source->stop();
+            if (!context.interrupted && found->second.fadeOutOnExit && found->second.fadeOutDuration > 0.0) {
+                auto duration = eve::Duration::fromSeconds(found->second.fadeOutDuration);
+                if (!duration) return eve::Result<void>::failure(duration.status());
+                auto end = context.time.tryAdd(duration.value());
+                if (!end) return eve::Result<void>::failure(end.status());
+                fading_.push_back({context.executionId, context.time, std::move(end).takeValue(),
+                                   found->second.volume, std::move(found->second)});
+            } else {
+                found->second.source->stop();
+            }
             active_.erase(found);
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
@@ -286,8 +295,9 @@ public:
             configureAudioSource(*source, binding.value(), selectAudioPitch(binding.value(), seed ^ 0x9e3779b97f4a7c15ULL));
             applyPosition(*source, binding.value().spatial, pose.value());
             source->play();
-            ActiveSource owned{data, std::move(source),
-                               binding.value().spatial, std::move(pose).takeValue()};
+            ActiveSource owned{data, std::move(source), binding.value().spatial,
+                               std::move(pose).takeValue(), binding.value().volume,
+                               binding.value().fadeOutOnExit, binding.value().fadeOutDuration};
             if (instant) {
                 auto duration = eve::Duration::fromSeconds(owned.source->getDuration() / owned.source->getPitch());
                 if (!duration) return eve::Result<void>::failure(duration.status());
@@ -335,8 +345,25 @@ public:
             transient.owned.source->stop();
             return true;
         });
+        const auto fadingBefore = fading_.size();
+        bool       fadingAdvanced = false;
+        std::erase_if(fading_, [&](FadingSource& fading) {
+            if (fading.executionId != context.executionId) return false;
+            fadingAdvanced = true;
+            if (context.time < fading.startTime || context.time >= fading.endTime) {
+                fading.owned.source->stop();
+                return true;
+            }
+            const auto elapsed = context.time.nanoseconds() - fading.startTime.nanoseconds();
+            const auto duration = fading.endTime.nanoseconds() - fading.startTime.nanoseconds();
+            const double remaining = 1.0 - static_cast<double>(elapsed) / static_cast<double>(duration);
+            fading.owned.source->setVolume(static_cast<float>(fading.startVolume * remaining));
+            return false;
+        });
         return eve::Result<void>::success(eve::Status::success(
-            before == transients_.size() ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+            before == transients_.size() && fadingBefore == fading_.size() && !fadingAdvanced
+                ? eve::StatusCode::NoOp
+                : eve::StatusCode::Applied));
     }
 
 private:
@@ -346,10 +373,20 @@ private:
         std::unique_ptr<Source> source;
         eve::action::ActionSpatialBinding spatial;
         eve::EntitySpatialPose pose;
+        double volume = 1.0;
+        bool fadeOutOnExit = true;
+        double fadeOutDuration = 0.1;
     };
     struct TransientSource {
         eve::action::ActionExecutionId executionId;
         eve::Duration endTime;
+        ActiveSource owned;
+    };
+    struct FadingSource {
+        eve::action::ActionExecutionId executionId;
+        eve::Duration startTime;
+        eve::Duration endTime;
+        double startVolume;
         ActiveSource owned;
     };
 
@@ -407,6 +444,7 @@ private:
 
     std::map<ActiveKey, ActiveSource> active_;
     std::vector<TransientSource> transients_;
+    std::vector<FadingSource> fading_;
 };
 
 template <typename T>

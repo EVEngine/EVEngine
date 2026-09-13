@@ -560,6 +560,8 @@ function panelInspector() {
         ui.slider("Min Distance", 1.0, 0.01, 50.0, "audio-min-distance");
         ui.slider("Max Distance", 35.0, 0.1, 200.0, "audio-max-distance");
         ui.checkbox("Looping", false, "audio-looping");
+        ui.checkbox("Fade Out on Exit", true, "audio-fade-out");
+        ui.slider("Fade Duration", 0.1, 0.01, 2.0, "audio-fade-duration");
         ui.text("VFX", "typed-vfx-title");
         ui.combo("Stop", "Stop Emitting\nClear Immediately", 0, "vfx-stop");
         ui.checkbox("Sync Rate", true, "vfx-sync-rate");
@@ -686,7 +688,8 @@ function setTypedPayloadVisibility(type, single) {
     local spatial = single && isSpatialType(type);
     foreach (field in ["typed-resource-title", "payload-uri"]) ui.setVisible(field, spatial);
     foreach (field in ["typed-audio-title", "audio-random-uris", "audio-volume", "audio-pitch",
-                       "audio-random-pitch", "audio-spatial-blend", "audio-min-distance", "audio-max-distance"])
+                       "audio-random-pitch", "audio-spatial-blend", "audio-min-distance", "audio-max-distance",
+                       "audio-fade-out", "audio-fade-duration"])
         ui.setVisible(field, audio);
     ui.setVisible("audio-looping", audio && type == "presentation:audio-state");
     foreach (field in ["typed-vfx-title", "vfx-stop", "vfx-sync-rate", "vfx-clip-start", "vfx-clip-end"])
@@ -1013,17 +1016,21 @@ function handleUiEvents() {
                 result = combatEditor.timeline.setItemPayloadTextList(
                     combatEditor.selectedActionId, "randomUris", ui.getValueText(id));
             } else if ((id == "audio-volume" || id == "audio-pitch" || id == "audio-random-pitch" ||
-                        id == "audio-spatial-blend" || id == "audio-min-distance" || id == "audio-max-distance") &&
+                        id == "audio-spatial-blend" || id == "audio-min-distance" || id == "audio-max-distance" ||
+                        id == "audio-fade-duration") &&
                        combatEditor.selectedActionId != "") {
                 local field = id == "audio-volume" ? "volume" : (id == "audio-pitch" ? "pitch" :
                     (id == "audio-random-pitch" ? "randomPitchOffset" :
                     (id == "audio-spatial-blend" ? "spatialBlend" :
-                    (id == "audio-min-distance" ? "minDistance" : "maxDistance"))));
+                    (id == "audio-min-distance" ? "minDistance" :
+                    (id == "audio-max-distance" ? "maxDistance" : "fadeOutDuration")))));
                 result = combatEditor.timeline.setItemPayloadNumber(
                     combatEditor.selectedActionId, field, ui.getValue(id));
-            } else if (id == "audio-looping" && combatEditor.selectedActionId != "") {
+            } else if ((id == "audio-looping" || id == "audio-fade-out") &&
+                       combatEditor.selectedActionId != "") {
                 result = combatEditor.timeline.setItemPayloadBool(
-                    combatEditor.selectedActionId, "looping", ui.getChecked(id));
+                    combatEditor.selectedActionId, id == "audio-looping" ? "looping" : "fadeOutOnExit",
+                    ui.getChecked(id));
             } else if (id == "vfx-stop" && combatEditor.selectedActionId != "") {
                 result = combatEditor.timeline.setItemPayloadText(combatEditor.selectedActionId,
                     "stopBehavior", stopBehaviorAt(ui.getValue(id).tointeger()));
@@ -1285,6 +1292,10 @@ function updateLabels() {
                     ui.setValue("audio-max-distance", combatEditor.timeline.getItemPayloadNumber(
                         itemId, "maxDistance", 35.0));
                     ui.setChecked("audio-looping", combatEditor.timeline.getItemPayloadBool(itemId, "looping", false));
+                    ui.setChecked("audio-fade-out", combatEditor.timeline.getItemPayloadBool(
+                        itemId, "fadeOutOnExit", true));
+                    ui.setValue("audio-fade-duration", combatEditor.timeline.getItemPayloadNumber(
+                        itemId, "fadeOutDuration", 0.1));
                 } else if (isVfxType(selectedType)) {
                     ui.setValue("vfx-stop", stopBehaviorIndex(combatEditor.timeline.getItemPayloadText(
                         itemId, "stopBehavior", "stop_emitting")).tofloat());

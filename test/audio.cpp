@@ -160,7 +160,9 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
     context.sourceAttachment = std::cref(attachmentSource);
     REQUIRE(runtime.apply(advance, context).ok());
     CHECK_EQ(attachmentSource.calls, 2);
+    const int sourceCount = audio->getSourceCount();
     REQUIRE(runtime.interrupt(context).ok());
+    CHECK_EQ(audio->getSourceCount(), sourceCount - 1);
 }
 
 TEST_CASE("audio.instantActionNotifyRetainsThenDeterministicallyReleasesSource") {
@@ -188,6 +190,51 @@ TEST_CASE("audio.instantActionNotifyRetainsThenDeterministicallyReleasesSource")
     expired.id = trigger.id;
     expired.totalElapsed = eve::Duration::fromNanoseconds(10'000'000'000LL);
     REQUIRE(runtime.apply(expired, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before);
+}
+
+TEST_CASE("audio.actionStateFadeOutUsesInjectedActionTimeAndReleasesSource") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::action::ActionBlockRuntime runtime(registry.value());
+    const int before = audio->getSourceCount();
+    const auto execution = eve::action::ActionExecutionId{94};
+    const auto track = actionLogicalId("presentation-track:audio");
+    const auto item = actionLogicalId("presentation-audio:fade");
+    const auto type = actionLogicalId("presentation:audio-state");
+    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
+                               {"volume", 0.8}, {"looping", true},
+                               {"fadeOutOnExit", true}, {"fadeOutDuration", 0.2}};
+    eve::action::ActionNotifyContext context;
+    context.executionId = execution;
+
+    eve::action::ActionAdvance entered;
+    entered.id = execution;
+    entered.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
+                                      track, item, type, eve::Duration::zero(), payload});
+    entered.activeBlocks.push_back({track, item, type, eve::Duration::zero(),
+                                    eve::Duration::fromSeconds(1.0).takeValue(), payload});
+    REQUIRE(runtime.apply(entered, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+
+    eve::action::ActionAdvance exited;
+    exited.id = execution;
+    exited.totalElapsed = eve::Duration::fromSeconds(1.0).takeValue();
+    exited.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateExit,
+                                     track, item, type, exited.totalElapsed, payload});
+    REQUIRE(runtime.apply(exited, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+
+    exited.timelineEvents.clear();
+    exited.totalElapsed = eve::Duration::fromSeconds(1.1).takeValue();
+    REQUIRE(runtime.apply(exited, context).ok());
+    CHECK_EQ(audio->getSourceCount(), before + 1);
+    exited.totalElapsed = eve::Duration::fromSeconds(1.2).takeValue();
+    REQUIRE(runtime.apply(exited, context).ok());
     CHECK_EQ(audio->getSourceCount(), before);
 }
 

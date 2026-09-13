@@ -98,6 +98,17 @@ Result<ActionAudioBinding> ActionAudioBinding::fromPayload(const Value::Object& 
     }
     if (shape == ActionAudioShape::Instant && candidate.looping)
         return invalid<ActionAudioBinding>("instant audio cannot loop; use audio-state", "looping");
+    if (const auto fadeOut = payload.find("fadeOutOnExit"); fadeOut != payload.end()) {
+        const auto* enabled = fadeOut->second.getIf<bool>();
+        if (!enabled) return invalid<ActionAudioBinding>("audio fade-out flag must be boolean", "fadeOutOnExit");
+        candidate.fadeOutOnExit = *enabled;
+    }
+    auto fadeOutDuration = numeric(payload, "fadeOutDuration", 0.1);
+    if (!fadeOutDuration) return Result<ActionAudioBinding>::failure(fadeOutDuration.status());
+    if (fadeOutDuration.value() <= 0.0 || fadeOutDuration.value() > 10.0)
+        return invalid<ActionAudioBinding>("audio fade-out duration must be in (0, 10] seconds",
+                                           "fadeOutDuration");
+    candidate.fadeOutDuration = fadeOutDuration.value();
     return Result<ActionAudioBinding>::success(std::move(candidate));
 }
 

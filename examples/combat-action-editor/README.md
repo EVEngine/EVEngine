@@ -33,7 +33,7 @@ Controls:
   same undo/redo history. Audio, VFX and Prefab blocks expose typed resource,
   playback, lifecycle and shared spatial controls. Audio additionally exposes
   a random clip URI pool, deterministic pitch variation, spatial blend and
-  attenuation distances; the advanced payload JSON
+  attenuation distances, and exit fade controls; the advanced payload JSON
   remains available for extensions. Each typed edit merges only its fields,
   preserves unknown payload data, validates the complete result through the
   notify registry, and commits one undo step. Notify type and payload JSON are

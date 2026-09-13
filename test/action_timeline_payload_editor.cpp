@@ -39,7 +39,8 @@ TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtom
                                     {"randomUris", eve::Value::Array{"asset://audio/a.wav",
                                                                       "asset://audio/b.wav"}},
                                     {"randomPitchOffset", 0.08}, {"spatialBlend", 0.5},
-                                    {"minDistance", 2.0}, {"maxDistance", 24.0}}).ok());
+                                    {"minDistance", 2.0}, {"maxDistance", 24.0},
+                                    {"fadeOutOnExit", true}, {"fadeOutDuration", 0.2}}).ok());
     auto edited = payloads.payload(itemId);
     REQUIRE(edited.ok());
     CHECK_EQ(*edited.value().at("extensionField").getIf<std::string>(), "preserved");
