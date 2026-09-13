@@ -31,7 +31,9 @@ Controls:
   opens the **Action Block** inspector. Its timing sliders commit validated,
   undoable transactions; the toolbar deletes the selected block and exposes the
   same undo/redo history. Audio, VFX and Prefab blocks expose typed resource,
-  playback, lifecycle and shared spatial controls. Audio additionally exposes
+  playback, lifecycle and shared spatial controls. VFX states can atomically
+  fit their block duration to the trimmed clip at 1.0x speed, or fit the clip
+  end to the current block duration. Audio additionally exposes
   a random clip URI pool, deterministic pitch variation, spatial blend and
   attenuation distances, and exit fade controls; the advanced payload JSON
   remains available for extensions. Each typed edit merges only its fields,

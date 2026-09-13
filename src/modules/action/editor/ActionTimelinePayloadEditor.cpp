@@ -1,5 +1,7 @@
 #include "action/editor/ActionTimelinePayloadEditor.h"
 
+#include "action/ActionVfxBlock.h"
+
 #include <algorithm>
 #include <optional>
 #include <string>
@@ -18,6 +20,7 @@ struct PayloadItem {
     LogicalId                 type;
     action::ActionTimelineEventKind kind = action::ActionTimelineEventKind::Notify;
     Duration                  time;
+    Duration                  end;
     Value::Object             payload;
 };
 
@@ -27,12 +30,12 @@ std::optional<PayloadItem> findPayloadItem(const action::ActionTimeline& timelin
                                          [&](const auto& value) { return value.id == itemId; });
         if (notify != track.notifies.end())
             return PayloadItem{track.id, notify->type, action::ActionTimelineEventKind::Notify, notify->time,
-                               notify->payload};
+                               notify->time, notify->payload};
         const auto state = std::find_if(track.states.begin(), track.states.end(),
                                         [&](const auto& value) { return value.id == itemId; });
         if (state != track.states.end())
             return PayloadItem{track.id, state->type, action::ActionTimelineEventKind::StateEnter, state->start,
-                               state->payload};
+                               state->end, state->payload};
     }
     return std::nullopt;
 }
@@ -58,6 +61,44 @@ EditorResult<void> ActionTimelinePayloadEditor::patch(const LogicalId& itemId, V
     auto valid = registry_.validate(event);
     if (!valid) return EditorResult<void>::failure(valid.status());
     return editor_.updateItem(itemId, item->type, std::move(merged));
+}
+
+EditorResult<void> ActionTimelinePayloadEditor::fitBlockToClip(const LogicalId& itemId) {
+    const auto item = findPayloadItem(editor_.target().timeline(), itemId);
+    if (!item)
+        return payloadError("editor.action.timeline.payload-item-missing",
+                            "Editable action-block payload was not found");
+    if (item->kind != action::ActionTimelineEventKind::StateEnter ||
+        item->type.format() != "presentation:vfx-state")
+        return payloadError("editor.action.timeline.clip-fit-type", "Only VFX states can fit a block to a clip");
+    auto binding = action::ActionVfxBinding::fromPayload(item->payload, action::ActionVfxShape::State);
+    if (!binding) return EditorResult<void>::failure(binding.status());
+    auto duration = Duration::fromSeconds(binding.value().clipEndTime - binding.value().clipStartTime);
+    if (!duration) return EditorResult<void>::failure(duration.status());
+    auto end = item->time.tryAdd(duration.value());
+    if (!end)
+        return payloadError("editor.action.timeline.clip-fit-overflow", "Fitted VFX block time overflowed");
+    return editor_.editItem(itemId, item->time, end.value(), item->type, item->payload);
+}
+
+EditorResult<void> ActionTimelinePayloadEditor::fitClipToBlock(const LogicalId& itemId) {
+    const auto item = findPayloadItem(editor_.target().timeline(), itemId);
+    if (!item)
+        return payloadError("editor.action.timeline.payload-item-missing",
+                            "Editable action-block payload was not found");
+    if (item->kind != action::ActionTimelineEventKind::StateEnter ||
+        item->type.format() != "presentation:vfx-state")
+        return payloadError("editor.action.timeline.clip-fit-type", "Only VFX states can fit a clip to a block");
+    auto binding = action::ActionVfxBinding::fromPayload(item->payload, action::ActionVfxShape::State);
+    if (!binding) return EditorResult<void>::failure(binding.status());
+    const double blockDuration =
+        Duration::fromNanoseconds(item->end.nanoseconds() - item->time.nanoseconds()).seconds();
+    auto merged = item->payload;
+    merged.insert_or_assign("clipEndTime", binding.value().clipStartTime + blockDuration);
+    action::ActionTimelineEvent event{item->kind, item->trackId, itemId, item->type, item->time, merged};
+    auto valid = registry_.validate(event);
+    if (!valid) return EditorResult<void>::failure(valid.status());
+    return editor_.editItem(itemId, item->time, item->end, item->type, std::move(merged));
 }
 
 }  // namespace eve::editor

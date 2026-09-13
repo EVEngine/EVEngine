@@ -1064,6 +1064,24 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
         return project(vm, self->editor().setItemEnabled(*parsedItemId, enabled));
     });
+    actionEditor.addFunc("fitBlockToClip", [vm](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        auto parsedItemId = LogicalId::parse(itemId);
+        if (!parsedItemId)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
+        ActionTimelinePayloadEditor payloads(self->editor(), self->registry());
+        return project(vm, payloads.fitBlockToClip(*parsedItemId));
+    });
+    actionEditor.addFunc("fitClipToBlock", [vm](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        auto parsedItemId = LogicalId::parse(itemId);
+        if (!parsedItemId)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
+        ActionTimelinePayloadEditor payloads(self->editor(), self->registry());
+        return project(vm, payloads.fitClipToBlock(*parsedItemId));
+    });
     actionEditor.addFunc("editItemDetails", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                   const std::string& type, const std::string& payloadJson) {
         auto parsedItemId = LogicalId::parse(itemId);

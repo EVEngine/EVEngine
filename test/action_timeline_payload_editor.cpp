@@ -26,6 +26,22 @@ eve::action::ActionTimeline payloadTimeline() {
     return timeline;
 }
 
+eve::action::ActionTimeline vfxPayloadTimeline() {
+    eve::action::ActionTimeline timeline;
+    timeline.actionId = payloadId("test:vfx-clip-fit");
+    timeline.duration = eve::Duration::fromSeconds(5.0).value();
+    eve::action::ActionTrack track;
+    track.id    = payloadId("test-track:vfx");
+    track.label = "VFX";
+    track.kind  = eve::action::ActionTrackKind::Effect;
+    track.states.push_back({payloadId("test-state:vfx"), payloadId("presentation:vfx-state"),
+                            eve::Duration::fromSeconds(1.0).value(), eve::Duration::fromSeconds(1.5).value(),
+                            {{"uri", "asset://vfx/slash.json"}, {"clipStartTime", 0.25},
+                             {"clipEndTime", 1.25}, {"extensionField", "preserved"}}});
+    timeline.tracks.push_back(std::move(track));
+    return timeline;
+}
+
 }  // namespace
 
 TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtomically") {
@@ -57,4 +73,48 @@ TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtom
     CHECK_EQ(*unchanged.value().at("maxDistance").getIf<double>(), 24.0);
     REQUIRE(editor.undo().ok());
     CHECK_EQ(*payloads.payload(itemId).value().at("extensionField").getIf<std::string>(), "preserved");
+}
+
+TEST_CASE("actionTimelinePayloadEditor.vfxClipFitCommandsAreAtomicAndUndoable") {
+    eve::editor::ActionTimelineEditor editor("test.vfx-clip-fit", vfxPayloadTimeline());
+    auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::editor::ActionTimelinePayloadEditor payloads(editor, registry.value());
+    const auto itemId = payloadId("test-state:vfx");
+
+    REQUIRE(payloads.fitBlockToClip(itemId).ok());
+    const auto& fittedBlock = editor.target().timeline().tracks.front().states.front();
+    CHECK_EQ(fittedBlock.start.seconds(), 1.0);
+    CHECK_EQ(fittedBlock.end.seconds(), 2.0);
+    CHECK_EQ(editor.target().revision(), 1ULL);
+
+    REQUIRE(editor.undo().ok());
+    CHECK_EQ(editor.target().timeline().tracks.front().states.front().end.seconds(), 1.5);
+    REQUIRE(payloads.fitClipToBlock(itemId).ok());
+    auto fittedClip = payloads.payload(itemId);
+    REQUIRE(fittedClip.ok());
+    CHECK_EQ(*fittedClip.value().at("clipStartTime").getIf<double>(), 0.25);
+    CHECK_EQ(*fittedClip.value().at("clipEndTime").getIf<double>(), 0.75);
+    CHECK_EQ(*fittedClip.value().at("extensionField").getIf<std::string>(), "preserved");
+    REQUIRE(editor.undo().ok());
+    CHECK_EQ(*payloads.payload(itemId).value().at("clipEndTime").getIf<double>(), 1.25);
+}
+
+TEST_CASE("actionTimelinePayloadEditor.vfxClipFitRejectsWrongShapeAndOutOfRangeWithoutMutation") {
+    auto timeline = vfxPayloadTimeline();
+    timeline.tracks.front().notifies.push_back(
+        {payloadId("test-notify:vfx"), payloadId("presentation:vfx"), eve::Duration::fromSeconds(0.25).value(),
+         {{"uri", "asset://vfx/slash.json"}, {"lifetimeSeconds", 1.0}}});
+    timeline.tracks.front().states.front().start = eve::Duration::fromSeconds(4.5).value();
+    timeline.tracks.front().states.front().end   = eve::Duration::fromSeconds(4.75).value();
+    eve::editor::ActionTimelineEditor editor("test.vfx-clip-fit-reject", std::move(timeline));
+    auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    eve::editor::ActionTimelinePayloadEditor payloads(editor, registry.value());
+
+    const auto revision = editor.target().revision();
+    CHECK(!payloads.fitBlockToClip(payloadId("test-state:vfx")).ok());
+    CHECK(!payloads.fitClipToBlock(payloadId("test-notify:vfx")).ok());
+    CHECK_EQ(editor.target().revision(), revision);
+    CHECK_EQ(editor.target().timeline().tracks.front().states.front().end.seconds(), 4.75);
 }

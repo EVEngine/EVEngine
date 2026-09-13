@@ -663,6 +663,9 @@ Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`syncRuntimeSection
 attachment、source/target anchor、bone 和位置/旋转/缩放偏移。Audio 还提供分号分隔的随机 URI 池、
 音高扰动、2D/3D 混合、最小/最大衰减距离，以及退出淡出开关和时长；运行时按 execution/item 的稳定
 seed 选片段和音高，并用 ActionRuntime 注入的时间推进淡出。
+VFX State 还提供 `fitBlockToClip` 与 `fitClipToBlock`：前者按有效裁剪区间调整 Block 末端以恢复
+1.0x 播放，后者保持 Block 不动并调整 `clipEndTime`。两者均拒绝 Instant、非 VFX 与越界候选，且只提交
+一个可撤销事务。
 脚本也可用 `setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用
 `setItemPayloadTextList` 把分号分隔文本写成字符串数组，`patchItemPayload` 原子提交一组字段；
 `getItemPayloadText/Number/Bool/Vector/TextList` 用于把权威 payload 投射回 UI。所有入口先合并到 payload 的拥有型

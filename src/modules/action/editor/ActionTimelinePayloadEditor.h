@@ -30,6 +30,20 @@ public:
      */
     [[nodiscard]] EditorResult<void> patch(const LogicalId& itemId, Value::Object fields);
 
+    /**
+     * @brief Resize one VFX state to its authored clip interval at 1.0x playback.
+     * @param itemId Stable VFX notify-state identity.
+     * @return Applied, or a structured type, range, validation, or transaction failure.
+     */
+    [[nodiscard]] EditorResult<void> fitBlockToClip(const LogicalId& itemId);
+
+    /**
+     * @brief Extend one VFX state's clip end so its authored interval matches the block duration.
+     * @param itemId Stable VFX notify-state identity.
+     * @return Applied, or a structured type, range, validation, or transaction failure.
+     */
+    [[nodiscard]] EditorResult<void> fitClipToBlock(const LogicalId& itemId);
+
 private:
     ActionTimelineEditor&               editor_;
     const action::ActionNotifyRegistry& registry_;

@@ -567,6 +567,8 @@ function panelInspector() {
         ui.checkbox("Sync Rate", true, "vfx-sync-rate");
         ui.slider("Clip Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "vfx-clip-start");
         ui.slider("Clip End", 0.5, 0.0, combatEditor.timeline.getDuration(), "vfx-clip-end");
+        ui.iconButton("move", "Fit Block to Clip", "vfx-fit-block");
+        ui.iconButton("sliders", "Fit Clip to Block", "vfx-fit-clip");
         ui.slider("Lifetime", 1.0, 0.01, 10.0, "vfx-lifetime");
         ui.text("Prefab", "typed-prefab-title");
         ui.combo("Lifecycle", "Recycle on Exit\nCustom Duration\nIndependent", 0, "prefab-lifecycle");
@@ -692,8 +694,11 @@ function setTypedPayloadVisibility(type, single) {
                        "audio-fade-out", "audio-fade-duration"])
         ui.setVisible(field, audio);
     ui.setVisible("audio-looping", audio && type == "presentation:audio-state");
-    foreach (field in ["typed-vfx-title", "vfx-stop", "vfx-sync-rate", "vfx-clip-start", "vfx-clip-end"])
+    foreach (field in ["typed-vfx-title", "vfx-stop", "vfx-sync-rate", "vfx-clip-start", "vfx-clip-end",
+                       "vfx-fit-block", "vfx-fit-clip"])
         ui.setVisible(field, vfx);
+    ui.setVisible("vfx-fit-block", vfx && type == "presentation:vfx-state");
+    ui.setVisible("vfx-fit-clip", vfx && type == "presentation:vfx-state");
     ui.setVisible("vfx-lifetime", vfx && type == "presentation:vfx");
     foreach (field in ["typed-prefab-title", "prefab-lifecycle", "prefab-duration"])
         ui.setVisible(field, prefab);
@@ -949,6 +954,14 @@ function handleUiEvents() {
                                             : result.status.summary;
         } else if (id == "action-undo" || id == "action-redo") {
             applyHistory(id == "action-undo" ? "undo" : "redo");
+        } else if ((id == "vfx-fit-block" || id == "vfx-fit-clip") &&
+                   combatEditor.selectedActionId != "") {
+            local result = id == "vfx-fit-block" ?
+                combatEditor.timeline.fitBlockToClip(combatEditor.selectedActionId) :
+                combatEditor.timeline.fitClipToBlock(combatEditor.selectedActionId);
+            combatEditor.status = result.ok ? (id == "vfx-fit-block" ?
+                "VFX block fitted to clip at 1.0x" : "VFX clip fitted to block") : result.status.summary;
+            if (result.ok) mountInspectorPanel();
         } else if (id == "set-key" || id == "delete-key" || id == "clip-undo" || id == "clip-redo") {
             local result = id == "set-key" ? combatEditor.clipEditor.keySelectedBone() :
                 id == "delete-key" ? combatEditor.clipEditor.deleteSelectedKey() :
