@@ -80,6 +80,14 @@ public:
 
     /** @brief Register one canonical definition; duplicate ids are rejected. */
     [[nodiscard]] Result<void> registerDefinition(AbilityDefinition definition);
+    /**
+     * @brief Transactionally replace one registered definition for future activations.
+     *
+     * Existing grants and cooldowns remain valid. Active ActionExecution objects
+     * retain the owning definition snapshot captured when they were submitted.
+     * A definition with grants cannot change its instancing policy.
+     */
+    [[nodiscard]] Result<void> replaceDefinition(AbilityDefinition definition);
     /** @brief Grant a registered definition to a non-empty owner identity. */
     [[nodiscard]] Result<AbilityGrantId> grant(std::string ownerId, const LogicalId& definitionId);
     /** @brief Revoke an inactive grant. Active grants must be synchronized/cancelled first. */

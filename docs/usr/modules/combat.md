@@ -18,6 +18,9 @@ runtime 内部复用下述 C++ 权威实现，不在脚本层复制生命值或�
 `registerTimelineAbility` 接收 `ActionTimelineEditor.snapshotJson()` 的规范 schema，将 timeline 的 actionId、
 总时长和 physical split 映射为同一个 `ActionDefinition` 的 phase timing；同时显式设置 cooldown、
 instancing、activation group 和可选 gameplay-event trigger。注册失败不会留下部分 definition。
+`replaceTimelineAbility` 使用相同参数事务式热替换已有定义：grant、per-owner instance 与剩余冷却保持不变；
+已激活 execution 继续持有提交时的旧快照，下一次激活才读取新的 timeline 与 actionId。
+已有 grant 时不能热切换 instancing policy，避免悄悄改变 instance 身份语义。
 
 ## 角色移动与导航
 

@@ -193,7 +193,6 @@ public:
                                   definitionText);
         auto granted = abilities_.grant(ownerId, *definitionId);
         if (!granted) return Result<Value>::failure(granted.status());
-        grantedActions_[granted.value().value()] = action->second;
         return abilityGrantValue(granted.value());
     }
 
@@ -202,6 +201,24 @@ public:
                                           const std::string& instancingText,
                                           const std::string& groupText,
                                           const std::string& triggerTag) {
+        return setTimelineAbility(definitionText, timelineJson, cooldownSeconds, instancingText,
+                                  groupText, triggerTag, false);
+    }
+
+    Result<Value> replaceTimelineAbility(const std::string& definitionText,
+                                         const std::string& timelineJson, double cooldownSeconds,
+                                         const std::string& instancingText,
+                                         const std::string& groupText,
+                                         const std::string& triggerTag) {
+        return setTimelineAbility(definitionText, timelineJson, cooldownSeconds, instancingText,
+                                  groupText, triggerTag, true);
+    }
+
+    Result<Value> setTimelineAbility(const std::string& definitionText,
+                                     const std::string& timelineJson, double cooldownSeconds,
+                                     const std::string& instancingText,
+                                     const std::string& groupText,
+                                     const std::string& triggerTag, bool replace) {
         auto definitionId = LogicalId::parse(definitionText);
         if (!definitionId)
             return failure<Value>(DiagnosticCode::InvalidArgument, "ability definition id is invalid",
@@ -257,8 +274,9 @@ public:
             definition.action.timing.recover = Duration::fromNanoseconds(
                 timeline.value().duration.nanoseconds() - splits[1].nanoseconds());
         }
-        auto registered = abilities_.registerDefinition(definition);
-        if (!registered) return Result<Value>::failure(registered.status());
+        auto changed = replace ? abilities_.replaceDefinition(definition)
+                               : abilities_.registerDefinition(definition);
+        if (!changed) return Result<Value>::failure(changed.status());
         abilityActions_[definitionText] = definition.action.id;
         Value::Object result;
         result["definitionId"] = definitionText;
@@ -273,9 +291,12 @@ public:
         if (!grant) return Result<Value>::failure(grant.status());
         if (tickValue < 0)
             return failure<Value>(DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick");
-        const auto action = grantedActions_.find(grant.value().value());
-        if (action == grantedActions_.end())
-            return failure<Value>(DiagnosticCode::NotFound, "ability grant action is unavailable", "grantId");
+        auto grantState = abilities_.findGrant(grant.value());
+        if (!grantState) return Result<Value>::failure(grantState.status());
+        const auto action = abilityActions_.find(grantState.value().definitionId.format());
+        if (action == abilityActions_.end())
+            return failure<Value>(DiagnosticCode::NotFound, "ability definition action is unavailable",
+                                  "definitionId");
         action::ActionRequest request;
         request.actionId      = action->second;
         request.requestedTick = SimulationTick(static_cast<std::uint64_t>(tickValue));
@@ -409,7 +430,6 @@ private:
     action::ActionRuntime                         actions_;
     action::AbilityRuntime                        abilities_{actions_};
     std::map<std::string, LogicalId, std::less<>> abilityActions_;
-    std::map<std::uint64_t, LogicalId>             grantedActions_;
 };
 
 ssq::Table project(HSQUIRRELVM vm, Result<Value>&& result) {
@@ -493,6 +513,16 @@ void Combat::expose(ssq::Table& table) {
                          const std::string& triggerTag) {
         return project(vm, self ? self->registerTimelineAbility(definitionId, timelineJson, cooldownSeconds,
                                                                  instancing, activationGroup, triggerTag)
+                                : failure<Value>(DiagnosticCode::InvalidArgument,
+                                                 "combat runtime must not be null", "runtime"));
+    });
+    runtime.addFunc("replaceTimelineAbility",
+                    [vm](ScriptCombatRuntime* self, const std::string& definitionId,
+                         const std::string& timelineJson, float cooldownSeconds,
+                         const std::string& instancing, const std::string& activationGroup,
+                         const std::string& triggerTag) {
+        return project(vm, self ? self->replaceTimelineAbility(definitionId, timelineJson, cooldownSeconds,
+                                                                instancing, activationGroup, triggerTag)
                                 : failure<Value>(DiagnosticCode::InvalidArgument,
                                                  "combat runtime must not be null", "runtime"));
     });

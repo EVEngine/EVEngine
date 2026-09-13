@@ -88,10 +88,14 @@ Controls:
 - Use WASD to move the player through `CombatLocomotionRuntime`. When playback
   crosses the damage notify, target health and reaction update above the
   viewport. Editing that block changes the next hit without a demo-only damage
-model.
+  model.
 The active editor snapshot is also registered as an `AbilityDefinition`; its
 physical sections become action phases, and the preview HUD reports the native
 Ability phase and cooldown instead of maintaining script timers.
+Saving hot-reloads that definition without revoking its grant. Press `J` while
+the authored `input:combo-window` is open to resolve its gameplay tag through
+`matchingAbilities`, replace the active exclusive Ability, and replay the
+montage. Input outside the authored window is rejected.
 
 The preview and timeline headers show the current selection, playback state,
 edit revision and the last emitted event so every interaction has visible

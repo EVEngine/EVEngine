@@ -16,6 +16,7 @@ persist combatEditor = {
     enemySkeleton = null, enemyPlayer = null, enemyParts = [], enemySkins = [],
     combatRuntime = null, combatTick = 0,
     abilityGrantId = 0, abilityActivationId = 0, abilityPhase = "ready", abilityCooldown = 0.0,
+    comboWindowOpen = false, comboInputTag = "", attackWas = false, comboCount = 0,
     playerSubject = "01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject = "11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth = 100.0, enemyHealth = 80.0, enemyReaction = "none",
@@ -38,6 +39,7 @@ local editorUiDefaults = {
     selectedTrack=0, selectedSplit=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
     enemySkeleton=null, enemyPlayer=null, enemyParts=[], enemySkins=[], combatRuntime=null, combatTick=0,
     abilityGrantId=0, abilityActivationId=0, abilityPhase="ready", abilityCooldown=0.0,
+    comboWindowOpen=false, comboInputTag="", attackWas=false, comboCount=0,
     playerSubject="01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject="11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth=100.0, enemyHealth=80.0, enemyReaction="none",
@@ -315,6 +317,33 @@ function activatePlaytestAbility() {
     return true;
 }
 
+function activateTriggeredAbility(eventTag) {
+    local matches = combatEditor.combatRuntime.matchingAbilities("fighter:player", eventTag);
+    if (!matches.ok || matches.value.len() == 0) {
+        combatEditor.status = matches.ok ? "No Ability matches " + eventTag : matches.status.summary;
+        return false;
+    }
+    local activated = combatEditor.combatRuntime.activateAbility(matches.value[0], combatEditor.combatTick);
+    if (!activated.ok) { combatEditor.status = activated.status.summary; return false; }
+    combatEditor.abilityActivationId = activated.value.activationId;
+    combatEditor.abilityPhase = "requested";
+    combatEditor.comboCount += 1;
+    requireResult(combatEditor.timeline.jumpRuntimeSeconds(0.0), "Replay combo montage");
+    combatEditor.status = "Combo accepted · " + eventTag + " · chain " + combatEditor.comboCount;
+    return true;
+}
+
+function hotReloadPlaytestAbility() {
+    if (combatEditor.combatRuntime == null || combatEditor.timeline == null) return true;
+    local snapshot = combatEditor.timeline.snapshotJson();
+    if (!snapshot.ok) { combatEditor.status = snapshot.status.summary; return false; }
+    local replaced = combatEditor.combatRuntime.replaceTimelineAbility(
+        "combat-ability:editor-light", snapshot.value, 0.25, "per-execution",
+        "exclusive-replaceable", "Ability.Combat.Attack.Light");
+    if (!replaced.ok) { combatEditor.status = replaced.status.summary; return false; }
+    return true;
+}
+
 function advanceCombatPlaytest(dt) {
     local x = 0.0; local z = 0.0;
     if (keyboard.isDown("a") || keyboard.isDown("A")) x -= 1.0;
@@ -348,8 +377,20 @@ function advanceCombatPlaytest(dt) {
 
 function routeRuntimeCombatEvents() {
     for (local i = 0; i < combatEditor.timeline.getRuntimeEventCount(); ++i) {
-        if (combatEditor.timeline.getRuntimeEventKind(i) != "notify" ||
-            combatEditor.timeline.getRuntimeEventType(i) != "combat:damage") continue;
+        local kind = combatEditor.timeline.getRuntimeEventKind(i);
+        local type = combatEditor.timeline.getRuntimeEventType(i);
+        if (type == "input:combo-window") {
+            if (kind == "state_enter") {
+                combatEditor.comboWindowOpen = true;
+                combatEditor.comboInputTag = combatEditor.timeline.getItemPayloadText(
+                    combatEditor.timeline.getRuntimeEventId(i), "input", "");
+            } else if (kind == "state_exit") {
+                combatEditor.comboWindowOpen = false;
+                combatEditor.comboInputTag = "";
+            }
+            continue;
+        }
+        if (kind != "notify" || type != "combat:damage") continue;
         local outcome = combatEditor.combatRuntime.applyTimelineDamage(
             combatEditor.playerSubject, combatEditor.enemySubject,
             combatEditor.timeline.getRuntimeEventPayloadJson(i));
@@ -428,6 +469,7 @@ function saveActiveDocument() {
         return;
     }
     combatEditor.assetCatalog.refresh(combatEditor.assetSearch);
+    if (!hotReloadPlaytestAbility()) return;
     combatEditor.status = "Saved and indexed · " + tab.resourceUri;
     combatEditor.closeArmed = -1; combatEditor.tabUiSignature = "";
 }
@@ -1330,6 +1372,14 @@ function updateKeyboardShortcuts() {
     if (save && !combatEditor.saveWas) {
         saveActiveDocument();
     }
+    local attack = keyboard.isDown("j") || keyboard.isDown("J");
+    if (attack && !combatEditor.attackWas) {
+        if (combatEditor.comboWindowOpen && combatEditor.comboInputTag != "")
+            activateTriggeredAbility(combatEditor.comboInputTag);
+        else
+            combatEditor.status = "Attack input ignored · outside authored combo window";
+    }
+    combatEditor.attackWas = attack;
     combatEditor.undoWas = undo; combatEditor.redoWas = redo; combatEditor.saveWas = save;
 }
 
@@ -1349,9 +1399,10 @@ function updateLabels() {
     ui.setText("preview-status", format("%s  %.3f / %.3f s",
         combatEditor.timeline.isPlaying() ? "PLAYING" : "PAUSED",
         combatEditor.timeline.getPreviewTime(), combatEditor.timeline.getDuration()));
-    ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs)",
+    ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs) · Combo %s x%d",
         combatEditor.playerHealth, combatEditor.enemyHealth, combatEditor.enemyReaction,
-        combatEditor.abilityPhase, combatEditor.abilityCooldown));
+        combatEditor.abilityPhase, combatEditor.abilityCooldown,
+        combatEditor.comboWindowOpen ? "OPEN [J]" : "closed", combatEditor.comboCount));
     ui.select("action.inspector"); ui.setText("action-uri", "Clip: Melee_1H_Attack_Chop");
     ui.setText("revision", "Revision " + combatEditor.clipEditor.getRevision());
     if (combatEditor.inspectorMode == "action") {

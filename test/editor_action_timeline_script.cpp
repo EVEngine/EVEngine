@@ -108,13 +108,23 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         timelineGrant <- combatRuntime.grantAbility("fighter:player", "combat-ability:authored-light");
         timelineMatches <- combatRuntime.matchingAbilities("fighter:player", "Ability.Combat.Attack.Light");
         timelineActivation <- combatRuntime.activateAbility(timelineGrant.value.grantId, 1);
+        actionEditor.setSectionSplit(0, 0.3);
+        actionEditor.setSectionSplit(1, 0.8);
+        replacementJson <- actionEditor.snapshotJson();
+        replacedTimelineAbility <- combatRuntime.replaceTimelineAbility(
+            "combat-ability:authored-light", replacementJson.value, 0.0,
+            "per-execution", "exclusive-replaceable", "Ability.Combat.Attack.Light");
         timelineAbilityAdvance <- combatRuntime.advanceAbilities(2, 1.0);
+        timelineActiveAfterAdvance <- timelineAbilityAdvance.value.activeCount;
+        replacementActivation <- combatRuntime.activateAbility(timelineGrant.value.grantId, 3);
+        replacementAdvance <- combatRuntime.advanceAbilities(4, 0.5);
         timelineAbilityAction <- timelineAbility.value.actionId;
         timelineAbilityDuration <- timelineAbility.value.durationSeconds;
         timelineAbilitySections <- timelineAbility.value.sectionCount;
         timelineMatchedGrant <- timelineMatches.value[0];
         timelineGrantedId <- timelineGrant.value.grantId;
-        timelineActiveAfterAdvance <- timelineAbilityAdvance.value.activeCount;
+        replacementAbilityAction <- replacedTimelineAbility.value.actionId;
+        replacementStillActive <- replacementAdvance.value.activeCount;
         actionEditor.removeSectionSplit(1);
         actionEditor.removeSectionSplit(0);
         instantTypeCount <- actionEditor.getInsertableTypeCount(false);
@@ -246,6 +256,11 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_EQ(vm.find("timelineMatchedGrant").toInt(), vm.find("timelineGrantedId").toInt());
     CHECK(vm.find("timelineActivation").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("timelineActiveAfterAdvance").toInt(), 0);
+    CHECK(vm.find("replacementJson").toTable().get<bool>("ok"));
+    CHECK(vm.find("replacedTimelineAbility").toTable().get<bool>("ok"));
+    CHECK(vm.find("replacementActivation").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("replacementAbilityAction").toString(), std::string("test:light-attack"));
+    CHECK_EQ(vm.find("replacementStillActive").toInt(), 1);
     CHECK(vm.find("instantTypeCount").toInt() > 0);
     CHECK(vm.find("stateTypeCount").toInt() > 0);
     CHECK(vm.find("damageTypeIndex").toInt() >= 0);
