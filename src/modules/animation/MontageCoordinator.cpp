@@ -201,18 +201,32 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t la
                                                                   "montage layer does not exist", "layer");
     Layer& layer = layers_[layerIndex];
     skeleton_.applyBindPose(layer.pose.get());
+    const Slot* first  = nullptr;
+    const Slot* second = nullptr;
     for (const Slot& slot : layer.slots) {
         if (!slot.player || slot.player->weight() <= 0.0) continue;
-        AnimPose base;
-        base.copyFrom(layer.pose.get());
-        if (layer.boneMask.empty()) {
-            layer.pose->blendFrom(&base, &slot.player->pose(), static_cast<float>(slot.player->weight()));
-            continue;
+        if (!first) first = &slot;
+        else second = &slot;
+    }
+    if (!first) return Result<std::reference_wrapper<AnimPose>>::success(std::ref(*layer.pose));
+
+    AnimPose composed;
+    composed.copyFrom(&first->player->pose());
+    if (second) {
+        const double total = first->player->weight() + second->player->weight();
+        if (total > 0.0) {
+            AnimPose base;
+            base.copyFrom(&composed);
+            composed.blendFrom(&base, &second->player->pose(),
+                               static_cast<float>(second->player->weight() / total));
         }
+    }
+    if (layer.boneMask.empty()) {
+        layer.pose->copyFrom(&composed);
+    } else {
         for (int bone = 0; bone < layer.pose->getBoneCount(); ++bone) {
-            const float weight = static_cast<float>(slot.player->weight()) *
-                                 layer.boneMask[static_cast<std::size_t>(bone)];
-            layer.pose->local(bone) = blendTRS(base.local(bone), slot.player->pose().local(bone), weight);
+            const float weight = layer.boneMask[static_cast<std::size_t>(bone)];
+            layer.pose->local(bone) = blendTRS(layer.pose->local(bone), composed.local(bone), weight);
         }
     }
     return Result<std::reference_wrapper<AnimPose>>::success(std::ref(*layer.pose));

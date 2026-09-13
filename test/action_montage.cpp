@@ -390,9 +390,15 @@ TEST_CASE("actionMontage.coordinatorPingPongsSlotsAndRejectsStaleHandles") {
     REQUIRE(second.ok());
     CHECK_NE(first.value().index(), second.value().index());
     REQUIRE(coordinator.resolve(first.value()).ok());
+    eve::action::ActionAdvance secondAdvance;
+    secondAdvance.id           = eve::action::ActionExecutionId(12);
+    secondAdvance.phase        = eve::action::ActionPhase::Active;
+    secondAdvance.totalElapsed = eve::Duration::fromSeconds(0.1).takeValue();
+    REQUIRE(coordinator.present(second.value(), secondAdvance, eve::SimulationTick(3)).ok());
     REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(), eve::SimulationTick(3)).ok());
     auto layerPose = coordinator.pose(0);
     REQUIRE(layerPose.ok());
+    CHECK(std::fabs(layerPose.value().get().local(0).px - 0.3f) < 1e-5f);
     REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(), eve::SimulationTick(4)).ok());
     auto stale = coordinator.resolve(first.value());
     CHECK(!stale.ok());

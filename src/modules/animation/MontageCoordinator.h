@@ -75,7 +75,7 @@ public:
                                                           IMontageRootMotionReceiver& receiver);
     /** @brief Clear the borrowed root-motion receiver from current and future slots of a layer. */
     [[nodiscard]] Result<void> clearLayerRootMotionReceiver(std::size_t layer);
-    /** @brief Borrow the composed layer pose; invalid layers return a structured failure. */
+    /** @brief Borrow the normalized full layer pose; invalid layers return a structured failure. */
     [[nodiscard]] Result<std::reference_wrapper<AnimPose>> pose(std::size_t layer);
     /** @brief Reclaim finished slots and invalidate their handles. */
     void collectFinished() noexcept;
