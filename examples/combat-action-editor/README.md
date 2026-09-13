@@ -38,6 +38,10 @@ Controls:
   track, Instant/State type, duration and payload; valid starter payloads make
   every built-in type immediately insertable at the playhead. Copy/paste uses
   the native deep-copy clipboard and pastes relative to the current playhead.
+  Ctrl/Shift-click adds blocks to the selection; the inspector reports the
+  complete selection range and aligns starts or ends. Dragging one selected
+  body moves the whole selection, while copy and delete operate on every
+  selected block in one undoable transaction.
   The **Track** tab selects and renames tracks, toggles mute/lock state, creates
   all eight semantic track kinds, deletes tracks, and deep-copies whole tracks
   across the open document tabs.

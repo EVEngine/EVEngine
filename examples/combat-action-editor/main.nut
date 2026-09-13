@@ -517,6 +517,11 @@ function panelInspector() {
         }
         ui.text("Action Block", "action-block-title"); ui.text("No Action Block selected", "action-block-id");
         ui.text("", "action-block-kind");
+        ui.text("Selection: 0 blocks", "action-selection-summary");
+        ui.beginToolbar("selection-tools");
+        ui.iconButton("align-left", "Align Starts", "align-selection-start");
+        ui.iconButton("align-right", "Align Ends", "align-selection-end");
+        ui.end();
         ui.checkbox("Enabled", true, "action-enabled");
         ui.text("Type", "action-type-label"); ui.inputText("##Type", "", "action-type");
         ui.setItemSize(300.0, 0.0);
@@ -562,6 +567,27 @@ function selectedActionIndex() {
     for (local i = 0; i < combatEditor.timeline.getItemCount(); ++i)
         if (combatEditor.timeline.getItemSelected(i)) return i;
     return -1;
+}
+
+function selectedActionCount() {
+    local count = 0;
+    for (local i = 0; i < combatEditor.timeline.getItemCount(); ++i)
+        if (combatEditor.timeline.getItemSelected(i)) count += 1;
+    return count;
+}
+
+function selectedActionRange() {
+    local start = combatEditor.timeline.getDuration(); local finish = 0.0; local found = false;
+    for (local i = 0; i < combatEditor.timeline.getItemCount(); ++i) {
+        if (!combatEditor.timeline.getItemSelected(i)) continue;
+        local id = combatEditor.timeline.getItemId(i);
+        local itemStart = combatEditor.timeline.getItemStart(id);
+        local itemEnd = combatEditor.timeline.getItemEnd(id);
+        if (itemStart < start) start = itemStart;
+        if (itemEnd > finish) finish = itemEnd;
+        found = true;
+    }
+    return found ? [start, finish] : [0.0, 0.0];
 }
 
 function animationSectionIndex(itemId) {
@@ -767,9 +793,15 @@ function handleUiEvents() {
             applyHistory(id == "track-undo" ? "undo" : "redo");
         } else if (id == "montage-undo" || id == "montage-redo") {
             applyHistory(id == "montage-undo" ? "undo" : "redo");
+        } else if (id == "align-selection-start" || id == "align-selection-end") {
+            local result = combatEditor.timeline.handleTimelineShortcut(
+                id == "align-selection-start" ? "Shift+[" : "Shift+]");
+            combatEditor.status = result.ok ? (id == "align-selection-start" ?
+                "Selected blocks aligned to earliest start" : "Selected blocks aligned to latest end") :
+                result.status.summary;
         } else if (id == "delete-action" && combatEditor.selectedActionId != "") {
-            local result = combatEditor.timeline.removeItem(combatEditor.selectedActionId);
-            combatEditor.status = result.ok ? "Action Block deleted" : result.status.summary;
+            local result = combatEditor.timeline.handleTimelineShortcut("Delete");
+            combatEditor.status = result.ok ? "Selected Action Blocks deleted" : result.status.summary;
             if (result.ok) combatEditor.selectedActionId = "";
         } else if (id == "copy-action") {
             local result = combatEditor.timeline.handleTimelineShortcut("Ctrl+C");
@@ -909,7 +941,9 @@ function updateTimelinePointer() {
         requireResult(combatEditor.timeline.zoomTimeline(pow(1.18, wheel), anchor), "Zoom timeline");
     }
     if (down && !combatEditor.mouseDown) {
-        combatEditor.timeline.pointerDown(x, y, false);
+        local additive = keyboard.isDown("lctrl") || keyboard.isDown("rctrl") || keyboard.isDown("ctrl") ||
+                         keyboard.isDown("lshift") || keyboard.isDown("rshift") || keyboard.isDown("shift");
+        combatEditor.timeline.pointerDown(x, y, additive);
         local selectedIndex = selectedActionIndex();
         if (selectedIndex >= 0) {
             combatEditor.selectedActionId = combatEditor.timeline.getItemId(selectedIndex);
@@ -988,6 +1022,12 @@ function updateLabels() {
     ui.setText("revision", "Revision " + combatEditor.clipEditor.getRevision());
     if (combatEditor.inspectorMode == "action") {
         local selected = selectedActionIndex();
+        local selectionCount = selectedActionCount();
+        local selectionRange = selectedActionRange();
+        ui.setText("action-selection-summary", selectionCount == 0 ? "Selection: 0 blocks" :
+            format("Selection: %d blocks · %.3f–%.3f s", selectionCount, selectionRange[0], selectionRange[1]));
+        ui.setEnabled("align-selection-start", selectionCount > 1);
+        ui.setEnabled("align-selection-end", selectionCount > 1);
         if (selected >= 0) {
             combatEditor.selectedActionId = combatEditor.timeline.getItemId(selected);
             combatEditor.selectedActionState = combatEditor.timeline.getItemState(selected);
@@ -1002,8 +1042,12 @@ function updateLabels() {
             ui.setChecked("action-enabled", combatEditor.timeline.getItemEnabled(combatEditor.selectedActionId));
             ui.setValue("action-start", combatEditor.timeline.getItemStart(combatEditor.selectedActionId));
             ui.setValue("action-end", combatEditor.timeline.getItemEnd(combatEditor.selectedActionId));
-            ui.setEnabled("action-start", true); ui.setEnabled("action-end", combatEditor.selectedActionState);
-            ui.setEnabled("action-end", combatEditor.selectedActionState || isSection);
+            local single = selectionCount == 1;
+            ui.setEnabled("action-start", single);
+            ui.setEnabled("action-end", single && (combatEditor.selectedActionState || isSection));
+            ui.setEnabled("action-enabled", single && !isSection);
+            ui.setEnabled("action-type", single && !isSection);
+            ui.setEnabled("action-payload", single && !isSection);
             ui.setVisible("action-type-label", !isSection); ui.setVisible("action-type", !isSection);
             ui.setVisible("action-payload-label", !isSection); ui.setVisible("action-payload", !isSection);
             ui.setVisible("action-enabled", !isSection);
