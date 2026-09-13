@@ -41,6 +41,10 @@ Controls:
   The **Track** tab selects and renames tracks, toggles mute/lock state, creates
   all eight semantic track kinds, deletes tracks, and deep-copies whole tracks
   across the open document tabs.
+  Selecting an animation section reveals its source URI, exact start/end,
+  blend-in duration, source trim range and blend curve. **New Section** creates
+  validated sections at explicit timeline ranges. Persisted UI state is migrated
+  when newer editor controls are introduced, preserving open document state.
   The **Joint** tab retains skeleton
   transform and key editing in the same compact side panel.
 - The Presentation lane includes a cubic master-volume parameter curve. Its

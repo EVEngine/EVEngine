@@ -628,6 +628,14 @@ local locked = actionEditor.getTrackLocked(1);
 actionEditor.copyTrack("combat-track:camera");
 local pastedTrack = actionEditor.pasteTrack();
 
+// Animation sections own clip selection, placement, source trim and blending.
+actionEditor.addAnimationSection("combat-section:strike", "asset://combat.glb#Strike",
+                                 0.25, 0.65, 0.08);
+actionEditor.editAnimationSection("combat-section:strike", 0.30, 0.70, 0.10,
+                                  "asset://combat.glb#StrikeHeavy");
+actionEditor.editAnimationSectionSource("combat-section:strike", 0.05, 0.40,
+                                        "ease-in-out");
+
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());

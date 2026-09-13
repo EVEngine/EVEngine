@@ -7,7 +7,8 @@ persist combatEditor = {
     workspace = null, timeline = null, camera = null, cameraController = null, skeleton = null,
     actionModule = null, assetCatalog = null, tabs = [], activeTab = 0, closeArmed = -1, tabUiSignature = "",
     assetPickerOpen = false, assetSearch = "",
-    inspectorMode = "joint", selectedActionId = "", selectedActionState = false, insertPanelOpen = false,
+    inspectorMode = "joint", selectedActionId = "", selectedActionState = false,
+    insertPanelOpen = false, newSectionOpen = false, nextSectionId = 0,
     insertTrack = 0, insertNotifyType = 0, insertStateType = 2,
     selectedTrack = 0, newTrackOpen = false, newTrackKind = 0, nextTrackId = 0,
     clipEditor = null, boneMouseDown = false,
@@ -22,6 +23,16 @@ persist combatEditor = {
     spaceWas = false, undoWas = false, redoWas = false, saveWas = false,
     frame = 0, screenshotSaved = false,
 };
+
+// Persisted editor state survives script revisions. Add newly introduced UI
+// fields explicitly so old workspaces migrate without discarding open tabs.
+local editorUiDefaults = {
+    insertPanelOpen=false, newSectionOpen=false, nextSectionId=0,
+    insertTrack=0, insertNotifyType=0, insertStateType=2,
+    selectedTrack=0, newTrackOpen=false, newTrackKind=0, nextTrackId=0,
+};
+foreach (key, value in editorUiDefaults)
+    if (!(key in combatEditor)) combatEditor[key] <- value;
 
 function ns(seconds) { return (seconds * 1000000000.0).tointeger(); }
 function clampf(value, minimum, maximum) { return value < minimum ? minimum : (value > maximum ? maximum : value); }
@@ -451,6 +462,20 @@ function panelInspector() {
         return;
     }
     if (combatEditor.inspectorMode == "action") {
+        if (combatEditor.newSectionOpen) {
+            local sectionStart = combatEditor.timeline.getPreviewTime();
+            local sectionEnd = clampf(sectionStart + 0.25, sectionStart, combatEditor.timeline.getDuration());
+            ui.text("New Animation Section", "new-section-title");
+            ui.inputText("Animation URI", combatEditor.timeline.getAnimationUri(), "new-section-uri");
+            ui.slider("Start", sectionStart, 0.0, combatEditor.timeline.getDuration(), "new-section-start");
+            ui.slider("End", sectionEnd, 0.0, combatEditor.timeline.getDuration(), "new-section-end");
+            ui.slider("Blend In", 0.10, 0.0, combatEditor.timeline.getDuration(), "new-section-blend");
+            ui.beginToolbar("new-section-actions"); ui.iconButton("plus", "Create", "add-section");
+            ui.iconButton("close", "Cancel", "cancel-new-section"); ui.end();
+            ui.textWrapped("Sections use exact timeline time and are rejected if they overlap or exceed the montage.",
+                           245.0, "new-section-help");
+            return;
+        }
         if (combatEditor.insertPanelOpen) {
             ui.text("New Block at Playhead", "insert-title");
             ui.combo("Track", trackChoices(), combatEditor.insertTrack, "insert-track");
@@ -478,7 +503,14 @@ function panelInspector() {
         ui.setItemSize(300.0, 0.0);
         ui.slider("Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-start");
         ui.slider("End", 0.0, 0.0, combatEditor.timeline.getDuration(), "action-end");
+        ui.text("Animation Section", "section-fields-title");
+        ui.inputText("Animation URI", "", "section-uri");
+        ui.slider("Blend In", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-blend");
+        ui.slider("Source Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-source-start");
+        ui.slider("Source End", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-source-end");
+        ui.combo("Blend Curve", "Linear\nEase In Out", 1, "section-curve");
         ui.beginToolbar("action-tools"); ui.iconButton("plus", "New Block", "new-action");
+        ui.iconButton("layers", "New Section", "new-section");
         ui.iconButton("copy", "Copy", "copy-action");
         ui.iconButton("clipboard", "Paste at playhead", "paste-action");
         ui.iconButton("trash", "Delete Block", "delete-action");
@@ -510,6 +542,15 @@ function selectedActionIndex() {
         if (combatEditor.timeline.getItemSelected(i)) return i;
     return -1;
 }
+
+function animationSectionIndex(itemId) {
+    for (local i = 0; i < combatEditor.timeline.getAnimationSectionCount(); ++i)
+        if (combatEditor.timeline.getAnimationSectionId(i) == itemId) return i;
+    return -1;
+}
+
+function blendCurveIndex(name) { return name == "linear" ? 0 : 1; }
+function blendCurveAt(index) { return index == 0 ? "linear" : "ease-in-out"; }
 
 function panelTimeline() {
     ui.beginToolbar("documents");
@@ -648,11 +689,24 @@ function handleUiEvents() {
         } else if (id == "inspect-joint" || id == "inspect-action" || id == "inspect-track") {
             combatEditor.inspectorMode = id == "inspect-action" ? "action" : (id == "inspect-track" ? "track" : "joint");
             combatEditor.insertPanelOpen = false;
+            combatEditor.newSectionOpen = false;
             combatEditor.newTrackOpen = false;
             mountInspectorPanel();
         } else if (id == "new-action" || id == "cancel-insert") {
             combatEditor.insertPanelOpen = id == "new-action";
+            combatEditor.newSectionOpen = false;
             mountInspectorPanel();
+        } else if (id == "new-section" || id == "cancel-new-section") {
+            combatEditor.newSectionOpen = id == "new-section";
+            combatEditor.insertPanelOpen = false;
+            mountInspectorPanel();
+        } else if (id == "add-section") {
+            ui.select("action.inspector"); combatEditor.nextSectionId += 1;
+            local result = combatEditor.timeline.addAnimationSection(
+                "editor-section:section-" + combatEditor.nextSectionId, ui.getValueText("new-section-uri"),
+                ui.getValue("new-section-start"), ui.getValue("new-section-end"), ui.getValue("new-section-blend"));
+            combatEditor.status = result.ok ? "Animation Section created" : result.status.summary;
+            if (result.ok) { combatEditor.newSectionOpen = false; mountInspectorPanel(); }
         } else if (id == "new-track" || id == "cancel-new-track") {
             combatEditor.newTrackOpen = id == "new-track";
             mountInspectorPanel();
@@ -766,6 +820,18 @@ function handleUiEvents() {
                 result = combatEditor.timeline.editItemDetails(combatEditor.selectedActionId,
                     ui.getValueText("action-type"), ui.getValueText("action-payload"));
                 combatEditor.status = result.ok ? "Action Block details committed" : result.status.summary;
+            } else if ((id == "section-uri" || id == "section-blend") &&
+                       animationSectionIndex(combatEditor.selectedActionId) >= 0) {
+                result = combatEditor.timeline.editAnimationSection(combatEditor.selectedActionId,
+                    ui.getValue("action-start"), ui.getValue("action-end"), ui.getValue("section-blend"),
+                    ui.getValueText("section-uri"));
+                combatEditor.status = result.ok ? "Animation Section committed" : result.status.summary;
+            } else if ((id == "section-source-start" || id == "section-source-end" || id == "section-curve") &&
+                       animationSectionIndex(combatEditor.selectedActionId) >= 0) {
+                result = combatEditor.timeline.editAnimationSectionSource(combatEditor.selectedActionId,
+                    ui.getValue("section-source-start"), ui.getValue("section-source-end"),
+                    blendCurveAt(ui.getValue("section-curve").tointeger()));
+                combatEditor.status = result.ok ? "Section source trim committed" : result.status.summary;
             } else if (id.find("position-") == 0) result = combatEditor.clipEditor.setSelectedPosition(
                 ui.getValue("position-x"), ui.getValue("position-y"), ui.getValue("position-z"));
             else if (id.find("rotation-") == 0) result = combatEditor.clipEditor.setSelectedRotation(
@@ -889,8 +955,10 @@ function updateLabels() {
             combatEditor.selectedActionId = combatEditor.timeline.getItemId(selected);
             combatEditor.selectedActionState = combatEditor.timeline.getItemState(selected);
             local selectedType = combatEditor.timeline.getItemType(selected);
+            local sectionIndex = animationSectionIndex(combatEditor.selectedActionId);
+            local isSection = sectionIndex >= 0;
             ui.setText("action-block-id", combatEditor.selectedActionId);
-            ui.setText("action-block-kind", selectedType == "animation:section" ? "Animation section" :
+            ui.setText("action-block-kind", isSection ? "Animation section" :
                        (combatEditor.selectedActionState ? "State window" : "Instant notify"));
             ui.setValueText("action-type", selectedType);
             ui.setValueText("action-payload", combatEditor.timeline.getItemPayloadJson(combatEditor.selectedActionId));
@@ -898,9 +966,20 @@ function updateLabels() {
             ui.setValue("action-start", combatEditor.timeline.getItemStart(combatEditor.selectedActionId));
             ui.setValue("action-end", combatEditor.timeline.getItemEnd(combatEditor.selectedActionId));
             ui.setEnabled("action-start", true); ui.setEnabled("action-end", combatEditor.selectedActionState);
-            ui.setEnabled("action-type", selectedType != "animation:section");
-            ui.setEnabled("action-payload", selectedType != "animation:section");
-            ui.setEnabled("action-enabled", selectedType != "animation:section");
+            ui.setEnabled("action-end", combatEditor.selectedActionState || isSection);
+            ui.setVisible("action-type-label", !isSection); ui.setVisible("action-type", !isSection);
+            ui.setVisible("action-payload-label", !isSection); ui.setVisible("action-payload", !isSection);
+            ui.setVisible("action-enabled", !isSection);
+            foreach (field in ["section-fields-title", "section-uri", "section-blend", "section-source-start",
+                               "section-source-end", "section-curve"]) ui.setVisible(field, isSection);
+            if (isSection) {
+                ui.setValueText("section-uri", combatEditor.timeline.getAnimationSectionUri(sectionIndex));
+                ui.setValue("section-blend", combatEditor.timeline.getAnimationSectionBlendIn(sectionIndex));
+                ui.setValue("section-source-start", combatEditor.timeline.getAnimationSectionSourceStart(sectionIndex));
+                ui.setValue("section-source-end", combatEditor.timeline.getAnimationSectionSourceEnd(sectionIndex));
+                ui.setValue("section-curve", blendCurveIndex(
+                    combatEditor.timeline.getAnimationSectionBlendCurve(sectionIndex)).tofloat());
+            }
             ui.setEnabled("delete-action", true);
         } else {
             combatEditor.selectedActionId = "";
@@ -909,6 +988,8 @@ function updateLabels() {
             ui.setEnabled("action-start", false); ui.setEnabled("action-end", false);
             ui.setEnabled("action-enabled", false); ui.setEnabled("action-type", false);
             ui.setEnabled("action-payload", false); ui.setEnabled("delete-action", false);
+            foreach (field in ["section-fields-title", "section-uri", "section-blend", "section-source-start",
+                               "section-source-end", "section-curve"]) ui.setVisible(field, false);
         }
         ui.setEnabled("action-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("action-redo", combatEditor.timeline.canRedo());

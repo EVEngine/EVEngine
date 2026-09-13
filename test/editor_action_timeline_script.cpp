@@ -105,6 +105,19 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         trackCountAfterPaste <- actionEditor.getTrackCount();
         removePastedTrack <- actionEditor.removeTrack(pasteTrackResult.value);
         trackCountAfterTrackCleanup <- actionEditor.getTrackCount();
+        addSectionResult <- actionEditor.addAnimationSection(
+            "test-section:attack", "asset://test/attack.glb#Attack", 0.0, 0.4, 0.1);
+        editSectionResult <- actionEditor.editAnimationSection(
+            "test-section:attack", 0.05, 0.45, 0.08, "asset://test/attack.glb#AttackEdited");
+        editSectionSourceResult <- actionEditor.editAnimationSectionSource(
+            "test-section:attack", 0.1, 0.3, "linear");
+        sectionUri <- actionEditor.getAnimationSectionUri(0);
+        sectionStart <- actionEditor.getAnimationSectionStart(0);
+        sectionBlend <- actionEditor.getAnimationSectionBlendIn(0);
+        sectionSourceStart <- actionEditor.getAnimationSectionSourceStart(0);
+        sectionCurve <- actionEditor.getAnimationSectionBlendCurve(0);
+        removeSectionResult <- actionEditor.removeAnimationSection("test-section:attack");
+        sectionCountAfterCleanup <- actionEditor.getAnimationSectionCount();
         invalidResult <- eve.ActionEditorModule().create("test.asset.invalid", {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:invalid", durationNs=-1,
@@ -169,6 +182,16 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK_EQ(vm.find("trackCountAfterPaste").toInt(), 2);
     CHECK(vm.find("removePastedTrack").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("trackCountAfterTrackCleanup").toInt(), 1);
+    CHECK(vm.find("addSectionResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("editSectionResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("editSectionSourceResult").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("sectionUri").toString(), std::string("asset://test/attack.glb#AttackEdited"));
+    CHECK(std::fabs(vm.find("sectionStart").toFloat() - 0.05f) < 1e-5f);
+    CHECK(std::fabs(vm.find("sectionBlend").toFloat() - 0.08f) < 1e-5f);
+    CHECK(std::fabs(vm.find("sectionSourceStart").toFloat() - 0.1f) < 1e-5f);
+    CHECK_EQ(vm.find("sectionCurve").toString(), std::string("linear"));
+    CHECK(vm.find("removeSectionResult").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("sectionCountAfterCleanup").toInt(), 0);
     CHECK(!vm.find("invalidResult").toTable().get<bool>("ok"));
 }
 
