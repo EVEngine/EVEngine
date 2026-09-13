@@ -76,6 +76,11 @@ eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
 eve_declare_module(NAME physics_action DIR physics/action LAYER 5
                    DEPS action physics
                    GROUP 3d web)
+# Optional map-backed steering provider. Keeping this bridge above both owners
+# lets headless/minimal combat builds omit the rendering-heavy map closure.
+eve_declare_module(NAME combat_navigation DIR combat/navigation LAYER 5
+                   DEPS combat map
+                   GROUP 2d 3d)
 eve_declare_module(NAME pixelworld_physics LAYER 5
                    DEPS pixelworld physics
                    GROUP 2d)

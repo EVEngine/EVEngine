@@ -16,8 +16,19 @@ locomotion.advance({tick, fixedDelta});
 ```
 
 方向不要求预先归一化，速度比例必须位于 `[0,1]`。玩家或 AI 的直接移动会清除该角色旧导航目标；
-`navigateTo` 则要求安装 `ICombatNavigationProvider`。内置 `DirectCombatNavigationProvider` 适合无障碍 arena，
-有地图阻挡的项目应实现同一接口并返回当前步 steering。
+`navigateTo` 则要求安装 `ICombatNavigationProvider`。内置 `DirectCombatNavigationProvider` 适合无障碍 arena。
+启用 2D/3D profile 时，可选 `combat_navigation` 卫星提供 `PathfinderCombatNavigationProvider`：
+
+```cpp
+map::Pathfinder pathfinder(width, height);
+auto navigation = combat::navigation::PathfinderCombatNavigationProvider::create(
+    pathfinder, {{worldOriginX, worldOriginZ}, cellSize});
+CombatLocomotionRuntime locomotion(*navigation.value());
+```
+
+它把世界 X/Z 投影到地图格，每步调用 canonical `Pathfinder` 取得下一 waypoint；不会缓存 Path，因此地图阻挡、
+TileLayer revision 或代价改变会在下一步重新规划。不可达目标返回 `NotFound`，并由 locomotion 的整帧事务语义保证
+所有角色都不发生部分移动。`Pathfinder` 必须比 provider 活得更久。
 
 整帧更新具有原子语义：运行时先复制全部状态，再依次取得导航 steering、限制加速度并积分，全部成功后才
 发布。Provider 失败、返回非有限值或非法比例时，没有任何角色移动。Provider 是借用对象，必须比运行时活得
