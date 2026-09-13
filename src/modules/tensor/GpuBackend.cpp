@@ -1,6 +1,7 @@
 #include "tensor/GpuBackend.h"
 #include "tensor/Graph.h"
 #include "tensor/KernelGen.h"
+#include "tensor/KernelGenWgsl.h"
 #include "tensor/Optimizer.h"
 
 #include "gpgpu/ComputeShader.h"
@@ -9,6 +10,7 @@
 #include "gpgpu/Sequence.h"
 
 #include "common/Exception.h"
+#include "common/config.h"
 
 #include <algorithm>
 #include <chrono>
@@ -25,7 +27,35 @@ namespace {
 constexpr int kLocalSize = 256;
 constexpr int kAutotuneIters = 5;
 
-const char *kReduceGlsl = R"(#version 450
+#ifdef EVENGINE_WEBGPU
+const char *kReduceSource = R"(
+@group(0) @binding(0) var<storage, read_write> input: array<f32>;
+@group(0) @binding(1) var<storage, read_write> partial: array<f32>;
+struct Params { data: array<vec4<f32>, 8>, }
+@group(0) @binding(8) var<uniform> pc: Params;
+var<workgroup> scratch: array<f32, 256>;
+@compute @workgroup_size(256)
+fn main(@builtin(local_invocation_id) lid: vec3<u32>,
+        @builtin(global_invocation_id) gid: vec3<u32>,
+        @builtin(workgroup_id) wid: vec3<u32>) {
+    let size = u32(pc.data[0].x + 0.5);
+    let op = u32(pc.data[0].y + 0.5);
+    scratch[lid.x] = select(select(-3.402823e38f, 3.402823e38f, op == 1u), 0.0f, op == 0u);
+    if (gid.x < size) { scratch[lid.x] = input[gid.x]; }
+    workgroupBarrier();
+    for (var step = 128u; step > 0u; step >>= 1u) {
+        if (lid.x < step) {
+            if (op == 0u) { scratch[lid.x] += scratch[lid.x + step]; }
+            else if (op == 1u) { scratch[lid.x] = min(scratch[lid.x], scratch[lid.x + step]); }
+            else { scratch[lid.x] = max(scratch[lid.x], scratch[lid.x + step]); }
+        }
+        workgroupBarrier();
+    }
+    if (lid.x == 0u) { partial[wid.x] = scratch[0]; }
+}
+)";
+#else
+const char *kReduceSource = R"(#version 450
 layout(local_size_x = 256) in;
 layout(set = 0, binding = 0) readonly buffer In { float a[]; };
 layout(set = 0, binding = 1) writeonly buffer Out { float partial[]; };
@@ -51,6 +81,8 @@ void main() {
 }
 )";
 
+#endif
+
 struct ReduceKernels {
     gpgpu::Gpgpu *gpgpu = nullptr;
     gpgpu::ComputeShader *reduce = nullptr;
@@ -70,7 +102,7 @@ ReduceKernels *getReduceKernels() {
         }
         auto *k = new ReduceKernels();
         k->gpgpu = gp;
-        k->reduce = gp->newShader(kReduceGlsl);
+        k->reduce = gp->newShader(kReduceSource);
         kernels = k;
         return kernels;
     } catch (...) {
@@ -81,11 +113,29 @@ ReduceKernels *getReduceKernels() {
 
 int groupsFor(int count) { return (count + kLocalSize - 1) / kLocalSize; }
 
+Result<KernelSpec> backendKernel(const Graph &graph, const FusedGroup &group,
+                                 KernelVariant variant = KernelVariant::Default) {
+#ifdef EVENGINE_WEBGPU
+    return generateWgslKernel(graph, group, variant);
+#else
+    KernelSpec spec;
+    const bool generated = variant == KernelVariant::TiledMatMul ? generateMatMulVariant(graph, group, true, spec)
+                                                                 : generateKernel(graph, group, spec);
+    if (!generated)
+        return Result<KernelSpec>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "Tensor GLSL kernel generation failed", "tensor.kernel"));
+    return Result<KernelSpec>::success(std::move(spec));
+#endif
+}
+
 /** Bind a single-pass kernel to its real input/output arena buffers. */
 void bindKernel(gpgpu::ComputeShader *shader, const KernelSpec &spec,
                 const std::vector<gpgpu::GpuBuffer *> &inputs, gpgpu::GpuBuffer *output) {
     for (int i = 0; i < spec.inputCount; ++i)
-        shader->bindBuffer(i, inputs[static_cast<size_t>(i)]);
+        shader->bindBuffer(i,
+                           spec.inputRepresentatives.empty() || spec.inputRepresentatives[static_cast<size_t>(i)] == i
+                               ? inputs[static_cast<size_t>(i)]
+                               : nullptr);
     shader->bindBuffer(spec.inputCount, output);
 }
 
@@ -140,13 +190,19 @@ struct GpuProgram::Impl {
         if (g.spec.twoPass) {
             auto *p1 = g.pass1.get();
             for (int i = 0; i < g.spec.inputsReadPass1; ++i)
-                p1->bindBuffer(i, g.inputs[static_cast<size_t>(i)]);
+                p1->bindBuffer(
+                    i, g.spec.inputRepresentatives.empty() || g.spec.inputRepresentatives[static_cast<size_t>(i)] == i
+                           ? g.inputs[static_cast<size_t>(i)]
+                           : nullptr);
             for (int s = 0; s < g.spec.statsCount; ++s)
                 p1->bindBuffer(g.spec.inputsReadPass1 + s, g.stats[static_cast<size_t>(s)]);
         }
         auto *p2 = g.pass2.get();
         for (int i = 0; i < g.spec.inputCount; ++i)
-            p2->bindBuffer(i, g.inputs[static_cast<size_t>(i)]);
+            p2->bindBuffer(
+                i, g.spec.inputRepresentatives.empty() || g.spec.inputRepresentatives[static_cast<size_t>(i)] == i
+                       ? g.inputs[static_cast<size_t>(i)]
+                       : nullptr);
         if (g.spec.scalesBinding >= 0 && g.qScales)
             p2->bindBuffer(g.spec.scalesBinding, g.qScales);
         const int outBinding = g.spec.outputBinding >= 0 ? g.spec.outputBinding
@@ -208,7 +264,14 @@ GpuProgram *GpuProgram::tryBuild(const Graph &graph, const OptimizedGraph &opt, 
                 impl.placeholderSizes[static_cast<size_t>(slot)] = nd.size;
             } else if (nd.type == OpType::Const) {
                 if (!nd.constBytes.empty()) {
-                    buf->uploadBytes(nd.constBytes.data(), nd.constBytes.size());
+                    // Packed weights may end mid-word; WebGPU transfers require four-byte sizes.
+                    if (nd.constBytes.size() % 4 != 0) {
+                        auto bytes = nd.constBytes;
+                        bytes.resize((bytes.size() + 3) & ~size_t(3), 0);
+                        buf->uploadBytes(bytes.data(), bytes.size());
+                    } else {
+                        buf->uploadBytes(nd.constBytes.data(), nd.constBytes.size());
+                    }
                     if (!nd.constScales.empty()) {
                         auto *sb = impl.alloc(int(nd.constScales.size()) * int(sizeof(float)));
                         sb->uploadBytes(nd.constScales.data(),
@@ -244,13 +307,14 @@ GpuProgram *GpuProgram::tryBuild(const Graph &graph, const OptimizedGraph &opt, 
             KernelSpec spec;
             if (grp.kind == GroupKind::MatMul) {
                 const GraphNode &mm = graph.node(grp.nodes.front());
-                KernelSpec naive;
-                if (!generateMatMulVariant(graph, grp, false, naive))
-                    throw eve::Exception("GpuProgram: matmul codegen failed");
+                auto             naiveResult = backendKernel(graph, grp);
+                if (!naiveResult) throw eve::Exception("GpuProgram: matmul codegen failed");
+                KernelSpec naive = std::move(naiveResult).value();
                 if (mm.rank == 2) {
-                    KernelSpec tiled;
+                    auto tiledResult = backendKernel(graph, grp, KernelVariant::TiledMatMul);
                     std::unique_ptr<gpgpu::ComputeShader> naiveShader, tiledShader;
-                    if (generateMatMulVariant(graph, grp, true, tiled)) {
+                    if (tiledResult) {
+                        KernelSpec tiled = std::move(tiledResult).value();
                         naiveShader.reset(gp->newShader(naive.pass2));
                         tiledShader.reset(gp->newShader(tiled.pass2));
                         try {
@@ -284,8 +348,9 @@ GpuProgram *GpuProgram::tryBuild(const Graph &graph, const OptimizedGraph &opt, 
                     rt.pass2.reset(gp->newShader(naive.pass2));
                 }
             } else {
-                if (!generateKernel(graph, grp, spec))
-                    throw eve::Exception("GpuProgram: kernel codegen failed");
+                auto result = backendKernel(graph, grp);
+                if (!result) throw eve::Exception("GpuProgram: kernel codegen failed");
+                spec = std::move(result).value();
                 rt.pass2.reset(gp->newShader(spec.pass2));
                 if (spec.twoPass) rt.pass1.reset(gp->newShader(spec.pass1));
             }

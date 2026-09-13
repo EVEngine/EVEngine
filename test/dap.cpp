@@ -842,18 +842,27 @@ TEST_CASE("devtools.dap.caughtErrorPausesAtReportSite") {
     REQUIRE(client.expectResponse("initialize"));
     client.sendRequest("launch", "{\"program\":\".\"}");
     REQUIRE(client.expectResponse("launch"));
-    client.sendRequest("setExceptionBreakpoints",
-                       "{\"filters\":[\"script_error\"]}");
+    client.sendRequest("setExceptionBreakpoints", "{\"filters\":[\"script_error\"]}");
     REQUIRE(client.expectResponse("setExceptionBreakpoints"));
     client.sendRequest("configurationDone");
     REQUIRE(client.expectResponse("configurationDone"));
 
     client.clearEvents();
-    go = true;
+    go           = true;
     auto stopped = client.expectEvent("stopped", 8000);
     REQUIRE(stopped);
     auto body = stopped->getObject("body");
     REQUIRE(body);
+    // The VM may report the caught throw before the explicit reportError call.
+    // Resume that intermediate stop and validate the report site that follows.
+    if (body->optValue<int>("line", -1) != 8) {
+        client.sendRequest("continue", "{\"threadId\":1}");
+        REQUIRE(client.expectResponse("continue"));
+        stopped = client.expectEvent("stopped", 8000);
+        REQUIRE(stopped);
+        body = stopped->getObject("body");
+        REQUIRE(body);
+    }
     CHECK_EQ(body->optValue<std::string>("reason", ""), std::string("exception"));
     auto srcObj = body->getObject("source");
     REQUIRE(srcObj);
@@ -869,19 +878,17 @@ TEST_CASE("devtools.dap.caughtErrorPausesAtReportSite") {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         dap.poll();
     }
-    // If the script thread is still blocked in waitWhilePaused, force-resume
-    // before teardown so dap.stop()/detach cannot race a paused VM (SEGFAULT).
-    if (!scriptDone.load() && dbg.isPaused()) dbg.resume();
-    for (int i = 0; i < 100 && !scriptDone.load(); ++i) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        dap.poll();
+    if (!scriptDone.load()) {
+        // Never detach a thread that captures this test's stack. Release a
+        // possible late debugger stop and wait for deterministic teardown.
+        dbg.setBreakOnError(false);
+        if (dbg.isPaused()) dbg.resume();
+        for (int i = 0; i < 200 && !scriptDone.load(); ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            dap.poll();
+        }
     }
-    if (scriptThread.joinable()) {
-        if (scriptDone.load())
-            scriptThread.join();
-        else
-            scriptThread.detach();
-    }
+    if (scriptThread.joinable()) scriptThread.join();
     CHECK(scriptDone.load());
     CHECK(!dbg.isPaused());
     dbg.setBreakOnError(false);

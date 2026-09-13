@@ -61,11 +61,6 @@ namespace eve::graphics::webgpu {
 
 namespace {
 
-// Forward declaration for the readback helper (defined in the Readback section).
-bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queue &queue,
-                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba,
-                      int bytesPerPixel = 4);
-
 // A shared default sampler used when no texture is provided.
 wgpu::Sampler createLinearSampler(wgpu::Device &dev) {
     WGPUSamplerDescriptor d{};
@@ -290,7 +285,11 @@ void Graphics::configureSurface(int width, int height) {
     cfg.width = static_cast<uint32_t>(width);
     cfg.height = static_cast<uint32_t>(height);
     cfg.format = surfaceFormat;
-    cfg.usage = WGPUTextureUsage_RenderAttachment;
+    WGPUSurfaceCapabilities caps{};
+    surfaceCanCopySrc = wgpuSurfaceGetCapabilities(surface.Get(), adapter.Get(), &caps) == WGPUStatus_Success &&
+                        (caps.usages & WGPUTextureUsage_CopySrc) != 0;
+    wgpuSurfaceCapabilitiesFreeMembers(caps);
+    cfg.usage           = WGPUTextureUsage_RenderAttachment | (surfaceCanCopySrc ? WGPUTextureUsage_CopySrc : 0);
     cfg.viewFormatCount = 0;
     cfg.viewFormats = nullptr;
     // emdawnwebgpu only accepts Fifo / Undefined present modes.
@@ -683,17 +682,6 @@ wgpu::PipelineLayout Graphics::makeVoxelPipelineLayout() {
 
 namespace {
 
-// Returns a RAII-held module: the caller must keep it alive across
-// CreateRenderPipeline. Returning a raw WGPUShaderModule would let the
-// temporary wgpu::ShaderModule destructor Release() the handle, dropping it
-// from emdawnwebgpu's jsObjects before the pipeline can reference it.
-wgpu::ShaderModule makeWgslModule(wgpu::Device &dev, const char *wgsl) {
-    wgpu::ShaderSourceWGSL wgslDesc{};
-    wgslDesc.code = wgsl;
-    wgpu::ShaderModuleDescriptor desc{};
-    desc.nextInChain = &wgslDesc;
-    return dev.CreateShaderModule(&desc);
-}
 
 // Builds a WGSL shader-module descriptor (the chained WGPUShaderSourceWGSL is
 // static so its chain pointer stays valid). The returned descriptor is a value
@@ -1369,99 +1357,6 @@ void Graphics::createDecalPipeline() {
         device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pd));
 }
 
-void Graphics::createVoxelPipelines() {
-    voxelSetLayout = makeVoxelBindGroupLayout();
-    voxelPipelineLayout = makeVoxelPipelineLayout();
-
-    WGPUVertexAttribute attrs[1] = {};
-    attrs[0].format = WGPUVertexFormat_Float32x2;  // corner
-    attrs[0].offset = 0;
-    attrs[0].shaderLocation = 0;
-    WGPUVertexBufferLayout cornerVb{};
-    cornerVb.arrayStride = 8;
-    cornerVb.stepMode = WGPUVertexStepMode_Vertex;
-    cornerVb.attributeCount = 1;
-    cornerVb.attributes = attrs;
-
-    WGPUVertexAttribute packedAttr{};
-    packedAttr.format = WGPUVertexFormat_Uint32;  // packed rect word
-    packedAttr.offset = 0;
-    packedAttr.shaderLocation = 1;
-    WGPUVertexBufferLayout packedVb{};
-    packedVb.arrayStride = 4;
-    packedVb.stepMode = WGPUVertexStepMode_Instance;
-    packedVb.attributeCount = 1;
-    packedVb.attributes = &packedAttr;
-
-    WGPUVertexAttribute aoAttr{};
-    aoAttr.format = WGPUVertexFormat_Uint32;  // 2 bits per corner
-    aoAttr.offset = 0;
-    aoAttr.shaderLocation = 2;
-    WGPUVertexBufferLayout aoVb{};
-    aoVb.arrayStride = 4;
-    aoVb.stepMode = WGPUVertexStepMode_Instance;
-    aoVb.attributeCount = 1;
-    aoVb.attributes = &aoAttr;
-
-    WGPUVertexBufferLayout vbs[3] = {cornerVb, packedVb, aoVb};
-
-    WGPUDepthStencilState ds{};
-    ds.format = WGPUTextureFormat_Depth32Float;
-    ds.depthWriteEnabled = WGPUOptionalBool_True;
-    ds.depthCompare = WGPUCompareFunction_Less;
-    ds.stencilReadMask = 0;
-    ds.stencilWriteMask = 0;
-
-    WGPUColorTargetState target{};
-    target.format = sceneColorFormat;
-    target.blend = nullptr;
-    target.writeMask = WGPUColorWriteMask_All;
-
-    WGPURenderPipelineDescriptor pd{};
-    pd.label = sv("eve_voxel");
-    pd.layout = voxelPipelineLayout.Get();
-    wgpu::ShaderModule vertModule = makeWgslModule(device, kVoxelRectVertWgsl);
-    wgpu::ShaderModule fragModule = makeWgslModule(device, kVoxelRectFragWgsl);
-    pd.vertex.module = vertModule.Get();
-    pd.vertex.entryPoint = sv("vs_main");
-    pd.vertex.bufferCount = 3;
-    pd.vertex.buffers = vbs;
-    WGPUFragmentState fs{};
-    fs.module = fragModule.Get();
-    fs.entryPoint = sv("fs_main");
-    fs.targetCount = 1;
-    fs.targets = &target;
-    pd.fragment = &fs;
-    pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
-    pd.primitive.frontFace = WGPUFrontFace_CCW;
-    pd.primitive.cullMode = WGPUCullMode_None;
-    pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
-    pd.depthStencil = &ds;
-    pd.multisample.count = sceneColorSamples;
-    // Zero-init would leave mask=0, which discards every fragment
-    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
-    pd.multisample.mask = 0xFFFFFFFFu;
-    voxelRectPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
-
-    // Unit quad for instanced voxel faces (2 triangles, corner + packed uv slot).
-    float quad[8] = {0, 0, 1, 0, 1, 1, 0, 1};
-    WGPUBufferDescriptor bd{};
-    bd.label = sv("eve_voxel_quad");
-    bd.size = sizeof(quad);
-    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.mappedAtCreation = false;
-    voxelUnitQuadVerts = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-    queue.WriteBuffer(voxelUnitQuadVerts, 0, quad, sizeof(quad));
-
-    uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
-    WGPUBufferDescriptor ibd{};
-    ibd.label = sv("eve_voxel_quad_idx");
-    ibd.size = sizeof(indices);
-    ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-    ibd.mappedAtCreation = false;
-    voxelUnitQuadIndices = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
-    queue.WriteBuffer(voxelUnitQuadIndices, 0, indices, sizeof(indices));
-}
 
 // ---------------------------------------------------------------------------
 // SSAO (screen-space ambient occlusion)
@@ -3545,7 +3440,7 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch &lb, int view
 void Graphics::begin3DFrame() {
     if (!initialized || !device) return;
     frame3DStarted = true;
-    frameHad3DThisFrame = false;
+    frameHad3DThisFrame = true;
     // Match the desktop (Vulkan) backend: had3DThisFrame() must return true
     // once a 3D frame begins, or RenderSystem3D::render bails out before any
     // mesh is drawn.
@@ -3972,78 +3867,6 @@ void Graphics::endDecalPass() {
 // Voxel
 // ---------------------------------------------------------------------------
 
-void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
-                                      float originY, float originZ, const std::string &faceDir,
-                                      Texture *atlas, int tilesPerRow, const uint32_t *ao) {
-    if (!device || count <= 0 || !packed) return;
-    if (!voxelUnitQuadVerts) return;
-    frameHad3DThisFrame = true;
-    frameHad3D = true;
-
-    int face = -1;
-    if (faceDir == "posX" || faceDir == "+x") face = 0;
-    else if (faceDir == "negX" || faceDir == "-x") face = 1;
-    else if (faceDir == "posY" || faceDir == "+y") face = 2;
-    else if (faceDir == "negY" || faceDir == "-y") face = 3;
-    else if (faceDir == "posZ" || faceDir == "+z") face = 4;
-    else if (faceDir == "negZ" || faceDir == "-z") face = 5;
-    else
-        throw Exception("drawVoxelFaceInstances: unknown faceDir '%s'", faceDir.c_str());
-
-    VoxelDraw d;
-    d.count = uint32_t(count);
-    d.atlas = gpuForTextureOrWhite(atlas);
-    d.viewProj = mesh3dViewProj;
-    d.chunkOrigin = glm::vec4(originX, originY, originZ, float(face));
-    d.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
-    d.tint = glm::vec4(1.f);
-    d.instanceBufferOffset = 0;
-    d.pushUboOffset = 0;
-
-    // Upload packed instances + the parallel AO word (2 bits per corner) into
-    // the per-frame instance arenas.
-    auto &arena = voxelInstanceArena;
-    auto &aoArena = voxelAoArena;
-    auto ensureArena = [&](VertexArena &a) {
-        if (!a.buffer) {
-            WGPUBufferDescriptor bd{};
-            bd.label = sv("eve_voxel_instances");
-            bd.size = 1u << 20;
-            bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-            bd.mappedAtCreation = false;
-            a.buffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-            a.capacity = 1u << 20;
-        }
-        uint64_t need = uint64_t(count) * 4;
-        if (a.used + need > a.capacity) {
-            uint64_t cap = a.capacity * 2;
-            WGPUBufferDescriptor bd{};
-            bd.label = sv("eve_voxel_instances");
-            bd.size = cap;
-            bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-            bd.mappedAtCreation = false;
-            a.buffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-            a.capacity = cap;
-            a.used = 0;
-        }
-    };
-    ensureArena(arena);
-    ensureArena(aoArena);
-    const uint32_t defaultAO = 0xFFu;  // all four corners AO=3 (full bright)
-    std::vector<uint32_t> aoDefaults;
-    if (!ao) {
-        aoDefaults.assign(size_t(count), defaultAO);
-        ao = aoDefaults.data();
-    }
-    const uint64_t need = uint64_t(count) * 4;
-    d.instanceBufferOffset = static_cast<uint32_t>(arena.used);
-    queue.WriteBuffer(arena.buffer, arena.used, packed, need);
-    arena.used += need;
-    d.aoBufferOffset = static_cast<uint32_t>(aoArena.used);
-    queue.WriteBuffer(aoArena.buffer, aoArena.used, ao, need);
-    aoArena.used += need;
-    voxelDraws.push_back(d);
-}
 
 // ---------------------------------------------------------------------------
 // Scene color / shadow / gbuffer resources
@@ -4807,53 +4630,6 @@ void Graphics::submitPendingDeferredPasses() {
     queue.Submit(1, &command);
 }
 
-void Graphics::flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat format) {
-    if (voxelDraws.empty()) return;
-    if (!voxelRectPipeline) createVoxelPipelines();
-    auto &uboArena = currentUboArena();
-    ensureUboArena(uboArena, uboArena.used + voxelDraws.size() * 512);
-    pass.SetPipeline(voxelRectPipeline);
-
-    for (auto &d : voxelDraws) {
-        uint32_t offset = uboArena.alloc(256, 256);
-        struct VoxelPC {
-            glm::mat4 viewProj;
-            glm::vec4 chunkOrigin;
-            glm::vec4 atlasInfo;
-            glm::vec4 tint;
-        } pc;
-        pc.viewProj = d.viewProj;
-        pc.chunkOrigin = d.chunkOrigin;
-        pc.atlasInfo = d.atlasInfo;
-        pc.tint = d.tint;
-        queue.WriteBuffer(uboArena.buffer, offset, &pc, sizeof(pc));
-
-        WGPUBindGroupEntry entries[3]{};
-        entries[0].binding = 0;
-        entries[0].buffer = uboArena.buffer.Get();
-        entries[0].size = sizeof(pc);
-        entries[1].binding = 1;
-        entries[1].textureView = d.atlas->view.Get();
-        entries[2].binding = 2;
-        entries[2].sampler = d.atlas->sampler.Get();
-        WGPUBindGroupDescriptor bgd{};
-        bgd.layout = voxelSetLayout.Get();
-        bgd.entryCount = 3;
-        bgd.entries = entries;
-        wgpu::BindGroup bg = device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&bgd));
-        uint32_t offsets[1] = {offset};
-        pass.SetBindGroup(0, bg, 1, offsets);
-
-        pass.SetVertexBuffer(0, voxelUnitQuadVerts, 0, 32);
-        pass.SetVertexBuffer(1, voxelInstanceArena.buffer, d.instanceBufferOffset,
-                             uint64_t(d.count) * 4);
-        pass.SetVertexBuffer(2, voxelAoArena.buffer, d.aoBufferOffset,
-                             uint64_t(d.count) * 4);
-        pass.SetIndexBuffer(voxelUnitQuadIndices, wgpu::IndexFormat::Uint32, 0, 24);
-        pass.DrawIndexed(6, d.count, 0, 0, 0);
-    }
-    voxelDraws.clear();
-}
 
 // ---------------------------------------------------------------------------
 // Present
@@ -4894,16 +4670,6 @@ void Graphics::popValidationScope() {
 #endif
 }
 
-struct Graphics::PendingReadback {
-    std::string path;
-    int width = 0;
-    int height = 0;
-    uint64_t bytesPerRow = 0;
-    wgpu::Buffer dst;
-    bool mapped = false;
-    bool done = false;
-    bool ok = false;
-};
 
 void Graphics::present() {
     ensureFileTexturesReady();
@@ -5277,6 +5043,7 @@ void Graphics::present() {
         pass.End();
     }
 
+    if (screenReadbackEnabled) recordPresentedReadback(encoder, surfaceTex);
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
     // emdawnwebgpu implements the GPU on the JS main thread: queued commands
@@ -5382,380 +5149,6 @@ void Graphics::clear(std::optional<Color> color, std::optional<int> /*stencil*/,
     if (auto *canvas = dynamic_cast<OffscreenCanvas *>(activeCanvas)) {
         canvas->clear(clearColor, std::nullopt, std::nullopt);
     }
-}
-
-Color Graphics::getPixel(int x, int y) {
-    if (activeCanvas) return getPixelImpl(static_cast<OffscreenCanvas *>(activeCanvas), x, y);
-    if (!sceneColorSlots.empty()) {
-        return getPixelImpl(nullptr, x, y);
-    }
-    return clearColor;
-}
-
-image::ImageData *Graphics::newImageData() {
-    if (activeCanvas) return newImageDataImpl(static_cast<OffscreenCanvas *>(activeCanvas));
-    if (!sceneColorSlots.empty()) return newImageDataImpl(nullptr);
-    return new image::ImageData(1, 1, "RGBA8");
-}
-
-// ---------------------------------------------------------------------------
-// Readback
-// ---------------------------------------------------------------------------
-
-namespace {
-
-bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queue &queue,
-                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba,
-                      int bytesPerPixel) {
-    if (!src) return false;
-    uint64_t bytesPerRow = static_cast<uint64_t>(width) * bytesPerPixel;
-    bytesPerRow = (bytesPerRow + 255) / 256 * 256;  // copy alignment 256
-    uint64_t size = bytesPerRow * height;
-
-    WGPUBufferDescriptor bd{};
-    bd.label = sv("eve_readback");
-    bd.size = size;
-    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
-    bd.mappedAtCreation = false;
-    wgpu::Buffer dst = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-
-    wgpu::CommandEncoder enc = device.CreateCommandEncoder();
-    WGPUTexelCopyTextureInfo from{};
-    from.texture = src.Get();
-    from.mipLevel = 0;
-    from.aspect = WGPUTextureAspect_All;
-    from.origin = {0, 0, 0};
-    WGPUTexelCopyBufferInfo to{};
-    to.buffer = dst.Get();
-    to.layout.offset = 0;
-    to.layout.bytesPerRow  = static_cast<uint32_t>(bytesPerRow);
-    to.layout.rowsPerImage = static_cast<uint32_t>(height);
-    WGPUExtent3D extent{static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
-    enc.CopyTextureToBuffer(reinterpret_cast<const wgpu::TexelCopyTextureInfo*>(&from),
-                            reinterpret_cast<const wgpu::TexelCopyBufferInfo*>(&to),
-                            reinterpret_cast<const wgpu::Extent3D*>(&extent));
-    wgpu::CommandBuffer cmd = enc.Finish();
-    queue.Submit(1, &cmd);
-
-    struct MapState {
-        bool               done    = false;
-        bool               success = false;
-        WGPUMapAsyncStatus status  = WGPUMapAsyncStatus_Force32;
-    } map;
-    WGPUBufferMapCallbackInfo cbInfo{};
-#if defined(__EMSCRIPTEN__)
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-#else
-    cbInfo.mode = WGPUCallbackMode_WaitAnyOnly;
-#endif
-    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void* userdata1, void* /*userdata2*/) {
-        auto* state    = static_cast<MapState*>(userdata1);
-        state->status  = status;
-        state->success = status == WGPUMapAsyncStatus_Success;
-        state->done    = true;
-    };
-    cbInfo.userdata1  = &map;
-    WGPUFuture future = wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, size, cbInfo);
-
-#if defined(__EMSCRIPTEN__)
-    int guard = 0;
-    while (!map.done && guard < 2000) {
-        emscripten_sleep(0);
-        wgpuInstanceProcessEvents(instance.Get());
-        ++guard;
-    }
-#else
-    WGPUFutureWaitInfo waitInfo{};
-    waitInfo.future = future;
-    (void)wgpuInstanceWaitAny(instance.Get(), 1, &waitInfo, UINT64_MAX);
-#endif
-    if (!map.success) {
-        std::fprintf(stderr, "[webgpu] texture readback map failed: status=%d done=%d\n", int(map.status),
-                     map.done ? 1 : 0);
-        return false;
-    }
-
-    const uint8_t* data = static_cast<const uint8_t*>(dst.GetConstMappedRange(0, size));
-    if (!data) return false;
-    const size_t tightRowBytes = static_cast<size_t>(width) * bytesPerPixel;
-    outRgba.resize(tightRowBytes * height);
-    for (int y = 0; y < height; ++y)
-        std::memcpy(outRgba.data() + size_t(y) * tightRowBytes,
-                    data + size_t(y) * bytesPerRow, tightRowBytes);
-    dst.Unmap();
-    return true;
-}
-
-float decodeHalf(uint16_t value) {
-    const uint32_t sign = uint32_t(value & 0x8000u) << 16u;
-    uint32_t exponent = (value >> 10u) & 0x1fu;
-    uint32_t mantissa = value & 0x03ffu;
-    uint32_t bits = 0;
-    if (exponent == 0) {
-        if (mantissa == 0) {
-            bits = sign;
-        } else {
-            exponent = 1;
-            while ((mantissa & 0x0400u) == 0) {
-                mantissa <<= 1u;
-                --exponent;
-            }
-            mantissa &= 0x03ffu;
-            bits = sign | ((exponent + 112u) << 23u) | (mantissa << 13u);
-        }
-    } else if (exponent == 31u) {
-        bits = sign | 0x7f800000u | (mantissa << 13u);
-    } else {
-        bits = sign | ((exponent + 112u) << 23u) | (mantissa << 13u);
-    }
-    float result = 0.f;
-    std::memcpy(&result, &bits, sizeof(result));
-    return result;
-}
-
-float hdrToDisplay(float value) {
-    const float linear = std::max(value, 0.f);
-    const float mapped = std::clamp((linear * (2.51f * linear + 0.03f)) /
-                                        (linear * (2.43f * linear + 0.59f) + 0.14f),
-                                    0.f, 1.f);
-    return mapped <= 0.0031308f ? mapped * 12.92f
-                               : 1.055f * std::pow(mapped, 1.f / 2.4f) - 0.055f;
-}
-
-Color hdrPixelToColor(const uint8_t *pixel) {
-    uint16_t channels[4]{};
-    std::memcpy(channels, pixel, sizeof(channels));
-    return Color(hdrToDisplay(decodeHalf(channels[0])), hdrToDisplay(decodeHalf(channels[1])),
-                 hdrToDisplay(decodeHalf(channels[2])),
-                 std::clamp(decodeHalf(channels[3]), 0.f, 1.f));
-}
-
-}  // namespace
-
-Color Graphics::getPixelImpl(OffscreenCanvas* canvas, int x, int y) {
-    int w = canvas ? canvas->getWidth() : (sceneColorWidth > 0 ? sceneColorWidth : 1);
-    int h = canvas ? canvas->getHeight() : (sceneColorHeight > 0 ? sceneColorHeight : 1);
-    if (x < 0 || y < 0 || x >= w || y >= h) return Color(0.f, 0.f, 0.f, 0.f);
-    std::vector<uint8_t> rgba;
-    wgpu::Texture src = canvas ? canvas->color
-                               : (sceneColorSlots.empty() ? nullptr
-                                                          : sceneColorSlots[lastPresentSlot].color);
-    const bool hdrScene = canvas == nullptr && sceneColorFormat == WGPUTextureFormat_RGBA16Float;
-    if (!src || !copyTextureToCpu(instance, device, queue, src, w, h, rgba,
-                                  hdrScene ? 8 : 4))
-        return clearColor;
-    if (hdrScene) return hdrPixelToColor(rgba.data() + (size_t(y) * w + x) * 8);
-    const uint8_t *p = rgba.data() + (size_t(y) * w + x) * 4;
-    return Color(p[0] / 255.f, p[1] / 255.f, p[2] / 255.f, p[3] / 255.f);
-}
-
-image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
-    int w = canvas ? canvas->getWidth() : (sceneColorWidth > 0 ? sceneColorWidth : 1);
-    int h = canvas ? canvas->getHeight() : (sceneColorHeight > 0 ? sceneColorHeight : 1);
-    auto *img = new image::ImageData(w, h, "RGBA8");
-    std::vector<uint8_t> rgba;
-    wgpu::Texture src = canvas ? canvas->color
-                               : (sceneColorSlots.empty() ? nullptr
-                                                          : sceneColorSlots[lastPresentSlot].color);
-    const bool hdrScene = canvas == nullptr && sceneColorFormat == WGPUTextureFormat_RGBA16Float;
-    if (src && copyTextureToCpu(instance, device, queue, src, w, h, rgba,
-                                hdrScene ? 8 : 4)) {
-        if (!hdrScene) {
-            std::memcpy(img->getData(), rgba.data(), rgba.size());
-        } else {
-            auto *dst = static_cast<uint8_t *>(img->getData());
-            for (size_t pixel = 0; pixel < size_t(w) * h; ++pixel) {
-                const Color color = hdrPixelToColor(rgba.data() + pixel * 8);
-                dst[pixel * 4 + 0] = uint8_t(std::clamp(color.r * 255.f, 0.f, 255.f));
-                dst[pixel * 4 + 1] = uint8_t(std::clamp(color.g * 255.f, 0.f, 255.f));
-                dst[pixel * 4 + 2] = uint8_t(std::clamp(color.b * 255.f, 0.f, 255.f));
-                dst[pixel * 4 + 3] = uint8_t(std::clamp(color.a * 255.f, 0.f, 255.f));
-            }
-        }
-    }
-    return img;
-}
-
-image::ImageData *Graphics::newHDRImageDataImpl(OffscreenCanvas *canvas) {
-    if (!canvas || !canvas->hdr) return nullptr;
-    const int w = canvas->getWidth();
-    const int h = canvas->getHeight();
-    std::vector<uint8_t> rgba16f;
-    if (!copyTextureToCpu(instance, device, queue, canvas->color, w, h, rgba16f, 8)) return nullptr;
-    auto *img = new image::ImageData(w, h, "RGBA16F");
-    std::memcpy(img->getData(), rgba16f.data(), rgba16f.size());
-    return img;
-}
-
-image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment) {
-    submitPendingDeferredPasses();
-    if (!device || gbufferSlots.empty() || gbufferWidth <= 0 || gbufferHeight <= 0) return nullptr;
-    GbufferSlot &slot = gbufferSlots[std::min<size_t>(lastGbufferSlot, gbufferSlots.size() - 1)];
-    wgpu::Texture src;
-    if (attachment == "depth")
-        src = slot.depthColor;
-    else if (attachment == "normal")
-        src = slot.normal;
-    else if (attachment == "albedo")
-        src = slot.albedo;
-    else
-        return nullptr;
-
-    std::vector<uint8_t> rgba;
-    if (!copyTextureToCpu(instance, device, queue, src, gbufferWidth, gbufferHeight, rgba))
-        return nullptr;
-    auto *image = new image::ImageData(gbufferWidth, gbufferHeight, "RGBA8");
-    std::memcpy(image->getData(), rgba.data(), rgba.size());
-    return image;
-}
-
-image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachment) {
-    submitPendingDeferredPasses();
-    if (!device || decalSlots.empty() || decalWidth <= 0 || decalHeight <= 0) return nullptr;
-    DecalSlot &slot = decalSlots[std::min<size_t>(lastDecalSlot, decalSlots.size() - 1)];
-    wgpu::Texture src;
-    if (attachment == "albedo")
-        src = slot.albedo;
-    else if (attachment == "normal")
-        src = slot.normal;
-    else if (attachment == "params")
-        src = slot.params;
-    else
-        return nullptr;
-    std::vector<uint8_t> rgba;
-    if (!copyTextureToCpu(instance, device, queue, src, decalWidth, decalHeight, rgba))
-        return nullptr;
-    auto *image = new image::ImageData(decalWidth, decalHeight, "RGBA8");
-    std::memcpy(image->getData(), rgba.data(), rgba.size());
-    return image;
-}
-
-// ---------------------------------------------------------------------------
-// Async frame readback (browser)
-// ---------------------------------------------------------------------------
-
-namespace {
-
-bool encodeRgbaToPng(const std::string &path, int width, int height,
-                     const std::vector<uint8_t> &rgba) {
-    try {
-        image::ImageData img(width, height, "RGBA8");
-        std::memcpy(img.getData(), rgba.data(), rgba.size());
-        std::unique_ptr<eve::filesystem::FileData> png(
-            img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false));
-        if (!png) return false;
-        std::ofstream out(path, std::ios::binary);
-        if (!out) return false;
-        out.write(static_cast<const char *>(png->getData()),
-                  static_cast<std::streamsize>(png->getSize()));
-        return out.good();
-    } catch (...) {
-        return false;
-    }
-}
-
-}  // namespace
-
-bool Graphics::beginFrameReadback(const std::string &path) {
-    // A finished readback can be replaced; only refuse while one is in flight.
-    if ((pendingReadback_ && !pendingReadback_->done) || !device) return false;
-    wgpu::Texture src = lastReadbackTex;
-    int w = lastReadbackW;
-    int h = lastReadbackH;
-    if (!src || w <= 0 || h <= 0) {
-        // Fall back to the scene color slot before anything was rendered.
-        if (sceneColorSlots.empty()) return false;
-        const uint32_t slot = lastPresentSlot;
-        if (slot >= sceneColorSlots.size()) return false;
-        src = sceneColorSlots[slot].color;
-        w = sceneColorWidth;
-        h = sceneColorHeight;
-        if (!src || w <= 0 || h <= 0) return false;
-    }
-
-    uint64_t bytesPerRow = static_cast<uint64_t>(w * 4);
-    bytesPerRow = (bytesPerRow + 255) / 256 * 256;
-    const uint64_t size = bytesPerRow * static_cast<uint64_t>(h);
-
-    WGPUBufferDescriptor bd{};
-    bd.label = sv("eve_readback");
-    bd.size = size;
-    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
-    bd.mappedAtCreation = false;
-    wgpu::Buffer dst = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-    if (!dst) return false;
-
-    // Copy the resolved scene color into the readback buffer, then map
-    // asynchronously (two-phase: the pump waits for the map callback on the
-    // browser event loop without ASYNCIFY sleeps).
-    wgpu::CommandEncoder enc = device.CreateCommandEncoder();
-    WGPUTexelCopyTextureInfo from{};
-    from.texture = src.Get();
-    from.mipLevel = 0;
-    from.aspect = WGPUTextureAspect_All;
-    from.origin = {0, 0, 0};
-    WGPUTexelCopyBufferInfo to{};
-    to.buffer = dst.Get();
-    to.layout.offset = 0;
-    to.layout.bytesPerRow = static_cast<uint32_t>(bytesPerRow);
-    to.layout.rowsPerImage = static_cast<uint32_t>(h);
-    WGPUExtent3D extent{static_cast<uint32_t>(w), static_cast<uint32_t>(h), 1};
-    enc.CopyTextureToBuffer(reinterpret_cast<const wgpu::TexelCopyTextureInfo*>(&from),
-                            reinterpret_cast<const wgpu::TexelCopyBufferInfo*>(&to),
-                            reinterpret_cast<const wgpu::Extent3D*>(&extent));
-    wgpu::CommandBuffer cmd = enc.Finish();
-    queue.Submit(1, &cmd);
-
-    auto pr = std::make_unique<PendingReadback>();
-    pr->path = path;
-    pr->width = w;
-    pr->height = h;
-    pr->bytesPerRow = bytesPerRow;
-    pr->dst = dst;
-
-    WGPUBufferMapCallbackInfo cbInfo{};
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void *userdata1,
-                         void * /*userdata2*/) {
-        auto *p = static_cast<PendingReadback *>(userdata1);
-        p->mapped = (status == WGPUMapAsyncStatus_Success);
-    };
-    cbInfo.userdata1 = pr.get();
-    wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, size, cbInfo);
-
-    pendingReadback_ = std::move(pr);
-    return true;
-}
-
-int Graphics::frameReadbackStatus() const {
-    if (!pendingReadback_) return 0;
-    if (!pendingReadback_->done) return 1;
-    return pendingReadback_->ok ? 2 : 3;
-}
-
-void Graphics::pumpReadback() {
-    if (!pendingReadback_ || pendingReadback_->done) return;
-    auto &pr = *pendingReadback_;
-    if (!pr.mapped) {
-        // The map callback is delivered on the browser event loop between
-        // frames (emdawnwebgpu callUserCallback), so no ASYNCIFY sleep is
-        // needed here �?this runs from present() on the main loop.
-#if defined(__EMSCRIPTEN__)
-        wgpuInstanceProcessEvents(instance.Get());
-#endif
-        return;
-    }
-    const uint8_t *data = static_cast<const uint8_t *>(
-        pr.dst.GetConstMappedRange(0, pr.bytesPerRow * static_cast<uint64_t>(pr.height)));
-    std::vector<uint8_t> rgba(static_cast<size_t>(pr.width) * pr.height * 4);
-    if (data) {
-        for (int y = 0; y < pr.height; ++y)
-            std::memcpy(rgba.data() + size_t(y) * pr.width * 4,
-                        data + size_t(y) * pr.bytesPerRow, size_t(pr.width) * 4);
-    }
-    pr.dst.Unmap();
-    pr.ok = data && encodeRgbaToPng(pr.path, pr.width, pr.height, rgba);
-    pr.done = true;
 }
 
 // ---------------------------------------------------------------------------

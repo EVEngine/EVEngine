@@ -888,6 +888,12 @@ private:
     mutable std::atomic<float> completedOffscreenTimestampMs{0.f};
     // Most recent 3D render target (scene color or canvas), used by the async
     // frame readback.
+    // Owned copy of the last composed surface, captured only when requested.
+    wgpu::Texture     presentedReadback;
+    int               presentedReadbackW = 0, presentedReadbackH = 0;
+    WGPUTextureFormat presentedReadbackFormat = WGPUTextureFormat_Undefined;
+    bool              surfaceCanCopySrc       = false;
+    void              recordPresentedReadback(wgpu::CommandEncoder &encoder, const wgpu::Texture &surfaceTexture);
     wgpu::Texture lastReadbackTex;
     int lastReadbackW = 0;
     int lastReadbackH = 0;
@@ -1149,7 +1155,14 @@ private:
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).
-    struct PendingReadback;
+    struct PendingReadback {
+        std::string  path;
+        int          width = 0, height = 0;
+        uint64_t     bytesPerRow = 0;
+        wgpu::Buffer dst;
+        bool         mapped = false, done = false, ok = false;
+        bool         hdr = false, bgra = false;
+    };
     std::unique_ptr<PendingReadback> pendingReadback_;
 
     // Cached mesh3d bind groups keyed by the frame-slot UBO buffer, texture

@@ -530,12 +530,11 @@ bool Vehicle::detachPhysics(VehicleEntity* v) {
 }
 
 bool Vehicle::hasPhysics(VehicleEntity* v) {
-    if (v == nullptr) return false;
-    return v->physicsBody()->body2d != nullptr || v->physicsBody()->body3d != nullptr;
+    return VehiclePhysics::isAttached(v);
 }
 
 std::string Vehicle::getPhysicsSpace(VehicleEntity* v) {
-    return v == nullptr ? std::string{} : v->physicsBody()->space;
+    return VehiclePhysics::isAttached(v) ? v->physicsBody()->space : std::string{};
 }
 
 float Vehicle::getHeight(VehicleEntity* v) { return VehiclePhysics::height(v); }

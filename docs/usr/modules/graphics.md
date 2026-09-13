@@ -252,6 +252,8 @@ Agent 可直接决定是否继续纠正；无效期望会在写入前拒绝。�
 `updateTextureFromImageData(texture, imageData)` 将尺寸相同的 RGBA8 `ImageData`
 重新上传到由当前 Graphics 后端创建的已有纹理；纹理对象保持不变，可继续被材质引用。
 该方法必须在渲染线程调用，后端所有权、格式或尺寸不匹配时抛出异常。
+`setRenderableTextureFromImageData(renderable, imageData, repeatU, repeatV)` 则一次完成纹理上传和
+Renderable/Material 绑定，避免脚本在两个绑定调用之间传递可空的借用句柄；返回纹理由 Graphics 持有。
 
 C++ 渲染适配器可调用 `updateTextureRegion(texture,x,y,width,height,rgba,bytesPerRow)`
 更新单 mip RGBA8 纹理的子矩形。Vulkan 使用 staging buffer 和原图 `copyBufferToImage`，
@@ -267,7 +269,7 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`getMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setHeightTexture()`、`setPosition()`、`setRadius()`

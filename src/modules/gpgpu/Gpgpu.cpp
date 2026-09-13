@@ -7,6 +7,7 @@
 #include "gpgpu/ShaderSystem.h"
 
 #include "common/Exception.h"
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/GpuDrivenTypes.h"
@@ -25,6 +26,7 @@
 
 #include <functional>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace eve::gpgpu {
@@ -194,6 +196,90 @@ std::string submitResidentInstancesScript(Gpgpu *gpgpu, GpuBuffer *buffer, ssq::
 }  // namespace
 
 Module_IMPL(Gpgpu, new Gpgpu());
+
+Gpgpu::Gpgpu() { eve::cap::provide<IMeshDeformationCompute>(this); }
+
+Gpgpu::~Gpgpu() { eve::cap::revoke<IMeshDeformationCompute>(this); }
+
+Result<std::vector<float>> Gpgpu::deform(MeshDeformationComputeRequest request) {
+    const std::size_t count = request.positions.size() / 3u;
+    if (!isAvailable())
+        return Result<std::vector<float>>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "mesh deformation compute backend is unavailable"));
+    if (count == 0 || request.positions.size() != count * 3u || request.normals.size() != count * 3u ||
+        (!request.baseline.empty() && request.baseline.size() != count * 3u) ||
+        (!request.targets.empty() && request.targets.size() != count * 3u) || count > 4'000'000u)
+        return Result<std::vector<float>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid mesh deformation compute buffers"));
+
+    std::vector<float> positions(count * 4u), normals(count * 4u), baseline(count * 4u), targets(count * 4u);
+    for (std::size_t i = 0; i < count; ++i) {
+        for (std::size_t c = 0; c < 3u; ++c) {
+            positions[i * 4u + c] = request.positions[i * 3u + c];
+            normals[i * 4u + c]   = request.normals[i * 3u + c];
+            baseline[i * 4u + c]  = request.baseline.empty() ? positions[i * 4u + c] : request.baseline[i * 3u + c];
+            targets[i * 4u + c]   = request.targets.empty() ? positions[i * 4u + c] : request.targets[i * 3u + c];
+        }
+    }
+    static constexpr const char* glsl = R"(#version 450
+layout(local_size_x=64) in;
+layout(set=0,binding=0) buffer P{vec4 v[];} p;
+layout(set=0,binding=1) readonly buffer N{vec4 v[];} n;
+layout(set=0,binding=2) readonly buffer B{vec4 v[];} b;
+layout(set=0,binding=3) readonly buffer T{vec4 v[];} t;
+layout(push_constant) uniform PC{float d[32];} pc;
+void main(){uint i=gl_GlobalInvocationID.x; if(i>=uint(pc.d[0]))return;
+ vec3 q=p.v[i].xyz,c=vec3(pc.d[2],pc.d[3],pc.d[4]); float dist=distance(q,c);
+ if(dist>=pc.d[5])return; float w=pow(1.0-dist/pc.d[5],pc.d[7])*pc.d[6]; int op=int(pc.d[1]);
+ if(op==4){p.v[i].xyz=mix(q,t.v[i].xyz,clamp(abs(w),0.0,1.0));return;}
+ if(op==2){p.v[i].y=mix(q.y,pc.d[3],clamp(abs(w),0.0,1.0));return;}
+ vec3 dir=(op==3||op==5)?normalize(vec3(pc.d[8],pc.d[9],pc.d[10])):n.v[i].xyz;
+ if(op==1)w=-w; vec3 outp=q+dir*w;
+ if(op==5){vec3 delta=outp-b.v[i].xyz;float len=length(delta);if(len>pc.d[11])delta*=pc.d[11]/len;outp=b.v[i].xyz+delta;}
+ p.v[i].xyz=outp;}
+)";
+    static constexpr const char* wgsl = R"(
+struct V{v:array<vec4f>}; struct Push{d:array<vec4f,8>};
+@group(0) @binding(0) var<storage,read_write> p:V; @group(0) @binding(1) var<storage,read> n:V;
+@group(0) @binding(2) var<storage,read> b:V; @group(0) @binding(3) var<storage,read> t:V;
+@group(0) @binding(8) var<uniform> pc:Push;
+fn f(i:u32)->f32{return pc.d[i/4u][i%4u];}
+@compute @workgroup_size(64) fn main(@builtin(global_invocation_id) gid:vec3u){let i=gid.x;if(i>=u32(f(0u))){return;}
+ let q=p.v[i].xyz;let c=vec3f(f(2u),f(3u),f(4u));let dist=distance(q,c);if(dist>=f(5u)){return;}
+ var w=pow(1.0-dist/f(5u),f(7u))*f(6u);let op=i32(f(1u));
+ if(op==4){p.v[i]=vec4f(mix(q,t.v[i].xyz,clamp(abs(w),0.0,1.0)),0.0);return;}
+ if(op==2){p.v[i]=vec4f(q.x,mix(q.y,f(3u),clamp(abs(w),0.0,1.0)),q.z,0.0);return;}
+ var dir=n.v[i].xyz;if(op==3||op==5){dir=normalize(vec3f(f(8u),f(9u),f(10u)));}if(op==1){w=-w;}
+ var outp=q+dir*w;if(op==5){var delta=outp-b.v[i].xyz;let len=length(delta);if(len>f(11u)){delta*=f(11u)/len;}outp=b.v[i].xyz+delta;}
+ p.v[i]=vec4f(outp,0.0);}
+)";
+    try {
+        std::unique_ptr<GpuBuffer> p(newBuffer(static_cast<int>(positions.size() * sizeof(float)), "storage"));
+        std::unique_ptr<GpuBuffer> n(newBuffer(static_cast<int>(normals.size() * sizeof(float)), "storage"));
+        std::unique_ptr<GpuBuffer> b(newBuffer(static_cast<int>(baseline.size() * sizeof(float)), "storage"));
+        std::unique_ptr<GpuBuffer> t(newBuffer(static_cast<int>(targets.size() * sizeof(float)), "storage"));
+        p->writeFloat32s(positions.data(), static_cast<int>(positions.size()));
+        n->writeFloat32s(normals.data(), static_cast<int>(normals.size()));
+        b->writeFloat32s(baseline.data(), static_cast<int>(baseline.size()));
+        t->writeFloat32s(targets.data(), static_cast<int>(targets.size()));
+        std::unique_ptr<ComputeShader> shader(newShader(currentGraphicsBackend() == "webgpu" ? wgsl : glsl));
+        shader->bindBuffer(0, p.get()); shader->bindBuffer(1, n.get()); shader->bindBuffer(2, b.get()); shader->bindBuffer(3, t.get());
+        shader->setFloat(0, static_cast<float>(count));
+        shader->setFloat(1, static_cast<float>(static_cast<int>(request.operation)));
+        shader->setFloat(2, request.centerX); shader->setFloat(3, request.centerY); shader->setFloat(4, request.centerZ);
+        shader->setFloat(5, request.radius); shader->setFloat(6, request.strength); shader->setFloat(7, request.falloff);
+        shader->setFloat(8, request.directionX); shader->setFloat(9, request.directionY); shader->setFloat(10, request.directionZ);
+        shader->setFloat(11, request.maxDisplacement);
+        dispatch(shader.get(), static_cast<int>((count + 63u) / 64u), 1, 1);
+        p->readFloat32s(positions.data(), static_cast<int>(positions.size()));
+        std::vector<float> result(count * 3u);
+        for (std::size_t i = 0; i < count; ++i)
+            for (std::size_t c = 0; c < 3u; ++c) result[i * 3u + c] = positions[i * 4u + c];
+        return Result<std::vector<float>>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return Result<std::vector<float>>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what()));
+    }
+}
 
 bool Gpgpu::isAvailable() const {
 #ifdef EVENGINE_WEBGPU

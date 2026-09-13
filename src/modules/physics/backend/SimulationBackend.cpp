@@ -5,10 +5,14 @@
 
 #include <Box2D/Box2D.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <string>
+#include <unordered_set>
 #include <utility>
+#include <vector>
 
 namespace eve::physics {
 namespace {
@@ -98,24 +102,76 @@ void stepBox2D(void* context, const eve::SimulationStep& step, const SimulationS
     world->Step(static_cast<float>(step.delta.seconds()), settings.velocityIterations, settings.positionIterations);
 }
 
-eve::Diagnostic fallbackDiagnostic(const char* reason) {
+eve::Diagnostic fallbackDiagnostic(SimulationBackendDomain domain, const char* reason) {
     return eve::Diagnostic::warning(eve::DiagnosticCode::Unsupported,
                                     "Physics accelerator capability is unavailable; CPU backend selected",
                                     "physics.simulationBackend",
                                     {{"provider", IAcceleratorBackendProvider::capabilityName},
                                      {"selected", "cpu"},
+                                     {"domain", std::string(simulationBackendDomainName(domain))},
                                      {"fallback", "structured-capability-fallback"},
                                      {"reason", reason}});
 }
 
 eve::Result<SimulationBackendSelection> cpuFallback(std::unique_ptr<ISimulationBackend> cpuBackend,
-                                                    const char*                         reason) {
+                                                    SimulationBackendDomain domain,
+                                                    const char* reason,
+                                                    std::vector<eve::Diagnostic> diagnostics = {}) {
+    diagnostics.insert(diagnostics.begin(), fallbackDiagnostic(domain, reason));
     return eve::Result<SimulationBackendSelection>::success(
         {std::move(cpuBackend), SimulationBackendKind::Gpu, SimulationBackendKind::Cpu, true},
-        eve::Status(eve::StatusCode::Applied, {fallbackDiagnostic(reason)}));
+        eve::Status(eve::StatusCode::Applied, std::move(diagnostics)));
+}
+
+std::unordered_set<IAcceleratorBackendProvider*>& registeredAcceleratorProviders() {
+    static std::unordered_set<IAcceleratorBackendProvider*> providers;
+    return providers;
+}
+
+eve::Diagnostic attemptedProviderWarning(const eve::Diagnostic& diagnostic, std::size_t attempt) {
+    auto details = diagnostic.details();
+    details.emplace_back("providerAttempt", std::to_string(attempt));
+    return eve::Diagnostic::warning(diagnostic.code(), diagnostic.message(), diagnostic.path(), std::move(details),
+                                    diagnostic.source());
 }
 
 }  // namespace
+
+eve::Result<AcceleratorBackendProviderRegistration> AcceleratorBackendProviderRegistration::registerProvider(
+    IAcceleratorBackendProvider& provider, int priority) {
+    auto& providers = registeredAcceleratorProviders();
+    if (providers.contains(&provider)) {
+        return eve::Result<AcceleratorBackendProviderRegistration>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "Physics accelerator provider is already registered",
+            "physics.simulationBackend.provider.registration"));
+    }
+    providers.insert(&provider);
+    eve::cap::addListener<IAcceleratorBackendProvider>(&provider, priority);
+    AcceleratorBackendProviderRegistration registration;
+    registration.provider_ = &provider;
+    return eve::Result<AcceleratorBackendProviderRegistration>::success(std::move(registration));
+}
+
+AcceleratorBackendProviderRegistration::~AcceleratorBackendProviderRegistration() { reset(); }
+
+AcceleratorBackendProviderRegistration::AcceleratorBackendProviderRegistration(
+    AcceleratorBackendProviderRegistration&& other) noexcept
+    : provider_(std::exchange(other.provider_, nullptr)) {}
+
+AcceleratorBackendProviderRegistration& AcceleratorBackendProviderRegistration::operator=(
+    AcceleratorBackendProviderRegistration&& other) noexcept {
+    if (this == &other) return *this;
+    reset();
+    provider_ = std::exchange(other.provider_, nullptr);
+    return *this;
+}
+
+void AcceleratorBackendProviderRegistration::reset() noexcept {
+    if (!provider_) return;
+    eve::cap::removeListener<IAcceleratorBackendProvider>(provider_);
+    registeredAcceleratorProviders().erase(provider_);
+    provider_ = nullptr;
+}
 
 namespace detail {
 
@@ -199,35 +255,68 @@ eve::Result<SimulationBackendSelection> selectSimulationBackend(SimulationBacken
             eve::Status::success(eve::StatusCode::Applied));
     }
 
-    auto* provider = eve::cap::query<IAcceleratorBackendProvider>();
-    if (!provider) return cpuFallback(std::move(cpuBackend), "capability-absent");
-
-    try {
-        if (!provider->supports(domain)) return cpuFallback(std::move(cpuBackend), "provider-does-not-support-domain");
-
-        auto candidate = provider->create(domain, state);
-        if (!candidate) {
-            // Observe the provider failure before selecting the CPU alternate path.
-            const eve::Status providerStatus = candidate.status();
-            (void)providerStatus;
-            return cpuFallback(std::move(cpuBackend), "provider-create-failed");
-        }
-
-        auto backend = std::move(candidate).takeValue();
-        if (!backend) return cpuFallback(std::move(cpuBackend), "provider-returned-null-backend");
-
-        SimulationBackendSelection selection;
-        selection.backend       = std::move(backend);
-        selection.requestedKind = SimulationBackendKind::Gpu;
-        selection.actualKind    = selection.backend->kind();
-        selection.usedFallback  = false;
-        return eve::Result<SimulationBackendSelection>::success(std::move(selection),
-                                                                eve::Status::success(eve::StatusCode::Applied));
-    } catch (const std::exception&) {
-        return cpuFallback(std::move(cpuBackend), "provider-create-threw");
-    } catch (...) {
-        return cpuFallback(std::move(cpuBackend), "provider-create-threw-unknown");
+    std::vector<IAcceleratorBackendProvider*> providers;
+    const auto listenerCount = eve::cap::listenerCount<IAcceleratorBackendProvider>();
+    providers.reserve(listenerCount + 1);
+    for (std::size_t index = 0; index < listenerCount; ++index) {
+        if (auto* provider = eve::cap::listenerAt<IAcceleratorBackendProvider>(index)) providers.push_back(provider);
     }
+    if (auto* legacy = eve::cap::query<IAcceleratorBackendProvider>();
+        legacy && std::find(providers.begin(), providers.end(), legacy) == providers.end()) {
+        providers.push_back(legacy);
+    }
+    if (providers.empty()) return cpuFallback(std::move(cpuBackend), domain, "capability-absent");
+
+    std::vector<eve::Diagnostic> failedDiagnostics;
+    bool                         supported = false;
+    std::size_t attempt = 0;
+    for (auto* provider : providers) {
+        if (!provider->supports(domain)) continue;
+        supported = true;
+        ++attempt;
+        try {
+            auto candidate = provider->create(domain, state);
+            if (!candidate) {
+                const auto& diagnostics = candidate.diagnostics();
+                for (const auto& diagnostic : diagnostics)
+                    failedDiagnostics.push_back(attemptedProviderWarning(diagnostic, attempt));
+                continue;
+            }
+            auto successDiagnostics = candidate.diagnostics();
+            for (auto& diagnostic : successDiagnostics)
+                diagnostic.addDetail("providerAttempt", std::to_string(attempt));
+            auto backend = std::move(candidate).takeValue();
+            if (!backend) {
+                failedDiagnostics.push_back(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvariantViolation, "Physics accelerator provider returned a null backend",
+                    "physics.simulationBackend.provider.create"));
+                continue;
+            }
+
+            SimulationBackendSelection selection;
+            selection.backend       = std::move(backend);
+            selection.requestedKind = SimulationBackendKind::Gpu;
+            selection.actualKind    = selection.backend->kind();
+            selection.usedFallback  = false;
+            failedDiagnostics.insert(failedDiagnostics.end(), successDiagnostics.begin(), successDiagnostics.end());
+            return eve::Result<SimulationBackendSelection>::success(std::move(selection),
+                                                                    eve::Status(eve::StatusCode::Applied,
+                                                                                std::move(failedDiagnostics)));
+        } catch (const std::exception& error) {
+            failedDiagnostics.push_back(eve::Diagnostic::warning(
+                eve::DiagnosticCode::CallbackFailure, error.what(), "physics.simulationBackend.provider.create",
+                {{"providerAttempt", std::to_string(attempt)}}));
+        } catch (...) {
+            failedDiagnostics.push_back(eve::Diagnostic::warning(
+                eve::DiagnosticCode::CallbackFailure,
+                "Physics accelerator provider threw a non-standard exception",
+                "physics.simulationBackend.provider.create", {{"providerAttempt", std::to_string(attempt)}}));
+        }
+    }
+
+    return cpuFallback(std::move(cpuBackend), domain,
+                       supported ? "all-supporting-providers-failed" : "provider-does-not-support-domain",
+                       std::move(failedDiagnostics));
 }
 
 }  // namespace detail

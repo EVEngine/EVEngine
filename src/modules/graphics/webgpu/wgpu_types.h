@@ -26,4 +26,17 @@ inline WGPUStringView sv(const std::string &s) {
     return WGPUStringView{s.data(), s.size()};
 }
 
+/** @brief Create an owning shader module; retain it until pipeline creation completes.
+ * @param dev Borrowed device used synchronously.
+ * @param wgsl Borrowed source; no pointer is retained after this call.
+ * @return Reference-counted shader module. Device error callbacks report validation errors.
+ */
+[[nodiscard]] inline wgpu::ShaderModule makeWgslModule(wgpu::Device &dev, const char *wgsl) {
+    wgpu::ShaderSourceWGSL wgslDesc{};
+    wgslDesc.code = wgsl;
+    wgpu::ShaderModuleDescriptor desc{};
+    desc.nextInChain = &wgslDesc;
+    return dev.CreateShaderModule(&desc);
+}
+
 }  // namespace eve::graphics::webgpu
