@@ -137,6 +137,12 @@ TEST_CASE("actionTimelineWidget.projectsDrawsAndHitTestsSemanticItems") {
     REQUIRE_EQ(layout.items.size(), 2u);
     CHECK_EQ(layout.width, 1120.0f);
     CHECK_EQ(layout.height, 24.0f);
+    CHECK_EQ(layout.items[0].displayName, std::string("Apply Damage"));
+    CHECK_EQ(layout.items[0].detail, std::string("Damage.Physical 10"));
+    CHECK(layout.items[0].visual == eve::editor::TimelineItemVisual::Damage);
+    CHECK_EQ(layout.items[1].displayName, std::string("Hitbox Window"));
+    CHECK_EQ(layout.items[1].detail, std::string("weapon.main"));
+    CHECK(layout.items[1].visual == eve::editor::TimelineItemVisual::Hitbox);
 
     auto notify = view.hitTest(320.0f, 12.0f);
     REQUIRE(notify.has_value());
@@ -149,7 +155,51 @@ TEST_CASE("actionTimelineWidget.projectsDrawsAndHitTestsSemanticItems") {
     view.draw(overlay);
     CHECK(overlay.rectangles >= 3);
     CHECK(overlay.lines >= 4);
-    CHECK_EQ(overlay.texts, 1);
+    CHECK_EQ(overlay.texts, 2);
+}
+
+TEST_CASE("actionTimelineWidget.projectsSemanticResourceThumbnailsWithoutPersistingThem") {
+    auto timeline = timelineFixture();
+    timeline.tracks[0].notifies.clear();
+    timeline.tracks[0].states.clear();
+    timeline.tracks[0].states.push_back(
+        {id("vfx-state:slash"), id("presentation:vfx-state"), eve::Duration::fromNanoseconds(10),
+         eve::Duration::fromNanoseconds(90), {{"uri", "effects/combat/slash.effect"}}});
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-thumbnail", std::move(timeline));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    const auto layout = widget(editor, registry.value()).layout();
+    REQUIRE_EQ(layout.items.size(), 1u);
+    CHECK_EQ(layout.items[0].displayName, std::string("VFX State"));
+    CHECK_EQ(layout.items[0].detail, std::string("slash.effect"));
+    CHECK(layout.items[0].visual == eve::editor::TimelineItemVisual::Vfx);
+
+    auto encoded = editor.target().timeline().toValue();
+    REQUIRE(encoded.ok());
+    const auto json = encoded.value().toJson();
+    REQUIRE(json.ok());
+    CHECK(json.value().find("displayName") == std::string::npos);
+    CHECK(json.value().find("visual") == std::string::npos);
+}
+
+TEST_CASE("actionTimelineWidget.usesRegistryLabelAndExplicitCustomVisualFallback") {
+    auto timeline = timelineFixture();
+    timeline.tracks[0].states.clear();
+    timeline.tracks[0].notifies[0].type = id("project:charge");
+    timeline.tracks[0].notifies[0].payload = {{"power", 3}};
+    eve::editor::ActionTimelineEditor editor("asset.combat.widget-custom", std::move(timeline));
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    REQUIRE(registry.value()
+                .registerDescriptor({"project:charge", "Charge Meter", "Project",
+                                     eve::action::ActionNotifyShape::Instant, {"power"}})
+                .ok());
+    const auto layout = widget(editor, registry.value()).layout();
+    REQUIRE_EQ(layout.items.size(), 1u);
+    CHECK_EQ(layout.items[0].displayName, std::string("Charge Meter"));
+    CHECK(layout.items[0].detail.empty());
+    CHECK(layout.items[0].visual == eve::editor::TimelineItemVisual::Custom);
+    CHECK_EQ(eve::editor::timelineItemVisualName(layout.items[0].visual), std::string_view("custom"));
 }
 
 TEST_CASE("actionTimelineWidget.projectsBoundedAudioWaveformWithoutOwningAudioState") {

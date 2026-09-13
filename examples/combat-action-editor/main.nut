@@ -1254,8 +1254,10 @@ function updateLabels() {
             local single = selectionCount == 1;
             setTypedPayloadVisibility(selectedType, single && !isSection);
             ui.setText("action-block-id", combatEditor.selectedActionId);
-            ui.setText("action-block-kind", isSection ? "Animation section" :
-                       (combatEditor.selectedActionState ? "State window" : "Instant notify"));
+            local blockLabel = combatEditor.timeline.getItemLabel(selected);
+            local blockDetail = combatEditor.timeline.getItemDetail(selected);
+            ui.setText("action-block-kind", blockLabel +
+                       (blockDetail == "" ? "" : " · " + blockDetail));
             ui.setValueText("action-type", selectedType);
             ui.setValueText("action-payload", combatEditor.timeline.getItemPayloadJson(combatEditor.selectedActionId));
             ui.setChecked("action-enabled", combatEditor.timeline.getItemEnabled(combatEditor.selectedActionId));
@@ -1424,6 +1426,47 @@ function drawTimeline() {
         local y0 = combatEditor.timeline.getItemMinY(i) + 5.0;
         local y1 = combatEditor.timeline.getItemMaxY(i) - 5.0;
         gfx.drawSolidRect(x0, y0, x1 - x0, y1 - y0, r, g, b, enabled ? 0.95 : 0.28);
+        local visual = combatEditor.timeline.getItemVisual(i);
+        local iconX = x0 + 4.0; local iconY = y0 + 4.0;
+        local iconW = x1 - x0 - 8.0 < 13.0 ? x1 - x0 - 8.0 : 13.0;
+        local iconH = y1 - y0 - 8.0;
+        if (iconW >= 5.0 && iconH >= 6.0) {
+            if (visual == "audio") {
+                for (local bar = 0; bar < 4; ++bar) {
+                    local h = bar % 2 == 0 ? iconH * 0.55 : iconH;
+                    gfx.drawSolidRect(iconX + bar * 3.0, iconY + (iconH - h) * 0.5,
+                                      1.5, h, 0.92, 0.98, 1.0, enabled ? 0.9 : 0.35);
+                }
+            } else if (visual == "vfx") {
+                gfx.drawSolidRect(iconX + iconW * 0.45, iconY, 1.5, iconH,
+                                  1.0, 0.92, 0.45, enabled ? 0.95 : 0.35);
+                gfx.drawSolidRect(iconX, iconY + iconH * 0.45, iconW, 1.5,
+                                  1.0, 0.92, 0.45, enabled ? 0.95 : 0.35);
+            } else if (visual == "camera") {
+                gfx.drawSolidRect(iconX, iconY + 2.0, iconW - 3.0, iconH - 4.0,
+                                  0.92, 0.96, 1.0, enabled ? 0.9 : 0.35);
+                gfx.drawSolidRect(iconX + iconW - 3.0, iconY + iconH * 0.35, 3.0, iconH * 0.3,
+                                  0.92, 0.96, 1.0, enabled ? 0.9 : 0.35);
+            } else if (visual == "prefab") {
+                gfx.drawSolidRect(iconX, iconY, iconW, iconH, 0.88, 0.95, 1.0, enabled ? 0.72 : 0.25);
+                gfx.drawSolidRect(iconX + 2.0, iconY + 2.0, iconW - 4.0, iconH - 4.0,
+                                  r, g, b, enabled ? 0.95 : 0.35);
+            } else if (visual == "hitbox" || visual == "collision") {
+                gfx.drawSolidRect(iconX, iconY, iconW, 1.5, 1.0, 0.88, 0.55, enabled ? 0.9 : 0.35);
+                gfx.drawSolidRect(iconX, iconY + iconH - 1.5, iconW, 1.5,
+                                  1.0, 0.88, 0.55, enabled ? 0.9 : 0.35);
+            } else if (visual == "defense") {
+                gfx.drawSolidRect(iconX + 2.0, iconY, iconW - 4.0, iconH * 0.7,
+                                  0.72, 0.92, 1.0, enabled ? 0.88 : 0.32);
+                gfx.drawSolidRect(iconX + 4.0, iconY + iconH * 0.7, iconW - 8.0, iconH * 0.3,
+                                  0.72, 0.92, 1.0, enabled ? 0.88 : 0.32);
+            } else if (visual == "movement" || visual == "input") {
+                gfx.drawSolidRect(iconX, iconY + iconH * 0.4, iconW, iconH * 0.2,
+                                  0.9, 1.0, 0.78, enabled ? 0.9 : 0.32);
+                gfx.drawSolidRect(iconX + iconW * 0.65, iconY + iconH * 0.2,
+                                  iconW * 0.35, iconH * 0.6, 0.9, 1.0, 0.78, enabled ? 0.9 : 0.32);
+            }
+        }
         if (combatEditor.timeline.getItemType(i) == "presentation:parameter-curve") {
             local curveId = combatEditor.timeline.getItemId(i);
             for (local sample = 0; sample <= 64; ++sample) {

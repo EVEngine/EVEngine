@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <sstream>
 #include <utility>
 
 namespace eve::editor {
@@ -71,7 +72,94 @@ EditorResult<void> adapt(const EditorResult<std::size_t>& result, std::string ru
     return eve::editing::failed<void>(result.code(), RuleId(std::move(rule)), std::move(message));
 }
 
+std::string payloadText(const Value::Object& payload, std::string_view fieldName) {
+    const auto found = payload.find(std::string(fieldName));
+    return found != payload.end() && found->second.isString() ? found->second.asString() : std::string{};
+}
+
+std::string resourceName(std::string value) {
+    const auto slash = value.find_last_of("/\\");
+    return slash == std::string::npos ? value : value.substr(slash + 1);
+}
+
+TimelineItemVisual visualFor(std::string_view type) {
+    if (type == "animation:section") return TimelineItemVisual::Animation;
+    if (type == "combat:damage") return TimelineItemVisual::Damage;
+    if (type == "presentation:vfx" || type == "presentation:vfx-state") return TimelineItemVisual::Vfx;
+    if (type == "presentation:audio" || type == "presentation:audio-state") return TimelineItemVisual::Audio;
+    if (type == "gameplay:prefab-spawn") return TimelineItemVisual::Prefab;
+    if (type == "presentation:camera") return TimelineItemVisual::Camera;
+    if (type == "combat:hitbox-window") return TimelineItemVisual::Hitbox;
+    if (type == "combat:invulnerability-window") return TimelineItemVisual::Defense;
+    if (type == "input:combo-window") return TimelineItemVisual::Input;
+    if (type == "collision:ignore-window") return TimelineItemVisual::Collision;
+    if (type == "movement:root-motion-window") return TimelineItemVisual::Movement;
+    if (type == "presentation:parameter-curve") return TimelineItemVisual::Curve;
+    if (type.starts_with("gameplay:")) return TimelineItemVisual::Gameplay;
+    return TimelineItemVisual::Custom;
+}
+
+std::string detailFor(std::string_view type, const Value::Object& payload) {
+    if (type == "animation:section") return resourceName(payloadText(payload, "animationUri"));
+    if (type == "combat:damage") {
+        const auto amount = payload.find("amount");
+        if (amount != payload.end() && (amount->second.isInt64() || amount->second.isDouble())) {
+            std::ostringstream stream;
+            if (amount->second.isInt64())
+                stream << amount->second.asInt();
+            else
+                stream << amount->second.asDouble();
+            const auto damageType = payloadText(payload, "damageType");
+            return damageType.empty() ? stream.str() : damageType + " " + stream.str();
+        }
+    }
+    if (type == "presentation:vfx" || type == "presentation:vfx-state" ||
+        type == "presentation:audio" || type == "presentation:audio-state" ||
+        type == "gameplay:prefab-spawn")
+        return resourceName(payloadText(payload, "uri"));
+    if (type == "presentation:camera") return payloadText(payload, "cue");
+    if (type == "combat:hitbox-window") return payloadText(payload, "hitbox");
+    if (type == "input:combo-window") return payloadText(payload, "input");
+    if (type == "collision:ignore-window") return payloadText(payload, "channel");
+    if (type == "movement:root-motion-window") return payloadText(payload, "mode");
+    if (type == "presentation:parameter-curve") return payloadText(payload, "target");
+    if (type == "gameplay:event") return payloadText(payload, "tag");
+    return {};
+}
+
+void decorate(TimelineItemGeometry& geometry, const LogicalId& type, const Value::Object& payload,
+              const action::ActionNotifyRegistry& registry) {
+    geometry.visual = visualFor(type.format());
+    geometry.detail = detailFor(type.format(), payload);
+    if (geometry.visual == TimelineItemVisual::Animation) {
+        geometry.displayName = "Animation";
+        return;
+    }
+    auto descriptor = registry.descriptor(type.format());
+    geometry.displayName = descriptor ? descriptor.value().displayName : type.format();
+}
+
 }  // namespace
+
+std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept {
+    switch (visual) {
+        case TimelineItemVisual::Animation: return "animation";
+        case TimelineItemVisual::Gameplay: return "gameplay";
+        case TimelineItemVisual::Damage: return "damage";
+        case TimelineItemVisual::Vfx: return "vfx";
+        case TimelineItemVisual::Audio: return "audio";
+        case TimelineItemVisual::Prefab: return "prefab";
+        case TimelineItemVisual::Camera: return "camera";
+        case TimelineItemVisual::Hitbox: return "hitbox";
+        case TimelineItemVisual::Defense: return "defense";
+        case TimelineItemVisual::Input: return "input";
+        case TimelineItemVisual::Collision: return "collision";
+        case TimelineItemVisual::Movement: return "movement";
+        case TimelineItemVisual::Curve: return "curve";
+        case TimelineItemVisual::Custom: return "custom";
+    }
+    return "custom";
+}
 
 ActionTimelineWidget::ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)
     : editor_(editor), registry_(registry) {}
@@ -244,6 +332,8 @@ TimelineWidgetLayout ActionTimelineWidget::layout() const {
             result.items.push_back({animationTrack, section.id, animationType, true, isSelected(section.id),
                                     timeToX(start), std::max(timeToX(end), timeToX(start) + 4.0f), 3.0f,
                                     rowHeight_ - 3.0f});
+            decorate(result.items.back(), animationType,
+                     {{"animationUri", Value(section.animationUri)}}, registry_);
         }
     }
     for (std::size_t row = 0; row < editor_.target().timeline().tracks.size(); ++row) {
@@ -256,6 +346,7 @@ TimelineWidgetLayout ActionTimelineWidget::layout() const {
             result.items.push_back({track.id, notify.id, notify.type, false, isSelected(notify.id),
                                     center - kNotifyWidth * 0.5f, center + kNotifyWidth * 0.5f, top + 3.0f,
                                     top + rowHeight_ - 3.0f});
+            decorate(result.items.back(), notify.type, notify.payload, registry_);
         }
         for (const auto& state : track.states) {
             Duration start = state.start;
@@ -268,6 +359,7 @@ TimelineWidgetLayout ActionTimelineWidget::layout() const {
             const float maximum = std::max(timeToX(end), minimum + 4.0f);
             result.items.push_back({track.id, state.id, state.type, true, isSelected(state.id), minimum, maximum,
                                     top + 3.0f, top + rowHeight_ - 3.0f});
+            decorate(result.items.back(), state.type, state.payload, registry_);
         }
     }
     return result;
@@ -296,6 +388,9 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
             item.selected ? 0xf2b84bffU : (animationSection ? 0xa66bd4ffU : (item.state ? 0x568bd7ffU : 0x61c28bffU));
         overlay.rectangle({item.minimumX, item.minimumY, 0.0f}, {item.maximumX, item.maximumY, 0.0f},
                           {color, 1.0f, true});
+        if (item.maximumX - item.minimumX >= 48.0f)
+            overlay.text({item.minimumX + 5.0f, item.minimumY + 3.0f, 0.0f}, item.displayName,
+                         {0xffffffffU, 1.0f, false});
         if (item.state && item.type.format() == "presentation:audio-state") {
             const auto view      = findItem(timeline, item.itemId);
             auto*      waveforms = eve::cap::query<action::IActionAudioWaveformProvider>();

@@ -26,6 +26,10 @@ Controls:
 - The compact transport icons control deterministic action preview; Space
   toggles playback.
 - Click empty timeline space to seek.
+- Timeline blocks project registry display names, compact resource/parameter
+  details and stable semantic mini-previews for VFX, audio, prefabs, cameras,
+  hitboxes, defense, input and movement. These visuals are derived UI state and
+  never become duplicate fields in the action asset.
 - Drag an item body to move it; drag a state edge to resize it.
 - Selecting an animation section, instant notify, or state window automatically
   opens the **Action Block** inspector. Its timing sliders commit validated,

@@ -1668,6 +1668,21 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         const auto* item   = itemAt(layout, index);
         return item ? item->type.format() : std::string{};
     });
+    actionEditor.addFunc("getItemVisual", [](ScriptActionTimelineEditor* self, int index) {
+        const auto  layout = self ? self->widget().layout() : TimelineWidgetLayout{};
+        const auto* item   = itemAt(layout, index);
+        return item ? std::string(timelineItemVisualName(item->visual)) : std::string("custom");
+    });
+    actionEditor.addFunc("getItemLabel", [](ScriptActionTimelineEditor* self, int index) {
+        const auto  layout = self ? self->widget().layout() : TimelineWidgetLayout{};
+        const auto* item   = itemAt(layout, index);
+        return item ? item->displayName : std::string{};
+    });
+    actionEditor.addFunc("getItemDetail", [](ScriptActionTimelineEditor* self, int index) {
+        const auto  layout = self ? self->widget().layout() : TimelineWidgetLayout{};
+        const auto* item   = itemAt(layout, index);
+        return item ? item->detail : std::string{};
+    });
     actionEditor.addFunc("getItemState", [](ScriptActionTimelineEditor* self, int index) {
         const auto  layout = self ? self->widget().layout() : TimelineWidgetLayout{};
         const auto* item   = itemAt(layout, index);
