@@ -3,7 +3,9 @@
 /** @file ActionTimelinePayloadEditor.h @brief Validated partial editing for action-block payloads. */
 
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionVfxDuration.h"
 #include "action/editor/ActionTimelineEditor.h"
+#include "common/BorrowedRef.h"
 
 namespace eve::editor {
 
@@ -43,6 +45,15 @@ public:
      * @return Applied, or a structured type, range, validation, or transaction failure.
      */
     [[nodiscard]] EditorResult<void> fitClipToBlock(const LogicalId& itemId);
+
+    /**
+     * @brief Set one VFX state's clip end to the finite duration reported by its resource provider.
+     * @param itemId Stable VFX notify-state identity.
+     * @param provider Optional synchronously borrowed provider; absence is reported as Unsupported.
+     * @return Applied, or a structured provider, resource, type, validation, or transaction failure.
+     */
+    [[nodiscard]] EditorResult<void> fitClipToNaturalDuration(
+        const LogicalId& itemId, OptionalRef<const action::IActionVfxDurationProvider> provider);
 
 private:
     ActionTimelineEditor&               editor_;

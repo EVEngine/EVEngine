@@ -666,6 +666,9 @@ seed 选片段和音高，并用 ActionRuntime 注入的时间推进淡出。
 VFX State 还提供 `fitBlockToClip` 与 `fitClipToBlock`：前者按有效裁剪区间调整 Block 末端以恢复
 1.0x 播放，后者保持 Block 不动并调整 `clipEndTime`。两者均拒绝 Instant、非 VFX 与越界候选，且只提交
 一个可撤销事务。
+Particles 模块存在时，`fitClipToNaturalDuration` 会通过 `IActionVfxDurationProvider` 读取资源中启用的
+`emitterLife` 与最大 `particleLifetime`；非循环层取完整消散时长，全循环资源取最长单圈周期。无界资源
+返回结构化 Unsupported，provider 缺失时按钮隐藏且 API 明确失败，不会把猜测值写入资产。
 脚本也可用 `setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用
 `setItemPayloadTextList` 把分号分隔文本写成字符串数组，`patchItemPayload` 原子提交一组字段；
 `getItemPayloadText/Number/Bool/Vector/TextList` 用于把权威 payload 投射回 UI。所有入口先合并到 payload 的拥有型

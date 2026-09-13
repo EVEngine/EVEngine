@@ -2,6 +2,7 @@
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPreview.h"
 #include "action/ActionVfxBlock.h"
+#include "action/ActionVfxDuration.h"
 #include "common/Capability.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -185,7 +186,46 @@ TEST_CASE("particles.effectAsset.playbackLabAssetIsConsumable") {
     CHECK(effect->getEmitterByName("core") != nullptr);
     CHECK(effect->getEmitterByName("sparks") != nullptr);
     CHECK(effect->hasFloatParameter("intensity"));
+    auto duration = effect->naturalDuration();
+    REQUIRE(duration.ok());
+    CHECK(std::abs(duration.value().seconds() - 1.8) < 0.001);
     delete effect;
+
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
+    (void)Particles::create();
+    auto* provider = eve::cap::query<eve::action::IActionVfxDurationProvider>();
+    REQUIRE(provider != nullptr);
+    auto providedDuration = provider->naturalDuration("examples/particle-playback-lab/impact.effect.json");
+    REQUIRE(providedDuration.ok());
+    CHECK(std::abs(providedDuration.value().seconds() - 1.8) < 0.001);
+}
+
+TEST_CASE("particles.effectAsset.naturalDurationUsesFiniteEmissionAndRejectsUnboundedAssets") {
+    std::string error;
+    auto* finite = ParticleEffect::fromText(R"({
+        "type":"eve.particle-effect", "version":1,
+        "emitters":[
+            {"name":"short", "emitter":{"emitterLife":0.3,"particleLifetime":[0.2,1.2]}},
+            {"name":"long", "emitter":{"emitterLife":0.8,"particleLifetime":[0.2,0.9]}}
+        ]
+    })", "", &error);
+    REQUIRE(finite != nullptr);
+    auto finiteDuration = finite->naturalDuration();
+    REQUIRE(finiteDuration.ok());
+    CHECK(std::abs(finiteDuration.value().seconds() - 1.7) < 0.001);
+    delete finite;
+
+    auto* unbounded = ParticleEffect::fromText(R"({
+        "type":"eve.particle-effect", "version":1,
+        "emitters":[{"name":"loop", "emitter":{"emitterLife":-1,"looping":true}}]
+    })", "", &error);
+    REQUIRE(unbounded != nullptr);
+    auto unboundedDuration = unbounded->naturalDuration();
+    CHECK(!unboundedDuration.ok());
+    REQUIRE(unboundedDuration.error() != nullptr);
+    CHECK_EQ(unboundedDuration.error()->code(), eve::DiagnosticCode::Unsupported);
+    delete unbounded;
 }
 
 TEST_CASE("particles.actionBlockProviderOwnsRealVfxEnterUpdateExit") {

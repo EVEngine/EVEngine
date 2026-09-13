@@ -1082,6 +1082,22 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         ActionTimelinePayloadEditor payloads(self->editor(), self->registry());
         return project(vm, payloads.fitClipToBlock(*parsedItemId));
     });
+    actionEditor.addFunc("fitClipToNaturalDuration",
+                         [vm](ScriptActionTimelineEditor* self, const std::string& itemId) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
+        auto parsedItemId = LogicalId::parse(itemId);
+        if (!parsedItemId)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is invalid", "itemId");
+        const auto* provider = cap::query<action::IActionVfxDurationProvider>();
+        ActionTimelinePayloadEditor payloads(self->editor(), self->registry());
+        OptionalRef<const action::IActionVfxDurationProvider> borrowed;
+        if (provider) borrowed = std::cref(*provider);
+        return project(vm, payloads.fitClipToNaturalDuration(*parsedItemId, borrowed));
+    });
+    actionEditor.addFunc("hasVfxDurationProvider", [](ScriptActionTimelineEditor*) {
+        return cap::query<action::IActionVfxDurationProvider>() != nullptr;
+    });
     actionEditor.addFunc("editItemDetails", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                   const std::string& type, const std::string& payloadJson) {
         auto parsedItemId = LogicalId::parse(itemId);

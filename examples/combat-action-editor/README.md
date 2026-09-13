@@ -33,7 +33,9 @@ Controls:
   same undo/redo history. Audio, VFX and Prefab blocks expose typed resource,
   playback, lifecycle and shared spatial controls. VFX states can atomically
   fit their block duration to the trimmed clip at 1.0x speed, or fit the clip
-  end to the current block duration. Audio additionally exposes
+  end to the current block duration. When the Particles provider is loaded,
+  **Use Asset Duration** reads the real finite emitter/lifetime data instead
+  of asking the author to copy a duration by hand. Audio additionally exposes
   a random clip URI pool, deterministic pitch variation, spatial blend and
   attenuation distances, and exit fade controls; the advanced payload JSON
   remains available for extensions. Each typed edit merges only its fields,

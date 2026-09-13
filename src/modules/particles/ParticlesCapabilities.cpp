@@ -2,6 +2,7 @@
 #include "action/ActionPreview.h"
 #include "action/ActionSpatialBlock.h"
 #include "action/ActionVfxBlock.h"
+#include "action/ActionVfxDuration.h"
 #include "common/Capability.h"
 #include "common/EntitySpatialResolver.h"
 #include "common/ParticlesQuery.h"
@@ -439,12 +440,35 @@ public:
     }
 };
 
+class ActionVfxDurationProvider final : public eve::action::IActionVfxDurationProvider {
+public:
+    eve::Result<eve::Duration> naturalDuration(std::string_view uri) const override {
+        if (uri.empty())
+            return actionFailure<eve::Duration>(eve::DiagnosticCode::InvalidArgument,
+                                                "VFX duration URI must be non-empty", "uri");
+        auto* particles = eve::ModuleManager::getInstance<Particles>("Particles");
+        if (!particles)
+            return actionFailure<eve::Duration>(eve::DiagnosticCode::NotFound,
+                                                "VFX duration requires the Particles module", "particles");
+        std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(std::string(uri)));
+        if (!effect)
+            return actionFailure<eve::Duration>(
+                eve::DiagnosticCode::NotFound,
+                particles->getLastEffectError().empty() ? "VFX duration resource could not be loaded"
+                                                        : particles->getLastEffectError(),
+                "uri");
+        return effect->naturalDuration();
+    }
+};
+
 }  // namespace
 
 void registerParticlesCapabilities() {
     static ParticlesQueryImpl impl;
     static ParticleActionProvider actionProvider;
+    static ActionVfxDurationProvider durationProvider;
     eve::cap::provide<eve::IParticlesQuery>(&impl);
+    eve::cap::provide<eve::action::IActionVfxDurationProvider>(&durationProvider);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
     eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
 }

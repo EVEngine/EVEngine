@@ -5,6 +5,16 @@
 
 namespace {
 
+class FixedVfxDurationProvider final : public eve::action::IActionVfxDurationProvider {
+public:
+    eve::Result<eve::Duration> naturalDuration(std::string_view uri) const override {
+        lastUri = std::string(uri);
+        return eve::Result<eve::Duration>::success(eve::Duration::fromSeconds(1.8).value());
+    }
+
+    mutable std::string lastUri;
+};
+
 eve::LogicalId payloadId(const char* value) {
     auto parsed = eve::LogicalId::parse(value);
     REQUIRE(parsed.has_value());
@@ -98,6 +108,16 @@ TEST_CASE("actionTimelinePayloadEditor.vfxClipFitCommandsAreAtomicAndUndoable") 
     CHECK_EQ(*fittedClip.value().at("extensionField").getIf<std::string>(), "preserved");
     REQUIRE(editor.undo().ok());
     CHECK_EQ(*payloads.payload(itemId).value().at("clipEndTime").getIf<double>(), 1.25);
+
+    FixedVfxDurationProvider provider;
+    REQUIRE(payloads.fitClipToNaturalDuration(itemId, std::cref(provider)).ok());
+    auto naturalClip = payloads.payload(itemId);
+    REQUIRE(naturalClip.ok());
+    CHECK_EQ(provider.lastUri, std::string("asset://vfx/slash.json"));
+    CHECK_EQ(*naturalClip.value().at("clipEndTime").getIf<double>(), 1.8);
+    CHECK_EQ(*naturalClip.value().at("extensionField").getIf<std::string>(), "preserved");
+    REQUIRE(editor.undo().ok());
+    CHECK_EQ(*payloads.payload(itemId).value().at("clipEndTime").getIf<double>(), 1.25);
 }
 
 TEST_CASE("actionTimelinePayloadEditor.vfxClipFitRejectsWrongShapeAndOutOfRangeWithoutMutation") {
@@ -115,6 +135,7 @@ TEST_CASE("actionTimelinePayloadEditor.vfxClipFitRejectsWrongShapeAndOutOfRangeW
     const auto revision = editor.target().revision();
     CHECK(!payloads.fitBlockToClip(payloadId("test-state:vfx")).ok());
     CHECK(!payloads.fitClipToBlock(payloadId("test-notify:vfx")).ok());
+    CHECK(!payloads.fitClipToNaturalDuration(payloadId("test-state:vfx"), std::nullopt).ok());
     CHECK_EQ(editor.target().revision(), revision);
     CHECK_EQ(editor.target().timeline().tracks.front().states.front().end.seconds(), 4.75);
 }

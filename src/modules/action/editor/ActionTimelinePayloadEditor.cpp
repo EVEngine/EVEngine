@@ -101,4 +101,30 @@ EditorResult<void> ActionTimelinePayloadEditor::fitClipToBlock(const LogicalId& 
     return editor_.editItem(itemId, item->time, item->end, item->type, std::move(merged));
 }
 
+EditorResult<void> ActionTimelinePayloadEditor::fitClipToNaturalDuration(
+    const LogicalId& itemId, OptionalRef<const action::IActionVfxDurationProvider> provider) {
+    const auto item = findPayloadItem(editor_.target().timeline(), itemId);
+    if (!item)
+        return payloadError("editor.action.timeline.payload-item-missing",
+                            "Editable action-block payload was not found");
+    if (item->kind != action::ActionTimelineEventKind::StateEnter ||
+        item->type.format() != "presentation:vfx-state")
+        return payloadError("editor.action.timeline.clip-fit-type",
+                            "Only VFX states can use a resource's natural duration");
+    if (!provider)
+        return eve::editing::failed<void>(
+            EditorStatus::Unsupported, RuleId("editor.action.timeline.vfx-duration-provider-missing"),
+            "VFX natural duration requires a loaded particle provider");
+    auto binding = action::ActionVfxBinding::fromPayload(item->payload, action::ActionVfxShape::State);
+    if (!binding) return EditorResult<void>::failure(binding.status());
+    auto duration = provider->get().naturalDuration(binding.value().uri);
+    if (!duration) return EditorResult<void>::failure(duration.status());
+    auto merged = item->payload;
+    merged.insert_or_assign("clipEndTime", duration.value().seconds());
+    action::ActionTimelineEvent event{item->kind, item->trackId, itemId, item->type, item->time, merged};
+    auto valid = registry_.validate(event);
+    if (!valid) return EditorResult<void>::failure(valid.status());
+    return editor_.editItem(itemId, item->time, item->end, item->type, std::move(merged));
+}
+
 }  // namespace eve::editor
