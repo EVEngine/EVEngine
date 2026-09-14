@@ -175,6 +175,43 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
         else
             node.cache =
                 spatial->sample(spacing, uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f));
+    } else if (node.operation == "grid.sample") {
+        const int   width   = intValue(node, "width", 8);
+        const int   depth   = intValue(node, "depth", 8);
+        const float spacing = floatValue(node, "spacing", 1.f);
+        if (width <= 0 || depth <= 0 || spacing <= 0.f)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id,
+                "grid.sample requires positive width, depth, and spacing: " + id);
+        const uint64_t expected = uint64_t(width) * uint64_t(depth);
+        if (maxNodeOutputPoints_ > 0 && expected > uint64_t(maxNodeOutputPoints_))
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "grid.sample exceeds node point budget at node: " + id);
+        node.cache = sampleGridPoints(width, depth, spacing, uint32_t(intValue(node, "seed", 1)),
+                                      floatValue(node, "jitter", 0.f));
+        const float originX = floatValue(node, "originX", 0.f);
+        const float originY = floatValue(node, "originY", 0.f);
+        const float originZ = floatValue(node, "originZ", 0.f);
+        if (originX != 0.f || originY != 0.f || originZ != 0.f)
+            node.cache = transformPointSet(node.cache, originX, originY, originZ, 0.f, 1.f, 1.f, 1.f);
+    } else if (node.operation == "poisson.sample") {
+        const int   width     = intValue(node, "width", 32);
+        const int   depth     = intValue(node, "depth", 32);
+        const float radius    = floatValue(node, "radius", 2.f);
+        const int   maxPoints = intValue(node, "maxPoints", 1000);
+        if (width < 0 || depth < 0 || radius <= 0.f || maxPoints < 0)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id,
+                "poisson.sample requires non-negative width/depth/maxPoints and positive radius: " + id);
+        if (maxNodeOutputPoints_ > 0 && uint64_t(maxPoints) > uint64_t(maxNodeOutputPoints_))
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "poisson.sample exceeds node point budget at node: " + id);
+        node.cache = poissonDiskPoints(width, depth, radius, uint32_t(intValue(node, "seed", 1)), maxPoints);
+        const float originX = floatValue(node, "originX", 0.f);
+        const float originY = floatValue(node, "originY", 0.f);
+        const float originZ = floatValue(node, "originZ", 0.f);
+        if (originX != 0.f || originY != 0.f || originZ != 0.f)
+            node.cache = transformPointSet(node.cache, originX, originY, originZ, 0.f, 1.f, 1.f, 1.f);
     } else if (node.operation == "spatial.filter") {
         auto spatialResult = resolveNodeSpatial(node);
         if (!first || !spatialResult.ok())
@@ -801,6 +838,17 @@ Result<void> PointGraph::validateNode(const std::string& id, std::unordered_map<
         if (node.operation == "mesh.sample" && spatial.value()->getKind() != "surface.mesh")
             return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
                                      "mesh.sample requires surface.mesh spatial data: " + id);
+    } else if (node.operation == "grid.sample") {
+        if (intValue(node, "width", 8) <= 0 || intValue(node, "depth", 8) <= 0 ||
+            floatValue(node, "spacing", 1.f) <= 0.f)
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
+                                     "grid.sample requires positive width, depth, and spacing: " + id);
+    } else if (node.operation == "poisson.sample") {
+        if (intValue(node, "width", 32) < 0 || intValue(node, "depth", 32) < 0 ||
+            floatValue(node, "radius", 2.f) <= 0.f || intValue(node, "maxPoints", 1000) < 0)
+            return nodeFailure<void>(
+                DiagnosticCode::InvalidArgument, id,
+                "poisson.sample requires non-negative width/depth/maxPoints and positive radius: " + id);
     }
     else if (node.operation == "biome.generate" && !node.biomeRules)
         return nodeFailure<void>(DiagnosticCode::InvalidArgument, id, "node has no biome rules: " + id);

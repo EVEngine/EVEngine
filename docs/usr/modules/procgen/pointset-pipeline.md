@@ -324,14 +324,16 @@ local trees = graph.execute("prune");
 ```
 
 支持的 operation 可用 `getOperationCount/getOperationId` 枚举，包括：
-`input`、`spatial.sample/filter/project`、`mesh.sample`、`spline.sample`、
+`input`、`spatial.sample/filter/project`、`mesh.sample`、`grid.sample`、`poisson.sample`、
+`spline.sample`、
 `spline.filter.distance`、`merge`、`points.union/intersect/difference`、`copy.points`、
 `transform`、`bounds.modify`、`density.remap`、`density.from.normal`、
 `attribute.math.float`、`attribute.copy/rename/delete/transfer`、`attribute.compare.float`、`attribute.select.float`、`filter.float/int/bool/string/slope`、`attribute.set.float/int/bool/vector/string`、
 `spawn.mesh`、`density.cull`、`self.prune`、`jitter`、`debug.disable/inspect`、`get.spatial/landscape/spline/points/actor`、`attribute.partition`、`attribute.noise.float`、`attribute.math.int/vector`、`attribute.set.data.float/int/string`、
 `biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
 
-相对 UE PCG 基础节点库，上述一等图节点覆盖了 Mesh/Spline Sampler、点集布尔
+相对 UE PCG 基础节点库，上述一等图节点覆盖了 Mesh/Spline Sampler、规则网格与 Poisson
+蓝噪声采样、点集布尔
 （Difference/Union/Intersection）、Bounds Modifier、Normal→Density、Static Mesh
 权重 Spawner，以及 Disable/Inspect 调试旁路。Landscape / Spline / Actor 源数据通过
 图级命名绑定（`setBindingSpatial` / `setBindingPoints`）与零输入 Get 节点
@@ -346,7 +348,10 @@ local trees = graph.execute("prune");
 Partition 与更丰富的 metadata 写入。
 
 `mesh.sample` 要求绑定 `surface.mesh` 空间数据（`SpatialData::meshSurface`）；误绑
-volume/heightfield 会在执行期失败。`spline.sample` 以控制点 PointSet 为输入，
+volume/heightfield 会在执行期失败。`grid.sample` / `poisson.sample` 为零输入生成节点，
+分别对应脚本 `procgen.sampleGrid` 与 `procgen.poissonDisk`：在 XZ 平面生成规则网格或
+Bridson 蓝噪声点集，并通过 `originX/Y/Z` 平移到世界坐标；二者都受 `setMaxNodeOutputPoints`
+预算约束。`spline.sample` 以控制点 PointSet 为输入，
 `spline.filter.distance` 用第二输入作为样条控制点做距离筛选。`points.*` 按稳定
 point id（legacy 回退到 position+seed）做集合运算，区别于 `merge` 的顺序拼接。
 `spawn.mesh` 按权重写入字符串属性（默认 `mesh`），供 Scene sink / 实例化消费；编辑器可用 `PcgInstancePublisher::planPublish/applyPublish` 发布批次，并用 `apply`/`planRemove` 撤销；

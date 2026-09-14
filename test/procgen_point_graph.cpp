@@ -553,6 +553,8 @@ TEST_CASE("procgen.pointGraph.expandsShapeGrammarAndRebindsExternalAssets") {
 
 TEST_CASE("procgen.pointGraph.exposesUeStyleBreadthNodes") {
     CHECK(PointGraph::getOperationInputCount("mesh.sample") == 0);
+    CHECK(PointGraph::getOperationInputCount("grid.sample") == 0);
+    CHECK(PointGraph::getOperationInputCount("poisson.sample") == 0);
     CHECK(PointGraph::getOperationInputCount("spline.sample") == 1);
     CHECK(PointGraph::getOperationInputCount("spline.filter.distance") == 2);
     CHECK(PointGraph::getOperationInputCount("points.union") == 2);
@@ -565,6 +567,77 @@ TEST_CASE("procgen.pointGraph.exposesUeStyleBreadthNodes") {
     CHECK(PointGraph::getOperationInputCount("debug.inspect") == 1);
     CHECK_EQ(PointGraph::getOperationParamKey("spline.sample", 2), std::string("lateralJitter"));
     CHECK_EQ(PointGraph::getOperationParamKey("spawn.mesh", 1), std::string("attribute"));
+    CHECK_EQ(PointGraph::getOperationParamKey("grid.sample", 0), std::string("width"));
+    CHECK_EQ(PointGraph::getOperationParamKey("poisson.sample", 2), std::string("radius"));
+}
+
+TEST_CASE("procgen.pointGraph.samplesGridAndPoissonDisk") {
+    PointGraph gridGraph;
+    CHECK(gridGraph.addNode("grid", "grid.sample"));
+    CHECK(gridGraph.setNodeInt("grid", "width", 4));
+    CHECK(gridGraph.setNodeInt("grid", "depth", 3));
+    CHECK(gridGraph.setNodeFloat("grid", "spacing", 2.f));
+    CHECK(gridGraph.setNodeInt("grid", "seed", 11));
+    CHECK(gridGraph.setNodeFloat("grid", "jitter", 0.f));
+    CHECK(gridGraph.setNodeFloat("grid", "originX", 10.f));
+    CHECK(gridGraph.setNodeFloat("grid", "originY", 1.f));
+    CHECK(gridGraph.setNodeFloat("grid", "originZ", -5.f));
+    CHECK(gridGraph.validate());
+    std::unique_ptr<PointSet> grid(gridGraph.execute("grid"));
+    REQUIRE(bool(grid));
+    CHECK_EQ(grid->getCount(), 12);
+    CHECK_EQ(grid->getX(0), 10.f);
+    CHECK_EQ(grid->getY(0), 1.f);
+    CHECK_EQ(grid->getZ(0), -5.f);
+
+    PointGraph again;
+    CHECK(again.addNode("grid", "grid.sample"));
+    CHECK(again.setNodeInt("grid", "width", 4));
+    CHECK(again.setNodeInt("grid", "depth", 3));
+    CHECK(again.setNodeFloat("grid", "spacing", 2.f));
+    CHECK(again.setNodeInt("grid", "seed", 11));
+    CHECK(again.setNodeFloat("grid", "originX", 10.f));
+    CHECK(again.setNodeFloat("grid", "originY", 1.f));
+    CHECK(again.setNodeFloat("grid", "originZ", -5.f));
+    std::unique_ptr<PointSet> gridB(again.execute("grid"));
+    REQUIRE(bool(gridB));
+    CHECK_EQ(gridB->getCount(), grid->getCount());
+    for (int i = 0; i < grid->getCount(); ++i) {
+        CHECK_EQ(gridB->getX(i), grid->getX(i));
+        CHECK_EQ(gridB->getZ(i), grid->getZ(i));
+        CHECK_EQ(gridB->getPointSeed(i), grid->getPointSeed(i));
+    }
+
+    PointGraph badGrid;
+    CHECK(badGrid.addNode("grid", "grid.sample"));
+    CHECK(badGrid.setNodeInt("grid", "width", 0));
+    CHECK(!badGrid.validate());
+
+    PointGraph poissonGraph;
+    CHECK(poissonGraph.addNode("scatter", "poisson.sample"));
+    CHECK(poissonGraph.setNodeInt("scatter", "width", 20));
+    CHECK(poissonGraph.setNodeInt("scatter", "depth", 20));
+    CHECK(poissonGraph.setNodeFloat("scatter", "radius", 2.f));
+    CHECK(poissonGraph.setNodeInt("scatter", "seed", 99));
+    CHECK(poissonGraph.setNodeInt("scatter", "maxPoints", 80));
+    CHECK(poissonGraph.setNodeFloat("scatter", "originX", 100.f));
+    CHECK(poissonGraph.validate());
+    std::unique_ptr<PointSet> scatter(poissonGraph.execute("scatter"));
+    REQUIRE(bool(scatter));
+    CHECK(scatter->getCount() > 0);
+    CHECK(scatter->getCount() <= 80);
+    CHECK(scatter->getX(0) >= 100.f);
+
+    PointGraph poissonBudget;
+    CHECK(poissonBudget.addNode("scatter", "poisson.sample"));
+    CHECK(poissonBudget.setNodeInt("scatter", "width", 50));
+    CHECK(poissonBudget.setNodeInt("scatter", "depth", 50));
+    CHECK(poissonBudget.setNodeFloat("scatter", "radius", 0.5f));
+    CHECK(poissonBudget.setNodeInt("scatter", "maxPoints", 200));
+    poissonBudget.setMaxNodeOutputPoints(50);
+    CHECK(poissonBudget.validate());
+    CHECK(!poissonBudget.execute("scatter"));
+    CHECK(poissonBudget.getError().find("budget") != std::string::npos);
 }
 
 TEST_CASE("procgen.pointGraph.samplesSplinesFiltersDistanceAndBooleans") {
