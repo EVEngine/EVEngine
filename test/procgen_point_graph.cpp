@@ -683,3 +683,131 @@ TEST_CASE("procgen.pointGraph.meshSampleRequiresMeshSurface") {
     REQUIRE(bool(sampled));
     CHECK(sampled->getCount() > 0);
 }
+
+
+TEST_CASE("procgen.pointGraph.exposesAttributeOps") {
+    CHECK(PointGraph::getOperationInputCount("attribute.copy") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.rename") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.delete") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.transfer") == 2);
+    CHECK(PointGraph::getOperationInputCount("attribute.set.int") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.set.bool") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.set.vector") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.compare.float") == 1);
+    CHECK(PointGraph::getOperationInputCount("attribute.select.float") == 1);
+    CHECK(PointGraph::getOperationInputCount("filter.int") == 1);
+    CHECK(PointGraph::getOperationInputCount("filter.bool") == 1);
+    CHECK_EQ(PointGraph::getOperationParamKey("attribute.transfer", 2), std::string("mode"));
+    CHECK_EQ(PointGraph::getOperationParamKey("attribute.compare.float", 1), std::string("comparison"));
+}
+
+TEST_CASE("procgen.pointGraph.copiesRenamesTransfersAndSelectsAttributes") {
+    PointSet source;
+    const int a = source.add(0.f, 0.f, 0.f);
+    const int b = source.add(10.f, 0.f, 0.f);
+    source.setDensity(a, 0.25f);
+    source.setDensity(b, 0.75f);
+    CHECK(source.trySetFloatAttribute(a, "age", 3.f).ok());
+    CHECK(source.trySetFloatAttribute(b, "age", 9.f).ok());
+    CHECK(source.trySetPointId(a, 11).ok());
+    CHECK(source.trySetPointId(b, 22).ok());
+
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("copyDensity", "attribute.copy"));
+    CHECK(graph.addNode("renameAge", "attribute.rename"));
+    CHECK(graph.addNode("tagLayer", "attribute.set.int"));
+    CHECK(graph.addNode("mark", "attribute.set.bool"));
+    CHECK(graph.addNode("compare", "attribute.compare.float"));
+    CHECK(graph.addNode("select", "attribute.select.float"));
+    CHECK(graph.addNode("filterHot", "filter.bool"));
+    CHECK(graph.setNodePoints("source", &source));
+    CHECK(graph.connect("source", "copyDensity"));
+    CHECK(graph.setNodeString("copyDensity", "source", "$Density"));
+    CHECK(graph.setNodeString("copyDensity", "target", "densityCopy"));
+    CHECK(graph.connect("copyDensity", "renameAge"));
+    CHECK(graph.setNodeString("renameAge", "from", "age"));
+    CHECK(graph.setNodeString("renameAge", "to", "years"));
+    CHECK(graph.connect("renameAge", "tagLayer"));
+    CHECK(graph.setNodeString("tagLayer", "attribute", "layer"));
+    CHECK(graph.setNodeInt("tagLayer", "value", 4));
+    CHECK(graph.connect("tagLayer", "mark"));
+    CHECK(graph.setNodeString("mark", "attribute", "keep"));
+    CHECK(graph.setNodeInt("mark", "value", 1));
+    CHECK(graph.connect("mark", "compare"));
+    CHECK(graph.setNodeString("compare", "attribute", "$Density"));
+    CHECK(graph.setNodeString("compare", "comparison", "gt"));
+    CHECK(graph.setNodeFloat("compare", "operand", 0.5f));
+    CHECK(graph.setNodeString("compare", "outputAttribute", "hot"));
+    CHECK(graph.connect("compare", "select"));
+    CHECK(graph.setNodeString("select", "conditionAttribute", "hot"));
+    CHECK(graph.setNodeString("select", "trueAttribute", "years"));
+    CHECK(graph.setNodeString("select", "falseAttribute", "densityCopy"));
+    CHECK(graph.setNodeString("select", "outputAttribute", "chosen"));
+    CHECK(graph.connect("select", "filterHot"));
+    CHECK(graph.setNodeString("filterHot", "attribute", "hot"));
+    CHECK(graph.setNodeInt("filterHot", "value", 1));
+    CHECK(graph.validate());
+
+    std::unique_ptr<PointSet> filtered(graph.execute("filterHot"));
+    REQUIRE(bool(filtered));
+    CHECK_EQ(filtered->getCount(), 1);
+    CHECK_EQ(filtered->getFloatAttribute(0, "densityCopy", -1.f), 0.75f);
+    CHECK_EQ(filtered->getFloatAttribute(0, "years", -1.f), 9.f);
+    CHECK_EQ(filtered->getIntAttribute(0, "layer", -1), 4);
+    CHECK(filtered->getBoolAttribute(0, "hot", false));
+    CHECK_EQ(filtered->getFloatAttribute(0, "chosen", -1.f), 9.f);
+    CHECK(!filtered->hasFloatAttribute(0, "age"));
+
+    PointSet donors;
+    const int d0 = donors.add(0.f, 0.f, 0.f);
+    const int d1 = donors.add(10.f, 0.f, 0.f);
+    CHECK(donors.trySetPointId(d0, 11).ok());
+    CHECK(donors.trySetPointId(d1, 22).ok());
+    CHECK(donors.trySetStringAttribute(d0, "biome", "meadow").ok());
+    CHECK(donors.trySetStringAttribute(d1, "biome", "forest").ok());
+
+    PointGraph transfer;
+    CHECK(transfer.addNode("targets", "input"));
+    CHECK(transfer.addNode("donors", "input"));
+    CHECK(transfer.addNode("paint", "attribute.transfer"));
+    CHECK(transfer.addNode("drop", "attribute.delete"));
+    CHECK(transfer.setNodePoints("targets", &source));
+    CHECK(transfer.setNodePoints("donors", &donors));
+    CHECK(transfer.connect("targets", "paint", 0));
+    CHECK(transfer.connect("donors", "paint", 1));
+    CHECK(transfer.setNodeString("paint", "attribute", "biome"));
+    CHECK(transfer.setNodeString("paint", "mode", "id"));
+    CHECK(transfer.connect("paint", "drop"));
+    CHECK(transfer.setNodeString("drop", "attribute", "age"));
+    CHECK(transfer.validate());
+    std::unique_ptr<PointSet> painted(transfer.execute("drop"));
+    REQUIRE(bool(painted));
+    CHECK_EQ(painted->getCount(), 2);
+    CHECK_EQ(painted->getStringAttribute(0, "biome", ""), std::string("meadow"));
+    CHECK_EQ(painted->getStringAttribute(1, "biome", ""), std::string("forest"));
+    CHECK(!painted->hasFloatAttribute(0, "age"));
+}
+
+TEST_CASE("procgen.pointGraph.writesBuiltinDensitySelector") {
+    PointSet points;
+    points.add(1.f, 2.f, 3.f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("set", "attribute.set.float"));
+    CHECK(graph.addNode("math", "attribute.math.float"));
+    CHECK(graph.setNodePoints("source", &points));
+    CHECK(graph.connect("source", "set"));
+    CHECK(graph.setNodeString("set", "attribute", "$Density"));
+    CHECK(graph.setNodeFloat("set", "value", 0.4f));
+    CHECK(graph.connect("set", "math"));
+    CHECK(graph.setNodeString("math", "attribute", "$Density"));
+    CHECK(graph.setNodeString("math", "outputAttribute", "scaled"));
+    CHECK(graph.setNodeString("math", "operation", "multiply"));
+    CHECK(graph.setNodeFloat("math", "operand", 2.f));
+    CHECK(graph.validate());
+    std::unique_ptr<PointSet> result(graph.execute("math"));
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getDensity(0), 0.4f);
+    CHECK_EQ(result->getFloatAttribute(0, "scaled", -1.f), 0.8f);
+}

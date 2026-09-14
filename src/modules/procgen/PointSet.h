@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::procgen {
@@ -186,6 +187,21 @@ public:
     ProcgenPoint& mutablePoint(std::size_t index);
     /** @brief Borrow the authoritative schema-bearing attribute table. */
     const AttributeTable& attributes() const noexcept { return attributes_; }
+    /**
+     * @brief Rename one metadata column on this set.
+     * @return AttributeTable rename diagnostics without mutating on failure.
+     */
+    [[nodiscard]] Result<void> tryRenameAttribute(const std::string& from, const std::string& to);
+    /**
+     * @brief Delete one metadata column on this set.
+     * @return AttributeTable remove diagnostics without mutating on failure.
+     */
+    [[nodiscard]] Result<void> tryDeleteAttribute(const std::string& name);
+    /**
+     * @brief Copy one metadata column onto another name on this set.
+     * @return AttributeTable copy diagnostics without mutating on failure.
+     */
+    [[nodiscard]] Result<void> tryCopyAttribute(const std::string& from, const std::string& to);
 
 private:
     ProcgenPoint*       pointAt(int index);
@@ -237,16 +253,61 @@ PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bo
 /** @brief Linearly remap point density between ranges with optional output clamping. */
 PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax, float outputMin, float outputMax,
                            bool clampOutput);
-/** @brief Apply one scalar operation to a float metadata attribute. */
+/** @brief Return whether `name` is a known `$`-prefixed float point-field selector. */
+[[nodiscard]] bool isPointFloatSelector(std::string_view name) noexcept;
+/** @brief Return whether `name` is a valid float channel (builtin selector or metadata name). */
+[[nodiscard]] bool isPointFloatChannel(std::string_view name) noexcept;
+/** @brief Read a float metadata column or closed `$` point-field selector. */
+[[nodiscard]] Result<float> readPointFloatChannel(const PointSet& points, int index, std::string_view name,
+                                                    float defaultValue);
+/** @brief Write a float metadata column or closed `$` point-field selector. */
+[[nodiscard]] Result<void> writePointFloatChannel(PointSet& points, int index, std::string_view name, float value);
+/** @brief Apply one scalar operation to a float metadata attribute or `$` selector. */
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
                                  const std::string& outputAttribute, const std::string& operation, float operand,
                                  float defaultValue);
-/** @brief Select points whose named float attribute lies in an inclusive range. */
+/** @brief Select points whose named float attribute or `$` selector lies in an inclusive range. */
 PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
                                    bool invert);
 /** @brief Select points whose named string attribute equals a value. */
 PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
                                     bool invert);
+/** @brief Select points whose named int attribute lies in an inclusive range. */
+PointSet filterPointIntAttribute(const PointSet& input, const std::string& name, std::int64_t minValue,
+                                 std::int64_t maxValue, bool invert);
+/** @brief Select points whose named bool attribute equals a value. */
+PointSet filterPointBoolAttribute(const PointSet& input, const std::string& name, bool value, bool invert);
+/** @brief Copy one float channel or typed metadata column onto another name. */
+[[nodiscard]] Result<PointSet> copyPointAttribute(const PointSet& input, const std::string& source,
+                                                  const std::string& target);
+/** @brief Rename one metadata column. */
+[[nodiscard]] Result<PointSet> renamePointAttribute(const PointSet& input, const std::string& from,
+                                                    const std::string& to);
+/** @brief Delete one metadata column. */
+[[nodiscard]] Result<PointSet> deletePointAttribute(const PointSet& input, const std::string& name);
+/**
+ * @brief Transfer one attribute from `source` onto `target` points.
+ * @param mode `index`, `id`, or `nearest`.
+ */
+[[nodiscard]] Result<PointSet> transferPointAttribute(const PointSet& target, const PointSet& source,
+                                                      const std::string& attribute, const std::string& outputAttribute,
+                                                      const std::string& mode);
+/** @brief Write a constant int metadata column on every point. */
+PointSet setPointIntAttribute(const PointSet& input, const std::string& attribute, std::int64_t value);
+/** @brief Write a constant bool metadata column on every point. */
+PointSet setPointBoolAttribute(const PointSet& input, const std::string& attribute, bool value);
+/** @brief Write a constant vector metadata column on every point. */
+PointSet setPointVectorAttribute(const PointSet& input, const std::string& attribute, float x, float y, float z);
+/** @brief Compare a float channel against an operand and write a bool metadata column. */
+[[nodiscard]] Result<PointSet> comparePointFloatAttribute(const PointSet& input, const std::string& attribute,
+                                                          const std::string& comparison, float operand,
+                                                          const std::string& outputAttribute, float defaultValue);
+/** @brief Select between two float channels using a bool metadata condition. */
+[[nodiscard]] Result<PointSet> selectPointFloatAttribute(const PointSet& input, const std::string& conditionAttribute,
+                                                         const std::string& trueAttribute,
+                                                         const std::string& falseAttribute,
+                                                         const std::string& outputAttribute, float trueDefault,
+                                                         float falseDefault);
 /** @brief Deterministically keep points according to density and a root seed. */
 PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
 /**

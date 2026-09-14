@@ -434,6 +434,18 @@ bool PointSet::hasStringAttribute(int index, const std::string& name) const {
     return index >= 0 && attributes_.getString(size_t(index), name).has_value();
 }
 
+Result<void> PointSet::tryRenameAttribute(const std::string& from, const std::string& to) {
+    return attributes_.renameColumn(from, to);
+}
+
+Result<void> PointSet::tryDeleteAttribute(const std::string& name) {
+    return attributes_.removeColumn(name);
+}
+
+Result<void> PointSet::tryCopyAttribute(const std::string& from, const std::string& to) {
+    return attributes_.copyColumn(from, to);
+}
+
 std::string PointSet::getAttributeType(int index, const std::string& name) const {
     if (!pointAt(index) || !attributes_.has(size_t(index), name)) return {};
     const auto type = attributes_.typeOf(name);
@@ -985,42 +997,6 @@ PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax
     return result;
 }
 
-PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
-                                 const std::string& outputAttribute, const std::string& operation, float operand,
-                                 float defaultValue) {
-    PointSet result = input;
-    for (size_t index = 0; index < result.points().size(); ++index) {
-        const float value  = result.getFloatAttribute(int(index), attribute, defaultValue);
-        float output = value;
-        if (operation == "add")
-            output += operand;
-        else if (operation == "subtract")
-            output -= operand;
-        else if (operation == "multiply")
-            output *= operand;
-        else if (operation == "divide")
-            output /= operand;
-        else if (operation == "min")
-            output = std::min(output, operand);
-        else if (operation == "max")
-            output = std::max(output, operand);
-        result.trySetFloatAttribute(int(index), outputAttribute, output)
-            .expect("mathPointFloatAttribute output schema");
-    }
-    return result;
-}
-
-PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
-                                   bool invert) {
-    if (minValue > maxValue) std::swap(minValue, maxValue);
-    PointSet output;
-    for (size_t index = 0; index < input.points().size(); ++index) {
-        const auto value   = input.attributes().getFloat(index, name);
-        const bool matches = value && *value >= minValue && *value <= maxValue;
-        if (matches != invert) appendPointRow(output, input, index);
-    }
-    return output;
-}
 
 PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
                                     bool invert) {

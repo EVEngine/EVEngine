@@ -297,6 +297,9 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
         else if (attribute.empty())
             return nodeFailure<std::reference_wrapper<const PointSet>>(
                 DiagnosticCode::InvalidArgument, id, "attribute.math.float requires an attribute: " + id);
+        else if (!isPointFloatChannel(attribute) || !isPointFloatChannel(outputAttribute))
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "attribute.math.float has unknown float channel at node: " + id);
         else if (!operationKnown)
             return nodeFailure<std::reference_wrapper<const PointSet>>(
                 DiagnosticCode::InvalidArgument, id, "attribute.math.float has invalid operation at node: " + id);
@@ -371,12 +374,17 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
         else {
             node.cache                  = *first;
             const std::string attribute = stringValue(node, "attribute");
-            if (attribute.empty())
+            if (attribute.empty() || !isPointFloatChannel(attribute))
                 return nodeFailure<std::reference_wrapper<const PointSet>>(
                     DiagnosticCode::InvalidArgument, id, "attribute.set.float requires attribute: " + id);
-            else
-                for (int i = 0; i < node.cache.getCount(); ++i)
-                    node.cache.setFloatAttribute(i, attribute, floatValue(node, "value", 0.f));
+            else {
+                const float value = floatValue(node, "value", 0.f);
+                for (int i = 0; i < node.cache.getCount(); ++i) {
+                    auto written = writePointFloatChannel(node.cache, i, attribute, value);
+                    if (!written.ok())
+                        return ResultRef<const PointSet>::failure(nestedFailure(id, written.status()));
+                }
+            }
         }
     } else if (node.operation == "attribute.set.string") {
         if (!first)
@@ -385,13 +393,124 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
         else {
             node.cache                  = *first;
             const std::string attribute = stringValue(node, "attribute");
-            if (attribute.empty())
+            if (attribute.empty() || attribute.front() == '$')
                 return nodeFailure<std::reference_wrapper<const PointSet>>(
                     DiagnosticCode::InvalidArgument, id, "attribute.set.string requires attribute: " + id);
             else
                 for (int i = 0; i < node.cache.getCount(); ++i)
                     node.cache.setStringAttribute(i, attribute, stringValue(node, "value"));
         }
+    } else if (node.operation == "attribute.set.int") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.set.int requires input: " + id);
+        else {
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty() || attribute.front() == '$')
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, "attribute.set.int requires attribute: " + id);
+            node.cache = setPointIntAttribute(*first, attribute, intValue(node, "value", 0));
+        }
+    } else if (node.operation == "attribute.set.bool") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.set.bool requires input: " + id);
+        else {
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty() || attribute.front() == '$')
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, "attribute.set.bool requires attribute: " + id);
+            node.cache = setPointBoolAttribute(*first, attribute, intValue(node, "value", 0) != 0);
+        }
+    } else if (node.operation == "attribute.set.vector") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.set.vector requires input: " + id);
+        else {
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty() || attribute.front() == '$')
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, "attribute.set.vector requires attribute: " + id);
+            node.cache = setPointVectorAttribute(*first, attribute, floatValue(node, "x", 0.f),
+                                                 floatValue(node, "y", 0.f), floatValue(node, "z", 0.f));
+        }
+    } else if (node.operation == "attribute.copy") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.copy requires input: " + id);
+        else {
+            auto copied = copyPointAttribute(*first, stringValue(node, "source"), stringValue(node, "target"));
+            if (!copied.ok()) return ResultRef<const PointSet>::failure(nestedFailure(id, copied.status()));
+            node.cache = std::move(copied).takeValue();
+        }
+    } else if (node.operation == "attribute.rename") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.rename requires input: " + id);
+        else {
+            auto renamed = renamePointAttribute(*first, stringValue(node, "from"), stringValue(node, "to"));
+            if (!renamed.ok()) return ResultRef<const PointSet>::failure(nestedFailure(id, renamed.status()));
+            node.cache = std::move(renamed).takeValue();
+        }
+    } else if (node.operation == "attribute.delete") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.delete requires input: " + id);
+        else {
+            auto deleted = deletePointAttribute(*first, stringValue(node, "attribute"));
+            if (!deleted.ok()) return ResultRef<const PointSet>::failure(nestedFailure(id, deleted.status()));
+            node.cache = std::move(deleted).takeValue();
+        }
+    } else if (node.operation == "attribute.transfer") {
+        if (!first || !second)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.transfer requires two inputs: " + id);
+        else {
+            auto transferred =
+                transferPointAttribute(*first, *second, stringValue(node, "attribute"),
+                                       stringValue(node, "outputAttribute"), stringValue(node, "mode", "nearest"));
+            if (!transferred.ok())
+                return ResultRef<const PointSet>::failure(nestedFailure(id, transferred.status()));
+            node.cache = std::move(transferred).takeValue();
+        }
+    } else if (node.operation == "attribute.compare.float") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "attribute.compare.float requires input: " + id);
+        else {
+            auto compared = comparePointFloatAttribute(
+                *first, stringValue(node, "attribute"), stringValue(node, "comparison", "gt"),
+                floatValue(node, "operand", 0.f), stringValue(node, "outputAttribute", "match"),
+                floatValue(node, "defaultValue", 0.f));
+            if (!compared.ok()) return ResultRef<const PointSet>::failure(nestedFailure(id, compared.status()));
+            node.cache = std::move(compared).takeValue();
+        }
+    } else if (node.operation == "attribute.select.float") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "attribute.select.float requires input: " + id);
+        else {
+            auto selected = selectPointFloatAttribute(
+                *first, stringValue(node, "conditionAttribute"), stringValue(node, "trueAttribute"),
+                stringValue(node, "falseAttribute"), stringValue(node, "outputAttribute"),
+                floatValue(node, "trueDefault", 0.f), floatValue(node, "falseDefault", 0.f));
+            if (!selected.ok()) return ResultRef<const PointSet>::failure(nestedFailure(id, selected.status()));
+            node.cache = std::move(selected).takeValue();
+        }
+    } else if (node.operation == "filter.int") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "filter.int requires input: " + id);
+        else
+            node.cache = filterPointIntAttribute(*first, stringValue(node, "attribute"), intValue(node, "min", 0),
+                                                 intValue(node, "max", 0), intValue(node, "invert", 0) != 0);
+    } else if (node.operation == "filter.bool") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "filter.bool requires input: " + id);
+        else
+            node.cache = filterPointBoolAttribute(*first, stringValue(node, "attribute"),
+                                                  intValue(node, "value", 1) != 0, intValue(node, "invert", 0) != 0);
     } else if (node.operation == "spawn.mesh") {
         if (!first)
             return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,

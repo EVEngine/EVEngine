@@ -327,7 +327,7 @@ local trees = graph.execute("prune");
 `input`、`spatial.sample/filter/project`、`mesh.sample`、`spline.sample`、
 `spline.filter.distance`、`merge`、`points.union/intersect/difference`、`copy.points`、
 `transform`、`bounds.modify`、`density.remap`、`density.from.normal`、
-`attribute.math.float`、`filter.float/string/slope`、`attribute.set.float/string`、
+`attribute.math.float`、`attribute.copy/rename/delete/transfer`、`attribute.compare.float`、`attribute.select.float`、`filter.float/int/bool/string/slope`、`attribute.set.float/int/bool/vector/string`、
 `spawn.mesh`、`density.cull`、`self.prune`、`jitter`、`debug.disable/inspect`、
 `biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
 
@@ -335,8 +335,7 @@ local trees = graph.execute("prune");
 （Difference/Union/Intersection）、Bounds Modifier、Normal→Density、Static Mesh
 权重 Spawner，以及 Disable/Inspect 调试旁路。Landscape / Spline / Actor 源数据仍通过
 `setNodeSpatial` / `setNodePoints` 外部绑定（对应 UE Get Landscape/Spline/Actor Data
-的数据注入角色），不做成从图内拉取关卡对象的隐式节点。Blueprint 自定义节点与
-Attribute Domain Selector 语法不在对标范围内。
+的数据注入角色），不做成从图内拉取关卡对象的隐式节点。Blueprint 自定义节点与完整的 UE Attribute Domain Selector 语法（多 Domain / `@Data.` 文法）不在对标范围内；图节点支持封闭的 `$Density` / `$Position.X` 等点字段选择器，以及copy/rename/delete/transfer/compare/select 与 int/bool/vector 属性写入。
 
 `mesh.sample` 要求绑定 `surface.mesh` 空间数据（`SpatialData::meshSurface`）；误绑
 volume/heightfield 会在执行期失败。`spline.sample` 以控制点 PointSet 为输入，
@@ -355,8 +354,11 @@ point id（legacy 回退到 position+seed）做集合运算，区别于 `merge` 
 yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 source metadata 胜出。
 `maxPoints` 在笛卡尔积分配前实施硬上限，防止错误图造成编辑器或流式任务内存爆炸。
 `density.remap` 线性映射 density 范围并可钳制输出；`attribute.math.float` 对 float metadata
-执行 add/subtract/multiply/divide/min/max，可写入新属性并为缺失输入提供确定性默认值。
-零输入范围、非法 operation 和除零会作为节点执行错误报告。
+或 `$Density` 等封闭点字段选择器执行 add/subtract/multiply/divide/min/max，可写入新属性或回写
+选择器，并为缺失 metadata 提供确定性默认值。`attribute.copy` 可在 metadata 列之间复制，也可
+在 `$` 选择器与 float 列之间搬运；`attribute.transfer` 按 index/id/nearest 从第二输入取属性；
+`attribute.compare.float` / `attribute.select.float` 提供比较与条件选择。零输入范围、非法
+operation、未知选择器和除零会作为节点执行错误报告。
 
 `execute(outputId)` 只求值该输出的祖先节点；没有配置变化时复用缓存。节点参数、输入或
 空间数据变化时只失效该节点及其下游，未受影响的分支继续复用结果；`getRevision()` 提供

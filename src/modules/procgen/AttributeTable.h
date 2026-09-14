@@ -59,6 +59,24 @@ public:
     /** @brief Return whether a row contains a value in the named column. */
     [[nodiscard]] bool has(std::size_t row, std::string_view name) const;
 
+    /**
+     * @brief Rename one metadata column without changing values or type.
+     * @return Success, NotFound when `from` is absent, AlreadyExists when `to` collides,
+     *         or InvalidArgument for empty / `$`-prefixed names.
+     */
+    [[nodiscard]] Result<void> renameColumn(std::string_view from, std::string_view to);
+    /**
+     * @brief Remove one metadata column and its values from every row.
+     * @return Success, NotFound when absent, or InvalidArgument for empty / `$`-prefixed names.
+     */
+    [[nodiscard]] Result<void> removeColumn(std::string_view name);
+    /**
+     * @brief Copy one typed column onto another name, creating or overwriting a compatible target.
+     * @return Success, NotFound when `from` is absent, TypeMismatch when `to` exists with another
+     *         type, or InvalidArgument for empty / `$`-prefixed names.
+     */
+    [[nodiscard]] Result<void> copyColumn(std::string_view from, std::string_view to);
+
     /** @brief Set a float value, rejecting an incompatible existing schema. */
     [[nodiscard]] Result<void> setFloat(std::size_t row, std::string_view name, float value);
     /** @brief Set an integer value, rejecting an incompatible existing schema. */
