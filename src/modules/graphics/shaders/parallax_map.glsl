@@ -86,4 +86,32 @@ vec2 parallaxMappedUV(sampler2D heightMap, vec2 uv, vec3 N, vec3 worldPos, vec3 
     return parallaxOcclusionUV(heightMap, uv, viewTS, scale, minLayers, maxLayers);
 }
 
+/**
+ * Silhouette POM coverage in raw mesh UV space.
+ * padding — soft border in UV units (0 = hard clip at the [0,1] chart edge).
+ * Returns 1 inside the chart, 0 when POM has overshot the mesh silhouette.
+ */
+float silPomCoverage(vec2 displacedUV, float padding) {
+    vec2 minCheck = displacedUV - vec2(padding);
+    vec2 maxCheck = (1.0 + padding) - displacedUV;
+    return (minCheck.x >= 0.0 && minCheck.y >= 0.0 &&
+            maxCheck.x >= 0.0 && maxCheck.y >= 0.0)
+               ? 1.0
+               : 0.0;
+}
+
+/**
+ * POM + optional silhouette clip. xy = displaced UV, z = coverage (1 = keep).
+ * When silhouetteEnabled < 0.5, coverage is always 1 (classic POM).
+ */
+vec3 parallaxMappedUVSilhouette(sampler2D heightMap, vec2 uv, vec3 N, vec3 worldPos, vec3 V,
+                                float scale, float minLayers, float maxLayers,
+                                float silhouetteEnabled, float padding) {
+    vec2 mapped = parallaxMappedUV(heightMap, uv, N, worldPos, V, scale, minLayers, maxLayers);
+    float coverage = 1.0;
+    if (silhouetteEnabled > 0.5)
+        coverage = silPomCoverage(mapped, padding);
+    return vec3(mapped, coverage);
+}
+
 #endif

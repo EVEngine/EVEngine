@@ -8,6 +8,9 @@
 using eve::graphics::ParallaxParams;
 using eve::graphics::clampParallaxParams;
 using eve::graphics::parallaxOffsetUV;
+using eve::graphics::silPomCoverage;
+using eve::graphics::ssdmCoverage;
+using eve::graphics::ssdmScreenOffset;
 
 TEST_CASE("ParallaxMap.scaleZeroIsIdentity") {
     float ou = -1.f, ov = -1.f;
@@ -43,4 +46,27 @@ TEST_CASE("ParallaxMap.clampParams") {
     clampParallaxParams(p);
     CHECK(p.scale == 0.f);
     CHECK(p.maxLayers == 16.f);
+}
+
+TEST_CASE("ParallaxMap.silPomCoverageClipsOutsideChart") {
+    CHECK(silPomCoverage(0.5f, 0.5f, 0.f) == 1.f);
+    CHECK(silPomCoverage(0.0f, 0.0f, 0.f) == 1.f);
+    CHECK(silPomCoverage(1.0f, 1.0f, 0.f) == 1.f);
+    CHECK(silPomCoverage(-0.01f, 0.5f, 0.f) == 0.f);
+    CHECK(silPomCoverage(0.5f, 1.01f, 0.f) == 0.f);
+    // Padding expands the keep region.
+    CHECK(silPomCoverage(-0.01f, 0.5f, 0.02f) == 1.f);
+}
+
+TEST_CASE("ParallaxMap.ssdmOffsetScalesWithHeight") {
+    float ox0 = 0.f, oy0 = 0.f;
+    float ox1 = 0.f, oy1 = 0.f;
+    ssdmScreenOffset(0.0f, 1.0f, 0.0f, 0.05f, ox0, oy0);
+    ssdmScreenOffset(1.0f, 1.0f, 0.0f, 0.05f, ox1, oy1);
+    CHECK(std::fabs(ox0) < 1e-6f);
+    CHECK(std::fabs(oy0) < 1e-6f);
+    CHECK(std::fabs(ox1 - 0.05f) < 1e-5f);
+    CHECK(std::fabs(oy1) < 1e-6f);
+    CHECK(ssdmCoverage(0.9f, 0.5f, 0.15f, 0.f, 0.f) == 0.f);
+    CHECK(ssdmCoverage(0.9f, 0.5f, 0.05f, 0.f, 0.f) == 1.f);
 }
