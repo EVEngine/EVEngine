@@ -1370,8 +1370,10 @@ jobs:
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
         # PRs cannot populate the shared sccache. A new compiler flag set is
-        # therefore a cold build; run 34596121051 reached 67% after 55 minutes.
-        timeout-minutes: 100
+        # therefore a cold build; run 34596121051 reached 67% after 55 minutes,
+        # and run 34823491554 timed out at ~94% after 100 minutes.
+        # Job budget is 270m; leave headroom for the 90m test step.
+        timeout-minutes: 130
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
