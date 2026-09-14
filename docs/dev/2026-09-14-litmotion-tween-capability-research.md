@@ -227,7 +227,7 @@ Squirrel 侧对象若必须存在，用轻量 handle wrapper（只持 `MotionHan
 
 明确：兼容保留 `Tween`；新能力走 `Motion*`；跨模块只经 binder 接口。
 
-### Phase 1 — DX 与绑定（最高价值）
+### Phase 1 — DX 与绑定（最高价值）✅ 已落地（本分支）
 
 - `MotionBuilder` + float/Vec2/Vec3 binder
 - `MotionHandle`：complete / cancel / isActive

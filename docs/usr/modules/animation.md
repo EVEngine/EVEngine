@@ -2,16 +2,52 @@
 
 **脚本入口：** `eve.Animation()`
 
-支持八类能力：
+支持九类能力：
 
-1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
-2. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
-3. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
-4. **3D 骨骼动画播放与动画图**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、`AnimGraph`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
-5. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
-6. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
-7. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
-8. **程序化骨骼**：`DynamicBoneSolver` 提供弹簧骨、碰撞、风场和距离休眠；`FootIKSolver` 提供地面探测、脚掌对齐、锁足和骨盆补偿
+1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）——兼容保留
+2. **Motion（LitMotion 风格）**：typed float/Vec2/Vec3 补间，Builder + Push Bind + Handle
+3. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
+4. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
+5. **3D 骨骼动画播放与动画图**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、`AnimGraph`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+6. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
+7. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
+8. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
+9. **程序化骨骼**：`DynamicBoneSolver` 提供弹簧骨、碰撞、风场和距离休眠；`FootIKSolver` 提供地面探测、脚掌对齐、锁足和骨盆补偿
+
+## Motion（LitMotion 风格 Push 补间）
+
+C++ 入口（Phase 1）：`Animation::motion` / `motionVec2` / `motionVec3` 返回 Builder；
+`bind(sink)` 时入库播放。Sink 由调用方提供（`FloatPointerSink` / 自定义
+`IMotionFloatSink`），跨模块写回不要让 `animation` 直接 include 上层。
+
+```cpp
+float x = 0.f;
+FloatPointerSink sink(&x);
+auto handle = anim->motion(0.f, 200.f, 0.6f)
+                  .ease("outQuad")
+                  .delay(0.1f)
+                  .loops(2, MotionLoopMode::Yoyo)
+                  .bind(sink)
+                  .expect("spawn");
+anim->advance(step);          // 与 Tween 共用 SimulationStep 泵
+anim->motions().complete(handle); // 跳到终点并触发 onComplete
+anim->motions().cancel(handle);   // 取消并触发 onCancel
+```
+
+无 sink 时可 `run()`，再用 `motions().floatValue(handle)` 拉取当前值。
+脚本侧完整 fluent/bind API 与 Sequence / Punch 见后续 Phase。
+
+## 基本用法（Tween）
+
+```squirrel
+local anim = eve.Animation();
+local move = anim.newTween(0.6);
+move.setFrom("x", 0);
+move.setTo("x", 200);
+move.setEase("outQuad");
+move.start();
+anim.update(dt);
+```
 
 ## 程序化骨骼与 Foot IK
 

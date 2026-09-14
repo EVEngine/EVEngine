@@ -1,5 +1,8 @@
 #pragma once
 
+#include "animation/MotionBuilder.h"
+#include "animation/MotionRuntime.h"
+#include "animation/MotionTypes.h"
 #include "animation/Tween.h"
 #include "common/Module.h"
 #include "common/Time.h"
@@ -208,7 +211,21 @@ public:
      */
     AnimTrail *newTrail(int capacity = 64);
 
-    /** @brief Advance all registered tweens, sprite anims, and spine anims. */
+    /**
+     * @brief LitMotion-style float motion builder (C++ fluent API).
+     * @example runtime().motion(0.f, 1.f, 0.5f).ease("outQuad").bind(sink);
+     */
+    [[nodiscard]] MotionBuilder motion(float from, float to, float duration);
+    /** @brief LitMotion-style Vec2 motion builder. */
+    [[nodiscard]] MotionVec2Builder motionVec2(MotionVec2 from, MotionVec2 to, float duration);
+    /** @brief LitMotion-style Vec3 motion builder. */
+    [[nodiscard]] MotionVec3Builder motionVec3(MotionVec3 from, MotionVec3 to, float duration);
+
+    /** @brief Shared motion storage for builders and handle queries. */
+    [[nodiscard]] MotionRuntime &motions() noexcept { return motions_; }
+    [[nodiscard]] const MotionRuntime &motions() const noexcept { return motions_; }
+
+    /** @brief Advance all registered tweens, motions, sprite anims, and spine anims. */
     [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
 
     /** @brief Last scheduler tick consumed by the checked module pump. */
@@ -218,6 +235,7 @@ public:
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
+    int getMotionCount() const { return motions_.activeCount(); }
     int getSpriteAnimCount() const { return static_cast<int>(spriteAnims_.size()); }
     int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
     int getActiveCount() const;
@@ -243,6 +261,7 @@ private:
     std::vector<Tween *>      tweens_;
     std::vector<SpriteAnim *> spriteAnims_;
     std::vector<SpineAnim *>  spineAnims_;
+    MotionRuntime             motions_;
     eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
     bool                      hasLastTick_ = false;
 };
