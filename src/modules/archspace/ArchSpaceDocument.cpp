@@ -1,5 +1,7 @@
 #include "archspace/ArchSpaceDocument.h"
 
+#include "archspace/ArchSpaceCatalog.h"
+
 #include <algorithm>
 #include <cmath>
 #include <unordered_map>
@@ -376,65 +378,23 @@ std::vector<std::string> Document::diagnostics() const {
 MeshBake Document::bakeMesh() const {
     MeshBake bake;
 
-    auto appendWallSegment = [&](const Node& wall, double y, double t0, double t1, double bottom, double top,
-                                 const std::string& id) {
-        if (t1 <= t0 + 1e-6 || top <= bottom + 1e-6) return;
-        const Vec3 a{wall.start.x + (wall.end.x - wall.start.x) * t0, y + bottom,
-                     wall.start.z + (wall.end.z - wall.start.z) * t0};
-        const Vec3 b{wall.start.x + (wall.end.x - wall.start.x) * t1, y + bottom,
-                     wall.start.z + (wall.end.z - wall.start.z) * t1};
-        appendBox(bake, a, b, wall.thickness, top - bottom, id);
-    };
-
     for (const auto& [id, node] : nodes_) {
         if (node.kind == NodeKind::Wall) {
-            const Node*  level = find(node.parentId);
-            const double y     = level ? level->elevation : 0.0;
-            const double len   = distance(node.start, node.end);
-            struct Span {
-                double      t0 = 0;
-                double      t1 = 0;
-                OpeningKind kind = OpeningKind::Door;
-                double      sill = 0;
-                double      oh   = 0;
-            };
-            std::vector<Span> openings;
+            const Node* level = find(node.parentId);
+            const double y = level ? level->elevation : 0.0;
+            std::vector<const Node*> openings;
+            openings.reserve(node.children.size());
             for (const auto& childId : node.children) {
                 const Node* child = find(childId);
-                if (!child || child->kind != NodeKind::Opening || len <= kEps) continue;
-                const double halfT = (child->width * 0.5) / len;
-                Span         span;
-                span.t0   = std::clamp(child->t - halfT, 0.0, 1.0);
-                span.t1   = std::clamp(child->t + halfT, 0.0, 1.0);
-                span.kind = child->openingKind;
-                span.sill = child->sill;
-                span.oh   = child->openingHeight;
-                openings.push_back(span);
+                if (child && child->kind == NodeKind::Opening) openings.push_back(child);
             }
-            std::sort(openings.begin(), openings.end(),
-                      [](const Span& a, const Span& b) { return a.t0 < b.t0; });
-            double cursor = 0.0;
-            for (const Span& opening : openings) {
-                appendWallSegment(node, y, cursor, opening.t0, 0.0, node.height, id);
-                if (opening.kind == OpeningKind::Door) {
-                    const double lintel = opening.sill + opening.oh;
-                    appendWallSegment(node, y, opening.t0, opening.t1, lintel, node.height, id + ".lintel");
-                } else {
-                    appendWallSegment(node, y, opening.t0, opening.t1, 0.0, opening.sill, id + ".sill");
-                    const double top = opening.sill + opening.oh;
-                    appendWallSegment(node, y, opening.t0, opening.t1, top, node.height, id + ".head");
-                }
-                cursor = std::max(cursor, opening.t1);
-            }
-            appendWallSegment(node, y, cursor, 1.0, 0.0, node.height, id);
+            appendWallWithOpenings(bake, node, y, openings);
         } else if (node.kind == NodeKind::Slab) {
-            const Node*  level = find(node.parentId);
-            const double y     = level ? level->elevation : 0.0;
+            const Node* level = find(node.parentId);
+            const double y = level ? level->elevation : 0.0;
             appendSlab(bake, node.polygon, y, node.slabThickness, id);
         } else if (node.kind == NodeKind::Item) {
-            const double half = 0.25;
-            appendBox(bake, Vec3{node.position.x - half, node.position.y, node.position.z},
-                      Vec3{node.position.x + half, node.position.y, node.position.z}, half * 2.0, 0.9, id);
+            appendCatalogItem(bake, id, node.catalogId, node.position, node.yawDegrees);
         }
     }
     return bake;
