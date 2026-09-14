@@ -34,6 +34,15 @@ public:
     MotionBuilder &onCancel(MotionRuntime::VoidCallback cb);
     MotionBuilder &cancelOnError(bool enabled);
 
+    /** @brief Select Tween / Punch / Shake evaluation. */
+    MotionBuilder &style(MotionStyle style);
+    /** @brief Oscillation count for Punch/Shake (default 10). */
+    MotionBuilder &frequency(int count);
+    /** @brief Damping ratio for Punch/Shake (0 = none, 1 = full). */
+    MotionBuilder &dampingRatio(float ratio);
+    /** @brief Deterministic seed for Shake signs. */
+    MotionBuilder &seed(std::uint32_t value);
+
     /**
      * @brief Attach a sink without spawning (for MotionSequence).
      * @note Does not start playback; call run()/bind() or hand to a sequence.
@@ -75,6 +84,15 @@ public:
     MotionVec2Builder &onComplete(MotionRuntime::VoidCallback cb);
     MotionVec2Builder &onCancel(MotionRuntime::VoidCallback cb);
     MotionVec2Builder &cancelOnError(bool enabled);
+
+    /** @brief Select Tween / Punch / Shake evaluation. */
+    MotionVec2Builder &style(MotionStyle style);
+    /** @brief Oscillation count for Punch/Shake (default 10). */
+    MotionVec2Builder &frequency(int count);
+    /** @brief Damping ratio for Punch/Shake (0 = none, 1 = full). */
+    MotionVec2Builder &dampingRatio(float ratio);
+    /** @brief Deterministic seed for Shake signs. */
+    MotionVec2Builder &seed(std::uint32_t value);
     MotionVec2Builder &to(IMotionVec2Sink &sink);
 
     [[nodiscard]] eve::Result<MotionHandle> run();
@@ -104,6 +122,15 @@ public:
     MotionVec3Builder &onComplete(MotionRuntime::VoidCallback cb);
     MotionVec3Builder &onCancel(MotionRuntime::VoidCallback cb);
     MotionVec3Builder &cancelOnError(bool enabled);
+
+    /** @brief Select Tween / Punch / Shake evaluation. */
+    MotionVec3Builder &style(MotionStyle style);
+    /** @brief Oscillation count for Punch/Shake (default 10). */
+    MotionVec3Builder &frequency(int count);
+    /** @brief Damping ratio for Punch/Shake (0 = none, 1 = full). */
+    MotionVec3Builder &dampingRatio(float ratio);
+    /** @brief Deterministic seed for Shake signs. */
+    MotionVec3Builder &seed(std::uint32_t value);
     MotionVec3Builder &to(IMotionVec3Sink &sink);
 
     [[nodiscard]] eve::Result<MotionHandle> run();
@@ -118,6 +145,61 @@ private:
 
     MotionRuntime           &runtime_;
     MotionRuntime::Vec3Desc  desc_{};
+    bool                     consumed_ = false;
+};
+
+
+/** @brief Color fluent builder (Tween / lerp only). */
+class MotionColorBuilder {
+public:
+    MotionColorBuilder(MotionRuntime &runtime, MotionColor from, MotionColor to, float duration);
+
+    MotionColorBuilder &ease(std::string kind);
+    MotionColorBuilder &delay(float seconds);
+    MotionColorBuilder &loops(int count, MotionLoopMode mode = MotionLoopMode::Restart);
+    MotionColorBuilder &onUpdate(MotionRuntime::ColorCallback cb);
+    MotionColorBuilder &onComplete(MotionRuntime::VoidCallback cb);
+    MotionColorBuilder &onCancel(MotionRuntime::VoidCallback cb);
+    MotionColorBuilder &cancelOnError(bool enabled);
+    MotionColorBuilder &to(IMotionColorSink &sink);
+
+    [[nodiscard]] eve::Result<MotionHandle> run();
+    [[nodiscard]] eve::Result<MotionHandle> bind(IMotionColorSink &sink);
+
+    [[nodiscard]] MotionRuntime &runtime() noexcept { return runtime_; }
+    [[nodiscard]] const MotionRuntime &runtime() const noexcept { return runtime_; }
+    [[nodiscard]] eve::Result<MotionRuntime::ColorDesc> takeDesc();
+
+private:
+    MotionRuntime            &runtime_;
+    MotionRuntime::ColorDesc  desc_{};
+    bool                      consumed_ = false;
+};
+
+/** @brief Quaternion fluent builder (Tween / slerp only). */
+class MotionQuatBuilder {
+public:
+    MotionQuatBuilder(MotionRuntime &runtime, MotionQuat from, MotionQuat to, float duration);
+
+    MotionQuatBuilder &ease(std::string kind);
+    MotionQuatBuilder &delay(float seconds);
+    MotionQuatBuilder &loops(int count, MotionLoopMode mode = MotionLoopMode::Restart);
+    MotionQuatBuilder &onUpdate(MotionRuntime::QuatCallback cb);
+    MotionQuatBuilder &onComplete(MotionRuntime::VoidCallback cb);
+    MotionQuatBuilder &onCancel(MotionRuntime::VoidCallback cb);
+    MotionQuatBuilder &cancelOnError(bool enabled);
+    MotionQuatBuilder &to(IMotionQuatSink &sink);
+
+    [[nodiscard]] eve::Result<MotionHandle> run();
+    [[nodiscard]] eve::Result<MotionHandle> bind(IMotionQuatSink &sink);
+
+    [[nodiscard]] MotionRuntime &runtime() noexcept { return runtime_; }
+    [[nodiscard]] const MotionRuntime &runtime() const noexcept { return runtime_; }
+    [[nodiscard]] eve::Result<MotionRuntime::QuatDesc> takeDesc();
+
+private:
+    MotionRuntime           &runtime_;
+    MotionRuntime::QuatDesc  desc_{};
     bool                     consumed_ = false;
 };
 

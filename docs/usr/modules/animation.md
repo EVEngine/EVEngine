@@ -71,7 +71,29 @@ local sh = seq.run();
 print(sh.childCount());
 ```
 
-Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。Punch / Shake 与 Color/Quat 见后续 Phase。
+Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。
+
+Punch / Shake（有限时长阻尼正弦；`to`/`strength` 为振幅）与 Color/Quat：
+
+```cpp
+anim->punch(0.f, 12.f, 0.4f).frequency(18).dampingRatio(0.f).bind(sinkX);
+anim->shake(0.f, 0.2f, 0.5f).frequency(20).seed(7).bind(sinkX);
+anim->motionColor(MotionColor{0,0,0,1}, MotionColor{1,0,0,1}, 0.3f).bind(colorSink);
+anim->motionQuat(MotionQuat{0,0,0,1}, MotionQuat{0,1,0,0}, 0.3f).bind(quatSink);
+```
+
+脚本：
+
+```squirrel
+local p = anim.newMotionPunch(0, 12, 0.4);
+p.frequency(18);
+p.dampingRatio(0.0);
+local h = p.run();
+local s = anim.newMotionShake(0, 0.2, 0.5);
+s.frequency(20);
+s.seed(7);
+s.run();
+```
 
 ## 基本用法（Tween）
 
@@ -482,7 +504,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
-- Motion（LitMotion 风格）：`newMotion()`、`newMotionSequence()`、`getMotionCount()`；`MotionBuilder`：`ease()`、`delay()`、`loops()`、`cancelOnError()`、`run()`；`Motion`：`isActive()`、`value()`、`complete()`、`cancel()`；`MotionSequence`：`append()`、`join()`、`insert()`、`appendInterval()`、`cursor()`、`duration()`、`itemCount()`、`run()`；`MotionSequenceHandle`：`isActive()`、`childCount()`、`complete()`、`cancel()`
+- Motion（LitMotion 风格）：`newMotion()`、`newMotionPunch()`、`newMotionShake()`、`newMotionSequence()`、`getMotionCount()`；`MotionBuilder`：`ease()`、`delay()`、`loops()`、`cancelOnError()`、`frequency()`、`dampingRatio()`、`seed()`、`run()`；`Motion`：`isActive()`、`value()`、`complete()`、`cancel()`；`MotionSequence`：`append()`、`join()`、`insert()`、`appendInterval()`、`cursor()`、`duration()`、`itemCount()`、`run()`；`MotionSequenceHandle`：`isActive()`、`childCount()`、`complete()`、`cancel()`
 - 2D 帧动画：`newSpriteSheet()`、`newSpriteSheetFromSequence()`、`newSpriteSheetFromAtlasJson()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`、`getSpriteSequenceCacheCount()`、`getSpriteSequenceCacheBytes()`、`clearSpriteSequenceCache()`
 - Spine：`newSpineAtlas()`、`newSpineAtlasFromFile()`、`newSpineAtlasFromText()`、`newSpineSkeletonData()`、`newSpineSkeletonDataFromFile()`、`newSpineSkeletonDataFromJson()`、`newSpineSkeleton()`、`newSpineAnim()`、`getSpineAnimCount()`
 - `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`setTexture()`、`getTexture()`、`getFrameCount()`、`findFrame()`、`getFrameName()`、`getFrameX()`、`getFrameY()`、`getFrameWidth()`、`getFrameHeight()`、`getFrameSourceWidth()`、`getFrameSourceHeight()`、`getFrameOffsetX()`、`getFrameOffsetY()`、`applyToQuad()`

@@ -2,6 +2,8 @@
 
 #include "common/Diagnostic.h"
 
+#include <cstdint>
+
 namespace eve::animation {
 namespace {
 
@@ -218,6 +220,176 @@ eve::Result<MotionRuntime::Vec3Desc> MotionVec3Builder::takeDesc() {
         return eve::Result<MotionRuntime::Vec3Desc>::failure(consumedDiag("MotionVec3Builder.takeDesc"));
     consumed_ = true;
     return eve::Result<MotionRuntime::Vec3Desc>::success(std::move(desc_));
+}
+
+
+MotionBuilder &MotionBuilder::style(MotionStyle style) {
+    desc_.style = style;
+    return *this;
+}
+MotionBuilder &MotionBuilder::frequency(int count) {
+    desc_.frequency = count;
+    return *this;
+}
+MotionBuilder &MotionBuilder::dampingRatio(float ratio) {
+    desc_.dampingRatio = ratio;
+    return *this;
+}
+MotionBuilder &MotionBuilder::seed(std::uint32_t value) {
+    desc_.seed = value;
+    return *this;
+}
+
+MotionVec2Builder &MotionVec2Builder::style(MotionStyle style) {
+    desc_.style = style;
+    return *this;
+}
+MotionVec2Builder &MotionVec2Builder::frequency(int count) {
+    desc_.frequency = count;
+    return *this;
+}
+MotionVec2Builder &MotionVec2Builder::dampingRatio(float ratio) {
+    desc_.dampingRatio = ratio;
+    return *this;
+}
+MotionVec2Builder &MotionVec2Builder::seed(std::uint32_t value) {
+    desc_.seed = value;
+    return *this;
+}
+
+MotionVec3Builder &MotionVec3Builder::style(MotionStyle style) {
+    desc_.style = style;
+    return *this;
+}
+MotionVec3Builder &MotionVec3Builder::frequency(int count) {
+    desc_.frequency = count;
+    return *this;
+}
+MotionVec3Builder &MotionVec3Builder::dampingRatio(float ratio) {
+    desc_.dampingRatio = ratio;
+    return *this;
+}
+MotionVec3Builder &MotionVec3Builder::seed(std::uint32_t value) {
+    desc_.seed = value;
+    return *this;
+}
+
+MotionColorBuilder::MotionColorBuilder(MotionRuntime &runtime, MotionColor from, MotionColor to,
+                                       float duration)
+    : runtime_(runtime) {
+    desc_.from     = from;
+    desc_.to       = to;
+    desc_.duration = duration;
+}
+MotionColorBuilder &MotionColorBuilder::ease(std::string kind) {
+    desc_.ease = std::move(kind);
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::delay(float seconds) {
+    desc_.delay = seconds;
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::loops(int count, MotionLoopMode mode) {
+    desc_.loops    = count;
+    desc_.loopMode = mode;
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::onUpdate(MotionRuntime::ColorCallback cb) {
+    desc_.onUpdate = std::move(cb);
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::onComplete(MotionRuntime::VoidCallback cb) {
+    desc_.onComplete = std::move(cb);
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::onCancel(MotionRuntime::VoidCallback cb) {
+    desc_.onCancel = std::move(cb);
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::cancelOnError(bool enabled) {
+    desc_.cancelOnError = enabled;
+    return *this;
+}
+MotionColorBuilder &MotionColorBuilder::to(IMotionColorSink &sink) {
+    desc_.sink = &sink;
+    return *this;
+}
+eve::Result<MotionHandle> MotionColorBuilder::run() {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionColorBuilder.run"));
+    consumed_  = true;
+    desc_.sink = nullptr;
+    return runtime_.spawnColor(desc_);
+}
+eve::Result<MotionHandle> MotionColorBuilder::bind(IMotionColorSink &sink) {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionColorBuilder.bind"));
+    consumed_  = true;
+    desc_.sink = &sink;
+    return runtime_.spawnColor(desc_);
+}
+eve::Result<MotionRuntime::ColorDesc> MotionColorBuilder::takeDesc() {
+    if (consumed_)
+        return eve::Result<MotionRuntime::ColorDesc>::failure(consumedDiag("MotionColorBuilder.takeDesc"));
+    consumed_ = true;
+    return eve::Result<MotionRuntime::ColorDesc>::success(std::move(desc_));
+}
+
+MotionQuatBuilder::MotionQuatBuilder(MotionRuntime &runtime, MotionQuat from, MotionQuat to,
+                                     float duration)
+    : runtime_(runtime) {
+    desc_.from     = from;
+    desc_.to       = to;
+    desc_.duration = duration;
+}
+MotionQuatBuilder &MotionQuatBuilder::ease(std::string kind) {
+    desc_.ease = std::move(kind);
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::delay(float seconds) {
+    desc_.delay = seconds;
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::loops(int count, MotionLoopMode mode) {
+    desc_.loops    = count;
+    desc_.loopMode = mode;
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::onUpdate(MotionRuntime::QuatCallback cb) {
+    desc_.onUpdate = std::move(cb);
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::onComplete(MotionRuntime::VoidCallback cb) {
+    desc_.onComplete = std::move(cb);
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::onCancel(MotionRuntime::VoidCallback cb) {
+    desc_.onCancel = std::move(cb);
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::cancelOnError(bool enabled) {
+    desc_.cancelOnError = enabled;
+    return *this;
+}
+MotionQuatBuilder &MotionQuatBuilder::to(IMotionQuatSink &sink) {
+    desc_.sink = &sink;
+    return *this;
+}
+eve::Result<MotionHandle> MotionQuatBuilder::run() {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionQuatBuilder.run"));
+    consumed_  = true;
+    desc_.sink = nullptr;
+    return runtime_.spawnQuat(desc_);
+}
+eve::Result<MotionHandle> MotionQuatBuilder::bind(IMotionQuatSink &sink) {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionQuatBuilder.bind"));
+    consumed_  = true;
+    desc_.sink = &sink;
+    return runtime_.spawnQuat(desc_);
+}
+eve::Result<MotionRuntime::QuatDesc> MotionQuatBuilder::takeDesc() {
+    if (consumed_)
+        return eve::Result<MotionRuntime::QuatDesc>::failure(consumedDiag("MotionQuatBuilder.takeDesc"));
+    consumed_ = true;
+    return eve::Result<MotionRuntime::QuatDesc>::success(std::move(desc_));
 }
 
 }  // namespace eve::animation

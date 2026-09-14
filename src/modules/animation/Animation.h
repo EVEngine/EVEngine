@@ -223,6 +223,27 @@ public:
     [[nodiscard]] MotionVec3Builder motionVec3(MotionVec3 from, MotionVec3 to, float duration);
 
     /** @brief Create an empty LitMotion-style motion sequence on this module runtime. */
+
+    /**
+     * @brief LitMotion-style punch (damped sine about `from`, strength=`strength`).
+     * @example runtime().punch(0.f, 12.f, 0.4f).frequency(18).dampingRatio(0.f).bind(sink);
+     */
+    [[nodiscard]] MotionBuilder punch(float from, float strength, float duration);
+    /** @brief LitMotion-style shake (punch with deterministic random signs). */
+    [[nodiscard]] MotionBuilder shake(float from, float strength, float duration);
+    /** @brief Vec2 punch builder. */
+    [[nodiscard]] MotionVec2Builder punchVec2(MotionVec2 from, MotionVec2 strength, float duration);
+    /** @brief Vec2 shake builder. */
+    [[nodiscard]] MotionVec2Builder shakeVec2(MotionVec2 from, MotionVec2 strength, float duration);
+    /** @brief Vec3 punch builder. */
+    [[nodiscard]] MotionVec3Builder punchVec3(MotionVec3 from, MotionVec3 strength, float duration);
+    /** @brief Vec3 shake builder. */
+    [[nodiscard]] MotionVec3Builder shakeVec3(MotionVec3 from, MotionVec3 strength, float duration);
+    /** @brief Color tween builder (lerp). */
+    [[nodiscard]] MotionColorBuilder motionColor(MotionColor from, MotionColor to, float duration);
+    /** @brief Quaternion tween builder (slerp). */
+    [[nodiscard]] MotionQuatBuilder motionQuat(MotionQuat from, MotionQuat to, float duration);
+
     [[nodiscard]] MotionSequence sequence();
 
     /** @brief Shared motion storage for builders and handle queries. */

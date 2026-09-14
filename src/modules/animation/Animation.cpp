@@ -413,6 +413,40 @@ MotionVec3Builder Animation::motionVec3(MotionVec3 from, MotionVec3 to, float du
 
 MotionSequence Animation::sequence() { return MotionSequence(motions_); }
 
+MotionBuilder Animation::punch(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionBuilder Animation::shake(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec2Builder Animation::punchVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec2Builder Animation::shakeVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec3Builder Animation::punchVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec3Builder Animation::shakeVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionColorBuilder Animation::motionColor(MotionColor from, MotionColor to, float duration) {
+    return MotionColorBuilder(motions_, from, to, duration);
+}
+
+MotionQuatBuilder Animation::motionQuat(MotionQuat from, MotionQuat to, float duration) {
+    return MotionQuatBuilder(motions_, from, to, duration);
+}
+
+
+
 void Animation::registerTween(Tween *t) {
     if (!t) return;
     t->setOwner(this);

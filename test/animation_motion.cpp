@@ -233,3 +233,97 @@ TEST_CASE("animation.motion.sequenceRejectsInfiniteLoops") {
     CHECK(!result.ok());
     result.ignore("expected infinite-loop rejection");
 }
+
+TEST_CASE("animation.motion.punchShakeFloat") {
+    auto *anim = Animation::create();
+    float out = -1.f;
+    FloatPointerSink sink(&out);
+
+    auto punch = anim->punch(0.f, 10.f, 1.f).frequency(2).dampingRatio(0.f).bind(sink).expect("punch");
+    CHECK(anim->motions().isActive(punch));
+    CHECK(std::fabs(out - 0.f) < 1e-5f);  // t=0 envelope is 0
+
+    {
+        auto advanced = anim->advance(stepAt(1, 0.25));
+        REQUIRE(advanced.ok());
+    }
+    // frequency=2, undamped: sin(2*pi*0.25)=sin(pi/2)=1 => value ~= 10
+    CHECK(std::fabs(out - 10.f) < 1e-2f);
+
+    {
+        auto advanced = anim->advance(stepAt(2, 0.75));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(out - 0.f) < 1e-3f);  // settles at base
+    CHECK(!anim->motions().isActive(punch));
+
+    out = 0.f;
+    auto shake = anim->shake(0.f, 5.f, 0.5f).frequency(4).dampingRatio(0.f).seed(7).bind(sink).expect("shake");
+    {
+        auto advanced = anim->advance(stepAt(3, 0.1));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(out) > 1e-3f);  // moved off base
+    {
+        auto advanced = anim->advance(stepAt(4, 0.4));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(out - 0.f) < 1e-3f);
+    CHECK(!anim->motions().isActive(shake));
+}
+
+TEST_CASE("animation.motion.colorLerpAndQuatSlerp") {
+    auto *anim = Animation::create();
+    float r = 0, g = 0, b = 0, a = 0;
+    ColorPointerSink colorSink(&r, &g, &b, &a);
+
+    auto color = anim->motionColor(MotionColor{0.f, 0.f, 0.f, 1.f}, MotionColor{1.f, 0.f, 0.f, 1.f}, 1.f)
+                     .ease("linear")
+                     .bind(colorSink)
+                     .expect("color");
+    {
+        auto advanced = anim->advance(stepAt(1, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(r - 0.5f) < 1e-3f);
+    CHECK(std::fabs(a - 1.f) < 1e-5f);
+    {
+        auto advanced = anim->advance(stepAt(2, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(r - 1.f) < 1e-3f);
+    CHECK(!anim->motions().isActive(color));
+
+    float qx = 0, qy = 0, qz = 0, qw = 1;
+    QuatPointerSink quatSink(&qx, &qy, &qz, &qw);
+    // 180 deg about Y: (0,1,0,0) from identity
+    auto quat = anim->motionQuat(MotionQuat{0.f, 0.f, 0.f, 1.f}, MotionQuat{0.f, 1.f, 0.f, 0.f}, 1.f)
+                    .ease("linear")
+                    .bind(quatSink)
+                    .expect("quat");
+    {
+        auto advanced = anim->advance(stepAt(3, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    // slerp mid of identity -> (0,1,0,0) is ~ (0, sin(pi/4), 0, cos(pi/4))
+    CHECK(std::fabs(qy) > 0.1f);  // mid-slerp has Y component
+    CHECK(std::fabs(std::sqrt(qx * qx + qy * qy + qz * qz + qw * qw) - 1.f) < 1e-3f);
+    {
+        auto advanced = anim->advance(stepAt(4, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(qy - 1.f) < 1e-3f);
+    CHECK(std::fabs(qw - 0.f) < 1e-3f);
+    CHECK(!anim->motions().isActive(quat));
+}
+
+TEST_CASE("animation.motion.oscillationHelpers") {
+    CHECK(std::fabs(evaluateMotionOscillation(0.f, 10, 0.f)) < 1e-6f);
+    CHECK(std::fabs(evaluateMotionOscillation(1.f, 10, 0.f)) < 1e-6f);
+    CHECK(std::fabs(evaluateMotionOscillation(0.25f, 2, 0.f) - 1.f) < 1e-4f);
+    const float a = evaluateMotionShakeSign(42u, 8, 0.3f, 0);
+    const float b = evaluateMotionShakeSign(42u, 8, 0.3f, 0);
+    CHECK(std::fabs(a - b) < 1e-6f);  // deterministic
+    CHECK(a >= -1.f);
+    CHECK(a <= 1.f);
+}

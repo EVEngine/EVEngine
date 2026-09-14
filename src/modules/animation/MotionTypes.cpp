@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 
 #ifndef M_PI
@@ -136,6 +137,91 @@ float evaluateMotionEase(float t, const char *kind) {
     }
 
     throw Exception("Motion.ease: unknown kind '%s'", kind);
+}
+
+
+eve::Result<void> ColorPointerSink::write(MotionColor value) {
+    if (!r_ || !g_ || !b_ || !a_) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "ColorPointerSink.write: target is null"));
+    }
+    *r_ = value.r;
+    *g_ = value.g;
+    *b_ = value.b;
+    *a_ = value.a;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> QuatPointerSink::write(MotionQuat value) {
+    if (!x_ || !y_ || !z_ || !w_) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "QuatPointerSink.write: target is null"));
+    }
+    *x_ = value.x;
+    *y_ = value.y;
+    *z_ = value.z;
+    *w_ = value.w;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+float evaluateMotionOscillation(float t, int frequency, float dampingRatio) {
+    if (!(t > 0.f) || !(t < 1.f) || frequency < 1) return 0.f;
+    if (!std::isfinite(t) || !std::isfinite(dampingRatio)) return 0.f;
+    const float freq = static_cast<float>(frequency);
+    const float angular = freq * float(M_PI);
+    const float dampingFactor = dampingRatio * freq / (2.f * float(M_PI));
+    return std::sin(angular * t) * std::exp(-dampingFactor * t);
+}
+
+float evaluateMotionShakeSign(std::uint32_t seed, int frequency, float t, int axis) {
+    if (frequency < 1) frequency = 1;
+    const float clamped = std::clamp(t, 0.f, 1.f);
+    const int step = static_cast<int>(clamped * static_cast<float>(frequency) * 2.f);
+    std::uint32_t h = seed;
+    h ^= 0x9E3779B9u * (static_cast<std::uint32_t>(axis) + 1u);
+    h ^= 0x85EBCA6Bu * (static_cast<std::uint32_t>(step) + 1u);
+    h ^= static_cast<std::uint32_t>(frequency) * 0xC2B2AE35u;
+    h ^= h >> 16;
+    h *= 0x7FEB352Du;
+    h ^= h >> 15;
+    h *= 0x846CA68Bu;
+    h ^= h >> 16;
+    // Map to [-1, 1]
+    const float u = static_cast<float>(h & 0x00FFFFFFu) / static_cast<float>(0x00FFFFFFu);
+    return u * 2.f - 1.f;
+}
+
+MotionColor lerpMotionColor(MotionColor a, MotionColor b, float t) {
+    return MotionColor{a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t,
+                       a.a + (b.a - a.a) * t};
+}
+
+MotionQuat slerpMotionQuat(MotionQuat a, MotionQuat b, float t) {
+    auto normalize = [](MotionQuat q) {
+        const float len = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+        if (!(len > 0.f)) return MotionQuat{0.f, 0.f, 0.f, 1.f};
+        const float inv = 1.f / len;
+        return MotionQuat{q.x * inv, q.y * inv, q.z * inv, q.w * inv};
+    };
+    a = normalize(a);
+    b = normalize(b);
+    float dot = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+    if (dot < 0.f) {
+        b = MotionQuat{-b.x, -b.y, -b.z, -b.w};
+        dot = -dot;
+    }
+    constexpr float kEps = 0.9995f;
+    if (dot > kEps) {
+        return normalize(MotionQuat{a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t,
+                                    a.z + (b.z - a.z) * t, a.w + (b.w - a.w) * t});
+    }
+    const float theta0 = std::acos(std::clamp(dot, -1.f, 1.f));
+    const float theta = theta0 * t;
+    const float sinTheta0 = std::sin(theta0);
+    const float s0 = std::sin(theta0 - theta) / sinTheta0;
+    const float s1 = std::sin(theta) / sinTheta0;
+    return MotionQuat{a.x * s0 + b.x * s1, a.y * s0 + b.y * s1, a.z * s0 + b.z * s1,
+                      a.w * s0 + b.w * s1};
 }
 
 }  // namespace eve::animation

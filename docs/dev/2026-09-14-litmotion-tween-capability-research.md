@@ -243,7 +243,7 @@ Squirrel 侧对象若必须存在，用轻量 handle wrapper（只持 `MotionHan
 - 与 Phase 1 共用 `MotionRuntime` storage
 - 测试：`test/animation_motion.cpp`（ease + sequence）
 
-### Phase 3 — Punch / Shake + Color/Quat Adapter
+### Phase 3 — Punch / Shake + Color/Quat Adapter ✅ 已落地（本分支）
 
 - 专用振荡 Adapter；Color/Quat 插值（Quat 用 slerp）
 - 可选：文本 scramble（仅当 UI 文本模块有稳定 write sink）

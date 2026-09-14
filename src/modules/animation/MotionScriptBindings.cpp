@@ -9,6 +9,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cstdint>
 #include <string>
 #include <utility>
 
@@ -78,6 +79,11 @@ public:
         desc_.loopMode = parseLoopMode(mode);
     }
     void cancelOnError(bool enabled) { desc_.cancelOnError = enabled; }
+    void frequency(int count) { desc_.frequency = count; }
+    void dampingRatio(float ratio) { desc_.dampingRatio = ratio; }
+    void seed(int value) { desc_.seed = static_cast<std::uint32_t>(value); }
+    void stylePunch() { desc_.style = MotionStyle::Punch; }
+    void styleShake() { desc_.style = MotionStyle::Shake; }
 
     ScriptMotionHandle *run() {
         ensureLive();
@@ -142,7 +148,8 @@ public:
         if (!taken.ok()) throwMotionError(taken.error());
         auto desc = std::move(taken).value();
         MotionBuilder bridge(animation_->motions(), desc.from, desc.to, desc.duration);
-        bridge.ease(desc.ease).delay(desc.delay).loops(desc.loops, desc.loopMode).cancelOnError(desc.cancelOnError);
+        bridge.ease(desc.ease).delay(desc.delay).loops(desc.loops, desc.loopMode).cancelOnError(desc.cancelOnError)
+            .style(desc.style).frequency(desc.frequency).dampingRatio(desc.dampingRatio).seed(desc.seed);
         if (desc.sink) bridge.to(*desc.sink);
         auto scheduled = sequence_.append(std::move(bridge));
         if (!scheduled.ok()) throwMotionError(scheduled.error());
@@ -154,7 +161,8 @@ public:
         if (!taken.ok()) throwMotionError(taken.error());
         auto desc = std::move(taken).value();
         MotionBuilder bridge(animation_->motions(), desc.from, desc.to, desc.duration);
-        bridge.ease(desc.ease).delay(desc.delay).loops(desc.loops, desc.loopMode).cancelOnError(desc.cancelOnError);
+        bridge.ease(desc.ease).delay(desc.delay).loops(desc.loops, desc.loopMode).cancelOnError(desc.cancelOnError)
+            .style(desc.style).frequency(desc.frequency).dampingRatio(desc.dampingRatio).seed(desc.seed);
         if (desc.sink) bridge.to(*desc.sink);
         auto scheduled = sequence_.join(std::move(bridge));
         if (!scheduled.ok()) throwMotionError(scheduled.error());
@@ -166,7 +174,8 @@ public:
         if (!taken.ok()) throwMotionError(taken.error());
         auto desc = std::move(taken).value();
         MotionBuilder bridge(animation_->motions(), desc.from, desc.to, desc.duration);
-        bridge.ease(desc.ease).delay(desc.delay).loops(desc.loops, desc.loopMode).cancelOnError(desc.cancelOnError);
+        bridge.ease(desc.ease).delay(desc.delay).loops(desc.loops, desc.loopMode).cancelOnError(desc.cancelOnError)
+            .style(desc.style).frequency(desc.frequency).dampingRatio(desc.dampingRatio).seed(desc.seed);
         if (desc.sink) bridge.to(*desc.sink);
         auto scheduled = sequence_.insert(atSeconds, std::move(bridge));
         if (!scheduled.ok()) throwMotionError(scheduled.error());
@@ -210,6 +219,9 @@ void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
     builder.addFunc("delay", &ScriptMotionBuilder::delay);
     builder.addFunc("loops", &ScriptMotionBuilder::loops);
     builder.addFunc("cancelOnError", &ScriptMotionBuilder::cancelOnError);
+    builder.addFunc("frequency", &ScriptMotionBuilder::frequency);
+    builder.addFunc("dampingRatio", &ScriptMotionBuilder::dampingRatio);
+    builder.addFunc("seed", &ScriptMotionBuilder::seed);
     builder.addFunc("run", &ScriptMotionBuilder::run);
 
     auto seqHandle = table.addClass<ScriptMotionSequenceHandle>(
@@ -238,6 +250,22 @@ void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
         std::function<ScriptMotionBuilder *(Animation *, float, float, float)>(
             [](Animation *self, float from, float to, float duration) -> ScriptMotionBuilder * {
                 return new ScriptMotionBuilder(self, from, to, duration);
+            }));
+    animationClass.addFunc(
+        "newMotionPunch",
+        std::function<ScriptMotionBuilder *(Animation *, float, float, float)>(
+            [](Animation *self, float from, float strength, float duration) -> ScriptMotionBuilder * {
+                auto *b = new ScriptMotionBuilder(self, from, strength, duration);
+                b->stylePunch();
+                return b;
+            }));
+    animationClass.addFunc(
+        "newMotionShake",
+        std::function<ScriptMotionBuilder *(Animation *, float, float, float)>(
+            [](Animation *self, float from, float strength, float duration) -> ScriptMotionBuilder * {
+                auto *b = new ScriptMotionBuilder(self, from, strength, duration);
+                b->styleShake();
+                return b;
             }));
     animationClass.addFunc(
         "newMotionSequence",
