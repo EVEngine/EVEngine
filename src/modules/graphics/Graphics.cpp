@@ -727,6 +727,10 @@ void Graphics::expose(ssq::Table& table) {
     groomInstance.addFunc("getActiveRepresentation", &hair::GroomInstance::getActiveRepresentation);
     groomInstance.addFunc("getClusterCount", &hair::GroomInstance::getClusterCount);
     groomInstance.addFunc("getVisibleCurveCount", &hair::GroomInstance::getVisibleCurveCount);
+    groomInstance.addFunc("setMarschnerLobes", &hair::GroomInstance::setMarschnerLobes);
+    groomInstance.addFunc("getMarschnerR", &hair::GroomInstance::getMarschnerR);
+    groomInstance.addFunc("getMarschnerTT", &hair::GroomInstance::getMarschnerTT);
+    groomInstance.addFunc("getMarschnerTRT", &hair::GroomInstance::getMarschnerTRT);
 
     auto waterfall = table.addClass<Waterfall>(
         "Waterfall", std::function<Waterfall*()>([]() -> Waterfall* { return nullptr; }), true);

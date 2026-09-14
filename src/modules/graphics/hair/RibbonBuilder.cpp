@@ -98,4 +98,13 @@ Result<RibbonMesh> buildRibbons(const StrandsDatas &strands, const RibbonParams 
     return Result<RibbonMesh>::success(std::move(mesh));
 }
 
+void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src) {
+    const uint32_t base = uint32_t(dst.vertexCount());
+    dst.posXYZ.insert(dst.posXYZ.end(), src.posXYZ.begin(), src.posXYZ.end());
+    dst.nrmXYZ.insert(dst.nrmXYZ.end(), src.nrmXYZ.begin(), src.nrmXYZ.end());
+    dst.uvST.insert(dst.uvST.end(), src.uvST.begin(), src.uvST.end());
+    dst.indices.reserve(dst.indices.size() + src.indices.size());
+    for (uint32_t idx : src.indices) dst.indices.push_back(base + idx);
+}
+
 }  // namespace eve::graphics::hair

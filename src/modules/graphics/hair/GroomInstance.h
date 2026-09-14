@@ -23,11 +23,10 @@ namespace hair {
 /**
  * @brief Runtime groom drawable (UE `UGroomComponent` analogue).
  *
- * Phase 2 selects the active LOD (Strands ribbons), keeps a `ClusterGrid` for
- * optional CPU frustum culling, and draws through the built-in Kajiya-Kay hair
- * shader. Geometric Cards LOD is owned by `graphics/HairCards` (separate PR);
- * this instance treats `Representation::Cards` / `Meshes` as unsupported until
- * that path is wired.
+ * Rebuilds all groups into one combined ribbon mesh (per-group LOD + optional
+ * cluster cull). Geometric Cards LOD remains owned by `graphics/HairCards`
+ * (separate PR). Phase 3 exposes Marschner R/TT/TRT lobe weights on the hair
+ * shader push constants.
  *
  * Caller owns the instance; Graphics owns Mesh / Shader / Texture.
  *
@@ -79,12 +78,21 @@ public:
     [[nodiscard]] bool isClusterCullingEnabled() const;
 
     /**
-     * @brief Frustum-cull the primary group's cluster grid and rebuild GPU mesh.
+     * @brief Frustum-cull every group's cluster grid and rebuild GPU mesh.
      * @param viewProj16 Column-major 4x4 view-projection (glm::mat4 layout).
      */
     [[nodiscard]] Result<void> updateVisibility(const float *viewProj16);
 
-    /** @brief Rebuild GPU ribbon mesh from the active LOD (and optional visibility mask). */
+    /**
+     * @brief Marschner-approximate lobe weights (R / TT / TRT) applied to the hair shader.
+     * Defaults: 1 / 0.45 / 0.25. Values are clamped to >= 0.
+     */
+    void setMarschnerLobes(float r, float tt, float trt);
+    [[nodiscard]] float getMarschnerR() const;
+    [[nodiscard]] float getMarschnerTT() const;
+    [[nodiscard]] float getMarschnerTRT() const;
+
+    /** @brief Rebuild GPU ribbon mesh from all groups (LOD + optional visibility). */
     [[nodiscard]] Result<void> rebuild();
 
     void draw(const glm::mat4 &model);
@@ -102,19 +110,23 @@ public:
     [[nodiscard]] int getVisibleCurveCount() const;
 
 private:
+    struct GroupCullState {
+        ClusterGrid clusters;
+        std::vector<uint32_t> visibleCurves;
+        bool hasVisibility = false;
+    };
+
     [[nodiscard]] Result<void> bakeFromStrands(StrandsDatas strands, const char *debugName);
     [[nodiscard]] const GroomGroup *primaryGroup() const;
     [[nodiscard]] size_t resolveLodIndex(const GroomGroup &group) const;
     [[nodiscard]] StrandsDatas decimatedStrands(const StrandsDatas &src, float curveFraction) const;
-    [[nodiscard]] Result<void> rebuildClusterGrid();
+    [[nodiscard]] Result<void> rebuildClusterGrids();
     [[nodiscard]] Result<void> ensureDrawResources();
+    void applyShadingParams();
 
     Graphics *gfx_ = nullptr;
     GroomAsset asset_;
-    ClusterGrid clusters_;
-    std::vector<uint32_t> visibleCurveIndices_;
-    bool clusterCulling_ = false;
-    bool hasVisibilityMask_ = false;
+    std::vector<GroupCullState> groupCull_;
     Mesh *mesh_ = nullptr;
     Shader *shader_ = nullptr;
     Texture *texture_ = nullptr;
@@ -124,6 +136,10 @@ private:
     float screenSize_ = 1.f;
     float widthScale_ = 1.f;
     float clusterCellSize_ = 0.15f;
+    float marschnerR_ = 1.f;
+    float marschnerTT_ = 0.45f;
+    float marschnerTRT_ = 0.25f;
+    bool clusterCulling_ = false;
     glm::vec3 sideHint_{1.f, 0.f, 0.f};
     glm::mat4 lastModel_{1.f};
 };

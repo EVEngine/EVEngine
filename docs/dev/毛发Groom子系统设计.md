@@ -249,12 +249,13 @@ public:
 - [x] `GroomAsset` 多 group  
 - [x] LOD 表：screen size → Representation + curve/vertex decimation + thicknessScale  
 - [x] `ClusterGrid` 构建与 CPU 视锥剔除  
+- [x] `GroomInstance` 多 group 合并 ribbon bake（`appendRibbonMesh`）  
 - [ ] Cards 几何 LOD：**不在本分支重复实现** — 由 `graphics/HairCards`（PR #400 `cursor/hair-cards-dynamicbone-1f76`）负责；本子系统仅保留 `Representation::Cards` 枚举与接线点  
 
 
 ### Phase 3 — 着色与阴影增强
 
-- [ ] 在现有 Kajiya-Kay 上增加 Marschner 近似推常量（R/TT/TRT 简化）  
+- [x] 在现有 Kajiya-Kay 上增加 Marschner 近似推常量（R/TT/TRT 简化）  
 - [ ] 可选简单自阴影（屏幕空间或深度偏移）；文档说明与 UE deep shadow 差距  
 
 ### Phase 4 — Binding / Guides
@@ -347,4 +348,15 @@ public:
 - 脚本：补充 LOD/cluster 只读 getter 与 culling 开关（可失败 API 仍 C++-only）
 
 下一步：与 HairCards 合并后接线 `Representation::Cards`；再进入 §7 Phase 3 着色增强。
+
+### 2026-09-14 — Phase 2 多 group bake + Phase 3 Marschner 推常量
+
+同分支续做：
+
+- `RibbonBuilder::appendRibbonMesh`：多段 ribbon 索引 rebase 合并
+- `GroomInstance::rebuild`：遍历全部 group，按 LOD + 可选 cluster 可见性 bake，合成单一 GPU mesh
+- Hair shader：`marschnerR` / `marschnerTT` / `marschnerTRT`（push `data[9..11]`），GLSL + WGSL + SPIR-V 同步；`setMarschnerLobes` / getters + 脚本绑定
+- 测试：`appendRibbonMeshRebasesIndices`、`groomAssetMultiGroup`、`groomInstanceMultiGroupAndMarschner`；HairShader param 计数 9→12
+
+未做：自阴影（Phase 3 剩余）、Cards 接线（等 PR #400）。
 

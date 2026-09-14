@@ -46,4 +46,10 @@ struct RibbonParams {
 [[nodiscard]] Result<RibbonMesh> buildRibbons(const StrandsDatas &strands,
                                               const RibbonParams &params = {});
 
+/**
+ * @brief Append `src` into `dst`, rebasing triangle indices by `dst` vertex count.
+ * @ownership Both meshes remain caller-owned; `src` is copied into `dst`.
+ */
+void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src);
+
 }  // namespace eve::graphics::hair

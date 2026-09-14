@@ -66,13 +66,15 @@ StrandsDatas GroomInstance::decimatedStrands(const StrandsDatas &src, float curv
     return out;
 }
 
-Result<void> GroomInstance::rebuildClusterGrid() {
-    const GroomGroup *group = primaryGroup();
-    if (!group) {
-        clusters_.clear();
-        return Result<void>::success();
+Result<void> GroomInstance::rebuildClusterGrids() {
+    groupCull_.assign(asset_.groupCount(), GroupCullState{});
+    for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
+        const GroomGroup *group = asset_.groupAt(gi);
+        if (!group) continue;
+        auto built = groupCull_[gi].clusters.build(group->strands, clusterCellSize_);
+        if (!built.ok()) return Result<void>::failure(built.status());
     }
-    return clusters_.build(group->strands, clusterCellSize_);
+    return Result<void>::success();
 }
 
 Result<void> GroomInstance::bakeFromStrands(StrandsDatas strands, const char *debugName) {
@@ -85,8 +87,6 @@ Result<void> GroomInstance::bakeFromStrands(StrandsDatas strands, const char *de
     group.strands = std::move(strands);
 
     // Cards geometric LOD lives in graphics/HairCards (separate agent/PR).
-    // This bake keeps Strands near + None far so LOD selection/cluster cull
-    // can be tested without duplicating card mesh builders.
     GroomLod nearLod;
     nearLod.screenSize = 1.f;
     nearLod.representation = Representation::Strands;
@@ -112,9 +112,7 @@ Result<void> GroomInstance::setAsset(const GroomAsset &asset) {
     auto ok = asset.validate();
     if (!ok.ok()) return Result<void>::failure(ok.status());
     asset_ = asset;
-    hasVisibilityMask_ = false;
-    visibleCurveIndices_.clear();
-    auto grid = rebuildClusterGrid();
+    auto grid = rebuildClusterGrids();
     if (!grid.ok()) return Result<void>::failure(grid.status());
     return rebuild();
 }
@@ -154,6 +152,19 @@ void GroomInstance::setClusterCullingEnabled(bool enabled) { clusterCulling_ = e
 
 bool GroomInstance::isClusterCullingEnabled() const { return clusterCulling_; }
 
+void GroomInstance::setMarschnerLobes(float r, float tt, float trt) {
+    marschnerR_ = r >= 0.f ? r : 0.f;
+    marschnerTT_ = tt >= 0.f ? tt : 0.f;
+    marschnerTRT_ = trt >= 0.f ? trt : 0.f;
+    applyShadingParams();
+}
+
+float GroomInstance::getMarschnerR() const { return marschnerR_; }
+
+float GroomInstance::getMarschnerTT() const { return marschnerTT_; }
+
+float GroomInstance::getMarschnerTRT() const { return marschnerTRT_; }
+
 Mesh *GroomInstance::getMesh() const { return mesh_; }
 
 Shader *GroomInstance::getShader() const { return shader_; }
@@ -166,12 +177,36 @@ int GroomInstance::getActiveLodIndex() const { return activeLodIndex_; }
 
 int GroomInstance::getActiveRepresentation() const { return int(activeRepresentation_); }
 
-size_t GroomInstance::getClusterCount() const { return clusters_.clusterCount(); }
+size_t GroomInstance::getClusterCount() const {
+    size_t total = 0;
+    for (const GroupCullState &state : groupCull_) total += state.clusters.clusterCount();
+    return total;
+}
 
 int GroomInstance::getVisibleCurveCount() const {
-    if (hasVisibilityMask_) return int(visibleCurveIndices_.size());
-    const GroomGroup *g = primaryGroup();
-    return g ? int(g->strands.curveCount()) : 0;
+    if (clusterCulling_) {
+        int total = 0;
+        bool anyMask = false;
+        for (const GroupCullState &state : groupCull_) {
+            if (!state.hasVisibility) continue;
+            anyMask = true;
+            total += int(state.visibleCurves.size());
+        }
+        if (anyMask) return total;
+    }
+    int total = 0;
+    for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
+        const GroomGroup *g = asset_.groupAt(gi);
+        if (g) total += int(g->strands.curveCount());
+    }
+    return total;
+}
+
+void GroomInstance::applyShadingParams() {
+    if (!shader_) return;
+    shader_->sendFloat("marschnerR", marschnerR_);
+    shader_->sendFloat("marschnerTT", marschnerTT_);
+    shader_->sendFloat("marschnerTRT", marschnerTRT_);
 }
 
 Result<void> GroomInstance::ensureDrawResources() {
@@ -182,6 +217,7 @@ Result<void> GroomInstance::ensureDrawResources() {
                 DiagnosticCode::Failed, "GroomInstance: hair shader failed", "hair.groom.shader"));
         }
     }
+    applyShadingParams();
     if (!texture_) {
         const uint8_t white[4] = {210, 170, 120, 255};
         texture_ = gfx_->newTexture(1, 1, white);
@@ -199,69 +235,89 @@ Result<void> GroomInstance::updateVisibility(const float *viewProj16) {
             DiagnosticCode::InvalidArgument, "GroomInstance::updateVisibility: null viewProj",
             "hair.groom.viewProj"));
     }
-    if (clusters_.clusterCount() == 0) {
-        auto grid = rebuildClusterGrid();
+    if (groupCull_.size() != asset_.groupCount()) {
+        auto grid = rebuildClusterGrids();
         if (!grid.ok()) return Result<void>::failure(grid.status());
     }
-    auto visibleClusters = clusters_.cullClusters(viewProj16);
-    if (!visibleClusters.ok()) return Result<void>::failure(visibleClusters.status());
-    auto curves = clusters_.collectCurveIndices(visibleClusters.value());
-    if (!curves.ok()) return Result<void>::failure(curves.status());
-    visibleCurveIndices_ = std::move(curves).value();
-    hasVisibilityMask_ = true;
+    for (GroupCullState &state : groupCull_) {
+        auto visibleClusters = state.clusters.cullClusters(viewProj16);
+        if (!visibleClusters.ok()) return Result<void>::failure(visibleClusters.status());
+        auto curves = state.clusters.collectCurveIndices(visibleClusters.value());
+        if (!curves.ok()) return Result<void>::failure(curves.status());
+        state.visibleCurves = std::move(curves).value();
+        state.hasVisibility = true;
+    }
     return rebuild();
 }
 
 Result<void> GroomInstance::rebuild() {
-    const GroomGroup *group = primaryGroup();
-    if (!group) {
+    if (asset_.groupCount() == 0) {
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "GroomInstance::rebuild: no groups", "hair.groom"));
     }
+    if (groupCull_.size() != asset_.groupCount()) {
+        auto grid = rebuildClusterGrids();
+        if (!grid.ok()) return Result<void>::failure(grid.status());
+    }
 
-    const size_t lodIndex = resolveLodIndex(*group);
-    activeLodIndex_ = int(lodIndex);
-    const GroomLod &lod = group->lods[lodIndex];
-    activeRepresentation_ = lod.representation;
+    // Report LOD from the primary group (representative for script getters).
+    const GroomGroup *primary = primaryGroup();
+    if (primary && !primary->lods.empty()) {
+        activeLodIndex_ = int(resolveLodIndex(*primary));
+        activeRepresentation_ = primary->lods[size_t(activeLodIndex_)].representation;
+    } else {
+        activeLodIndex_ = 0;
+        activeRepresentation_ = Representation::None;
+    }
 
-    if (lod.representation == Representation::None) {
+    RibbonMesh combined;
+    bool anyStrands = false;
+
+    for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
+        const GroomGroup *group = asset_.groupAt(gi);
+        if (!group || group->lods.empty()) continue;
+
+        const size_t lodIndex = resolveLodIndex(*group);
+        const GroomLod &lod = group->lods[lodIndex];
+        if (lod.representation == Representation::None) continue;
+        if (lod.representation == Representation::Cards ||
+            lod.representation == Representation::Meshes) {
+            mesh_ = nullptr;
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported,
+                "GroomInstance::rebuild: Cards/Meshes LOD owned by HairCards / later phase",
+                "hair.groom.representation"));
+        }
+
+        StrandsDatas source = group->strands;
+        if (clusterCulling_ && gi < groupCull_.size() && groupCull_[gi].hasVisibility) {
+            if (groupCull_[gi].visibleCurves.empty()) continue;
+            auto filtered = filterStrandsByCurves(group->strands, groupCull_[gi].visibleCurves);
+            if (!filtered.ok()) return Result<void>::failure(filtered.status());
+            source = std::move(filtered).value();
+        }
+
+        StrandsDatas strands = decimatedStrands(source, lod.curveFraction);
+        auto ok = strands.validate();
+        if (!ok.ok()) return Result<void>::failure(ok.status());
+
+        RibbonParams ribbon;
+        ribbon.sideHint = sideHint_;
+        ribbon.widthScale = widthScale_ * lod.thicknessScale;
+        auto meshData = buildRibbons(strands, ribbon);
+        if (!meshData.ok()) return Result<void>::failure(meshData.status());
+        appendRibbonMesh(combined, meshData.value());
+        anyStrands = true;
+    }
+
+    if (!anyStrands || combined.indices.empty()) {
         mesh_ = nullptr;
         return Result<void>::success();
     }
-    if (lod.representation == Representation::Cards ||
-        lod.representation == Representation::Meshes) {
-        // Cards mesh builders live in graphics/HairCards (PR #400); Meshes later.
-        mesh_ = nullptr;
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::Unsupported,
-            "GroomInstance::rebuild: Cards/Meshes LOD owned by HairCards / later phase",
-            "hair.groom.representation"));
-    }
 
-    StrandsDatas source = group->strands;
-    if (clusterCulling_ && hasVisibilityMask_) {
-        if (visibleCurveIndices_.empty()) {
-            mesh_ = nullptr;
-            return Result<void>::success();
-        }
-        auto filtered = filterStrandsByCurves(group->strands, visibleCurveIndices_);
-        if (!filtered.ok()) return Result<void>::failure(filtered.status());
-        source = std::move(filtered).value();
-    }
-
-    StrandsDatas strands = decimatedStrands(source, lod.curveFraction);
-    auto ok = strands.validate();
-    if (!ok.ok()) return Result<void>::failure(ok.status());
-
-    RibbonParams ribbon;
-    ribbon.sideHint = sideHint_;
-    ribbon.widthScale = widthScale_ * lod.thicknessScale;
-    auto meshData = buildRibbons(strands, ribbon);
-    if (!meshData.ok()) return Result<void>::failure(meshData.status());
-    const RibbonMesh &rm = meshData.value();
-
-    mesh_ = gfx_->newMeshFromArrays(rm.posXYZ.data(), rm.nrmXYZ.data(), rm.uvST.data(),
-                                    rm.vertexCount(), rm.indices.data(), rm.indexCount());
+    mesh_ = gfx_->newMeshFromArrays(combined.posXYZ.data(), combined.nrmXYZ.data(),
+                                    combined.uvST.data(), combined.vertexCount(),
+                                    combined.indices.data(), combined.indexCount());
     if (!mesh_) {
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::Failed, "GroomInstance::rebuild: mesh upload failed", "hair.groom.mesh"));
@@ -275,18 +331,27 @@ void GroomInstance::draw() { draw(lastModel_); }
 void GroomInstance::draw(const glm::mat4 &model) {
     lastModel_ = model;
     if (!gfx_ || !mesh_ || !shader_ || !texture_) return;
+    applyShadingParams();
     const Color tint(1.f, 1.f, 1.f, 1.f);
     gfx_->drawMeshShader(mesh_, model, texture_, tint, shader_);
 }
 
 int GroomInstance::getCurveCount() const {
-    const GroomGroup *g = primaryGroup();
-    return g ? int(g->strands.curveCount()) : 0;
+    int total = 0;
+    for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
+        const GroomGroup *g = asset_.groupAt(gi);
+        if (g) total += int(g->strands.curveCount());
+    }
+    return total;
 }
 
 int GroomInstance::getPointCount() const {
-    const GroomGroup *g = primaryGroup();
-    return g ? int(g->strands.pointCount()) : 0;
+    int total = 0;
+    for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
+        const GroomGroup *g = asset_.groupAt(gi);
+        if (g) total += int(g->strands.pointCount());
+    }
+    return total;
 }
 
 }  // namespace eve::graphics::hair
