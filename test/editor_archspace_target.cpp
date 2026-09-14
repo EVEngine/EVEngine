@@ -1,3 +1,4 @@
+#include "archspace/ArchSpaceCatalog.h"
 #include "archspace/ArchSpaceDocument.h"
 #include "archspace/editing/ArchSpaceTarget.h"
 #include "archspace/editor/ArchSpaceEditorModule.h"
@@ -9,6 +10,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <algorithm>
 #include <fstream>
 
 using namespace eve::archspace;
@@ -113,6 +115,15 @@ TEST_CASE("archspace.document.opening_cutout_changes_mesh_and_helpers_work") {
     CHECK_EQ(arrays.indexCount() % 3, 0);
     CHECK(arrays.triangleCount() >= 12);
 
+    const auto hasPrimitive = [&](const char* needle) {
+        return std::any_of(after.primitiveIds.begin(), after.primitiveIds.end(),
+                           [&](const std::string& id) { return id.find(needle) != std::string::npos; });
+    };
+    CHECK(hasPrimitive(".reveal."));
+    CHECK(hasPrimitive("sofa"));
+    CHECK(lookupCatalog("furniture.sofa").has_value());
+    CHECK(listCatalogIds().size() >= 6);
+
     // Machine-readable evidence for walkthrough artifacts.
     std::ofstream evidence("/opt/cursor/artifacts/archspace_mesh_evidence.txt");
     evidence << "nodes=" << document.nodeCount() << "\n";
@@ -124,6 +135,8 @@ TEST_CASE("archspace.document.opening_cutout_changes_mesh_and_helpers_work") {
     evidence << "has_window=1\n";
     evidence << "has_partition=1\n";
     evidence << "has_item=1\n";
+    evidence << "has_reveal=1\n";
+    evidence << "has_catalog_furniture=1\n";
     evidence.close();
 }
 

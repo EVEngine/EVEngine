@@ -24,7 +24,10 @@ function archBuildApartment() {
     archRequire(doc.createOpening("office.wall.1", "office.window", "Window", "window", 0.5, 1.4, 1.4, 0.9),
                 "window");
     archRequire(doc.placeItem("level0", "desk", "Desk", "furniture.desk", 7.2, 0.0, 2.0, 90.0), "desk");
-    if (!doc.hasNode("living.zone") || !doc.hasNode("living.door") || !doc.hasNode("desk"))
+    archRequire(doc.placeItem("level0", "sofa", "Sofa", "furniture.sofa", 2.0, 0.0, 2.2, 0.0), "sofa");
+    archRequire(doc.placeItem("level0", "chair", "Chair", "furniture.chair", 7.2, 0.0, 1.1, 0.0), "chair");
+    if (!doc.hasNode("living.zone") || !doc.hasNode("living.door") || !doc.hasNode("desk") ||
+        !doc.hasNode("sofa") || !doc.hasNode("chair"))
         throw "ArchSpace document missing authored nodes";
     return doc;
 }
