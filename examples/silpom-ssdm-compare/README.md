@@ -55,4 +55,4 @@ The right panel used to look like the floor covered the wall for three separate 
 
 1. **Vulkan ZO depth** — `gl_FragDepth` must be written in `[0,1]` NDC (not OpenGL's `*0.5+0.5`).
 2. **No hole punching** — SSDM misses fall back to POM on the card; discarding let the floor show through.
-3. **Contact layout** — cards sit a few centimeters above the floor, and SSDM fades relief near the chart bottom so parallax does not look like it continues under the floor plane.
+3. **Contact layout** — cards sit a few centimeters above the floor, SSDM fades relief near the chart bottom, and out-of-chart hits open the L/R/top silhouette only (the bottom edge stays sealed so the floor cannot show through the contact line).

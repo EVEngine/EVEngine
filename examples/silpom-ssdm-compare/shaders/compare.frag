@@ -188,12 +188,21 @@ void main() {
         vec4 hit = ssdmSample(planePos, N, vCameraPos, viewDir, scale, minLayers, maxLayers);
 
         float h01 = 0.0;
+        if (hit.w > 0.0 && hit.z < 0.5) {
+            // Outside the UV chart: open L/R/top silhouette, but NEVER open the
+            // bottom edge — discarding there lets the floor show through the
+            // contact line (the original "floor covers wall" look).
+            if (hit.y >= 0.0)
+                discard;
+            // hit.y < 0 (below chart): fall through to POM seal at the base.
+        }
         if (hit.z > 0.5 && hit.w > 0.0) {
             uv = hit.xy;
             vec3 hitPos = vCameraPos + viewDir * hit.w;
             float thickness = max(scale * 1.5, 1e-3);
             h01 = clamp(dot(N, hitPos - planePos) / thickness, 0.0, 1.0);
         } else {
+            // True miss inside the card: geometric surface + POM color fallback.
             mat3 TBN = makeTBN(N, vWorldPos, vUV);
             if (length(TBN[0]) > 1e-4) {
                 vec3 viewTS = normalize(transpose(TBN) * V);
