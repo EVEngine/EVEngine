@@ -1012,7 +1012,9 @@ jobs:
     runs-on: ubuntu-24.04
     # Full debug build + per-case unit tests + all-example smoke exceeded the
     # previous 60-minute job cap even though each step stayed within its guard.
-    timeout-minutes: 90
+    # Cold third-party restore + read-only sccache (PR) can push the build step
+    # past 40 minutes, so keep headroom for tests afterward.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
@@ -1108,7 +1110,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug
-        timeout-minutes: 40
+        # PRs are sccache READ_ONLY and cannot refill the shared cache. A cold
+        # third-party restore plus a full engine rebuild regularly exceeds 40m.
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
