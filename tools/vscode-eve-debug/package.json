@@ -1,27 +1,62 @@
 {
   "name": "eve-debug",
-  "displayName": "EVEngine Squirrel Debug",
-  "description": "Debug Adapter for EVEngine Squirrel scripts (breakpoints, continue, step, watches, snapshots)",
-  "version": "0.2.0",
+  "displayName": "EVEngine EveScript",
+  "description": "EveScript language support and debugger for EVEngine (LSP + DAP)",
+  "version": "0.3.0",
   "publisher": "evengine",
   "repository": "https://github.com/EVEngine/EVEngine",
   "engines": {
     "vscode": "^1.74.0"
   },
   "categories": [
-    "Debuggers"
+    "Programming Languages",
+    "Debuggers",
+    "Formatters"
   ],
   "activationEvents": [
     "onDebugResolve:eve",
-    "onDebugDynamicConfigurations:eve",
-    "onCommand:eve-debug.start",
-    "onCommand:eve-debug.debugEditorContents"
+    "onDebugDynamicConfigurations:eve"
   ],
   "main": "./extension.js",
   "scripts": {
-    "test": "node test/extension.test.js"
+    "test": "node test/extension.test.js",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.0"
   },
   "contributes": {
+    "configuration": {
+      "title": "EVEngine",
+      "properties": {
+        "eve.executable": {
+          "type": "string",
+          "default": "eve",
+          "description": "Path to the eve executable. Empty or `eve` auto-detects common build/ trees."
+        },
+        "eve.languageServer.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start `eve language-server` for EveScript (.nut) files."
+        },
+        "eve.languageServer.trace": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages"
+          ],
+          "default": "off",
+          "description": "Log LSP JSON-RPC frames to the EVEngine Language Server output channel."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[nut]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.semanticHighlighting.enabled": true
+      }
+    },
     "commands": [
       {
         "command": "eve-debug.start",
@@ -77,6 +112,12 @@
         "title": "查看实例 (Inspect Instance)",
         "category": "EVEngine",
         "enablement": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.showErrorSlice",
+        "title": "Show Error Slice",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve'"
       }
     ],
     "menus": {
@@ -118,6 +159,10 @@
         {
           "command": "eve-debug.stepFrame",
           "when": "debugType == 'eve'"
+        },
+        {
+          "command": "eve-debug.showErrorSlice",
+          "when": "debugType == 'eve'"
         }
       ]
     },
@@ -150,12 +195,35 @@
       {
         "id": "nut",
         "aliases": [
+          "EveScript",
           "Squirrel",
           "nut"
         ],
         "extensions": [
           ".nut"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nut",
+        "scopeName": "source.evescript",
+        "path": "./syntaxes/evescript.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "nut",
+        "scopes": {
+          "namespace": ["entity.name.namespace.evescript"],
+          "class": ["entity.name.type.class.evescript"],
+          "function": ["entity.name.function.evescript"],
+          "method": ["entity.name.function.member.evescript"],
+          "variable": ["variable.other.readwrite.evescript"],
+          "property": ["variable.other.property.evescript"],
+          "keyword": ["constant.language.boolean.evescript"]
+        }
       }
     ],
     "debuggers": [

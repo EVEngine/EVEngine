@@ -1,4 +1,4 @@
-#include "animation_editing/SkeletonOverlay.h"
+#include "animation/editing/SkeletonOverlay.h"
 
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"

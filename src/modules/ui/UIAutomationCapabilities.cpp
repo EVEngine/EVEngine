@@ -56,6 +56,7 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::Badge: return "badge";
         case NodeType::Card: return "card";
         case NodeType::NinePatchPanel: return "ninePatchPanel";
+        case NodeType::ColorPalette: return "colorPalette";
         case NodeType::SectionHeader: return "sectionHeader";
         case NodeType::MenuBar: return "menuBar";
         case NodeType::Menu: return "menu";
@@ -167,6 +168,14 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
         out->set("value", node.value);
         out->set("min", node.minValue);
         out->set("max", node.maxValue);
+    }
+    if (node.type == NodeType::ColorPalette) {
+        Poco::JSON::Array::Ptr color(new Poco::JSON::Array());
+        color->add(static_cast<double>(node.tintR));
+        color->add(static_cast<double>(node.tintG));
+        color->add(static_cast<double>(node.tintB));
+        color->add(static_cast<double>(node.tintA));
+        out->set("color", color);
     }
     if (node.type == NodeType::InputText || node.type == NodeType::SearchField ||
         node.type == NodeType::Combo || node.type == NodeType::MenuItem)

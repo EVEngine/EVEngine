@@ -22,6 +22,6 @@ make run/<platform>-debug GAME=examples/snow
 | `P` | 开关 POM（对比真实位移与视差微细节） |
 | `R` | 重置雪面 |
 
-渲染路径：`editor.newHeightmapMesh/updateHeightmapMesh` 原地重建地形网格；
+渲染路径：`heightmapTargets.newMesh/updateMesh` 原地重建地形网格；
 雪纹理的 R 通道即 POM 高度（白 = 隆起），G/B/A 是随雪深变暗的冷白 albedo，
 所以坑底自然露出深色地表。

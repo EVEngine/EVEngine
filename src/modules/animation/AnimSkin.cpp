@@ -223,7 +223,8 @@ float AnimSkin::getMatrixPaletteElement(int skinBoneIndex, int elementIndex) con
 
 bool AnimSkin::bindGpuMesh(graphics::Graphics* gfx, graphics::Mesh* mesh) {
     if (!gfx || !mesh || mesh->getVertexCount() != vertexCount_) return false;
-    if (getBoneCount() > graphics::Mesh::kMaxSkinBones) return false;
+    // The uploaded joint stream uses unsigned 16-bit indices.
+    if (getBoneCount() > 65536) return false;
     std::vector<uint16_t> joints(static_cast<size_t>(vertexCount_) * kMaxInfluences, 0);
     std::vector<float>    weights(static_cast<size_t>(vertexCount_) * kMaxInfluences, 0.f);
     for (int v = 0; v < vertexCount_; ++v) {
@@ -241,7 +242,7 @@ bool AnimSkin::bindGpuMesh(graphics::Graphics* gfx, graphics::Mesh* mesh) {
 
 bool AnimSkin::updateGpuMesh(graphics::Mesh* mesh, const AnimPose* pose) const {
     if (!mesh || !mesh->hasGpuSkinning() || !updateMatrixPalette(pose) || skinMatrices_.empty()) return false;
-    return mesh->setSkinPalette(skinMatrices_.front().m, static_cast<int>(skinMatrices_.size()));
+    return mesh->setSkinPalette(skinMatrices_.front().m, static_cast<int>(skinMatrices_.size())).ok();
 }
 
 float AnimSkin::getBindPositionX(int vertexIndex) const {

@@ -252,20 +252,58 @@ struct RegisterVulkanWarmup {
 
 // --- Backend lifecycle and frame orchestration --------------------------------
 
+#if defined(VKB_ENABLE_VMA)
+VmaAllocatorOwner::~VmaAllocatorOwner() {
+    if (allocator_) vmaDestroyAllocator(allocator_);
+}
+
+void VmaAllocatorOwner::create(const vkb::Instance &instance,
+                               const vkb::PhysicalDevice &physicalDevice,
+                               vkb::Device &device) {
+    VmaAllocatorCreateInfo createInfo{};
+    createInfo.instance = static_cast<VkInstance>(instance.instance);
+    createInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice.instance);
+    createInfo.device = static_cast<VkDevice>(device.instance);
+    VmaVulkanFunctions vulkanFunctions{};
+    // The headless backend does not ask SDL to load Vulkan, so its loader
+    // accessor may legitimately be null. Reuse the dispatcher that created
+    // this instance; it is also the portable path on Android.
+    vulkanFunctions.vkGetInstanceProcAddr = VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr;
+    if (!vulkanFunctions.vkGetInstanceProcAddr) {
+        throw Exception("VMA could not resolve vkGetInstanceProcAddr from the Vulkan dispatcher");
+    }
+    vulkanFunctions.vkGetDeviceProcAddr = reinterpret_cast<PFN_vkGetDeviceProcAddr>(
+        vulkanFunctions.vkGetInstanceProcAddr(createInfo.instance, "vkGetDeviceProcAddr"));
+    if (!vulkanFunctions.vkGetDeviceProcAddr) {
+        throw Exception("VMA could not resolve vkGetDeviceProcAddr");
+    }
+    createInfo.pVulkanFunctions = &vulkanFunctions;
+    // InstanceBuilder requests Vulkan 1.0. VMA requires this value to describe
+    // the application's instance contract, not the physical device maximum.
+    createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
+    const VkResult result = vmaCreateAllocator(&createInfo, &allocator_);
+    if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
+    device.attachVmaAllocator(allocator_);
+}
+#endif
+
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
-Graphics::Graphics() { eve::boot::startVulkanInstanceWarmup(); }
+Graphics::Graphics() = default;
 
 Graphics::~Graphics() {
+    retireResourceLifetime();
     detachGraphicsArtifactProvider(this);
     if (!initialized) {
-        // Construction starts instance warmup before callers decide whether to
-        // initialize graphics. Join it before the Vulkan loader can be unloaded.
+        // A process-level boot warmup may exist even when callers decide not
+        // to initialize graphics. Join it before the Vulkan loader unloads.
         discardWarmedInstance();
         if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
         return;
     }
     device->waitIdle();
+    destroyPbrResources();
+    deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
@@ -318,6 +356,8 @@ Graphics::~Graphics() {
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
     if (mesh3dTransparentPipeline) device->destroyPipeline(mesh3dTransparentPipeline);
     for (auto pipeline : mesh3dSurfacePipelines)
+        if (pipeline) device->destroyPipeline(pipeline);
+    for (auto pipeline : primitive3DPipelines)
         if (pipeline) device->destroyPipeline(pipeline);
     destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
@@ -479,10 +519,18 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
+#if defined(VKB_ENABLE_VMA)
+        vmaAllocatorOwner_.create(inst, phys, device);
+#endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
         eve::recordLogEvent("info",
             "gpu: logical device created (gpuDriven=" +
             std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+#if defined(VKB_ENABLE_VMA)
+            ", allocator=VMA" +
+#else
+            ", allocator=native" +
+#endif
             ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
@@ -662,6 +710,7 @@ void Graphics::onNativeWindowDestroyed() {
 }
 
 void Graphics::destroySwapchainResources() {
+    destroyPbrResources();
     presentRecording = {};
     swapchainPass = {};
     presentModel.destroy();

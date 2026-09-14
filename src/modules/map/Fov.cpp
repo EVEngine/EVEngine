@@ -1239,6 +1239,33 @@ void Fov::resetVisibleOnly() {
     impl_->dirty = true;
 }
 
+Fov::Snapshot Fov::snapshot() const {
+    Snapshot result;
+    result.width = impl_->width;
+    result.height = impl_->height;
+    result.depth = impl_->depth;
+    result.states.reserve(impl_->state.size());
+    for (const auto state : impl_->state) result.states.push_back(stateToMaskByte(state));
+    return result;
+}
+
+Result<void> Fov::restore(const Snapshot& snapshotValue) {
+    if (snapshotValue.width != impl_->width || snapshotValue.height != impl_->height ||
+        snapshotValue.depth != impl_->depth || snapshotValue.states.size() != impl_->state.size())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Fov snapshot dimensions or payload size do not match", "snapshot"));
+    for (std::size_t index = 0; index < snapshotValue.states.size(); ++index) {
+        const auto value = snapshotValue.states[index];
+        impl_->state[index] = value == 0 ? CellState::Unknown :
+                              value >= 192 ? CellState::Visible : CellState::Explored;
+    }
+    impl_->visibleList.clear();
+    for (std::size_t index = 0; index < impl_->state.size(); ++index)
+        if (impl_->state[index] == CellState::Visible) impl_->visibleList.push_back(static_cast<int>(index));
+    impl_->dirty = true;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 float Fov::getMaskValue(int x, int y) const {
     if (impl_->mode == Mode::Volume) return getMaskValue3(x, y, 0);
     if (!impl_->inBounds2(x, y)) return 0.f;

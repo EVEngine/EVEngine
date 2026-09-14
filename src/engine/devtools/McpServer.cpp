@@ -1,11 +1,13 @@
 #include "devtools/McpServer.hpp"
 
 #include "common/EditorAutomation.h"
+#include "common/GameplayControlJson.h"
 #include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/AgentDevelopmentMcp.hpp"
+#include "devtools/PlayHost.h"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
@@ -699,6 +701,32 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     if (name == "eve_status") return engineStatusJson(mcp);
 
+    if (name == "eve_gameplay") {
+        if (!args || !args->has("request")) return "error: missing request";
+        std::string request;
+        try {
+            request = mcpStringify(args->get("request"));
+        } catch (const std::exception& error) {
+            return std::string("error: invalid request: ") + error.what();
+        }
+        auto response = eve::executeGameplayControlJson(request);
+        return response ? std::move(response).takeValue()
+                        : std::string("error: ") + response.status().describe();
+    }
+
+    if (name == "eve_play") {
+        if (!args || !args->has("request")) return "error: missing request";
+        std::string request;
+        try {
+            request = mcpStringify(args->get("request"));
+        } catch (const std::exception& error) {
+            return std::string("error: invalid request: ") + error.what();
+        }
+        auto response = executePlayJson(request);
+        return response ? std::move(response).takeValue()
+                        : std::string("error: ") + response.status().describe();
+    }
+
     if (name.rfind("eve_pixelworld_", 0) == 0) {
         auto* provider = mcpPixelWorld();
         if (!provider) return "{\"ok\":false,\"error\":\"pixelworld module not available\"}";
@@ -1349,7 +1377,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string source = argString(args, "source");
         const int         line   = argInt(args, "line");
         if (source.empty() || line <= 0) return "error: need source and line";
-        const int id = dbg.setBreakpoint(source, line, true);
+        const std::string condition = argString(args, "condition");
+        const int id = dbg.setBreakpoint(source, line, true, condition);
         return "ok id=" + std::to_string(id);
     }
     if (name == "eve_clear_breakpoint") {
@@ -1366,6 +1395,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             o->set("source", bp.source);
             o->set("line", bp.line);
             o->set("enabled", bp.enabled);
+            o->set("condition", bp.condition);
             arr->add(o);
         }
         return mcpStringify(Poco::Dynamic::Var(arr));
@@ -1634,7 +1664,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.4.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.5.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor "
         "windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
@@ -1645,6 +1675,10 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"tools\":["
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
+        "{\"name\":\"eve_play\",\"description\":\"Unified Play Host: pause/play, step host frames, observe game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, and record/replay play traces without eve_eval.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
         "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_pixelworld_catalog_builtin\",\"description\":\"Return the canonical versioned built-in material/reaction Catalog document.\","
@@ -1753,7 +1787,8 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_set_breakpoint\",\"description\":\"Set a script breakpoint.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"},\"line\":{\"type\":"
-        "\"integer\"}},\"required\":[\"source\",\"line\"]}},"
+        "\"integer\"},\"condition\":{\"type\":\"string\",\"description\":\"Optional Squirrel expression; empty always "
+        "hits.\"}},\"required\":[\"source\",\"line\"]}},"
         "{\"name\":\"eve_clear_breakpoint\",\"description\":\"Clear a script breakpoint.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"},\"line\":{\"type\":"
         "\"integer\"}},\"required\":[\"source\",\"line\"]}},"
@@ -2091,10 +2126,10 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     } else if (name == "test_scenario") {
         text =
             "Design a short automated test against the live EVEngine session:\n"
-            "1) eve_pause then eve_snapshot_capture as baseline.\n"
-            "2) Mutate or advance with eve_step_frame / eve_run_script.\n"
-            "3) Assert with eve_eval / eve_watch_list.\n"
-            "4) eve_snapshot_restore to reset; record notes via eve_ai_note.";
+            "1) Read game.agent.json via eve_play op=status, then observe declared script roots.\n"
+            "2) Pause, step host frames, capture an engine screenshot, and checkpoint restore with eve_play.\n"
+            "3) Use eve_gameplay for player-equivalent domain commands when the contract declares a gameplay-domain.\n"
+            "4) Do not use eve_eval as the official observation path.";
     } else if (name == "ai_game_review") {
         text =
             "Review this AI-generated or AI-assisted game build:\n"

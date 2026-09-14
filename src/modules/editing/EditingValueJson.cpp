@@ -353,9 +353,9 @@ EditorResult<EditorValue> editorValueFromJson(const std::string& json) {
     JsonParser  parser(json);
     EditorValue value;
     if (!parser.parse(value))
-        return EditorResult<EditorValue>::error(EditorStatus::Rejected, RuleId("editor.value.invalid-json"),
+        return eve::editing::failed<EditorValue>(EditorStatus::Rejected, RuleId("editor.value.invalid-json"),
                                                 parser.error());
-    return EditorResult<EditorValue>::applied(std::move(value));
+    return eve::editing::applied<EditorValue>(std::move(value));
 }
 
 std::string editorValueContentHash(const EditorValue& value) {

@@ -2,7 +2,7 @@
 
 #include "common/Export.h"
 #include "common/Runtime.h"
-#include "scriptmodel/ReflectedPropertyModel.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 #include "ui/Widget.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -142,7 +142,7 @@ private:
     std::function<ssq::Object()> pickScene_;
     int selectedInstance_ = -1;
     UIHostHandle                                         host_{};
-    std::unique_ptr<scriptmodel::ReflectedPropertyModel> propertyModel_;
+    std::unique_ptr<property_access::ReflectedPropertyModel> propertyModel_;
 };
 
 }  // namespace eve::ui

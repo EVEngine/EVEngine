@@ -3,6 +3,7 @@
 /** @file Tactics.h @brief Tactics domain composition profile facade. */
 
 #include "common/Module.h"
+#include "common/GameplayControl.h"
 #include "common/SquirrelOwnership.h"
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
@@ -42,14 +43,35 @@ struct TacticsBattleSession {
  *
  * All methods are simulation-thread-affine and invoke no unknown callbacks.
  */
-class Tactics : public Module {
+class Tactics : public Module, public IGameplayControlProvider {
 public:
     Module_REG(Tactics);
 
     /** @brief Construct an empty tactics composition profile. */
-    Tactics() = default;
+    Tactics();
     /** @brief Destroy live entities created through this facade. */
     ~Tactics() override;
+
+    /** @copydoc IGameplayControlProvider::gameplayDomain */
+    [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayControlProvider::observeGameplay */
+    [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
+                                                               SubjectRef instance) const override;
+    /** @copydoc IGameplayControlProvider::availableGameplayActions */
+    [[nodiscard]] Result<std::vector<GameplayActionDescriptor>> availableGameplayActions(
+        const GameplaySession& session, SubjectRef instance, SubjectRef subject) const override;
+    /** @copydoc IGameplayControlProvider::submitGameplay */
+    [[nodiscard]] Result<GameplayCommandReceipt> submitGameplay(const GameplaySession& session,
+                                                                 SubjectRef instance,
+                                                                 const GameplayCommand& command) override;
+    /** @copydoc IGameplayControlProvider::advanceGameplay */
+    [[nodiscard]] Result<GameplayObservation> advanceGameplay(const GameplaySession& session,
+                                                               SubjectRef instance,
+                                                               const SimulationStep& step) override;
+    /** @copydoc IGameplayControlProvider::gameplayEvents */
+    [[nodiscard]] Result<std::vector<GameplayEvent>> gameplayEvents(const GameplaySession& session,
+                                                                     SubjectRef instance,
+                                                                     std::uint64_t afterSequence) const override;
 
     /** @brief Create a battle root with a valid stable subject and explicit seed. */
     [[nodiscard]] Result<ecs::EntityHandle> newBattle(SubjectRef subject, std::uint64_t seed = 0);
@@ -131,6 +153,7 @@ public:
 
 private:
     [[nodiscard]] Battle* resolveBattle(ecs::EntityHandle handle) const noexcept;
+    [[nodiscard]] Battle* resolveBattle(SubjectRef subject) const noexcept;
     [[nodiscard]] bool owns(const std::vector<ecs::EntityHandle>& handles,
                             const ecs::EntityHandle&              handle) const noexcept;
 

@@ -32,7 +32,6 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 envProbeCenter;
     vec4 envProbeExtent;
     vec4 skinInfo;
-    mat4 skinBones[128];
 } ubo;
 
 layout(location = 0) out vec3 vNormal;
@@ -42,14 +41,16 @@ layout(location = 3) out vec3 vWorldPos;
 layout(location = 4) out vec3 vCameraPos;
 layout(location = 5) out vec3 vViewPos;
 
+layout(std430, set = 0, binding = 21) readonly buffer SkinPalette { mat4 bones[]; } skinPalette;
+
 void main() {
     vec4 localPos = vec4(inPos, 1.0);
     vec3 localNormal = inNormal;
     if (ubo.skinInfo.x > 0.5) {
-        mat4 skin = inWeights.x * ubo.skinBones[inJoints.x]
-                  + inWeights.y * ubo.skinBones[inJoints.y]
-                  + inWeights.z * ubo.skinBones[inJoints.z]
-                  + inWeights.w * ubo.skinBones[inJoints.w];
+        mat4 skin = inWeights.x * skinPalette.bones[inJoints.x]
+                  + inWeights.y * skinPalette.bones[inJoints.y]
+                  + inWeights.z * skinPalette.bones[inJoints.z]
+                  + inWeights.w * skinPalette.bones[inJoints.w];
         localPos = skin * localPos;
         localNormal = mat3(skin) * localNormal;
     }

@@ -1,12 +1,13 @@
 #pragma once
-#include "graphics/Graphics.h"
 #include "graphics/Batcher.h"
-#include "graphics/Texture.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/Graphics.h"
+#include "graphics/Light.h"
+#include "graphics/Mesh.h"
+#include "graphics/PrimitiveTypes.h"
+#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/Texture.h"
 
 #if defined(__EMSCRIPTEN__) && __has_include(<webgpu/webgpu_cpp.h>)
 #include <webgpu/webgpu_cpp.h>
@@ -61,11 +62,10 @@ struct Mesh3DUBO {
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
-static_assert(sizeof(Mesh3DUBO) == 8960, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 768, "Mesh3DUBO layout must match the WGSL Frame block");
 
 struct MeshVertex {
     glm::vec3 pos;
@@ -81,9 +81,8 @@ struct SkinPassUBO {
     glm::mat4 model{1.f};
     glm::vec4 clip{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
-static_assert(sizeof(SkinPassUBO) == 8352);
+static_assert(sizeof(SkinPassUBO) == 160);
 
 /**
  * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
@@ -242,6 +241,7 @@ public:
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
+    void drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                               const Color &color,
                               BlendMode blend = BlendMode::Alpha) override;
@@ -267,6 +267,7 @@ public:
     float getMaxAnisotropy() const override;
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
+    bool uploadDeferredFileTexture(Texture *texture, image::ImageData *data) override;
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
@@ -324,7 +325,9 @@ public:
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
     Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
-                                  const std::string &fragWgsl) override;
+                                   const std::string &fragWgsl) override;
+    eve::Result<void> configureMeshShaderSurface(Shader& shader, BlendMode blend,
+                                                  bool depthWrite, bool doubleSided) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
@@ -350,6 +353,7 @@ public:
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
     void end3DFrameToCanvas() override;
+    void  drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) override;
     float getLastOffscreen3DGpuDurationMs() const override {
         return completedOffscreenTimestampMs.exchange(0.f);
     }
@@ -369,6 +373,8 @@ public:
                                  int atlasSlotsX, int atlasSlotsY,
                                  float borderFraction) override;
     void     setMesh3DSceneDepth(Texture *depth) override;
+    void     setMesh3DSceneColor(Texture *color) override;
+    [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
     void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                               bool doubleSided, float alphaCutoff,
@@ -402,6 +408,19 @@ public:
     }
     float getSceneBloomIntensity() const override { return sceneBloomIntensity; }
     float getSceneBloomThreshold() const override { return sceneBloomThreshold; }
+    void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange, float nearZ,
+                              float farZ) override {
+        sceneDofFocusDistance = focusDistance;
+        sceneDofMaxBlurPx = maxBlurPx;
+        sceneDofFocusRange = focusRange;
+        sceneDofNearZ = nearZ;
+        sceneDofFarZ = farZ;
+    }
+    float getSceneDofFocusDistance() const override { return sceneDofFocusDistance; }
+    float getSceneDofMaxBlur() const override { return sceneDofMaxBlurPx; }
+    float getSceneDofFocusRange() const override { return sceneDofFocusRange; }
+    float getSceneDofNearZ() const override { return sceneDofNearZ; }
+    float getSceneDofFarZ() const override { return sceneDofFarZ; }
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
@@ -511,6 +530,7 @@ private:
         bool shadowReceive = true;
         float alphaCutoff = 0.5f;
         std::string alphaTechnique = "cutoff";
+        wgpu::Buffer skinBuffer;
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
         uint32_t shadowUboOffset = 0;
@@ -615,10 +635,9 @@ private:
     wgpu::BindGroup makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth,
                                        GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
                                        GpuTexture *specular = nullptr);
-    wgpu::BindGroup makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                      GpuTexture *height, GpuTexture *depth,
-                                      uint32_t frameUboOffset, uint32_t shadowUboOffset,
-                                      uint32_t pushUboOffset);
+    wgpu::BindGroup makeMeshBindGroup(GpuTexture* albedo, GpuTexture* normal, GpuTexture* env, GpuTexture* height,
+                                      GpuTexture* depth, GpuTexture* sceneColor, uint32_t frameUboOffset,
+                                      uint32_t shadowUboOffset, uint32_t pushUboOffset, const wgpu::Buffer& skinBuffer);
     wgpu::BindGroup makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
                                                  GpuTexture *env, GpuTexture *height,
                                                  GpuTexture *depth, wgpu::TextureView aoView,
@@ -637,6 +656,9 @@ private:
                       WGPUTextureFormat format);
     void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
                      bool canvasTarget = false);
+    void                 flushPrimitive3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, uint32_t sampleCount);
+    wgpu::RenderPipeline getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
+                                                WGPUTextureFormat format, uint32_t sampleCount);
     void flushShadowPass(wgpu::RenderPassEncoder pass, int cascade);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
@@ -649,8 +671,14 @@ private:
         uint64_t capacity = 0;
         uint64_t used = 0;
         uint32_t alloc(uint64_t size, uint64_t alignment);
-        void reset() { used = 0; }
+        std::vector<wgpu::Buffer> palettes;
+        size_t                    paletteIndex = 0;
+        void                      reset() {
+            used         = 0;
+            paletteIndex = 0;
+        }
     };
+    wgpu::Buffer uploadSkinPalette(Mesh* mesh);
     UboArena &currentUboArena();
     void ensureUboArena(UboArena &arena, uint64_t bytes);
 
@@ -696,6 +724,8 @@ private:
     uint32_t frameIndex = 0;
     // Slot rendered by the most recent present (the readback source).
     uint32_t lastPresentSlot = 0;
+    bool sceneColorHistoryValid = false;
+    std::optional<size_t> mesh3dSceneColorCaptureIndex;
     static constexpr uint32_t kFramesInFlight = 2;
     std::vector<UboArena> uboArenas;
     std::vector<VertexArena> vertexArenas;
@@ -783,6 +813,11 @@ private:
     float sceneAutoExposureMaxEV = 8.f;
     float sceneBloomIntensity = 0.f;
     float sceneBloomThreshold = 1.f;
+    float sceneDofFocusDistance = 0.f;
+    float sceneDofMaxBlurPx = 0.f;
+    float sceneDofFocusRange = 8.f;
+    float sceneDofNearZ = 0.1f;
+    float sceneDofFarZ = 100.f;
     wgpu::RenderPipeline mesh3dPipeline;
     wgpu::RenderPipeline mesh3dTransparentPipeline;
     static constexpr size_t kMeshPipelineVariants = 20;
@@ -853,17 +888,36 @@ private:
     mutable std::atomic<float> completedOffscreenTimestampMs{0.f};
     // Most recent 3D render target (scene color or canvas), used by the async
     // frame readback.
+    // Owned copy of the last composed surface, captured only when requested.
+    wgpu::Texture     presentedReadback;
+    int               presentedReadbackW = 0, presentedReadbackH = 0;
+    WGPUTextureFormat presentedReadbackFormat = WGPUTextureFormat_Undefined;
+    bool              surfaceCanCopySrc       = false;
+    void              recordPresentedReadback(wgpu::CommandEncoder &encoder, const wgpu::Texture &surfaceTexture);
     wgpu::Texture lastReadbackTex;
     int lastReadbackW = 0;
     int lastReadbackH = 0;
     glm::mat4 mesh3dViewProj{1.f};
     glm::mat4 mesh3dView{1.f};
     float mesh3dNear = 0.1f, mesh3dFar = 100.f;
+    struct Primitive3DVertex {
+        glm::vec4 clipPosition{0.f};
+        glm::vec4 color{1.f};
+    };
+    struct Primitive3DDraw {
+        ScenePrimitivePaint            paint;
+        float                          averageDepth = 0.f;
+        std::size_t                    sequence     = 0;
+        std::vector<Primitive3DVertex> vertices;
+    };
+    std::vector<Primitive3DDraw>                            primitive3DDraws;
+    std::unordered_map<std::uint64_t, wgpu::RenderPipeline> primitive3DPipelines;
     Texture *sceneColorTexture = nullptr;
     Texture *mesh3dNormalTexture = nullptr;
     Texture *mesh3dHeightTexture = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
     Texture *mesh3dSceneDepthTexture = nullptr;
+    Texture *mesh3dSceneColorTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     glm::vec3 mesh3dEnvProbeCenter{0.f};
     glm::vec3 mesh3dEnvProbeExtent{0.f};
@@ -1101,17 +1155,23 @@ private:
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).
-    struct PendingReadback;
+    struct PendingReadback {
+        std::string  path;
+        int          width = 0, height = 0;
+        uint64_t     bytesPerRow = 0;
+        wgpu::Buffer dst;
+        bool         mapped = false, done = false, ok = false;
+        bool         hdr = false, bgra = false;
+    };
     std::unique_ptr<PendingReadback> pendingReadback_;
 
     // Cached mesh3d bind groups keyed by the frame-slot UBO buffer, texture
     // views and shadow resources. Dynamic offsets reuse a group within one
     // frame slot; the buffer identity prevents a group from retaining another
     // in-flight slot's UBO arena.
-    using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t>;
+    using MeshBindGroupKey =
+        std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                   uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

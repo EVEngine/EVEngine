@@ -46,7 +46,7 @@ eve_declare_module(NAME keyboard LAYER 2 SCRIPT Keyboard SLOT keyboard
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME mouse LAYER 2 SCRIPT Mouse SLOT mouse
-                   DEPS window
+                   DEPS platform_event window
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME touch LAYER 2 SCRIPT Touch SLOT touch

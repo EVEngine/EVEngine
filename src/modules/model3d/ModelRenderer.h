@@ -31,7 +31,9 @@ struct ModelRenderOptions {
 };
 
 /**
- * Build a Renderable3D for one Assimp mesh. The mesh index is looked up in the
+ * Build a Renderable3D for one Assimp mesh.
+ * Missing external preview textures report a warning and retain material factors;
+ * this does not relax canonical asset import or archive dependency validation. The mesh index is looked up in the
  * scene graph to bake its node world transform (when bakeWorldTransform is on);
  * if several nodes reference the mesh, the first is used.
  * Returns nullptr for invalid/empty meshes. The entity is registered in the

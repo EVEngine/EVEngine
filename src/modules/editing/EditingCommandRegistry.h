@@ -3,6 +3,7 @@
 #include "editing/EditableTarget.h"
 
 #include <functional>
+#include <cstddef>
 #include <string>
 
 namespace eve::editing {
@@ -28,10 +29,18 @@ using EditingCommandPlanner =
  */
 class IEditingCommandRegistry {
 public:
+    static constexpr const char* capabilityName = "IEditingCommandRegistry";
+
     virtual ~IEditingCommandRegistry() = default;
     /** @brief Register or replace one domain-owned planned command. */
     [[nodiscard]] virtual Result<void> registerPlannedCommand(
         EditingCommandDescriptor descriptor, EditingCommandPlanner planner) = 0;
+    /**
+     * @brief Remove every command registered by one domain module.
+     * @param ownerModule Stable owner name used in command descriptors.
+     * @return Applied with the number removed, or a structured failure.
+     */
+    [[nodiscard]] virtual Result<std::size_t> unregisterOwner(const std::string& ownerModule) = 0;
 };
 
 }  // namespace eve::editing

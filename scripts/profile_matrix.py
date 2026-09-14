@@ -53,10 +53,16 @@ PROFILES = (
 )
 HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
 RUNTIME_ONLY = {"runtime-3d"}
+_MODULE_DIRS: dict[str, str] | None = None
 
 
 def is_editor_module(name: str) -> bool:
-    return name in {"editor", "editing"} or name.endswith("_editing")
+    global _MODULE_DIRS
+    if _MODULE_DIRS is None:
+        _MODULE_DIRS = {item.name: item.dir for item in manifest.parse_manifest()}
+    return manifest.is_authoring_facet(name, _MODULE_DIRS.get(name))
+
+
 CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
@@ -97,7 +103,7 @@ PHYSICS_CORE_SOURCES = (
     "physics/PhysicsHandles.cpp",
     "physics/PhysicsLink.cpp",
     "physics/Shape3D.cpp",
-    "physics/SimulationBackend.cpp",
+    "physics/backend/SimulationBackend.cpp",
     "physics/World.cpp",
     "physics/World3D.cpp",
 )
@@ -117,6 +123,7 @@ _KEYWORDS = {
     "NAME",
     "LIB",
     "LAYER",
+    "DIR",
     "DEPS",
     "OPTIONAL_DEPS",
     "THIRDPARTY",
@@ -126,7 +133,7 @@ _KEYWORDS = {
     "REQUIRED",
     "CORE",
 }
-_ONE_VALUE = {"NAME", "LIB", "LAYER"}
+_ONE_VALUE = {"NAME", "LIB", "LAYER", "DIR"}
 _MULTI_VALUE = {"DEPS", "OPTIONAL_DEPS", "THIRDPARTY", "SCRIPT", "SLOT", "GROUP"}
 
 
@@ -254,7 +261,7 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
 
 def check_contracts() -> int:
     declarations = manifest.parse_manifest()
-    errors = manifest.validate(declarations, manifest.source_modules())
+    errors = manifest.validate(declarations, manifest.MODULES)
     try:
         module_contracts = contracts()
     except ValueError as error:

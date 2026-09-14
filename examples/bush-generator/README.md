@@ -16,8 +16,8 @@ make run GAME=examples/bush-generator               # current host debug
 `procgen.generateMesh("mesh.bush", p, gfx)` returns a Result projection whose
 `value` is a GPU `Mesh`; use `procgen.buildMesh("mesh.bush", p)` for the CPU
 `MeshBuild`. Check `ok` before reading either `value`. The generator
-clusters a set of squashed foliage ellipsoids under a dome silhouette, adds a
-few woody twigs poking out, and optionally scatters loose leaf cards.
+clusters a set of irregular foliage lobes under a dome silhouette, adds a few
+woody twigs, and grows loose leaf cards over each lobe's outer surface.
 
 The mesh uses a two-region atlas, matching the `mesh.tree` convention:
 
@@ -39,6 +39,8 @@ The mesh uses a two-region atlas, matching the `mesh.tree` convention:
 | `rings` | `3` | lobe ring resolution |
 | `radialSegments` | `7` | lobe radial resolution |
 | `leafDensity` | `0.62` | fraction of loose leaf cards |
+| `lobeScale` | `0.68` | relative size of each foliage lobe |
+| `irregularity` | `0.62` | strength of low-frequency silhouette breakup |
 | `leafSize` | `0.16·height` | leaf-card size |
 | `twigs` | `4` | emergent woody twigs (0 disables) |
 | `twigLength` | `0.30·height` | twig length |
@@ -58,16 +60,12 @@ if (!meshResult.ok) throw meshResult.status.summary;
 local mesh = meshResult.value;
 ```
 
-## Controls
+## Live controls
 
-| Key | Action |
-|-----|--------|
-| `R` | new seed |
-| `1` / `2` | mound / sphere style |
-| `L` | cycle leaf mode (mixed → blobs → cards → none) |
-| `C` | toggle leaf cards |
-| `[` / `]` | leaf density down / up |
-| `T` | reload texture from disk |
+The example exposes silhouette and foliage modes plus sliders for width,
+height, lobe count/scale, irregularity, leaf density/size, and twig count/length.
+Every edit rebuilds the native deterministic mesh immediately. **New seed**
+changes the variation; **Reset** restores the authored showcase values.
 
 ## Assets & attribution
 

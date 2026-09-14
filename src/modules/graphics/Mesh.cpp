@@ -8,6 +8,21 @@
 #include <cmath>
 
 namespace eve::graphics {
+Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
+    if (gpuVertexCount <= 0 || values.size() != size_t(gpuVertexCount) * 2 ||
+        std::any_of(values.begin(), values.end(), [](float x) { return !std::isfinite(x); }))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "UV channel must match mesh vertices"));
+    std::vector<float> owned(values.begin(), values.end());
+    texcoords_.insert_or_assign(set, std::move(owned));
+    ++texcoordRevision_;
+    return Result<void>::success();
+}
+std::span<const float> Mesh::texcoordSet(uint32_t set) const {
+    auto found = texcoords_.find(set);
+    return found == texcoords_.end() ? std::span<const float>{} : std::span<const float>(found->second);
+}
+
 
 namespace {
 const std::vector<float> kEmptyAttribute;
@@ -62,10 +77,17 @@ const std::vector<float> &Mesh::importedColor(int channel) const {
                : kEmptyAttribute;
 }
 
-bool Mesh::setSkinPalette(const float *matrices, int matrixCount) {
-    if (!matrices || matrixCount <= 0 || matrixCount > kMaxSkinBones) return false;
-    skinPalette_.assign(matrices, matrices + static_cast<size_t>(matrixCount) * 16u);
-    return true;
+Result<void> Mesh::setSkinPalette(const float* matrices, int matrixCount) {
+    if (!matrices || matrixCount <= 0 || static_cast<size_t>(matrixCount) > skinPalette_.max_size() / 16u)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid skin palette size"));
+    const size_t count = static_cast<size_t>(matrixCount) * 16u;
+    for (size_t i = 0; i < count; ++i)
+        if (!std::isfinite(matrices[i]))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Non-finite skin palette matrix"));
+    std::vector<float> replacement(matrices, matrices + count);
+    skinPalette_.swap(replacement);
+    return Result<void>::success();
 }
 
 void Mesh::computeBounds(const float *posXYZ, int vertexCount) {

@@ -245,7 +245,7 @@ TEST_CASE("hd2d.sprite.frameGridAnimation") {
     fx.gfx->present();
 }
 
-TEST_CASE("hd2d.sprite.flipSwapsFrameUvs") {
+TEST_CASE("hd2d.sprite.flipPreservesSelectedAtlasRegion") {
     GfxFixture fx;
     auto *sprite = Hd2D::create()->newSprite(fx.gfx);
     REQUIRE(sprite != nullptr);
@@ -254,10 +254,12 @@ TEST_CASE("hd2d.sprite.flipSwapsFrameUvs") {
     sprite->setFrameIndex(1);
     float u0, v0, u1, v1;
     sprite->getFrame(u0, v0, u1, v1);
-    CHECK(u0 > 0.49f);
+    REQUIRE(u0 > 0.49f);
     sprite->setFlipX(true);
     sprite->getFrame(u0, v0, u1, v1);
-    CHECK(u0 < 0.01f);
+    // Flipping reverses sampling inside the same cell, not the selected cell.
+    REQUIRE(u0 > 0.49f);
+    REQUIRE_EQ(sprite->getFrameIndex(), 1);
     fx.gfx->clear(std::nullopt, std::nullopt, std::nullopt);  // flush GPU ring before teardown
     fx.gfx->present();
 }

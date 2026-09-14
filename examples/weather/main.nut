@@ -2,7 +2,7 @@
 // module: rain, snow, lightning, wind and the storm mood (sky / fog / sun).
 //
 // Controls:
-//   鈥?Panel buttons or keys 1..6  鈥?pick a preset
+//   鈥?Panel buttons or keys 1..8  鈥?pick a preset
 //   鈥?Space  /  "Cycle" button     鈥?auto-loop through every weather
 //   鈥?S      /  "Strike" button    鈥?force a lightning bolt
 //   鈥?Sliders tune intensity + wind live
@@ -18,18 +18,22 @@ persist props = []
 persist strikeWasDown = false
 
 
-presetOrder <- ["clear", "drizzle", "rain", "storm", "snow", "fog"];
+presetOrder <- ["clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard"];
 
 presets <- {
     clear   = { intensity = 0.0,  wind = 1.5, dir = 0.0,  sky = [0.45, 0.53, 0.62], sun = 1.0,  fog = [0.55, 0.58, 0.62], fogD = 0.0015, lightning = false }
     drizzle = { intensity = 0.25, wind = 4.0, dir = 20.0, sky = [0.40, 0.46, 0.55], sun = 0.8, fog = [0.52, 0.54, 0.56], fogD = 0.006,  lightning = false }
     rain    = { intensity = 0.65, wind = 7.0, dir = 35.0, sky = [0.34, 0.39, 0.47], sun = 0.5, fog = [0.45, 0.48, 0.51], fogD = 0.012,  lightning = false }
     storm   = { intensity = 0.9,  wind = 13.0, dir = 55.0, sky = [0.22, 0.26, 0.32], sun = 0.25, fog = [0.30, 0.32, 0.36], fogD = 0.02,   lightning = true }
-    snow    = { intensity = 0.75, wind = 5.0,  dir = 10.0, sky = [0.62, 0.68, 0.74], sun = 0.7, fog = [0.72, 0.76, 0.80], fogD = 0.01,   lightning = false }
+    snow    = { intensity = 0.75, wind = 1.2,  dir = 10.0, sky = [0.62, 0.68, 0.74], sun = 0.7, fog = [0.72, 0.76, 0.80], fogD = 0.01,   lightning = false }
+    wind    = { intensity = 0.7, wind = 9.0, dir = 70.0, sky = [0.52, 0.61, 0.70], sun = 0.85, fog = [0.64, 0.68, 0.70], fogD = 0.004, lightning = false }
+    blizzard = { intensity = 1.0, wind = 13.0, dir = 60.0, sky = [0.52, 0.59, 0.66], sun = 0.45, fog = [0.72, 0.77, 0.82], fogD = 0.055, lightning = false }
     fog     = { intensity = 0.0,  wind = 1.0,  dir = 0.0,  sky = [0.45, 0.47, 0.50], sun = 0.4, fog = [0.60, 0.62, 0.65], fogD = 0.05,   lightning = false }
 };
 
 camera <- null;
+sceneFog <- null;
+weatherTime <- 0.0;
 lastFrameWasDown <- false;
 
 function buildProp(kind, x, z) {
@@ -112,7 +116,7 @@ function updateHud() {
     ui.setText("hudIntensity", "Intensity:  " + (p.intensity * 100).tointeger() + "%");
     ui.setText("hudWind", "Wind:  " + p.wind + " m/s @ " + p.dir + "\u00B0");
     ui.setText("hudFx", (p.lightning ? "Lightning:  ON" : "Lightning:  off") +
-                        "   鈥?  Cycle: " + (autoCycle ? "ON" : "off"));
+                        " | Cycle: " + (autoCycle ? "ON" : "off"));
 }
 
 function applyPreset() {
@@ -132,29 +136,41 @@ function applyPreset() {
 
 function buildPanel() {
     ui.setTheme("dark");
+    ui.setScale(1.2);
     ui.setNavKeyboard(true);
 
     ui.beginBuild();
     ui.beginWindow("WEATHER LAB", "root");
     ui.text("Presets", "h1");
     ui.button("1  Clear", "pClear");
+    ui.setItemSize(100.0, 0.0);
+    ui.sameLine("");
     ui.button("2  Drizzle", "pDrizzle");
     ui.button("3  Rain", "pRain");
+    ui.setItemSize(100.0, 0.0);
+    ui.sameLine("");
     ui.button("4  Storm", "pStorm");
     ui.button("5  Snow", "pSnow");
+    ui.setItemSize(100.0, 0.0);
+    ui.sameLine("");
     ui.button("6  Fog", "pFog");
-    ui.text("Control", "h1");
-    ui.slider("Intensity", presets[preset].intensity, 0.0, 1.0, "intensity");
-    ui.slider("Wind speed", presets[preset].wind, 0.0, 20.0, "wind");
-    ui.slider("Wind dir (deg)", presets[preset].dir, 0.0, 360.0, "winddir");
+    ui.button("7  Wind", "pWind");
+    ui.setItemSize(100.0, 0.0);
+    ui.sameLine("");
+    ui.button("8  Blizzard", "pBlizzard");
+    ui.text("Control", "h2");
+    ui.slider("Density", presets[preset].intensity, 0.0, 1.0, "intensity");
+    ui.slider("Speed", presets[preset].wind, 0.0, 20.0, "wind");
+    ui.slider("Dir", presets[preset].dir, 0.0, 360.0, "winddir");
     ui.button("Strike lightning (S)", "strike");
     ui.button("Cycle all (Space)", "cycle");
-    ui.text("Camera: space to orbit 鈥?S = bolt", "hint");
+    ui.text("Space: cycle | S: strike", "hint");
     ui.end();
-    ui.mountBuildAs("panel");
+    if (!ui.mountBuildAs("panel")) throw "Weather panel mount failed";
     ui.select("panel");
     ui.setHostOverlay(true);
-    ui.setHostPos(760.0, 24.0, 250.0, 620.0);
+    ui.setHostPos(760.0, 12.0, 0.0, 0.0);
+    ui.setHostSize(250.0, 470.0);
 
     ui.beginBuild();
     ui.beginWindow("Weather", "hudroot");
@@ -163,10 +179,11 @@ function buildPanel() {
     ui.text("Wind", "hudWind");
     ui.text("FX", "hudFx");
     ui.end();
-    ui.mountBuildAs("hud");
+    if (!ui.mountBuildAs("hud")) throw "Weather HUD mount failed";
     ui.select("hud");
     ui.setHostOverlay(true);
-    ui.setHostPos(20.0, 20.0, 300.0, 120.0);
+    ui.setHostPos(20.0, 20.0, 0.0, 0.0);
+    ui.setHostSize(300.0, 130.0);
 
     uiReady = true;
 }
@@ -174,12 +191,20 @@ function buildPanel() {
 eve_init = function() {
     gfx.setBackgroundColor(0.35, 0.42, 0.5, 1.0);
     camera = eve.Camera3D();
-    camera.setEye(0.0, 7.0, 16.0);
+    camera.setEye(17.0, 7.5, 0.0);
     camera.setTarget(0.0, 1.0, 0.0);
     camera.setFov(55.0);
     camera.setAmbient(0.35, 0.4, 0.45);
     gfx.setDirectionalLight(-0.4, 0.75, 0.5, 1.0, 0.95, 0.88);
 
+    sceneFog = gfx.newVolumetric();
+    sceneFog.setMode("fog");
+    sceneFog.setFogHeight(0.0);
+    sceneFog.setFogHeightFalloff(0.04);
+    sceneFog.setFogStart(2.0);
+    sceneFog.setFogEnd(90.0);
+    sceneFog.setFogNoise(0.12);
+    gfx.getRenderControl().enable("gbuffer");
     buildScene();
     if (!uiReady) buildPanel();
     applyPreset();
@@ -192,8 +217,15 @@ eve_update = function(dt) {
         camera.setEye(math.polarX(r, camAngle), 7.5, math.polarY(r, camAngle));
     }
 
-    // Preset hotkeys 1..6.
-    local keys = ["1", "2", "3", "4", "5", "6"];
+    weatherTime += dt;
+    sceneFog.setCamera(math.polarX(17.0, camAngle), 7.5, math.polarY(17.0, camAngle),
+                       0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 100.0);
+    sceneFog.setFogColor(weather.getFogColorR(), weather.getFogColorG(), weather.getFogColorB());
+    sceneFog.setDensity(weather.getFogDensity());
+    sceneFog.setTime(weatherTime);
+
+    // Preset hotkeys 1..8.
+    local keys = ["1", "2", "3", "4", "5", "6", "7", "8"];
     foreach (k in keys) {
         if (keyboard.isDown(k)) {
             local idx = k.tointeger() - 1;
@@ -238,6 +270,8 @@ eve_update = function(dt) {
         else if (clicked == "panel/pRain") { preset = "rain"; needApply = true; }
         else if (clicked == "panel/pStorm") { preset = "storm"; needApply = true; }
         else if (clicked == "panel/pSnow") { preset = "snow"; needApply = true; }
+        else if (clicked == "panel/pWind") { preset = "wind"; needApply = true; }
+        else if (clicked == "panel/pBlizzard") { preset = "blizzard"; needApply = true; }
         else if (clicked == "panel/pFog") { preset = "fog"; needApply = true; }
         else if (clicked == "panel/strike") weather.strike();
         else if (clicked == "panel/cycle") autoCycle = !autoCycle;
@@ -272,5 +306,6 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
+    sceneFog.applyFog(gfx, gfx.getRenderControl().getGBuffer().getDepthTexture());
     ui.beginFrameAndRender();
 };

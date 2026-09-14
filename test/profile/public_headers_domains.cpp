@@ -5,7 +5,7 @@
 #include "editing/EditingAuthority.h"
 #include "physics/PhysicsHandles.h"
 #include "physics/PhysicsLink.h"
-#include "physics/SimulationBackend.h"
+#include "physics/backend/SimulationBackend.h"
 #include "physics/World.h"
 #include "procgen/core/ProcgenCore.h"
 #include "settlement/Settlement.h"

@@ -8,7 +8,7 @@
 > （ScrollList / virtualList，按滚动偏移只绘制可见行）；2026-08-19 再补 UI 内嵌渲染视口
 > （Viewport 控件：离屏 Canvas → 纹理注册 → Image 显示 + 输入路由），并新增
 > `Graphics::renderScene3DToCanvas`（RenderSystem3D::renderToCanvas 前向离屏 3D 通道）、
-> `editor.newHeightmapMesh / updateHeightmapMesh`（高度图 → 地形网格），
+> `heightmapTargets.newMesh / updateMesh`（高度图 → 地形网格），
 > 示例 `examples/terrain-editor`。
 > 2026-08-30 新增 3D 世界锚点：`UIHost::WorldAnchor` 由活动 `Camera3D` 投影到 retained
 > UI overlay，支持视锥外隐藏/安全边缘钳制、相机缺失/背后状态与距离缩放；HUD、头顶
@@ -124,10 +124,10 @@ flowchart TB
 
 依赖只允许自上而下，View 不直接认识 Squirrel VM，Editor 命令也不进入通用模型层：
 
-1. `presentation`：`Value`、`PropertySchema`、`IPropertyModel`、订阅与校验结果；纯 C++、
-   无 UI/VM/Editor 依赖。
-2. `scriptmodel` / `editor::EditorPropertyModel`：分别把 Squirrel 反射对象和编辑器属性源
-   适配为同一个 `IPropertyModel`；Editor 写入只产生 command intent。
+1. `property_access`：`PropertySchema`、`IPropertyAccess`、订阅与校验结果；核心头文件纯 C++、
+   无 UI/VM/Editor 依赖。Squirrel 反射适配器在同模块 `squirrel/` 子目录。
+2. `property_access::ReflectedPropertyModel` / `editor::EditorPropertyModel`：分别把 Squirrel 反射对象和编辑器属性源
+   适配为同一个 `IPropertyAccess`；Editor 写入只产生 command intent。
 3. `ui::PropertyView`：只消费 schema/value，选择控件、生成稳定 ID、双向写回并按 revision
    增量同步；既可嵌入游戏 UI，也可嵌入编辑器面板。
 4. `Inspector`、游戏 HUD、Editor shell：组合 View、命令、权限与目标选择；不复制属性控件。

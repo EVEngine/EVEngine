@@ -210,7 +210,7 @@ void Inspector::rebuildPropertyModel() {
     const ssq::Object* instance = currentInstance();
     if (rt && instance)
         propertyModel_ =
-            std::make_unique<scriptmodel::ReflectedPropertyModel>(*rt, *instance);
+            std::make_unique<property_access::ReflectedPropertyModel>(*rt, *instance);
 }
 
 WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,

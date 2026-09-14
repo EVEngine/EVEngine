@@ -7,6 +7,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <map>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -18,6 +19,8 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/PbrSurface.h"
+#include "graphics/PrimitiveTypes.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
@@ -30,6 +33,24 @@
 namespace eve::graphics::vulkan {
 
 class OffscreenCanvas;
+
+#if defined(VKB_ENABLE_VMA)
+/** @brief Owns the backend VMA allocator; destroyed after all Graphics resources. */
+class VmaAllocatorOwner {
+public:
+    VmaAllocatorOwner() = default;
+    ~VmaAllocatorOwner();
+    VmaAllocatorOwner(const VmaAllocatorOwner &) = delete;
+    VmaAllocatorOwner &operator=(const VmaAllocatorOwner &) = delete;
+
+    /** @brief Create the allocator for an already-created Vulkan device. */
+    void create(const vkb::Instance &instance, const vkb::PhysicalDevice &physicalDevice,
+                vkb::Device &device);
+
+private:
+    VmaAllocator allocator_ = VK_NULL_HANDLE;
+};
+#endif
 
 struct ColorVertex {
     glm::vec2 pos;
@@ -47,6 +68,20 @@ struct ColorVertex {
             {0, binding, vk::Format::eR32G32Sfloat, offsetof(ColorVertex, pos)},
             {1, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(ColorVertex, color)},
         };
+    }
+};
+
+/** @brief Clip-space vertex emitted by the backend-neutral primitive tessellator. */
+struct Primitive3DVertex {
+    glm::vec4 clipPosition;
+    glm::vec4 color;
+
+    static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
+        return {binding, sizeof(Primitive3DVertex), vk::VertexInputRate::eVertex};
+    }
+    static std::vector<vk::VertexInputAttributeDescription> getAttributeDescription(uint32_t binding) {
+        return {{0, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(Primitive3DVertex, clipPosition)},
+                {1, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(Primitive3DVertex, color)}};
     }
 };
 
@@ -96,6 +131,8 @@ struct MeshVertex {
     glm::vec2 uv;
     glm::u16vec4 joints{0};
     glm::vec4 weights{0.f};
+    // Optional imported tangent basis; w=0 explicitly denotes an absent stream.
+    glm::vec4 tangent{0.f};
 
     static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
         vk::VertexInputBindingDescription b{};
@@ -111,6 +148,7 @@ struct MeshVertex {
             {2, binding, vk::Format::eR32G32Sfloat, offsetof(MeshVertex, uv)},
             {3, binding, vk::Format::eR16G16B16A16Uint, offsetof(MeshVertex, joints)},
             {4, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, weights)},
+            {5, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, tangent)},
         };
     }
 };
@@ -142,7 +180,6 @@ struct Mesh3DUBO {
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
@@ -152,9 +189,8 @@ struct SkinPassUBO {
     glm::mat4 model{1.f};
     glm::vec4 clip{0.f};
     glm::vec4 skinInfo{0.f};
-    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
-static_assert(sizeof(SkinPassUBO) == 8352, "SkinPassUBO must match std140 shaders");
+static_assert(sizeof(SkinPassUBO) == 160, "SkinPassUBO must match std140 shaders");
 
 struct Mesh3DClusteredUBO {
     glm::mat4 mvp{1.f};
@@ -228,6 +264,11 @@ struct GpuMesh {
     GpuMeshRecord record;
 };
 
+struct MeshShaderResources;
+struct MeshShaderResourcesDeleter {
+    void operator()(MeshShaderResources *resources) const noexcept;
+};
+
 struct GpuShader {
     vk::Pipeline       swapchainPipeline;
     vk::Pipeline       offscreenPipeline;
@@ -240,6 +281,8 @@ struct GpuShader {
     vk::Pipeline       mesh3dOffscreenPipeline;
     vk::Pipeline       mesh3dHdrOffscreenPipeline;
     vk::PipelineLayout pipelineLayout;
+    vk::DescriptorSet                                                resourceSet;
+    std::unique_ptr<MeshShaderResources, MeshShaderResourcesDeleter> resources;
     bool isMesh3D = false;
     bool isHair3D = false;
     Shader *owner = nullptr;
@@ -382,6 +425,7 @@ public:
 
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
+    void     drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                               const Color &color,
                               BlendMode blend = BlendMode::Alpha) override;
@@ -408,6 +452,7 @@ public:
     float getMaxAnisotropy() const override;
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
+    bool uploadDeferredFileTexture(Texture *texture, image::ImageData *data) override;
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
@@ -463,6 +508,9 @@ public:
     [[nodiscard]] Result<void> replaceShaderFromSpv(
         Shader &shader, const std::vector<uint32_t> &vertSpv,
         const std::vector<uint32_t> &fragSpv) override;
+    [[nodiscard]] Result<void> replaceMeshShaderResources(Shader &shader, const std::vector<uint32_t> &vertSpv,
+                                                          const std::vector<uint32_t> &fragSpv,
+                                                          const ShaderResourceInputs  &resources) override;
     [[nodiscard]] Result<void> replaceShaderFromWgsl(
         Shader &shader, const std::string &vertWgsl,
         const std::string &fragWgsl) override;
@@ -475,6 +523,9 @@ public:
     Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
                                   const std::string &fragWgsl) override;
     bool releaseShader(Shader *shader) override;
+    eve::Result<void> configureMeshShaderSurface(Shader &shader, BlendMode blend, bool depthWrite,
+                                                 bool doubleSided) override;
+    eve::Result<void> configureMeshShaderRaster(Shader &shader, const MeshShaderRasterState &state) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
@@ -492,6 +543,7 @@ public:
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
     void end3DFrameToCanvas() override;
+    void  drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) override;
     float getLastOffscreen3DGpuDurationMs() const override {
         return lastOffscreen3DGpuDurationMs;
     }
@@ -507,16 +559,22 @@ public:
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
-      void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
-                                  float originZ, const std::string &faceDir, Texture *atlas,
-                                  int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
+    [[nodiscard]] Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
+                                                       const Color &tint, std::uint32_t first,
+                                                       std::uint32_t count) override;
+    void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY, float originZ,
+                                const std::string &faceDir, Texture *atlas, int tilesPerRow = 16,
+                                const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
                                  int atlasSlotsX, int atlasSlotsY,
                                  float borderFraction) override;
     void              setMesh3DSceneDepth(Texture *depth) override;
+    void              setMesh3DSceneColor(Texture *color) override;
+    [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void              setMesh3DMaterial(float metallic, float roughness) override;
+    [[nodiscard]] Result<void>                  setMesh3DPbrSurface(const PbrSurface* surface) override;
     void              setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                                        bool doubleSided, float alphaCutoff,
                                        const std::string &alphaTechnique = "cutoff") override;
@@ -533,6 +591,8 @@ public:
     void setMesh3DEnv(Texture *cube, float intensity) override;
     void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) override;
     void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
+    [[nodiscard]] Result<void> setSceneToneMapping(SceneToneMapping mode) override;
+    SceneToneMapping           getSceneToneMapping() const override { return sceneToneMapping_; }
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     float getSceneExposure() const override { return sceneExposure; }
     void setSceneAutoExposure(bool enabled, float minEV, float maxEV) override {
@@ -549,6 +609,19 @@ public:
     }
     float getSceneBloomIntensity() const override { return sceneBloomIntensity; }
     float getSceneBloomThreshold() const override { return sceneBloomThreshold; }
+    void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange, float nearZ,
+                              float farZ) override {
+        sceneDofFocusDistance = focusDistance;
+        sceneDofMaxBlurPx = maxBlurPx;
+        sceneDofFocusRange = focusRange;
+        sceneDofNearZ = nearZ;
+        sceneDofFarZ = farZ;
+    }
+    float getSceneDofFocusDistance() const override { return sceneDofFocusDistance; }
+    float getSceneDofMaxBlur() const override { return sceneDofMaxBlurPx; }
+    float getSceneDofFocusRange() const override { return sceneDofFocusRange; }
+    float getSceneDofNearZ() const override { return sceneDofNearZ; }
+    float getSceneDofFarZ() const override { return sceneDofFarZ; }
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
@@ -614,8 +687,15 @@ public:
      * @brief Composite queued engine textures into the currently open UI render pass.
      * @param commandBuffer Native Vulkan command buffer owned by the active UI pass.
      * @param draws Ordered textured rectangles in framebuffer coordinates.
+     * @param bufferOffset First transient
+     * vertex-buffer slot; disjoint calls in the
+     * same frame must reserve non-overlapping ranges of draws.size()
+     * slots.
+     * @ownership Inputs are borrowed for this synchronous render-thread call only.
+     * @reentrancy
+     * Must not be called concurrently; invokes no user callbacks.
      */
-    void drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws);
+    void drawUiTextureRects(void* commandBuffer, const std::vector<UiTextureDraw>& draws, std::size_t bufferOffset = 0);
     vkb::Instance &getInstance() { return inst; }
     vkb::Swapchain &getSwapchain() { return swapchain; }
     void *getSdlWindow() const { return sdlWindow; }
@@ -630,6 +710,8 @@ public:
     };
 
 private:
+    void drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint, Shader *shader,
+                             std::uint32_t first, std::uint32_t count);
     struct GpuParticleDrawRequest;
     struct GpuParticleResource;
 
@@ -646,6 +728,12 @@ private:
     void          destroyGpuParticleResources();
     void          recordGpuParticleCompute(vk::CommandBuffer cb);
     void          drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDrawRequest& request);
+    struct PbrResources;
+    static void                                            deletePbrResources(PbrResources* resources);
+    std::unique_ptr<PbrResources, void (*)(PbrResources*)> pbrResources_{nullptr, &deletePbrResources};
+    std::optional<PbrSurface>                              pbrSurface_;
+    void                                                   destroyPbrResources();
+    void          drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
@@ -692,6 +780,7 @@ private:
     void          uploadClusteredLighting(const ClusteredLightingUpload &upload);
     void          ensureMesh3dStrides();
     void          ensureMesh3dRing(Mesh3dFrameSlots &fslots);
+    size_t                  uploadSkinPalette(Mesh* mesh, Mesh3dFrameSlots& fslots);
     vk::DescriptorSet skinPassSetFor(GpuTexture *albedo, Mesh3dFrameSlots &fslots);
     bool prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp,
                          const glm::mat4 &model, const glm::vec4 &clip,
@@ -710,13 +799,17 @@ private:
                                               const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
                                               BlendMode mode = BlendMode::Alpha,
                                               vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1);
-    vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
-                                            vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
-                                            vk::SampleCountFlagBits samples,
-                                            BlendMode blend = BlendMode::Opaque,
-                                            bool depthWrite = true, bool doubleSided = true);
+    vk::Pipeline      createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
+                                                vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
+                                                vk::SampleCountFlagBits samples, BlendMode blend = BlendMode::Opaque,
+                                                bool depthWrite = true, bool doubleSided = true,
+                                                const MeshShaderRasterState &raster = {});
+    eve::Result<void> rebuildMeshShaderSurface(Shader &shader, BlendMode blend, bool depthWrite, bool doubleSided,
+                                               const MeshShaderRasterState &raster);
     static constexpr size_t kMesh3DPipelineVariants = 20;
     static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
+    static constexpr size_t kPrimitive3DPipelineVariants = 45;
+    static size_t           primitive3DPipelineIndex(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull);
     /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
@@ -731,6 +824,9 @@ private:
     /** @brief Rebuild scene-pass pipelines against the given render pass / sample count. */
     void ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                                   vk::SampleCountFlagBits samples);
+    void rebuildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples);
+    void buildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples,
+                                   std::array<vk::Pipeline, kPrimitive3DPipelineVariants> &pipelines);
     /** @brief Clamp a requested sample count to the device-supported set (0/1/2/4/8). */
     int clampMsaaSamples(int requested) const;
     /** @brief Render pass a scene-pass pipeline should be built against right now. */
@@ -768,7 +864,7 @@ private:
     void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
     vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                               GpuTexture *heightTex, GpuTexture *depthTex,
+                               GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
                                GpuTexture *decalAlbedo, GpuTexture *decalNormal,
                                GpuTexture *decalParams, Mesh3dFrameSlots &fslots);
     void          ensureDefaultEnvCubemap();
@@ -829,6 +925,11 @@ private:
     vk::SurfaceKHR surface;
 
     vkb::Instance inst;
+#if defined(VKB_ENABLE_VMA)
+    // Declared before Device and all GPU resources so reverse member
+    // destruction keeps the allocator alive until every buffer is gone.
+    VmaAllocatorOwner vmaAllocatorOwner_;
+#endif
     vkb::Device device;
     vkb::Swapchain swapchain;
     vkb::BuiltRenderPass renderpass;
@@ -850,12 +951,18 @@ private:
     vk::Pipeline opaqueTexPipeline;
     vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
+    SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
     float sceneExposure = 1.f;
     bool sceneAutoExposure = false;
     float sceneAutoExposureMinEV = -8.f;
     float sceneAutoExposureMaxEV = 8.f;
     float sceneBloomIntensity = 0.f;
     float sceneBloomThreshold = 1.f;
+    float sceneDofFocusDistance = 0.f;
+    float sceneDofMaxBlurPx = 0.f;
+    float sceneDofFocusRange = 8.f;
+    float sceneDofNearZ = 0.1f;
+    float sceneDofFarZ = 100.f;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
@@ -882,6 +989,11 @@ private:
     vk::Pipeline mesh3dPipeline;
     vk::Pipeline mesh3dTransparentPipeline;
     std::array<vk::Pipeline, kMesh3DPipelineVariants> mesh3dSurfacePipelines{};
+    std::array<vk::Pipeline, kPrimitive3DPipelineVariants> primitive3DPipelines{};
+    std::array<vk::Pipeline, kPrimitive3DPipelineVariants> offscreenPrimitive3DPipelines{};
+    std::array<vk::Pipeline, kPrimitive3DPipelineVariants> hdrOffscreenPrimitive3DPipelines{};
+    std::vector<vkb::HostVertexBuffer>                     offscreenPrimitive3DBufs;
+    std::size_t                                            offscreenPrimitive3DDrawIndex = 0;
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -893,27 +1005,27 @@ private:
         GpuTexture *reflectionProbe1 = nullptr;
         GpuTexture *height = nullptr;
         GpuTexture *depth = nullptr;
+        GpuTexture *sceneColor = nullptr;
         GpuTexture *decalAlbedo = nullptr;
         GpuTexture *decalNormal = nullptr;
         GpuTexture *decalParams = nullptr;
+        size_t      paletteSlot      = 0;
         bool operator==(const Mesh3dSetKey &o) const {
-            return albedo == o.albedo && normal == o.normal && env == o.env &&
-                   reflectionProbe0 == o.reflectionProbe0 &&
-                   reflectionProbe1 == o.reflectionProbe1 && height == o.height &&
-                   depth == o.depth && decalAlbedo == o.decalAlbedo &&
-                   decalNormal == o.decalNormal && decalParams == o.decalParams;
+            return albedo == o.albedo && normal == o.normal && env == o.env && reflectionProbe0 == o.reflectionProbe0 &&
+                   reflectionProbe1 == o.reflectionProbe1 && height == o.height && depth == o.depth &&
+                   sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo && decalNormal == o.decalNormal &&
+                   decalParams == o.decalParams && paletteSlot == o.paletteSlot;
         }
     };
     struct Mesh3dSetKeyHash {
         size_t operator()(const Mesh3dSetKey &k) const {
-            return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
-                   (std::hash<GpuTexture *>()(k.reflectionProbe0) << 8) ^
-                   (std::hash<GpuTexture *>()(k.reflectionProbe1) << 9) ^
-                   (std::hash<GpuTexture *>()(k.depth) << 4) ^
-                   (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
-                   (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^
-                   (std::hash<GpuTexture *>()(k.decalParams) << 7);
+            return std::hash<GpuTexture*>()(k.albedo) ^ (std::hash<GpuTexture*>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture*>()(k.env) << 2) ^ (std::hash<GpuTexture*>()(k.height) << 3) ^
+                   (std::hash<GpuTexture*>()(k.reflectionProbe0) << 8) ^
+                   (std::hash<GpuTexture*>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture*>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture*>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture*>()(k.decalAlbedo) << 5) ^
+                   (std::hash<GpuTexture*>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture*>()(k.decalParams) << 7) ^
+                   k.paletteSlot;
         }
     };
     // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame
@@ -929,7 +1041,9 @@ private:
         size_t             drawIndex     = 0;
         size_t             lastDrawCount = 0;
         std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
-        std::unordered_map<GpuTexture *, vkb::BoundSet> skinSets;
+        std::map<std::pair<size_t, GpuTexture*>, vkb::BoundSet>           skinSets;
+        std::vector<vkb::GenericBuffer>                                   palettes;
+        size_t                                                            activePalette = 0;
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture                      *whiteTexture            = nullptr;
@@ -942,6 +1056,7 @@ private:
     Texture                      *mesh3dHeightTexture     = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
     Texture *mesh3dSceneDepthTexture = nullptr;
+    Texture *mesh3dSceneColorTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     glm::vec3 mesh3dEnvProbeCenter{0.f};
     glm::vec3 mesh3dEnvProbeExtent{0.f};
@@ -1040,7 +1155,8 @@ private:
     uint32_t registerBindlessTexture2D(GpuTexture *tex);
     uint32_t registerBindlessTextureCube(GpuTexture *tex);
     void unregisterBindlessTexture(GpuTexture *tex);
-    uint32_t registerMeshRecord(GpuMesh *gpu);
+    uint32_t          registerMeshRecord(GpuMesh *gpu, const std::vector<MeshVertex> *vertices = nullptr,
+                                         const std::vector<uint32_t> *indices = nullptr);
     void syncMeshTable();
     GpuMaterialRecord buildMaterialRecord(Material *material);
     void createBindlessSet();
@@ -1062,7 +1178,8 @@ private:
     void growGpuVertexPool(uint32_t needVertices, uint32_t needIndices);
     /** @brief Rewrite bindless bindings 18-21 (pool buffers) in every slot set. */
     void bindGpuVertexPoolBindless();
-    void appendGpuMeshToPool(GpuMesh &gpu);
+    void appendGpuMeshToPool(GpuMesh &gpu, const std::vector<MeshVertex> *vertices = nullptr,
+                             const std::vector<uint32_t> *indices = nullptr);
 
     // ---- GPU-driven (stage 3): virtual geometry ----
     static constexpr uint32_t kMaxVgAssets = 64;
@@ -1349,6 +1466,11 @@ private:
     size_t deferredGraphRecordedSlot_ = 0;
     /** @brief (Re)build one deferred FrameGraph per slot from current targets. */
     void buildDeferredFrameGraphs();
+    /** @brief On the render thread, wait for submitted work and release graph
+     * borrowers before replacing their
+     * engine-owned shadow/G-buffer targets.
+     */
+    void resetDeferredFrameGraphs();
     /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
     void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
     /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
@@ -1367,7 +1489,10 @@ private:
     vk::Format sceneColorFormat = vk::Format::eUndefined;
     vk::SampleCountFlagBits sceneColorSamples = vk::SampleCountFlagBits::e1;
     std::vector<SceneColorSlot> sceneColorSlots;
+    size_t completedSceneColorSlot = 0;
+    bool sceneColorHistoryValid = false;
     vkb::BuiltRenderPass sceneColorRenderPass{};
+    vk::RenderPass sceneColorResumeRenderPass{};
     bool sceneColorPassOpen = false;
     vk::RenderPass scenePassPipelineTarget = vk::RenderPass{};
     vk::SampleCountFlagBits scenePassPipelineSamples = vk::SampleCountFlagBits::e1;
@@ -1486,6 +1611,8 @@ private:
         std::vector<vkb::HostVertexBuffer> solidBufs;
         std::vector<vkb::HostVertexBuffer> texBufs;
         std::vector<vkb::HostVertexBuffer> uiTexBufs;
+        std::vector<vkb::HostVertexBuffer> primitive3DBufs;
+        std::size_t                        primitive3DDrawIndex = 0;
     };
     std::vector<Frame2DBuffers> frame2dBuffers;  // per swapchain frame slot
     Frame2DBuffers offscreenBuffers;             // synchronous offscreen path

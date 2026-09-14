@@ -3,14 +3,16 @@
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Light.h"
 #include "graphics/Outline.h"
+#include "graphics/PrimitiveDrawList.h"
+#include "graphics/PrimitiveTessellator.h"
 #include "graphics/RenderControl.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -57,6 +59,7 @@
 namespace eve::graphics::vulkan {
 
 void Graphics::begin3DFrame() {
+    ensureFileTexturesReady();
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
@@ -73,6 +76,7 @@ void Graphics::begin3DFrame() {
     // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
         return;
+    currentFrame2DBuffers().primitive3DDrawIndex = 0;
     decalLayerFresh = false;
     recordDeferredFrameGraph();
     recordDecalPass();
@@ -110,6 +114,7 @@ void Graphics::begin3DFrame() {
         auto &fslots = currentMesh3dFrameSlots();
         fslots.lastDrawCount = fslots.drawIndex;
         fslots.drawIndex = 0;
+        fslots.activePalette = 0;
         ensureMesh3dRing(fslots);
         auto &cslots = currentMesh3dClusteredFrameSlots();
         cslots.lastDrawCount = cslots.drawIndex;
@@ -124,11 +129,12 @@ void Graphics::begin3DFrame() {
     hasPendingClear = false;
 }
 
+
 void Graphics::ensureOffscreen3DResources() {
     auto &dev = getDevice();
-    auto createResources = [&](vk::Format colorFormat, vkb::BuiltRenderPass &renderPass,
-                               vk::Pipeline &meshPipeline,
-                               std::array<vk::Pipeline, kMesh3DPipelineVariants> &surfacePipelines) {
+    auto  createResources = [&](vk::Format colorFormat, vkb::BuiltRenderPass &renderPass, vk::Pipeline &meshPipeline,
+                               std::array<vk::Pipeline, kMesh3DPipelineVariants>      &surfacePipelines,
+                               std::array<vk::Pipeline, kPrimitive3DPipelineVariants> &primitivePipelines) {
         if (renderPass) return;
         renderPass =
             dev.createRenderPass()
@@ -157,14 +163,15 @@ void Graphics::ensureOffscreen3DResources() {
                 }
             }
         }
+        buildPrimitive3DPipelines(renderPass, vk::SampleCountFlagBits::e1, primitivePipelines);
     };
-    createResources(vk::Format::eR8G8B8A8Unorm, offscreen3DRenderPass,
-                    offscreen3DMeshPipeline, offscreen3DSurfacePipelines);
-    createResources(vk::Format::eR16G16B16A16Sfloat, hdrOffscreen3DRenderPass,
-                    hdrOffscreen3DMeshPipeline, hdrOffscreen3DSurfacePipelines);
+    createResources(vk::Format::eR8G8B8A8Unorm, offscreen3DRenderPass, offscreen3DMeshPipeline,
+                    offscreen3DSurfacePipelines, offscreenPrimitive3DPipelines);
+    createResources(vk::Format::eR16G16B16A16Sfloat, hdrOffscreen3DRenderPass, hdrOffscreen3DMeshPipeline,
+                    hdrOffscreen3DSurfacePipelines, hdrOffscreenPrimitive3DPipelines);
     if (!offscreen3DPool) {
         vk::CommandPoolCreateInfo poolInfo{};
-        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
         offscreen3DPool = dev->createCommandPool(poolInfo);
         vk::CommandBufferAllocateInfo allocInfo{};
         allocInfo.commandPool = offscreen3DPool;
@@ -219,6 +226,15 @@ void Graphics::destroyOffscreen3DResources() {
         if (pipeline) device->destroyPipeline(pipeline);
         pipeline = nullptr;
     }
+    for (auto &pipeline : offscreenPrimitive3DPipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    for (auto &pipeline : hdrOffscreenPrimitive3DPipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    offscreenPrimitive3DBufs.clear();
     if (offscreen3DRenderPass) {
         device->destroyRenderPass(offscreen3DRenderPass);
         offscreen3DRenderPass = {};
@@ -230,6 +246,7 @@ void Graphics::destroyOffscreen3DResources() {
 }
 
 void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
+    ensureFileTexturesReady();
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
     if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
@@ -251,6 +268,7 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     offscreen3DHDRActive = oc->isHDR();
 
     if (offscreen3DFence) (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    offscreenPrimitive3DDrawIndex = 0;
     vk::CommandBufferBeginInfo beginInfo{};
     offscreen3DCB.begin(beginInfo);
     lastOffscreen3DGpuDurationMs = 0.f;
@@ -279,6 +297,7 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
         auto &fslots = currentMesh3dFrameSlots();
         fslots.lastDrawCount = fslots.drawIndex;
         fslots.drawIndex = 0;
+        fslots.activePalette = 0;
         ensureMesh3dRing(fslots);
         auto &cslots = currentMesh3dClusteredFrameSlots();
         cslots.lastDrawCount = cslots.drawIndex;
@@ -296,8 +315,8 @@ void Graphics::end3DFrameToCanvas() {
     if (!offscreen3DPassOpen || !offscreen3DCB) return;
     offscreen3DCB.endRenderPass();
     if (offscreen3DCanvas) {
-        offscreen3DCanvas->colorImage().setLayout(offscreen3DCB,
-                                                  vk::ImageLayout::eShaderReadOnlyOptimal);
+        // The sampled render pass already performed its final-layout transition.
+        offscreen3DCanvas->colorImage().endSampledLayout();
     }
     if (offscreen3DTimestampQueryPool) {
         offscreen3DCB.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe,
@@ -590,6 +609,55 @@ void Graphics::setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCou
 
 void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
 
+void Graphics::setMesh3DSceneColor(Texture *color) { mesh3dSceneColorTexture = color; }
+
+Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
+    if (mesh3dSceneColorTexture) return Mesh3DSceneColorCaptureStatus::ExplicitOverride;
+    if (!sceneColorPassOpen || sceneColorSlots.size() < 2 || !sceneColorResumeRenderPass ||
+        sceneColorSamples != vk::SampleCountFlagBits::e1)
+        return sceneColorHistoryValid ? Mesh3DSceneColorCaptureStatus::HistoryFallback
+                                      : Mesh3DSceneColorCaptureStatus::Unavailable;
+
+    const size_t sourceIndex = currentFrameSlot() % sceneColorSlots.size();
+    const size_t snapshotIndex = (sourceIndex + 1u) % sceneColorSlots.size();
+    SceneColorSlot &source = sceneColorSlots[sourceIndex];
+    SceneColorSlot &snapshot = sceneColorSlots[snapshotIndex];
+    auto &cb = currentPresentCb();
+
+    cb.endRenderPass();
+    sceneColorPassOpen = false;
+    source.color.endSampledLayout();
+    source.color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+    snapshot.color.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+    vk::ImageCopy copy{};
+    copy.srcSubresource =
+        vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    copy.dstSubresource =
+        vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    copy.extent = vk::Extent3D{static_cast<uint32_t>(sceneColorWidth),
+                              static_cast<uint32_t>(sceneColorHeight), 1};
+    cb.copyImage(source.color.image(), vk::ImageLayout::eTransferSrcOptimal,
+                 snapshot.color.image(), vk::ImageLayout::eTransferDstOptimal, 1, &copy);
+    snapshot.color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+
+    source.color.setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
+    source.depth.setLayout(cb, vk::ImageLayout::eDepthStencilAttachmentOptimal,
+                           vk::ImageAspectFlagBits::eDepth);
+    vk::RenderPassBeginInfo resume{};
+    resume.renderPass = sceneColorResumeRenderPass;
+    resume.framebuffer = source.framebuffer;
+    resume.renderArea =
+        vk::Rect2D{{0, 0}, {static_cast<uint32_t>(sceneColorWidth),
+                            static_cast<uint32_t>(sceneColorHeight)}};
+    cb.beginRenderPass(resume, vk::SubpassContents::eInline);
+    source.color.beginColorAttachment();
+    source.depth.beginDepthAttachment();
+    sceneColorPassOpen = true;
+    completedSceneColorSlot = snapshotIndex;
+    sceneColorHistoryValid = true;
+    return Mesh3DSceneColorCaptureStatus::Captured;
+}
+
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     mesh3dEnvTexture = cube;
     mesh3dEnvIntensity = intensity < 0.f ? 0.f : intensity;
@@ -610,65 +678,6 @@ void Graphics::setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) {
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
 
 void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = receive; }
-
-vk::DescriptorSet Graphics::skinPassSetFor(GpuTexture *albedo, Mesh3dFrameSlots &fslots) {
-    auto it = fslots.skinSets.find(albedo);
-    if (it != fslots.skinSets.end()) return it->second;
-    vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool = descriptorPool;
-    alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts = &skinPassSetLayout;
-    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
-    vkb::DescriptorSetUpdater updater(1, 1, 0);
-    updater.beginDescriptorSet(unbound)
-        .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, sizeof(SkinPassUBO))
-        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(albedo->sampler, albedo->imageView()))
-        .update(device.instance);
-    vkb::BoundSet bound = std::move(unbound).publish();
-    auto [inserted, ignored] = fslots.skinSets.emplace(albedo, bound);
-    return inserted->second;
-}
-
-bool Graphics::prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp,
-                               const glm::mat4 &model, const glm::vec4 &clip,
-                               vk::DescriptorSet &set, uint32_t &uboOffset) {
-    if (!mesh || !mesh->hasGpuSkinning()) return false;
-    auto &fslots = currentMesh3dFrameSlots();
-    // A 3D frame can inherit an already-open present command buffer (for
-    // example, when script-side 2D clear work precedes render3D).  In that
-    // path begin3DFrame may not have initialized this slot yet.  Allocate the
-    // empty slot lazily before the first skinned draw; no recorded command can
-    // reference it while capacity is zero.
-    if (!fslots.uboRing.buffer || fslots.capacity == 0) ensureMesh3dRing(fslots);
-    if (fslots.drawIndex >= fslots.capacity) {
-        std::fprintf(stderr, "[vulkan] skin pass UBO ring exhausted (%zu draws); draw skipped\n",
-                     fslots.capacity);
-        return false;
-    }
-    SkinPassUBO ubo;
-    ubo.mvp = mvp;
-    ubo.model = model;
-    ubo.clip = clip;
-    const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
-    ubo.skinInfo.x = static_cast<float>(paletteCount);
-    const auto &palette = mesh->skinPalette();
-    for (int i = 0; i < paletteCount; ++i) {
-        const float *matrix = palette.data() + static_cast<size_t>(i) * 16u;
-        for (int column = 0; column < 4; ++column)
-            for (int row = 0; row < 4; ++row)
-                ubo.skinBones[i][column][row] = matrix[column * 4 + row];
-    }
-    const size_t slot = fslots.drawIndex++;
-    ensureMesh3dStrides();
-    uboOffset = uint32_t(slot) * mesh3dUboStride;
-    updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
-    Texture *texture = albedo ? albedo : whiteTexture;
-    if (!texture || !texture->gpuHandle) return false;
-    set = skinPassSetFor(static_cast<GpuTexture *>(texture->gpuHandle), fslots);
-    return bool(set);
-}
 
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
@@ -1058,7 +1067,7 @@ void Graphics::ensureFlatHeightTexture3D() {
 }
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                     GpuTexture *heightTex, GpuTexture *depthTex,
+                                     GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
                                      GpuTexture *decalAlbedo, GpuTexture *decalNormal,
                                      GpuTexture *decalParams,
                                      Mesh3dFrameSlots &fslots) {
@@ -1066,6 +1075,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
+    ASSERT(sceneColorTex != nullptr);
     ASSERT(decalAlbedo != nullptr);
     ASSERT(decalNormal != nullptr);
     ASSERT(decalParams != nullptr);
@@ -1085,8 +1095,10 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     };
     GpuTexture *probe0 = probeTexture(0);
     GpuTexture *probe1 = probeTexture(1);
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex,
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex, sceneColorTex,
                      decalAlbedo, decalNormal, decalParams};
+    key.paletteSlot = fslots.activePalette;
+    if (fslots.palettes.empty()) uploadSkinPalette(nullptr, fslots);
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
 
@@ -1096,10 +1108,12 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     alloc.pSetLayouts = &mesh3dSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
-    vkb::DescriptorSetUpdater updater(15, 15, 0);
+    vkb::DescriptorSetUpdater updater(16, 16, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
+        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
+        .beginBuffers(21, 0, vk::DescriptorType::eStorageBuffer)
+        .buffer(fslots.palettes[fslots.activePalette].buffer, 0, fslots.palettes[fslots.activePalette].capacity)
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1107,7 +1121,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(envTex->sampler, envTex->imageView()))
         .beginBuffers(4, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.shadowRing.buffer, 0, fslots.shadowRing.size)
+        .buffer(fslots.shadowRing.buffer, 0, sizeof(ShadowUBO))
         .beginImages(5, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(6, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1124,6 +1138,8 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .image(vkb::SampledImage::forLaterSample(probe0->sampler, probe0->imageView()))
         .beginImages(17, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(probe1->sampler, probe1->imageView()))
+        .beginImages(18, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(sceneColorTex->sampler, sceneColorTex->imageView()))
         .beginImages(20, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowRawSampler, currentShadowArrayView()))
         .update(device.instance);
@@ -1147,231 +1163,6 @@ void Graphics::setMesh3DClip(float nearZ, float farZ) {
     mesh3dFrameUbo.clipInfo = glm::vec4(n, f, mesh3dFrameUbo.clipInfo.z, mesh3dFrameUbo.clipInfo.w);
     mesh3dClustered.clipInfo.x = n;
     mesh3dClustered.clipInfo.y = f;
-}
-
-vkb::FrameGraph *Graphics::currentDeferredFrameGraph() {
-    if (deferredFrameGraphs_[0] == nullptr) return nullptr;
-    return deferredFrameGraphs_[currentFrameSlot() % deferredFrameGraphs_.size()].get();
-}
-
-void Graphics::buildDeferredFrameGraphs() {
-    // One FrameGraph per in-flight slot imports the engine-owned targets and
-    // owns the deferred passes: the 3 CSM cascades (per-layer views of the
-    // shadow array) + the G-buffer fill share one dependency-free layer, so the
-    // JobSystem executor records all four command buffers concurrently (see
-    // recordDeferredFrameGraph). The engine keeps image ownership so
-    // renderEntityIdMask / readGBufferToImageData and the postFX wrappers are
-    // unaffected. Each graph is only used on its slot's frames, so its command
-    // buffer is reused two frames later — by then the present slot fence
-    // guarantees the previous graph submit completed (same queue, submitted
-    // before the present command buffer).
-    const vk::Format depthFmt = vk::Format::eD32Sfloat;
-    const vk::Format colorFmt = pickGBufferColorFormat(device);
-    const uint32_t mapSize = uint32_t(ShadowConfig::kMapSize);
-    const uint32_t shadowLayers = uint32_t(ShadowConfig::kCascades);
-    const uint32_t w = gbufferWidth > 0 ? uint32_t(gbufferWidth) : 1u;
-    const uint32_t h = gbufferHeight > 0 ? uint32_t(gbufferHeight) : 1u;
-
-    for (size_t i = 0; i < deferredFrameGraphs_.size(); ++i) {
-        auto graph = std::make_unique<vkb::FrameGraph>(&device, 1);
-
-        vkb::TextureDesc shadowDesc;
-        shadowDesc.format = depthFmt;
-        shadowDesc.extent = vk::Extent3D{mapSize, mapSize, 1};
-        shadowDesc.arrayLayers = shadowLayers;
-        shadowDesc.aspect = vk::ImageAspectFlagBits::eDepth;
-        shadowDesc.usage = vk::ImageUsageFlagBits::eSampled |
-                           vk::ImageUsageFlagBits::eDepthStencilAttachment;
-        shadowDesc.afterLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
-        vk::ClearValue shadowClear{};
-        shadowClear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-        const bool haveShadowSlot =
-            i < shadowMaps.size() && shadowMaps[i].image.layerCount() >= shadowLayers;
-        if (haveShadowSlot) {
-            const vk::Image shadowImage = shadowMaps[i].image.image();
-            for (uint32_t c = 0; c < shadowLayers; ++c) {
-                auto shadowH = graph->importTexture("shadowCascade" + std::to_string(c),
-                                                    shadowImage, shadowMaps[i].image.layerView(c),
-                                                    shadowDesc);
-                graph->addPass("shadow" + std::to_string(c))
-                    .depthAttachment(shadowH, vkb::AttachmentOp::clear(shadowClear))
-                    .record([this, c](vkb::FrameGraphPassContext &ctx) {
-                        recordShadowCascadePass(ctx, int(c));
-                    });
-            }
-        }
-
-        if (i < gbufferSlots.size() && gbufferWidth > 0 && gbufferHeight > 0) {
-            auto &slot = gbufferSlots[i];
-            vkb::TextureDesc colorDesc;
-            colorDesc.format = colorFmt;
-            colorDesc.extent = vk::Extent3D{w, h, 1};
-            colorDesc.usage = vk::ImageUsageFlagBits::eSampled |
-                              vk::ImageUsageFlagBits::eColorAttachment |
-                              vk::ImageUsageFlagBits::eTransferSrc;
-            colorDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            auto normalH = graph->importTexture("gbNormal", slot.normal.image(),
-                                                slot.normal.imageView(), colorDesc);
-            auto depthColorH = graph->importTexture("gbDepthColor", slot.depthColor.image(),
-                                                    slot.depthColor.imageView(), colorDesc);
-            auto albedoH = graph->importTexture("gbAlbedo", slot.albedo.image(),
-                                                slot.albedo.imageView(), colorDesc);
-
-            vkb::TextureDesc depthDesc;
-            depthDesc.format = depthFmt;
-            depthDesc.extent = vk::Extent3D{w, h, 1};
-            depthDesc.aspect = vk::ImageAspectFlagBits::eDepth;
-            depthDesc.usage = vk::ImageUsageFlagBits::eSampled |
-                              vk::ImageUsageFlagBits::eDepthStencilAttachment;
-            depthDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            auto depthH = graph->importTexture("gbHwDepth", slot.depth.image(),
-                                               slot.depth.imageView(), depthDesc);
-
-            std::array<vk::ClearValue, 4> clears{};
-            clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-            clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-            clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-            clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-            graph->addPass("gbuffer")
-                .colorAttachment(normalH, vkb::AttachmentOp::clear(clears[0]))
-                .colorAttachment(depthColorH, vkb::AttachmentOp::clear(clears[1]))
-                .colorAttachment(albedoH, vkb::AttachmentOp::clear(clears[2]))
-                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[3]))
-                .record([this](vkb::FrameGraphPassContext &ctx) { recordGBufferPassDraws(ctx); });
-        }
-        graph->compile();
-        deferredFrameGraphs_[i] = std::move(graph);
-    }
-}
-
-void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade) {
-    // Runs inside the FrameGraph's "shadow<cascade>" render-pass instance
-    // (already begun with a depth clear); only draw commands go here. The pass
-    // may be recorded on a JobSystem worker, so everything below must be
-    // read-only: shadowCascadeDraws was captured by endShadowPass on the main
-    // thread before the graph records.
-    auto &cb = ctx.commandBuffer();
-    const vk::Extent2D extent = ctx.extent();
-    const uint32_t size = extent.width ? extent.width : uint32_t(ShadowConfig::kMapSize);
-    setViewportAndScissor(cb, size, size);
-    vk::Pipeline boundPipeline{};
-    for (const auto &d : shadowCascadeDraws[cascade]) {
-        if (!d.mesh || !d.mesh->gpuHandle) continue;
-        const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
-        const bool skinned = d.skinSet && d.mesh->hasGpuSkinning();
-        vk::Pipeline wanted = skinned ? (wantAlpha ? shadowSkinAlphaPipeline : shadowSkinPipeline)
-                                     : (wantAlpha ? shadowAlphaPipeline : shadowPipeline);
-        if (wanted != boundPipeline) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
-            boundPipeline = wanted;
-        }
-        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-        if (skinned) {
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, skinPassPipelineLayout, 0, 1,
-                                  &d.skinSet, 1, &d.skinUboOffset);
-        } else if (wantAlpha) {
-            Texture *alb = d.albedo ? d.albedo : whiteTexture;
-            if (alb && alb->gpuHandle && texSetLayout) {
-                auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                      shadowAlphaPipelineLayout, 0, 1,
-                                      gpuTex->descriptorSet.ptr(), 0, nullptr);
-            }
-        }
-        if (!skinned)
-            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
-        drawIndexedMesh(cb, *gpuMesh);
-    }
-}
-
-void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
-    // Runs inside the FrameGraph's "gbuffer" render-pass instance (already
-    // begun with the planned clear values); only draw commands go here. The
-    // pass may be recorded on a JobSystem worker, so everything below must be
-    // read-only: gbufferPassDraws was captured on the main thread.
-    auto &cb = ctx.commandBuffer();
-    const vk::Extent2D extent = ctx.extent();
-    const uint32_t w = extent.width ? extent.width : uint32_t(gbufferWidth);
-    const uint32_t h = extent.height ? extent.height : uint32_t(gbufferHeight);
-    setViewportAndScissor(cb, w, h);
-    vk::Pipeline boundPipeline{};
-    for (const auto &d : gbufferPassDraws) {
-        if (!d.mesh || !d.mesh->gpuHandle) continue;
-        const bool wantAlpha = d.alphaTest && gbufferAlphaPipeline;
-        const bool skinned = d.skinSet && d.mesh->hasGpuSkinning();
-        vk::Pipeline wanted = skinned ? (wantAlpha ? gbufferSkinAlphaPipeline : gbufferSkinPipeline)
-                                     : (wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
-        if (wanted != boundPipeline) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
-            boundPipeline = wanted;
-        }
-        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-        Texture *alb = d.albedo ? d.albedo : whiteTexture;
-        if (skinned) {
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, skinPassPipelineLayout, 0, 1,
-                                  &d.skinSet, 1, &d.skinUboOffset);
-        } else if (alb && alb->gpuHandle && texSetLayout) {
-            auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
-                                  gpuTex->descriptorSet.ptr(), 0, nullptr);
-        }
-        if (!skinned)
-            cb.pushConstants(gbufferPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
-                             0, sizeof(GBufferPush), &d.push);
-        drawIndexedMesh(cb, *gpuMesh);
-    }
-}
-
-void Graphics::recordDeferredFrameGraph() {
-    const size_t slot = currentFrameSlot();
-    if (deferredGraphRecorded_ && deferredGraphRecordedSlot_ == slot) {
-        // render3D can be called several times per script frame (e.g. the
-        // render tests call it 3x before present). The deferred graph's command
-        // buffers must only be recorded once per slot per frame — re-recording
-        // them while the previous submit is still in flight would reset
-        // in-use command buffers (UB, GPU hang).
-        return;
-    }
-    auto *graph = currentDeferredFrameGraph();
-    if (!graph && (!shadowMaps.empty() || !gbufferSlots.empty())) {
-        // Shadows can be enabled without a G-buffer pass (or vice versa); build
-        // the deferred graphs on demand from whatever targets exist today.
-        buildDeferredFrameGraphs();
-        graph = currentDeferredFrameGraph();
-    }
-    if (!graph || !gbufferPipeline || !gbufferRenderPass || !shadowPipeline) {
-        dropPendingOffscreenPasses();
-        return;
-    }
-    // Record the declarative deferred passes (3 CSM cascades + G-buffer, one
-    // independent layer) with the JobSystem executor — the four command
-    // buffers are recorded concurrently on workers — then submit them on the
-    // graphics queue before the swapchain pass begins. Layout transitions and
-    // the render-pass instances are planned by the FrameGraph. Same-queue
-    // submission order plus the present slot fence (waited in Present::begin)
-    // keep this slot's graph command buffers safe to reuse two frames later.
-    auto *jobs = thread::Thread::create()->getJobSystem();
-    jobs->beginFrame();  // idempotent wait; recycles the per-frame arena
-    // Re-plan every frame (cheap; device objects are cached) so the graph is
-    // in the compiled phase for this record cycle — vkb::FrameGraph enforces
-    // build -> compile -> record -> submit and record() exactly once per
-    // compile.
-    graph->compile();
-    // Parallel executor: each pass owns a dedicated command pool (one pool per
-    // frame slot per pass), so the workers never share a pool while recording
-    // concurrently — the Vulkan external-synchronization rule for command
-    // pools is satisfied structurally.
-    recordFrameGraphWithJobSystem(*graph, jobs);
-    graph->submit();
-    jobs->endFrame();
-    for (auto &d : shadowCascadeDraws) d.clear();
-    gbufferPassDraws.clear();
-    shadowPendingMask = 0;
-    gbufferPending = false;
-    deferredGraphRecorded_ = true;
-    deferredGraphRecordedSlot_ = slot;
 }
 
 }  // namespace eve::graphics::vulkan

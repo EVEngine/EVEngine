@@ -2,9 +2,11 @@
 #include "model3d/EveFileSystem.h"
 #include "model3d/ModelRenderer.h"
 
+#include "common/AsyncWork.h"
 #include "common/Data.h"
 #include "common/Exception.h"
 #include "common/Resource.h"
+#include "common/SquirrelBinding.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
@@ -21,6 +23,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace eve {
@@ -109,6 +112,8 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
         hint = ensureDotExt(std::move(packedHint));
     }
 
+    if (hint == ".vrm") hint = ".glb";
+
     // Prefer VFS for sidecar resolution when FileData carries a filename.
     filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
     if (!fs)
@@ -126,11 +131,29 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
     if (auto *fd = dynamic_cast<filesystem::FileData *>(data))
         uri = "file://" + fd->getFilename();
 
-    return new ModelData(std::move(scene), std::move(uri));
+    return new ModelData(std::move(scene), std::move(uri), options.flipUVs);
 }
 
 ModelData *Model3D::newModelDataFromFile(std::string path) {
     return newModelDataFromFile(std::move(path), ModelLoadOptions{});
+}
+
+eve::Result<void> Model3D::requestModelData(const std::string &path) {
+    return requestModelData(path, ModelLoadOptions{});
+}
+
+eve::Result<void> Model3D::requestModelData(const std::string &path, const ModelLoadOptions &options) {
+    if (path.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "Model path must not be empty", "model3d.prefetch"));
+    if (!eve::cap::query<eve::caps::IAsyncWorkExecutor>())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Model prefetch requires the thread executor", "model3d.prefetch"));
+    if (!ModuleManager::getInstance<filesystem::Filesystem>("Filesystem"))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Initialize Filesystem on the game thread before model prefetch",
+            "model3d.prefetch"));
+    return eve::ResourceManager::getInstance().request(modelCacheKey(path, options));
 }
 
 ModelData *Model3D::newModelDataFromFile(std::string path, const ModelLoadOptions &options) {
@@ -194,6 +217,28 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getVertexCount", &ModelData::getVertexCount);
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
     md.addFunc("getVertexPosition", &ModelData::getVertexPosition);
+    md.addFunc("getVertexNormal", &ModelData::getVertexNormal);
+    md.addFunc("setVertexNormal",
+               [](ModelData *self, int meshIndex, int vertexIndex, float x, float y, float z) {
+                   auto result = self->setVertexNormal(meshIndex, vertexIndex, x, y, z);
+                   if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+               });
+    md.addFunc("applyVertexNormals", [](ModelData *self, int meshIndex, std::string kind) {
+        auto result = self->applyVertexNormals(meshIndex, kind);
+        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+    });
+    md.addFunc("applyVertexNormalsFrom",
+               [](ModelData *self, int meshIndex, std::string kind, float x, float y, float z) {
+                   auto result = self->applyVertexNormalsFrom(meshIndex, kind, x, y, z);
+                   if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+               });
+    md.addFunc("bakeNormalMap",
+               [](ModelData *self, int meshIndex, int width, int height, int uvChannel,
+                  std::string space) -> image::ImageData * {
+                   auto baked = self->bakeNormalMap(meshIndex, width, height, uvChannel, space);
+                   if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
+                   return std::move(baked).takeValue().release();
+               });
     md.addFunc("getFaceVertexIndex", &ModelData::getFaceVertexIndex);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
@@ -257,6 +302,58 @@ void Model3D::expose(ssq::Table &table) {
 }
 
 void Model3D::expose(ssq::Class &cls) {
+    const auto parseOptions = [](ssq::Object object) {
+        auto value = eve::script::valueFromSquirrel(object);
+        if (!value || !value.value().isObject()) throw eve::Exception("Expected model decode options table");
+        ModelLoadOptions options;
+        for (const auto &key : value.value().keys()) {
+            const auto *field = value.value().find(key);
+            if (!field->isBool()) throw eve::Exception("Model decode options must be booleans");
+            const bool flag = field->asBool();
+            if (key == "triangulate")
+                options.triangulate = flag;
+            else if (key == "generateNormalsIfMissing")
+                options.generateNormalsIfMissing = flag;
+            else if (key == "joinIdenticalVertices")
+                options.joinIdenticalVertices = flag;
+            else if (key == "flipUVs")
+                options.flipUVs = flag;
+            else if (key == "improveCacheLocality")
+                options.improveCacheLocality = flag;
+            else
+                throw eve::Exception("Unknown model decode option: %s", key.c_str());
+        }
+        return options;
+    };
+    cls.addFunc("requestModelDataWithOptions",
+                [vm = cls.getHandle(), parseOptions](Model3D *self, const std::string &path, ssq::Object object) {
+                    try {
+                        return eve::script::projectResult(vm, self->requestModelData(path, parseOptions(object)));
+                    } catch (const std::exception &error) {
+                        return eve::script::projectResult(
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  error.what(), "model3d.prefetch")));
+                    }
+                });
+    cls.addFunc("loadModelDataWithOptions", [vm = cls.getHandle(), parseOptions](Model3D *self, const std::string &path,
+                                                                                 ssq::Object object) {
+        try {
+            auto  options   = parseOptions(object);
+            auto *model     = self->newModelDataFromFile(path, options);
+            auto  projected = eve::script::projectStatusResult(vm, eve::Status::success(), true, true);
+            projected.set("value", model);
+            projected.set("ownership", std::string("borrowed-from-resource-cache"));
+            return projected;
+        } catch (const std::exception &error) {
+            return eve::script::projectStatusResult(
+                vm,
+                eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "model3d.load")),
+                false, false);
+        }
+    });
+    cls.addFunc("requestModelData", [vm = cls.getHandle()](Model3D *self, const std::string &path) {
+        return eve::script::projectResult(vm, self->requestModelData(path));
+    });
     cls.addFunc("getName", &Model3D::getName);
     cls.addFunc("newModelData", static_cast<ModelData *(Model3D::*)(Data *, std::string)>(
                                     &Model3D::newModelData));

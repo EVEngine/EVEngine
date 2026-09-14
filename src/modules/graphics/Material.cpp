@@ -27,8 +27,8 @@ eve::Result<void> Material::setVirtualTexture(Texture *albedoAtlas, Texture *nor
     if (!std::isfinite(borderFraction) || borderFraction < 0.f || borderFraction >= 0.5f)
         return eve::Result<void>::failure(
             invalidMaterial("virtual texture border fraction must be in [0, 0.5)"));
-    albedo_ = albedoAtlas;
-    normal_ = normalAtlas;
+    pbr_.textures[0].texture = albedoAtlas;
+    pbr_.textures[2].texture = normalAtlas;
     height_ = pageTable;
     virtualPageCountX_ = pageCountX;
     virtualPageCountY_ = pageCountY;
@@ -54,7 +54,6 @@ void Material::setShadingModel(const std::string &model) {
     } else {
         shadingModel_ = "pbr";
     }
-    if (shadingModel_ == "unlit") receiveLight_ = false;
     if (shadingModel_ == "hair") {
         isHair_ = true;
         surfaceMode_ = SurfaceMode::Transparent;
@@ -159,16 +158,30 @@ bool Material::isTransparentHair() const {
     return isHair_ || shadingModel_ == "hair";
 }
 
-void Material::bind(Graphics &gfx) const {
+Result<void> Material::setPbrSurface(const PbrSurface& surface) {
+    auto valid = validatePbrSurface(surface);
+    if (!valid) return valid;
+    pbr_        = surface;
+    pbrEnabled_ = true;
+    setShadingModel(surface.unlit ? "unlit" : "pbr");
+    pbr_.unlit = false;  // Shading mode is owned by shadingModel_; DTO snapshots derive it.
+    return Result<void>::success();
+}
+
+Result<void> Material::bind(Graphics& gfx) const {
+    auto snapshot  = pbr_;
+    snapshot.unlit = shadingModel_ == "unlit";
+    auto pbrStatus = gfx.setMesh3DPbrSurface(pbrEnabled_ ? &snapshot : nullptr);
+    if (!pbrStatus) return pbrStatus;
     const BlendMode effectiveBlend =
-        albedo_ && albedo_->hasPremultipliedAlpha() && blendMode_ == BlendMode::Alpha
+        pbr_.textures[0].texture && pbr_.textures[0].texture->hasPremultipliedAlpha() && blendMode_ == BlendMode::Alpha
             ? BlendMode::Premultiplied
             : blendMode_;
     gfx.setMesh3DSurface(surfaceMode_, effectiveBlend, depthWrite_, doubleSided_, alphaCutoff_,
                          alphaTechnique_);
     gfx.setMesh3DMaterial(metallic_, roughness_);
     gfx.setMesh3DTexCellBomb(texBombScale_, texBombStrength_, texBombRot_);
-    gfx.setMesh3DNormalTexture(normal_);
+    gfx.setMesh3DNormalTexture(pbr_.textures[2].texture);
     gfx.setMesh3DHeightTexture(height_);
     gfx.setMesh3DVirtualTexture(virtualTextureEnabled_, virtualPageCountX_, virtualPageCountY_,
                                 virtualAtlasSlotsX_, virtualAtlasSlotsY_,
@@ -191,6 +204,7 @@ void Material::bind(Graphics &gfx) const {
             if (shader_->hasUniform(kv.first)) shader_->sendFloat(kv.first, kv.second);
         }
     }
+    return Result<void>::success();
 }
 
 }  // namespace eve::graphics

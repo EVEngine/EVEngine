@@ -1,0 +1,21 @@
+{
+  "AnimationLibrary.glb": "1b7bf67866360665426bb99e4c71bd619f19b408453c24e30f0c3071601eee5c",
+  "LICENSE-ANIMATIONS.txt": "dfd829af5caf503d6f6bf80096124e8a60117c3c123a6e6a20199547203e0a3e",
+  "LICENSE-CHARACTERS.txt": "c232257c8a2545520aa120cda96acb23d00a355d2e3339cba20b7ebf56f28a09",
+  "Superhero_Female_FullBody.bin": "3a8220a485b33d05d879115a50697728b45a151781106033afb8b8c243fca208",
+  "Superhero_Female_FullBody.gltf": "5ab0d4ae5ce17f4f4c4319655d82a4c882b559d6bb8c592b4dbb76d4f2ff1906",
+  "Superhero_Male_FullBody.bin": "459003f9745853ae562a85506a2b94dd56515c1f37728f9fa3d2ce1a3e4cd92f",
+  "Superhero_Male_FullBody.gltf": "49059ba5189df4c49630a95bdf8ba6d38ca8b8fa259d0105c219bcd6f786c314",
+  "T_Eye_Brown.png": "d08e3356a83211bc6ca21fe3a8e39f4b5c1a3b8f85457fc2c0fb57be09935025",
+  "T_Eye_Normal.png": "9ed61f7726a54fe346a78b9e5a18905d8e2b88f86235d97f53cd207a26f3f8c7",
+  "T_Hair_1_BaseColor.png": "bc7aa863bd22ab0a995cd838cceb4d3a5186ee54ee2fb0108fad85d20c057e6e",
+  "T_Hair_1_Normal.png": "57fd0ad8c96a4d01b38769637e066cecaa285b456f6e48ce00863754a457affb",
+  "T_Hair_2_BaseColor.png": "f9f4f2fb3eeeefb0b6f0fdef38b0770fd6607640c1c680b8139dd76697e9f9b3",
+  "T_Hair_2_Normal.png": "172f230aae0d4366c3cfc0402b2e6d1811b11f8487344bff28605eeacac1558d",
+  "T_Superhero_Female_Dark_BaseColor.png": "d366843ee7d9e9f37ec87a0e1c98c7f2e45573c08eeb80a51a6d9344e68cf288",
+  "T_Superhero_Female_Normal.png": "cf922460b43ccd31e983e34db05514c9d451dd2f9cdd01a843978e797719f859",
+  "T_Superhero_Female_Roughness.png": "d2beabf2bd0313e32c68dcdbb80dca371a6e994fabf96efa97128bf9f14fa57b",
+  "T_Superhero_Male_Dark.png": "df680cbc1967a61e85998bfafb8f7bc0a36dd604bb3266486c4b06b1a184bb45",
+  "T_Superhero_Male_Normal.png": "9b25cf9200216eb754b79cf4c63b5380c419780788322f3c57cdd2b3e02679a6",
+  "T_Superhero_Male_Roughness.png": "c70dabf48574cda55644d556beae1ee7cf1bdcf68a50d259d20f2f2358f27991"
+}

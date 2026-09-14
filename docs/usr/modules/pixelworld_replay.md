@@ -20,5 +20,5 @@ hash 必须由宿主注入，模块不默认选择弱 hash。`restoreSnapshot()`
 非 canonical Chunk 顺序和未知新版本都不会部分修改旧日志。version 1 可迁移到
 version 2，其 checkpoint 保留 world digest，但没有当时尚未编码的每 Chunk 诊断。
 
-源码：[`src/modules/pixelworld_replay/`](../../../src/modules/pixelworld_replay/)。
+源码：[`src/modules/pixelworld/replay/`](../../../src/modules/pixelworld/replay/)。
 测试：[`test/pixelworld_replay.cpp`](../../../test/pixelworld_replay.cpp)。

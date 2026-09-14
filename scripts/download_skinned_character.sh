@@ -22,9 +22,6 @@ need_cmd() {
   }
 }
 
-need_cmd curl
-need_cmd python3
-
 CURL_OPTS=(--retry 5 --retry-delay 2 --retry-all-errors --connect-timeout 30)
 # Prefer system CA bundle (avoids flaky "self-signed certificate" on some CI runners).
 for _ca in /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt; do
@@ -42,6 +39,9 @@ if [ -f "$OUT_ROOT/.downloaded" ] &&
   echo "Skinned character already present under $OUT_ROOT (skip download)"
   exit 0
 fi
+
+need_cmd curl
+need_cmd python3
 
 download_model_gltf() {
   local model="$1"

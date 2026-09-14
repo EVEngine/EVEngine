@@ -1,9 +1,14 @@
 #include "stylize/Stylize.h"
 
 #include "stylize/ImageStylize.h"
+#include "stylize/MeshEffect.h"
+#include "stylize/MeshEffectRenderer.h"
+#include "stylize/MeshVfxAsset.h"
+#include "stylize/SkillMeshEffect.h"
 #include "stylize/StyleInstance.h"
 #include "stylize/StyleRecipe.h"
 #include "stylize/StyleShaders.h"
+#include "stylize/TrailEffect.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
@@ -70,6 +75,26 @@ StyleInstance *Stylize::newInstance(const std::string &style) {
 }
 
 StyleRecipe *Stylize::newRecipe() { return new StyleRecipe(); }
+
+std::unique_ptr<MeshEffectInstance> Stylize::createMeshEffect(const std::string& style) {
+    return std::make_unique<MeshEffectInstance>(style);
+}
+
+std::unique_ptr<TrailEmitter> Stylize::createTrailEmitter() {
+    return std::make_unique<TrailEmitter>();
+}
+
+std::unique_ptr<MeshEffectRenderer> Stylize::createMeshEffectRenderer(graphics::Graphics& gfx) {
+    return std::make_unique<MeshEffectRenderer>(gfx);
+}
+
+std::unique_ptr<SkillMeshEffect> Stylize::createSkillMeshEffect(SkillMeshEffectKind kind) {
+    return std::make_unique<SkillMeshEffect>(kind);
+}
+
+eve::Result<std::unique_ptr<MeshVfxAssetInstance>> Stylize::createMeshVfxAssetInstance(const MeshVfxAsset& asset) {
+    return MeshVfxAssetInstance::create(asset);
+}
 
 void Stylize::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Stylize::create, false);

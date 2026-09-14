@@ -1,0 +1,11 @@
+{
+  "accepted": true,
+  "reviewer_notes": "Inspected all 24 frames in contact sheet, composited animated preview, and the native Vulkan scene. Four facing directions remain distinct; alternating feet and arm poses are visible; all characters preserve their generated base identity.",
+  "checks": {
+    "reference_identity": "pass",
+    "direction": "pass",
+    "animation_readable": "pass",
+    "frame_separation": "pass",
+    "not_procedural": "pass"
+  }
+}

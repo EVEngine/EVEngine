@@ -28,6 +28,8 @@ public:
     [[nodiscard]] eve::editing::Result<void> registerPlannedCommand(
         eve::editing::EditingCommandDescriptor descriptor,
         eve::editing::EditingCommandPlanner planner) override;
+    [[nodiscard]] eve::editing::Result<std::size_t> unregisterOwner(
+        const std::string& ownerModule) override;
     [[nodiscard]] EditorResult<void> registerTarget(IEditableTarget& target);
     [[nodiscard]] EditorResult<void> unregisterTarget(const TargetId& target);
     [[nodiscard]] EditorResult<void> bind(EditorSession& session, const TargetId& target);
@@ -36,6 +38,9 @@ public:
     [[nodiscard]] EditorResult<TransactionReceipt> redo(const TargetId& target);
 
 private:
+    friend class EditorSession;
+    void detach(EditorSession& session) noexcept;
+
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };

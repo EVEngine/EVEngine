@@ -9,6 +9,7 @@
  */
 
 #include "common/RuntimeHandle.h"
+#include "common/Identity.h"
 
 namespace eve::physics {
 
@@ -42,6 +43,9 @@ namespace detail {
  */
 [[nodiscard("retain the handle while the physics world is live")]]
 PhysicsWorldHandle allocatePhysicsWorldHandle();
+
+/** @brief Creates a non-nil process-local generated identity for a world without an injected persistent ID. */
+[[nodiscard]] eve::PersistentId makePhysicsWorldPersistentId(PhysicsWorldHandle runtimeHandle);
 
 }  // namespace detail
 }  // namespace eve::physics

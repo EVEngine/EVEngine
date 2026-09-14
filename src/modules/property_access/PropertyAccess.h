@@ -113,11 +113,15 @@ struct WriteResult {
  */
 EVENGINE_API WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
 
+/** @brief Availability of a property in an immutable model snapshot. */
+enum class PropertyChangeState { Value, Mixed, Missing };
+
 /** @brief Immutable notification emitted after a model property changes. */
 struct PropertyChange {
     std::string   path;
     Value         value;
     std::uint64_t revision = 0;
+    PropertyChangeState state = PropertyChangeState::Value;
 };
 
 /**

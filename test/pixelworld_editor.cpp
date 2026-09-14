@@ -3,7 +3,7 @@
 
 #include "pixelworld/PixelMaterialCatalogCodec.h"
 #include "pixelworld/PixelWorld.h"
-#include "pixelworld_editor/PixelWorldCatalogPanel.h"
+#include "pixelworld/editor/PixelWorldCatalogPanel.h"
 #include "ui/UIHost.h"
 
 #include <string>

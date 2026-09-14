@@ -2,6 +2,13 @@
 # L4 -- rendering extensions and simulation
 # ---------------------------------------------------------------------------
 
+eve_declare_module(NAME physics_softbody_graphics DIR physics/softbody/graphics LAYER 4
+                   DEPS graphics physics_softbody
+                   GROUP 3d web)
+eve_declare_module(NAME physics_softbody_cook DIR physics/softbody/cook LAYER 4
+                   DEPS asset physics_softbody
+                   GROUP 3d web)
+
 eve_declare_module(NAME material_graphics_editing LAYER 4
                    DEPS graphics material_editing
                    GROUP 3d web)
@@ -11,7 +18,7 @@ eve_declare_module(NAME graphics_editing LAYER 4
 
 # Typed bridge from admitted runtime packages into backend-owned GPU resources.
 eve_declare_module(NAME asset_graphics LAYER 4
-                   DEPS asset graphics
+                   DEPS asset asset_scene graphics
                    GROUP minimal 2d 3d web)
 
 eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SLOT pixelworldGraphics
@@ -25,14 +32,14 @@ eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
                    GROUP 2d 3d web)
 eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
-                   DEPS platform_event filesystem graphics image property_access scriptmodel timer window
+                   DEPS platform_event filesystem graphics image property_access timer window
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 # The public Physics facade retains its interactive presentation dependencies;
 # src/modules/CMakeLists.txt separately compiles the domain core (World/Body/
 # Shape/Joint/query/fixed-step) without those dependencies for core profiles.
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
-                   DEPS platform_event graphics gpgpu sensing
+                   DEPS physics_backend physics_softbody physics_softbody_graphics platform_event graphics gpgpu sensing
                    OPTIONAL_DEPS scene
                    THIRDPARTY box2d box3d
                    GROUP 2d 3d web)
@@ -52,13 +59,33 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
-eve_declare_module(NAME pixelworld_physics LAYER 5
+# Cloth is a host-owned physics satellite: rigid-body physics stays usable in
+# trimmed builds without cloth topology, rendering, or compute backends. Its
+# accelerator provider registers independently and cannot replace the fluids provider.
+eve_declare_module(NAME physics_cloth DIR physics/cloth LAYER 5 SCRIPT Cloth SLOT cloth
+                   DEPS physics graphics gpgpu
+                   GROUP 2d 3d web)
+# Typed package bridge kept outside the physics domain core.
+eve_declare_module(NAME asset_physics DIR asset/physics LAYER 5
+                   DEPS asset physics_cloth
+                   GROUP 3d web)
+eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
+                   SCRIPT Rope SLOT rope
+                   DEPS physics schema
+                   GROUP 3d web)
+eve_declare_module(NAME pixelworld_physics LAYER 5 SCRIPT PixelWorldPhysics SLOT pixelworldPhysics
                    DEPS pixelworld physics
                    GROUP 2d)
+eve_declare_module(NAME scene_physics DIR scene/physics LAYER 5 SCRIPT ScenePhysics SLOT scenePhysics
+                   DEPS physics scene
+                   GROUP 3d)
 # Optional editing satellite. Runtime-only profiles can enable physics without
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5
                    DEPS editing physics
+                   GROUP 3d web)
+eve_declare_module(NAME physics_softbody_editing DIR physics/softbody/editing LAYER 5
+                   DEPS editing physics_softbody
                    GROUP 3d web)
 
 # Vehicle entities, kinematic/tracked/wheeled mobility and the Vehicle adapter

@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 #if defined(_WIN32)
@@ -24,12 +25,26 @@
 namespace eve::gpgpu {
 namespace {
 
+// Compiler failures must not call Exception's global render-tracer callback:
+// this path also executes on CPU workers without a Graphics lifetime.
+std::runtime_error compileError(const char *message) {
+    return std::runtime_error(message);
+}
+
+template <class... Args>
+std::runtime_error compileError(const char *format, Args... args) {
+    const int count = std::snprintf(nullptr, 0, format, args...);
+    if (count < 0) return std::runtime_error("Compute compilation failed");
+    std::string text(static_cast<size_t>(count) + 1, '\0');
+    std::snprintf(text.data(), text.size(), format, args...);
+    text.pop_back();
+    return std::runtime_error(text);
+}
+
 std::vector<uint32_t> loadSpirvBytes(const void *data, size_t size) {
-    if (!data || size < 4 || (size % 4) != 0)
-        throw Exception("Gpgpu SPIR-V: invalid size %zu", size);
+    if (!data || size < 4 || (size % 4) != 0) throw compileError("Gpgpu SPIR-V: invalid size %zu", size);
     const auto *words = static_cast<const uint32_t *>(data);
-    if (words[0] != 0x07230203)
-        throw Exception("Gpgpu SPIR-V: bad magic (expected 0x07230203)");
+    if (words[0] != 0x07230203) throw compileError("Gpgpu SPIR-V: bad magic (expected 0x07230203)");
     return std::vector<uint32_t>(words, words + size / 4);
 }
 
@@ -85,40 +100,54 @@ namespace {
 #if defined(EVE_HAS_SHADERC)
 /** In-process GLSL -> SPIR-V via the Vulkan SDK's static shaderc library. */
 std::vector<uint32_t> compileComputeGlslInProcess(const std::string &glsl) {
-    shaderc_compiler_t compiler = shaderc_compiler_initialize();
-    if (!compiler) throw Exception("Gpgpu.newShader: shaderc_compiler_initialize failed");
-    shaderc_compile_options_t options = shaderc_compile_options_initialize();
-    if (!options) {
-        shaderc_compiler_release(compiler);
-        throw Exception("Gpgpu.newShader: shaderc_compile_options_initialize failed");
-    }
-    shaderc_compile_options_set_target_env(options, shaderc_target_env_vulkan,
-                                           shaderc_env_version_vulkan_1_0);
-    shaderc_compile_options_set_target_spirv(options, shaderc_spirv_version_1_0);
+    struct CompilerContext {
+        shaderc_compiler_t        compiler = shaderc_compiler_initialize();
+        shaderc_compile_options_t options  = nullptr;
+        CompilerContext() {
+            if (!compiler) throw compileError("Gpgpu.newShader: shaderc_compiler_initialize failed");
+            options = shaderc_compile_options_initialize();
+            if (!options) {
+                shaderc_compiler_release(compiler);
+                throw compileError("Gpgpu.newShader: shaderc_compile_options_initialize failed");
+            }
+            shaderc_compile_options_set_target_env(options, shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_0);
+            shaderc_compile_options_set_target_spirv(options, shaderc_spirv_version_1_0);
+        }
+        ~CompilerContext() {
+            shaderc_compile_options_release(options);
+            shaderc_compiler_release(compiler);
+        }
+    };
+    // Keep glslang's compiler/built-in state alive across jobs and graph segments.
+    // Each CPU thread owns its context; no device references survive here.
+    thread_local CompilerContext context;
+    auto                         compiler = context.compiler;
+    auto                         options  = context.options;
     shaderc_compilation_result_t result =
         shaderc_compile_into_spv(compiler, glsl.data(), glsl.size(),
                                  shaderc_glsl_compute_shader, "eve_compute.comp", "main",
                                  options);
-    shaderc_compile_options_release(options);
-    shaderc_compiler_release(compiler);
+    if (!result) throw compileError("Gpgpu.newShader: shaderc returned no compilation result");
+    struct CompilationResult {
+        shaderc_compilation_result_t value;
+        ~CompilationResult() { shaderc_result_release(value); }
+    } ownedResult{result};
     if (shaderc_result_get_compilation_status(result) != shaderc_compilation_status_success) {
         const std::string err = shaderc_result_get_error_message(result);
-        shaderc_result_release(result);
-        throw Exception("Gpgpu.newShader: shaderc failed:\n%s", err.c_str());
+        throw compileError("Gpgpu.newShader: shaderc failed:\n%s", err.c_str());
     }
     const size_t len  = shaderc_result_get_length(result);
     const char *bytes = shaderc_result_get_bytes(result);
     if (len == 0 || len % 4 != 0) {
-        shaderc_result_release(result);
-        throw Exception("Gpgpu.newShader: shaderc returned invalid SPIR-V");
+        throw compileError("Gpgpu.newShader: shaderc returned invalid SPIR-V");
     }
     std::vector<uint32_t> spv(len / 4);
     std::memcpy(spv.data(), bytes, len);
-    shaderc_result_release(result);
     return spv;
 }
 #endif  // EVE_HAS_SHADERC
 
+#if !defined(EVE_HAS_SHADERC)
 /** Locate a usable glslc.exe: VULKAN_SDK, common install roots, then PATH. */
 std::string findGlslc() {
     if (const char *sdk = std::getenv("VULKAN_SDK"); sdk && *sdk) {
@@ -157,37 +186,45 @@ std::string findGlslc() {
     return {};
 }
 
+#endif  // !EVE_HAS_SHADERC
 }  // namespace
 #endif
 
 std::vector<uint32_t> compileComputeGlsl(const std::string &glsl) {
-    if (glsl.empty()) throw Exception("Gpgpu.newShader: empty GLSL");
+    if (glsl.empty()) throw compileError("Gpgpu.newShader: empty GLSL");
 #if defined(_WIN32)
 #if defined(EVE_HAS_SHADERC)
-    try {
-        return compileComputeGlslInProcess(glsl);
-    } catch (...) {
-        // Fall through to spawning glslc (SDK lib present but compile failed).
-    }
-#endif
+    // Compile errors remain errors; a packaged shaderc build never needs an SDK executable.
+    return compileComputeGlslInProcess(glsl);
+#else
     const std::string glslc = findGlslc();
     if (glslc.empty())
-        throw Exception("Gpgpu.newShader: glslc not found on Windows "
-                        "(install the Vulkan SDK or set VULKAN_SDK)");
+        throw compileError(
+            "Gpgpu.newShader: glslc not found on Windows "
+            "(install the Vulkan SDK or set VULKAN_SDK)");
 
     char tmpDir[MAX_PATH];
-    if (GetTempPathA(MAX_PATH, tmpDir) == 0)
-        throw Exception("Gpgpu.newShader: GetTempPath failed");
+    if (GetTempPathA(MAX_PATH, tmpDir) == 0) throw compileError("Gpgpu.newShader: GetTempPath failed");
     char inPath[MAX_PATH];
-    if (GetTempFileNameA(tmpDir, "eve", 0, inPath) == 0)
-        throw Exception("Gpgpu.newShader: GetTempFileName failed");
+    if (GetTempFileNameA(tmpDir, "eve", 0, inPath) == 0) throw compileError("Gpgpu.newShader: GetTempFileName failed");
     std::string outPath = std::string(inPath) + ".spv";
+    const std::string errPath = outPath + ".err";
+    struct TemporaryFiles {
+        const char        *input;
+        const std::string &output;
+        const std::string &error;
+        ~TemporaryFiles() {
+            DeleteFileA(error.c_str());
+            DeleteFileA(output.c_str());
+            // Reserve the unique basename until both sidecars are consumed.
+            DeleteFileA(input);
+        }
+    } temporary{inPath, outPath, errPath};
 
     {
         FILE *f = nullptr;
         if (fopen_s(&f, inPath, "wb") != 0 || !f) {
-            DeleteFileA(inPath);
-            throw Exception("Gpgpu.newShader: failed to write temp GLSL");
+            throw compileError("Gpgpu.newShader: failed to write temp GLSL");
         }
         fwrite(glsl.data(), 1, glsl.size(), f);
         fclose(f);
@@ -196,64 +233,79 @@ std::vector<uint32_t> compileComputeGlsl(const std::string &glsl) {
     // Spawn glslc directly with CreateProcess: _popen routes through cmd.exe
     // /c whose quote-stripping rules mangle commands starting with a quoted
     // program path. Capture stderr/stdout into a sidecar file.
-    const std::string errPath = outPath + ".err";
     std::string cmd = "\"" + glslc + "\" -fshader-stage=comp \"" + inPath + "\" -o \"" +
                       outPath + "\"";
-    STARTUPINFOA si{};
-    si.cb = sizeof(si);
+    STARTUPINFOEXA si{};
+    si.StartupInfo.cb = sizeof(si);
     PROCESS_INFORMATION pi{};
     SECURITY_ATTRIBUTES sa{};
     sa.nLength = sizeof(sa);
     sa.bInheritHandle = TRUE;
-    HANDLE errFile = CreateFileA(errPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ, &sa,
-                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (errFile != INVALID_HANDLE_VALUE) {
-        si.dwFlags = STARTF_USESTDHANDLES;
-        si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-        si.hStdOutput = errFile;
-        si.hStdError = errFile;
+    HANDLE errFile    = CreateFileA(errPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, &sa,
+                                    CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    HANDLE input      = CreateFileA("NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, &sa, OPEN_EXISTING,
+                                    FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (errFile == INVALID_HANDLE_VALUE || input == INVALID_HANDLE_VALUE) {
+        if (errFile != INVALID_HANDLE_VALUE) CloseHandle(errFile);
+        if (input != INVALID_HANDLE_VALUE) CloseHandle(input);
+        throw compileError("Gpgpu.newShader: failed to create compiler standard handles");
     }
-    char *mutableCmd = _strdup(cmd.c_str());
+    struct StandardHandles {
+        HANDLE output, input;
+        ~StandardHandles() {
+            CloseHandle(output);
+            CloseHandle(input);
+        }
+    } handles{errFile, input};
+    // Without an explicit list, concurrent CreateProcess calls inherit other
+    // jobs' temporary-file handles and can prevent glslc from opening its input.
+    SIZE_T attributeBytes = 0;
+    InitializeProcThreadAttributeList(nullptr, 1, 0, &attributeBytes);
+    std::vector<uint8_t> attributes(attributeBytes);
+    si.lpAttributeList = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attributes.data());
+    if (!InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, &attributeBytes))
+        throw compileError("Gpgpu.newShader: failed to initialize process attributes");
+    struct AttributeList {
+        LPPROC_THREAD_ATTRIBUTE_LIST value;
+        ~AttributeList() { DeleteProcThreadAttributeList(value); }
+    } attributeList{si.lpAttributeList};
+    HANDLE inherited[] = {errFile, input};
+    if (!UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, inherited,
+                                   sizeof(inherited), nullptr, nullptr))
+        throw compileError("Gpgpu.newShader: failed to restrict compiler handle inheritance");
+    si.StartupInfo.dwFlags    = STARTF_USESTDHANDLES;
+    si.StartupInfo.hStdInput  = input;
+    si.StartupInfo.hStdOutput = errFile;
+    si.StartupInfo.hStdError  = errFile;
     const BOOL spawned =
-        CreateProcessA(glslc.c_str(), mutableCmd, nullptr, nullptr, TRUE, CREATE_NO_WINDOW,
-                       nullptr, nullptr, &si, &pi);
-    free(mutableCmd);
-    if (errFile != INVALID_HANDLE_VALUE) CloseHandle(errFile);
+        CreateProcessA(glslc.c_str(), cmd.data(), nullptr, nullptr, TRUE,
+                       CREATE_NO_WINDOW | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &si.StartupInfo, &pi);
     if (!spawned) {
         const DWORD errCode = GetLastError();
-        DeleteFileA(inPath);
-        DeleteFileA(outPath.c_str());
-        DeleteFileA(errPath.c_str());
-        throw Exception("Gpgpu.newShader: failed to launch glslc (error %lu)", errCode);
+        throw compileError("Gpgpu.newShader: failed to launch glslc (error %lu)", errCode);
     }
     WaitForSingleObject(pi.hProcess, INFINITE);
     DWORD exitCode = 0;
     GetExitCodeProcess(pi.hProcess, &exitCode);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
-    DeleteFileA(inPath);
     if (exitCode != 0) {
         std::string err;
-        FILE *ef = nullptr;
-        if (fopen_s(&ef, errPath.c_str(), "rb") == 0 && ef) {
-            char buf[512];
-            size_t n;
-            while ((n = fread(buf, 1, sizeof(buf) - 1, ef)) > 0) {
-                buf[n] = '\0';
-                err += buf;
-            }
-            fclose(ef);
+        HANDLE      diagnostics =
+            CreateFileA(errPath.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+                        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (diagnostics != INVALID_HANDLE_VALUE) {
+            char  buffer[512];
+            DWORD count = 0;
+            while (ReadFile(diagnostics, buffer, sizeof(buffer), &count, nullptr) && count) err.append(buffer, count);
+            CloseHandle(diagnostics);
         }
-        DeleteFileA(outPath.c_str());
-        DeleteFileA(errPath.c_str());
-        throw Exception("Gpgpu.newShader: glslc failed (exit %lu):\n%s", exitCode, err.c_str());
+        throw compileError("Gpgpu.newShader: glslc failed (exit %lu):\n%s", exitCode, err.c_str());
     }
-    DeleteFileA(errPath.c_str());
 
     FILE *f = nullptr;
     if (fopen_s(&f, outPath.c_str(), "rb") != 0 || !f) {
-        DeleteFileA(outPath.c_str());
-        throw Exception("Gpgpu.newShader: failed to open compiled SPIR-V");
+        throw compileError("Gpgpu.newShader: failed to open compiled SPIR-V");
     }
     fseek(f, 0, SEEK_END);
     long sz = ftell(f);
@@ -261,23 +313,22 @@ std::vector<uint32_t> compileComputeGlsl(const std::string &glsl) {
     std::vector<uint8_t> bytes(static_cast<size_t>(sz > 0 ? sz : 0));
     if (sz > 0 && fread(bytes.data(), 1, static_cast<size_t>(sz), f) != static_cast<size_t>(sz)) {
         fclose(f);
-        DeleteFileA(outPath.c_str());
-        throw Exception("Gpgpu.newShader: failed to read compiled SPIR-V");
+        throw compileError("Gpgpu.newShader: failed to read compiled SPIR-V");
     }
     fclose(f);
-    DeleteFileA(outPath.c_str());
     return loadSpirvBytes(bytes.data(), bytes.size());
+#endif  // EVE_HAS_SHADERC
 #else
     char inPath[] = "/tmp/eve_comp_XXXXXX";
     int fd = mkstemp(inPath);
-    if (fd < 0) throw Exception("Gpgpu.newShader: mkstemp failed");
+    if (fd < 0) throw compileError("Gpgpu.newShader: mkstemp failed");
     std::string outPath = std::string(inPath) + ".spv";
     {
         ssize_t n = write(fd, glsl.data(), glsl.size());
         close(fd);
         if (n < 0 || size_t(n) != glsl.size()) {
             unlink(inPath);
-            throw Exception("Gpgpu.newShader: failed to write temp GLSL");
+            throw compileError("Gpgpu.newShader: failed to write temp GLSL");
         }
     }
 
@@ -292,17 +343,17 @@ std::vector<uint32_t> compileComputeGlsl(const std::string &glsl) {
         unlink(inPath);
         if (status != 0) {
             unlink(outPath.c_str());
-            throw Exception("Gpgpu.newShader: glslc failed:\n%s", err.c_str());
+            throw compileError("Gpgpu.newShader: glslc failed:\n%s", err.c_str());
         }
     } else {
         unlink(inPath);
-        throw Exception("Gpgpu.newShader: glslc not available (popen failed)");
+        throw compileError("Gpgpu.newShader: glslc not available (popen failed)");
     }
 
     FILE *f = fopen(outPath.c_str(), "rb");
     if (!f) {
         unlink(outPath.c_str());
-        throw Exception("Gpgpu.newShader: failed to open compiled SPIR-V");
+        throw compileError("Gpgpu.newShader: failed to open compiled SPIR-V");
     }
     fseek(f, 0, SEEK_END);
     long sz = ftell(f);
@@ -311,7 +362,7 @@ std::vector<uint32_t> compileComputeGlsl(const std::string &glsl) {
     if (sz > 0 && fread(bytes.data(), 1, static_cast<size_t>(sz), f) != static_cast<size_t>(sz)) {
         fclose(f);
         unlink(outPath.c_str());
-        throw Exception("Gpgpu.newShader: failed to read compiled SPIR-V");
+        throw compileError("Gpgpu.newShader: failed to read compiled SPIR-V");
     }
     fclose(f);
     unlink(outPath.c_str());

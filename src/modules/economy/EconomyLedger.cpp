@@ -69,4 +69,16 @@ void EconomyLedger::swap(EconomyLedger& other) noexcept {
     swap(expense_, other.expense_);
 }
 
+EconomyLedger::Snapshot EconomyLedger::snapshot() const {
+    return {{current_.begin(), current_.end()}, {wasted_.begin(), wasted_.end()},
+            {income_.begin(), income_.end()}, {expense_.begin(), expense_.end()}};
+}
+
+void EconomyLedger::restore(const Snapshot& snapshot) {
+    current_ = std::unordered_map<std::string, int>(snapshot.current.begin(), snapshot.current.end());
+    wasted_ = std::unordered_map<std::string, int>(snapshot.wasted.begin(), snapshot.wasted.end());
+    income_ = std::unordered_map<std::string, int>(snapshot.income.begin(), snapshot.income.end());
+    expense_ = std::unordered_map<std::string, int>(snapshot.expense.begin(), snapshot.expense.end());
+}
+
 }  // namespace eve::economy

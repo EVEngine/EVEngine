@@ -213,8 +213,8 @@ TEST_CASE("avatar.vroid.pathAndTransform") {
     Avatar *mod = Avatar::create();
     AvatarInstance *av = mod->newVroidAvatar();
     CHECK_EQ(av->getKind(), std::string("vroid"));
-    CHECK(av->loadVroidModelPath("chars/hero.vrm"));
-    CHECK_EQ(av->getVroidModelPath(), std::string("chars/hero.vrm"));
+    CHECK(!av->loadVroidModelPath("chars/hero.vrm"));
+    CHECK(av->getVroidModelPath().empty());
     av->setPosition3D(1.f, 0.f, -2.f);
     av->setRotation3D(0.1f, 0.f, 0.f);
     av->setScale3D(1.f, 1.f, 1.f);

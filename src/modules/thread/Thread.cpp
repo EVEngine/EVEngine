@@ -1,22 +1,59 @@
 #include "thread/Thread.h"
 
+#include "common/AsyncWork.h"
+#include "common/Diagnostic.h"
 #include "common/Exception.h"
 #include "common/Capability.h"
 #include "common/MainThreadPost.h"
+#include "common/Result.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
 #include <functional>
 #include <thread>
 
 namespace eve {
 namespace thread {
 
+namespace {
+
+class PoolExecutor final : public eve::caps::IAsyncWorkExecutor {
+public:
+    explicit PoolExecutor(Thread *owner) : pool_(std::min(8, owner->getHardwareConcurrency())) {}
+
+    eve::Result<void> submit(std::function<void()> work) override {
+        if (!work) {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "IAsyncWorkExecutor: null work"));
+        }
+        try {
+            std::unique_ptr<Task> task(pool_.submit(std::move(work)));
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        } catch (const eve::Exception &ex) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, ex.what()));
+        }
+    }
+
+private:
+    // CPU resource decoders are allocation/IO heavy. Bound admission independently
+    // of the general-purpose pool and drain accepted work during destruction.
+    ThreadPool pool_;
+};
+
+}  // namespace
+
 Module_IMPL(Thread, new Thread());
 
-Thread::Thread() = default;
+Thread::Thread() {
+    executor_ = std::make_unique<PoolExecutor>(this);
+    cap::provide<caps::IAsyncWorkExecutor>(executor_.get());
+}
 
 Thread::~Thread() {
+    cap::revoke<caps::IAsyncWorkExecutor>(executor_.get());
+    executor_.reset();
     if (defaultPool_)
         defaultPool_->stop();
     if (defaultJobSystem_)

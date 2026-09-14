@@ -19,8 +19,14 @@ int EditorToolbar::findIndex(const std::string &id) const {
 void EditorToolbar::addTool(const std::string &id, const std::string &label) {
     if (id.empty()) throw Exception("EditorToolbar::addTool: empty id");
     if (findIndex(id) >= 0) throw Exception("EditorToolbar::addTool: duplicate id");
-    tools_.push_back(Tool{id, label, ""});
+    tools_.push_back(Tool{id, label, "", ""});
     if (active_.empty()) active_ = id;
+}
+
+void EditorToolbar::setIcon(const std::string &id, const std::string &icon) {
+    int i = findIndex(id);
+    if (i < 0) throw Exception("EditorToolbar::setIcon: unknown id");
+    tools_[i].icon = icon;
 }
 
 void EditorToolbar::setShortcut(const std::string &id, const std::string &key) {
@@ -55,6 +61,12 @@ std::string EditorToolbar::getToolLabel(int index) const {
     if (index < 0 || index >= static_cast<int>(tools_.size()))
         throw Exception("EditorToolbar::getToolLabel: bad index");
     return tools_[index].label;
+}
+
+std::string EditorToolbar::getToolIcon(int index) const {
+    if (index < 0 || index >= static_cast<int>(tools_.size()))
+        throw Exception("EditorToolbar::getToolIcon: bad index");
+    return tools_[index].icon;
 }
 
 std::string EditorToolbar::getToolShortcut(int index) const {

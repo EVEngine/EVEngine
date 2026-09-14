@@ -43,9 +43,18 @@ struct Builder {
             float x0=cx+std::cos(a0)*radius, z0=cz+std::sin(a0)*radius;
             float x1=cx+std::cos(a1)*radius, z1=cz+std::sin(a1)*radius;
             float am=(a0+a1)*0.5f;
-            quad(x0,y0,z0, x1,y0,z1, x1,y1,z1, x0,y1,z0,
+            // CCW from the outside, matching Graphics::newMeshCylinder / Vulkan
+            // front faces. The previous order wound the wall and cap inward, so
+            // back-face culling showed the interior of every tower.
+            quad(x0,y0,z0, x0,y1,z0, x1,y1,z1, x1,y0,z1,
                  std::cos(am),0,std::sin(am));
-            quad(cx,y1,cz, x0,y1,z0, x1,y1,z1, cx,y1,cz, 0,1,0);
+            const uint32_t cap = uint32_t(mesh.getVertexCount());
+            mesh.addVertex(cx, y1, cz, 0, 1, 0, 0.5f, 0.5f);
+            mesh.addVertex(x1, y1, z1, 0, 1, 0, 0.5f + 0.5f * std::cos(a1),
+                           0.5f + 0.5f * std::sin(a1));
+            mesh.addVertex(x0, y1, z0, 0, 1, 0, 0.5f + 0.5f * std::cos(a0),
+                           0.5f + 0.5f * std::sin(a0));
+            mesh.addTriangle(cap, cap + 1, cap + 2);
         }
     }
 };

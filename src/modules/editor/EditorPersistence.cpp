@@ -39,7 +39,7 @@ DomainOperation decodeOperation(const EditorValue& value) {
 }
 
 EditorResult<EditorPersistenceSnapshot> persistenceError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<EditorPersistenceSnapshot>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<EditorPersistenceSnapshot>(status, RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -49,18 +49,15 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::load() const {
         return persistenceError(EditorStatus::Rejected, "editor.persistence.invalid",
                                 "Persistence store and URI are required");
     auto stored = store_->read(resourceUri_);
-    if (!stored.isAccepted() || !stored.value) {
-        if (stored.status == EditorStatus::NotFound) {
+    if (!stored.ok()) {
+        if (stored.code() == EditorStatus::NotFound) {
             EditorPersistenceSnapshot empty;
             empty.kind = kind_;
-            return EditorResult<EditorPersistenceSnapshot>::applied(std::move(empty));
+            return eve::editing::applied<EditorPersistenceSnapshot>(std::move(empty));
         }
-        EditorResult<EditorPersistenceSnapshot> result;
-        result.status      = stored.status;
-        result.diagnostics = std::move(stored.diagnostics);
-        return result;
+        return EditorResult<EditorPersistenceSnapshot>::failure(stored.status());
     }
-    return decode(kind_, *stored.value);
+    return decode(kind_, stored.value());
 }
 
 EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const EditorPersistenceSnapshot& base,
@@ -77,13 +74,8 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const E
     envelope["journal"]       = EditorValue(std::move(serializedJournal));
     auto stored =
         store_->compareAndSwap(resourceUri_, base.revision, base.contentHash, EditorValue(std::move(envelope)));
-    if (!stored.isAccepted() || !stored.value) {
-        EditorResult<EditorPersistenceSnapshot> result;
-        result.status      = stored.status;
-        result.diagnostics = std::move(stored.diagnostics);
-        return result;
-    }
-    return decode(kind_, *stored.value);
+    if (!stored.ok()) return EditorResult<EditorPersistenceSnapshot>::failure(stored.status());
+    return decode(kind_, stored.value());
 }
 
 EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::decode(EditorPersistenceKind kind,
@@ -104,7 +96,7 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::decode(EditorP
     result.contentHash = stored.contentHash;
     result.content     = content->second;
     for (const EditorValue& value : *journalValues) result.journal.push_back(decodeOperation(value));
-    return EditorResult<EditorPersistenceSnapshot>::applied(std::move(result));
+    return eve::editing::applied<EditorPersistenceSnapshot>(std::move(result));
 }
 
 }  // namespace eve::editor

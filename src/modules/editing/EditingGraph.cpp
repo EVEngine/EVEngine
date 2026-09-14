@@ -7,7 +7,7 @@ namespace eve::editing {
 namespace {
 template <class T>
 Result<T> graphError(Status status, const char* rule, std::string message) {
-    return Result<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 }  // namespace
 
@@ -24,7 +24,7 @@ Result<void> GraphDocument::createNode(GraphNodeRecord node) {
     }
     nodes_.emplace(node.id, std::move(node));
     ++revision_;
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<void> GraphDocument::deleteNode(const GraphNodeId& node) {
@@ -38,32 +38,31 @@ Result<void> GraphDocument::deleteNode(const GraphNodeId& node) {
     });
     nodes_.erase(node);
     ++revision_;
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<void> GraphDocument::connect(GraphEdgeRecord edge, const GraphConnectionDecision& decision) {
     if (!decision.allowed) {
-        Result<void> result;
-        result.status      = Status::Rejected;
-        result.diagnostics = decision.diagnostics;
-        if (result.diagnostics.empty())
-            result.diagnostics.push_back(
-                {RuleId("editing.graph.connection-rejected"), DiagnosticSeverity::Error, "Connection was rejected"});
-        return result;
+        auto diagnostics = decision.diagnostics;
+        if (diagnostics.empty())
+            diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation,
+                                                 RuleId("editing.graph.connection-rejected"),
+                                                 DiagnosticSeverity::Error, "Connection was rejected"));
+        return Result<void>::failure(eve::Status(Status::Rejected, std::move(diagnostics)));
     }
     if (edge.id.empty() || edges_.contains(edge.id) || !findPin(edge.from) || !findPin(edge.to))
         return graphError<void>(Status::Rejected, "editing.graph.invalid-edge",
                                 "Graph edge id/pins are invalid or duplicated");
     edges_.emplace(edge.id, std::move(edge));
     ++revision_;
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<void> GraphDocument::disconnect(const StableId& edge) {
     if (!edges_.erase(edge))
         return graphError<void>(Status::NotFound, "editing.graph.edge-not-found", "Graph edge does not exist");
     ++revision_;
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<void> GraphDocument::setNodeProperties(const GraphNodeId& node, Value properties) {
@@ -75,7 +74,7 @@ Result<void> GraphDocument::setNodeProperties(const GraphNodeId& node, Value pro
                                 "Graph node properties must be an object");
     found->second.properties = std::move(properties);
     ++revision_;
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<void> GraphDocument::setParameters(Value parameters) {
@@ -87,7 +86,7 @@ Result<void> GraphDocument::setParameters(Value parameters) {
                                 "Graph parameters exceed editing document limits");
     parameters_ = std::move(parameters);
     ++revision_;
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 GraphDocumentData GraphDocument::snapshot(std::string domain) const {

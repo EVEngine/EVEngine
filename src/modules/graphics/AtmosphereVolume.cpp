@@ -73,6 +73,37 @@ void AtmosphereVolume::injectHeightFog(float baseExtinction, const glm::vec3 &al
     }
 }
 
+void AtmosphereVolume::injectHeightFogFrustum(float baseExtinction, const glm::vec3 &albedo,
+                                               float baseHeight, float heightFalloff,
+                                               float minWorldY, float maxWorldY,
+                                               const glm::mat4 &invViewProj) {
+    const float sigma = std::max(baseExtinction, 0.f);
+    const glm::vec3 omega = glm::clamp(albedo, glm::vec3(0.f), glm::vec3(1.f));
+    const float falloff = std::max(heightFalloff, 0.f);
+    auto unproject = [&](float ndcX, float ndcY, float ndcZ) {
+        const glm::vec4 homogeneous = invViewProj * glm::vec4(ndcX, ndcY, ndcZ, 1.f);
+        return glm::vec3(homogeneous) / homogeneous.w;
+    };
+    for (int y = 0; y < height_; ++y) {
+        const float ndcY = ((float(y) + 0.5f) / float(height_)) * 2.f - 1.f;
+        for (int x = 0; x < width_; ++x) {
+            const float ndcX = ((float(x) + 0.5f) / float(width_)) * 2.f - 1.f;
+            const glm::vec3 nearPoint = unproject(ndcX, ndcY, 0.f);
+            const glm::vec3 farPoint = unproject(ndcX, ndcY, 1.f);
+            for (int z = 0; z < depth_; ++z) {
+                const float depth01 = (sliceDistance(z) - nearDistance_) /
+                                      (farDistance_ - nearDistance_);
+                const glm::vec3 world = glm::mix(nearPoint, farPoint, depth01);
+                if (world.y < minWorldY || world.y > maxWorldY) continue;
+                const float extinction = sigma * std::exp(-falloff * std::max(world.y - baseHeight, 0.f));
+                FogFroxel &froxel = at(x, y, z);
+                froxel.extinction += extinction;
+                froxel.scattering += omega * extinction;
+            }
+        }
+    }
+}
+
 void AtmosphereVolume::injectLocalVolume(const FogVolume &volume, const glm::vec3 &worldMin,
                                          const glm::vec3 &worldMax) {
     for (int z = 0; z < depth_; ++z) {

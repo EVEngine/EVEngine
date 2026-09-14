@@ -532,6 +532,8 @@ public:
     [[nodiscard]] ActionExecution* find(ActionExecutionId id) noexcept;
     /** @brief Number of executions retained by this runtime. */
     [[nodiscard]] std::size_t executionCount() const noexcept { return executions_.size(); }
+    /** @brief Discard every retained execution and restart deterministic local ids at one. */
+    void clear() noexcept;
 
 private:
     using ExecutionStore = std::map<ActionExecutionId, std::unique_ptr<ActionExecution>>;

@@ -29,7 +29,7 @@ void applySnowToHeightmap(const SnowField &field, const procgen::Heightmap &terr
  *
  * The SnowField grid is the single source of truth: it drives the real
  * terrain-surface displacement (footprints / craters as actual geometry via
- * applySnowToHeightmap + editor.updateHeightmapMesh) and the POM height map
+ * applySnowToHeightmap + heightmapTargets.updateMesh) and the POM height map
  * (uploadTexture / updateTexture + Renderable3D.setHeightTexture/setParallax),
  * plus snowfall recovery (addSnowfall).
  *

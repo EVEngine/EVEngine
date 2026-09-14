@@ -62,13 +62,35 @@ bool genCaveCellular(const Params &params, Grid2D &out, std::string &error) {
     const double fill  = double(params.getFloat("fill", 0.45f));
 
     auto matrix = dtlutil::makeMatrix(w, h, 0);
-    // land=1, border/wall=0
-    dtl::shape::CellularAutomatonIsland<std::uint_fast8_t> shape(1, 0, size_t(std::max(1, loops)),
-                                                                 fill);
-    dtlutil::seedEngine(params.getSeed());
-    if (!shape.draw(matrix)) {
-        error = "cave.cellular: DTL CellularAutomatonIsland draw failed";
-        return false;
+    dtl::random::DefaultRandom rng(params.getSeed());
+    // DTL construction consumes one sample; reseed to preserve the legacy stream.
+    rng.seed(params.getSeed());
+    rng.clear();
+    for (int y = 0; y < h; ++y)
+        for (int x = 0; x < w; ++x) matrix[size_t(y)][size_t(x)] = rng.probability(fill) ? 1 : 0;
+    for (int x = 0; x < w; ++x) {
+        matrix.front()[size_t(x)] = 0;
+        matrix.back()[size_t(x)]  = 0;
+    }
+    for (int y = 0; y < h; ++y) {
+        matrix[size_t(y)].front() = 0;
+        matrix[size_t(y)].back()  = 0;
+    }
+    for (int pass = 0; pass < std::max(1, loops); ++pass) {
+        for (int y = 1; y < h - 1; ++y) {
+            for (int x = 1; x < w - 1; ++x) {
+                const auto left  = matrix[size_t(y)][size_t(x - 1)];
+                const auto right = matrix[size_t(y)][size_t(x + 1)];
+                const auto up    = matrix[size_t(y - 1)][size_t(x)];
+                const auto down  = matrix[size_t(y + 1)][size_t(x)];
+                if (left == right && right == up && up == down) {
+                    matrix[size_t(y)][size_t(x)] = left;
+                } else {
+                    const std::uint_fast8_t neighbors[] = {left, right, up, down};
+                    matrix[size_t(y)][size_t(x)]        = neighbors[rng.getBit2()];
+                }
+            }
+        }
     }
 
     dtlutil::copyMatrixToGrid(matrix, out, [](std::uint_fast8_t v) -> uint32_t {

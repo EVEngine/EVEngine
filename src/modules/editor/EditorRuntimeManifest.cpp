@@ -13,7 +13,7 @@ bool selected(const std::vector<Id>& values, const Id& id) {
 }
 
 EditorResult<RuntimeEditorPackage> manifestError(const char* rule, std::string message) {
-    return EditorResult<RuntimeEditorPackage>::error(EditorStatus::Rejected, RuleId(rule), std::move(message));
+    return eve::editing::failed<RuntimeEditorPackage>(EditorStatus::Rejected, RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -72,7 +72,7 @@ EditorResult<RuntimeEditorPackage> RuntimeEditorPublisher::publish(const Runtime
         AssetGuid current = pending.front();
         pending.pop_front();
         if (!visited.emplace(current).second) continue;
-        if (!assets.find(current).isAccepted())
+        if (!assets.find(current).ok())
             return manifestError("editor.runtime.asset-not-found", "Manifest asset is unavailable: " + current.value());
         package.assetClosure.push_back(current);
         for (const AssetDependency& dependency : assets.dependencies(current))
@@ -80,7 +80,7 @@ EditorResult<RuntimeEditorPackage> RuntimeEditorPublisher::publish(const Runtime
                 pending.push_back(dependency.to);
     }
     std::sort(package.assetClosure.begin(), package.assetClosure.end());
-    return EditorResult<RuntimeEditorPackage>::applied(std::move(package));
+    return eve::editing::applied<RuntimeEditorPackage>(std::move(package));
 }
 
 }  // namespace eve::editor

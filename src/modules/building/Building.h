@@ -38,6 +38,10 @@ public:
     std::string getBuildingValidateRule(const std::string &buildingId);
     std::string getBuildingChannel(const std::string &buildingId);
     std::string getBuildingRenderMode(const std::string &buildingId);
+    /** @brief Definition placement domain (`cell` or `edge`). */
+    std::string getBuildingPlacementKind(const std::string &buildingId);
+    /** @brief Definition edge connection group, or empty when it falls back to id. */
+    std::string getBuildingConnectionGroup(const std::string &buildingId);
     std::string getBuildingVisual2d(const std::string &buildingId, const std::string &key,
                                     const std::string &fallback = {});
     std::string getBuildingVisual3d(const std::string &buildingId, const std::string &key,

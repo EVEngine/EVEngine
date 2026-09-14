@@ -1,5 +1,5 @@
-#include "asset_graphics/EvpackGraphicsLoader.h"
-#include "asset_graphics/EvpackImageLoader.h"
+#include "asset/graphics/EvpackGraphicsLoader.h"
+#include "asset/graphics/EvpackImageLoader.h"
 
 #include "graphics/IMeshResourceFactory.h"
 #include "zeroerr/assert.h"

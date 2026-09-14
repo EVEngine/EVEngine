@@ -18,13 +18,13 @@ public:
         CHECK(registry.registerCommand(
             std::move(command),
             [](const CommandContext&, const EditorValue&) {
-                return EditorResult<EditorValue>::applied(EditorValue("tree"));
+                return eve::editing::applied<EditorValue>(EditorValue("tree"));
             },
             ExtensionAudience::Player)
-                  .isAccepted());
+                  .ok());
         CHECK(registry.registerTool({ToolId("park.tree-tool"), {}, "Tree", "Build", {}, ExtensionAudience::Player})
-                  .isAccepted());
-        CHECK(registry.registerRule({RuleId("park.path-rule"), {}, ExtensionAudience::Player}).isAccepted());
+                  .ok());
+        CHECK(registry.registerRule({RuleId("park.path-rule"), {}, ExtensionAudience::Player}).ok());
     }
 };
 
@@ -42,16 +42,16 @@ TEST_CASE("editor.v2.runtime_manifest_is_explicit_and_closes_asset_dependencies"
     EditorCommandService    commands;
     EditorExtensionRegistry extensions(&commands);
     RuntimeParkExtension    park;
-    REQUIRE(extensions.load(park).isAccepted());
+    REQUIRE(extensions.load(park).ok());
 
     MemoryAssetDatabase assets;
     REQUIRE(assets
                 .publish(runtimeAsset("park", "content://Park"),
                          {{AssetGuid("park"), AssetGuid("tree"), DependencyKind::Hard, {}},
                           {AssetGuid("park"), AssetGuid("source"), DependencyKind::EditorOnly, {}}})
-                .isAccepted());
-    REQUIRE(assets.publish(runtimeAsset("tree", "content://Tree")).isAccepted());
-    REQUIRE(assets.publish(runtimeAsset("source", "content://TreeSource")).isAccepted());
+                .ok());
+    REQUIRE(assets.publish(runtimeAsset("tree", "content://Tree")).ok());
+    REQUIRE(assets.publish(runtimeAsset("source", "content://TreeSource")).ok());
 
     RuntimeEditorManifest manifest;
     manifest.commands   = {CommandId("park.place-tree")};
@@ -59,12 +59,12 @@ TEST_CASE("editor.v2.runtime_manifest_is_explicit_and_closes_asset_dependencies"
     manifest.rules      = {RuleId("park.path-rule")};
     manifest.rootAssets = {AssetGuid("park")};
     auto package        = RuntimeEditorPublisher().publish(manifest, commands, extensions, assets);
-    REQUIRE(package.isAccepted());
-    CHECK(package.value->profile.allowsCommand(CommandId("park.place-tree")));
-    CHECK(!package.value->profile.allowsCommand(CommandId("developer.delete-source")));
-    CHECK_EQ(package.value->tools.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(package.value->rules.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(package.value->assetClosure.size(), static_cast<std::size_t>(2));
+    REQUIRE(package.ok());
+    CHECK(package.value().profile.allowsCommand(CommandId("park.place-tree")));
+    CHECK(!package.value().profile.allowsCommand(CommandId("developer.delete-source")));
+    CHECK_EQ(package.value().tools.size(), static_cast<std::size_t>(1));
+    CHECK_EQ(package.value().rules.size(), static_cast<std::size_t>(1));
+    CHECK_EQ(package.value().assetClosure.size(), static_cast<std::size_t>(2));
 }
 
 TEST_CASE("editor.v2.runtime_manifest_rejects_developer_features") {
@@ -74,5 +74,5 @@ TEST_CASE("editor.v2.runtime_manifest_rejects_developer_features") {
     RuntimeEditorManifest   manifest;
     manifest.features = HostFeature::RuntimeWorld | HostFeature::ArbitraryScript;
     auto result       = RuntimeEditorPublisher().publish(manifest, commands, extensions, assets);
-    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(result.code()), static_cast<int>(EditorStatus::Rejected));
 }

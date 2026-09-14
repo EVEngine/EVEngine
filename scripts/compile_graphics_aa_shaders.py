@@ -17,6 +17,7 @@ FRAGS = [
     "aa_ssaa.frag",
     "bloom_downsample.frag",
     "bloom_upsample.frag",
+    "bloom_gaussian.frag",
     "exposure_meter.frag",
     "exposure_adapt.frag",
     "exposure_apply.frag",

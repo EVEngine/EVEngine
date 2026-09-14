@@ -32,8 +32,8 @@ void destroyHandles(std::vector<ecs::EntityHandle>& hs) {
 }
 
 template <typename T>
-void registerCppEntityClassForScript() {
-    eve::registerCppEntityView(typeid(T*).hash_code(), [](ssq::Array& out) {
+void registerCppEntityClassForScript(const ssq::Class& cls) {
+    eve::registerCppEntityView(cls, [](ssq::Array& out) {
         HSQUIRRELVM vm = out.getHandle();
         sq_pushobject(vm, out.getRaw());
         ecs::Table* table = ecs::current();
@@ -628,13 +628,9 @@ void Weapon::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Weapon::create, false);
     expose(cls);
 
-    registerCppEntityClassForScript<WeaponEntity>();
-    registerCppEntityClassForScript<WeaponMountEntity>();
-    registerCppEntityClassForScript<WeaponRigEntity>();
-    registerCppEntityClassForScript<AmmoPoolEntity>();
-
     auto wCls = table.addClass<WeaponEntity>(
         "WeaponEntity", std::function<WeaponEntity*()>([]() -> WeaponEntity* { return nullptr; }), false);
+    registerCppEntityClassForScript<WeaponEntity>(wCls);
     wCls.addFunc("getId", [](WeaponEntity* w) -> std::string { return w ? w->identity()->id : std::string{}; });
     wCls.addFunc("getDefId", [](WeaponEntity* w) -> std::string { return w ? w->identity()->defId : std::string{}; });
     wCls.addFunc("getOwnerId", [](WeaponEntity* w) -> int { return w ? w->identity()->ownerId : 0; });
@@ -728,6 +724,7 @@ void Weapon::expose(ssq::Table& table) {
     auto mCls = table.addClass<WeaponMountEntity>(
         "WeaponMountEntity", std::function<WeaponMountEntity*()>([]() -> WeaponMountEntity* { return nullptr; }),
         false);
+    registerCppEntityClassForScript<WeaponMountEntity>(mCls);
     mCls.addFunc("getId", [](WeaponMountEntity* m) -> std::string { return m ? m->identity()->id : std::string{}; });
     mCls.addFunc("getType",
                  [](WeaponMountEntity* m) -> std::string { return m ? m->identity()->type : std::string{}; });
@@ -759,6 +756,7 @@ void Weapon::expose(ssq::Table& table) {
 
     auto rCls = table.addClass<WeaponRigEntity>(
         "WeaponRigEntity", std::function<WeaponRigEntity*()>([]() -> WeaponRigEntity* { return nullptr; }), false);
+    registerCppEntityClassForScript<WeaponRigEntity>(rCls);
     rCls.addFunc("getId", [](WeaponRigEntity* r) -> std::string { return r ? r->identity()->id : std::string{}; });
     rCls.addFunc("getWield",
                  [](WeaponRigEntity* r) -> std::string { return r ? r->identity()->wield : std::string{}; });
@@ -785,6 +783,7 @@ void Weapon::expose(ssq::Table& table) {
 
     auto pCls = table.addClass<AmmoPoolEntity>(
         "AmmoPoolEntity", std::function<AmmoPoolEntity*()>([]() -> AmmoPoolEntity* { return nullptr; }), false);
+    registerCppEntityClassForScript<AmmoPoolEntity>(pCls);
     pCls.addFunc("getId", [](AmmoPoolEntity* p) -> std::string { return p ? p->identity()->id : std::string{}; });
     pCls.addFunc("getAmmoType",
                  [](AmmoPoolEntity* p) -> std::string { return p ? p->identity()->ammoType : std::string{}; });

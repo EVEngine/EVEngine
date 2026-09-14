@@ -4,6 +4,7 @@
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/SolidPipeline.h"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/Light.h"
 #include "graphics/AmbientOcclusion.h"
@@ -49,92 +50,69 @@
 
 #include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/color_vert_spv.inc"
-#include "graphics/shaders/textured_vert_spv.inc"
-#include "graphics/shaders/textured_frag_spv.inc"
-#include "graphics/shaders/scene_tonemap_frag_spv.inc"
-#include "graphics/shaders/mesh3d_vert_spv.inc"
-#include "graphics/shaders/mesh3d_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
-#include "graphics/shaders/resolve_vis_vert_spv.inc"
-#include "graphics/shaders/resolve_vis_frag_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
-#include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/decal_box_frag_spv.inc"
+#include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
+#include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/particle_distortion_frag_spv.inc"
+#include "graphics/shaders/primitive3d_frag_spv.inc"
+#include "graphics/shaders/primitive3d_vert_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/scene_tonemap_frag_spv.inc"
+#include "graphics/shaders/textured_frag_spv.inc"
 #include "graphics/shaders/textured_opaque_frag_spv.inc"
+#include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
 
 namespace eve::graphics::vulkan {
 
 namespace {
 
-vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
-                                      vk::PipelineLayout layout,
-                                      BlendMode mode = BlendMode::Opaque) {
-    if (mode == BlendMode::Additive || mode == BlendMode::Premultiplied ||
-        mode == BlendMode::Multiply) {
-        // cbs/attachments must outlive build(); the builder must stay a single
-        // expression — copying the builder into a named local leaves its
-        // shader-stage pName pointers dangling into the temporary's storage.
-        std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
-                                                                       makeBlendAttachment(mode));
-        vk::PipelineColorBlendStateCreateInfo cbs{};
-        cbs.logicOpEnable = false;
-        cbs.attachmentCount = 1;
-        cbs.pAttachments = attachments.data();
-        return device.createPipeline()
-            .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<ColorVertex>()
-                                     .addAttributeDescription<ColorVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                           vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
-            .setColorBlending(cbs)
-            .build(renderPass);
-    }
-    if (mode == BlendMode::Alpha) {
-        return device.createPipeline()
-            .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<ColorVertex>()
-                                     .addAttributeDescription<ColorVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                           vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
-            .setAlphaBlending(1)
-            .build(renderPass);
-    }
-    // Opaque: keep the original single-expression chain (no explicit blend state).
+vk::Pipeline createPrimitive3DPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
+                                       vk::PipelineLayout layout, PrimitiveDepthMode depth, BlendMode blend,
+                                       PrimitiveCullMode cull, vk::SampleCountFlagBits samples) {
+    const bool              depthTest  = depth != PrimitiveDepthMode::Ignore;
+    const bool              depthWrite = depth == PrimitiveDepthMode::TestAndWrite;
+    const vk::CullModeFlags cullFlags =
+        cull == PrimitiveCullMode::Back
+            ? vk::CullModeFlagBits::eBack
+            : (cull == PrimitiveCullMode::Front ? vk::CullModeFlagBits::eFront : vk::CullModeFlagBits::eNone);
+    std::vector<vk::PipelineColorBlendAttachmentState> attachments(1, makeBlendAttachment(blend));
+    vk::PipelineColorBlendStateCreateInfo              blending{};
+    blending.attachmentCount = 1;
+    blending.pAttachments    = attachments.data();
     return device.createPipeline()
-        .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
+        .useClassicPipeline(embeddedSpirv(primitive3d_vert_spv), embeddedSpirv(primitive3d_frag_spv))
         .setPipelineLayout(layout)
         .setVertexInputState(vkb::VertexInputStateBuilder()
-                                 .addInputBinding<ColorVertex>()
-                                 .addAttributeDescription<ColorVertex>())
+                                 .addInputBinding<Primitive3DVertex>()
+                                 .addAttributeDescription<Primitive3DVertex>())
         .setDynamicStatesViewportScissor()
-        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
-                       vk::FrontFace::eCounterClockwise)
+        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.f, cullFlags, vk::FrontFace::eCounterClockwise)
+        .setDepthStencil(depthTest, depthWrite, depthTest ? vk::CompareOp::eLessOrEqual : vk::CompareOp::eAlways)
+        .setMultisampler(false, samples)
+        .setColorBlending(blending)
         .build(renderPass);
 }
 }  // namespace
@@ -383,32 +361,34 @@ void Graphics::createMesh3DPipeline() {
     // Vulkan NDC), so frontFace is Clockwise while mesh winding stays CCW in object space.
     vkb::DescriptorSetLayoutBuilder layoutBuilder;
     mesh3dSetLayoutUnique =
-        layoutBuilder
+        layoutBuilder.buffer(21, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex, 1)
             .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(2, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .buffer(4, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment, 1)
             .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(6, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .image(7, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(16, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(17, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(18, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(20, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
     vkb::DescriptorSetLayoutBuilder skinLayoutBuilder;
     skinPassSetLayoutUnique =
-        skinLayoutBuilder
+        skinLayoutBuilder.buffer(2, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex, 1)
             .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     skinPassSetLayout = *skinPassSetLayoutUnique;
     skinPassPipelineLayout = createPipelineLayout(device, skinPassSetLayout);
@@ -482,6 +462,7 @@ void Graphics::createMesh3DClusteredPipeline() {
 }
 
 void Graphics::destroyShadowResources() {
+    resetDeferredFrameGraphs();
     destroyPipeline(device, shadowPipeline);
     destroyPipelineLayout(device, shadowPipelineLayout);
     destroyPipeline(device, shadowAlphaPipeline);
@@ -516,6 +497,7 @@ void Graphics::destroyShadowResources() {
 }
 
 void Graphics::destroyGBufferResources() {
+    resetDeferredFrameGraphs();
     gbufferPassActive = false;
     gbufferPending = false;
     gbufferPassDraws.clear();
@@ -565,6 +547,7 @@ void Graphics::destroyGBufferResources() {
 
 void Graphics::destroySceneColorResources() {
     sceneColorPassOpen = false;
+    sceneColorHistoryValid = false;
     if (device.instance) device->waitIdle();
     for (auto &slot : sceneColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
@@ -579,6 +562,10 @@ void Graphics::destroySceneColorResources() {
     if (sceneColorRenderPass) {
         device->destroyRenderPass(sceneColorRenderPass);
         sceneColorRenderPass = {};
+    }
+    if (sceneColorResumeRenderPass) {
+        device->destroyRenderPass(sceneColorResumeRenderPass);
+        sceneColorResumeRenderPass = vk::RenderPass{};
     }
     sceneColorWidth = 0;
     sceneColorHeight = 0;
@@ -739,6 +726,7 @@ void Graphics::queueUiResolve() {
 
 bool Graphics::renderUiOverlayPass() {
     if (!presentOverlayFn_) return false;
+    if (!presentOverlayFn_(presentOverlayUser_, nullptr)) return false;
     createUiColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
     auto *slot = currentUiColorSlot();
     if (!slot || !uiRenderPass || !slot->framebuffer) return false;
@@ -808,14 +796,13 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             // Match the FrameGraph render pass used to record this pipeline:
             // imported G-buffer targets begin undefined and leave sampled, so
             // only the subpass-to-reader dependency is materialized.
-            .addDependency(
-                0, VK_SUBPASS_EXTERNAL,
-                vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
-                    vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
-                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
-                vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eDepthStencilAttachmentRead)
+            .addDependency(0, VK_SUBPASS_EXTERNAL,
+                           vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                               vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                               vk::PipelineStageFlagBits::eLateFragmentTests,
+                           vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                           vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                           vk::AccessFlagBits::eShaderRead)
             .build();
     gbufferRenderPass = gbufferPass;
 
@@ -910,14 +897,14 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
         gpu.descriptorSet = vkb::BoundSet{sets[0]};
-        gpu.width = width;
-        gpu.height = height;
+        gpu.width         = gbufW;
+        gpu.height        = gbufH;
         gpu.viewOverride = view;
         writeCombinedImageDescriptor(&gpu);
-        tex.width = width;
-        tex.height = height;
-        tex.pixelWidth = width;
-        tex.pixelHeight = height;
+        tex.width       = gbufW;
+        tex.height      = gbufH;
+        tex.pixelWidth  = gbufW;
+        tex.pixelHeight = gbufH;
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : gbufferSlots) {
@@ -928,7 +915,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         makeSampleTex(slot.visBaryGpu, slot.visBaryTex, slot.visBary.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
-    createGpuDrivenVisResources(width, height);
+    createGpuDrivenVisResources(gbufW, gbufH);
 }
 
 void Graphics::ensureDecalUnitBox() {
@@ -1220,13 +1207,67 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
             device.createRenderPass()
                 .addSampledColorAttachment(colorFmt)
                 .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
-                                    vk::AttachmentStoreOp::eDontCare)
+                                    vk::AttachmentStoreOp::eStore)
                 .addSubpass(vkb::SubpassBuilder()
                                 .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                                 .setDepthStencilAttachment(
                                     1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
                 .addExternalShaderReadDependencies()
                 .build();
+
+        std::array<vk::AttachmentDescription, 2> attachments{};
+        attachments[0] = vk::AttachmentDescription()
+                             .setFormat(colorFmt)
+                             .setSamples(vk::SampleCountFlagBits::e1)
+                             .setLoadOp(vk::AttachmentLoadOp::eLoad)
+                             .setStoreOp(vk::AttachmentStoreOp::eStore)
+                             .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                             .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                             .setInitialLayout(vk::ImageLayout::eColorAttachmentOptimal)
+                             .setFinalLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+        attachments[1] = vk::AttachmentDescription()
+                             .setFormat(depthFmt)
+                             .setSamples(vk::SampleCountFlagBits::e1)
+                             .setLoadOp(vk::AttachmentLoadOp::eLoad)
+                             .setStoreOp(vk::AttachmentStoreOp::eStore)
+                             .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                             .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                             .setInitialLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal)
+                             .setFinalLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
+        const vk::AttachmentReference colorRef{0, vk::ImageLayout::eColorAttachmentOptimal};
+        const vk::AttachmentReference depthRef{1, vk::ImageLayout::eDepthStencilAttachmentOptimal};
+        const vk::SubpassDescription subpass =
+            vk::SubpassDescription()
+                .setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+                .setColorAttachmentCount(1)
+                .setPColorAttachments(&colorRef)
+                .setPDepthStencilAttachment(&depthRef);
+        std::array<vk::SubpassDependency, 2> dependencies{};
+        dependencies[0] = vk::SubpassDependency()
+                              .setSrcSubpass(VK_SUBPASS_EXTERNAL)
+                              .setDstSubpass(0)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eTransfer)
+                              .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                               vk::PipelineStageFlagBits::eEarlyFragmentTests)
+                              .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
+                              .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite |
+                                                vk::AccessFlagBits::eDepthStencilAttachmentRead);
+        dependencies[1] = vk::SubpassDependency()
+                              .setSrcSubpass(0)
+                              .setDstSubpass(VK_SUBPASS_EXTERNAL)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+                              .setDstStageMask(vk::PipelineStageFlagBits::eFragmentShader)
+                              .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+                              .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
+        const vk::RenderPassCreateInfo resumeInfo =
+            vk::RenderPassCreateInfo()
+                .setAttachmentCount(static_cast<uint32_t>(attachments.size()))
+                .setPAttachments(attachments.data())
+                .setSubpassCount(1)
+                .setPSubpasses(&subpass)
+                .setDependencyCount(static_cast<uint32_t>(dependencies.size()))
+                .setPDependencies(dependencies.data());
+        sceneColorResumeRenderPass = device->createRenderPass(resumeInfo);
     }
     auto scenePass = sceneColorRenderPass;
 
@@ -1314,8 +1355,11 @@ void Graphics::endSceneColorRenderPass() {
     auto &cb = currentPresentCb();
     cb.endRenderPass();
     sceneColorPassOpen = false;
-    if (auto *slot = currentSceneColorSlot())
+    if (auto *slot = currentSceneColorSlot()) {
         slot->color.endSampledLayout();
+        completedSceneColorSlot = currentFrameSlot() % sceneColorSlots.size();
+        sceneColorHistoryValid = true;
+    }
 }
 
 int Graphics::clampMsaaSamples(int requested) const {
@@ -1339,6 +1383,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     const vk::RenderPass targetHandle = vk::RenderPass(target);
     if (targetHandle == scenePassPipelineTarget && samples == scenePassPipelineSamples) return;
     device->waitIdle();
+    destroyPbrResources();
 
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dTransparentPipeline);
@@ -1347,6 +1392,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     destroyPipeline(device, mesh3dGpuDrivenPipeline);
     destroyPipeline(device, resolveVisPipeline);
     destroyPipeline(device, voxelRectPipeline);
+    for (auto &pipeline : primitive3DPipelines) destroyPipeline(device, pipeline);
 
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
                                                embeddedSpirv(mesh3d_frag_spv),
@@ -1382,6 +1428,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     }
     if (voxelRectPipelineLayout)
         voxelRectPipeline = buildVoxelRectPipeline(target, samples);
+    rebuildPrimitive3DPipelines(target, samples);
 
     for (auto &g : ownedGpuShaders) {
         if (!g->isMesh3D) continue;
@@ -1394,9 +1441,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                 createMesh3DHairPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
         } else {
-            g->mesh3dPipeline =
-                createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
-                                          g->pipelineLayout, target, samples);
+            g->mesh3dPipeline = createMesh3DStylePipeline(
+                g->owner->vertexSpirv(), g->owner->fragmentSpirv(), g->pipelineLayout, target, samples,
+                g->owner->meshBlend, g->owner->meshDepthWrite, g->owner->meshDoubleSided, g->owner->meshRasterState());
             g->mesh3dXrayPipeline =
                 createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
@@ -1407,10 +1454,37 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     scenePassPipelineSamples = samples;
 }
 
+size_t Graphics::primitive3DPipelineIndex(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull) {
+    return static_cast<size_t>(depth) * 15u + static_cast<size_t>(blend) * 3u + static_cast<size_t>(cull);
+}
+
+void Graphics::rebuildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples) {
+    buildPrimitive3DPipelines(target, samples, primitive3DPipelines);
+}
+
+void Graphics::buildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples,
+                                         std::array<vk::Pipeline, kPrimitive3DPipelineVariants> &pipelines) {
+    for (auto &pipeline : pipelines) destroyPipeline(device, pipeline);
+    for (int depthValue = 0; depthValue < 3; ++depthValue) {
+        for (int blendValue = 0; blendValue < 5; ++blendValue) {
+            for (int cullValue = 0; cullValue < 3; ++cullValue) {
+                const auto depth = static_cast<PrimitiveDepthMode>(depthValue);
+                const auto blend = static_cast<BlendMode>(blendValue);
+                const auto cull  = static_cast<PrimitiveCullMode>(cullValue);
+                pipelines[primitive3DPipelineIndex(depth, blend, cull)] =
+                    createPrimitive3DPipeline(device, target, pipelineLayout, depth, blend, cull, samples);
+            }
+        }
+    }
+}
+
 void Graphics::queueSceneColorResolve() {
     Texture *src = takeFinalSceneTexture();
     if (!src) src = getSceneColorTexture();
-    if (!src || !src->gpuHandle || sceneColorComposited) return;
+    if (!src || !src->gpuHandle) return;
+    // Still build the AA/Bloom/Exposure resolve when a script called
+    // drawScene3D (sceneColorComposited). autoScene skips the implicit
+    // fullscreen blit; present replaces the script's scene-color span.
     const bool reflectionPasses = renderControl_ &&
                                   (renderControl_->isEnabled("rtgi") ||
                                    renderControl_->isEnabled("ssr") ||
@@ -1458,11 +1532,16 @@ void Graphics::materializeSceneColorResolve() {
     if (renderControl_ && renderControl_->getGBuffer()->isValid())
         motion = renderControl_->getGBuffer()->getVelocityTexture();
     Texture *postProcessed = prepareFinalSceneTexture(src, motion);
-    Shader *resolveShader = prepareSceneColorResolveShader(postProcessed);
-    if (resolveShader) {
-        TexturedBatch resolve{postProcessed, nullptr, resolveShader, BlendMode::Alpha, Batcher{}};
+    if (postProcessed) {
+        // AA and exposure are already applied. Use the final tone-map pipeline;
+        // UNORM swapchains also require explicit linear-to-sRGB encoding.
+        const bool attachmentEncodesSrgb =
+            swapchain.image_format == vk::Format::eB8G8R8A8Srgb || swapchain.image_format == vk::Format::eR8G8B8A8Srgb;
+        TexturedBatch resolve{postProcessed, nullptr, nullptr, BlendMode::Opaque, Batcher{}};
         resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height),
-                                      Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+                                      Color(getSceneToneMapping() == SceneToneMapping::Aces ? 1.f : 0.f, 1.f, 1.f,
+                                            attachmentEncodesSrgb ? 0.f : 65536.f),
+                                      0.f, 0.f, 1.f, 1.f);
         pendingSceneResolve = std::move(resolve);
     }
     solidBatches = std::move(savedSolid);
@@ -1495,20 +1574,28 @@ void Graphics::createShadowResources() {
                                .addressModeV(vk::SamplerAddressMode::eClampToEdge)
                                .build(device);
 
-    auto shadowPass =
-        device.createRenderPass()
-            .addSampledDepthAttachment(vk::Format::eD32Sfloat)
-            .addSubpass(vkb::SubpassBuilder().setDepthStencilAttachment(
-                0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-    shadowRenderPass = shadowPass;
+        auto shadowPass =
+            device.createRenderPass()
+                .addSampledDepthAttachment(vk::Format::eD32Sfloat)
+                .addSubpass(
+                    vkb::SubpassBuilder().setDepthStencilAttachment(0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                // Imported cascades start undefined and finish sampled. Match the
+                // actual FrameGraph pass, including its single outgoing dependency.
+                .addDependency(
+                    0, VK_SUBPASS_EXTERNAL,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                        vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::AccessFlagBits::eShaderRead)
+                .build();
+        shadowRenderPass = shadowPass;
 
-    for (auto &slot : shadowMaps) {
-        for (uint32_t i = 0; i < layers; ++i) {
-            slot.framebuffers[i] = shadowPass.createFramebuffer(
-                device, size, size, {slot.image.layerAttachment(i)});
-        }
+        for (auto& slot : shadowMaps) {
+            for (uint32_t i = 0; i < layers; ++i) {
+                slot.framebuffers[i] =
+                    shadowPass.createFramebuffer(device, size, size, {slot.image.layerAttachment(i)});
+            }
     }
 
     shadowPipelineLayout =
@@ -1750,7 +1837,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     };
     GpuTexture *probe0 = probeTexture(0);
     GpuTexture *probe1 = probeTexture(1);
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, nullptr,
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, nullptr, nullptr,
                      decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
@@ -1765,7 +1852,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     vkb::DescriptorSetUpdater updater(17, 17, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
+        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DClusteredUBO))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1779,7 +1866,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
         .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
         .buffer(st.indicesBuf.buffer, 0, vk::DeviceSize(st.indicesCap))
         .beginBuffers(7, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(fslots.shadowRing.buffer, 0, fslots.shadowRing.size)
+        .buffer(fslots.shadowRing.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1805,70 +1892,6 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
 
 size_t Graphics::mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided) {
     return size_t(blend) * 4u + (depthWrite ? 2u : 0u) + (doubleSided ? 1u : 0u);
-}
-
-vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
-                                                 const std::vector<uint32_t> &frag,
-                                                 vk::PipelineLayout layout,
-                                                 const vkb::BuiltRenderPass &rp,
-                                                 vk::SampleCountFlagBits samples, BlendMode blend,
-                                                 bool depthWrite, bool doubleSided) {
-    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
-    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    const auto cull = doubleSided ? vk::CullModeFlagBits::eNone : vk::CullModeFlagBits::eBack;
-    vk::Pipeline pipe{};
-    if (blend == BlendMode::Additive || blend == BlendMode::Premultiplied ||
-        blend == BlendMode::Multiply) {
-        std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
-                                                                       makeBlendAttachment(blend));
-        vk::PipelineColorBlendStateCreateInfo cbs{};
-        cbs.attachmentCount = 1;
-        cbs.pAttachments = attachments.data();
-        pipe = device.createPipeline()
-            .useClassicPipeline(vertModule, fragModule)
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<MeshVertex>()
-                                     .addAttributeDescription<MeshVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                           vk::FrontFace::eCounterClockwise)
-            .setMultisampler(false, samples)
-            .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-            .setColorBlending(cbs)
-            .build(rp);
-    } else if (blend == BlendMode::Alpha) {
-        pipe = device.createPipeline()
-                   .useClassicPipeline(vertModule, fragModule)
-                   .setPipelineLayout(layout)
-                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                            .addInputBinding<MeshVertex>()
-                                            .addAttributeDescription<MeshVertex>())
-                   .setDynamicStatesViewportScissor()
-                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eCounterClockwise)
-                   .setMultisampler(false, samples)
-                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-                   .setAlphaBlending(1)
-                   .build(rp);
-    } else {
-        pipe = device.createPipeline()
-                   .useClassicPipeline(vertModule, fragModule)
-                   .setPipelineLayout(layout)
-                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                            .addInputBinding<MeshVertex>()
-                                            .addAttributeDescription<MeshVertex>())
-                   .setDynamicStatesViewportScissor()
-                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eCounterClockwise)
-                   .setMultisampler(false, samples)
-                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-                   .setColorAttachmentCount(1)
-                   .build(rp);
-    }
-    device->destroyShaderModule(vertModule);
-    device->destroyShaderModule(fragModule);
-    return pipe;
 }
 
 vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
@@ -1925,99 +1948,6 @@ vk::Pipeline Graphics::createMesh3DXrayPipeline(const std::vector<uint32_t> &ver
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
     return pipe;
-}
-
-void Graphics::ensureOffscreenPipelines() {
-    if (offscreenRenderPass) return;
-
-    vkb::RenderPassBuilder rpBuilder = device.createRenderPass();
-    offscreenRenderPass =
-        rpBuilder.addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
-            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal))
-            .addDependency(VK_SUBPASS_EXTERNAL, 0)
-            .build();
-
-    offscreenSolidPipeline =
-        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout);
-    offscreenSolidAlphaPipeline =
-        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout, BlendMode::Alpha);
-    offscreenAdditiveSolidPipeline =
-        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout, BlendMode::Additive);
-    offscreenPremultipliedSolidPipeline = createSolidColorPipeline(
-        device, offscreenRenderPass, pipelineLayout, BlendMode::Premultiplied);
-    offscreenMultiplySolidPipeline = createSolidColorPipeline(
-        device, offscreenRenderPass, pipelineLayout, BlendMode::Multiply);
-
-    // Textured offscreen pipeline mirrors createTexturedPipeline but with offscreen RP.
-    auto tvert = embeddedSpirv(textured_vert_spv);
-    auto tfrag = embeddedSpirv(textured_frag_spv);
-    offscreenTexPipeline =
-        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout);
-    offscreenAdditiveTexPipeline =
-        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout,
-                                    BlendMode::Additive);
-    offscreenPremultipliedTexPipeline = createTexturedStylePipeline(
-        tvert, tfrag, offscreenRenderPass, texPipelineLayout, BlendMode::Premultiplied);
-    offscreenMultiplyTexPipeline = createTexturedStylePipeline(
-        tvert, tfrag, offscreenRenderPass, texPipelineLayout, BlendMode::Multiply);
-    offscreenOpaqueTexPipeline =
-        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout,
-                                    BlendMode::Opaque);
-
-    if (lit2dPipelineLayout) {
-        auto lvert = embeddedSpirv(lit2d_vert_spv);
-        auto lfrag = embeddedSpirv(lit2d_frag_spv);
-        offscreenLitPipeline =
-            createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout);
-    }
-
-    // Lazily create offscreen pipelines for any custom shaders already loaded.
-    for (auto &sh : ownedShaders) ensureShaderOffscreenPipeline(sh.get());
-}
-
-void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
-    if (!shader || !shader->gpuHandle || !offscreenRenderPass) return;
-    // Mesh3D SPIR-V / layout is incompatible with the 2D textured offscreen pass.
-    if (shader->getKind() == Shader::Kind::eMesh3D) return;
-    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
-    if (gpu->isMesh3D || gpu->offscreenPipeline) return;
-    gpu->offscreenPipeline = createTexturedStylePipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
-                                                         offscreenRenderPass, shaderPipelineLayout);
-    gpu->offscreenOpaquePipeline = createTexturedStylePipeline(
-        shader->vertexSpirv(), shader->fragmentSpirv(), offscreenRenderPass,
-        shaderPipelineLayout, BlendMode::Opaque);
-}
-
-void Graphics::ensureHdrOffscreenPipelines() {
-    if (hdrOffscreenRenderPass) return;
-    hdrOffscreenRenderPass =
-        device.createRenderPass()
-            .addSampledColorAttachment(vk::Format::eR16G16B16A16Sfloat)
-            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(
-                0, vk::ImageLayout::eColorAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-
-    auto vert = embeddedSpirv(textured_vert_spv);
-    auto frag = embeddedSpirv(textured_frag_spv);
-    hdrOffscreenTexPipeline = createTexturedStylePipeline(
-        vert, frag, hdrOffscreenRenderPass, texPipelineLayout);
-    hdrOffscreenOpaqueTexPipeline = createTexturedStylePipeline(
-        vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Opaque);
-    for (auto &shader : ownedShaders) ensureShaderHdrOffscreenPipeline(shader.get());
-}
-
-void Graphics::ensureShaderHdrOffscreenPipeline(Shader *shader) {
-    if (!shader || !shader->gpuHandle || !hdrOffscreenRenderPass) return;
-    if (shader->getKind() == Shader::Kind::eMesh3D) return;
-    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
-    if (gpu->isMesh3D || gpu->hdrOffscreenPipeline) return;
-    gpu->hdrOffscreenPipeline = createTexturedStylePipeline(
-        shader->vertexSpirv(), shader->fragmentSpirv(), hdrOffscreenRenderPass,
-        shaderPipelineLayout);
-    gpu->hdrOffscreenOpaquePipeline = createTexturedStylePipeline(
-        shader->vertexSpirv(), shader->fragmentSpirv(), hdrOffscreenRenderPass,
-        shaderPipelineLayout, BlendMode::Opaque);
 }
 
 Texture *Graphics::getTexture() { return nullptr; }

@@ -10,7 +10,7 @@ namespace {
 
 template <class T>
 EditorResult<T> curveError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -37,7 +37,7 @@ EditorResult<EditorCurveKey> parseKey(const EditorValue& value) {
         !std::isfinite(*in) || !std::isfinite(*out) || *time < 0.0 || *time > 1.0)
         return curveError<EditorCurveKey>(EditorStatus::Rejected, "editor.curve.invalid-key",
                                          "Curve key requires stable id, normalized time and finite values");
-    return EditorResult<EditorCurveKey>::applied({StableId(*id), *time, *assigned, *in, *out, *interpolation});
+    return eve::editing::applied<EditorCurveKey>({StableId(*id), *time, *assigned, *in, *out, *interpolation});
 }
 
 EditorValue stopValue(const EditorGradientStop& stop) {
@@ -61,7 +61,7 @@ EditorResult<EditorGradientStop> parseStop(const EditorValue& value) {
                                                   "Gradient color must be normalized");
         result.color[i] = *number;
     }
-    return EditorResult<EditorGradientStop>::applied(std::move(result));
+    return eve::editing::applied<EditorGradientStop>(std::move(result));
 }
 
 DomainOperation operation(const char* type, const char* inverseType, const std::string& target,
@@ -97,17 +97,17 @@ EditorResult<void> EditorCurveDocument::applyDomainOperation(const DomainOperati
     if (operationValue.target != TargetId(id_))
         return curveError<void>(EditorStatus::Rejected, "editor.curve.target-mismatch", "Curve operation targets another document");
     if (operationValue.type == "curve.key.set.v1") {
-        auto parsed = parseKey(operationValue.payload); if (!parsed.value) return curveError<void>(parsed.status, "editor.curve.invalid-key", "Curve key is invalid");
-        keys_[parsed.value->id] = std::move(*parsed.value);
+        auto parsed = parseKey(operationValue.payload); if (!parsed.ok()) return curveError<void>(parsed.code(), "editor.curve.invalid-key", "Curve key is invalid");
+        keys_[parsed.value().id] = std::move(parsed.value());
     } else if (operationValue.type == "curve.key.delete.v1") {
-        auto parsed = parseKey(operationValue.payload); if (!parsed.value || !keys_.erase(parsed.value->id)) return curveError<void>(EditorStatus::NotFound, "editor.curve.key-not-found", "Curve key was not found");
+        auto parsed = parseKey(operationValue.payload); if (!parsed.ok() || !keys_.erase(parsed.value().id)) return curveError<void>(EditorStatus::NotFound, "editor.curve.key-not-found", "Curve key was not found");
     } else if (operationValue.type == "curve.stop.set.v1") {
-        auto parsed = parseStop(operationValue.payload); if (!parsed.value) return curveError<void>(parsed.status, "editor.curve.invalid-stop", "Gradient stop is invalid");
-        stops_[parsed.value->id] = std::move(*parsed.value);
+        auto parsed = parseStop(operationValue.payload); if (!parsed.ok()) return curveError<void>(parsed.code(), "editor.curve.invalid-stop", "Gradient stop is invalid");
+        stops_[parsed.value().id] = std::move(parsed.value());
     } else if (operationValue.type == "curve.stop.delete.v1") {
-        auto parsed = parseStop(operationValue.payload); if (!parsed.value || !stops_.erase(parsed.value->id)) return curveError<void>(EditorStatus::NotFound, "editor.curve.stop-not-found", "Gradient stop was not found");
+        auto parsed = parseStop(operationValue.payload); if (!parsed.ok() || !stops_.erase(parsed.value().id)) return curveError<void>(EditorStatus::NotFound, "editor.curve.stop-not-found", "Gradient stop was not found");
     } else return curveError<void>(EditorStatus::Unsupported, "editor.curve.operation-unsupported", "Curve operation is unsupported");
-    ++revision_; dirty_.include(0, 0); return EditorResult<void>::applied();
+    ++revision_; dirty_.include(0, 0); return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> EditorCurveDocument::cloneDomainState() const {
@@ -117,29 +117,29 @@ std::unique_ptr<IDomainOperationTarget> EditorCurveDocument::cloneDomainState() 
 EditorResult<void> EditorCurveDocument::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* curve = dynamic_cast<EditorCurveDocument*>(candidate.get());
     if (!curve || curve->id_ != id_) return curveError<void>(EditorStatus::Rejected, "editor.curve.invalid-candidate", "Curve candidate does not match this document");
-    *this = std::move(*curve); return EditorResult<void>::applied();
+    *this = std::move(*curve); return eve::editing::applied<void>();
 }
 
 EditorResult<DomainOperation> EditorCurveDocument::makeSetKey(const EditorCurveKey& key) const {
-    auto parsed = parseKey(keyValue(key)); if (!parsed.value) return curveError<DomainOperation>(parsed.status, "editor.curve.invalid-key", "Curve key is invalid");
+    auto parsed = parseKey(keyValue(key)); if (!parsed.ok()) return curveError<DomainOperation>(parsed.code(), "editor.curve.invalid-key", "Curve key is invalid");
     const auto found = keys_.find(key.id); const bool exists = found != keys_.end();
-    return EditorResult<DomainOperation>::applied(operation("curve.key.set.v1", exists ? "curve.key.set.v1" : "curve.key.delete.v1", id_, keyValue(*parsed.value), exists ? keyValue(found->second) : keyValue(*parsed.value), key.id));
+    return eve::editing::applied<DomainOperation>(operation("curve.key.set.v1", exists ? "curve.key.set.v1" : "curve.key.delete.v1", id_, keyValue(parsed.value()), exists ? keyValue(found->second) : keyValue(parsed.value()), key.id));
 }
 
 EditorResult<DomainOperation> EditorCurveDocument::makeDeleteKey(const StableId& key) const {
     const auto found = keys_.find(key); if (found == keys_.end()) return curveError<DomainOperation>(EditorStatus::NotFound, "editor.curve.key-not-found", "Curve key was not found");
-    return EditorResult<DomainOperation>::applied(operation("curve.key.delete.v1", "curve.key.set.v1", id_, keyValue(found->second), keyValue(found->second), key));
+    return eve::editing::applied<DomainOperation>(operation("curve.key.delete.v1", "curve.key.set.v1", id_, keyValue(found->second), keyValue(found->second), key));
 }
 
 EditorResult<DomainOperation> EditorCurveDocument::makeSetStop(const EditorGradientStop& stop) const {
-    auto parsed = parseStop(stopValue(stop)); if (!parsed.value) return curveError<DomainOperation>(parsed.status, "editor.curve.invalid-stop", "Gradient stop is invalid");
+    auto parsed = parseStop(stopValue(stop)); if (!parsed.ok()) return curveError<DomainOperation>(parsed.code(), "editor.curve.invalid-stop", "Gradient stop is invalid");
     const auto found = stops_.find(stop.id); const bool exists = found != stops_.end();
-    return EditorResult<DomainOperation>::applied(operation("curve.stop.set.v1", exists ? "curve.stop.set.v1" : "curve.stop.delete.v1", id_, stopValue(*parsed.value), exists ? stopValue(found->second) : stopValue(*parsed.value), stop.id));
+    return eve::editing::applied<DomainOperation>(operation("curve.stop.set.v1", exists ? "curve.stop.set.v1" : "curve.stop.delete.v1", id_, stopValue(parsed.value()), exists ? stopValue(found->second) : stopValue(parsed.value()), stop.id));
 }
 
 EditorResult<DomainOperation> EditorCurveDocument::makeDeleteStop(const StableId& stop) const {
     const auto found = stops_.find(stop); if (found == stops_.end()) return curveError<DomainOperation>(EditorStatus::NotFound, "editor.curve.stop-not-found", "Gradient stop was not found");
-    return EditorResult<DomainOperation>::applied(operation("curve.stop.delete.v1", "curve.stop.set.v1", id_, stopValue(found->second), stopValue(found->second), stop));
+    return eve::editing::applied<DomainOperation>(operation("curve.stop.delete.v1", "curve.stop.set.v1", id_, stopValue(found->second), stopValue(found->second), stop));
 }
 
 std::vector<EditorCurveKey> EditorCurveDocument::keys() const { return timeline(keys_); }
@@ -173,7 +173,11 @@ std::array<double, 4> EditorCurveDocument::sampleGradient(double time) const {
 EditorCurvePreview EditorCurveDocument::preview(int sampleCount, int maximumSamples) const {
     EditorCurvePreview result; result.documentRevision = revision_;
     if (sampleCount < 2 || maximumSamples < 2 || sampleCount > maximumSamples) {
-        result.status = EditorStatus::Rejected; result.diagnostics.push_back({RuleId("editor.curve.preview-budget"), DiagnosticSeverity::Error, "Curve preview sample count exceeds its bounded budget"}); return result;
+        result.status = EditorStatus::Rejected;
+        result.diagnostics.push_back(editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.curve.preview-budget"),
+            DiagnosticSeverity::Error, "Curve preview sample count exceeds its bounded budget"));
+        return result;
     }
     result.curveSamples.reserve(static_cast<std::size_t>(sampleCount)); result.gradientSamples.reserve(static_cast<std::size_t>(sampleCount));
     for (int i = 0; i < sampleCount; ++i) { const double t = static_cast<double>(i) / (sampleCount - 1); result.curveSamples.push_back(sampleCurve(t)); result.gradientSamples.push_back(sampleGradient(t)); }
@@ -191,9 +195,9 @@ EditorResult<void> EditorCurveDocument::loadSnapshot(const EditorValue& snapshot
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr; const auto* keys = keysValue ? keysValue->getIf<EditorValue::Array>() : nullptr; const auto* stops = stopsValue ? stopsValue->getIf<EditorValue::Array>() : nullptr;
     if (!version || *version != 1 || !keys || !stops) return curveError<void>(EditorStatus::Unsupported, "editor.curve.invalid-snapshot", "Curve snapshot schema is unsupported");
     EditorCurveDocument candidate(id_);
-    for (const auto& value : *keys) { auto parsed = parseKey(value); if (!parsed.value || candidate.keys_.contains(parsed.value->id)) return curveError<void>(EditorStatus::Rejected, "editor.curve.invalid-snapshot-key", "Curve snapshot contains invalid or duplicate keys"); candidate.keys_[parsed.value->id] = std::move(*parsed.value); }
-    for (const auto& value : *stops) { auto parsed = parseStop(value); if (!parsed.value || candidate.stops_.contains(parsed.value->id)) return curveError<void>(EditorStatus::Rejected, "editor.curve.invalid-snapshot-stop", "Curve snapshot contains invalid or duplicate stops"); candidate.stops_[parsed.value->id] = std::move(*parsed.value); }
-    candidate.revision_ = revision_ + 1; candidate.dirty_.clear(); *this = std::move(candidate); return EditorResult<void>::applied();
+    for (const auto& value : *keys) { auto parsed = parseKey(value); if (!parsed.ok() || candidate.keys_.contains(parsed.value().id)) return curveError<void>(EditorStatus::Rejected, "editor.curve.invalid-snapshot-key", "Curve snapshot contains invalid or duplicate keys"); candidate.keys_[parsed.value().id] = std::move(parsed.value()); }
+    for (const auto& value : *stops) { auto parsed = parseStop(value); if (!parsed.ok() || candidate.stops_.contains(parsed.value().id)) return curveError<void>(EditorStatus::Rejected, "editor.curve.invalid-snapshot-stop", "Curve snapshot contains invalid or duplicate stops"); candidate.stops_[parsed.value().id] = std::move(parsed.value()); }
+    candidate.revision_ = revision_ + 1; candidate.dirty_.clear(); *this = std::move(candidate); return eve::editing::applied<void>();
 }
 
 }  // namespace eve::editor

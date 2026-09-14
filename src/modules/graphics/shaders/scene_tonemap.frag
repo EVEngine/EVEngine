@@ -87,7 +87,8 @@ void main() {
   float bloomIntensity = mod(bloomPacked, 256.0) * (1.0 / 32.0);
   float bloomThreshold = floor(bloomPacked * (1.0 / 256.0)) * (1.0 / 16.0);
   vec3 bloom = bloomIntensity > 0.0 ? sampleBloom(fragUV, bloomThreshold) : vec3(0.0);
-  vec3 displayColor = acesFitted((hdr.rgb + bloom * bloomIntensity) * exposure);
+  vec3 linearColor = (hdr.rgb + bloom * bloomIntensity) * exposure;
+  vec3 displayColor = fragColor.r >= 0.5 ? acesFitted(linearColor) : clamp(linearColor, 0.0, 1.0);
   if (encodeSrgb) displayColor = linearToSrgb(displayColor);
   outColor = vec4(displayColor, hdr.a);
 }

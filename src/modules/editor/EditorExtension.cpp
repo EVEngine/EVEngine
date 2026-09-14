@@ -28,7 +28,7 @@ EditorResult<void> EditorExtensionRegistry::load(IGameEditorExtension& extension
         return invalid("editor.extension.exception", "Game editor extension threw an unknown exception");
     }
     activeOwner_.clear();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::size_t EditorExtensionRegistry::unload(const std::string& ownerModule) {
@@ -79,12 +79,12 @@ EditorResult<EditorValue> EditorExtensionRegistry::registerCommand(CommandDescri
                                                                    EditorCommandHandler handler,
                                                                    ExtensionAudience    audiences) {
     if (activeOwner_.empty())
-        return EditorResult<EditorValue>::error(EditorStatus::Rejected,
+        return eve::editing::failed<EditorValue>(EditorStatus::Rejected,
                                                 RuleId("editor.extension.registration-outside-load"),
                                                 "Commands may only be registered while loading an extension");
     descriptor.ownerModule           = activeOwner_;
     EditorResult<EditorValue> result = commands_->registerCommand(descriptor, std::move(handler));
-    if (result.isAccepted()) commandVisibility_.push_back({descriptor.id, activeOwner_, audiences});
+    if (result.ok()) commandVisibility_.push_back({descriptor.id, activeOwner_, audiences});
     return result;
 }
 
@@ -96,7 +96,7 @@ EditorResult<void> EditorExtensionRegistry::registerTool(ExtensionToolDescriptor
         return invalid("editor.extension.duplicate-tool", "Tool id is already registered");
     descriptor.ownerModule = activeOwner_;
     tools_.push_back(std::move(descriptor));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> EditorExtensionRegistry::registerPalette(ExtensionPaletteDescriptor descriptor) {
@@ -104,7 +104,7 @@ EditorResult<void> EditorExtensionRegistry::registerPalette(ExtensionPaletteDesc
         return invalid("editor.extension.invalid-palette", "Palette registration requires an active owner and id");
     descriptor.ownerModule = activeOwner_;
     palettes_.push_back(std::move(descriptor));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> EditorExtensionRegistry::registerRule(ExtensionRuleDescriptor descriptor) {
@@ -112,7 +112,7 @@ EditorResult<void> EditorExtensionRegistry::registerRule(ExtensionRuleDescriptor
         return invalid("editor.extension.invalid-rule", "Rule registration requires an active owner and id");
     descriptor.ownerModule = activeOwner_;
     rules_.push_back(std::move(descriptor));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 ExtensionAudience EditorExtensionRegistry::audienceFor(const HostProfile& profile) {
@@ -126,7 +126,7 @@ ExtensionAudience EditorExtensionRegistry::audienceFor(const HostProfile& profil
 }
 
 EditorResult<void> EditorExtensionRegistry::invalid(const char* rule, std::string message) {
-    return EditorResult<void>::error(EditorStatus::Rejected, RuleId(rule), std::move(message));
+    return eve::editing::failed<void>(EditorStatus::Rejected, RuleId(rule), std::move(message));
 }
 
 }  // namespace eve::editor

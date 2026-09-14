@@ -35,7 +35,7 @@ Poco::JSON::Object::Ptr resultObject(const AgentDevelopmentResult& result) {
 }
 
 Poco::JSON::Object::Ptr snapshot(const AgentDevelopmentResult& result) {
-    auto output  = resultObject(result);
+    auto  output  = resultObject(result);
     auto& session = AgentDevelopmentSession::instance();
     output->set("schema", "eve.agent-development-session");
     output->set("schemaVersion", 1);
@@ -72,9 +72,7 @@ Poco::JSON::Object::Ptr snapshot(const AgentDevelopmentResult& result) {
     return output;
 }
 
-AgentDevelopmentResult invalid(std::string code, std::string message) {
-    return {std::move(code), std::move(message)};
-}
+AgentDevelopmentResult invalid(std::string code, std::string message) { return {std::move(code), std::move(message)}; }
 
 }  // namespace
 
@@ -85,7 +83,7 @@ bool isAgentDevelopmentTool(std::string_view name) {
 }
 
 std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::Ptr args) {
-    auto& session = AgentDevelopmentSession::instance();
+    auto&                  session = AgentDevelopmentSession::instance();
     AgentDevelopmentResult result{"applied", {}};
     if (name == "eve_agent_session_start") {
         std::vector<AgentAcceptanceCriterion> criteria;
@@ -108,7 +106,7 @@ std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::
         if (result.isAccepted()) result = session.start(stringField(args, "objective"), std::move(criteria));
     } else if (name == "eve_agent_session_advance") {
         AgentDevelopmentPhase phase = AgentDevelopmentPhase::Aborted;
-        result = parseAgentDevelopmentPhase(stringField(args, "phase"), &phase);
+        result                      = parseAgentDevelopmentPhase(stringField(args, "phase"), &phase);
         if (result.isAccepted()) result = session.advance(stringField(args, "sessionId"), phase);
     } else if (name == "eve_agent_session_evidence") {
         AgentDevelopmentEvidence evidence;
@@ -117,7 +115,7 @@ std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::
         evidence.status      = stringField(args, "status");
         evidence.summary     = stringField(args, "summary");
         evidence.artifact    = stringField(args, "artifact");
-        result = session.record(stringField(args, "sessionId"), std::move(evidence));
+        result               = session.record(stringField(args, "sessionId"), std::move(evidence));
     } else if (name == "eve_agent_session_complete") {
         result = session.complete(stringField(args, "sessionId"), stringField(args, "summary"));
     } else if (name == "eve_agent_session_abort") {
@@ -129,7 +127,7 @@ std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::
 }
 
 std::string_view agentDevelopmentToolSchemas() {
-    return R"json({"name":"eve_agent_session_start","description":"Start an evidence-driven Agent game-development workflow with explicit acceptance criteria.","inputSchema":{"type":"object","properties":{"objective":{"type":"string"},"criteria":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"description":{"type":"string"},"required":{"type":"boolean"}},"required":["id","description"]}}},"required":["objective","criteria"]}},{"name":"eve_agent_session_advance","description":"Advance the active workflow through discover, modify, run, observe, verify, or recover.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"phase":{"type":"string","enum":["discover","modify","run","observe","verify","recover"]}},"required":["sessionId","phase"]}},{"name":"eve_agent_session_evidence","description":"Record an immutable evidence receipt against one declared acceptance criterion.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"criterionId":{"type":"string"},"kind":{"type":"string","enum":["runtime-observation","test","screenshot","checkpoint","artifact","manual"]},"status":{"type":"string","enum":["pass","fail","pending"]},"summary":{"type":"string"},"artifact":{"type":"string"}},"required":["sessionId","criterionId","kind","status","summary"]}},{"name":"eve_agent_session_status","description":"Read the versioned workflow snapshot, criteria, evidence ledger, and completion readiness.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_agent_session_complete","description":"Complete from verify only when every required criterion has passing evidence.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"summary":{"type":"string"}},"required":["sessionId","summary"]}},{"name":"eve_agent_session_abort","description":"Abort an active workflow with an explicit reason.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"reason":{"type":"string"}},"required":["sessionId","reason"]}})json";
+    return R"json({"name":"eve_agent_session_start","description":"Start an evidence-driven Agent game-development workflow with explicit acceptance criteria.","inputSchema":{"type":"object","properties":{"objective":{"type":"string"},"criteria":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"description":{"type":"string"},"required":{"type":"boolean"}},"required":["id","description"]}}},"required":["objective","criteria"]}},{"name":"eve_agent_session_advance","description":"Advance the active workflow through discover, modify, run, observe, verify, or recover.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"phase":{"type":"string","enum":["discover","modify","run","observe","verify","recover"]}},"required":["sessionId","phase"]}},{"name":"eve_agent_session_evidence","description":"Record an immutable evidence receipt against one declared acceptance criterion.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"criterionId":{"type":"string"},"kind":{"type":"string","enum":["runtime-observation","test","screenshot","checkpoint","artifact","manual","play-trace"]},"status":{"type":"string","enum":["pass","fail","pending"]},"summary":{"type":"string"},"artifact":{"type":"string"}},"required":["sessionId","criterionId","kind","status","summary"]}},{"name":"eve_agent_session_status","description":"Read the versioned workflow snapshot, criteria, evidence ledger, and completion readiness.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_agent_session_complete","description":"Complete from verify only when every required criterion has passing evidence.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"summary":{"type":"string"}},"required":["sessionId","summary"]}},{"name":"eve_agent_session_abort","description":"Abort an active workflow with an explicit reason.","inputSchema":{"type":"object","properties":{"sessionId":{"type":"string"},"reason":{"type":"string"}},"required":["sessionId","reason"]}})json";
 }
 
 }  // namespace eve::dev

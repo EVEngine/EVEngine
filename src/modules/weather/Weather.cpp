@@ -36,7 +36,7 @@ struct Lcg {
 };
 
 constexpr int kRainCount = 1600;
-constexpr int kSnowCount = 260;
+constexpr int kSnowCount = 1400;
 constexpr int kBoltCount = 4;
 
 constexpr float kBoxXZ = 26.f;  // half extent on X/Z
@@ -266,6 +266,8 @@ struct Weather::Impl {
     graphics::Graphics *gfx = nullptr;
     bool built = false;
     float time = 0.f;
+    float               windOffsetX = 0.f;
+    float               windOffsetZ = 0.f;
 
     // state
     int preset = 0;              // index into kPresetNames
@@ -299,9 +301,8 @@ struct Weather::Impl {
     Lcg rng;
 };
 
-const char *const Weather::kPresetNames[] = {"clear", "drizzle", "rain",
-                                             "storm", "snow",    "fog"};
-const int Weather::kPresetCount = 6;
+const char *const Weather::kPresetNames[] = {"clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard"};
+const int         Weather::kPresetCount   = 8;
 
 Weather::Weather() : impl_(new Impl()) {}
 
@@ -343,6 +344,9 @@ void declareWeatherParams(graphics::Shader *shader) {
     shader->declareFloat("uFogB");
     shader->declareFloat("uFogDensity");
     shader->declareFloat("uFlash");
+    shader->declareFloat("uKind");
+    shader->declareFloat("uWindOffsetX");
+    shader->declareFloat("uWindOffsetZ");
 }
 }  // namespace
 
@@ -382,13 +386,14 @@ void Weather::init(graphics::Graphics *gfx) {
     graphics::Mesh *rainMesh = buildFieldMesh(gfx, impl_->rng, kRainCount, 0.82f, 0.024f);
     impl_->rain = graphics::Renderable3D::create();
     impl_->rain->setMesh(rainMesh);
-    impl_->rain->setTexture(rainTex);
     impl_->rainMat = gfx->newMaterial();
+    impl_->rainMat->setAlbedoTexture(rainTex);
     impl_->rainMat->setShadingModel("unlit");
     impl_->rainMat->setReceiveLight(false);
     impl_->rainMat->setReceiveShadow(false);
     impl_->rainMat->setCastShadow(false);
-    impl_->rainMat->setTint(0.38f, 0.52f, 0.68f, 1.0f);
+    impl_->rainMat->setCastOcclusion(false);
+    impl_->rainMat->setTint(0.72f, 0.80f, 0.88f, 1.0f);
     impl_->rainMat->setShader(weatherVert);
     impl_->rain->setMaterial(impl_->rainMat);
     impl_->rain->setVisible(false);
@@ -397,12 +402,13 @@ void Weather::init(graphics::Graphics *gfx) {
     graphics::Mesh *snowMesh = buildFieldMesh(gfx, impl_->rng, kSnowCount, 0.22f, 0.10f);
     impl_->snow = graphics::Renderable3D::create();
     impl_->snow->setMesh(snowMesh);
-    impl_->snow->setTexture(snowTex);
     impl_->snowMat = gfx->newMaterial();
+    impl_->snowMat->setAlbedoTexture(snowTex);
     impl_->snowMat->setShadingModel("unlit");
     impl_->snowMat->setReceiveLight(false);
     impl_->snowMat->setReceiveShadow(false);
     impl_->snowMat->setCastShadow(false);
+    impl_->snowMat->setCastOcclusion(false);
     impl_->snowMat->setTint(1.0f, 1.0f, 1.0f, 1.0f);
     impl_->snowMat->setShader(weatherVert);
     impl_->snow->setMaterial(impl_->snowMat);
@@ -480,7 +486,7 @@ float Weather::getSkyColorR() const { return impl_->skyR; }
 float Weather::getSkyColorG() const { return impl_->skyG; }
 float Weather::getSkyColorB() const { return impl_->skyB; }
 
-void Weather::setSunIntensity(float v) { impl_->sunIntensity = v < 0.f ? 0.f : v; }
+void  Weather::setSunIntensity(float v) { impl_->sunIntensity = std::clamp(v, 0.f, 1.f); }
 float Weather::getSunIntensity() const { return impl_->sunIntensity; }
 
 void Weather::setFogColor(float r, float g, float b) {
@@ -497,7 +503,8 @@ void Weather::setEnvironmentEnabled(bool enabled) { impl_->environmentEnabled = 
 bool Weather::isEnvironmentEnabled() const { return impl_->environmentEnabled; }
 
 float Weather::getAmbientBrightness() const {
-    return 0.35f + (1.f - impl_->intensityCur) * 0.55f;
+    const float cloudiness = (impl_->preset >= 1 && impl_->preset <= 3) ? impl_->intensityCur : 0.f;
+    return 0.35f + (1.f - cloudiness) * 0.55f;
 }
 
 // ---------------------------------------------------------------------------
@@ -519,26 +526,38 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     const float windX = -std::sin(rad) * impl_->windSpeed;
     const float windZ = std::cos(rad) * impl_->windSpeed;
 
+    // Integrate drift rather than multiplying the current wind by elapsed
+    // time: changing a slider must not teleport the whole particle field.
+    impl_->windOffsetX = std::fmod(impl_->windOffsetX + windX * dt, 52.f);
+    impl_->windOffsetZ = std::fmod(impl_->windOffsetZ + windZ * dt, 52.f);
+    for (auto *mat : {impl_->rainMat, impl_->snowMat}) {
+        mat->setFloat("uWindOffsetX", impl_->windOffsetX);
+        mat->setFloat("uWindOffsetZ", impl_->windOffsetZ);
+    }
     const float time = impl_->time;
     const float fogR = impl_->fogR, fogG = impl_->fogG, fogB = impl_->fogB;
     const float fogD = impl_->fogDensity;
     const float intensity = impl_->intensityCur;
 
     // Rain visible for drizzle/rain/storm.
-    const bool rainOn = impl_->preset >= 1 && impl_->preset <= 3;
+    const bool windOn = impl_->preset == 6;
+    const bool rainOn = (impl_->preset >= 1 && impl_->preset <= 3) || windOn;
     impl_->rain->setVisible(rainOn && intensity > 0.01f);
     if (rainOn) {
-        const float speed = 26.f;
-        pushWeatherParams(impl_->rainMat, time, windX, windZ, speed, 0.82f, 0.024f, intensity,
-                          fogR, fogG, fogB, fogD, 0.f);
+        const float speed = windOn ? 0.15f : 18.f;
+        impl_->rainMat->setFloat("uKind", windOn ? 2.f : 0.f);
+        pushWeatherParams(impl_->rainMat, time, windX, windZ, speed, windOn ? 9.0f : 0.65f, windOn ? 1.1f : 0.045f,
+                          windOn ? intensity * std::min(1.f, impl_->windSpeed / 8.f) * 0.22f : intensity, fogR, fogG,
+                          fogB, fogD, 0.f);
     }
 
     // Snow.
-    const bool snowOn = impl_->preset == 4;
+    const bool snowOn = impl_->preset == 4 || impl_->preset == 7;
     impl_->snow->setVisible(snowOn && intensity > 0.01f);
     if (snowOn) {
-        pushWeatherParams(impl_->snowMat, time, windX, windZ, 2.2f, 0.22f, 0.10f, intensity,
-                          fogR, fogG, fogB, fogD, 0.f);
+        impl_->snowMat->setFloat("uKind", 1.f);
+        pushWeatherParams(impl_->snowMat, time, windX, windZ, 1.15f, 0.22f, 0.22f, intensity, fogR, fogG, fogB, fogD,
+                          0.f);
     }
 
     // Lightning during storm.
@@ -581,7 +600,8 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
 
     // Push ambient/sky mood onto the graphics state each frame.
     if (gfx && impl_->environmentEnabled) {
-        const float dark = 1.f - 0.65f * impl_->intensityCur;
+        const float cloudiness = (impl_->preset >= 1 && impl_->preset <= 3) ? impl_->intensityCur : 0.f;
+        const float dark       = 1.f - 0.35f * cloudiness;
         const float skyFlash = impl_->flash * 0.55f;
         gfx->setBackgroundColorRGBA(
             std::min(1.f, impl_->skyR * dark + skyFlash * 0.68f),
@@ -589,9 +609,9 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
             std::min(1.f, impl_->skyB * dark + skyFlash), 1.f);
         const float flashLight = impl_->flash * 1.35f;
         gfx->setDirectionalLight(-0.4f, 0.75f, 0.5f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) + flashLight * 0.72f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.95f + flashLight * 0.84f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.88f + flashLight);
+                                 impl_->sunIntensity * (1.f - 0.35f * cloudiness) + flashLight * 0.72f,
+                                 impl_->sunIntensity * (1.f - 0.35f * cloudiness) * 0.95f + flashLight * 0.84f,
+                                 impl_->sunIntensity * (1.f - 0.35f * cloudiness) * 0.88f + flashLight);
     }
 }
 

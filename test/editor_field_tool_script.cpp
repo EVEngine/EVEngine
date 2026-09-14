@@ -10,10 +10,11 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
     eve::ModuleManager::expose(vm);
     vm.run(vm.compileSource(R"(
         editor <- eve.Editor();
+        heightmapTargets <- eve.HeightmapTargetModule();
         procgen <- eve.Procgen();
         heightmapResult <- procgen.newHeightmap(8, 8);
         heightmap <- heightmapResult.ok ? heightmapResult.value : null;
-        target <- editor.newHeightmapTarget("terrain", heightmap);
+        target <- heightmapTargets.create("terrain", heightmap);
         falloff <- editor.newSmoothBrushFalloff();
         kernel <- editor.newCircleBrushKernel();
         kernel.setSmoothFalloff(falloff);
@@ -25,7 +26,7 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
         tool.setStrength(0.25);
         session <- editor.newSession();
         added <- session.addFieldTool(tool);
-        session.bindHeightmapTarget(target);
+        heightmapTargets.bind(session, target);
         activated <- session.activateTool("terrain.raise");
         down <- session.dispatchPointer(0, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
         up <- session.dispatchPointer(2, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
@@ -35,6 +36,10 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
         restored <- target.readScalar(3, 4);
         redone <- session.redo();
         replayed <- target.readScalar(3, 4);
+        encoded <- heightmapTargets.encodeDocument(heightmap, 0.5, 0.5);
+        target.writeScalar(3, 4, -2.0);
+        decoded <- heightmapTargets.decodeDocument(encoded.value, heightmap);
+        documentRestored <- target.readScalar(3, 4);
     )"));
 
     CHECK(vm.find("added").toBool());
@@ -47,4 +52,7 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
     CHECK_EQ(vm.find("restored").toFloat(), 0.f);
     CHECK(vm.find("redone").toBool());
     CHECK_GT(vm.find("replayed").toFloat(), 0.2f);
+    CHECK(vm.find("encoded").toTable().find("ok").toBool());
+    CHECK(vm.find("decoded").toTable().find("ok").toBool());
+    CHECK_GT(vm.find("documentRestored").toFloat(), 0.2f);
 }

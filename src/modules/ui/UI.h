@@ -206,6 +206,12 @@ public:
     /** @brief Adds a slider. */
     void addSlider(const std::string &label, float value, float minV, float maxV,
                    const std::string &id = "");
+    /**
+     * @brief Adds a color palette (ColorEdit + swatch grid).
+     * RGBA is stored on the node tint; read back with getColorR/G/B/A.
+     */
+    void addColorPalette(const std::string &label, float r, float g, float b, float a = 1.f,
+                         const std::string &id = "");
     /** @brief Adds a progress bar. */
     void addProgress(float fraction, const std::string &id = "", const std::string &overlay = "");
     /** Colored / textured image; size 0 = default (32px or flex-assigned). */
@@ -266,6 +272,11 @@ public:
     void setItemDropTarget(const std::string &acceptedType);
     /** @brief Enables or disables the most recently added item. */
     void setItemEnabled(bool enabled);
+    /**
+     * @brief Marks the most recently added button as the selected tool/action.
+     * @param selected Selected state.
+     */
+    void setItemSelected(bool selected);
     /** @brief Sets the last item's focus mode: "none", "click", or "all". */
     void setItemFocusMode(const std::string &mode);
     /** @brief Sets the last item's pointer filter: "stop", "pass", or "ignore". */
@@ -314,6 +325,8 @@ public:
     void setChecked(const std::string &id, bool checked);
     void setValue(const std::string &id, float value);
     void setValueText(const std::string &id, const std::string &value);
+    /** @brief Sets RGBA on a ColorPalette (or image tint) node. */
+    void setColor(const std::string &id, float r, float g, float b, float a = 1.f);
     void setImageTint(const std::string &id, float r, float g, float b, float a = 1.f);
     void setImageUv(const std::string &id, float u0, float v0, float u1, float v1);
     void setImageNinePatch(const std::string &id, float l, float t, float r, float b);
@@ -336,6 +349,11 @@ public:
     void unregisterTexture(uint64_t textureId);
     float getValue(const std::string &id) const;
     std::string getValueText(const std::string &id) const;
+    /** @brief ColorPalette / image tint channels; missing nodes return 0. */
+    float getColorR(const std::string &id) const;
+    float getColorG(const std::string &id) const;
+    float getColorB(const std::string &id) const;
+    float getColorA(const std::string &id) const;
     bool getChecked(const std::string &id) const;
     /** @brief Requests keyboard/gamepad focus for a mounted control. */
     bool requestFocus(const std::string &id);
@@ -349,7 +367,7 @@ public:
     /** @brief Marks the host as a modal (blocks other hosts) / overlay. */
     void setHostModal(bool modal);
     void setHostOverlay(bool overlay);
-    /** @brief Sets frameless overlay opacity (0..1). */
+    /** @brief Sets overlay opacity (0..1); zero also removes the host border and outer padding. */
     void setHostOverlayAlpha(float alpha);
     /** @brief Allows or prevents user movement after the initial position. */
     void setHostMovable(bool movable);

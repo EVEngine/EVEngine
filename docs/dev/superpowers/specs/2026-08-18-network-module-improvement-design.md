@@ -173,7 +173,7 @@ Godot 4.x 内置网络栈，差距集中在「游戏网络层」：UDP 可靠性
   仅链接 network 模块 + Poco + 脚本库）四项全绿：
   序列化往返 / 越界安全 / 2 MiB TCP 冲刷（逐字节校验）/ 512 KiB Channel 帧重组。
 - `test/network.cpp` 新增同套用例，单独编译通过；全量 `unit_test` 本机受阻于
-  **既有** `src/modules/sceneloader/SceneLoader.cpp` 编译错误（引用 `SceneNode`
+  **既有** `src/modules/scene/loader/SceneLoader.cpp` 编译错误（引用 `SceneNode`
   不存在的成员，主仓库该文件已更新、本 worktree 落后），与本改动无关。
 
 待依赖更新后继续：1.3 HTTPS/TLS（third-party 需补 OpenSSL + Poco NetSSL_OpenSSL）、

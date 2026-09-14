@@ -18,6 +18,10 @@ function relativeMode() {
     if (eve.Mouse == null) return false;
     local m = eve.Mouse();
     if (m.setRelativeMode == null || m.getRelativeMode == null) return false;
+    if (m.getMovementX == null || m.getMovementY == null) return false;
+    m.getMovementX();
+    local my = m.getMovementY();
+    if (typeof my != "float" && typeof my != "integer") return false;
     // SDL may reject relative mode without a focused window; only verify the
     // round trip when the backend accepts the request.
     if (!m.setRelativeMode(true)) return true;

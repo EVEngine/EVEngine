@@ -1,0 +1,14 @@
+# Local generation sources, superseded assets and visual QA output.
+/assets/azure/
+/assets/azure-master/source/
+/assets/azure-master/authoring.py
+/assets/azure-master/registration.json
+/assets/azure-master/*-preview.png
+/assets/azure-master/*-wardrobe.jpg
+/assets/azure-master/*-expressions.jpg
+/assets/azure-master/verification.json
+/assets/azure-master/manifest.nut.tmp
+/azure-runtime.png
+/verification/
+/verification-master/
+/verify_runtime.py

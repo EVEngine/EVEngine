@@ -70,7 +70,7 @@ struct Crowd::Impl {
     // SOA 单位存储（id = 槽位索引）。
     std::vector<float> xs, ys, headings, vxs, vys, speeds;
     std::vector<float> radii, maxSpeeds, maxAccels, turnRates;
-    std::vector<int32_t> actions, datas;
+    std::vector<int32_t> actions, datas, avoidancePriorities;
     std::vector<uint8_t> hasTargets;
     std::vector<float> targetXs, targetYs;
     std::vector<float> wanderPhases;
@@ -343,19 +343,46 @@ struct Crowd::Impl {
             const float yi = ys[size_t(i)];
             forEachNeighbor(xi, yi, sepRadius, [&](int j) {
                 if (j <= i) return;
-                const float dx = xs[size_t(j)] - xi;
-                const float dy = ys[size_t(j)] - yi;
-                const float d2 = dx * dx + dy * dy;
+                float dx = xs[size_t(j)] - xi;
+                float dy = ys[size_t(j)] - yi;
+                float d2 = dx * dx + dy * dy;
                 const float minD = radii[size_t(i)] + radii[size_t(j)];
-                if (d2 >= minD * minD || d2 <= 1e-9f) return;
+                if (d2 >= minD * minD) return;
+                const bool exactOverlap = d2 <= 1e-9f;
+                if (exactOverlap) {
+                    const std::string left = stableIds[size_t(i)].empty()
+                                                 ? std::to_string(i) : stableIds[size_t(i)];
+                    const std::string right = stableIds[size_t(j)].empty()
+                                                  ? std::to_string(j) : stableIds[size_t(j)];
+                    const std::string& first = left < right ? left : right;
+                    const std::string& second = left < right ? right : left;
+                    std::uint64_t hash = 1469598103934665603ULL;
+                    for (const unsigned char value : first + "\n" + second) {
+                        hash ^= value;
+                        hash *= 1099511628211ULL;
+                    }
+                    const float angle = static_cast<float>(hash % 104729ULL) /
+                                        104729.0f * 6.28318530717958647692f;
+                    dx = std::cos(angle);
+                    dy = std::sin(angle);
+                    if (left > right) { dx = -dx; dy = -dy; }
+                    d2 = 1.0f;
+                }
                 const float d = std::sqrt(d2);
-                const float push = (minD - d) * 0.5f;
+                const float push = minD - (exactOverlap ? 0.0f : d);
                 const float nx = dx / d;
                 const float ny = dy / d;
-                xs[size_t(i)] -= nx * push;
-                ys[size_t(i)] -= ny * push;
-                xs[size_t(j)] += nx * push;
-                ys[size_t(j)] += ny * push;
+                float leftShare = 0.5f;
+                float rightShare = 0.5f;
+                if (avoidancePriorities[size_t(i)] > avoidancePriorities[size_t(j)]) {
+                    leftShare = 0.0f; rightShare = 1.0f;
+                } else if (avoidancePriorities[size_t(j)] > avoidancePriorities[size_t(i)]) {
+                    leftShare = 1.0f; rightShare = 0.0f;
+                }
+                xs[size_t(i)] -= nx * push * leftShare;
+                ys[size_t(i)] -= ny * push * leftShare;
+                xs[size_t(j)] += nx * push * rightShare;
+                ys[size_t(j)] += ny * push * rightShare;
             });
         }
     }
@@ -447,6 +474,7 @@ int Crowd::addAgent(float x, float y, float heading, float radius) {
     d.turnRates.push_back(d.defaultTurnRate);
     d.actions.push_back(kFlow);
     d.datas.push_back(0);
+    d.avoidancePriorities.push_back(0);
     d.hasTargets.push_back(0);
     d.targetXs.push_back(0.f);
     d.targetYs.push_back(0.f);
@@ -501,6 +529,7 @@ bool Crowd::removeAgent(int id) {
         d.turnRates[size_t(id)] = d.turnRates[size_t(last)];
         d.actions[size_t(id)] = d.actions[size_t(last)];
         d.datas[size_t(id)] = d.datas[size_t(last)];
+        d.avoidancePriorities[size_t(id)] = d.avoidancePriorities[size_t(last)];
         d.hasTargets[size_t(id)] = d.hasTargets[size_t(last)];
         d.targetXs[size_t(id)] = d.targetXs[size_t(last)];
         d.targetYs[size_t(id)] = d.targetYs[size_t(last)];
@@ -521,6 +550,7 @@ bool Crowd::removeAgent(int id) {
     d.turnRates.pop_back();
     d.actions.pop_back();
     d.datas.pop_back();
+    d.avoidancePriorities.pop_back();
     d.hasTargets.pop_back();
     d.targetXs.pop_back();
     d.targetYs.pop_back();
@@ -543,6 +573,7 @@ void Crowd::clearAgents() {
     d.turnRates.clear();
     d.actions.clear();
     d.datas.clear();
+    d.avoidancePriorities.clear();
     d.hasTargets.clear();
     d.targetXs.clear();
     d.targetYs.clear();
@@ -622,6 +653,18 @@ int Crowd::getAgentData(int id) const {
     return impl_->datas[size_t(id)];
 }
 
+Result<void> Crowd::setAgentAvoidancePriority(int id, int priority) {
+    if (!impl_->validId(id))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Crowd avoidance-priority agent slot was not found", "id"));
+    impl_->avoidancePriorities[size_t(id)] = priority;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+int Crowd::getAgentAvoidancePriority(int id) const {
+    return impl_->validId(id) ? impl_->avoidancePriorities[size_t(id)] : 0;
+}
+
 bool Crowd::setAgentPosition(int id, float x, float y) {
     if (!impl_->validId(id)) return false;
     impl_->xs[size_t(id)] = x;
@@ -643,6 +686,7 @@ AgentState Crowd::getAgentState(int id) const {
     s.vy = impl_->vys[size_t(id)];
     s.action = impl_->actions[size_t(id)];
     s.data = impl_->datas[size_t(id)];
+    s.avoidancePriority = impl_->avoidancePriorities[size_t(id)];
     return s;
 }
 
@@ -689,6 +733,7 @@ void Crowd::expose(ssq::Table &table) {
     state.addVar("vy", &AgentState::vy);
     state.addVar("action", &AgentState::action);
     state.addVar("data", &AgentState::data);
+    state.addVar("avoidancePriority", &AgentState::avoidancePriority);
 
     auto flow = table.addClass<FlowVec>("CrowdFlowVec", ssq::Class::Ctor<FlowVec()>());
     flow.addVar("x", &FlowVec::x);
@@ -740,6 +785,9 @@ void Crowd::expose(ssq::Class &cls) {
     cls.addFunc("setAgentRadius", &Crowd::setAgentRadius);
     cls.addFunc("setAgentData", &Crowd::setAgentData);
     cls.addFunc("getAgentData", &Crowd::getAgentData);
+    cls.addFunc("setAgentAvoidancePriority",
+                [](Crowd* crowd, int id, int priority) { return crowd->setAgentAvoidancePriority(id, priority).ok(); });
+    cls.addFunc("getAgentAvoidancePriority", &Crowd::getAgentAvoidancePriority);
     cls.addFunc("setAgentPosition", &Crowd::setAgentPosition);
     cls.addFunc("getAgentState", &Crowd::getAgentState);
 

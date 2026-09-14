@@ -45,11 +45,11 @@ public:
 
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot &, const PropertyPath &, const EditorValue &,
                                           PropertySetMode) const override {
-        return EditorResult<DomainOperation>::applied({});
+        return eve::editing::applied<DomainOperation>({});
     }
 
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot &, const PropertyPath &) const override {
-        return EditorResult<DomainOperation>::applied({});
+        return eve::editing::applied<DomainOperation>({});
     }
 
     double speed = 4.0;
@@ -74,37 +74,41 @@ TEST_CASE("property.validation_presentation_and_editor_share_type_enum_range_and
     const auto sharedType = eve::property_access::validatePropertyValue(presentationNumber, eve::Value("fast"));
     const auto editorType = validatePropertyValue(editorNumber, EditorValue("fast"));
     CHECK(!sharedType.accepted);
-    CHECK(!editorType.isAccepted());
+    CHECK(!editorType.ok());
     CHECK_EQ(sharedType.code, std::string("property_access.property.type"));
-    REQUIRE_EQ(editorType.diagnostics.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(editorType.diagnostics.front().rule.value(), std::string("editor.property.type-mismatch"));
+    REQUIRE_EQ(editorType.diagnostics().size(), static_cast<std::size_t>(1));
+    CHECK_EQ(eve::editing::diagnosticRule(editorType.diagnostics().front()).value(),
+             std::string("editor.property.type-mismatch"));
 
     const double nonFinite    = std::numeric_limits<double>::quiet_NaN();
     const auto   sharedFinite = eve::property_access::validatePropertyValue(presentationNumber, eve::Value(nonFinite));
     const auto   editorFinite = validatePropertyValue(editorNumber, EditorValue(nonFinite));
     CHECK(!sharedFinite.accepted);
-    CHECK(!editorFinite.isAccepted());
+    CHECK(!editorFinite.ok());
     CHECK_EQ(sharedFinite.code, std::string("property_access.property.finite"));
-    REQUIRE_EQ(editorFinite.diagnostics.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(editorFinite.diagnostics.front().rule.value(), std::string("editor.property.finite"));
+    REQUIRE_EQ(editorFinite.diagnostics().size(), static_cast<std::size_t>(1));
+    CHECK_EQ(eve::editing::diagnosticRule(editorFinite.diagnostics().front()).value(),
+             std::string("editor.property.finite"));
 
     const auto sharedRange = eve::property_access::validatePropertyValue(presentationNumber, eve::Value(11.0));
     const auto editorRange = validatePropertyValue(editorNumber, EditorValue(11.0));
     CHECK(!sharedRange.accepted);
-    CHECK(!editorRange.isAccepted());
+    CHECK(!editorRange.ok());
     CHECK_EQ(sharedRange.code, std::string("property_access.property.maximum"));
-    REQUIRE_EQ(editorRange.diagnostics.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(editorRange.diagnostics.front().rule.value(), std::string("editor.property.above-maximum"));
+    REQUIRE_EQ(editorRange.diagnostics().size(), static_cast<std::size_t>(1));
+    CHECK_EQ(eve::editing::diagnosticRule(editorRange.diagnostics().front()).value(),
+             std::string("editor.property.above-maximum"));
 
     const PropertyDescriptor                       editorEnum       = editorEnumProperty();
     const eve::property_access::PropertyDescriptor presentationEnum = toPresentationDescriptor(editorEnum);
     const auto sharedEnum       = eve::property_access::validatePropertyValue(presentationEnum, eve::Value("sprint"));
     const auto editorEnumResult = validatePropertyValue(editorEnum, EditorValue("sprint"));
     CHECK(!sharedEnum.accepted);
-    CHECK(!editorEnumResult.isAccepted());
+    CHECK(!editorEnumResult.ok());
     CHECK_EQ(sharedEnum.code, std::string("property_access.property.choice"));
-    REQUIRE_EQ(editorEnumResult.diagnostics.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(editorEnumResult.diagnostics.front().rule.value(), std::string("editor.property.invalid-enum"));
+    REQUIRE_EQ(editorEnumResult.diagnostics().size(), static_cast<std::size_t>(1));
+    CHECK_EQ(eve::editing::diagnosticRule(editorEnumResult.diagnostics().front()).value(),
+             std::string("editor.property.invalid-enum"));
 }
 
 TEST_CASE("property.validation_editor_model_rejects_before_command_sink") {
@@ -113,7 +117,7 @@ TEST_CASE("property.validation_editor_model_rejects_before_command_sink") {
     bool                sinkCalled = false;
     model.setEditSink([&](const PropertyEditIntent &) {
         sinkCalled = true;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     });
 
     const auto rejected = model.write("speed", eve::Value(11.0));

@@ -9,7 +9,6 @@ layout(std140, set = 0, binding = 0) uniform SkinPass {
     mat4 model;
     vec4 clip;
     vec4 skinInfo;
-    mat4 skinBones[128];
 } skinPass;
 layout(set = 0, binding = 1) uniform sampler2D MainTex;
 
@@ -21,7 +20,8 @@ void main() {
     vec4 sampled = texture(MainTex, vUV);
     if (sampled.a < 0.05) discard;
     vec3 n = normalize(vWorldNormal);
-    float z = clamp(vNdcZ, 0.0, 1.0);
+    // Post-divide depth must not undergo perspective interpolation again.
+    float z = clamp(gl_FragCoord.z, 0.0, 1.0);
     float nearZ = max(skinPass.clip.x, 1e-4);
     float farZ = max(skinPass.clip.y, nearZ + 1e-4);
     float zEye = (nearZ * farZ) / max(farZ - z * (farZ - nearZ), 1e-6);

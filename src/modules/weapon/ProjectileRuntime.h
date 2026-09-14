@@ -82,6 +82,17 @@ struct ProjectileUpdate {
     std::vector<ProjectileHandle> released;
 };
 
+/** @brief One pool slot including its generation, retained even while empty. */
+struct ProjectileSlotSnapshot {
+    std::uint32_t generation = 0;
+    std::optional<ProjectileState> state;
+};
+
+/** @brief Complete deterministic projectile-pool state for rollback and save games. */
+struct ProjectileRuntimeSnapshot {
+    std::vector<ProjectileSlotSnapshot> slots;
+};
+
 /** @brief Optional target-position boundary used only by homing projectiles. */
 class IProjectileTargetProvider {
 public:
@@ -115,6 +126,10 @@ public:
     [[nodiscard]] std::optional<ProjectileState> find(ProjectileHandle handle) const;
     /** @brief Return owning live states in stable slot order. */
     [[nodiscard]] std::vector<ProjectileState> states() const;
+    /** @brief Capture live trajectories plus empty-slot generations. */
+    [[nodiscard]] ProjectileRuntimeSnapshot snapshot() const;
+    /** @brief Atomically replace this pool from a validated snapshot. */
+    [[nodiscard]] Result<void> restore(const ProjectileRuntimeSnapshot& snapshot);
     /** @brief Number of live projectiles. */
     [[nodiscard]] std::size_t activeCount() const noexcept { return activeCount_; }
     /** @brief Current fixed pool capacity. */

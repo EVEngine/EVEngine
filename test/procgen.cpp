@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include <bit>
 
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
@@ -14,10 +15,12 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainFile.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "water_scene_fixture.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
@@ -74,6 +77,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <numeric>
 #include <set>
@@ -85,6 +89,30 @@ using eve::graphics::Color;
 
 using namespace eve::procgen;
 using namespace eve::graphics;
+
+namespace {
+class TrackingTerrainSource final : public ITerrainArchiveSource {
+public:
+    explicit TrackingTerrainSource(std::vector<std::uint8_t> bytes) : bytes_(std::move(bytes)) {}
+    std::uint64_t size() const noexcept override { return bytes_.size(); }
+    eve::Result<std::vector<std::uint8_t>> read(std::uint64_t offset,
+                                                std::size_t length) const override {
+        if (offset > bytes_.size() || length > bytes_.size() - std::size_t(offset))
+            return eve::Result<std::vector<std::uint8_t>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "tracking source out of bounds"));
+        ++readCount;
+        bytesRead += length;
+        return eve::Result<std::vector<std::uint8_t>>::success(std::vector<std::uint8_t>(
+            bytes_.begin() + std::ptrdiff_t(offset),
+            bytes_.begin() + std::ptrdiff_t(offset + length)));
+    }
+    mutable std::size_t readCount = 0;
+    mutable std::size_t bytesRead = 0;
+
+private:
+    std::vector<std::uint8_t> bytes_;
+};
+}  // namespace
 
 TEST_CASE("procgen.hexTerrain.biomesRiversCliffsDeterministic") {
     Params p;
@@ -261,7 +289,7 @@ bool neighborsOk(int a, int b, const std::set<std::pair<int, int>> &allowed) {
 }
 
 bool terrainAdjacencyOk(const Grid2D &g) {
-    // Ordered elevation band: only self + ±1 neighbors.
+    // Ordered elevation band: only self + 卤1 neighbors.
     static const int band[] = {int(Semantic::Water), int(Semantic::Sand),  int(Semantic::Grass),
                                int(Semantic::Dirt),  int(Semantic::Stone), int(Semantic::Snow)};
     std::set<std::pair<int, int>> allowed;
@@ -341,6 +369,28 @@ bool meshNormalsFiniteUnit(const MeshBuild &m, float tol = 0.15f) {
         if (std::fabs(len - 1.f) > tol) return false;
     }
     return true;
+}
+
+bool meshWindingAgreesWithNormals(const MeshBuild &m, float minFraction = 0.9f) {
+    int ok = 0, counted = 0;
+    for (int t = 0; t + 2 < m.getIndexCount(); t += 3) {
+        const int i0 = m.getIndex(t), i1 = m.getIndex(t + 1), i2 = m.getIndex(t + 2);
+        const float ax = m.getPositionX(i1) - m.getPositionX(i0);
+        const float ay = m.getPositionY(i1) - m.getPositionY(i0);
+        const float az = m.getPositionZ(i1) - m.getPositionZ(i0);
+        const float bx = m.getPositionX(i2) - m.getPositionX(i0);
+        const float by = m.getPositionY(i2) - m.getPositionY(i0);
+        const float bz = m.getPositionZ(i2) - m.getPositionZ(i0);
+        const float gx = ay * bz - az * by, gy = az * bx - ax * bz, gz = ax * by - ay * bx;
+        const float gLen = std::sqrt(gx * gx + gy * gy + gz * gz);
+        if (gLen < 1e-8f) continue;
+        const float nx = (m.getNormalX(i0) + m.getNormalX(i1) + m.getNormalX(i2)) / 3.f;
+        const float ny = (m.getNormalY(i0) + m.getNormalY(i1) + m.getNormalY(i2)) / 3.f;
+        const float nz = (m.getNormalZ(i0) + m.getNormalZ(i1) + m.getNormalZ(i2)) / 3.f;
+        ++counted;
+        if (gx * nx + gy * ny + gz * nz > 0.f) ++ok;
+    }
+    return counted > 0 && float(ok) / float(counted) >= minFraction;
 }
 
 bool meshPositionsFinite(const MeshBuild &m) {
@@ -606,6 +656,12 @@ TEST_CASE("procgen.mesh.tree.validatesOptions") {
     p.setString("branchAlgorithm", "crystalGrowth");
     CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
     CHECK(err.find("branchAlgorithm") != std::string::npos);
+    p.setString("branchAlgorithm", "weberPenn");
+    p.setString("leafMode", "confetti");
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
+    CHECK(err.find("leafMode") != std::string::npos);
+    p.setString("leafMode", "clusters");
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
 }
 
 TEST_CASE("procgen.mesh.skyscraper.reproducibleAndControllable") {
@@ -711,11 +767,40 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     params.setFloat("growthStep", 0.25f);
     params.setFloat("maxTurnAngle", 18.f);
     params.setInt("maxChildren", 2);
+    // Cluster knobs are env-overridable so the leaf look can be compared across
+    // runs without rebuilding; unset variables leave the recipe defaults.
+    const auto envFloat = [](const char *name, float fallback) {
+        const char *raw = std::getenv(name);
+        return raw && raw[0] ? std::stof(raw) : fallback;
+    };
+    const auto envInt = [](const char *name, int fallback) {
+        const char *raw = std::getenv(name);
+        return raw && raw[0] ? std::stoi(raw) : fallback;
+    };
+    params.setFloat("clusterSize", envFloat("EVENGINE_TREE_CLUSTER_SIZE", 0.30f));
+    params.setFloat("clusterLeafScale", envFloat("EVENGINE_TREE_CLUSTER_LEAF_SCALE", 0.85f));
+    params.setFloat("clusterSpacing", envFloat("EVENGINE_TREE_CLUSTER_SPACING", 0.80f));
+    params.setFloat("clusterSeparation", envFloat("EVENGINE_TREE_CLUSTER_SEPARATION", 0.55f));
+    params.setInt("clusterPlanes", envInt("EVENGINE_TREE_CLUSTER_PLANES", 10));
+    params.setInt("clusterCaps", envInt("EVENGINE_TREE_CLUSTER_CAPS", 2));
+    params.setInt("clusterLeaves", envInt("EVENGINE_TREE_CLUSTER_LEAVES", 28));
+    params.setInt("clusterLimit", envInt("EVENGINE_TREE_CLUSTER_LIMIT", 120));
+    params.setFloat("leafSize", envFloat("EVENGINE_TREE_LEAF_SIZE", 6.2f * 0.075f));
 
     Procgen generator;
     auto    treeParams = requireParams(params);
     auto    treeMesh   = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
     REQUIRE(treeMesh.isBound());
+    // Same parameters, CPU side: the uploaded Mesh keeps no metadata, but the
+    // dump is most useful with the cost and cluster count next to it.
+    {
+        MeshBuild   stats;
+        std::string statsError;
+        if (MeshRecipeRegistry::instance().generate("mesh.tree", params, stats, statsError)) {
+            std::printf("tree mesh: %d vertices, %d triangles, clusters=%s\n", stats.getVertexCount(),
+                        stats.getIndexCount() / 3, stats.getMeta("clusters", "n/a").c_str());
+        }
+    }
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
     const uint8_t atlasPixels[] = {
@@ -1527,6 +1612,38 @@ TEST_CASE("procgen.terrain.streaming.budgetEvictionAndCrossChunkSampling") {
     CHECK_EQ(noOp.resident, 1);
 }
 
+TEST_CASE("procgen.terrain.streaming.randomAccessReadsOnlyMetadataAndResidentChunks") {
+    Heightmap heightmap(256, 256);
+    for (int y = 0; y < 256; ++y)
+        for (int x = 0; x < 256; ++x)
+            heightmap.setHeight(x, y, float((x * 17 + y * 31) % 251) / 250.0F);
+    HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 0.45F, 0.5F);
+    const ClimateMap climate = TerrainPipeline::buildClimate(heightmap, hydrology, 0.5F, 0.5F);
+    std::vector<std::uint8_t> archive;
+    std::string error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 16, archive, &error));
+    auto source = std::make_shared<TrackingTerrainSource>(std::move(archive));
+
+    TerrainStreamingCache stream;
+    auto opened = stream.openSource(source);
+    REQUIRE(opened.ok());
+    CHECK_EQ(source->readCount, std::size_t(2));
+    CHECK(source->bytesRead < source->size() / 4);
+    const std::size_t metadataBytes = source->bytesRead;
+
+    const auto loaded = stream.streamAround(128, 128, 1, 2, &error);
+    CHECK_EQ(loaded.loaded, 2);
+    CHECK_EQ(loaded.resident, 2);
+    CHECK_EQ(source->readCount, std::size_t(4));
+    CHECK(source->bytesRead > metadataBytes);
+    CHECK(source->bytesRead < source->size() / 2);
+    const std::size_t stableReads = source->readCount;
+    CHECK_EQ(stream.streamAround(128, 128, 1, 0, &error).loaded, 3);
+    CHECK_EQ(source->readCount, stableReads + 3);
+    CHECK_EQ(stream.streamAround(128, 128, 1, 0, &error).loaded, 0);
+    CHECK_EQ(source->readCount, stableReads + 3);
+}
+
 TEST_CASE("procgen.terrain.streaming.crossChunkHydrologyTraceAndHalo") {
     Heightmap heightmap(24, 9);
     for (int y = 0; y < 9; ++y) for (int x = 0; x < 24; ++x)
@@ -2026,7 +2143,7 @@ TEST_CASE("procgen.mesh.marchingcubes.sphere") {
     CHECK(meshNormalsFiniteUnit(mesh));
     // Closed sphere should have non-trivial volume.
     CHECK(std::fabs(meshApproxSignedVolume(mesh)) > 0.05f);
-    // Same seed ⇒ same mesh.
+    // Same seed 鈬?same mesh.
     MeshBuild mesh2;
     CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh2, err));
     CHECK_EQ(mesh.getVertexCount(), mesh2.getVertexCount());
@@ -2218,11 +2335,11 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
         return float(sum / double(w * h));
     };
 
-    // No clouds → fully lit (baseline).
+    // No clouds 鈫?fully lit (baseline).
     gfx->setCloudShadows(0.f, 1.5f, 0.f, 4.f, 0.f, 0.5f, 0.5f);
     const float lit = meanLuma();
 
-    // Dense, strong clouds → ground visibly darker.
+    // Dense, strong clouds 鈫?ground visibly darker.
     gfx->setCloudShadows(0.9f, 2.0f, 1.5f, 4.f, 0.f, 0.5f, 0.5f);
     const float cloudy = meanLuma();
 
@@ -2232,7 +2349,7 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     std::printf("cloud shadows render: lit=%.3f cloudy=%.3f litAgain=%.3f\n", lit, cloudy, litAgain);
     CHECK_GT(lit, 10.f);            // baseline is lit
     CHECK(cloudy < lit * 0.85f);    // clouds meaningfully darken the ground
-    CHECK(approxEq(lit, litAgain, 2.f));  // disabled again → back to baseline
+    CHECK(approxEq(lit, litAgain, 2.f));  // disabled again 鈫?back to baseline
     win->close();
 }
 
@@ -2465,7 +2582,7 @@ TEST_CASE("procgen.mesh.marchingcubes.noiseReproducibleAndVaries") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.rawDensityPlane") {
-    // Density = y - 0.5 on a 4³ grid → horizontal plane at mid height.
+    // Density = y - 0.5 on a 4鲁 grid 鈫?horizontal plane at mid height.
     const int n = 4;
     std::vector<float> density(size_t(n * n * n));
     for (int z = 0; z < n; ++z) {
@@ -2584,7 +2701,7 @@ TEST_CASE("procgen.mesh.marchingcubes.isolevelAffectsMesh") {
     std::string err;
     CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", lo, a, err));
     CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", hi, b, err));
-    // Higher isolevel shrinks solid region → fewer / different triangles.
+    // Higher isolevel shrinks solid region 鈫?fewer / different triangles.
     const bool differs =
         a.getVertexCount() != b.getVertexCount() || a.positions() != b.positions();
     CHECK(differs);
@@ -2889,7 +3006,7 @@ TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
     p.worldScale = 64.f;
     p.coverage = 0.5f;
     CloudField a(p), b(p);
-    // Deterministic: same seed → same coverage at the same point/time.
+    // Deterministic: same seed 鈫?same coverage at the same point/time.
     CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), b.coverageAt(3.f, 4.f, 0.f), 1e-5f));
     // Animated: different time drifts the field (for a non-zero wind speed).
     const float t0 = a.coverageAt(3.f, 4.f, 0.f);
@@ -2906,7 +3023,7 @@ TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
         CHECK(c >= 0.f);
         CHECK(c <= 1.f);
     }
-    // Different seed → different field.
+    // Different seed 鈫?different field.
     CloudField::Params q = p;
     q.seed = 100;
     CloudField c(q);
@@ -2924,7 +3041,7 @@ TEST_CASE("procgen.cloud.field.windDriftsInDirection") {
     const float base = f.coverageAt(0.f, 0.f, 0.f);
     const float dt = 1.f;
     CHECK(approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 0.f, 1.f), 1e-2f));
-    // Perpendicular axis is unchanged at that same world offset check fails → drift is 1D.
+    // Perpendicular axis is unchanged at that same world offset check fails 鈫?drift is 1D.
     CHECK(!approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 5.f, 1.f), 1e-2f));
 }
 
@@ -2971,7 +3088,7 @@ TEST_CASE("procgen.cloud.shadow.projection") {
     }
     CHECK(maxF > 0.9f);               // some fully-lit ground
     CHECK(minF < 1.f);                // some coverage darkens ground
-    // Sun below horizon → no cloud shadows.
+    // Sun below horizon 鈫?no cloud shadows.
     sp.sunDirY = -1.f;
     CloudShadow below(sp);
     CHECK_EQ(below.coverageAt(px, pz, 0.f), 0.f);
@@ -3212,120 +3329,6 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
     CHECK_EQ(staleDiagnostic->code(), eve::DiagnosticCode::StaleHandle);
 }
 
-static Color colorForSemantic(int sem) {
-    switch (sem) {
-    case int(Semantic::Wall):
-        return Color(0.22f, 0.24f, 0.30f, 1.f);
-    case int(Semantic::Floor):
-        return Color(0.72f, 0.68f, 0.55f, 1.f);
-    case int(Semantic::Corridor):
-        return Color(0.55f, 0.52f, 0.42f, 1.f);
-    case int(Semantic::Water):
-        return Color(0.25f, 0.45f, 0.85f, 1.f);
-    case int(Semantic::Sand):
-        return Color(0.85f, 0.78f, 0.45f, 1.f);
-    case int(Semantic::Grass):
-        return Color(0.35f, 0.65f, 0.30f, 1.f);
-    case int(Semantic::Dirt):
-        return Color(0.55f, 0.40f, 0.25f, 1.f);
-    case int(Semantic::Stone):
-        return Color(0.55f, 0.58f, 0.62f, 1.f);
-    case int(Semantic::Snow):
-        return Color(0.90f, 0.93f, 0.97f, 1.f);
-    case int(Semantic::Door):
-        return Color(0.75f, 0.45f, 0.20f, 1.f);
-    default:
-        return Color(0.05f, 0.05f, 0.07f, 1.f);
-    }
-}
-
-static void drawGrid(Graphics *gfx, const Grid2D &grid, float originX, float originY, float cell) {
-    const int w = grid.getWidth();
-    const int h = grid.getHeight();
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            const Color c = colorForSemantic(grid.getCell(x, y));
-            gfx->drawSolidRect(originX + float(x) * cell, originY + float(y) * cell, cell, cell, c);
-        }
-    }
-    // Markers for spawn / objects.
-    for (int i = 0; i < grid.getObjectCount(); ++i) {
-        const float ox = originX + grid.getObjectX(i) * cell;
-        const float oy = originY + grid.getObjectY(i) * cell;
-        gfx->drawSolidRect(ox - 2.f, oy - 2.f, 5.f, 5.f, Color(1.f, 0.3f, 0.3f, 1.f));
-    }
-}
-
-TEST_CASE("procgen.render.dungeonCaveMazePreview") {
-    GeneratorRegistry::instance().registerBuiltins();
-
-    auto *win = eve::window::Window::create();
-    auto *gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width = 720;
-    s.height = 420;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-
-    struct Algo {
-        const char *id;
-        int w, h;
-    };
-    const Algo algos[] = {
-        {"dungeon.bsp", 36, 28},
-        {"cave.cellular", 36, 28},
-        {"maze.backtrack", 31, 23},
-        {"noise.terrain", 36, 28},
-    };
-
-    gfx->setBackgroundColorRGBA(0.06f, 0.07f, 0.09f, 1.f);
-    int drawnCells = 0;
-
-    for (int ai = 0; ai < 4; ++ai) {
-        const Algo &algo = algos[ai];
-        Params p;
-        p.setSeed(42);
-        p.setSize(algo.w, algo.h);
-        if (std::string(algo.id) == "cave.cellular") {
-            p.setInt("loops", 4);
-            p.setFloat("fill", 0.45f);
-        } else if (std::string(algo.id) == "noise.terrain") {
-            p.setFloat("frequency", 5.f);
-            p.setInt("octaves", 3);
-        }
-
-        Grid2D grid;
-        std::string err;
-        REQUIRE(GeneratorRegistry::instance().generate(algo.id, p, grid, err));
-
-        const float cell = std::min(16.f, std::min(float(gfx->getWidth() - 40) / float(algo.w),
-                                                   float(gfx->getHeight() - 40) / float(algo.h)));
-        const float originX = (float(gfx->getWidth()) - float(algo.w) * cell) * 0.5f;
-        const float originY = (float(gfx->getHeight()) - float(algo.h) * cell) * 0.5f;
-
-        for (int frame = 0; frame < 45; ++frame) {
-            gfx->clearScreen();
-            drawGrid(gfx, grid, originX, originY, cell);
-            // Title bar strip so algorithm changes are readable without fonts.
-            const float barW = float(gfx->getWidth()) * (0.15f + 0.2f * float(ai));
-            gfx->drawSolidRect(12.f, 10.f, barW, 8.f, Color(0.9f, 0.85f, 0.4f, 1.f));
-            gfx->present();
-
-            drawnCells = algo.w * algo.h;
-            SDL_Event e;
-            while (SDL_PollEvent(&e)) {
-                if (e.type == SDL_QUIT) break;
-            }
-            SDL_Delay(16);
-        }
-    }
-
-    CHECK_GT(drawnCells, 100);
-    win->close();
-}
-
 TEST_CASE("procgen.mesh.linearStructure.recipesRegistered") {
     MeshRecipeRegistry::instance().registerBuiltins();
     for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
@@ -3400,7 +3403,7 @@ TEST_CASE("procgen.mesh.linearStructure.segmentsScaleVertexCount") {
     std::string err;
     CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", lo, a, err));
     CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", hi, b, err));
-    // Linear repetition of one unit ⇒ vertex count grows linearly with segments.
+    // Linear repetition of one unit 鈬?vertex count grows linearly with segments.
     CHECK_EQ(3 * a.getVertexCount(), b.getVertexCount());
 }
 
@@ -3478,6 +3481,13 @@ TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
     CHECK(stairs->getVertexCount() > 100);
     CHECK_EQ(stairs->getMeta("group", ""), "stairs");
     CHECK(meshIndicesInRange(*stairs));
+    int towerGroup = -1;
+    for (int i = 0; i < a.getGroupCount(); ++i)
+        if (a.getGroupName(i) == "towers") towerGroup = i;
+    REQUIRE(towerGroup >= 0);
+    auto towers = a.copyGroup(towerGroup);
+    REQUIRE(towers.get() != nullptr);
+    CHECK(meshWindingAgreesWithNormals(*towers));
 }
 
 TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
@@ -3788,7 +3798,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     // Blue-ish sky cubemap so reflection is visible.
     [[maybe_unused]] auto *const imageModule        = eve::image::Image::create();
     const int fs = 4;
-    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
+    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces 脳 4脳4 脳 RGBA
     for (int f = 0; f < 6; ++f)
         for (int i = 0; i < fs * fs; ++i) {
             const size_t o = size_t(f) * fs * fs * 4 + size_t(i) * 4;
@@ -3880,7 +3890,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     win->close();
 }
 
-/** Build a unit cube ([-0.5,0.5]³) with per-face UVs in [0,1]². */
+/** Build a unit cube ([-0.5,0.5]鲁) with per-face UVs in [0,1]虏. */
 static Mesh *makeUnitCube(Graphics *gfx) {
     std::vector<float> pos, nrm, uv;
     std::vector<uint32_t> idx;
@@ -3938,7 +3948,7 @@ TEST_CASE("graphics.water.render.plane") {
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Gradient sky cubemap: deep blue at the zenith, pale near the horizon.
-    const int fs = 16;
+    const int fs = 64;
     std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
     {
         auto dirFor = [&](int f, int x, int y, float &dx, float &dy, float &dz) {
@@ -3964,9 +3974,20 @@ TEST_CASE("graphics.water.render.plane") {
                     // t=1 at zenith, t=0 near/below horizon.
                     const float t = std::pow(std::clamp(ny * 0.5f + 0.5f, 0.f, 1.f), 1.5f);
                     // Pale blue horizon → deep blue zenith.
-                    const float cr = 0.72f + (0.12f - 0.72f) * t;
-                    const float cg = 0.80f + (0.32f - 0.80f) * t;
-                    const float cb = 0.90f + (0.72f - 0.90f) * t;
+                    float cr = 0.72f + (0.12f - 0.72f) * t;
+                    float cg = 0.80f + (0.32f - 0.80f) * t;
+                    float cb = 0.90f + (0.72f - 0.90f) * t;
+                    const float nx = dx / len;
+                    const float nz = dz / len;
+                    const float cloudNoise = std::sin(nx * 8.0f + nz * 3.1f) +
+                                             std::sin(nz * 11.3f - nx * 2.7f) * 0.55f +
+                                             std::sin((nx + nz) * 17.0f) * 0.22f;
+                    const float cloudAltitude = std::clamp((ny - 0.03f) * 4.0f, 0.0f, 1.0f) *
+                                                std::clamp((0.82f - ny) * 3.2f, 0.0f, 1.0f);
+                    const float cloud = std::clamp((cloudNoise - 0.42f) * 2.6f, 0.0f, 1.0f) * cloudAltitude;
+                    cr = cr + (0.96f - cr) * cloud;
+                    cg = cg + (0.97f - cg) * cloud;
+                    cb = cb + (1.00f - cb) * cloud;
                     const size_t o = (size_t(f) * fs * fs + size_t(y) * fs + size_t(x)) * 4u;
                     sky[o + 0] = uint8_t(cr * 255.f);
                     sky[o + 1] = uint8_t(cg * 255.f);
@@ -3979,30 +4000,6 @@ TEST_CASE("graphics.water.render.plane") {
     Texture *skyTex = gfx->newCubemap(fs, sky.data());
     REQUIRE(skyTex != nullptr);
 
-    // Skybox: a huge sphere centered on the camera, shaded purely by the env
-    // cubemap so the sky is visible behind the water.
-    const char *kSkyFrag = R"GLSL(#version 450
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 4) in vec3 vCameraPos;
-layout(set = 0, binding = 3) uniform samplerCube env;
-layout(location = 0) out vec4 outColor;
-void main() {
-    vec3 c = texture(env, normalize(vWorldPos - vCameraPos)).rgb;
-    outColor = vec4(c, 1.0);
-}
-)GLSL";
-    Shader *skyShader = gfx->newMeshShader("", kSkyFrag);
-    REQUIRE(skyShader != nullptr);
-    Mesh *skyMesh = gfx->newMeshSphere(24, 16);
-    REQUIRE(skyMesh != nullptr);
-    auto *skyEnt = Renderable3D::create();
-    skyEnt->setMesh(skyMesh);
-    skyEnt->setShader(skyShader);
-    skyEnt->setTexture(nullptr);
-    skyEnt->setScale(200.f, 200.f, 200.f);
-    skyEnt->setReceiveShadow(false);
-    skyEnt->setCastShadow(false);
-
     auto *camera = Camera3D::createCamera();
     camera->setEye(6.f, 5.f, 8.f);
     camera->setTarget(0.f, 0.f, 0.f);
@@ -4011,11 +4008,10 @@ void main() {
     camera->setEnvMap(skyTex);
     camera->setEnvIntensity(1.f);
     camera->data()->nearZ = 0.1f;
-    camera->data()->farZ = 2000.f;
-    skyEnt->setCamera(camera);
-
-    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    camera->data()->farZ = 100.f;
+    gfx->setBackgroundColor(Color(0.36f, 0.55f, 0.72f, 1.f));
     gfx->setScreenReadbackEnabled(true);
+    gfx->getRenderControl()->enable("gbuffer");
     RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
 
     auto *present = Renderable2D::create();
@@ -4025,35 +4021,58 @@ void main() {
     present->sprite()->height = 1.f;
     present->sprite()->a = 0.f;
 
-    // A single flat water plane carrying the water shader.
+    WaterSceneFixture sceneFixture = createStylizedWaterScene(gfx, camera);
+
+    // The water is drawn explicitly after the opaque GBuffer so it can sample
+    // scene color and linear depth without a read/write feedback hazard.
     Water *water = gfx->newWater();
     REQUIRE(water != nullptr);
     water->createPlane(14.f, 14.f, 64, 64);
-    water->setWaterColor(0.06f, 0.30f, 0.48f);
-    water->setWaveAmplitude(0.30f);
-    water->setRippleAmplitude(0.55f);
-    water->setRippleCount(8);
-    water->setRippleInterval(1.4f);
-    water->setWaveScale(14.f);
-    water->setReflectionTint(0.9f, 0.95f, 1.0f);
-    water->setReflectionIntensity(1.3f);
-    water->setSunIntensity(1.6f);
-
-    auto *waterEnt = Renderable3D::create();
-    waterEnt->setMesh(water->getMesh());
-    waterEnt->setShader(water->getShader());
-    waterEnt->setTexture(nullptr);
-    waterEnt->setReceiveShadow(false);
-    waterEnt->setCastShadow(false);
-    waterEnt->setCamera(camera);
+    WaterStyleConfig style             = water->config();
+    style.deepColor                    = {0.005f, 0.16f, 0.42f};
+    style.shallowColor                 = {0.025f, 0.50f, 0.62f};
+    style.waveAmplitude                = 0.11f;
+    style.waveSharpness                = 1.65f;
+    style.rippleAmplitude              = 0.12f;
+    style.rippleCount                  = 5;
+    style.rippleInterval               = 1.4f;
+    style.waveScale                    = 1.35f;
+    style.foamWidth                    = 0.58f;
+    style.foamSoftness                 = 0.12f;
+    style.foamStrength                 = 0.72f;
+    style.reflectionIntensity          = 0.82f;
+    style.fresnelPower                 = 2.2f;
+    style.sunIntensity                 = 0.65f;
+    style.opacity                      = 0.68f;
+    style.refractionStrength           = 0.045f;
+    style.causticsStrength             = 0.55f;
+    style.causticsScale                = 3.8f;
+    if (const char* layerMode = std::getenv("EVENGINE_WATER_LAYER_MODE")) {
+        if (std::strcmp(layerMode, "transmission") == 0) {
+            style.reflectionIntensity = 0.0f;
+            style.sunIntensity        = 0.0f;
+            style.foamStrength        = 0.12f;
+            style.opacity             = 0.52f;
+        } else if (std::strcmp(layerMode, "reflection") == 0) {
+            style.reflectionIntensity = 1.15f;
+            style.sunIntensity        = 0.75f;
+            style.refractionStrength  = 0.0f;
+            style.causticsStrength    = 0.0f;
+            style.foamStrength        = 0.08f;
+            style.opacity             = 0.82f;
+        }
+    }
+    auto styleJson = style.toJson();
+    REQUIRE(static_cast<bool>(styleJson));
+    REQUIRE(static_cast<bool>(water->applyConfigJson(styleJson.value())));
 
     // Animate a few seconds so ripples travel, then save a frame.
     for (int frame = 0; frame < 40; ++frame) {
-        // Keep the skybox centered on the camera so it reads as a surrounding sky.
-        skyEnt->setPosition(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ);
-        water->setTime(float(frame) * 0.06f);
-        water->bindParams();
+        const float time = float(frame) * 0.06f;
+        water->setTime(time);
+        sceneFixture.update(time);
         RenderSystem3D::render(*gfx);
+        water->draw();
         RenderSystem::render(*gfx);
     }
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
@@ -4326,23 +4345,6 @@ TEST_CASE("graphics.water.render.planar") {
     present->sprite()->height = 1.f;
     present->sprite()->a = 0.f;
 
-    // Skybox: big sphere shaded by the env cubemap.
-    const char *kSky = R"GLSL(#version 450
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 4) in vec3 vCameraPos;
-layout(set = 0, binding = 3) uniform samplerCube env;
-layout(location = 0) out vec4 outColor;
-void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rgb, 1.0); }
-)GLSL";
-    Shader *skyShader = gfx->newMeshShader("", kSky);
-    auto *skyEnt = Renderable3D::create();
-    skyEnt->setMesh(gfx->newMeshSphere(24, 16));
-    skyEnt->setShader(skyShader);
-    skyEnt->setScale(300.f, 300.f, 300.f);
-    skyEnt->setReceiveShadow(false);
-    skyEnt->setCastShadow(false);
-    skyEnt->setCamera(camera);
-
     // Boxes above the water to reflect.
     struct Box { float x, y, z, sx, sy, sz; uint8_t r, g, b; };
     const Box boxes[] = {
@@ -4351,22 +4353,15 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
         {3.5f, 3.5f, -4.f, 2.5f, 2.5f, 2.5f, 70, 110, 230},
     };
     Mesh *cube = makeUnitCube(gfx);
-    struct Ent { Renderable3D *e; glm::mat4 model; };
+    struct Ent { Texture* texture; glm::mat4 model; };
     std::vector<Ent> ents;
     for (const Box &b : boxes) {
-        auto *ent = Renderable3D::create();
-        ent->setMesh(cube);
         const uint8_t px[4] = {b.r, b.g, b.b, 255};
-        ent->setTexture(gfx->newTexture(1, 1, px));
-        ent->setPosition(b.x, b.y, b.z);
-        ent->setScale(b.sx, b.sy, b.sz);
-        ent->setReceiveShadow(false);
-        ent->setCastShadow(false);
-        ent->setCamera(camera);
+        Texture* texture = gfx->newTexture(1, 1, px);
         glm::mat4 m(1.f);
         m = glm::translate(m, glm::vec3(b.x, b.y, b.z));
         m = glm::scale(m, glm::vec3(b.sx, b.sy, b.sz));
-        ents.push_back({ent, m});
+        ents.push_back({texture, m});
     }
 
     Water *water = gfx->newWater();
@@ -4376,14 +4371,6 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
     water->setReflectionIntensity(1.0f);
     water->setScreenSpaceReflection(true, 0.9f);
     water->setViewport(float(settings.width), float(settings.height));
-
-    auto *waterEnt = Renderable3D::create();
-    waterEnt->setMesh(water->getMesh());
-    waterEnt->setShader(water->getShader());
-    waterEnt->setTexture(nullptr);
-    waterEnt->setReceiveShadow(false);
-    waterEnt->setCastShadow(false);
-    waterEnt->setCamera(camera);
 
     Canvas *refl = gfx->newCanvas(settings.width, settings.height);
     REQUIRE(refl != nullptr);
@@ -4404,23 +4391,30 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
     gfx->setBackgroundColor(Color(0.45f, 0.62f, 0.85f, 1.f));
     gfx->begin3DFrameToCanvas(refl);
     for (const Ent &en : ents) {
-        gfx->drawMeshShader(cube, en.model,
-                            static_cast<Renderable3D *>(en.e)->meshRenderer()->texture,
-                            glm::vec4(1.f), nullptr);
+        gfx->drawMeshShader(cube, en.model, en.texture, glm::vec4(1.f), nullptr);
     }
     gfx->end3DFrameToCanvas();
     gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
 
-    // Final frame: water sampling the planar reflection.
-    waterEnt->setHeightTexture(refl->getTexture());
+    // Final frame: the public Water path borrows and samples the planar reflection.
+    const glm::mat4 mainView = glm::lookAtRH(eye, tgt, glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 mainProj = perspectiveVulkanRH_ZO(glm::radians(camera->data()->fovYDeg),
+                                                       settings.width / float(settings.height),
+                                                       camera->data()->nearZ, camera->data()->farZ);
+    gfx->setMesh3DViewProj(mainProj * mainView);
+    gfx->setMesh3DView(mainView);
+    gfx->setMesh3DCameraPos(eye);
+    gfx->setMesh3DClip(camera->data()->nearZ, camera->data()->farZ);
+    gfx->setMesh3DEnv(skyTex, 1.f);
     water->setTime(0.5f);
-    water->bindParams();
     RenderSystem3D::render(*gfx);
+    water->drawWithPlanarReflection(refl->getTexture(), 0.9F);
     RenderSystem::render(*gfx);
 
     // Read the reflection canvas once and check the red box was captured.
     std::unique_ptr<eve::image::ImageData> rim(refl->newImageData());
     REQUIRE(rim.get() != nullptr);
+    REQUIRE(saveImagePng(*rim, std::string(outPath) + ".reflection.png"));
     int red = 0, total = 0;
     const uint8_t *pd = static_cast<const uint8_t *>(rim->getData());
     const int rw = rim->getWidth();
@@ -4439,7 +4433,110 @@ void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rg
 
     std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
     REQUIRE(img.get() != nullptr);
+    int reflectedRed = 0;
+    const auto* finalPixels = static_cast<const uint8_t*>(img->getData());
+    for (int y = 0; y < img->getHeight(); ++y) {
+        for (int x = 0; x < img->getWidth(); ++x) {
+            const size_t offset = (size_t(y) * size_t(img->getWidth()) + size_t(x)) * 4;
+            const int r = finalPixels[offset];
+            const int g = finalPixels[offset + 1];
+            const int b = finalPixels[offset + 2];
+            if (r > 120 && r > g + 20 && r > b + 20) ++reflectedRed;
+        }
+    }
+    CHECK(reflectedRed > 1000);
     REQUIRE(saveImagePng(*img, outPath));
     std::printf("planar water render saved: %s\n", outPath);
     win->close();
+}
+
+TEST_CASE("procgen.terrain.file.decodeEvtrAndEvtrn") {
+    // EVTR: chunked archive, UNORM16-quantized heights, no metres-per-cell.
+    Heightmap heightmap(19, 13);
+    for (int y = 0; y < heightmap.getHeight(); ++y)
+        for (int x = 0; x < heightmap.getWidth(); ++x)
+            heightmap.setHeight(x, y, 10.f + float(x) * 0.25f + float(y) * 0.5f);
+    const HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 5.f, 10.f);
+    const ClimateMap   climate   = TerrainPipeline::buildClimate(heightmap, hydrology, 10.f, 0.6f);
+    std::vector<uint8_t> evtr;
+    std::string          error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, evtr, &error));
+
+    auto decodedEvtr = decodeTerrainFile(std::span<const std::uint8_t>(evtr.data(), evtr.size()),
+                                         TerrainFileFormat::Auto);
+    REQUIRE(decodedEvtr.ok());
+    const DecodedTerrainFile evtrTerrain = std::move(decodedEvtr).takeValue();
+    CHECK_EQ(evtrTerrain.format, std::string("evtr"));
+    CHECK_EQ(evtrTerrain.heightmap.getWidth(), 19);
+    CHECK_EQ(evtrTerrain.heightmap.getHeight(), 13);
+    // An EVTR archive carries no cell size, so the level owns the spacing.
+    CHECK(!evtrTerrain.hasSpacing);
+    CHECK(std::abs(evtrTerrain.minHeight - 10.f) < 0.01f);
+    CHECK(std::abs(evtrTerrain.maxHeight - (10.f + 18 * 0.25f + 12 * 0.5f)) < 0.01f);
+    // Quantization is UNORM16 over the archive range, so allow one step.
+    for (int y = 0; y < 13; y += 4)
+        for (int x = 0; x < 19; x += 3)
+            CHECK(std::abs(evtrTerrain.heightmap.height(x, y) - heightmap.height(x, y)) < 0.01f);
+
+    // EVTRN: raw float32 heightfield written by the asset importer.
+    auto putU32 = [](std::vector<uint8_t>& out, std::uint32_t value) {
+        for (unsigned shift = 0; shift != 32; shift += 8)
+            out.push_back(static_cast<std::uint8_t>(value >> shift));
+    };
+    auto putF32 = [&putU32](std::vector<uint8_t>& out, float value) {
+        putU32(out, std::bit_cast<std::uint32_t>(value));
+    };
+    constexpr int kWidth = 5, kHeight = 3;
+    std::vector<uint8_t> evtrn = {'E', 'V', 'T', 'R', 'N', 0, 1, 0};
+    putU32(evtrn, kWidth);
+    putU32(evtrn, kHeight);
+    putF32(evtrn, 2.5f);
+    putF32(evtrn, 4.0f);
+    for (int y = 0; y < kHeight; ++y)
+        for (int x = 0; x < kWidth; ++x) putF32(evtrn, float(x) - float(y) * 0.5f);
+
+    auto decodedEvtrn = decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size()),
+                                          TerrainFileFormat::Auto);
+    REQUIRE(decodedEvtrn.ok());
+    const DecodedTerrainFile evtrnTerrain = std::move(decodedEvtrn).takeValue();
+    CHECK_EQ(evtrnTerrain.format, std::string("evtrn"));
+    CHECK(evtrnTerrain.hasSpacing);
+    CHECK_EQ(evtrnTerrain.spacingX, 2.5f);
+    CHECK_EQ(evtrnTerrain.spacingZ, 4.0f);
+    CHECK_EQ(evtrnTerrain.heightmap.getWidth(), kWidth);
+    CHECK_EQ(evtrnTerrain.heightmap.getHeight(), kHeight);
+    CHECK_EQ(evtrnTerrain.heightmap.height(4, 2), 3.f);
+    CHECK_EQ(evtrnTerrain.heightmap.height(0, 2), -1.f);
+    CHECK_EQ(evtrnTerrain.minHeight, -1.f);
+    CHECK_EQ(evtrnTerrain.maxHeight, 4.f);
+
+    // A caller that names the format still gets the magic checked.
+    auto mismatched = decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size()),
+                                        TerrainFileFormat::Evtr);
+    CHECK(!mismatched.ok());
+    const eve::Diagnostic* mismatchDiagnostic = mismatched.status().primaryDiagnostic();
+    REQUIRE(mismatchDiagnostic != nullptr);
+    CHECK_EQ(int(mismatchDiagnostic->code()), int(eve::DiagnosticCode::ParseError));
+
+    // Unknown magic, truncated payload, and a size/dimension mismatch all fail
+    // rather than returning a partially filled grid.
+    std::vector<uint8_t> unknown = evtrn;
+    unknown[0] = 'X';
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(unknown.data(), unknown.size()),
+                             TerrainFileFormat::Auto)
+               .ok());
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size() - 4),
+                             TerrainFileFormat::Evtrn)
+               .ok());
+    std::vector<uint8_t> wrongCount = evtrn;
+    wrongCount[8] = 9;  // claims nine columns for a payload holding five
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(wrongCount.data(), wrongCount.size()),
+                             TerrainFileFormat::Evtrn)
+               .ok());
+    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(), TerrainFileFormat::Auto).ok());
+
+    CHECK_EQ(int(parseTerrainFileFormat("EVTRN")), int(TerrainFileFormat::Evtrn));
+    CHECK_EQ(int(parseTerrainFileFormat("evtr")), int(TerrainFileFormat::Evtr));
+    CHECK_EQ(int(parseTerrainFileFormat("")), int(TerrainFileFormat::Auto));
+    CHECK_EQ(int(parseTerrainFileFormat("nonsense")), int(TerrainFileFormat::Auto));
 }

@@ -111,4 +111,11 @@ EVENGINE_API const ScriptErrorContext* peekLastScriptError(HSQUIRRELVM vm);
  */
 EVENGINE_API void clearLastScriptError(HSQUIRRELVM vm);
 
+/**
+ * @brief Formats the last captured error for a VM without consuming it.
+ * @param vm VM to read.
+ * @return Multi-line report, or empty when no error is pending.
+ */
+EVENGINE_API std::string formatLastScriptError(HSQUIRRELVM vm);
+
 }  // namespace eve::script

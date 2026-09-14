@@ -6,6 +6,8 @@ persist accumulator = 0.0;
 persist brushMaterial = "sand";
 persist brushRadius = 4;
 persist atlasRenderer = null;
+persist physicsWorld = null;
+persist terrainCollision = null;
 persist showDiagnostics = true;
 
 const WORLD_W = 160;
@@ -72,6 +74,9 @@ eve_init = function() {
     }
     if (atlasRenderer == null)
         atlasRenderer = pixelworldGraphics.newRenderer(0, 0, WORLD_W, WORLD_H);
+    if (physicsWorld == null) physicsWorld = physics.newWorld(0.0, 0.0, true);
+    if (terrainCollision == null) terrainCollision = pixelworldPhysics.newTerrainCache();
+    terrainCollision.sync(physicsWorld, world, 256);
     pixelworldEditor.openCatalog();
 };
 
@@ -80,6 +85,8 @@ eve_update = function(dt) {
     accumulator += dt;
     while (accumulator >= STEP) {
         world.step();
+        terrainCollision.sync(physicsWorld, world, 256);
+        physicsWorld.update(STEP);
         accumulator -= STEP;
     }
     if (key_just_pressed("r")) buildScene();

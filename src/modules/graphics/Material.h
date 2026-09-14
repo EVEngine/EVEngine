@@ -1,11 +1,12 @@
 #pragma once
 
-#include "graphics/Mesh.h"
+#include "common/Result.h"
 #include "graphics/BlendMode.h"
+#include "graphics/Mesh.h"
+#include "graphics/PbrSurface.h"
 #include "graphics/Shader.h"
 #include "graphics/SurfaceMode.h"
 #include "graphics/Texture.h"
-#include "common/Result.h"
 
 #include <map>
 #include <string>
@@ -43,11 +44,40 @@ public:
     void setShadingModel(const std::string &model);
     std::string getShadingModel() const { return shadingModel_; }
 
-    void setAlbedoTexture(Texture *texture) { albedo_ = texture; }
-    Texture *getAlbedoTexture() const { return albedo_; }
+    /** @brief Atomically replace validated PBR bindings and enable the extended forward path.
+     * Texture pointers are borrowed from Graphics and must outlive this material/draws.
+     * Render-thread only; no callbacks. Failure preserves the previous material.
+     */
+    [[nodiscard]] Result<void> setPbrSurface(const PbrSurface& surface);
+    /** @brief Return an owning parameter snapshot; texture resources remain borrowed. */
+    PbrSurface pbrSurface() const {
+        auto s  = pbr_;
+        s.unlit = shadingModel_ == "unlit";
+        return s;
+    }
+    /** @brief Whether full PBR texture/extension rendering is requested. */
+    bool hasPbrSurface() const { return pbrEnabled_; }
+    /** @brief Set the borrowed material texture.
+     * @ownership Graphics factory owns the resource.
+     * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
+     * @thread Render-thread affine; no callbacks or retained temporary data. */
+    void setAlbedoTexture(Texture* texture) { pbr_.textures[0].texture = texture; }
+    /** @brief Get the borrowed material texture.
+     * @ownership Graphics factory owns the resource.
+     * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
+     * @thread Render-thread affine; no callbacks or retained temporary data. */
+    Texture* getAlbedoTexture() const { return pbr_.textures[0].texture; }
 
-    void setNormalTexture(Texture *texture) { normal_ = texture; }
-    Texture *getNormalTexture() const { return normal_; }
+    /** @brief Set the borrowed material texture.
+     * @ownership Graphics factory owns the resource.
+     * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
+     * @thread Render-thread affine; no callbacks or retained temporary data. */
+    void setNormalTexture(Texture* texture) { pbr_.textures[2].texture = texture; }
+    /** @brief Get the borrowed material texture.
+     * @ownership Graphics factory owns the resource.
+     * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
+     * @thread Render-thread affine; no callbacks or retained temporary data. */
+    Texture* getNormalTexture() const { return pbr_.textures[2].texture; }
 
     void setHeightTexture(Texture *texture) { height_ = texture; }
     Texture *getHeightTexture() const { return height_; }
@@ -103,7 +133,7 @@ public:
     float getParallaxMaxLayers() const { return parallaxMaxLayers_; }
 
     void setReceiveLight(bool receive) { receiveLight_ = receive; }
-    bool getReceiveLight() const { return receiveLight_; }
+    bool getReceiveLight() const { return receiveLight_ && shadingModel_ != "unlit"; }
 
     void setCastShadow(bool cast) { castShadow_ = cast; }
     bool getCastShadow() const { return castShadow_; }
@@ -126,7 +156,7 @@ public:
      * @brief Push this material onto Graphics mesh3d state for the next draw.
      * Does not issue the draw itself.
      */
-    void bind(Graphics &gfx) const;
+    [[nodiscard]] Result<void> bind(Graphics& gfx) const;
 
     /** @brief Effective shader for Mesh3D draws (may be null → default PBR pipeline). */
     Shader *effectiveShader() const;
@@ -154,9 +184,9 @@ public:
     void setAlphaTechnique(const std::string &technique);
     std::string getAlphaTechnique() const { return alphaTechnique_; }
 private:
+    PbrSurface                   pbr_;
+    bool                         pbrEnabled_   = false;
     std::string shadingModel_ = "pbr";
-    Texture *albedo_ = nullptr;
-    Texture *normal_ = nullptr;
     Texture *height_ = nullptr;
     Shader *shader_ = nullptr;
     float r_ = 1.f, g_ = 1.f, b_ = 1.f, a_ = 1.f;

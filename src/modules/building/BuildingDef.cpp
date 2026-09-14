@@ -1,12 +1,16 @@
 #include "building/BuildingDef.h"
-
 #include "common/Json.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace eve::building {
 
 using eve::json::Value;
+
+namespace {
+bool validConvexPolygon(const std::vector<float> &vertices);
+}
 
 bool BuildingDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
@@ -70,6 +74,21 @@ void BuildingRegistry::registerBuilding(const BuildingDefinition &def) {
     if (copy.snapMode.empty()) copy.snapMode = "grid";
     if (copy.rotationMode.empty()) copy.rotationMode = "cardinal";
     if (copy.validateRule.empty()) copy.validateRule = "default";
+    if (copy.placementKind != "edge" && copy.placementKind != "corner" &&
+        copy.placementKind != "free")
+        copy.placementKind = "cell";
+    if (!std::isfinite(copy.freeRadiusCells) || copy.freeRadiusCells <= 0.f)
+        copy.freeRadiusCells = 0.25f;
+    if (!std::isfinite(copy.freeFootprintWidthCells) || copy.freeFootprintWidthCells <= 0.f ||
+        !std::isfinite(copy.freeFootprintHeightCells) || copy.freeFootprintHeightCells <= 0.f) {
+        copy.freeFootprintWidthCells = 0.f;
+        copy.freeFootprintHeightCells = 0.f;
+    }
+    if (!copy.freeFootprintVertices.empty() && !validConvexPolygon(copy.freeFootprintVertices))
+        copy.freeFootprintVertices.clear();
+    if (copy.supportMode != "cell_below" && copy.supportMode != "corner_below")
+        copy.supportMode = "none";
+    copy.maxSurfaceSlopeDegrees = std::clamp(copy.maxSurfaceSlopeDegrees, 0.f, 180.f);
     const size_t expected = size_t(copy.footprintW) * size_t(copy.footprintH);
     if (!copy.footprintMask.empty() && copy.footprintMask.size() != expected) {
         copy.footprintMask.clear();  // 长度不匹配时回退实心矩形
@@ -91,6 +110,28 @@ int BuildingRegistry::count() { return int(table().size()); }
 
 namespace {
 
+bool validConvexPolygon(const std::vector<float> &vertices) {
+    if (vertices.size() < 6 || vertices.size() % 2 != 0 || vertices.size() > 128) return false;
+    float winding = 0.f;
+    const size_t count = vertices.size() / 2;
+    for (size_t i = 0; i < count; ++i) {
+        const size_t next = (i + 1) % count;
+        const size_t after = (i + 2) % count;
+        const float ax = vertices[next * 2] - vertices[i * 2];
+        const float ay = vertices[next * 2 + 1] - vertices[i * 2 + 1];
+        const float bx = vertices[after * 2] - vertices[next * 2];
+        const float by = vertices[after * 2 + 1] - vertices[next * 2 + 1];
+        if (!std::isfinite(vertices[i * 2]) || !std::isfinite(vertices[i * 2 + 1])) return false;
+        const float cross = ax * by - ay * bx;
+        if (std::fabs(cross) <= 1e-5f) continue;
+        if (winding == 0.f)
+            winding = cross;
+        else if (cross * winding < 0.f)
+            return false;
+    }
+    return winding != 0.f;
+}
+
 BuildingDefinition parseBuildingObject(Value o) {
     BuildingDefinition def;
     if (!o.isObject()) return def;
@@ -99,11 +140,22 @@ BuildingDefinition parseBuildingObject(Value o) {
     def.category = o.getString("category");
     def.channel = o.getString("channel");
     def.renderMode = o.getString("renderMode");
+    def.placementKind = o.getString("placementKind", "cell");
+    def.freeRadiusCells = o.getFloat("freeRadiusCells", 0.25f);
+    def.freeFootprintWidthCells = o.getFloat("freeFootprintWidthCells", 0.f);
+    def.freeFootprintHeightCells = o.getFloat("freeFootprintHeightCells", 0.f);
+    def.freeFootprintVertices = o.getFloatArray("freeFootprintVertices");
+    def.connectionGroup = o.getString("connectionGroup");
+    def.structuralRole = o.getString("structuralRole");
+    def.supportMode = o.getString("supportMode", "none");
+    def.supportTag = o.getString("supportTag");
     def.footprintW = o.getInt("footprintW", 1);
     def.footprintH = o.getInt("footprintH", 1);
     def.snapMode = o.getString("snapMode", "grid");
     def.rotationMode = o.getString("rotationMode", "cardinal");
     def.validateRule = o.getString("validateRule", "default");
+    def.maxSurfaceSlopeDegrees = o.getFloat("maxSurfaceSlopeDegrees", 180.f);
+    def.maxSurfaceHeightDelta = o.getFloat("maxSurfaceHeightDelta", -1.f);
     def.tags = o.getStringArray("tags");
     def.requireTerrain = o.getIntArray("requireTerrain");
     def.forbidTerrain = o.getIntArray("forbidTerrain");

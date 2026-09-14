@@ -17,7 +17,11 @@ Controls:
 - `F`: toggle fog for an immediate silhouette and blend comparison
 - `P`: capture the current fixed view as `bush-fog-view-N.png`
 
-The example rebuilds local froxels whenever the camera changes. Local volumes are
-voxelized through the camera inverse view-projection, keeping their world-space
-positions stable from every check angle. Foliage stays on the stable
+The example rebuilds local froxels whenever the camera changes. Height fog and
+local volumes are voxelized through the camera inverse view-projection, keeping
+their world-space positions stable from every check angle. Local volumes use
+seeded world-space density noise and broad edge falloff instead of uniform solid
+fog shapes. The froxel composite reconstructs path-integrated scattering with
+alpha-correct blending and trilinearly filters the volume, avoiding the former
+faint output and visible row bands. Foliage stays on the stable
 masked/coverage path so internal leaf overlap cannot create translucent ghosts.

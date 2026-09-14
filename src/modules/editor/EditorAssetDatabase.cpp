@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 EditorResult<T> assetError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 bool containsInsensitive(std::string value, std::string text) {
@@ -43,7 +43,7 @@ EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::
     std::erase_if(dependencies_, [&](const AssetDependency& dependency) { return dependency.from == record.guid; });
     dependencies_.insert(dependencies_.end(), dependencies.begin(), dependencies.end());
     ++generation_;
-    return EditorResult<AssetRecord>::applied(std::move(record));
+    return eve::editing::applied<AssetRecord>(std::move(record));
 }
 
 EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
@@ -92,7 +92,7 @@ EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
     uriToGuid_    = std::move(stagedUris);
     dependencies_ = std::move(stagedDependencies);
     ++generation_;
-    return EditorResult<std::vector<AssetRecord>>::applied(std::move(published));
+    return eve::editing::applied<std::vector<AssetRecord>>(std::move(published));
 }
 
 EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const {
@@ -100,7 +100,7 @@ EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const
     if (found == records_.end())
         return assetError<AssetRecord>(EditorStatus::NotFound, "editor.asset.not-found",
                                        "Asset is not indexed: " + guid.value());
-    return EditorResult<AssetRecord>::applied(found->second);
+    return eve::editing::applied<AssetRecord>(found->second);
 }
 
 EditorResult<AssetRecord> MemoryAssetDatabase::findByUri(const std::string& logicalUri) const {
@@ -149,7 +149,7 @@ EditorResult<AssetPage<AssetRecord>> MemoryAssetDatabase::query(const AssetQuery
         page.nextOffset = end;
         page.hasMore    = end < matches.size();
     }
-    return EditorResult<AssetPage<AssetRecord>>::applied(std::move(page));
+    return eve::editing::applied<AssetPage<AssetRecord>>(std::move(page));
 }
 
 std::vector<AssetDependency> MemoryAssetDatabase::dependencies(const AssetGuid& guid, bool incoming) const {
@@ -176,7 +176,7 @@ EditorResult<ImportTicket> ImportCoordinator::begin(const AssetGuid& asset, std:
         return assetError<ImportTicket>(EditorStatus::Rejected, "editor.import.invalid-request",
                                         "Import request requires asset, source hash and versioned importer");
     const std::uint64_t generation = ++generations_[asset];
-    return EditorResult<ImportTicket>::applied(
+    return eve::editing::applied<ImportTicket>(
         {asset, generation, std::move(sourceHash), std::move(importerId), importerVersion});
 }
 
@@ -207,12 +207,13 @@ EditorResult<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
                                        "Importer product must contain at least one published artifact");
     if (std::any_of(record.diagnostics.begin(), record.diagnostics.end(),
                     [](const EditorDiagnostic& diagnostic) {
-                        return diagnostic.severity == DiagnosticSeverity::Error;
+                        return diagnostic.severity() == DiagnosticSeverity::Error ||
+                               diagnostic.severity() == DiagnosticSeverity::Fatal;
                     }))
         return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.product-errors",
                                        "Importer product contains error diagnostics");
     auto published = database_->publish(std::move(record), std::move(product.dependencies));
-    if (published.isAccepted()) generations_.erase(ticket.asset);
+    if (published.ok()) generations_.erase(ticket.asset);
     return published;
 }
 

@@ -25,14 +25,14 @@ TEST_CASE("editor.import.generation_tickets_reject_stale_or_incomplete_worker_pr
     ImportCoordinator coordinator(&database);
     auto first = coordinator.begin(AssetGuid("walk"), "hash-a", "fbx-animation", 2);
     auto latest = coordinator.begin(AssetGuid("walk"), "hash-b", "fbx-animation", 2);
-    REQUIRE(first.value); REQUIRE(latest.value);
-    CHECK_EQ(static_cast<int>(coordinator.publish(*first.value, product(*first.value)).status),
+    REQUIRE(first.ok()); REQUIRE(latest.ok());
+    CHECK_EQ(static_cast<int>(coordinator.publish(first.value(), product(first.value())).code()),
              static_cast<int>(EditorStatus::Conflict));
-    ImportProduct incomplete = product(*latest.value);
+    ImportProduct incomplete = product(latest.value());
     incomplete.record.artifacts.clear();
-    CHECK_EQ(static_cast<int>(coordinator.publish(*latest.value, std::move(incomplete)).status),
+    CHECK_EQ(static_cast<int>(coordinator.publish(latest.value(), std::move(incomplete)).code()),
              static_cast<int>(EditorStatus::Rejected));
-    auto published = coordinator.publish(*latest.value, product(*latest.value));
-    REQUIRE(published.value); CHECK_EQ(published.value->sourceHash, "hash-b");
-    REQUIRE(database.find(AssetGuid("walk")).value);
+    auto published = coordinator.publish(latest.value(), product(latest.value()));
+    REQUIRE(published.ok()); CHECK_EQ(published.value().sourceHash, "hash-b");
+    REQUIRE(database.find(AssetGuid("walk")).ok());
 }

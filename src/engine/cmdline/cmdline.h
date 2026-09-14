@@ -49,7 +49,7 @@ public:
     /** @brief 无头 MCP 宿主：stdio（默认）或 TCP，供 AI 代理驱动。 */
     int McpHost(std::string path, int port);
 
-    /** @brief EveScript Language Server Protocol stdio host. */
+    /** @brief EveScript Language Server Protocol stdio host (devtools LanguageServer). */
     int LanguageServer(std::string path);
 
     /** @brief 把当前目录打成 .eve 压缩包。 */

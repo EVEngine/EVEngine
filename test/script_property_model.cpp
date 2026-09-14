@@ -1,6 +1,6 @@
 #include "common/Runtime.h"
 #include "property_access/PropertyAccess.h"
-#include "scriptmodel/ReflectedPropertyModel.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -11,7 +11,6 @@
 
 using namespace eve;
 using namespace eve::property_access;
-using namespace eve::scriptmodel;
 
 namespace {
 
@@ -33,10 +32,10 @@ class ModelHero extends ModelBase {
 
 }  // namespace
 
-TEST_CASE("scriptmodel.reflection_builds_shared_schema_and_structured_values") {
+TEST_CASE("property_access.reflection_builds_shared_schema_and_structured_values") {
     Runtime runtime(512, ssq::Libs::ALL);
     runtime.initialize();
-    runtime.runSource(kModelScript, "scriptmodel.nut");
+    runtime.runSource(kModelScript, "property_access.nut");
     ssq::Object hero = runtime.createInstance("ModelHero");
 
     ReflectedPropertyModel model(runtime, hero);
@@ -82,10 +81,10 @@ TEST_CASE("scriptmodel.reflection_builds_shared_schema_and_structured_values") {
     CHECK(stats->contains("armor"));
 }
 
-TEST_CASE("scriptmodel.writes_and_refreshes_through_shared_mvvm_contract") {
+TEST_CASE("property_access.writes_and_refreshes_through_shared_mvvm_contract") {
     Runtime runtime(512, ssq::Libs::ALL);
     runtime.initialize();
-    runtime.runSource(kModelScript, "scriptmodel.nut");
+    runtime.runSource(kModelScript, "property_access.nut");
     ssq::Object hero = runtime.createInstance("ModelHero");
     ReflectedPropertyModel model(runtime, hero);
 
@@ -116,10 +115,10 @@ TEST_CASE("scriptmodel.writes_and_refreshes_through_shared_mvvm_contract") {
     CHECK(!*alive);
 }
 
-TEST_CASE("scriptmodel.property_validation_matches_presentation_contract") {
+TEST_CASE("property_access.script_validation_matches_shared_contract") {
     Runtime runtime(512, ssq::Libs::ALL);
     runtime.initialize();
-    runtime.runSource(kModelScript, "scriptmodel.nut");
+    runtime.runSource(kModelScript, "property_access.nut");
     ssq::Object            hero = runtime.createInstance("ModelHero");
     ReflectedPropertyModel model(runtime, hero);
 
@@ -138,40 +137,40 @@ TEST_CASE("scriptmodel.property_validation_matches_presentation_contract") {
     CHECK(!sharedType.accepted);
     CHECK(!runtimeType.accepted);
     CHECK_EQ(sharedType.code, std::string("property_access.property.type"));
-    CHECK_EQ(runtimeType.code, std::string("scriptmodel.property.type"));
+    CHECK_EQ(runtimeType.code, std::string("property_access.script.type"));
 
     const auto sharedFinite  = validatePropertyValue(*hp, Value(std::numeric_limits<double>::quiet_NaN()));
     const auto runtimeFinite = model.write("hp", Value(std::numeric_limits<double>::quiet_NaN()));
     CHECK(!sharedFinite.accepted);
     CHECK(!runtimeFinite.accepted);
     CHECK_EQ(sharedFinite.code, std::string("property_access.property.finite"));
-    CHECK_EQ(runtimeFinite.code, std::string("scriptmodel.property.finite"));
+    CHECK_EQ(runtimeFinite.code, std::string("property_access.script.finite"));
 
     const auto sharedMinimum  = validatePropertyValue(*hp, Value(-1.0));
     const auto runtimeMinimum = model.write("hp", Value(-1.0));
     CHECK(!sharedMinimum.accepted);
     CHECK(!runtimeMinimum.accepted);
     CHECK_EQ(sharedMinimum.code, std::string("property_access.property.minimum"));
-    CHECK_EQ(runtimeMinimum.code, std::string("scriptmodel.property.minimum"));
+    CHECK_EQ(runtimeMinimum.code, std::string("property_access.script.minimum"));
 
     const auto sharedMaximum  = validatePropertyValue(*hp, Value(101.0));
     const auto runtimeMaximum = model.write("hp", Value(101.0));
     CHECK(!sharedMaximum.accepted);
     CHECK(!runtimeMaximum.accepted);
     CHECK_EQ(sharedMaximum.code, std::string("property_access.property.maximum"));
-    CHECK_EQ(runtimeMaximum.code, std::string("scriptmodel.property.maximum"));
+    CHECK_EQ(runtimeMaximum.code, std::string("property_access.script.maximum"));
 
     const auto sharedChoice  = validatePropertyValue(*job, Value("rogue"));
     const auto runtimeChoice = model.write("job", Value("rogue"));
     CHECK(!sharedChoice.accepted);
     CHECK(!runtimeChoice.accepted);
     CHECK_EQ(sharedChoice.code, std::string("property_access.property.choice"));
-    CHECK_EQ(runtimeChoice.code, std::string("scriptmodel.property.choice"));
+    CHECK_EQ(runtimeChoice.code, std::string("property_access.script.choice"));
 
     const auto sharedReadOnly  = validatePropertyValue(*tags, Value(Value::Array{}));
     const auto runtimeReadOnly = model.write("tags", Value(Value::Array{}));
     CHECK(!sharedReadOnly.accepted);
     CHECK(!runtimeReadOnly.accepted);
     CHECK_EQ(sharedReadOnly.code, std::string("property_access.property.read-only"));
-    CHECK_EQ(runtimeReadOnly.code, std::string("scriptmodel.property.read-only"));
+    CHECK_EQ(runtimeReadOnly.code, std::string("property_access.script.read-only"));
 }

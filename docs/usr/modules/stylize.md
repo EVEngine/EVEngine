@@ -40,7 +40,48 @@ function eve_render() {
 `stylize.newInstance("pixel")` + `setFloat("pixelSize", ...)` 即可量化像素；
 同一 stage 的多个效果用 `newRecipe()` 组合。
 
-### 3D 网格卡通描边
+### 3D 角色技能 mesh 特效
+
+除静态 `StyleInstance` 外，C++ API 提供 `MeshEffectInstance` 管理目标强句柄、
+样式参数以及淡入、持续、淡出生命周期。目标仍由 graphics 拥有和解析，播放
+时间仅通过调用方传入的 `dt` 推进。
+
+```cpp
+auto effect = stylize->createMeshEffect("ember");
+effect->bindTarget(MeshEffectTargetHandle(slot, generation));
+effect->setPlayback({0.08f, 0.35f, 0.15f, false});
+effect->style().setFloat("burnAmount", 0.72f);
+effect->play();
+effect->update(dt);
+```
+
+`TrailEmitter` 接收刀根和刀尖的世界坐标，执行最小距离过滤、寿命淘汰与瞬移
+断轨，并生成后端无关的三角形 Ribbon 快照：
+
+```cpp
+auto trail = stylize->createTrailEmitter();
+trail->update(dt);
+trail->append(bladeRoot, bladeTip);
+TrailMeshSnapshot ribbon = trail->buildMesh();
+```
+
+当前接口提供 CPU/runtime 核心。角色蒙皮复用、overlay draw、透明排序和
+Ribbon GPU buffer 上传由 `MeshEffectRenderer` 负责。renderer 必须在已打开的
+3D frame 内调用；它会复用角色原 Mesh 的蒙皮数据，并为 Ribbon 使用 graphics
+已有的动态 mesh ring buffer：
+
+```cpp
+auto renderer = stylize->createMeshEffectRenderer(*graphics);
+
+graphics->begin3DFrameToCanvas(target);
+auto overlayResult = renderer->submitOverlay(*effect, resolvedMeshSource);
+auto trailResult = renderer->submitTrail(*slashEffect, trail->buildMesh());
+graphics->end3DFrameToCanvas();
+
+if (!overlayResult.ok() || !trailResult.ok()) {
+    // Inspect the structured Status/Diagnostic before continuing.
+}
+```
 
 ```squirrel
 local toon = stylize.newInstance("cartoon");
@@ -48,6 +89,42 @@ local shader = toon.newMeshShader(gfx);   // ink / xray 同理
 local mat = gfx.newMaterial();
 mat.setShadingModel("custom");
 // 挂到 Renderable3D：r.setMaterial(mat) / r.setPart(...)
+```
+
+常用技能常见视觉风格可直接通过 `StyleInstance` 新建并映射为角色网格材质：
+
+- `slash`：刀光/斩击轨迹
+- `ember`：燃烧/灼烧反馈
+- `aura`：护盾、增益减益光环
+- `rim`：边缘发光，`dissolve`：溶解退场，`hologram`：全息，`snow`：覆盖式覆盖
+
+第三阶段提供 `SkillMeshEffect` 组合层，统一持有生命周期和可选 Ribbon。内置
+`WeaponSlash`、`ImpactFlash`、`ChargeAura`、`BurningBody` 四种配方：
+
+```cpp
+auto skill = stylize->createSkillMeshEffect(SkillMeshEffectKind::WeaponSlash);
+skill->bindTarget(targetHandle);
+skill->play();
+skill->update(dt);
+skill->appendBlade(bladeRoot, bladeTip);
+
+auto overlay = renderer->submitOverlay(skill->effect(), resolvedMeshSource);
+auto ribbon = renderer->submitTrail(skill->effect(), skill->trail().buildMesh());
+```
+
+`SkillMeshEffect` 不解析或持有场景对象；目标销毁、句柄代次校验和绘制顺序仍由
+调用方负责。所有时间由调用方注入，配方在相同 `dt` 与刀刃采样序列下确定性一致。
+
+```squirrel
+local fx = stylize.newInstance("slash");
+fx.setFloat("coreR", 1.0);
+fx.setFloat("coreG", 0.95);
+fx.setFloat("coreB", 1.0);
+fx.setFloat("intensity", 1.8);
+fx.setFloat("speed", 1.2);
+local fxShader = fx.newMeshShader(gfx);
+local mat = gfx.newMaterial();
+mat.setShadingModel("custom");
 ```
 
 ## API 快查
@@ -103,3 +180,4 @@ mat.setShadingModel("custom");
   `afterTonemap`；`requiresInput` 只报告 shader 实际读取的输入。
 - `supports(style, "gbuffer")` 可查询 definition 是否要求 depth 或 normal。
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。
+- Mesh 风格扩展：`rim` / `dissolve` / `hologram` / `snow` / `slash` / `ember` / `aura`。

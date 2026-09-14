@@ -1,15 +1,21 @@
 #include "asset/AssetCooker.h"
+#include "asset/AssetMigration.h"
 #include "asset/EvpackResourceReader.h"
 #include "asset/RuntimeDefinition.h"
-#include "asset_import/UnityImporter.h"
-#include "asset_import/TerrainImporter.h"
-#include "asset_procgen/EvpackInstanceSetLoader.h"
-#include "asset_procgen/EvpackTerrainLoader.h"
-#include "asset_procgen/EvpackTerrainMaterialLoader.h"
-#include "asset_scene/EvpackSceneTemplateLoader.h"
+#include "asset/import/UnityImporter.h"
+#include "asset/import/TerrainImporter.h"
+#include "asset/procgen/EvpackInstanceSetLoader.h"
+#include "asset/procgen/EvpackTerrainLoader.h"
+#include "asset/procgen/EvpackTerrainMaterialLoader.h"
+#include "asset/scene/EvpackSceneTemplateLoader.h"
+#include "editor/EditorDocumentService.h"
+#include "editor/EditorDiskDocumentStore.h"
+#include "procgen/editing/HeightmapTarget.h"
+#include "procgen/heightmap_target/TerrainDocumentCodec.h"
 
 #include <algorithm>
 #include <cmath>
+#include <filesystem>
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -138,14 +144,14 @@ MonoBehaviour:
     AssetCookProfile profile{{"android", "arm64", "vulkan", {"astc"}, "spirv-1.6", "high", {}},
                              CookPublication::LocalInspection, 16};
     auto cooked = cookEvaToEvpack(eva.value(), profile);
+    REQUIRE(cooked.ok());
     AssetCookProfile webProfile{{"web", "wasm32", "webgpu", {"rgba8"}, "wgsl-1", "high", {}},
                                 CookPublication::LocalInspection, 16};
     auto webCooked = cookEvaToEvpack(eva.value(), webProfile);
-    REQUIRE(cooked.ok());
     REQUIRE(webCooked.ok());
     auto runtime = parseEvpack(cooked.value().bytes);
-    auto webRuntime = parseEvpack(webCooked.value().bytes);
     REQUIRE(runtime.ok());
+    auto webRuntime = parseEvpack(webCooked.value().bytes);
     REQUIRE(webRuntime.ok());
     CHECK(runtime.value().chunks().size() >= prepared.value().manifest.assets.size());
     CHECK_EQ(runtime.value().chunks().size(), webRuntime.value().chunks().size());
@@ -154,17 +160,17 @@ MonoBehaviour:
     EvpackResourceReader androidReader(androidAdmitted);
     EvpackResourceReader webReader(webAdmitted);
     for (const auto& sourceAsset : prepared.value().manifest.assets) {
-        const std::string expected = sourceAsset.type + "/" +
-                                     std::to_string(sourceAsset.schemaVersion.value());
-        auto androidAsset = androidReader.read(
-            sourceAsset.asset, expected,
-            {"android", "arm64", "vulkan", {"astc"}, {"spirv-1.6"}, {"high"}, {}},
-            16 * 1024 * 1024);
+        auto currentVersion = currentAssetSchemaVersion(sourceAsset.type);
+        REQUIRE(currentVersion.ok());
+        const std::string expected = sourceAsset.type + "/" + std::to_string(currentVersion.value().value());
+        auto              androidAsset =
+            androidReader.read(sourceAsset.asset, expected,
+                               {"android", "arm64", "vulkan", {"astc"}, {"spirv-1.6"}, {"high"}, {}}, 16 * 1024 * 1024);
+        REQUIRE(androidAsset.ok());
         auto webAsset = webReader.read(
             sourceAsset.asset, expected,
             {"web", "wasm32", "webgpu", {"rgba8"}, {"wgsl-1"}, {"high"}, {}},
             16 * 1024 * 1024);
-        REQUIRE(androidAsset.ok());
         REQUIRE(webAsset.ok());
         CHECK_EQ(androidAsset.value().chunks.front().bytes,
                  webAsset.value().chunks.front().bytes);
@@ -196,6 +202,50 @@ MonoBehaviour:
     CHECK(std::abs(loadedTerrain.value().heightmap.height(1, 1) - 100.f) < 0.001f);
     auto sampled = loadedTerrain.value().spatial.sample(2.f, 42, 0.f);
     CHECK(sampled.getCount() > 0);
+
+    // Imported runtime terrain terminates in the same versioned document used by
+    // the level editor, then survives edit, atomic save, close and reopen.
+    const auto documentRoot = std::filesystem::temp_directory_path() /
+                              ("eve-terrain-document-" + terrainAsset->asset.id().format());
+    std::error_code cleanupError;
+    std::filesystem::remove_all(documentRoot, cleanupError);
+    editor::DiskAtomicDocumentStore documentStore(documentRoot);
+    editor::DocumentService firstDocuments(&documentStore);
+    auto initialDocument = heightmap_target::encodeTerrainDocument(
+        loadedTerrain.value().heightmap, loadedTerrain.value().spacingX,
+        loadedTerrain.value().spacingZ);
+    REQUIRE(initialDocument.ok());
+    auto openedDocument = firstDocuments.open(
+        {editor::DocumentKind::Scene, editor::AssetGuid(terrainAsset->asset.id().format())},
+        "Imported Terrain", "content://World/Imported.terrain", initialDocument.value());
+    REQUIRE(openedDocument.ok());
+    procgen_editing::HeightmapTarget editTarget(
+        terrainAsset->asset.id().format(), &loadedTerrain.value().heightmap);
+    CHECK(editTarget.writeScalar(1, 1, 73.25F) == editing::FieldWriteStatus::Applied);
+    auto editedDocument = heightmap_target::encodeTerrainDocument(
+        loadedTerrain.value().heightmap, loadedTerrain.value().spacingX,
+        loadedTerrain.value().spacingZ);
+    REQUIRE(editedDocument.ok());
+    REQUIRE(firstDocuments.edit(openedDocument.value().id,
+                                std::move(editedDocument).takeValue()).ok());
+    auto save = firstDocuments.requestSave(openedDocument.value().id);
+    REQUIRE(save.ok());
+    REQUIRE(firstDocuments.executeSave(save.value()).ok());
+    REQUIRE(firstDocuments.close(openedDocument.value().id).ok());
+
+    editor::DocumentService reopenedDocuments(&documentStore);
+    auto reopenedDocument = reopenedDocuments.open(
+        {editor::DocumentKind::Scene, editor::AssetGuid(terrainAsset->asset.id().format())},
+        "Imported Terrain", "content://World/Imported.terrain");
+    REQUIRE(reopenedDocument.ok());
+    auto persistedDocument = reopenedDocuments.content(reopenedDocument.value().id);
+    REQUIRE(persistedDocument.ok());
+    auto restoredTerrain = heightmap_target::decodeTerrainDocument(persistedDocument.value());
+    REQUIRE(restoredTerrain.ok());
+    CHECK_EQ(restoredTerrain.value().heightmap.getWidth(), 3);
+    CHECK_EQ(restoredTerrain.value().heightmap.getHeight(), 3);
+    CHECK(std::abs(restoredTerrain.value().heightmap.height(1, 1) - 73.25F) < 0.001F);
+    std::filesystem::remove_all(documentRoot, cleanupError);
 
     eve::asset_scene::EvpackSceneTemplateLoader sceneLoader(androidReader);
     auto loadedScene = sceneLoader.load(sceneAsset->asset, androidCapabilities);

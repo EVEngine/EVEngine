@@ -152,7 +152,7 @@ function buildWorkspace() {
     combatEditor.workspace = editor.newWorkspace("kaykit.combat", "KayKit Combat Action Editor");
     local timelineData = attackTimeline(combatEditor.clip.getDuration());
     combatEditor.timeline = requireResult(
-        editor.newActionTimelineEditor("asset.kaykit.light-attack", timelineData),
+        eve.ActionEditorModule().create("asset.kaykit.light-attack", timelineData),
         "Create action timeline editor");
     requireResult(combatEditor.timeline.configureWorkspace(combatEditor.workspace), "Compose workspace");
     combatEditor.workspace.setRegionSize("left", 225.0);

@@ -33,5 +33,5 @@ little-endian cell bytes，可选择 `None` 或 zstd level 3，并保存独立 d
 version 1/2 的 5-byte legacy cell
 仍可迁移，缺失 residual 恢复为 0，version 1 缺失的 `sourceLastEditSequence` 也恢复为 0。
 
-源码：[`src/modules/pixelworld_streaming/`](../../../src/modules/pixelworld_streaming/)。
+源码：[`src/modules/pixelworld/streaming/`](../../../src/modules/pixelworld/streaming/)。
 测试：[`test/pixelworld_streaming.cpp`](../../../test/pixelworld_streaming.cpp)。

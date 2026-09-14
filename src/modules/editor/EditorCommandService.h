@@ -92,9 +92,9 @@ public:
      */
     EditorResult<EditorValue> execute(const CommandId& id, const CommandContext& context,
                                       const EditorValue& payload) const;
-    /** @brief Produce a side-effect-free plan after applying host execution policy. */
+    /** @brief Produce a side-effect-free plan bound to the target, command generation, payload and source. */
     EditorResult<CommandPlan> plan(const CommandRequest& request, const HostProfile& profile) const;
-    /** @brief Execute a previously produced plan after revision and identity checks. */
+    /** @brief Execute a plan only when its lifetime, registration, policy and input bindings remain valid. */
     EditorResult<TransactionReceipt> executePlan(const CommandRequest& request, const CommandPlan& plan,
                                                  const HostProfile& profile) const;
 
@@ -104,11 +104,16 @@ private:
         EditorCommandHandler      handler;
         EditorCommandPlanner      planner;
         EditorCommandPlanExecutor planExecutor;
+        uint64_t                  generation = 0;
     };
 
     static EditorResult<EditorValue> error(EditorStatus status, const char* rule, std::string message);
+    [[nodiscard]] EditorResult<void> checkExecutionPolicy(const CommandDescriptor& descriptor, const CommandId& id,
+                                                            CommandSource source, const EditorValue& payload,
+                                                            const HostProfile& profile) const;
     std::vector<Registration>        commands_;
     uint64_t                         revision_     = 0;
+    uint64_t                         nextRegistrationGeneration_ = 1;
     mutable uint64_t                 planSequence_ = 0;
 };
 

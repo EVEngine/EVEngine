@@ -37,6 +37,8 @@ class AnimTrail;
 class AnimBatch;
 class AnimConstraintStack;
 class AnimSyncGroup;
+class DynamicBoneSolver;
+class FootIKSolver;
 class SpriteSheet;
 class SpriteClip;
 class SpriteAnim;
@@ -117,6 +119,18 @@ public:
     AnimBatch        *newBatch();
     /** @brief Create an ordered procedural constraint stack. */
     AnimConstraintStack *newConstraintStack(AnimSkeleton* skeleton);
+    /**
+     * @brief Create a dynamic bone solver for spring-damped chains.
+     * @ownership Returned object is owned by script GC.
+     * @lifetime Valid until script GC releases it.
+     */
+    DynamicBoneSolver *newDynamicBoneSolver(AnimSkeleton *skeleton);
+    /**
+     * @brief Create a paired-foot IK solver for a borrowed skeleton.
+     * @ownership Returned object is owned by script GC.
+     * @lifetime Valid until script GC releases it.
+     */
+    FootIKSolver *newFootIKSolver(AnimSkeleton *skeleton);
     /** @brief Create a normalized-time player synchronization group. */
     AnimSyncGroup* newSyncGroup();
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);

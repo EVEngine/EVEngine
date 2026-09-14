@@ -194,6 +194,34 @@ TEST_CASE("map.fov.exploredMemory") {
     delete fov;
 }
 
+TEST_CASE("map.fov.snapshotRestoresExactVisibilityMemory") {
+    Fov fov(7, 7);
+    fov.setBlockEmpty(false);
+    fov.setRadiusMetric("chebyshev");
+    const int revealer = fov.addRevealer(2, 2, 1);
+    fov.compute();
+    fov.setRevealerPosition(revealer, 5, 5);
+    fov.compute();
+
+    const auto saved = fov.snapshot();
+    CHECK(fov.isExplored(2, 2));
+    CHECK(!fov.isVisible(2, 2));
+    CHECK(fov.isVisible(5, 5));
+    CHECK(!fov.isExplored(0, 6));
+
+    fov.clearMemory();
+    CHECK(!fov.isExplored(2, 2));
+    REQUIRE(fov.restore(saved).ok());
+    CHECK(fov.isExplored(2, 2));
+    CHECK(!fov.isVisible(2, 2));
+    CHECK(fov.isVisible(5, 5));
+    CHECK(!fov.isExplored(0, 6));
+
+    auto invalid = saved;
+    invalid.width += 1;
+    CHECK(!fov.restore(invalid).ok());
+}
+
 TEST_CASE("map.fov.layerOpaqueGid") {
     auto *mod = Map::create();
     TileLayer *layer = mod->newLayer(7, 3, 8.f, 8.f);

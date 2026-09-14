@@ -109,8 +109,17 @@ jobs:
 
       - name: Install source-quality tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format-18
+          # This job needs Ubuntu packages only. Leave the runner's Chrome
+          # installation and repository configuration intact for browser jobs.
+          apt_empty_parts="$(mktemp -d)"
+          chmod 755 "$apt_empty_parts"
+          trap 'rmdir "$apt_empty_parts"' EXIT
+          apt_sources=(
+            -o "Dir::Etc::sourcelist=$GITHUB_WORKSPACE/.github/apt/ubuntu-noble.sources"
+            -o "Dir::Etc::sourceparts=$apt_empty_parts"
+          )
+          sudo apt-get "${apt_sources[@]}" update
+          sudo apt-get "${apt_sources[@]}" install -y clang-format-18
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
           python3 -m pip install --user --quiet pillow ruff
 
@@ -195,7 +204,11 @@ jobs:
       - name: Install profile toolchain
         timeout-minutes: 15
         run: |
-          sudo apt-get update
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build libvulkan-dev \
             libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
@@ -345,6 +358,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 debug
+        # A PR that changes the third-party patch/cache key must do a full cold
+        # dependency plus engine/test build. Recent windows-2025 runners can
+        # exceed 40 minutes without any compiler failure, so retain a bounded
+        # hang guard while allowing the cold build to finish.
         timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -355,7 +372,7 @@ jobs:
           fi
           make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
-              -DEVENGINE_COMPILER_CACHE=SCCACHE $tp_args"
+              -DEVENGINE_COMPILER_CACHE=OFF $tp_args"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -446,13 +463,25 @@ jobs:
           -R '^(graphics\.backendParity\..*|gpgpu\.procgen\.transformParity)$'
           --output-on-failure
 
+      - name: Run native Dawn Tensor contracts
+        # Ten isolated cases also pay the software adapter's initialization cost.
+        timeout-minutes: 30
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: >-
+          ctest --test-dir build/webgpu-native
+          -R '^tensor\.gpu\.'
+          --output-on-failure
+
       - name: Compare Vulkan and WebGPU parity images
         timeout-minutes: 5
         shell: pwsh
         run: |
           python -m pip install --quiet pillow
           python scripts/compare_render_backends.py `
-            artifacts/render-parity/vulkan artifacts/render-parity/webgpu
+            artifacts/render-parity/vulkan artifacts/render-parity/webgpu `
+            --result-json artifacts/render-parity/ci-result.json
 
       - name: Upload render parity artifacts
         if: always()
@@ -748,6 +777,14 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
 
+      - name: Report network phase timings
+        if: always()
+        run: |
+          log=build/macosx-debug/Testing/Temporary/LastTest.log
+          if test -f "$log"; then
+            sed -n '/NetHostPeers .*: .* ms/p' "$log"
+          fi
+
       - name: Configure native Dawn Metal lane
         timeout-minutes: 20
         run: |
@@ -787,7 +824,7 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: |
           ctest --test-dir build/webgpu-macos \
-            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))' \
+            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels)|tensor\.gpu\.|voxel\.render\.(faceDirAliasesDraw|atlasBoundaryIndices|emptyInstanceInputsAreNoOps|thinRectanglesAcrossAxes)|outline\.previewCube|procgen\.render\.dungeonCaveMazePreview)' \
             --output-on-failure
 
   macos-release:
@@ -973,7 +1010,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Full debug build + per-case unit tests + all-example smoke exceeded the
+    # previous 60-minute job cap even though each step stayed within its guard.
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
@@ -990,24 +1029,33 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # apt update may consume most of ten minutes while retrying a slow
+        # mirror, and Mesa can download at well below 100 KiB/s. Keep enough
+        # time for an active transfer to finish.
+        timeout-minutes: 25
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
           # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
           [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -1016,7 +1064,7 @@ jobs:
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers vulkan-tools \
-            xvfb
+            xvfb ffmpeg python3-pil
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
@@ -1091,15 +1139,35 @@ jobs:
           path: build/third-party-binary/linux-debug
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
+      - name: Verify resource format fixture integrity
+        timeout-minutes: 5
+        run: python3 scripts/resource_format_suite.py --report build/resource-format-inventory.json
+
       - name: Run linux unit tests
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
+          EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
         run: |
           # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
           # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
           # SEGFAULT) that is not reproducible in isolation.
           xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2
+
+      - name: Verify resource test results without skipped or warning-only cases
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
+        run: |
+          xvfb-run -a -s "-screen 0 1280x800x24" python3 scripts/resource_format_suite.py \
+            --build-dir build/linux-debug --report build/resource-format-report.json
+
+      - name: Independently decode resource image exports
+        timeout-minutes: 5
+        run: |
+          /usr/bin/python3 scripts/check_resource_format_exports.py build/resource-format-exports \
+            --report build/resource-format-export-report.json
 
       - name: Run headless GPU tests without Xvfb
         timeout-minutes: 15
@@ -1148,7 +1216,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Keep parity with the debug lane's full native dependency install.
+        timeout-minutes: 15
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
@@ -1159,9 +1228,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1219,9 +1292,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    # The build and test steps have independent bounded guards. Leave
-    # enough job-level budget for both plus toolchain setup and cache reporting.
-    timeout-minutes: 120
+    # Allow the 100-minute cold optimized sanitizer build and 90-minute test
+    # guards plus dependency/toolchain setup and cache reporting.
+    timeout-minutes: 270
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1241,21 +1314,28 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Sanitizer jobs use the same full dependency set as the debug lane.
+        timeout-minutes: 20
         run: |
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
           [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -1285,10 +1365,10 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      - name: Build linux debug (ASan+UBSan)
-        # A cold full-profile sanitizer build now takes just over 40 minutes
-        # after the asset pipeline modules and tests were added.
-        timeout-minutes: 55
+      - name: Build linux RelWithDebInfo (ASan+UBSan)
+        # PRs cannot populate the shared sccache. A new compiler flag set is
+        # therefore a cold build; run 34596121051 reached 67% after 55 minutes.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1301,14 +1381,13 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        # The process-isolated 3513-case suite reached 3444/3513 at the old
-        # 60-minute limit without a sanitizer finding. Keep a bounded guard
-        # while allowing the measured hosted-runner overhead to finish.
-        timeout-minutes: 70
+        # Keep every case process-isolated, but use all CPUs exposed by the
+        # GitHub runner instead of hard-coding a runner-size assumption.
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS="$(nproc)"
 
   linux-coverage:
     name: Linux (Coverage)
@@ -1331,7 +1410,8 @@ jobs:
           submodules: recursive
 
       - name: Install system packages
-        timeout-minutes: 10
+        # Keep parity with the other full native Linux dependency installs.
+        timeout-minutes: 15
         run: |
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
@@ -1339,9 +1419,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1447,7 +1531,11 @@ jobs:
       - name: Install fuzz toolchain
         timeout-minutes: 5
         run: |
-          sudo apt-get update
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends clang ninja-build
 
       - name: Setup C/C++ compilation cache
@@ -1489,6 +1577,9 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      EMSCRIPTEN_VERSION: "6.0.9"
+      EMDAWNWEBGPU_RELEASE: "v20260423.175430"
     # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
     # carry -Xclang flags that sccache v0.16 treats as non-cacheable, adding
     # wrapper overhead without storing any of the engine's object files.
@@ -1512,9 +1603,13 @@ jobs:
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
             timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -1534,7 +1629,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: $HOME/emsdk
-          key: emsdk-${{ runner.os }}-${{ runner.arch }}-latest
+          key: emsdk-${{ runner.os }}-${{ runner.arch }}-${{ env.EMSCRIPTEN_VERSION }}-${{ env.EMDAWNWEBGPU_RELEASE }}-v1
 
       - name: Install Emscripten SDK
         timeout-minutes: 30
@@ -1544,8 +1639,46 @@ jobs:
           else
             git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
           fi
-          "$HOME/emsdk/emsdk" install latest
-          "$HOME/emsdk/emsdk" activate latest
+          "$HOME/emsdk/emsdk" install "$EMSCRIPTEN_VERSION"
+          "$HOME/emsdk/emsdk" activate "$EMSCRIPTEN_VERSION"
+
+      - name: Acquire and verify immutable WebGPU port
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/webgpu-dependencies
+          archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
+          url="https://github.com/google/dawn/releases/download/${EMDAWNWEBGPU_RELEASE}/emdawnwebgpu_pkg-${EMDAWNWEBGPU_RELEASE}.zip"
+          if ! curl --fail --location --retry 4 --retry-all-errors --retry-delay 5 \
+            --output "$archive" "$url"; then
+            python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
+            exit 1
+          fi
+          python3 scripts/verify_webgpu_dependencies.py \
+            --lock cmake/webgpu_dependencies.json \
+            --archive "$archive" \
+            --emscripten-version "$EMSCRIPTEN_VERSION" \
+            --result-json artifacts/webgpu-dependencies/ci-result.json
+
+      - name: Prewarm Emscripten WebGPU port
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          source "$HOME/emsdk/emsdk_env.sh"
+          for attempt in 1 2 3; do
+            em++ --use-port=emdawnwebgpu -x c++ -c /dev/null \
+              -o artifacts/webgpu-dependencies/port-probe.o && exit 0
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
+          done
+          exit 1
+
+      - name: Upload WebGPU dependency result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-dependency-result
+          path: artifacts/webgpu-dependencies/ci-result.json
+          if-no-files-found: warn
 
       - name: Configure webgpu (Emscripten/WASM)
         timeout-minutes: 15

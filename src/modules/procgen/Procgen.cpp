@@ -7,7 +7,10 @@
 #include "procgen/BiomeScript.h"
 #include "procgen/PointGraphScript.h"
 #include "procgen/ProcgenCapabilities.h"
+#include "procgen/RuntimeGenerationScript.h"
 #include "procgen/ShapeGrammarScript.h"
+#include "procgen/mesh/MeshModifierGraphScript.h"
+#include "procgen/mesh/DynamicMeshUvPaintSession.h"
 
 #include "image/ImageData.h"
 
@@ -17,6 +20,7 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainFile.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 
@@ -273,6 +277,39 @@ ssq::Table staleProcgenResult(HSQUIRRELVM vm, const char* objectName) {
     return eve::script::projectResult(
         vm, procgenBindingFailure<T>(eve::DiagnosticCode::StaleHandle,
                                      std::string("owned procgen ") + objectName + " handle is stale", objectName));
+}
+
+/** @brief Projects a decoded terrain file as an owned heightmap proxy plus metadata.
+ *
+ * The heightmap arrives through the same owning-handle path as `newHeightmap`, so
+ * scripts sample it with the ordinary `ProcgenHeightmap` methods. Spacing is only
+ * authoritative when `hasSpacing` is true: an EVTR archive stores no
+ * metres-per-cell and leaves that to the level that references it.
+ */
+ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrainFile>&& decoded) {
+    if (!decoded) return eve::script::projectStatusResult(vm, decoded.status(), false, false);
+    DecodedTerrainFile terrain = std::move(decoded).takeValue();
+    const std::int64_t width   = terrain.heightmap.getWidth();
+    const std::int64_t height  = terrain.heightmap.getHeight();
+    auto*              module  = Procgen::create();
+    auto               result  = makeOwnedNativeProxy<Heightmap>(
+        vm, module->adoptHeightmap(std::move(terrain.heightmap)),
+        [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
+        [](ProcgenHeightmapHandleRef ref) {
+            auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+            return owner ? owner->releaseHeightmap(ref)
+                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                       "Procgen module is no longer loaded", "heightmap");
+        });
+    result.set("spacingX", terrain.spacingX);
+    result.set("spacingZ", terrain.spacingZ);
+    result.set("hasSpacing", terrain.hasSpacing);
+    result.set("minHeight", terrain.minHeight);
+    result.set("maxHeight", terrain.maxHeight);
+    result.set("format", terrain.format);
+    result.set("width", width);
+    result.set("height", height);
+    return result;
 }
 
 /** @brief Projects one native recipe schema through the canonical Result table.
@@ -1275,6 +1312,25 @@ eve::script::Borrowed<PointGraph> Procgen::resolvePointGraph(ProcgenPointGraphHa
     return pointGraphs_.resolve(reference);
 }
 
+eve::script::Borrowed<MeshModifierGraph> Procgen::resolveMeshModifierGraph(
+    ProcgenMeshModifierGraphHandleRef reference) noexcept {
+    return meshModifierGraphs_.resolve(reference);
+}
+
+eve::script::Borrowed<MeshDeformationSession> Procgen::resolveMeshDeformationSession(
+    ProcgenMeshDeformationSessionHandleRef reference) noexcept {
+    return meshDeformationSessions_.resolve(reference);
+}
+
+eve::script::Borrowed<DynamicMeshUvPaintSession> Procgen::resolveDynamicMeshUvPaintSession(
+    ProcgenDynamicMeshUvPaintSessionHandleRef reference) noexcept {
+    return dynamicMeshUvPaintSessions_.resolve(reference);
+}
+
+eve::script::Borrowed<SplinePath> Procgen::resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept {
+    return splinePaths_.resolve(reference);
+}
+
 eve::script::Borrowed<BiomeRules> Procgen::resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept {
     return biomeRules_.resolve(reference);
 }
@@ -1291,6 +1347,16 @@ eve::Result<void> Procgen::release(ProcgenRuntimeGenerationHandleRef reference) 
     return runtimeGenerations_.erase(reference);
 }
 eve::Result<void> Procgen::release(ProcgenPointGraphHandleRef reference) { return pointGraphs_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenMeshModifierGraphHandleRef reference) {
+    return meshModifierGraphs_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenMeshDeformationSessionHandleRef reference) {
+    return meshDeformationSessions_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenDynamicMeshUvPaintSessionHandleRef reference) {
+    return dynamicMeshUvPaintSessions_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenSplinePathHandleRef reference) { return splinePaths_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) { return biomeRules_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) { return shapeGrammars_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenLSystemHandleRef reference) { return lsystems_.erase(reference); }
@@ -1299,6 +1365,16 @@ bool Procgen::isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcep
     return runtimeGenerations_.isStale(reference);
 }
 bool Procgen::isStale(ProcgenPointGraphHandleRef reference) const noexcept { return pointGraphs_.isStale(reference); }
+bool Procgen::isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcept {
+    return meshModifierGraphs_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept {
+    return meshDeformationSessions_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenDynamicMeshUvPaintSessionHandleRef reference) const noexcept {
+    return dynamicMeshUvPaintSessions_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenSplinePathHandleRef reference) const noexcept { return splinePaths_.isStale(reference); }
 bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept { return biomeRules_.isStale(reference); }
 bool Procgen::isStale(ProcgenShapeGrammarHandleRef reference) const noexcept {
     return shapeGrammars_.isStale(reference);
@@ -2227,6 +2303,13 @@ eve::Result<ProcgenHeightmapHandleRef> Procgen::newHeightmapHandle(int width, in
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(width, height));
 }
 
+eve::Result<ProcgenHeightmapHandleRef> Procgen::adoptHeightmap(Heightmap heightmap) {
+    if (heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0)
+        return procgenBindingFailure<ProcgenHeightmapHandleRef>(
+            eve::DiagnosticCode::InvalidArgument, "decoded heightmap has no samples", "heightmap");
+    return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(std::move(heightmap)));
+}
+
 eve::script::Borrowed<Heightmap> Procgen::resolveHeightmap(ProcgenHeightmapHandleRef reference) noexcept {
     return ownership_->heightmaps.resolve(reference);
 }
@@ -2797,6 +2880,7 @@ void Procgen::expose(ssq::Table &table) {
     expose(cls);
     exposeBiomeRules(table);
     exposePointGraph(table);
+    exposeMeshModifierGraph(table);
     exposeShapeGrammar(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
@@ -3007,137 +3091,7 @@ void Procgen::expose(ssq::Table &table) {
     pointDelta.addFunc("getTargetFingerprint",
                        [](PointDelta* value) { return std::to_string(value->targetFingerprint); });
 
-    auto cellRequest = table.addClass<ProcgenCellRequest>(
-        "ProcgenCellRequest", std::function<ProcgenCellRequest*()>([]() -> ProcgenCellRequest* { return nullptr; }),
-        true);
-    cellRequest.addFunc("getLevel", &ProcgenCellRequest::getLevel);
-    cellRequest.addFunc("getX", &ProcgenCellRequest::getX);
-    cellRequest.addFunc("getZ", &ProcgenCellRequest::getZ);
-    cellRequest.addFunc("getSeed", &ProcgenCellRequest::getSeed);
-    cellRequest.addFunc("getTicket", &ProcgenCellRequest::getTicket);
-    cellRequest.addFunc("getMinX", &ProcgenCellRequest::getMinX);
-    cellRequest.addFunc("getMinZ", &ProcgenCellRequest::getMinZ);
-    cellRequest.addFunc("getMaxX", &ProcgenCellRequest::getMaxX);
-    cellRequest.addFunc("getMaxZ", &ProcgenCellRequest::getMaxZ);
-
-    auto runtimeGeneration = table.addClass<RuntimeGeneration>(
-        "ProcgenRuntimeGeneration", std::function<RuntimeGeneration*()>([]() -> RuntimeGeneration* { return nullptr; }),
-        true);
-    runtimeGeneration.addFunc("clear", &RuntimeGeneration::clear);
-    runtimeGeneration.addFunc("addLevel", &RuntimeGeneration::addLevel);
-    runtimeGeneration.addFunc("getLevelCount", &RuntimeGeneration::getLevelCount);
-    runtimeGeneration.addFunc("getLevelCellSize", &RuntimeGeneration::getLevelCellSize);
-    runtimeGeneration.addFunc("getLevelGenerationRadius", &RuntimeGeneration::getLevelGenerationRadius);
-    runtimeGeneration.addFunc("getLevelCleanupRadius", &RuntimeGeneration::getLevelCleanupRadius);
-    runtimeGeneration.addFunc("setDirectionWeight", &RuntimeGeneration::setDirectionWeight);
-    runtimeGeneration.addFunc("getDirectionWeight", &RuntimeGeneration::getDirectionWeight);
-    runtimeGeneration.addFunc("setMaxGenerating", &RuntimeGeneration::setMaxGenerating);
-    runtimeGeneration.addFunc("getMaxGenerating", &RuntimeGeneration::getMaxGenerating);
-    runtimeGeneration.addFunc("setMaxActiveCells", &RuntimeGeneration::setMaxActiveCells);
-    runtimeGeneration.addFunc("getMaxActiveCells", &RuntimeGeneration::getMaxActiveCells);
-    runtimeGeneration.addFunc("setMaxPointsPerCell", &RuntimeGeneration::setMaxPointsPerCell);
-    runtimeGeneration.addFunc("getMaxPointsPerCell", &RuntimeGeneration::getMaxPointsPerCell);
-    runtimeGeneration.addFunc("setMaxResidentPoints", &RuntimeGeneration::setMaxResidentPoints);
-    runtimeGeneration.addFunc("getMaxResidentPoints", &RuntimeGeneration::getMaxResidentPoints);
-    runtimeGeneration.addFunc("getResidentPointCount", &RuntimeGeneration::getResidentPointCount);
-    runtimeGeneration.addFunc("getRejectedOutputCount", &RuntimeGeneration::getRejectedOutputCount);
-    runtimeGeneration.addFunc("trimToResidentPoints", &RuntimeGeneration::trimToResidentPoints);
-    runtimeGeneration.addFunc("setMaxGenerationRetries", &RuntimeGeneration::setMaxGenerationRetries);
-    runtimeGeneration.addFunc("getMaxGenerationRetries", &RuntimeGeneration::getMaxGenerationRetries);
-    runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
-    runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
-    runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);
-    runtimeGeneration.addFunc("setRefreshWorkBudget", &RuntimeGeneration::setRefreshWorkBudget);
-    runtimeGeneration.addFunc("getRefreshWorkBudget", &RuntimeGeneration::getRefreshWorkBudget);
-    runtimeGeneration.addFunc("isRefreshPending", &RuntimeGeneration::isRefreshPending);
-    runtimeGeneration.addFunc("getCommittedRefreshRevision", &RuntimeGeneration::getCommittedRefreshRevision);
-    runtimeGeneration.addFunc(
-        "continueGenerationRefresh", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value) {
-            return eve::script::projectResult(
-                vm,
-                value ? value->continueGenerationRefresh()
-                      : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                             "continueGenerationRefresh requires RuntimeGeneration",
-                                                             "runtimeGeneration"),
-                [](std::uint64_t processed) { return eve::Value(std::to_string(processed)); });
-        });
-    runtimeGeneration.addFunc("updateSource", &RuntimeGeneration::updateSource);
-    runtimeGeneration.addFunc("setGenerationSource", &RuntimeGeneration::setGenerationSource);
-    runtimeGeneration.addFunc("removeGenerationSource", &RuntimeGeneration::removeGenerationSource);
-    runtimeGeneration.addFunc("clearGenerationSources", &RuntimeGeneration::clearGenerationSources);
-    runtimeGeneration.addFunc("getGenerationSourceCount", &RuntimeGeneration::getGenerationSourceCount);
-    runtimeGeneration.addFunc("getGenerationSourceId", &RuntimeGeneration::getGenerationSourceId);
-    runtimeGeneration.addFunc("refreshGenerationSources", &RuntimeGeneration::refreshGenerationSources);
-    runtimeGeneration.addFunc("setFrustumCulling", &RuntimeGeneration::setFrustumCulling);
-    runtimeGeneration.addFunc("isFrustumCullingEnabled", &RuntimeGeneration::isFrustumCullingEnabled);
-    runtimeGeneration.addFunc("getFrustumHalfAngle", &RuntimeGeneration::getFrustumHalfAngle);
-    runtimeGeneration.addFunc("getFrustumBehindRadius", &RuntimeGeneration::getFrustumBehindRadius);
-    runtimeGeneration.addFunc("getPendingGenerateCount", &RuntimeGeneration::getPendingGenerateCount);
-    runtimeGeneration.addFunc("getGeneratingCount", &RuntimeGeneration::getGeneratingCount);
-    runtimeGeneration.addFunc("getActiveCellCount", &RuntimeGeneration::getActiveCellCount);
-    runtimeGeneration.addFunc("getPendingCleanupCount", &RuntimeGeneration::getPendingCleanupCount);
-    runtimeGeneration.addFunc("getCancelledGenerationCount", &RuntimeGeneration::getCancelledGenerationCount);
-    runtimeGeneration.addFunc("getFailedCellCount", &RuntimeGeneration::getFailedCellCount);
-    runtimeGeneration.addFunc("retryFailedCells", &RuntimeGeneration::retryFailedCells);
-    runtimeGeneration.addFunc("nextGenerate", &RuntimeGeneration::nextGenerate);
-    runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
-    runtimeGeneration.addFunc("isRequestCurrent", &RuntimeGeneration::isRequestCurrent);
-    runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);
-    runtimeGeneration.addFunc("failGeneration", &RuntimeGeneration::failGeneration);
-    runtimeGeneration.addFunc("completeCleanup", &RuntimeGeneration::completeCleanup);
-    runtimeGeneration.addFunc("completeCleanupsAtomic", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value,
-                                                                                             ssq::Array requestArray) {
-        std::vector<const ProcgenCellRequest*> requests;
-        requests.reserve(requestArray.size());
-        for (size_t index = 0; index < requestArray.size(); ++index)
-            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
-        return eve::script::projectResult(
-            vm,
-            value
-                ? value->completeCleanupsAtomic(requests)
-                : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                       "completeCleanupsAtomic requires RuntimeGeneration", "runtime"),
-            [](std::uint64_t completed) { return eve::Value(std::to_string(completed)); });
-    });
-    runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
-    runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
-    runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);
-    runtimeGeneration.addFunc(
-        "applyCellUpdate", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value, int level, int x, int z,
-                                                                 const std::string& revisionText, PointSet* output) {
-            std::uint64_t revision = 0;
-            const auto [end, error] =
-                std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), revision);
-            if (!output || error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
-                return eve::script::projectResult(
-                    vm, procgenBindingFailure<std::uint64_t>(
-                            eve::DiagnosticCode::InvalidArgument,
-                            "applyCellUpdate requires an output and a non-zero decimal revision", "revision"),
-                    [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
-            return eve::script::projectResult(
-                vm, value->applyCellUpdate(level, x, z, revision, *output),
-                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
-        });
-    runtimeGeneration.addFunc(
-        "migrateCellPointIds", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value, int level, int x, int z,
-                                                                     const std::string& revisionText) {
-            std::uint64_t revision = 0;
-            const auto [end, error] =
-                std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), revision);
-            if (error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
-                return eve::script::projectResult(
-                    vm, procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                             "migrateCellPointIds requires a non-zero decimal revision",
-                                                             "revision"),
-                    [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
-            return eve::script::projectResult(
-                vm, value->migrateCellPointIds(level, x, z, revision),
-                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
-        });
-    runtimeGeneration.addFunc("getCellDelta", &RuntimeGeneration::getCellDelta);
-    runtimeGeneration.addFunc("serializeCell", &RuntimeGeneration::serializeCell);
-    runtimeGeneration.addFunc("deserializeCell", &RuntimeGeneration::deserializeCell);
-    runtimeGeneration.addFunc("debugReport", &RuntimeGeneration::debugReport);
+    exposeRuntimeGeneration(table);
 
     auto context = table.addClass<ProcgenContext>(
         "ProcgenContext", std::function<ProcgenContext*()>([]() -> ProcgenContext* { return nullptr; }), true);
@@ -3926,7 +3880,22 @@ void Procgen::expose(ssq::Class &cls) {
             [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
             [module](ProcgenHeightmapHandleRef ref) { return module->releaseHeightmap(ref); });
     });
-    cls.addFunc("newCloudField", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
+    // Decoded terrain files return the same heightmap proxy as newHeightmap, with
+    // the file's own metadata attached to the result envelope. Spacing is only
+    // authoritative for EVTRN: an EVTR archive stores no metres-per-cell, so the
+    // referencing level owns that value and `hasSpacing` is false.
+    cls.addFunc("loadTerrainFile",
+                [vm = cls.getHandle()](Procgen*, const std::string& path, const std::string& format) -> ssq::Table {
+                    return projectDecodedTerrainResult(
+                        vm, loadTerrainFile(path, parseTerrainFileFormat(format)));
+                });
+    cls.addFunc("loadTerrainBytes",
+                [vm = cls.getHandle()](Procgen*, const std::string& bytes, const std::string& format) -> ssq::Table {
+                    const auto* data = reinterpret_cast<const std::uint8_t*>(bytes.data());
+                    return projectDecodedTerrainResult(
+                        vm, decodeTerrainFile(std::span<const std::uint8_t>(data, bytes.size()),
+                                                       parseTerrainFileFormat(format)));
+                });    cls.addFunc("newCloudField", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         auto* module = Procgen::create();
         return makeOwnedNativeProxy<CloudField>(
             vm, module->newCloudFieldHandle(),
@@ -4091,6 +4060,82 @@ void Procgen::expose(ssq::Class &cls) {
                 return owner ? owner->release(ref)
                              : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                                            "Procgen module is no longer loaded", "pointGraph");
+            });
+    });
+    cls.addFunc("newMeshModifierGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<MeshModifierGraph>(
+            vm, value->newMeshModifierGraphHandle(),
+            [value](ProcgenMeshModifierGraphHandleRef ref) { return value->resolveMeshModifierGraph(ref); },
+            [](ProcgenMeshModifierGraphHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "meshModifierGraph");
+            });
+    });
+    cls.addFunc("newSplinePath", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<SplinePath>(
+            vm, value->newSplinePathHandle(),
+            [value](ProcgenSplinePathHandleRef ref) { return value->resolveSplinePath(ref); },
+            [](ProcgenSplinePathHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "splinePath");
+            });
+    });
+    cls.addFunc("newMeshDeformationSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<MeshDeformationSession>(
+            vm, value->newMeshDeformationSessionHandle(),
+            [value](ProcgenMeshDeformationSessionHandleRef ref) {
+                return value->resolveMeshDeformationSession(ref);
+            },
+            [](ProcgenMeshDeformationSessionHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "meshDeformation");
+            });
+    });
+    cls.addFunc("newDynamicMeshUvPaintSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<DynamicMeshUvPaintSession>(
+            vm, value->newDynamicMeshUvPaintSessionHandle(),
+            [value](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
+                return value->resolveDynamicMeshUvPaintSession(ref);
+            },
+            [](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "dynamicUvPaint");
             });
     });
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {

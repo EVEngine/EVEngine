@@ -106,6 +106,8 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/external/zeroerr/include/zeroerr/"
 # SDK's API surface always matches the target runtime. Single source of truth is
 # cmake/module_manifest.cmake (EVE_ENABLED_MODULES); CORE modules (common /
 # cmdline / devtools) live under src/engine and have no src/modules/<name> dir.
+# Nested authoring facets install to include/eve/<host>/editing (matching
+# #include "host/editing/Header.h"); the host package excludes those child dirs.
 if(NOT DEFINED EVE_ENABLED_MODULES)
     # Defensive fallback when included outside the engine configure: every dir.
     file(GLOB _eve_all_module_dirs RELATIVE "${CMAKE_SOURCE_DIR}/src/modules"
@@ -113,22 +115,32 @@ if(NOT DEFINED EVE_ENABLED_MODULES)
     set(EVE_ENABLED_MODULES ${_eve_all_module_dirs})
 endif()
 foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
+    if(EVE_MODULE_${_eve_mod}_CORE)
         continue()
     endif()
-    install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"
-        DESTINATION include/eve/${_eve_mod}
+    eve_module_scan_dir("${_eve_mod}" _eve_mod_dir)
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}")
+        continue()
+    endif()
+    eve_module_nested_scan_excludes("${_eve_mod}" _eve_nested_heads)
+    set(_eve_install_excludes
+        PATTERN "sdl" EXCLUDE
+        PATTERN "vulkan" EXCLUDE
+        PATTERN "webgpu" EXCLUDE
+        PATTERN "physfs" EXCLUDE
+        PATTERN "openal" EXCLUDE
+        PATTERN "imgui" EXCLUDE
+        PATTERN "cppfs" EXCLUDE
+        PATTERN "include_shim" EXCLUDE)
+    foreach(_eve_nested IN LISTS _eve_nested_heads)
+        list(APPEND _eve_install_excludes PATTERN "${_eve_nested}" EXCLUDE)
+    endforeach()
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}/"
+        DESTINATION include/eve/${_eve_mod_dir}
         FILES_MATCHING
             PATTERN "*.h"
             PATTERN "*.hpp"
-            PATTERN "sdl" EXCLUDE
-            PATTERN "vulkan" EXCLUDE
-            PATTERN "webgpu" EXCLUDE
-            PATTERN "physfs" EXCLUDE
-            PATTERN "openal" EXCLUDE
-            PATTERN "imgui" EXCLUDE
-            PATTERN "cppfs" EXCLUDE
-            PATTERN "include_shim" EXCLUDE
+            ${_eve_install_excludes}
     )
 endforeach()
 

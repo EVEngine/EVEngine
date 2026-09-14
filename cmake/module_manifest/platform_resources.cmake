@@ -7,10 +7,11 @@ eve_declare_module(NAME window REQUIRED LAYER 1 SCRIPT Window SLOT win
                    THIRDPARTY sdl2)
 eve_declare_module(NAME image LAYER 1 SCRIPT Image
                    DEPS filesystem
-                   THIRDPARTY medialoader_image
+                   THIRDPARTY medialoader_image webp
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME asset_import LAYER 1
                    DEPS asset data cmdline
+                   THIRDPARTY zlib assimp xxhash
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME i18n LAYER 1 SCRIPT I18n SLOT i18n
                    DEPS filesystem
@@ -24,7 +25,7 @@ eve_declare_module(NAME joystick LAYER 1 SCRIPT Joystick
                    GROUP minimal 2d 3d web)
 # L4 -- model/resource orchestration
 eve_declare_module(NAME model3d LIB EVModel3D LAYER 4 SCRIPT Model3D SLOT model3d
-                   DEPS filesystem
+                   DEPS filesystem image
                    THIRDPARTY medialoader_model assimp
                    GROUP 3d)
 # L1 -- platform services (continued)

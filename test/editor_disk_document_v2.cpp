@@ -34,71 +34,71 @@ TEST_CASE("editor.v2.disk_document_atomic_conflict_and_autosave") {
     DocumentService   documents(&store);
     const DocumentKey key{DocumentKind::Scene, AssetGuid("park-disk")};
     auto              opened = documents.open(key, "Park", "content://World/Park.evscene", versionValue(0));
-    REQUIRE(opened.isAccepted());
-    const DocumentId id = opened.value->id;
-    REQUIRE(documents.edit(id, versionValue(1)).isAccepted());
+    REQUIRE(opened.ok());
+    const DocumentId id = opened.value().id;
+    REQUIRE(documents.edit(id, versionValue(1)).ok());
     const auto firstTicket = documents.requestSave(id);
-    REQUIRE(firstTicket.isAccepted());
-    REQUIRE(documents.executeSave(*firstTicket.value).isAccepted());
+    REQUIRE(firstTicket.ok());
+    REQUIRE(documents.executeSave(firstTicket.value()).ok());
 
     const std::filesystem::path path = store.resolve("content://World/Park.evscene");
     CHECK(std::filesystem::is_regular_file(path));
     const auto savedOne = store.read("content://World/Park.evscene");
-    REQUIRE(savedOne.isAccepted());
-    CHECK(savedOne.value->content == versionValue(1));
+    REQUIRE(savedOne.ok());
+    CHECK(savedOne.value().content == versionValue(1));
 
     // A timestamp-only external touch does not create a false conflict.
     std::error_code ec;
     std::filesystem::last_write_time(path, std::filesystem::file_time_type::clock::now(), ec);
     CHECK(!ec);
-    REQUIRE(documents.edit(id, versionValue(2)).isAccepted());
+    REQUIRE(documents.edit(id, versionValue(2)).ok());
     auto sameContentBase = documents.requestSave(id);
-    REQUIRE(documents.executeSave(*sameContentBase.value).isAccepted());
+    REQUIRE(documents.executeSave(sameContentBase.value()).ok());
 
     // Manual external content mutation with a stale envelope revision is still
     // detected because CAS validates the computed disk content hash.
     std::ifstream     input(path, std::ios::binary);
     const std::string json{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     auto              envelope = editorValueFromJson(json);
-    REQUIRE(envelope.isAccepted());
-    auto* envelopeObject = envelope.value->getIf<EditorValue::Object>();
+    REQUIRE(envelope.ok());
+    auto* envelopeObject = envelope.value().getIf<EditorValue::Object>();
     REQUIRE(envelopeObject != nullptr);
     (*envelopeObject)["content"] = versionValue(99);
     input.close();
     std::ofstream output(path, std::ios::binary | std::ios::trunc);
-    output << editorValueToJson(*envelope.value);
+    output << editorValueToJson(envelope.value());
     output.close();
 
-    REQUIRE(documents.edit(id, versionValue(3)).isAccepted());
+    REQUIRE(documents.edit(id, versionValue(3)).ok());
     auto       stale    = documents.requestSave(id);
-    const auto conflict = documents.executeSave(*stale.value);
-    CHECK(static_cast<int>(conflict.status) == static_cast<int>(EditorStatus::Conflict));
-    CHECK(static_cast<int>(conflict.value->state) == static_cast<int>(DocumentState::Conflict));
+    const auto conflict = documents.executeSave(stale.value());
+    CHECK(static_cast<int>(conflict.code()) == static_cast<int>(EditorStatus::Conflict));
+    CHECK(static_cast<int>(conflict.value().state) == static_cast<int>(DocumentState::Conflict));
 
     // A failed atomic replace leaves the previously persisted file intact.
     DiskAtomicDocumentStore failureStore(root);
     const auto              beforeFailure = failureStore.read("content://World/Park.evscene");
-    REQUIRE(beforeFailure.isAccepted());
+    REQUIRE(beforeFailure.ok());
     failureStore.setBeforeReplaceHook([](const std::filesystem::path&) { return false; });
-    const auto failed = failureStore.compareAndSwap("content://World/Park.evscene", beforeFailure.value->revision,
-                                                    beforeFailure.value->contentHash, versionValue(4));
-    CHECK(static_cast<int>(failed.status) == static_cast<int>(EditorStatus::Failed));
+    const auto failed = failureStore.compareAndSwap("content://World/Park.evscene", beforeFailure.value().revision,
+                                                    beforeFailure.value().contentHash, versionValue(4));
+    CHECK(static_cast<int>(failed.code()) == static_cast<int>(EditorStatus::Failed));
     const auto afterFailure = store.read("content://World/Park.evscene");
-    REQUIRE(afterFailure.isAccepted());
-    CHECK(afterFailure.value->content == beforeFailure.value->content);
+    REQUIRE(afterFailure.ok());
+    CHECK(afterFailure.value().content == beforeFailure.value().content);
 
     // Drafts live outside Content and are recoverable only against the same base.
     const auto formal = documents.snapshot(id);
-    REQUIRE(formal.value.has_value());
+    REQUIRE(formal.ok());
     AutosaveService autosave(&store, "park-project");
     const auto      working = documents.content(id);
-    REQUIRE(working.value.has_value());
-    REQUIRE(autosave.writeDraft(*formal.value, *working.value).isAccepted());
+    REQUIRE(working.ok());
+    REQUIRE(autosave.writeDraft(formal.value(), working.value()).ok());
     const auto draft = autosave.readDraft(id);
-    REQUIRE(draft.isAccepted());
-    CHECK(draft.value->content == versionValue(3));
-    CHECK(autosave.shouldOfferRecovery(*draft.value, *formal.value));
+    REQUIRE(draft.ok());
+    CHECK(draft.value().content == versionValue(3));
+    CHECK(autosave.shouldOfferRecovery(draft.value(), formal.value()));
 
-    REQUIRE(documents.close(id).isAccepted());
+    REQUIRE(documents.close(id).ok());
     std::filesystem::remove_all(root, ec);
 }

@@ -1,6 +1,7 @@
 #include "devtools/DebugAdapter.hpp"
 
 #include "common/ScriptCompiler.h"
+#include "devtools/DevTool.hpp"
 #include "devtools/Snapshot.hpp"
 
 #include <Poco/JSON/Array.h>
@@ -344,8 +345,10 @@ std::string DebugAdapter::reasonString(PauseReason r) {
             return "step";
         case PauseReason::Exception:
             return "exception";
-        case PauseReason::PauseKey:
         case PauseReason::Snapshot:
+            return "snapshot";
+        case PauseReason::PauseKey:
+        case PauseReason::None:
         default:
             return "pause";
     }
@@ -363,6 +366,9 @@ void DebugAdapter::notifyStopped(PauseReason reason, const SourceLoc& loc,
             body->set("description", lastException_);
             body->set("text", lastException_);
         }
+    } else if (reason == PauseReason::Snapshot && !description.empty()) {
+        body->set("description", description);
+        body->set("text", description);
     }
     if (!loc.source.empty() && loc.line > 0) {
         const auto original = script::ScriptCompiler::toOriginalPosition(
@@ -738,6 +744,33 @@ void DebugAdapter::handleRequest(const std::string& json) {
                 sendMessage(makeEvent("stopped", stringify(Poco::Dynamic::Var(stoppedBody))));
             }
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
+            return;
+        }
+        if (command == "errorSlice") {
+            auto&             dt     = DevTool::instance();
+            std::string       report = dt.lastReport();
+            SliceResult       slice  = dt.lastSlice();
+            if (report.empty()) {
+                const std::string message =
+                    args ? args->optValue<std::string>("message", "slice") : std::string("slice");
+                report = dt.formatError(message);
+                slice  = dt.analyzeError(message);
+            }
+            Poco::JSON::Array::Ptr locations = new Poco::JSON::Array();
+            for (const SourceLoc& loc : slice.locations) {
+                if (loc.line <= 0 && loc.source.empty()) continue;
+                Poco::JSON::Object::Ptr item = new Poco::JSON::Object();
+                item->set("path", resolveSourcePath(loc.source));
+                item->set("name", loc.source);
+                item->set("line", loc.line);
+                item->set("function", loc.function);
+                locations->add(item);
+            }
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("report", report);
+            body->set("error", dt.lastError());
+            body->set("locations", locations);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
         if (command == "evaluate") {

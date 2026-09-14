@@ -23,6 +23,11 @@ class Batcher {
 public:
     void clear();
     void addRect(float x, float y, float w, float h, const Color &color);
+    /** @brief Adds one arbitrary solid triangle in logical Canvas coordinates. */
+    void addTriangle(glm::vec2 a, glm::vec2 b, glm::vec2 c, const Color &color);
+    /** @brief Adds one arbitrary solid triangle with independent vertex colors. */
+    void addTriangle(glm::vec2 a, glm::vec2 b, glm::vec2 c, const Color &colorA, const Color &colorB,
+                     const Color &colorC);
     void addRectRotated(float cx, float cy, float w, float h, float degrees, const Color &color);
     void addTexturedRect(float x, float y, float w, float h, const Color &color,
                          float u0, float v0, float u1, float v1,

@@ -87,4 +87,4 @@ Spine 旋转父级偏移、IK2D 求解追踪、IK3D 偏移投影、按名重附�
 > 备注：远端 main（fbf9db0）的 scene-ecs 合并存在已知编译问题
 > （`SceneLoader.cpp` 引用不存在的 `SceneNode::linkTarget/linkKind`），为让本 PR 可编译，
 > 按仓库 `codex/fix-sceneloader-merge-ci` 分支的修复一并提交了这两处补丁
-> （`src/modules/sceneloader/SceneLoader.cpp` + `test/sceneloader.cpp`）。
+> （`src/modules/scene/loader/SceneLoader.cpp` + `test/sceneloader.cpp`）。

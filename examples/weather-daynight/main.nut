@@ -83,7 +83,7 @@ function buildLivingScene() {
             hm.setHeight(x, z, clampf(h, 0.03, 0.92));
         }
     }
-    local terrainMesh = editor.newHeightmapMesh(hm, CELL, 7.0);
+    local terrainMesh = eve.HeightmapTargetModule().newMesh(hm, CELL, 7.0);
     skyTerrain = addObject(terrainMesh, -18.0, -0.85, -18.0,
         1.0, 1.0, 1.0, 0.17, 0.31, 0.16, 0.98);
     skyTerrain.setCastShadow(true);

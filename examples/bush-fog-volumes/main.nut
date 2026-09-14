@@ -3,13 +3,14 @@
 
 persist bfCamera = null
 persist bfFog = null
+persist bfAtmosphereFog = null
 persist bfObjects = []
 persist bfVolumes = []
 persist bfView = 0
 persist bfFogEnabled = true
 persist bfTexture = null
 persist bfElapsed = 0.0
-persist bfCapturePending = false
+persist bfCapturePending = true
 persist bfCaptureName = "bush-fog-volumes.png"
 
 bfViews <- [
@@ -41,6 +42,8 @@ function bfBush(seed, x, z, scale) {
     p.setString("style", "mound");
     p.setString("leafMode", "mixed");
     p.setFloat("leafDensity", 0.78);
+    p.setFloat("lobeScale", 0.72);
+    p.setFloat("irregularity", 0.76);
     p.setFloat("height", 1.9);
     p.setFloat("width", 2.8);
     p.setInt("blobs", 13);
@@ -73,28 +76,33 @@ function bfSolid(mesh, x, y, z, sx, sy, sz, r, g, b) {
     bfObjects.push(object);
 }
 
-function bfMakeVolume(shape, x, y, z, sx, sy, sz, extinction, r, g, b) {
+function bfMakeVolume(shape, x, y, z, sx, sy, sz, extinction, r, g, b, noiseSeed) {
     local volume = eve.FogVolume();
     volume.setShape(shape);
     volume.setPosition(x, y, z);
     volume.setSize(sx, sy, sz);
     volume.setExtinction(extinction);
     volume.setAlbedo(r, g, b);
-    volume.setAnisotropy(0.18);
-    volume.setEdgeFalloff(0.42);
+    volume.setAnisotropy(0.10);
+    volume.setEdgeFalloff(0.82);
+    volume.setNoise(0.88, 0.48, noiseSeed);
     bfVolumes.push(volume);
 }
 
 function bfRebuildFog() {
     local v = bfViews[bfView];
     bfFog.setCamera(v.ex, v.ey, v.ez, v.tx, v.ty, v.tz,
-                    0.0, 1.0, 0.0, 48.0, 1.7777778, 0.1, 70.0);
-    bfFog.configureFroxelGrid(96, 54, 40, 0.1, 70.0);
+                    0.0, 1.0, 0.0, 48.0, 1.7777778, 0.1, 38.0);
+    bfAtmosphereFog.setCamera(v.ex, v.ey, v.ez, v.tx, v.ty, v.tz,
+                              0.0, 1.0, 0.0, 48.0, 1.7777778, 0.1, 38.0);
+    bfFog.configureFroxelGrid(160, 90, 64, 0.1, 38.0);
     bfFog.clearFroxelGrid();
-    // A light global layer establishes atmospheric depth between bush rows.
-    bfFog.injectFroxelHeightFog(0.010, 0.68, 0.78, 0.82, 0.0, 0.20, -1.0, 7.0);
+    // Thin ground haze establishes depth without washing the whole image.
+    // Height is reconstructed in world space, so the layer remains horizontal
+    // through every fixed camera check.
+    bfFog.injectFroxelHeightFog(0.00035, 0.68, 0.76, 0.78, -0.35, 0.58, -1.0, 7.0);
     foreach (volume in bfVolumes) bfFog.injectFroxelLocalVolume(volume);
-    bfFog.integrateFroxel(1.05, 1.00, 0.88, 1.0);
+    bfFog.integrateFroxel(1.10, 1.16, 1.08, 0.92);
     bfFog.uploadFroxel(gfx);
 }
 
@@ -108,14 +116,16 @@ function bfSetView(index) {
 }
 
 eve_init = function() {
-    gfx.setBackgroundColor(0.055, 0.085, 0.105, 1.0);
-    gfx.setDirectionalLight(-0.45, -1.0, -0.30, 1.25, 1.17, 1.02);
+    gfx.setBackgroundColor(0.030, 0.050, 0.064, 1.0);
+    gfx.setDirectionalLight(-0.45, -1.0, -0.30, 1.12, 1.06, 0.94);
     bfTexture = gfx.newTextureFromFile("assets/bush_atlas.png");
 
     bfCamera = eve.Camera3D();
     bfCamera.setUp(0.0, 1.0, 0.0);
     bfCamera.setFov(48.0);
-    bfCamera.setAmbient(0.27, 0.33, 0.31);
+    // Keep the G-buffer's linear-depth encoding identical to both fog passes.
+    bfCamera.setClipPlanes(0.1, 38.0);
+    bfCamera.setAmbient(0.19, 0.24, 0.22);
     bfCamera.setActive(true);
 
     local cube = gfx.newMeshCube(1.0);
@@ -130,12 +140,14 @@ eve_init = function() {
     bfBush(20260825, -3.0, -10.5, 1.20);
     bfBush(20260826, 2.2, -13.0, 1.28);
 
-    // Warm spherical mist crosses the near transparent bush; cool cylinder
-    // crosses the middle/far row so their silhouettes reveal local density.
-    bfMakeVolume("sphere", -1.2, 1.1, -2.4, 5.8, 3.8, 5.8,
-                 0.085, 0.92, 0.76, 0.58);
-    bfMakeVolume("cylinder", 3.0, 1.3, -8.7, 5.2, 4.5, 5.2,
-                 0.070, 0.56, 0.76, 0.92);
+    // Three overlapping banks sit between the camera and the vegetation. Their
+    // broad falloff and distinct noise seeds avoid exposing analytic boundaries.
+    bfMakeVolume("sphere", -2.0, 0.45, 4.2, 10.0, 2.8, 8.0,
+                 0.14, 0.61, 0.68, 0.70, 17);
+    bfMakeVolume("sphere", 2.2, 0.55, -2.4, 9.0, 3.0, 9.0,
+                 0.12, 0.58, 0.68, 0.72, 43);
+    bfMakeVolume("cylinder", -1.0, 0.65, -9.0, 11.0, 3.2, 10.0,
+                 0.10, 0.56, 0.66, 0.70, 71);
 
     local rc = gfx.getRenderControl();
     rc.enable("gbuffer");
@@ -145,6 +157,19 @@ eve_init = function() {
     bfFog = gfx.newVolumetric();
     bfFog.setMode("froxel");
     bfFog.setQuality("medium");
+    // A continuous ray-marched layer supplies fine wisps between froxels. The
+    // froxel pass remains responsible for the three bounded, depth-aware banks.
+    bfAtmosphereFog = gfx.newVolumetric();
+    bfAtmosphereFog.setMode("fog");
+    bfAtmosphereFog.setQuality("high");
+    bfAtmosphereFog.setFogColor(0.55, 0.66, 0.70);
+    bfAtmosphereFog.setDensity(0.040);
+    bfAtmosphereFog.setIntensity(0.72);
+    bfAtmosphereFog.setFogHeight(0.75);
+    bfAtmosphereFog.setFogHeightFalloff(0.72);
+    bfAtmosphereFog.setFogStart(1.2);
+    bfAtmosphereFog.setFogEnd(24.0);
+    bfAtmosphereFog.setFogNoise(1.10);
     bfSetView(0);
     print("Bush fog volumes: 1-4 camera, V cycle, F fog toggle\n");
 };
@@ -173,6 +198,7 @@ eve_render = function() {
     gfx.render3D();
     if (bfFogEnabled) {
         local depth = gfx.getRenderControl().getGBuffer().getDepthTexture();
+        bfAtmosphereFog.applyFog(gfx, depth);
         bfFog.applyFroxel(gfx, depth);
     }
 };

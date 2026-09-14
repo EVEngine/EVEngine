@@ -82,6 +82,17 @@ uint8_t quantize8(float v) { return uint8_t(std::lround(std::clamp(v, 0.f, 1.f) 
 uint16_t quantize16(float v) { return uint16_t(std::lround(std::clamp(v, 0.f, 1.f) * 65535.f)); }
 }  // namespace
 
+Result<std::vector<std::uint8_t>> MemoryTerrainArchiveSource::read(
+    std::uint64_t offset, std::size_t length) const {
+    if (offset > bytes_.size() || length > bytes_.size() - static_cast<std::size_t>(offset))
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain archive read is out of bounds", {}, {},
+            "procgen.terrain-source"));
+    const auto begin = bytes_.begin() + static_cast<std::ptrdiff_t>(offset);
+    return Result<std::vector<std::uint8_t>>::success(
+        std::vector<std::uint8_t>(begin, begin + static_cast<std::ptrdiff_t>(length)));
+}
+
 bool TerrainAsset::bake(const Heightmap &hm, const HydrologyMap &hydro, const ClimateMap &climate,
                         int chunkSize, std::vector<uint8_t> &out, std::string *error) {
     const int w = hm.getWidth(), h = hm.getHeight(); const size_t cells = size_t(w) * size_t(h);
@@ -162,8 +173,49 @@ bool TerrainAsset::bake(const Heightmap &hm, const HydrologyMap &hydro, const Cl
 }
 
 bool TerrainAsset::open(const uint8_t *data, size_t size, std::string *error) {
-    if (!data || size < kHeaderSize || std::memcmp(data, "EVTR", 4) != 0) { fail(error, "terrain asset: invalid magic or truncated header"); return false; }
-    const uint8_t *p = data + 4, *end = data + size; uint16_t version = 0, flags = 0; uint32_t w, h, cs, count; uint64_t directory;
+    if (!data) { fail(error, "terrain asset: invalid source"); return false; }
+    auto source = std::make_shared<MemoryTerrainArchiveSource>(
+        std::span<const std::uint8_t>(data, size));
+    if (!openMetadata(data, size, size, error)) return false;
+    source_ = std::move(source);
+    return true;
+}
+
+Result<void> TerrainAsset::openSource(std::shared_ptr<const ITerrainArchiveSource> source) {
+    if (!source || source->size() < kHeaderSize)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain archive source is missing or truncated", {}, {},
+            "procgen.terrain-source"));
+    auto header = source->read(0, kHeaderSize);
+    if (!header) return Result<void>::failure(header.status());
+    const auto& headerBytes = header.value();
+    if (std::memcmp(headerBytes.data(), "EVTR", 4) != 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "terrain archive has invalid magic", {}, {},
+            "procgen.terrain-source"));
+    const std::uint32_t count = uint32_t(headerBytes[20]) | (uint32_t(headerBytes[21]) << 8) |
+                                (uint32_t(headerBytes[22]) << 16) | (uint32_t(headerBytes[23]) << 24);
+    if (std::uint64_t(count) * kEntrySize > source->size() - kHeaderSize)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "terrain archive directory exceeds source size", {}, {},
+            "procgen.terrain-source"));
+    const std::size_t metadataSize = kHeaderSize + std::size_t(count) * kEntrySize;
+    auto metadata = source->read(0, metadataSize);
+    if (!metadata) return Result<void>::failure(metadata.status());
+    TerrainAsset next;
+    std::string error;
+    if (!next.openMetadata(metadata.value().data(), metadata.value().size(), source->size(), &error))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, std::move(error), {}, {}, "procgen.terrain-source"));
+    next.source_ = std::move(source);
+    *this = std::move(next);
+    return Result<void>::success();
+}
+
+bool TerrainAsset::openMetadata(const uint8_t *data, size_t metadataSize,
+                                std::uint64_t archiveSize, std::string *error) {
+    if (!data || metadataSize < kHeaderSize || std::memcmp(data, "EVTR", 4) != 0) { fail(error, "terrain asset: invalid magic or truncated header"); return false; }
+    const uint8_t *p = data + 4, *end = data + metadataSize; uint16_t version = 0, flags = 0; uint32_t w, h, cs, count; uint64_t directory;
     float minH, maxH, maxFlow;
     if (!getU16(p, end, version) || !getU16(p, end, flags) || !getU32(p, end, w) || !getU32(p, end, h) ||
         !getU32(p, end, cs) || !getU32(p, end, count) || !getFloat(p, end, minH) || !getFloat(p, end, maxH) ||
@@ -174,7 +226,7 @@ bool TerrainAsset::open(const uint8_t *data, size_t size, std::string *error) {
         !std::isfinite(minH) || !std::isfinite(maxH) || !std::isfinite(maxFlow) ||
         minH > maxH || maxFlow < 1.f || directory != kHeaderSize ||
         uint64_t(count) != ((uint64_t(w) + cs - 1) / cs) * ((uint64_t(h) + cs - 1) / cs) ||
-        uint64_t(count) * kEntrySize > size - directory) {
+        directory > metadataSize || uint64_t(count) * kEntrySize > metadataSize - directory) {
         fail(error, "terrain asset: unsupported or invalid header"); return false;
     }
     const uint64_t payloadStart = directory + uint64_t(count) * kEntrySize;
@@ -195,11 +247,8 @@ bool TerrainAsset::open(const uint8_t *data, size_t size, std::string *error) {
             uint32_t(e.height) != expectedHeight ||
             e.rawSize != uint64_t(e.width) * uint64_t(e.height) * bytesPerCell(version) ||
             (!e.compressed && e.storedSize != e.rawSize) || e.offset < payloadStart ||
-            e.offset > size || e.storedSize > size - e.offset) {
+            e.offset > archiveSize || e.storedSize > archiveSize - e.offset) {
             fail(error, "terrain asset: invalid chunk entry"); return false;
-        }
-        if (std::any_of(entries.begin(), entries.end(), [&](const auto &old) { return old.chunkX == e.chunkX && old.chunkY == e.chunkY; })) {
-            fail(error, "terrain asset: duplicate chunk coordinate"); return false;
         }
         entries.push_back(e);
     }
@@ -214,18 +263,34 @@ bool TerrainAsset::open(const uint8_t *data, size_t size, std::string *error) {
             fail(error, "terrain asset: overlapping chunk payloads"); return false;
         }
     }
+    std::sort(entries.begin(), entries.end(), [](const auto& left, const auto& right) {
+        return left.chunkY < right.chunkY ||
+               (left.chunkY == right.chunkY && left.chunkX < right.chunkX);
+    });
+    for (std::size_t index = 1; index < entries.size(); ++index) {
+        if (entries[index - 1].chunkX == entries[index].chunkX &&
+            entries[index - 1].chunkY == entries[index].chunkY) {
+            fail(error, "terrain asset: duplicate chunk coordinate");
+            return false;
+        }
+    }
     width_ = int(w); height_ = int(h); chunkSize_ = int(cs); version_ = version;
     minHeight_ = minH; maxHeight_ = maxH; maxFlow_ = maxFlow;
-    chunks_ = std::move(entries); bytes_.assign(data, data + size); return true;
+    chunks_ = std::move(entries); return true;
 }
 
 bool TerrainAsset::loadChunk(int chunkX, int chunkY, TerrainChunkData &out, std::string *error) const {
-    const auto it = std::find_if(chunks_.begin(), chunks_.end(), [&](const auto &e) { return e.chunkX == chunkX && e.chunkY == chunkY; });
-    if (it == chunks_.end()) { fail(error, "terrain asset: chunk not found"); return false; }
+    const TerrainChunkEntry* entry = findChunk(chunkX, chunkY);
+    if (!entry) { fail(error, "terrain asset: chunk not found"); return false; }
+    const auto it = entry;
     std::vector<uint8_t> raw;
-    const uint8_t *stored = bytes_.data() + it->offset;
+    if (!source_) { fail(error, "terrain asset: archive source is unavailable"); return false; }
+    auto storedResult = source_->read(it->offset, it->storedSize);
+    if (!storedResult) { fail(error, "terrain asset: chunk source read failed"); return false; }
+    const auto& storedBytes = storedResult.value();
+    const uint8_t *stored = storedBytes.data();
     if (it->compressed) { if (!unpackBits(stored, it->storedSize, it->rawSize, raw)) { fail(error, "terrain asset: invalid compressed chunk"); return false; } }
-    else raw.assign(stored, stored + it->storedSize);
+    else raw = storedBytes;
     if (raw.size() != it->rawSize || checksum(raw) != it->checksum) { fail(error, "terrain asset: chunk checksum mismatch"); return false; }
     out = {}; out.chunkX = chunkX; out.chunkY = chunkY; out.width = it->width; out.height = it->height; out.heights.resize(out.width, out.height);
     const size_t cells = size_t(out.width) * size_t(out.height); out.flowAccumulation.resize(cells); out.flowDirection.resize(cells); out.flowVectorX.resize(cells); out.flowVectorY.resize(cells); out.streamOrder.resize(cells); out.lakeDepth.resize(cells); out.temperature.resize(cells); out.moisture.resize(cells); out.rivers.resize(cells); out.biomes.resize(cells);
@@ -263,6 +328,16 @@ bool TerrainAsset::loadChunk(int chunkX, int chunkY, TerrainChunkData &out, std:
         out.biomes[i] = Biome(biome);
     }
     return true;
+}
+
+const TerrainChunkEntry* TerrainAsset::findChunk(int chunkX, int chunkY) const noexcept {
+    if (chunkX < 0 || chunkY < 0 || chunkSize_ <= 0) return nullptr;
+    const std::uint64_t columns = (std::uint64_t(width_) + std::uint64_t(chunkSize_) - 1) /
+                                  std::uint64_t(chunkSize_);
+    const std::uint64_t index = std::uint64_t(chunkY) * columns + std::uint64_t(chunkX);
+    if (index >= chunks_.size()) return nullptr;
+    const TerrainChunkEntry& entry = chunks_[static_cast<std::size_t>(index)];
+    return entry.chunkX == chunkX && entry.chunkY == chunkY ? &entry : nullptr;
 }
 
 }  // namespace eve::procgen

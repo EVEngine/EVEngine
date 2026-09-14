@@ -1,3 +1,4 @@
+dofile("town_art.nut");
 // ============================================================================
 // EVEngine Building 模块示例 —— 城镇建筑放置沙盒
 //
@@ -28,6 +29,10 @@ persist mapOriginY = 88.0
 persist cellPx = 28.0
 persist gridW = 24
 persist gridH = 18
+persist sidebarX = 724.0
+persist sidebarWidth = 532.0
+persist hiddenGhostCellX = -999
+persist hiddenGhostCellY = -999
 
 // 地形语义：1=陆地 2=水域
 TERRAIN_LAND <- 1;
@@ -61,8 +66,8 @@ function mousePressed(button) {
 function registerBuildings() {
     bld.registerBuildingsFromJson(@"[
       {""id"":""road"",""displayName"":""石板路"",""category"":""infra"",
-       ""footprintW"":1,""footprintH"":1,""tags"":[""road""],""cost"":{""gold"":2}},
-      {""id"":""house.wood"",""displayName"":""木屋"",""category"":""housing"",
+       ""footprintW"":1,""footprintH"":1,""tags"":[""road""],""requireTerrain"":[1],""cost"":{""gold"":2}},
+      {""id"":""house.wood"",""displayName"":""石屋"",""category"":""housing"",
        ""footprintW"":2,""footprintH"":2,""tags"":[""house"",""housing""],
        ""requireTerrain"":[1],""cost"":{""gold"":15,""wood"":20},
        ""extra"":{""color"":""warm""}},
@@ -98,8 +103,8 @@ function paintTerrain() {
 }
 
 function resetTown() {
-    if (world) world.destroy();
     if (ghost) ghost.destroy();
+    if (world) world.destroy();
 
     world = bld.newWorld(gridW, gridH, cellPx);
     world.setId("town");
@@ -113,8 +118,21 @@ function resetTown() {
     ghost.setBuildingId(palette[paletteIndex]);
     ghost.setRotationDeg(0.0);
 
-    gold = 120;
-    wood = 80;
+    // Seed a readable town using the same validated placement path as the player.
+    foreach (entry in [["house.wood",3,3],["house.wood",8,3],["barn.l",12,4],
+                       ["road",3,6],["road",4,6],["road",5,6],["road",6,6],
+                       ["road",7,6],["road",8,6],["road",9,6],["road",10,6],
+                       ["stall",6,5],["dock",10,11]]) {
+        ghost.setBuildingId(entry[0]);
+        ghost.setFromWorld(world,mapOriginX+(entry[1]+0.5)*cellPx,mapOriginY+(entry[2]+0.5)*cellPx);
+        ghost.validate(world);
+        if (!ghost.isValid() || world.placeGhost(ghost)<=0) throw "Town seed placement failed";
+    }
+    ghost.setBuildingId(palette[0]);
+    gold = 500;
+    wood = 400;
+    hiddenGhostCellX = -999;
+    hiddenGhostCellY = -999;
     logLines = [];
     pushLog("欢迎来到城镇沙盒：先铺路，再摆摊；码头只能建在水上。");
     bld.clearChangeEvents();
@@ -128,6 +146,8 @@ function selectPalette(index) {
     if (index < 0 || index >= palette.len()) return;
     paletteIndex = index;
     ghost.setBuildingId(palette[paletteIndex]);
+    hiddenGhostCellX = -999;
+    hiddenGhostCellY = -999;
     pushLog("选择：" + bld.getBuildingDisplayName(palette[paletteIndex]));
 }
 
@@ -155,10 +175,26 @@ function updateGhostFromMouse() {
     local my = mouse.getY();
     ghost.setFromWorld(world, mx, my);
     ghost.validate(world);
+    if (ghost.getCellX() != hiddenGhostCellX || ghost.getCellY() != hiddenGhostCellY) {
+        hiddenGhostCellX = -999;
+        hiddenGhostCellY = -999;
+    }
+}
+
+function mouseOnMap() {
+    local mx = mouse.getX();
+    local my = mouse.getY();
+    return mx >= mapOriginX && my >= mapOriginY &&
+           mx < mapOriginX + gridW * cellPx &&
+           my < mapOriginY + gridH * cellPx;
 }
 
 function tryPlace() {
     updateGhostFromMouse();
+    tryPlaceGhost();
+}
+
+function tryPlaceGhost() {
     local id = currentBuildingId();
     local afford = canAfford(id);
     if (afford != "") {
@@ -175,8 +211,20 @@ function tryPlace() {
         return;
     }
     payCost(id);
+    // Keep the freshly placed cells visible. Otherwise the now-invalid overlap
+    // ghost sits on top of the building until the pointer moves and makes a
+    // successful click look as if nothing changed.
+    hiddenGhostCellX = ghost.getCellX();
+    hiddenGhostCellY = ghost.getCellY();
     pushLog("已建造 " + bld.getBuildingDisplayName(id) + " #" + inst +
             " @(" + ghost.getCellX() + "," + ghost.getCellY() + ")");
+}
+
+function tryPlaceCell(cx, cy) {
+    ghost.setFromWorld(world, mapOriginX + (cx + 0.5) * cellPx,
+                       mapOriginY + (cy + 0.5) * cellPx);
+    ghost.validate(world);
+    tryPlaceGhost();
 }
 
 function tryRemove() {
@@ -193,23 +241,6 @@ function tryRemove() {
     if (world.removeBuilding(occ)) {
         refundApprox(bid);
         pushLog("拆除 " + bld.getBuildingDisplayName(bid) + " #" + occ + "（半价返还）");
-    }
-}
-
-function buildingColor(buildingId, out) {
-    // out = [r,g,b]
-    if (buildingId == "road") {
-        out[0] = 0.45; out[1] = 0.45; out[2] = 0.48;
-    } else if (buildingId == "house.wood") {
-        out[0] = 0.72; out[1] = 0.48; out[2] = 0.28;
-    } else if (buildingId == "stall") {
-        out[0] = 0.85; out[1] = 0.62; out[2] = 0.22;
-    } else if (buildingId == "dock") {
-        out[0] = 0.35; out[1] = 0.55; out[2] = 0.70;
-    } else if (buildingId == "barn.l") {
-        out[0] = 0.55; out[1] = 0.38; out[2] = 0.55;
-    } else {
-        out[0] = 0.6; out[1] = 0.6; out[2] = 0.6;
     }
 }
 
@@ -243,6 +274,7 @@ function footprintCells(buildingId, ox, oy, rot, sink) {
 
 function refreshHud() {
     if (!uiBuilt) return;
+    ui.select("hud");
     local name = bld.getBuildingDisplayName(currentBuildingId());
     local costG = bld.getBuildingCost(currentBuildingId(), "gold");
     local costW = bld.getBuildingCost(currentBuildingId(), "wood");
@@ -254,16 +286,42 @@ function refreshHud() {
         "  花费 G" + costG + "/W" + costW +
         "  旋转 " + ghost.getRotationDeg().tointeger() + "°  " + ghostInfo);
     ui.setText("help",
-        "1路 2木屋 3摊位(需邻路) 4码头(水域) 5L仓 | 移动预览 | R旋转 | 左键建 | 右键拆 | Space重置");
+        "快捷键：1-5 选择 · R 旋转 · 左键建造 · 右键拆除 · T 网格 · Space 重置");
     local logText = "";
     foreach (line in logLines)
         logText += line + "\n";
     ui.setText("log", logText);
+
+}
+
+function mountMapCells(remount) {
+    ui.beginBuild();
+    ui.beginWindow("", "map-input-root");
+    for (local y = 0; y < gridH; y += 1) {
+        for (local x = 0; x < gridW; x += 1) {
+            ui.imageButton("cell-" + x + "-" + y, cellPx, cellPx);
+            ui.setItemAbsolute(0.0, 0.0, x * cellPx, y * cellPx);
+        }
+    }
+    ui.end();
+    if (remount) ui.remountBuildAs("map-input");
+    else ui.mountBuildAs("map-input");
+    ui.select("map-input");
+    ui.setHostOverlay(true);
+    ui.setHostOverlayAlpha(0.0);
+    ui.setHostMovable(false);
+    ui.setHostResizable(false);
+    ui.setHostPos(mapOriginX, mapOriginY, 0.0, 0.0);
+    ui.setHostSize(gridW * cellPx, gridH * cellPx);
+    for (local y = 0; y < gridH; y += 1)
+        for (local x = 0; x < gridW; x += 1)
+            ui.setImageTint("cell-" + x + "-" + y, 1.0, 1.0, 1.0, 0.001);
 }
 
 eve_init = function() {
     print("examples/building: town placement sandbox ready\n");
-    gfx.setBackgroundColor(0.08, 0.10, 0.12, 1.0);
+    gfx.setBackgroundColor(0.055, 0.075, 0.065, 1.0);
+    loadTownArt();
     if (bld == null) {
         bld = eve.Building();
         registerBuildings();
@@ -276,27 +334,69 @@ eve_init = function() {
 
     if (!uiBuilt) {
         ui.beginBuild();
-        ui.beginWindow("BuildingDemo", "root");
-        ui.text("建筑放置系统示例", "title");
-        ui.text("", "stats");
-        ui.text("", "help");
+        ui.beginWindow("建造面板", "root");
+        ui.textWrapped("", sidebarWidth - 44.0, "stats");
+        ui.separator("palette-separator");
+        ui.text("选择建筑", "palette-title");
+        ui.button("1  石板路", "select-road");
+        ui.button("2  石屋", "select-house");
+        ui.button("3  摊位（需邻路）", "select-stall");
+        ui.button("4  码头（仅水域）", "select-dock");
+        ui.button("5  L 形仓", "select-barn");
+        ui.separator("action-separator");
+        ui.beginRow("actions", 10.0);
+        ui.button("旋转 90°", "rotate");
+        ui.button("重置城镇", "reset");
+        ui.end();
+        ui.textWrapped("", sidebarWidth - 44.0, "help");
+        ui.separator("log-separator");
+        ui.text("操作记录", "log-title");
         ui.text("", "log");
         ui.end();
         ui.mountBuildAs("hud");
         ui.select("hud");
-        ui.setHostOverlay(true);
-        ui.setHostPos(12.0, 8.0, 0.0, 0.0);
+        ui.setHostOverlay(false);
+        ui.setHostPos(sidebarX, 20.0, 0.0, 0.0);
+        ui.setHostSize(sidebarWidth, 756.0);
+        mountMapCells(false);
         uiBuilt = true;
     }
     refreshHud();
 };
 
 eve_reload <- function() {
+    loadTownArt();
     registerBuildings();
+    mountMapCells(true);
 };
 
 eve_update = function(dt) {
     if (world == null || ghost == null) return;
+    waterTime += dt;
+    if (keyPressed("t")) showGrid = !showGrid;
+
+    local clicked = ui.consumeClick();
+    while (clicked != "") {
+        if (clicked == "hud/select-road") selectPalette(0);
+        else if (clicked == "hud/select-house") selectPalette(1);
+        else if (clicked == "hud/select-stall") selectPalette(2);
+        else if (clicked == "hud/select-dock") selectPalette(3);
+        else if (clicked == "hud/select-barn") selectPalette(4);
+        else if (clicked == "hud/rotate") {
+            ghost.rotateBy(90.0);
+            hiddenGhostCellX = -999;
+            hiddenGhostCellY = -999;
+            pushLog("旋转 → " + ghost.getRotationDeg().tointeger() + "°");
+        } else if (clicked == "hud/reset") {
+            resetTown();
+        } else {
+            for (local y = 0; y < gridH; y += 1)
+                for (local x = 0; x < gridW; x += 1)
+                    if (clicked == "map-input/cell-" + x + "-" + y)
+                        tryPlaceCell(x, y);
+        }
+        clicked = ui.consumeClick();
+    }
 
     if (keyPressed("1")) selectPalette(0);
     if (keyPressed("2")) selectPalette(1);
@@ -306,6 +406,8 @@ eve_update = function(dt) {
 
     if (keyPressed("r") || keyPressed("R")) {
         ghost.rotateBy(90.0);
+        hiddenGhostCellX = -999;
+        hiddenGhostCellY = -999;
         pushLog("旋转 → " + ghost.getRotationDeg().tointeger() + "°");
     }
 
@@ -317,9 +419,13 @@ eve_update = function(dt) {
 
     updateGhostFromMouse();
 
-    if (mousePressed(1))
+    // The map-input host is an overlay for semantic automation and therefore
+    // intentionally does not receive native pointer input. Keep the actual
+    // player interaction on the mouse path, bounded to the map so sidebar
+    // clicks cannot place buildings behind the panel.
+    if (mousePressed(1) && mouseOnMap())
         tryPlace();
-    if (mousePressed(2))
+    if (mousePressed(2) && mouseOnMap())
         tryRemove();
 
     refreshHud();
@@ -332,71 +438,7 @@ eve_render = function() {
         return;
     }
 
-    // —— 地形 ——
-    for (local y = 0; y < gridH; y += 1) {
-        for (local x = 0; x < gridW; x += 1) {
-            local px = mapOriginX + x * cellPx;
-            local py = mapOriginY + y * cellPx;
-            local sem = world.getTerrain(x, y);
-            if (sem == TERRAIN_WATER)
-                gfx.drawSolidRect(px, py, cellPx - 1.0, cellPx - 1.0, 0.18, 0.42, 0.62, 1.0);
-            else
-                gfx.drawSolidRect(px, py, cellPx - 1.0, cellPx - 1.0, 0.22, 0.38, 0.24, 1.0);
-        }
-    }
-
-    // —— 已放置建筑 ——
-    local col = [0.5, 0.5, 0.5];
-    local n = world.getBuildingCount();
-    for (local i = 0; i < n; i += 1) {
-        local inst = world.getBuildingInstanceAt(i);
-        local bid = world.getBuildingId(inst);
-        local ox = world.getBuildingCellX(inst);
-        local oy = world.getBuildingCellY(inst);
-        local rot = world.getBuildingRotation(inst);
-        local cells = [];
-        footprintCells(bid, ox, oy, rot, cells);
-        buildingColor(bid, col);
-        foreach (c in cells) {
-            local px = mapOriginX + c[0] * cellPx;
-            local py = mapOriginY + c[1] * cellPx;
-            gfx.drawSolidRect(px + 1.0, py + 1.0, cellPx - 3.0, cellPx - 3.0,
-                              col[0], col[1], col[2], 1.0);
-        }
-    }
-
-    // —— 鬼影 ——
-    if (ghost != null) {
-        local cells = [];
-        footprintCells(ghost.getBuildingId(), ghost.getCellX(), ghost.getCellY(),
-                       ghost.getRotationDeg(), cells);
-        local ok = ghost.isValid() && canAfford(ghost.getBuildingId()) == "";
-        local gr = ok ? 0.25 : 0.75;
-        local gg = ok ? 0.75 : 0.22;
-        local gb = ok ? 0.35 : 0.20;
-        foreach (c in cells) {
-            if (c[0] < 0 || c[1] < 0 || c[0] >= gridW || c[1] >= gridH) continue;
-            local px = mapOriginX + c[0] * cellPx;
-            local py = mapOriginY + c[1] * cellPx;
-            gfx.drawSolidRect(px + 3.0, py + 3.0, cellPx - 7.0, cellPx - 7.0,
-                              gr, gg, gb, 0.85);
-        }
-    }
-
-    // —— 右侧调色板预览条 ——
-    local px0 = mapOriginX + gridW * cellPx + 28.0;
-    local py0 = mapOriginY;
-    for (local i = 0; i < palette.len(); i += 1) {
-        local bid = palette[i];
-        buildingColor(bid, col);
-        local y = py0 + i * 56.0;
-        local selected = (i == paletteIndex);
-        if (selected)
-            gfx.drawSolidRect(px0 - 4.0, y - 4.0, 120.0, 48.0, 0.35, 0.40, 0.48, 1.0);
-        else
-            gfx.drawSolidRect(px0 - 4.0, y - 4.0, 120.0, 48.0, 0.16, 0.18, 0.22, 1.0);
-        gfx.drawSolidRect(px0, y, 40.0, 40.0, col[0], col[1], col[2], 1.0);
-    }
+    drawTown();
 
     ui.beginFrameAndRender();
 };

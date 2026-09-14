@@ -73,7 +73,9 @@ AgentDevelopmentResult AgentDevelopmentSession::record(std::string_view sessionI
     if (evidence.kind.empty() || evidence.summary.empty())
         return rejected("invalid-evidence", "evidence kind and summary must not be empty");
     static const std::set<std::string> kEvidenceKinds{
-        "runtime-observation", "test", "screenshot", "checkpoint", "artifact", "manual"};
+        "runtime-observation", "test", "screenshot", "checkpoint", "artifact", "manual", "play-trace"};
+    if (evidence.kind == "eval")
+        return rejected("invalid-evidence-kind", "required criteria reject eval evidence");
     if (!kEvidenceKinds.contains(evidence.kind))
         return rejected("invalid-evidence-kind", "evidence kind is not part of schema version one");
     if (evidence.status != "pass" && evidence.status != "fail" && evidence.status != "pending")
@@ -84,7 +86,10 @@ AgentDevelopmentResult AgentDevelopmentSession::record(std::string_view sessionI
     if (criterion == criteria_.end())
         return rejected("criterion-not-found", "evidence criterion was not declared by the session");
     evidence.sequence = nextEvidence_++;
-    if (evidence.status == "pass" && evidence.kind != "manual") criterion->passed = true;
+    const bool visual = criterion->id == "visual" || criterion->id == "screenshot";
+    if (evidence.status == "pass" && evidence.kind != "manual") {
+        if (!visual || evidence.kind == "screenshot") criterion->passed = true;
+    }
     if (evidence.status == "fail") criterion->passed = false;
     evidence_.push_back(std::move(evidence));
     return applied();
@@ -130,8 +135,15 @@ bool AgentDevelopmentSession::active() const {
 }
 
 bool AgentDevelopmentSession::readyToComplete() const {
-    return std::all_of(criteria_.begin(), criteria_.end(), [](const auto& criterion) {
-        return !criterion.required || criterion.passed;
+    return std::all_of(criteria_.begin(), criteria_.end(), [&](const auto& criterion) {
+        if (!criterion.required) return true;
+        if (!criterion.passed) return false;
+        const bool visual = criterion.id == "visual" || criterion.id == "screenshot";
+        if (!visual) return true;
+        return std::any_of(evidence_.begin(), evidence_.end(), [&](const auto& evidence) {
+            return evidence.criterionId == criterion.id && evidence.kind == "screenshot" &&
+                   evidence.status == "pass";
+        });
     });
 }
 

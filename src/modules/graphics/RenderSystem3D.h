@@ -2,12 +2,14 @@
 
 #include "common/ECS.h"
 #include "graphics/Material.h"
+#include "graphics/MeshInstanceRange.h"
 #include "zeroerr/assert.h"
 
-#include <functional>
-#include <glm/mat4x4.hpp>
 #include <array>
 #include <cstdint>
+#include <functional>
+#include <glm/mat4x4.hpp>
+#include <optional>
 #include <string>
 
 namespace eve::graphics {
@@ -53,6 +55,9 @@ public:
         float autoExposureMaxEV = 8.f;
         float bloomIntensity = 0.f;
         float bloomThreshold = 1.f;
+        float dofFocusDistance = 0.f;
+        float dofMaxBlurPx = 0.f;    // <= 0 disables DOF
+        float dofFocusRange = 8.f;
         bool active = false;
         Camera3D *entity = nullptr;
         // Last screenToRay() result (origin = eye, dir normalized).
@@ -71,9 +76,19 @@ public:
     }
 
     void setEye(float x, float y, float z);
+    /** @brief Camera eye position (world space). */
+    float getEyeX();
+    float getEyeY();
+    float getEyeZ();
     void setTarget(float x, float y, float z);
+    /** @brief Look-at target (world space). */
+    float getTargetX();
+    float getTargetY();
+    float getTargetZ();
     void setUp(float x, float y, float z);
     void setFov(float fovYDeg);
+    /** @brief Vertical field of view in degrees. */
+    float getFov();
     /** @brief Enable an orthographic projection with the given vertical world-space span. */
     void setOrthographic(float height);
     /** @brief Return to perspective projection, retaining the configured field of view. */
@@ -99,6 +114,19 @@ public:
     float getBloomIntensity();
     /** @brief Return bloom threshold in linear HDR units. */
     float getBloomThreshold();
+    /**
+     * @brief Configure Gaussian depth-of-field on the final HDR resolve.
+     * @param focusDistance View-space distance of the sharp plane.
+     * @param maxBlurPx Maximum blur radius in texels; <= 0 disables DOF.
+     * @param focusRange Distance from focus at which blur reaches maxBlurPx.
+     */
+    void setDepthOfField(float focusDistance, float maxBlurPx, float focusRange = 8.f);
+    /** @brief Return DOF focus distance. */
+    float getDofFocusDistance();
+    /** @brief Return DOF max blur in texels (0 when disabled). */
+    float getDofMaxBlur();
+    /** @brief Return DOF focus range. */
+    float getDofFocusRange();
     /** @brief Enable box-projected IBL for the camera environment cubemap. */
     void setEnvProbe(float centerX, float centerY, float centerZ, float extentX, float extentY,
                      float extentZ);
@@ -163,6 +191,8 @@ public:
         Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
         Texture *heightTexture = nullptr;  // nullptr → no parallax height (R = height)
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
+        /** @brief Optional value-owned instance range; forward custom shader path only. */
+        std::optional<MeshInstanceRange> instances;
         /** @brief Optional packed material; when set, overrides texture/shader/PBR fields below. */
         Material *material = nullptr;
         /**
@@ -251,6 +281,20 @@ public:
     float getYaw();
     void setScale(float sx, float sy, float sz);
     void setMesh(Mesh *mesh);
+    /** @brief Atomically set static instance range and bounds; render/update thread only.
+     * @ownership Metadata is
+     * copied into MeshRenderer; no caller references are retained.
+     * @details Requires one custom-shader mesh
+     * without skinning, LOD, hair, shadow or
+     * occlusion casting. Mutate outside render traversal; no callbacks
+     * are invoked.
+     * @return Validation failure leaves the previous range unchanged. Actual GPU buffer
+     *
+     * length is checked at submission, including after shader resource replacement.
+     */
+    [[nodiscard]] Result<void> setInstanceRange(const MeshInstanceRange &range);
+    /** @brief Remove runtime instance metadata on the update thread; no callbacks. */
+    void clearInstanceRange();
     /** @brief Main (non-part) mesh attached via setMesh; nullptr when unset. */
     Mesh *getMesh();
     void setTexture(Texture *texture);

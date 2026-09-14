@@ -20,6 +20,10 @@ namespace eve::gpgpu {
 
 namespace {
 
+// WebGPU permits at most 256-byte storage-offset alignment. Each unused writable
+// binding needs a disjoint range, even when the shader does not access it.
+constexpr uint64_t kDummyBindingStride = 256;
+
 graphics::webgpu::Graphics *requireWebGpuGraphics() {
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) gfx = eve::graphics::Graphics::create();
@@ -239,12 +243,13 @@ void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ
 
     // Build a bind group for the current storage-buffer bindings.
     WGPUBindGroupEntry entries[ComputeShader::kMaxBindings + 1]{};
-    WebGpuGpuBuffer *dummy = webgpuNewBuffer(4, "storage");
+    WebGpuGpuBuffer   *dummy = webgpuNewBuffer(int(kDummyBindingStride * ComputeShader::kMaxBindings), "storage");
     for (int i = 0; i < ComputeShader::kMaxBindings; ++i) {
         auto *vb = dynamic_cast<WebGpuGpuBuffer *>(ws->getBoundBuffer(i));
         entries[size_t(i)].binding = uint32_t(i);
         entries[size_t(i)].buffer = (vb && vb->buffer) ? vb->buffer.Get() : dummy->buffer.Get();
         entries[size_t(i)].size = (vb && vb->buffer) ? vb->size_ : 4;
+        entries[size_t(i)].offset  = (vb && vb->buffer) ? 0 : uint64_t(i) * kDummyBindingStride;
     }
     entries[ComputeShader::kMaxBindings].binding = uint32_t(ComputeShader::kMaxBindings);
     entries[ComputeShader::kMaxBindings].buffer = ws->pushUbo.Get();
@@ -473,7 +478,7 @@ SequenceStatus webgpuSequenceSubmitAsync(WebGpuSequence *sequence) {
 
         WGPUBufferDescriptor dummyDesc{};
         dummyDesc.label          = sv("eve_sequence_dummy");
-        dummyDesc.size           = 4;
+        dummyDesc.size           = kDummyBindingStride * ComputeShader::kMaxBindings;
         dummyDesc.usage          = WGPUBufferUsage_Storage;
         wgpu::Buffer       dummy = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&dummyDesc));
         WGPUBindGroupEntry entries[ComputeShader::kMaxBindings + 1]{};
@@ -482,6 +487,7 @@ SequenceStatus webgpuSequenceSubmitAsync(WebGpuSequence *sequence) {
             entries[size_t(i)].binding = uint32_t(i);
             entries[size_t(i)].buffer  = bound ? bound->buffer.Get() : dummy.Get();
             entries[size_t(i)].size    = bound ? bound->size_ : 4;
+            entries[size_t(i)].offset  = bound ? 0 : uint64_t(i) * kDummyBindingStride;
         }
         entries[ComputeShader::kMaxBindings].binding = ComputeShader::kMaxBindings;
         entries[ComputeShader::kMaxBindings].buffer  = push.Get();

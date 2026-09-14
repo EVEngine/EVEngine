@@ -12,7 +12,8 @@ Discover -> Modify -> Run -> Observe -> Verify -> Complete
                                       Verify -> Modify（未收敛时继续迭代）
 ```
 
-- **Discover**：读取项目、MCP tools、Editor commands、模块能力和当前 runtime 状态。
+- **Discover**：先读游戏根目录的 `game.agent.json`（入口、观察面、合法动作、截图后端），再枚举 MCP tools、
+  Editor commands、模块能力和当前 runtime 状态。没有契约时 `eve_play` 仍可 `status`/`clock`，但 `observe` 会返回 `Unsupported`。
 - **Modify**：编辑 `config.nut/main.nut`、资源或 Editor target；副作用通过明确的文件保存、热重载或
   Editor transaction 发生。
 - **Run**：启动/继续真实帧循环，或执行一个确定性 smoke/update 路径。
@@ -71,6 +72,6 @@ Development Session 只拥有 objective、phase、criteria 和 evidence metadata
 ## 下一阶段
 
 1. 让 MCP 工具自动生成带 tool/result correlation 的可信 evidence receipt，减少 Agent 手工登记。
-2. 增加 `game.agent.json` 项目契约：入口、smoke 场景、可观察状态、输入动作、容差和发布目标。
+2. 增加 `game.agent.json` 项目契约：入口、smoke 场景、可观察状态、输入动作、容差和发布目标（P0 已在 `examples/ai-game` 落地；Play Host 见 [`2026-09-05-play-verify-evolve.md`](2026-09-05-play-verify-evolve.md)）。
 3. 建立可重放 playtest action trace，将 semantic input、simulation seed、checkpoint 和 observation 组合。
 4. 把同一会话摘要输出给 CI/PR，明确区分通过、未运行、环境阻塞和视觉待审。

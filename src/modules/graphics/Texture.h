@@ -22,11 +22,11 @@ public:
     /** @brief Black silhouette using texture alpha (volumetric occlusion map). */
     void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
 
-    int getWidth() const { return width; }
-    int getHeight() const { return height; }
-    int getPixelWidth() const { return pixelWidth; }
-    int getPixelHeight() const { return pixelHeight; }
-    int getMipmapCount() const { return mipmapCount; }
+    int getWidth() const;
+    int getHeight() const;
+    int getPixelWidth() const;
+    int getPixelHeight() const;
+    int getMipmapCount() const;
     const TextureSampler &getSampler() const { return sampler; }
     /** @brief Declare whether RGB is straight or already multiplied by alpha. */
     void setAlphaConvention(const std::string &value) {
@@ -48,7 +48,15 @@ public:
     int pixelWidth = 0;
     int pixelHeight = 0;
     TextureSampler sampler{};
+
+    void markDeferredFilePixels(Graphics *graphics);
+    void clearDeferredFilePixels();
+    bool hasDeferredFilePixels() const { return filePixelsPending_; }
+
 private:
+    void realizeFilePixelsIfNeeded() const;
+    Graphics *graphics_ = nullptr;
+    bool filePixelsPending_ = false;
     bool premultipliedAlpha_ = false;
 };
 

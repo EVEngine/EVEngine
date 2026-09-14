@@ -550,4 +550,9 @@ Result<void> ActionRuntime::cancel(ActionExecutionId id, SimulationTick tick) {
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+void ActionRuntime::clear() noexcept {
+    executions_.clear();
+    nextId_ = ActionExecutionId{1};
+}
+
 }  // namespace eve::action

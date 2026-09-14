@@ -3,11 +3,15 @@
 
 #include "common/Capability.h"
 #include "common/Resource.h"
+#include "common/AsyncWork.h"
 
+#include <functional>
 #include <map>
+#include <mutex>
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <utility>
 
 namespace {
@@ -281,4 +285,90 @@ TEST_CASE("resource.reloadCommitFailureRollsBackEarlierEntries") {
     CHECK(!result.value());
     CHECK_EQ(first->value, 1);
     CHECK_EQ(second->value, 1);
+}
+
+TEST_CASE("resource.requestNoOpWhenCached") {
+    Reset reset;
+    provider();
+    REQUIRE(get("a.dat") != nullptr);
+    auto queued = eve::ResourceManager::getInstance().request("a.dat");
+    CHECK(queued.ok());
+    CHECK_EQ(queued.code(), eve::StatusCode::NoOp);
+}
+
+TEST_CASE("resource.requestUnknownIsNotFound") {
+    Reset reset;
+    provider();
+    auto queued = eve::ResourceManager::getInstance().request("no_such_kind.zzz");
+    CHECK(!queued.ok());
+    CHECK_EQ(queued.code(), eve::StatusCode::NotFound);
+}
+
+TEST_CASE("resource.peekDoesNotLoad") {
+    Reset reset;
+    provider();
+    CHECK(!eve::ResourceManager::getInstance().peek("a.dat").has_value());
+    CHECK_EQ(eve::ResourceManager::getInstance().count(), 0u);
+}
+
+TEST_CASE("resource.requestAsyncThenWaitFor") {
+    Reset reset;
+    provider();
+
+    std::mutex gate;
+    gate.lock();
+    class DelayedExecutor final : public eve::caps::IAsyncWorkExecutor {
+    public:
+        explicit DelayedExecutor(std::mutex *gate) : gate_(gate) {}
+        eve::Result<void> submit(std::function<void()> work) override {
+            std::thread([work = std::move(work), gate = gate_]() {
+                std::lock_guard<std::mutex> hold(*gate);
+                work();
+            }).detach();
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        }
+        std::mutex *gate_ = nullptr;
+    } executor{&gate};
+    eve::cap::provide<eve::caps::IAsyncWorkExecutor>(&executor);
+
+    auto queued = eve::ResourceManager::getInstance().request("async.dat");
+    CHECK(queued.ok());
+    CHECK_EQ(queued.code(), eve::StatusCode::Applied);
+    CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 1u);
+    CHECK(!eve::ResourceManager::getInstance().peek("async.dat").has_value());
+
+    gate.unlock();
+    auto ready = eve::ResourceManager::getInstance().waitFor("async.dat");
+    REQUIRE(ready.ok());
+    CHECK_EQ(static_cast<TestResource &>(ready.value().get()).value, 1);
+    CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 0u);
+}
+
+TEST_CASE("resource.getJoinsInFlightRequest") {
+    Reset reset;
+    provider();
+
+    std::mutex gate;
+    gate.lock();
+    class DelayedExecutor final : public eve::caps::IAsyncWorkExecutor {
+    public:
+        explicit DelayedExecutor(std::mutex *gate) : gate_(gate) {}
+        eve::Result<void> submit(std::function<void()> work) override {
+            std::thread([work = std::move(work), gate = gate_]() {
+                std::lock_guard<std::mutex> hold(*gate);
+                work();
+            }).detach();
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        }
+        std::mutex *gate_ = nullptr;
+    } executor{&gate};
+    eve::cap::provide<eve::caps::IAsyncWorkExecutor>(&executor);
+
+    auto queued = eve::ResourceManager::getInstance().request("join.dat");
+    CHECK(queued.ok());
+    CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 1u);
+    gate.unlock();
+    eve::Resource *loaded = get("join.dat");
+    REQUIRE(loaded != nullptr);
+    CHECK_EQ(static_cast<TestResource *>(loaded)->value, 1);
 }

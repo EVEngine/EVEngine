@@ -1,5 +1,7 @@
 #include "avatar/Avatar.h"
 #include "avatar/Live2DNullBackend.h"
+#include "avatar/VrmRuntime.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "inventory/Equipment.h"
@@ -61,11 +63,19 @@ bool AvatarInstance::removeExpression(const std::string& name) {
 }
 
 int AvatarInstance::getExpressionCount() const {
-    return static_cast<int>(expressionDefs_.size());
+    int count = static_cast<int>(expressionDefs_.size());
+    if (vrm_)
+        for (const auto& e : vrm_->document.expressions)
+            if (!expressionDefs_.contains(e.name)) ++count;
+    return count;
 }
 
 std::string AvatarInstance::getExpressionName(int index) const {
-    const std::vector<std::string> names = sortedKeys(expressionDefs_);
+    std::vector<std::string> names = sortedKeys(expressionDefs_);
+    if (vrm_)
+        for (const auto& e : vrm_->document.expressions) names.push_back(e.name);
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
     return index < 0 || index >= static_cast<int>(names.size()) ? std::string{}
                                                                : names[static_cast<size_t>(index)];
 }
@@ -181,30 +191,6 @@ void Avatar::expose(ssq::Table &table) {
         "AvatarInstance",
         std::function<AvatarInstance *()>([]() -> AvatarInstance * { return nullptr; }), true);
 
-    auto sprite = table.addClass<graphics::Renderable2D>(
-        "Renderable2D", std::function<graphics::Renderable2D*()>([]() { return graphics::Renderable2D::create(); }),
-        false);
-    sprite.addFunc("setPosition", &graphics::Renderable2D::setPosition);
-    sprite.addFunc("getX", &graphics::Renderable2D::getX);
-    sprite.addFunc("getY", &graphics::Renderable2D::getY);
-    sprite.addFunc("setRotation", &graphics::Renderable2D::setRotation);
-    sprite.addFunc("getRotation", &graphics::Renderable2D::getRotation);
-    sprite.addFunc("setScale", &graphics::Renderable2D::setScale);
-    sprite.addFunc("setSize", &graphics::Renderable2D::setSize);
-    sprite.addFunc("setColor", &graphics::Renderable2D::setColor);
-    sprite.addFunc("setLayer", &graphics::Renderable2D::setLayer);
-    sprite.addFunc("getLayer", &graphics::Renderable2D::getLayer);
-    sprite.addFunc("setVisible", &graphics::Renderable2D::setVisible);
-    sprite.addFunc("isVisible", &graphics::Renderable2D::getVisible);
-    sprite.addFunc("setTexture", &graphics::Renderable2D::setTexture);
-    sprite.addFunc("setQuad", &graphics::Renderable2D::setQuad);
-    sprite.addFunc("setReceiveLight", &graphics::Renderable2D::setReceiveLight);
-    sprite.addFunc("getReceiveLight", &graphics::Renderable2D::getReceiveLight);
-    sprite.addFunc("setCastOcclusion", &graphics::Renderable2D::setCastOcclusion);
-    sprite.addFunc("getCastOcclusion", &graphics::Renderable2D::getCastOcclusion);
-    sprite.addFunc("setBlendMode", &graphics::Renderable2D::setBlend);
-    sprite.addFunc("getBlendMode", &graphics::Renderable2D::getBlend);
-
     av.addFunc("getKind", &AvatarInstance::getKind);
     av.addFunc("setPosition", &AvatarInstance::setPosition);
     av.addFunc("getX", &AvatarInstance::getX);
@@ -268,6 +254,16 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getLive2DBackendName", &AvatarInstance::getLive2DBackendName);
     av.addFunc("hasLive2DBackend", &AvatarInstance::hasLive2DBackend);
 
+    av.addFunc("loadVroidModel", [vm = table.getHandle()](AvatarInstance* avatar, const std::string& path) {
+        return eve::script::projectResult(vm, avatar->loadVroidModel(path));
+    });
+    av.addFunc("setHumanoidBoneRotation", [vm = table.getHandle()](AvatarInstance* avatar, const std::string& semantic,
+                                                                   float yaw, float pitch, float roll) {
+        return eve::script::projectResult(vm, avatar->setHumanoidBoneRotation(semantic, yaw, pitch, roll));
+    });
+    av.addFunc("getVroidMeshCount", &AvatarInstance::getVroidMeshCount);
+    av.addFunc("getVroidSpringCount", &AvatarInstance::getVroidSpringCount);
+    av.addFunc("getVroidVersion", &AvatarInstance::getVroidVersion);
     av.addFunc("loadVroidModelPath", &AvatarInstance::loadVroidModelPath);
     av.addFunc("bindVroidModelData", &AvatarInstance::bindVroidModelData);
     av.addFunc("loadMorphNamesFromModel", &AvatarInstance::loadMorphNamesFromModel);
@@ -283,6 +279,18 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("bindAnimPlayer", &AvatarInstance::bindAnimPlayer);
     av.addFunc("bindAnimStateMachine", &AvatarInstance::bindAnimStateMachine);
     av.addFunc("bindAnimLayerMixer", &AvatarInstance::bindAnimLayerMixer);
+    av.addFunc("setAnimConstraintStack", [](AvatarInstance* a, animation::AnimConstraintStack* stack) -> void {
+        a->setAnimConstraintStack(stack);
+    });
+    av.addFunc("getAnimConstraintStack", &AvatarInstance::getAnimConstraintStack);
+    av.addFunc("setFootIKSolver", [](AvatarInstance* a, animation::FootIKSolver* solver) -> void {
+        a->setFootIKSolver(solver);
+    });
+    av.addFunc("getFootIKSolver", &AvatarInstance::getFootIKSolver);
+    av.addFunc("setDynamicBoneSolver", [](AvatarInstance* a, animation::DynamicBoneSolver* solver) -> void {
+        a->setDynamicBoneSolver(solver);
+    });
+    av.addFunc("getDynamicBoneSolver", &AvatarInstance::getDynamicBoneSolver);
     av.addFunc("bindAnimSkin", &AvatarInstance::bindAnimSkin);
     av.addFunc("bindSkinnedPart",
                [](AvatarInstance* a, int partIndex, const std::string& partName,

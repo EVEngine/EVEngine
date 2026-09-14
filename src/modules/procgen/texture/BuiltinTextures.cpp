@@ -495,6 +495,7 @@ void TextureRecipeRegistry::registerBuiltins() {
         schema.params.push_back(ParamDescriptor::floating("windSpeed", "Wind Speed", 4.f, 0.f, 256.f, 0.1f));
         schema.params.push_back(ParamDescriptor::floating("windAngle", "Wind Angle", 0.f, -6.2832f, 6.2832f, 0.01f));
         schema.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 4, 1, 12));
+        schema.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
         schema.params.push_back(ParamDescriptor::floating("time", "Time", 0.f, 0.f, 86400.f, 0.1f));
         schema.params.push_back(ParamDescriptor::floating("extent", "Extent", 96.f, 1.f, 4096.f, 1.f));
         if (shadow) {

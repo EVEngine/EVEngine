@@ -29,7 +29,6 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 envProbeCenter;
     vec4 envProbeExtent;
     vec4 skinInfo;
-    mat4 skinBones[128];
     vec4 reflectionProbeCenter[2];
     vec4 reflectionProbeExtent[2];
 } ubo;

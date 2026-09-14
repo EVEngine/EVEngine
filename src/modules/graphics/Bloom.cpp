@@ -85,6 +85,7 @@ void Bloom::configureUpsample(Texture *source, float scatter) {
 Texture *Bloom::build(Texture *source, float threshold, float scatter) {
     if (!source) throw eve::Exception("Bloom.build: null source");
     ensureTargets(source->getWidth(), source->getHeight());
+    if (filterSettings_.filter == BloomFilter::GaussianScatter) return buildGaussian(source, threshold);
     Canvas *previous = gfx_->getCanvas();
 
     Texture *input = source;
@@ -118,6 +119,7 @@ Texture *Bloom::apply(Texture *source, float intensity, float threshold, float s
     if (!source) throw eve::Exception("Bloom.apply: null source");
     if (intensity <= 0.f) return source;
     Texture *bloom = build(source, threshold, scatter);
+    if (filterSettings_.filter == BloomFilter::GaussianScatter) return compositeGaussian(source, bloom, intensity);
     Canvas *previous = gfx_->getCanvas();
     composite_->clear(Color(0.f, 0.f, 0.f, 0.f), {}, {});
     gfx_->setCanvas(composite_);

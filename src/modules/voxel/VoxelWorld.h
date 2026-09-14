@@ -28,12 +28,17 @@ namespace eve::data {
 class ByteData;
 }  // namespace eve::data
 
+namespace eve::thread {
+class Job;
+}
+
 namespace eve::voxel {
 
 /** @brief Result of a streaming pass. */
 struct StreamStats {
     int created = 0;  // chunks allocated + filled this pass
     int evicted = 0;  // chunks unloaded outside the radius
+    int pending = 0;  // still missing inside the radius after this pass
 };
 
 /** @brief One draw batch: all packed rects of one face direction for one chunk. */
@@ -75,15 +80,30 @@ public:
     int unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks);
 
     /**
-     * @brief Player-centered streaming: evict chunks outside `radiusChunks`, then
-     * allocate + fill + mesh missing chunks inside it (sphere, chunk coords).
+     * @brief Extra chunk radius kept after leaving the stream sphere.
+     * `streamAround` still creates only inside `radiusChunks`, but does not
+     * unload or drop in-flight jobs until distance exceeds radius plus this value.
+     * 0 (default) matches the old immediately-evict behaviour.
+     */
+    void setStreamCacheChunks(int extraChunks);
+    int getStreamCacheChunks() const { return streamCacheChunks_; }
+
+    /**
+     * @brief Player-centered streaming: fill missing chunks inside `radiusChunks`,
+     * unload only past radius + `getStreamCacheChunks()` (hysteresis cache).
      * `generator` is called for each new chunk (chunk, cx, cy, cz); when null
      * the stored terrain sampler (procgen::TerrainSampler) is used if enabled,
      * otherwise chunks stay empty.
      * Radius < 0 is a no-op.
+     * @param maxCreates Maximum new chunks to *start or harvest* this call; nearest first.
+     *                   0 means unlimited synchronous fill (tests / one-shot).
+     *                   >0 runs terrain fill+mesh on JobSystem workers; this call
+     *                   only enqueues work and inserts chunks that are already
+     *                   ready, so eve_update stays off the generation cost.
      */
     StreamStats streamAround(int centerX, int centerY, int centerZ, int radiusChunks,
-                             const std::function<void(Chunk &, int, int, int)> &generator = {});
+                             const std::function<void(Chunk &, int, int, int)> &generator = {},
+                             int maxCreates = 0);
 
     /**
      * @brief Configure the built-in terrain generator used by streamAround(). The
@@ -104,7 +124,7 @@ public:
      */
     void setTerrainParam(const std::string &key, float value);
 
-    void disableTerrain() { terrainEnabled_ = false; terrainAssetEnabled_ = false; terrainAsset_.clear(); }
+    void disableTerrain();
     bool terrainEnabled() const { return terrainEnabled_ || terrainAssetEnabled_; }
 
     /** @brief Compatibility operation that opens baked EVTR terrain data. */
@@ -133,12 +153,18 @@ public:
     bool loadWorld(data::ByteData *bytes);
 
     /**
-     * @brief Remesh every dirty chunk. Returns number remeshed.
+     * @brief Remesh dirty chunks.
      * @param maxThreads 0 = auto (parallel up to an internal cap on desktop),
      *                   1 = serial, >1 = that many workers. Falls back to
      *                   serial when threads are unavailable.
+     * @param maxChunks  0 = all dirty chunks; >0 remesh at most that many
+     *                   (so a streaming world can finish meshes across frames).
      */
-    int remeshDirty(int maxThreads = 0);
+    int remeshDirty(int maxThreads = 0, int maxChunks = 0);
+    /** @brief Number of chunks whose mesh is stale. */
+    int getDirtyCount() const;
+    /** @brief Terrain jobs still running (not yet inserted into the world). */
+    int getInflightStreamCount() const;
 
     /**
      * @brief Select chunks/faces to draw.
@@ -238,8 +264,28 @@ private:
     /** Mark the six adjacent chunks dirty when an edit lands on a border face. */
     void markNeighborChunksDirty(int cx, int cy, int cz, int lx, int ly, int lz);
     uint8_t terrainSurfaceAt(int wx, int wz) const;
+    void fillChunkTerrain(Chunk &chunk, int nx, int ny, int nz) const;
+    void remeshChunks(const std::vector<Chunk *> &chunks, int maxThreads);
+    void waitStreamJobs();
+    void reapRetiredStreamJobs();
+    void restoreRetiredInside(int centerX, int centerY, int centerZ, int radiusChunks);
+    bool isStreamJob(int cx, int cy, int cz) const;
+    int harvestStreamJobs(int centerX, int centerY, int centerZ, int radiusChunks, int maxHarvest);
+    void dropStreamJobsOutside(int centerX, int centerY, int centerZ, int radiusChunks);
+
+    struct StreamJob {
+        int cx = 0;
+        int cy = 0;
+        int cz = 0;
+        std::unique_ptr<Chunk> chunk;
+        thread::Job *job = nullptr;
+    };
+
+    std::vector<StreamJob> inflight_;
+    std::vector<StreamJob> retired_;
 
     std::unordered_map<uint64_t, std::unique_ptr<Chunk>> chunks_;
+    int streamCacheChunks_ = 0;
     uint64_t revision_ = 0;
     std::vector<DrawBatch> visible_;
     std::vector<uint64_t> visibleChunkKeys_;

@@ -5,5 +5,5 @@ config = {
     title = "EVEngine Building —— 3D 地面放置示例"
     debug = false
     hotReload = true
-    modules = ["gfx", "mouse", "keyboard", "ui"]
+    modules = ["gfx", "model3d", "mouse", "keyboard", "ui"]
 };

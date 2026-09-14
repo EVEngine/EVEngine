@@ -10,6 +10,13 @@ Animation Sequences and Skeletal Meshes are supported. For animation sequences,
 the exporter includes the preview skeletal mesh and vertex skin weights so the
 result is self-contained for runtime animation loading.
 
+Material baking uses the installed GPU through `-AllowCommandletRendering` and
+exports PNG images. Shader compilation may take time on the first run; NullRHI
+must not be used for material export. GLB normalized integer skin weights are
+expanded to FLOAT before publication for the current Model3D reader. Conversion
+diagnostics and final artifact hashes are recorded in the manifest. This weight
+compatibility conversion does not currently apply to sidecar `.gltf` output.
+
 ```powershell
 python tools/unreal-uasset-converter/unreal_uasset_converter.py `
   --project C:\Projects\OwnedAssets\OwnedAssets.uproject `

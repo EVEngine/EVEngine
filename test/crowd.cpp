@@ -231,6 +231,41 @@ TEST_CASE("crowd.sim.turnRateLimitsHeading") {
     crowd->clearAgents();
 }
 
+TEST_CASE("crowd.sim.exactOverlapUsesStableIdentityAndAvoidancePriority") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setResolveOverlaps(true);
+    crowd.setSeparationRadius(4.0f);
+    crowd.setSeparationWeight(0.0f);
+
+    auto run = [&](bool reverse) {
+        crowd.clearAgents();
+        const int first = crowd.addNamedAgent(reverse ? "low" : "high", 0.0f, 0.0f, 0.0f, 1.0f);
+        const int second = crowd.addNamedAgent(reverse ? "high" : "low", 0.0f, 0.0f, 0.0f, 1.0f);
+        REQUIRE(first >= 0);
+        REQUIRE(second >= 0);
+        const int high = crowd.getNamedAgentIndex("high");
+        const int low = crowd.getNamedAgentIndex("low");
+        REQUIRE(crowd.setAgentAction(high, "idle"));
+        REQUIRE(crowd.setAgentAction(low, "idle"));
+        REQUIRE(crowd.setAgentAvoidancePriority(high, 10).ok());
+        REQUIRE(crowd.setAgentAvoidancePriority(low, -10).ok());
+        crowd.step(0.1f);
+        CHECK_EQ(crowd.getAgentAvoidancePriority(high), 10);
+        CHECK_EQ(crowd.getAgentAvoidancePriority(low), -10);
+        const AgentState highState = crowd.getAgentState(high);
+        const AgentState lowState = crowd.getAgentState(low);
+        CHECK(std::hypot(highState.x, highState.y) < 1e-5f);
+        CHECK(std::hypot(lowState.x, lowState.y) > 1.9f);
+        return lowState;
+    };
+
+    const AgentState forward = run(false);
+    const AgentState reversed = run(true);
+    CHECK(approx(forward.x, reversed.x));
+    CHECK(approx(forward.y, reversed.y));
+}
+
 TEST_CASE("crowd.sim.seekArrivesAndStops") {
     auto *crowd = Crowd::create();
     REQUIRE(crowd != nullptr);

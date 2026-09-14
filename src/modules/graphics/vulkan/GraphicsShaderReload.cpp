@@ -11,6 +11,7 @@
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
+#include "graphics/vulkan/ShaderResourceReload.h"
 
 namespace eve::graphics::vulkan {
 namespace {
@@ -24,6 +25,8 @@ void destroyCandidate(vkb::Device &device, GpuShader &candidate) {
     if (candidate.swapchainPipeline) device->destroyPipeline(candidate.swapchainPipeline);
     if (candidate.offscreenPipeline) device->destroyPipeline(candidate.offscreenPipeline);
     if (candidate.mesh3dPipeline) device->destroyPipeline(candidate.mesh3dPipeline);
+    if (candidate.mesh3dOffscreenPipeline) device->destroyPipeline(candidate.mesh3dOffscreenPipeline);
+    if (candidate.mesh3dHdrOffscreenPipeline) device->destroyPipeline(candidate.mesh3dHdrOffscreenPipeline);
     if (candidate.mesh3dXrayPipeline) device->destroyPipeline(candidate.mesh3dXrayPipeline);
 }
 
@@ -48,6 +51,8 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
         return reloadFailure(DiagnosticCode::ParseError, "SPIR-V magic mismatch", "source");
 
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
+    auto  resourceValidation = validateMeshResourceShaderReload(*current, vertSpv, fragSpv);
+    if (!resourceValidation) return resourceValidation;
     auto gpuIt = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
                               [&](const std::unique_ptr<GpuShader> &owned) {
                                   return owned.get() == current;
@@ -85,7 +90,14 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
                 vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples());
         } else {
             candidate.mesh3dPipeline = createMesh3DStylePipeline(
-                vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples());
+                vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples(), shader.meshBlend,
+                shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());
+            candidate.mesh3dOffscreenPipeline = createMesh3DStylePipeline(
+                vert, fragSpv, candidate.pipelineLayout, offscreen3DRenderPass, vk::SampleCountFlagBits::e1,
+                shader.meshBlend, shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());
+            candidate.mesh3dHdrOffscreenPipeline = createMesh3DStylePipeline(
+                vert, fragSpv, candidate.pipelineLayout, hdrOffscreen3DRenderPass, vk::SampleCountFlagBits::e1,
+                shader.meshBlend, shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());
             candidate.mesh3dXrayPipeline = createMesh3DXrayPipeline(
                 vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples());
         }
@@ -105,6 +117,12 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
     if (current->offscreenPipeline) device->destroyPipeline(current->offscreenPipeline);
     if (current->mesh3dPipeline) device->destroyPipeline(current->mesh3dPipeline);
     if (current->mesh3dXrayPipeline) device->destroyPipeline(current->mesh3dXrayPipeline);
+    if (current->isMesh3D && !current->isHair3D) {
+        if (current->mesh3dOffscreenPipeline) device->destroyPipeline(current->mesh3dOffscreenPipeline);
+        if (current->mesh3dHdrOffscreenPipeline) device->destroyPipeline(current->mesh3dHdrOffscreenPipeline);
+        current->mesh3dOffscreenPipeline    = candidate.mesh3dOffscreenPipeline;
+        current->mesh3dHdrOffscreenPipeline = candidate.mesh3dHdrOffscreenPipeline;
+    }
     current->swapchainPipeline = candidate.swapchainPipeline;
     current->offscreenPipeline = candidate.offscreenPipeline;
     current->mesh3dPipeline = candidate.mesh3dPipeline;

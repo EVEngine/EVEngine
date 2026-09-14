@@ -26,6 +26,7 @@ class Drawable;
 class Font;
 class Shader;
 class Texture;
+class PrimitiveCanvas2D;
 struct Lighting2DUBO;
 
 /** @brief 2D immediate-mode drawing surface (screen or offscreen Canvas). */
@@ -46,6 +47,12 @@ public:
     virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                                       const Color &color,
                                       BlendMode blend = BlendMode::Alpha) = 0;
+    /**
+     * @brief Resolves and queues one frame-local primitive Canvas.
+     * @param canvas Borrowed recorder consumed synchronously and never retained.
+     * @note Render-thread affine; invokes no callbacks.
+     */
+    virtual void drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) = 0;
 
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                                   const Color &color) = 0;

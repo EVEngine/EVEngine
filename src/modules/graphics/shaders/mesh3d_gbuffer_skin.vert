@@ -11,18 +11,19 @@ layout(std140, set = 0, binding = 0) uniform SkinPass {
     mat4 model;
     vec4 clip;
     vec4 skinInfo;
-    mat4 skinBones[128];
 } skinPass;
 
 layout(location = 0) out vec3 vWorldNormal;
 layout(location = 1) out float vNdcZ;
 layout(location = 2) out vec2 vUV;
 
+layout(std430, set = 0, binding = 2) readonly buffer SkinPalette { mat4 bones[]; } skinPalette;
+
 void main() {
-    mat4 skin = inWeights.x * skinPass.skinBones[inJoints.x]
-              + inWeights.y * skinPass.skinBones[inJoints.y]
-              + inWeights.z * skinPass.skinBones[inJoints.z]
-              + inWeights.w * skinPass.skinBones[inJoints.w];
+    mat4 skin = inWeights.x * skinPalette.bones[inJoints.x]
+              + inWeights.y * skinPalette.bones[inJoints.y]
+              + inWeights.z * skinPalette.bones[inJoints.z]
+              + inWeights.w * skinPalette.bones[inJoints.w];
     vec4 hp = skinPass.mvp * skin * vec4(inPos, 1.0);
     gl_Position = hp;
     mat3 skinNormal = mat3(skin);

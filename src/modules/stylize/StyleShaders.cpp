@@ -7,13 +7,15 @@
 #include "graphics/Shader.h"
 #include "graphics/shaders/mesh3d_toon_frag_spv.inc"
 #include "graphics/shaders/mesh3d_toon_vert_spv.inc"
+#include "stylize/shaders/StylizeWgsl.h"
+#include "stylize/shaders/anime_mesh_frag_spv.inc"
+#include "stylize/shaders/anime_mesh_wgsl.inc"
 #include "stylize/shaders/cartoon_post_frag_spv.inc"
 #include "stylize/shaders/ink_mesh_frag_spv.inc"
 #include "stylize/shaders/ink_post_frag_spv.inc"
 #include "stylize/shaders/pixel_post_frag_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
-#include "stylize/shaders/StylizeWgsl.h"
 
 #include <algorithm>
 #include <array>
@@ -23,12 +25,13 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<StyleDefinition, 5> kStyles = {{
+const std::array<StyleDefinition, 6> kStyles = {{
     {"cartoon", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 100},
     {"watercolor", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 200},
     {"ink", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 110},
     {"pixel", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 300},
     {"xray", false, true, false, true, false, graphics::PostEffectStage::AfterOpaque, 50},
+    {"anime", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
 }};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
@@ -192,6 +195,25 @@ bool styleSupports(const std::string &style, const std::string &feature) {
 }
 
 namespace {
+// Order is the shared GLSL/WGSL parameter ABI. Seed shader uniforms from this table.
+const StyleParameterDesc kAnimeParams[] = {
+    {"shadowThreshold", -0.08f, -1.f, 1.f},
+    {"shadowSoftness", 0.035f, 0.001f, 0.5f},
+    {"shadowStrength", 1.f, 0.f, 1.f},
+    {"rimStrength", 0.19f, 0.f, 1.f},
+    {"skin", 0.f, 0.f, 1.f},
+    {"hair", 0.f, 0.f, 1.f},
+    {"skinDetail", 1.f, 0.f, 1.f},
+    {"specularStrength", 0.22f, 0.f, 1.f},
+    {"specularPower", 32.f, 1.f, 128.f},
+    {"shadowR", 0.64f, 0.f, 1.f},
+    {"shadowG", 0.66f, 0.f, 1.f},
+    {"shadowB", 0.79f, 0.f, 1.f},
+    {"fillGradient", 0.08f, 0.f, 1.f},
+    {"unlit", 0.f, 0.f, 1.f},
+    {"surfaceSpecular", 0.f, 0.f, 1.f},
+    {"castShadowStrength", 1.f, 0.f, 1.f},
+};
 const StyleParameterDesc kCartoonParams[] = {
     {"bands", 3.f, 1.f, 16.f},              {"outlineStrength", 1.15f, 0.f, 4.f},
     {"outlineThreshold", 0.12f, 0.f, 1.f},  {"posterize", 5.f, 1.f, 32.f},
@@ -232,6 +254,7 @@ const StyleParameterDesc *paramAt(const StyleParameterDesc (&params)[N], int ind
 }  // namespace
 
 int styleParamCount(const std::string &style) {
+    if (style == "anime") return int(std::size(kAnimeParams));
     if (style == "cartoon") return int(sizeof(kCartoonParams) / sizeof(kCartoonParams[0]));
     if (style == "watercolor") return int(sizeof(kWatercolorParams) / sizeof(kWatercolorParams[0]));
     if (style == "ink") return int(sizeof(kInkParams) / sizeof(kInkParams[0]));
@@ -246,6 +269,7 @@ std::string styleParamName(const std::string &style, int index) {
 }
 
 const StyleParameterDesc *styleParameterAt(const std::string &style, int index) {
+    if (style == "anime") return paramAt(kAnimeParams, index);
     if (style == "cartoon") return paramAt(kCartoonParams, index);
     if (style == "watercolor") return paramAt(kWatercolorParams, index);
     if (style == "ink") return paramAt(kInkParams, index);
@@ -374,6 +398,13 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
 
 void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindMeshUniforms: null shader");
+    if (style == "anime") {
+        for (const auto &param : kAnimeParams) {
+            shader->declareFloat(param.id);
+            shader->sendFloat(param.id, param.defaultValue);
+        }
+        return;
+    }
 
     if (isEffectStyle(style)) {
         bindEffectMeshUniforms(shader, style);
@@ -474,6 +505,17 @@ graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &s
 graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createMeshShader: null graphics");
     if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
+
+    if (style == "anime") {
+        graphics::Shader *shader =
+            gfx->getBackendName() == "webgpu"
+                ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kAnimeMesh)
+                : gfx->newMeshShaderFromSpv(copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count),
+                                            copySpv(anime_mesh_frag_spv, anime_mesh_frag_spv_count));
+        if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create anime mesh shader");
+        bindMeshUniforms(shader, style);
+        return shader;
+    }
 
     if (style == "cartoon") {
         if (gfx->getBackendName() == "webgpu") {

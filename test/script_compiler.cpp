@@ -4,6 +4,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <chrono>
+#include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -19,14 +21,14 @@ TEST_CASE("scriptCompiler.recordsErasedLanguageMetadata") {
         "export function answer(value: int) -> int { return value + score }\n",
         "game:/metadata.nut");
 
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/metadata.nut");
-    CHECK(metadata != nullptr);
-    CHECK(!metadata->sourceHash.empty());
-    CHECK_EQ(metadata->persistRoots.size(), size_t(1));
-    CHECK_EQ(metadata->persistRoots[0], std::string("score"));
-    CHECK_EQ(metadata->exports.size(), size_t(1));
-    CHECK_EQ(metadata->exports[0], std::string("answer"));
-    CHECK_EQ(metadata->sourceMap.originalPosition({2, 9}).line, uint32_t(2));
+    const auto metadata = runtime.scriptCompiler().metadata("game:/metadata.nut");
+    REQUIRE(metadata.has_value());
+    CHECK(!metadata->get().sourceHash.empty());
+    CHECK_EQ(metadata->get().persistRoots.size(), size_t(1));
+    CHECK_EQ(metadata->get().persistRoots[0], std::string("score"));
+    CHECK_EQ(metadata->get().exports.size(), size_t(1));
+    CHECK_EQ(metadata->get().exports[0], std::string("answer"));
+    CHECK_EQ(metadata->get().sourceMap.originalPosition({2, 9}).line, uint32_t(2));
 }
 
 TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
@@ -107,6 +109,31 @@ TEST_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
     runtime.runSource("native_named_result <- nativeCompose(third: 3, first: 1, second: 2)\n", "native-named-test.nut");
     const auto result = runtime.vm().get<int64_t>("native_named_result");
     CHECK_EQ(result, int64_t(123));
+}
+
+TEST_CASE("scriptCompiler.nestedBindingCallsKeepOuterSignatureStable") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeInner", [](int value) { return value + 1; });
+    runtime.vm().addFunc("nativeOuter", [](int first, int second) { return first * 10 + second; });
+
+    script::BindingContract inner;
+    inner.module = "test";
+    inner.method = "nativeInner";
+    inner.parameters = {{"value", "int"}};
+    inner.returnType = "int";
+    runtime.scriptCompiler().bindings().registerContract(std::move(inner));
+
+    script::BindingContract outer;
+    outer.module = "test";
+    outer.method = "nativeOuter";
+    outer.parameters = {{"first", "int"}, {"second", "int"}};
+    outer.returnType = "int";
+    runtime.scriptCompiler().bindings().registerContract(std::move(outer));
+
+    runtime.runSource(
+        "nested_binding_result <- nativeOuter(nativeInner(4), 7)\n",
+        "nested-binding-signature-test.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("nested_binding_result"), int64_t(57));
 }
 
 TEST_CASE("scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments") {
@@ -207,12 +234,12 @@ TEST_CASE("scriptCompiler.retainsStructuredDiagnosticsAfterFailure") {
         rejected = true;
     }
     CHECK(rejected);
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
-    CHECK(metadata != nullptr);
-    CHECK_EQ(metadata->diagnostics.size(), size_t(1));
-    CHECK_EQ(metadata->diagnostics[0].code, std::string("EVE2601"));
-    CHECK_EQ(metadata->diagnostics[0].position.line, uint32_t(1));
-    CHECK(!metadata->diagnostics[0].fix.empty());
+    const auto metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
+    REQUIRE(metadata.has_value());
+    CHECK_EQ(metadata->get().diagnostics.size(), size_t(1));
+    CHECK_EQ(metadata->get().diagnostics[0].code, std::string("EVE2601"));
+    CHECK_EQ(metadata->get().diagnostics[0].position.line, uint32_t(1));
+    CHECK(!metadata->get().diagnostics[0].fix.empty());
 }
 
 TEST_CASE("scriptCompiler.requiresPluginAnnotationsToBeRegistered") {
@@ -262,10 +289,10 @@ TEST_CASE("scriptCompiler.rawVmBridgeRecordsToolingMetadata") {
         runtime.handle(), source, static_cast<SQInteger>(std::strlen(source)), "console_repl.nut", SQTrue);
     CHECK(SQ_SUCCEEDED(result));
     sq_settop(runtime.handle(), top);
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("console_repl.nut");
-    CHECK(metadata != nullptr);
-    CHECK_EQ(metadata->symbols.size(), size_t(1));
-    CHECK_EQ(metadata->symbols[0].name, std::string("replValue"));
+    const auto metadata = runtime.scriptCompiler().metadata("console_repl.nut");
+    REQUIRE(metadata.has_value());
+    CHECK_EQ(metadata->get().symbols.size(), size_t(1));
+    CHECK_EQ(metadata->get().symbols[0].name, std::string("replValue"));
 }
 
 TEST_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
@@ -316,6 +343,10 @@ TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
     const std::filesystem::path root(EVENGINE_SOURCE_DIR);
     size_t                      compiled = 0;
+    using Clock                          = std::chrono::steady_clock;
+    const auto start                     = Clock::now();
+    double     readMs = 0, vmMs = 0, compileMs = 0, destroyMs = 0;
+    const auto milliseconds = [](auto duration) { return std::chrono::duration<double, std::milli>(duration).count(); };
     for (std::filesystem::recursive_directory_iterator it(root), end; it != end; ++it) {
         if (it->is_directory()) {
             const std::string name = it->path().filename().string();
@@ -323,18 +354,33 @@ TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
             continue;
         }
         if (it->path().extension() != ".nut") continue;
+        const auto    readStart = Clock::now();
         std::ifstream input(it->path(), std::ios::binary);
         REQUIRE(input.good());
         const std::string source(std::istreambuf_iterator<char>(input), {});
         const std::string relative = std::filesystem::relative(it->path(), root).generic_string();
+        readMs += milliseconds(Clock::now() - readStart);
         try {
-            Runtime runtime(1024, ssq::Libs::ALL);
-            runtime.compileSource(source, "baseline:/" + relative);
+            auto phaseStart = Clock::now();
+            {
+                Runtime    runtime(1024, ssq::Libs::ALL);
+                const auto ready = Clock::now();
+                vmMs += milliseconds(ready - phaseStart);
+                runtime.compileSource(source, "baseline:/" + relative);
+                phaseStart = Clock::now();
+                compileMs += milliseconds(phaseStart - ready);
+            }
+            destroyMs += milliseconds(Clock::now() - phaseStart);
         } catch (const std::exception& error) {
             throw std::runtime_error(relative + ": " + error.what());
         }
         ++compiled;
     }
-    CHECK(compiled >= size_t(150));
+    REQUIRE(compiled >= size_t(150));
+    const double totalMs = milliseconds(Clock::now() - start);
+    std::fprintf(
+        stderr,
+        "Script corpus: %zu scripts; walk %.1f ms, read %.1f ms, VM %.1f ms, compile %.1f ms, destroy %.1f ms\n",
+        compiled, totalMs - readMs - vmMs - compileMs - destroyMs, readMs, vmMs, compileMs, destroyMs);
 #endif
 }

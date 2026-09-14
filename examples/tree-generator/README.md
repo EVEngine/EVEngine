@@ -13,7 +13,7 @@ local p = paramsResult.value;
 p.setSeed(31415);
 p.setString("style", "lowpoly");
 p.setString("branchAlgorithm", "weberPenn");
-p.setString("leafMode", "canopy");
+p.setString("leafMode", "clusters");
 p.setFloat("leafDensity", 0.75);
 
 local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
@@ -24,10 +24,38 @@ local mesh = meshResult.value;
 `branchAlgorithm` 只能选择一种骨架算法：`weberPenn` 是默认值，规则稳定、生成较快；
 `spaceColonization` 通过树冠吸引点迭代生长，轮廓更不规则。主干、枝条层级和叶片系统由两种算法共享。
 
+## 叶片模式
+
+- `clusters`（默认，推荐）：在每个结果枝的合适位置放一个"叶片丛"。丛是一个球体，由
+  `clusterPlanes` 张绕 Y 轴分层旋转、各自带轻微倾斜和偏移的叶片平面组成；每张平面上的
+  叶片中心由蓝噪声（Poisson-disk）采样得到，分布均匀，既不成团也不留空洞。叶片顶点法线取自
+  丛球面，所以一堆平面卡片仍然按球体受光，树冠有体积感；叶片同时输出正反两个绕向，开启背面
+  剔除的管线也不会把它剔掉。空白处不生成任何几何体——"只有叶片着色、其余透明"落到网格上
+  就是"没有叶片就没有面"，既省几何体，也避开了半透明排序。
+- `cards`：沿枝条随机撒独立叶片，实现最简，但容易看出成团和空洞。
+- `canopy`：用椭球团块堆树冠，几何体最少，最"低多边形"。
+- `none`：只输出枝干骨架。
+
+叶片丛参数：
+
+- `clusterSize`：丛半径占 `crownRadius` 的比例，默认 `0.30`。
+- `clusterSeparation`：相邻丛心的最小间距（单位：丛半径），默认 `0.55`。调大→丛更少更大，
+  调小→丛更多更碎。
+- `clusterPlanes` / `clusterCaps`：叶片平面数（默认 `10`）与封住两极的近水平面数（默认 `2`）。
+- `clusterTilt`：环形平面偏离竖直方向的最大倾角（度），默认 `26`。
+- `clusterLeafScale`：丛内单片叶长相对 `leafSize` 的比例，默认 `0.85`。
+- `clusterSpacing`：蓝噪声中心间距（单位：叶长），默认 `0.80`；`leafDensity` 在此基础上缩放。
+- `clusterLeaves`：每张平面的叶片数上限，默认 `28`。若请求的间距会超出该上限，采样器会放大
+  间距而不是截断，所以留下的叶片依然均匀。
+- `clusterLimit`：单棵树的丛数上限，默认 `120`。
+
+丛心按"随机顺序 + Poisson 排斥"从结果枝锚点中挑选：枝条越均匀地填满树冠，叶片丛就越均匀，
+`clusterLimit` 则给出几何体量的硬上限。
+
 ## 通用参数
 
 - `style`: `lowpoly` / `realistic`
-- `leafMode`: `cards`（独立双面叶片）/ `canopy`（整片冠层网格）/ `none`
+- `leafMode`: `clusters` / `cards` / `canopy` / `none`
 - `leafDensity`: `0..1`
 - `height`, `trunkRadius`, `crownRadius`, `leafSize`
 - `foliageStart`: 树冠起始高度比例，`0.1..0.9`
@@ -69,7 +97,7 @@ make run/linux-debug GAME=examples/tree-generator
 make run/win32-debug GAME=examples/tree-generator
 ```
 
-快捷键：`R` 换 seed，`1/2` 切换 Low Poly/写实，`A` 切换分枝算法，`L` 开关叶片，
-`C` 切换整片冠层，`[` / `]` 调节叶片密度。
+快捷键：`R` 换 seed，`1/2` 切换 Low Poly/写实，`A` 切换分枝算法，`L` 循环叶片模式
+（clusters → cards → canopy → none），`[` / `]` 调节叶片密度。
 
 树木网格应在加载、换 seed 或修改参数时生成并缓存，不要每帧重新生成。

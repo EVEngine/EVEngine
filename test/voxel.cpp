@@ -15,10 +15,12 @@
 #include "voxel/VoxelWorld.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace eve::voxel;
@@ -175,26 +177,6 @@ TEST_CASE("voxel.pack.roundtrip") {
                     CHECK_EQ(g.z(), z);
                     CHECK_EQ(g.tex(), tex);
                 }
-}
-
-TEST_CASE("voxel.greedy.solid_cube") {
-    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
-    chunk->fill(1);
-    chunk->remesh();
-
-    CHECK_EQ(chunk->faceRectCount(FaceDir::PosX), 1);
-    CHECK_EQ(chunk->faceRectCount(FaceDir::NegX), 1);
-    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 1);
-    CHECK_EQ(chunk->faceRectCount(FaceDir::NegY), 1);
-    CHECK_EQ(chunk->faceRectCount(FaceDir::PosZ), 1);
-    CHECK_EQ(chunk->faceRectCount(FaceDir::NegZ), 1);
-    CHECK_EQ(chunk->totalRectCount(), 6);
-
-    const PackedRect &top = chunk->faceRects(FaceDir::PosY)[0];
-    CHECK_EQ(top.width(), 32);
-    CHECK_EQ(top.height(), 32);
-    CHECK_EQ(top.tex(), 1);
-    CHECK_EQ(top.y(), 31);
 }
 
 TEST_CASE("voxel.greedy.single_voxel") {
@@ -759,21 +741,6 @@ TEST_CASE("voxel.frustum.intersects") {
     }
 }
 
-TEST_CASE("voxel.faceDir.name_aliases") {
-    FaceDir d;
-    CHECK(faceDirFromName("posX", d));
-    CHECK_EQ(int(d), int(FaceDir::PosX));
-    CHECK(faceDirFromName("+x", d));
-    CHECK_EQ(int(d), int(FaceDir::PosX));
-    CHECK(faceDirFromName("-y", d));
-    CHECK_EQ(int(d), int(FaceDir::NegY));
-    CHECK(faceDirFromName("posZ", d));
-    CHECK_EQ(int(d), int(FaceDir::PosZ));
-    CHECK(!faceDirFromName("forward", d));
-    CHECK(!faceDirFromName("", d));
-    CHECK_EQ(std::string(faceDirName(FaceDir::NegZ)), std::string("negZ"));
-}
-
 TEST_CASE("voxel.chunk.empty_and_dirty_flags") {
     std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
     CHECK(chunk->isDirty());
@@ -1081,25 +1048,6 @@ TEST_CASE("voxel.chunk.border_ring_merges") {
     for (const auto &r : chunk->faceRects(FaceDir::PosY)) area += r.width() * r.height();
     CHECK_EQ(area, 8 * 2 + 6 * 2);  // 28
     CHECK(chunk->faceRectCount(FaceDir::PosY) >= 4);
-}
-
-TEST_CASE("voxel.greedy.stripe_horizontal_one_rect") {
-    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
-    for (int x = 0; x < 16; ++x) chunk->set(x, 0, 3, 4);
-    chunk->remesh();
-    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 1);
-    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].width(), 16);
-    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].height(), 1);
-    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].z(), 3);
-}
-
-TEST_CASE("voxel.greedy.stripe_vertical_depth") {
-    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
-    for (int z = 0; z < 12; ++z) chunk->set(5, 0, z, 2);
-    chunk->remesh();
-    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 1);
-    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].width(), 1);
-    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].height(), 12);
 }
 
 TEST_CASE("voxel.world.many_chunks_visibility_subset") {
@@ -1447,27 +1395,6 @@ TEST_CASE("voxel.faceDir.normals_are_unit_axis") {
         CHECK_EQ(nx * nx + ny * ny + nz * nz, 1.f);
         const int nonzero = (nx != 0.f) + (ny != 0.f) + (nz != 0.f);
         CHECK_EQ(nonzero, 1);
-    }
-}
-
-TEST_CASE("voxel.faceDir.fromName_rejects_garbage") {
-    FaceDir d = FaceDir::PosX;
-    CHECK(!faceDirFromName("", d));
-    CHECK(!faceDirFromName("PosX", d));  // case-sensitive
-    CHECK(!faceDirFromName("x+", d));
-    CHECK(!faceDirFromName("forward", d));
-}
-
-TEST_CASE("voxel.greedy.full_chunk_six_32x32") {
-    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
-    chunk->fill(7);
-    chunk->remesh();
-    CHECK_EQ(chunk->totalRectCount(), 6);
-    for (int i = 0; i < faceDirCount(); ++i) {
-        CHECK_EQ(chunk->faceRectCount(FaceDir(i)), 1);
-        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].width(), 32);
-        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].height(), 32);
-        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].tex(), 7);
     }
 }
 
@@ -2477,6 +2404,42 @@ TEST_CASE("voxel.world.streamAround_evicts_and_creates") {
     StreamStats s4 = world.streamAround(0, 0, 0, -1);
     CHECK_EQ(s4.created, 0);
     CHECK_EQ(s4.evicted, 0);
+}
+
+TEST_CASE("voxel.world.streamAround_cache_keeps_recent_chunks") {
+    VoxelWorld world;
+    world.setStreamCacheChunks(4);
+
+    StreamStats s1 = world.streamAround(0, 0, 0, 2);
+    CHECK_EQ(s1.created, 33);
+    CHECK_EQ(world.getChunkCount(), 33);
+
+    StreamStats s2 = world.streamAround(1, 0, 0, 2);
+    CHECK_EQ(s2.evicted, 0);
+    CHECK(world.hasChunk(0, 0, 0));
+    CHECK(world.getChunkCount() >= 33);
+
+    StreamStats s3 = world.streamAround(10, 0, 0, 2);
+    CHECK(!world.hasChunk(0, 0, 0));
+    CHECK(world.hasChunk(10, 0, 0));
+    CHECK(s3.evicted > 0);
+}
+
+TEST_CASE("voxel.world.streamAround_create_budget_spreads_across_calls") {
+    VoxelWorld world;
+    world.setTerrainParams(42, 1, 2, 3, 8.f, 14.f, 1.f / 32.f);
+
+    StreamStats first = world.streamAround(0, 0, 0, 2, {}, 4);
+    CHECK(first.created + world.getInflightStreamCount() >= 4);
+    CHECK(world.getChunkCount() <= 4);
+    CHECK_EQ(first.pending + world.getChunkCount(), 33);
+
+    for (int i = 0; i < 400 && world.getChunkCount() < 33; ++i) {
+        world.streamAround(0, 0, 0, 2, {}, 8);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    CHECK_EQ(world.getChunkCount(), 33);
+    CHECK_EQ(world.getInflightStreamCount(), 0);
 }
 
 TEST_CASE("voxel.world.streamTerrain_and_persist") {

@@ -5,11 +5,11 @@
 
 namespace eve::editor {
 
-using EditorStatus       = eve::editing::Status;
-using DiagnosticSeverity = eve::editing::DiagnosticSeverity;
-using EditorDiagnostic   = eve::editing::Diagnostic;
+using EditorStatus       = eve::StatusCode;
+using DiagnosticSeverity = eve::Severity;
+using EditorDiagnostic   = eve::Diagnostic;
 
 template <class T>
-using EditorResult = eve::editing::Result<T>;
+using EditorResult = eve::Result<T>;
 
 }  // namespace eve::editor

@@ -9,7 +9,10 @@
 #include "graphics/vulkan/GraphicsInternal.h"
 #include "graphics/vulkan/Canvas.h"
 
+#include "common/Diagnostic.h"
 #include "common/Exception.h"
+#include "common/Resource.h"
+#include "common/Result.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -17,6 +20,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,7 +33,20 @@
 
 namespace eve::graphics::vulkan {
 
-namespace {
+template <class TextureImage>
+void recordTextureCopies(vk::CommandBuffer cb, TextureImage &image, vkb::GenericBuffer &staging,
+                         uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers) {
+    vk::DeviceSize offset = 0;
+    for (uint32_t mip = 0; mip < mipLevels; ++mip) {
+        const uint32_t mipWidth = std::max(width >> mip, 1u);
+        const uint32_t mipHeight = std::max(height >> mip, 1u);
+        for (uint32_t layer = 0; layer < layers; ++layer) {
+            image.copy(cb, staging.buffer, mip, layer, mipWidth, mipHeight, 1, uint32_t(offset));
+            offset += vk::DeviceSize(mipWidth) * mipHeight * 4u;
+        }
+    }
+    image.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+}
 
 template <class TextureImage>
 void uploadTextureForAllShaderStages(vkb::Device &device, vk::CommandPool commandPool,
@@ -43,43 +60,11 @@ void uploadTextureForAllShaderStages(vkb::Device &device, vk::CommandPool comman
 
     vkb::executeImmediately(device.instance, commandPool, graphicsQueue,
                             [&](vk::CommandBuffer cb) {
-                                vk::DeviceSize offset = 0;
-                                for (uint32_t mip = 0; mip < mipLevels; ++mip) {
-                                    const uint32_t mipWidth = std::max(width >> mip, 1u);
-                                    const uint32_t mipHeight = std::max(height >> mip, 1u);
-                                    for (uint32_t layer = 0; layer < layers; ++layer) {
-                                        image.copy(cb, staging.buffer, mip, layer, mipWidth,
-                                                   mipHeight, 1, uint32_t(offset));
-                                        offset += vk::DeviceSize(mipWidth) * mipHeight * 4u;
-                                    }
-                                }
-                                // VKBuilder's shader-read transition targets
-                                // vertex shaders only. Perform the final image
-                                // transition here so fragment and compute
-                                // texture consumers are in its destination
-                                // scope as well.
-                                vk::ImageMemoryBarrier barrier{};
-                                barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
-                                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-                                barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
-                                barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-                                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                barrier.image = image.image();
-                                barrier.subresourceRange = {
-                                    vk::ImageAspectFlagBits::eColor, 0, mipLevels, 0, layers};
-                                cb.pipelineBarrier(
-                                    vk::PipelineStageFlagBits::eTransfer,
-                                    vk::PipelineStageFlagBits::eVertexShader |
-                                        vk::PipelineStageFlagBits::eFragmentShader |
-                                        vk::PipelineStageFlagBits::eComputeShader,
-                                    {}, 0, nullptr, 0, nullptr, 1, &barrier);
-                                image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+                                recordTextureCopies(cb, image, staging, width, height, mipLevels,
+                                                    layers);
                             });
     staging.release();
 }
-
-}  // namespace
 
 void Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {
     if (!gpu || !gpu->descriptorSet || !gpu->sampler) return;
@@ -612,6 +597,7 @@ Texture *Graphics::newTexture(image::ImageData *data, const TextureCreateInfo &i
 
 
 void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler) {
+    ensureFileTexturesReady();
     if (!texture || !texture->gpuHandle || !initialized) return;
     for (auto &owned : ownedGpuTextures) {
         if (owned.get() != texture->gpuHandle) continue;
@@ -628,7 +614,24 @@ void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler
 }
 
 bool Graphics::releaseTexture(Texture *texture) {
-    if (!texture || !texture->gpuHandle) return false;
+    if (!texture) return false;
+    dropDeferredFileTexture(texture);
+    if (!texture->gpuHandle) {
+        auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                                  [&](const std::unique_ptr<Texture> &t) {
+                                      return t.get() == texture;
+                                  });
+        if (texIt == ownedTextures.end()) return false;
+        for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
+            if (it->second == texture)
+                it = texturesByPath.erase(it);
+            else
+                ++it;
+        }
+        (void)texIt->release();
+        ownedTextures.erase(texIt);
+        return true;
+    }
     // Renderer-owned fallback textures must never be released by callers.
     if (texture == whiteTexture || texture == flatNormalTexture ||
         texture == flatNormalTexture3D || texture == defaultEnvCubemap)
@@ -856,19 +859,33 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
 
     const std::string key = normalizeTexPath(filename);
-    auto *imgMod = image::Image::create();
-    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
+    if (!fileTextureSourceExists(filename) && !fileTextureSourceExists(key))
+        throw Exception("Could not load image file: %s", filename.c_str());
 
     auto it = texturesByPath.find(key);
     if (it != texturesByPath.end() && it->second) {
-        if (!replaceTexturePixels(it->second, data.get()))
+        requestFileImageDecode(key);
+        if (it->second->hasDeferredFilePixels()) return it->second;
+        auto waited = eve::ResourceManager::getInstance().waitFor(key);
+        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
+        auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
+        if (!data || !replaceTexturePixels(it->second, data))
             throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
         return it->second;
     }
 
-    Texture *tex = newTexture(data.get());
-    texturesByPath[key] = tex;
-    return tex;
+    requestFileImageDecode(key);
+    auto tex = std::make_unique<Texture>();
+    tex->markDeferredFilePixels(this);
+    Texture *raw = tex.get();
+    ownedTextures.push_back(std::move(tex));
+    texturesByPath[key] = raw;
+    deferredFileTextures_.push_back({key, raw});
+    return raw;
+}
+
+bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
+    return replaceTexturePixels(texture, data);
 }
 
 bool Graphics::reloadTextureFromFile(const std::string &filename) {
@@ -877,6 +894,7 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(key);
     if (it == texturesByPath.end() || !it->second) return false;
 
+    ensureFileTexturesReady();
     image::ImageData *data = nullptr;
     try {
         auto *imgMod = image::Image::create();

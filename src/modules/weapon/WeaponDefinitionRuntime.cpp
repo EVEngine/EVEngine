@@ -69,6 +69,25 @@ bool readBoolean(const eve::Value::Object& object, std::string_view name, bool& 
     return true;
 }
 
+bool readStringArray(const eve::Value::Object& object, std::string_view name,
+                     std::vector<std::string>& output) {
+    const auto* value = field(object, name);
+    if (value == nullptr) return true;
+    const auto* array = value->getIf<eve::Value::Array>();
+    if (array == nullptr) return false;
+    std::vector<std::string> candidate;
+    candidate.reserve(array->size());
+    for (const auto& entry : *array) {
+        const auto* text = entry.getIf<std::string>();
+        if (text == nullptr || text->empty()) return false;
+        candidate.push_back(*text);
+    }
+    std::sort(candidate.begin(), candidate.end());
+    if (std::adjacent_find(candidate.begin(), candidate.end()) != candidate.end()) return false;
+    output = std::move(candidate);
+    return true;
+}
+
 const char* resourceKindName(ResourceKind kind) noexcept {
     switch (kind) {
         case ResourceKind::None: return "none";
@@ -117,6 +136,12 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
 
     if (!readNumber(*object, "damage", result.damage) || !readNumber(*object, "penetration", result.penetration) ||
         !readNumber(*object, "range", result.range) || !readNumber(*object, "spread", result.spread) ||
+        !readNumber(*object, "falloffStart", result.falloffStart) ||
+        !readNumber(*object, "minimumDamageFactor", result.minimumDamageFactor) ||
+        !readNumber(*object, "splashMinimumDamageFactor", result.splashMinimumDamageFactor) ||
+        !readNumber(*object, "preferredTargetBonus", result.preferredTargetBonus) ||
+        !readNumber(*object, "accuracy", result.accuracy) ||
+        !readNumber(*object, "scatterRadius", result.scatterRadius) ||
         !readNumber(*object, "spreadMin", result.spreadMin) || !readNumber(*object, "spreadMax", result.spreadMax) ||
         !readNumber(*object, "spreadPerShot", result.spreadPerShot) ||
         !readNumber(*object, "spreadRecover", result.spreadRecover) ||
@@ -126,9 +151,24 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
         !readNumber(*object, "zoomFov", result.zoomFov) || !readNumber(*object, "cooldown", result.cooldown) ||
         !readNumber(*object, "arc", result.arc))
         return invalid<WeaponDefinition>("weapon numeric fields must be finite numbers", "definition");
+    if (result.falloffStart < 0.0f || result.falloffStart > result.range ||
+        result.minimumDamageFactor < 0.0f || result.minimumDamageFactor > 1.0f ||
+        result.splashMinimumDamageFactor < 0.0f || result.splashMinimumDamageFactor > 1.0f ||
+        result.accuracy < 0.0f || result.accuracy > 1.0f || result.scatterRadius < 0.0f ||
+        result.preferredTargetBonus < 1.0f)
+        return invalid<WeaponDefinition>("weapon damage falloff fields are outside valid ranges", "definition");
 
-    if (!readText(*object, "damageType", result.damageType) || !readText(*object, "element", result.element))
-        return invalid<WeaponDefinition>("weapon damageType and element must be strings", "definition");
+    if (!readText(*object, "damageType", result.damageType) || !readText(*object, "element", result.element) ||
+        !readBoolean(*object, "targetsGround", result.targetsGround) ||
+        !readBoolean(*object, "targetsAir", result.targetsAir) ||
+        !readBoolean(*object, "friendlyFire", result.friendlyFire) ||
+        !readBoolean(*object, "blockedByObstacles", result.blockedByObstacles) ||
+        !readStringArray(*object, "requiredTargetTags", result.requiredTargetTags) ||
+        !readStringArray(*object, "excludedTargetTags", result.excludedTargetTags) ||
+        !readStringArray(*object, "preferredTargetTags", result.preferredTargetTags))
+        return invalid<WeaponDefinition>("weapon target policy fields are invalid", "definition");
+    if (!result.targetsGround && !result.targetsAir)
+        return invalid<WeaponDefinition>("weapon must target ground, air, or both", "definition");
 
     if (const auto* modes = field(*object, "fireModes")) {
         const auto* array = modes->getIf<eve::Value::Array>();

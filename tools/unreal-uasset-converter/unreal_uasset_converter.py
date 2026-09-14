@@ -8,10 +8,13 @@ import hashlib
 import json
 import os
 import re
+import secrets
+import shutil
+import struct
 import subprocess
 import sys
-import tempfile
 import urllib.parse
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Sequence
@@ -20,7 +23,7 @@ from typing import Callable, Sequence
 REQUEST_SCHEMA = "eve.unreal-asset-export-request/1"
 RESULT_SCHEMA = "eve.unreal-asset-export-result/1"
 MANIFEST_SCHEMA = "eve.unreal-animation-conversion/1"
-TOOL_VERSION = "1.0.0"
+TOOL_VERSION = "1.1.0"
 _ASSET_RE = re.compile(r"^/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+$")
 
 
@@ -152,7 +155,7 @@ def build_command(config: ConversionConfig, exporter_script: Path) -> list[str]:
         "-unattended",
         "-nop4",
         "-nosplash",
-        "-nullrhi",
+        "-AllowCommandletRendering",
         "-NoSound",
         "-DDC-ForceMemoryCache",
     ]
@@ -166,6 +169,82 @@ def _read_json_object(path: Path, description: str) -> dict:
     if not isinstance(value, dict):
         raise ConversionError(f"{description} {path} must contain a JSON object")
     return value
+
+
+def normalize_glb_weights(path: Path) -> int:
+    """Expand normalized integer weights for the current Model3D decoder.
+
+    Operates only on unpublished staging artifacts. Preserves all influence sets
+    and original buffer bytes; adds float streams before manifest hashing.
+    """
+    document = _validate_glb(path)
+    indices = {index for mesh in document.get("meshes", [])
+               for primitive in mesh.get("primitives", [])
+               for name, index in primitive.get("attributes", {}).items()
+               if name.startswith("WEIGHTS_")}
+    accessors = document.get("accessors", [])
+    if any(type(index) is not int or index < 0 or index >= len(accessors) for index in indices):
+        raise ConversionError("weight accessor index is out of range")
+    converted = [index for index in indices
+                 if accessors[index].get("componentType") in (5121, 5123)]
+    if not converted:
+        return 0
+    raw = path.read_bytes()
+    chunks = []
+    offset = 12
+    while offset < len(raw):
+        if offset + 8 > len(raw):
+            raise ConversionError("truncated GLB chunk header")
+        size, kind = struct.unpack_from("<I4s", raw, offset)
+        if size % 4 or offset + 8 + size > len(raw):
+            raise ConversionError("invalid GLB chunk length")
+        chunks.append((kind, raw[offset + 8:offset + 8 + size]))
+        offset += 8 + size
+    if len(chunks) != 2 or chunks[0][0] != b"JSON" or chunks[1][0] != b"BIN\0":
+        raise ConversionError("weight expansion requires a single embedded GLB buffer")
+    buffers = document.get("buffers", [])
+    if len(buffers) != 1 or "uri" in buffers[0]:
+        raise ConversionError("weight expansion requires an embedded buffer")
+    binary = bytearray(chunks[1][1])
+    views = document.get("bufferViews", [])
+    for index in sorted(converted):
+        accessor = accessors[index]
+        if accessor.get("type") != "VEC4" or accessor.get("normalized") is not True or "sparse" in accessor:
+            raise ConversionError("weight expansion requires dense normalized VEC4 accessors")
+        view_index = accessor.get("bufferView")
+        if type(view_index) is not int or view_index < 0 or view_index >= len(views):
+            raise ConversionError("weight buffer view index is out of range")
+        view = views[view_index]
+        width = 1 if accessor["componentType"] == 5121 else 2
+        count = accessor["count"]
+        stride = view.get("byteStride", 4 * width)
+        start = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
+        end = start + (count - 1) * stride + 4 * width
+        if (view.get("buffer", 0) != 0 or count < 1 or stride < 4 * width
+                or start < 0 or end > len(chunks[1][1])
+                or end > view.get("byteOffset", 0) + view["byteLength"]):
+            raise ConversionError("weight accessor exceeds its buffer view")
+        expanded = bytearray()
+        for vertex in range(count):
+            values = struct.unpack_from("<4B" if width == 1 else "<4H", binary, start + vertex * stride)
+            expanded.extend(struct.pack("<4f", *(value / (255 if width == 1 else 65535) for value in values)))
+        binary.extend(b"\0" * (-len(binary) % 4))
+        views.append({"buffer": 0, "byteOffset": len(binary), "byteLength": len(expanded)})
+        binary.extend(expanded)
+        accessor["bufferView"] = len(views) - 1
+        accessor["byteOffset"] = 0
+        accessor["componentType"] = 5126
+        accessor.pop("normalized", None)
+        # Quantized extrema describe integer storage, not the new float stream.
+        accessor.pop("min", None)
+        accessor.pop("max", None)
+    buffers[0]["byteLength"] = len(binary)
+    encoded = json.dumps(document, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    encoded += b" " * (-len(encoded) % 4)
+    payload = (struct.pack("<I4s", len(encoded), b"JSON") + encoded
+               + struct.pack("<I4s", len(binary), b"BIN\0") + binary)
+    path.write_bytes(b"glTF" + struct.pack("<II", 2, 12 + len(payload)) + payload)
+    return len(converted)
 
 
 def _validate_glb(path: Path) -> dict:
@@ -298,6 +377,10 @@ def _validate_result(result: dict, request: dict, staging_output: Path) -> list[
         if not artifact_path.is_file() or artifact_path.parent != staging_output:
             raise ConversionError(f"expected artifact was not created: {output_name}")
         if artifact_path.suffix.lower() == ".glb":
+            expanded = normalize_glb_weights(artifact_path)
+            if expanded:
+                result.setdefault("diagnostics", []).append(
+                    f"{output_name}: expanded {expanded} normalized integer weight streams to FLOAT for Model3D")
             document = _validate_glb(artifact_path)
             dependencies: list[Path] = []
         else:
@@ -339,6 +422,34 @@ def _tail(text: str, lines: int = 40) -> str:
     return "\n".join(text.splitlines()[-lines:])
 
 
+@contextmanager
+def publication_staging(parent: Path, label: str):
+    """Stage on the destination volume with its inherited access permissions.
+
+    Python 3.13+ makes Windows mode-0700 temporary directories creator-only.
+    Renaming such a payload would preserve that ACL and make the exported game
+    assets unreadable by the user's desktop account after sandbox conversion.
+    Exclusive mkdir with a random name keeps collision handling atomic while
+    using the same parent ACL/umask as an ordinary destination directory.
+    """
+    parent = parent.resolve()
+    for _ in range(32):
+        root = parent / f".{label}.staging-{secrets.token_hex(16)}"
+        try:
+            root.mkdir(mode=0o777)
+            break
+        except FileExistsError:
+            continue
+    else:
+        raise ConversionError("could not allocate publication staging directory")
+    try:
+        yield root
+    finally:
+        if root.parent != parent or root.is_symlink():
+            raise ConversionError("publication staging path changed during conversion")
+        shutil.rmtree(root)
+
+
 def convert(
     config: ConversionConfig,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
@@ -354,9 +465,7 @@ def convert(
         raise ConversionError(f"output directory already exists: {config.output}")
     config.output.parent.mkdir(parents=True, exist_ok=True)
     exporter_script = Path(__file__).with_name("ue_export_assets.py")
-    with tempfile.TemporaryDirectory(
-        prefix=f".{config.output.name}.staging-", dir=config.output.parent
-    ) as temporary:
+    with publication_staging(config.output.parent, config.output.name) as temporary:
         root = Path(temporary)
         staging_output = root / "payload"
         staging_output.mkdir()
@@ -401,6 +510,7 @@ def convert(
             "format": config.output_format,
             "unknownFieldPolicy": "ignore",
             "artifacts": artifacts,
+            "diagnostics": result.get("diagnostics", []),
         }
         (staging_output / "conversion.manifest.json").write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

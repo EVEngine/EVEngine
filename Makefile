@@ -200,6 +200,23 @@ check/architecture-contracts:
 	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
 	python3 -m unittest scripts.tests.test_architecture_contracts -v
 
+# Focused CPU tests for format round trips and live tile editing; no GPU host.
+AGENT_TEST_BUILD ?= build/agent
+AGENT_CMAKE_ARGS ?=
+.PHONY: check/agent
+check/agent:
+	cmake -S test/agent -B "$(AGENT_TEST_BUILD)" -DCMAKE_BUILD_TYPE=Debug $(AGENT_CMAKE_ARGS)
+	cmake --build "$(AGENT_TEST_BUILD)" -j $(JOBS)
+	ctest --test-dir "$(AGENT_TEST_BUILD)" --output-on-failure
+
+TILEMAP_TEST_BUILD ?= build/tilemap-editor-tests
+TILEMAP_CMAKE_ARGS ?=
+.PHONY: check/tilemap-editor
+check/tilemap-editor:
+	cmake -S test/tilemap_editor -B "$(TILEMAP_TEST_BUILD)" -DCMAKE_BUILD_TYPE=Debug $(TILEMAP_CMAKE_ARGS)
+	cmake --build "$(TILEMAP_TEST_BUILD)" -j $(JOBS)
+	ctest --test-dir "$(TILEMAP_TEST_BUILD)" --output-on-failure
+
 # Resolve all supported module profiles without a compiler or build tree.
 check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
@@ -315,7 +332,6 @@ endef
 
 build/win32: build/win32/build.ninja
 	$(call reconfigure-if-args-changed,build/win32,$(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS))
-	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32/build.ninja:
@@ -325,6 +341,9 @@ build/win32/build.ninja:
 # ~100ms and lists every pending edge, so vcvars + cmake only run when
 # something is actually stale. check_sources_* rescan targets run on every
 # build by design, so their lines are filtered out of the dry-run output.
+# Do not use `test/ -nt unit_test.exe`: PRE_BUILD asset scripts and any write
+# under test/ bump the directory mtime on Windows, which reconfigured CMake
+# and rebuilt every test TU.
 ensure-built/win32:
 	@stale=0; \
 	for f in build/win32/src/modules/*_src.txt build/win32/src/engine/*_src.txt; do \
@@ -334,8 +353,21 @@ ensure-built/win32:
 	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
 	  done; \
 	done; \
-	if [ "$$stale" = 0 ] && [ -d test ] && [ -f build/win32/test/unit_test.exe ] \
-	   && [ test -nt build/win32/test/unit_test.exe ]; then stale=1; fi; \
+	if [ ! -f build/win32/test/test_src.txt ]; then stale=1; \
+	else \
+	  n_disk=0; \
+	  for cpp in test/*.cpp; do \
+	    [ -f "$$cpp" ] || continue; \
+	    n_disk=$$((n_disk+1)); \
+	    if [ "$$cpp" -nt build/win32/test/test_src.txt ]; then stale=1; break; fi; \
+	  done; \
+	  n_list=$$(grep -c . build/win32/test/test_src.txt 2>/dev/null || echo 0); \
+	  if [ "$$stale" = 0 ] && [ "$$n_disk" != "$$n_list" ]; then stale=1; fi; \
+	fi; \
+	if [ "$$stale" = 1 ] && [ -f build/win32/build.ninja ]; then \
+	  echo "source list stale; reconfiguring build/win32"; \
+	  $(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS); \
+	fi; \
 	if [ -f build/win32/build.ninja ] \
 	   && [ "$$(cat build/win32/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
 	   && [ "$$stale" = 0 ] \
@@ -393,7 +425,6 @@ build/android/build.ninja:
 
 build/win32-debug: build/win32-debug/build.ninja
 	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS))
-	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
@@ -408,8 +439,21 @@ ensure-built/win32-debug:
 	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
 	  done; \
 	done; \
-	if [ "$$stale" = 0 ] && [ -d test ] && [ -f build/win32-debug/test/unit_test.exe ] \
-	   && [ test -nt build/win32-debug/test/unit_test.exe ]; then stale=1; fi; \
+	if [ ! -f build/win32-debug/test/test_src.txt ]; then stale=1; \
+	else \
+	  n_disk=0; \
+	  for cpp in test/*.cpp; do \
+	    [ -f "$$cpp" ] || continue; \
+	    n_disk=$$((n_disk+1)); \
+	    if [ "$$cpp" -nt build/win32-debug/test/test_src.txt ]; then stale=1; break; fi; \
+	  done; \
+	  n_list=$$(grep -c . build/win32-debug/test/test_src.txt 2>/dev/null || echo 0); \
+	  if [ "$$stale" = 0 ] && [ "$$n_disk" != "$$n_list" ]; then stale=1; fi; \
+	fi; \
+	if [ "$$stale" = 1 ] && [ -f build/win32-debug/build.ninja ]; then \
+	  echo "source list stale; reconfiguring build/win32-debug"; \
+	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \
+	fi; \
 	if [ -f build/win32-debug/build.ninja ] \
 	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
 	   && [ "$$stale" = 0 ] \
@@ -437,12 +481,19 @@ build/linux-asan: build/linux-asan/Makefile
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
+# Keep heap, stack and undefined-behavior instrumentation plus engine assertions,
+# but omit per-global ASan redzones: the monolithic unit_test has enough globals
+# for those redzones alone to exceed x86-64's PC-relative relocation range.
+# Disabling linker relaxation also avoids GOTPCREL overflows near that limit.
 build/linux-asan/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
-		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
-		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
-		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
+		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
+		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
+		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
+		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
+		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
 		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		-DEVENGINE_ENABLE_ASSERTS=ON \
 		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
 
 build/linux-coverage: build/linux-coverage/Makefile
@@ -501,7 +552,7 @@ build/android-debug/build.ninja:
 		-B build/android-debug -S .
 
 build/ios: build/ios/EVEngine.xcodeproj
-	cmake --build build/ios --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios --target deps --config Release -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios && xcodebuild -scheme eve -configuration Release \
@@ -534,7 +585,7 @@ build/ios/EVEngine.xcodeproj:
 		-B build/ios -S .
 
 build/ios-debug: build/ios-debug/EVEngine.xcodeproj
-	cmake --build build/ios-debug --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-debug --target deps --config Debug -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		echo "  Xcode → Settings → Accounts → add Apple ID, then export IOS_DEVELOPMENT_TEAM=<TeamID>"; \
@@ -570,7 +621,7 @@ build/ios-debug/EVEngine.xcodeproj:
 # iOS game app for the simulator (no signing required). Uses its own
 # third-party tree (ios-simulator-debug) so the device deps are not clobbered.
 build/ios-sim-debug: build/ios-sim-debug/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-sim-debug --target deps --config Debug -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
 		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
@@ -597,7 +648,7 @@ build/ios-sim-debug/EVEngine.xcodeproj:
 #   make run/ios-test-debug [FILTER=math.*]   # install + launch on device
 #   make log/ios-test                          # stream test results
 build/ios-debug-test: build/ios-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-debug-test --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
@@ -636,7 +687,7 @@ build/ios-debug-test/EVEngine.xcodeproj:
 # iOS test app for the simulator (no signing required). Uses its own
 # third-party tree (ios-simulator-debug) so the device deps are not clobbered.
 build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug-test --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-sim-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
 		CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
@@ -986,7 +1037,11 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 # by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
 # ~70x slower when several shared one process on CI, so bundles are excluded
 # unless requested (FILTER=bundle/<file> or ctest -L bundle).
-CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/')
+# Full FPS sweeps are opt-in; correctness still covers every ClassicScenes asset.
+# Run FILTER=ClassicScenes.perf.maxFps or INCLUDE_BENCHMARKS=1 to include them.
+INCLUDE_BENCHMARKS ?= 0
+CTEST_BENCHMARK_SEL = $(if $(FILTER),,$(if $(filter 1,$(INCLUDE_BENCHMARKS)),,-LE benchmark))
+CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/') $(CTEST_BENCHMARK_SEL)
 
 # Retry each failed test once before reporting it (see CI-DEBUG-PLAYBOOK:
 # xvfb display allocation, first-run network fetches and TCP echo timing can
@@ -1103,7 +1158,7 @@ sdk/ios-debug: build/ios-debug
 
 sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
 sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug:
-	@plat=$@; plat=$${plat#sdk/}; \
+	@set -e; plat=$@; plat=$${plat#sdk/}; \
 	  cmake --install "build/$$plat" --prefix "dist/eve-sdk/$$plat"; \
 	  echo "Installed target SDK -> dist/eve-sdk/$$plat"
 

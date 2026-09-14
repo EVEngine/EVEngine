@@ -1,6 +1,11 @@
 #pragma once
 
+#include "common/AttachmentPoint.h"
+#include "common/AnimationEventSource.h"
+
+#include <array>
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -35,14 +40,19 @@ namespace eve::animation {
 class AnimClip;
 class AnimPlayer;
 class AnimLayerMixer;
+class AnimConstraintStack;
 class AnimPose;
 class AnimSkin;
 class AnimSkeleton;
 class AnimStateMachine;
+class DynamicBoneSolver;
+class FootIKSolver;
 class Tween;
 }
 
 namespace eve::avatar {
+
+class VrmRuntime;
 
 /** @brief Outcome of changing or rebuilding the equipment appearance projection. */
 enum class EquipmentVisualChange {
@@ -89,7 +99,7 @@ using Live2DBackendFactory = ILive2DBackend *(*)();
  * Script-facing API avoids overloads; kind-specific methods no-op / return false
  * when unsupported.
  */
-class AvatarInstance {
+class AvatarInstance : public eve::IAttachmentPointSource, public eve::IAnimationEventSource {
 public:
     /** @brief Callback fired exactly once, when the instance is destroyed. */
     using DestroyHook = std::function<void(AvatarInstance *)>;
@@ -164,7 +174,7 @@ public:
     bool defineExpression(const std::string &name, const std::string &spec);
     /** @brief Remove a project-defined expression. */
     bool removeExpression(const std::string& name);
-    /** @brief Return the number of project-defined expressions. */
+    /** @brief Return the number of imported and project-defined expressions. */
     int getExpressionCount() const;
     /** @brief Return a stable sorted expression name, or empty text. */
     std::string getExpressionName(int index) const;
@@ -180,7 +190,35 @@ public:
     void collectLive2DDrawItems(std::vector<graphics::DrawItem2D>& out);
 
     // ---- vroid kind ----
+    /**
+     * @brief Import and atomically replace a complete VRM avatar from a VFS path.
+     * @param path Borrowed for the call; copied on success.
+     * @return Structured import/provider error; failure preserves the previous avatar.
+     * @ownership Avatar owns imported CPU state and releases its GPU resources on replacement/destruction.
+     * @thread Main/render thread before frame submission. Does not invoke callbacks or scripts.
+     * @note Explicit reload rebuilds the entire projection. Unknown VRM versions are rejected.
+     */
+    [[nodiscard]] eve::Result<void> loadVroidModel(std::string_view path);
+    /** @brief Compatibility-only bool projection of loadVroidModel; performs the real import. */
     bool loadVroidModelPath(const std::string &path);
+    /** @brief Number of imported mesh primitives; zero before successful import. */
+    int getVroidMeshCount() const;
+    /** @brief Number of imported VRM spring chains. */
+    int getVroidSpringCount() const;
+    /** @brief Imported VRM specification version, or empty before import. */
+    std::string getVroidVersion() const;
+    /**
+     * @brief Set an imported humanoid bone's local rotation offset in radians.
+     * @param semantic VRM bone semantic, borrowed for the call.
+     * @param yaw Local yaw offset in radians.
+     * @param pitch Local pitch offset in radians.
+     * @param roll Local roll offset in radians.
+     * @return Success or InvalidArgument/NotFound, preserving offsets on failure.
+     * @note Render thread only; applied before gaze and springs, without callbacks.
+     * Offsets are owned by this Avatar and cleared by model replacement.
+     */
+    [[nodiscard]] eve::Result<void> setHumanoidBoneRotation(std::string_view semantic, float yaw, float pitch,
+                                                            float roll);
     bool bindVroidModelData(model3d::ModelData *data);
     /** @brief Register morph target names from ModelData as parameters (weights default 0). */
     int loadMorphNamesFromModel(int meshIndex = 0);
@@ -189,7 +227,18 @@ public:
     void setPosition3D(float x, float y, float z);
     void setRotation3D(float yaw, float pitch, float roll);
     void setScale3D(float sx, float sy, float sz);
-    graphics::Renderable3D *getRenderable3D() const { return renderable3d_; }
+    /**
+     * @brief Borrow the first imported render projection, or the manual projection.
+     * @return Non-owning pointer, or nullptr when no live projection exists.
+     * @lifetime Borrowed until replacement, release or ECS destruction; render thread only.
+     */
+    graphics::Renderable3D* getRenderable3D() const;
+    /**
+     * @brief Borrow the first imported mesh, or the manually bound mesh.
+     * @return Non-owning pointer; nullptr when the imported graphics provider expired.
+     * @ownership Borrowed on the render thread. Import ownership stays with Avatar; lifetime ends on
+     * replacement, release or provider destruction. Manual mesh lifetime is caller-owned.
+     */
     graphics::Mesh *getBoundMesh() const;
     std::string getVroidModelPath() const { return vroidPath_; }
     /** @brief Push parameter weights onto Mesh morphs and bake GPU verts when possible. */
@@ -202,6 +251,34 @@ public:
     bool bindAnimStateMachine(animation::AnimStateMachine* machine);
     /** @brief Bind an override/additive layer mixer that the avatar advances each update. */
     bool bindAnimLayerMixer(animation::AnimLayerMixer* mixer);
+    /** @brief Copy an IK/aim stack into Avatar-owned storage; null disables it. */
+    void setAnimConstraintStack(animation::AnimConstraintStack* stack);
+    /**
+     * @brief Return the Avatar-owned constraint stack, or null.
+     * @ownership Borrowed from this Avatar.
+     * @lifetime Valid until replacement, disable, or Avatar destruction.
+     */
+    animation::AnimConstraintStack* getAnimConstraintStack() const { return animConstraintStack_.get(); }
+    /** @brief Copy paired-foot IK configuration into Avatar-owned storage; null disables it. */
+    void setFootIKSolver(animation::FootIKSolver* solver);
+    /**
+     * @brief Return the Avatar-owned paired-foot IK solver, or null.
+     * @ownership Borrowed from this Avatar.
+     * @lifetime Valid until replacement, disable, or Avatar destruction.
+     */
+    animation::FootIKSolver* getFootIKSolver() const { return footIKSolver_.get(); }
+    /**
+     * @brief Copy dynamic-bone configuration into Avatar-owned storage.
+     * @param solver Borrowed only during this call; null disables the effect.
+     * @note Main-thread only. The getter is valid until replacement or Avatar destruction.
+     */
+    void setDynamicBoneSolver(animation::DynamicBoneSolver* solver);
+    /**
+     * @brief Return the Avatar-owned solver, or null.
+     * @ownership Borrowed from this Avatar.
+     * @lifetime Valid until replacement, disable, or Avatar destruction.
+     */
+    animation::DynamicBoneSolver* getDynamicBoneSolver() const { return dynamicBoneSolver_.get(); }
     /** @brief Bind CPU skin data used to deform the avatar mesh from the active pose. */
     bool bindAnimSkin(animation::AnimSkin* skin);
     /**
@@ -244,6 +321,10 @@ public:
     std::string getAnimationEventName(int index) const;
     /** @brief Animation event payload, or empty for an invalid index. */
     std::string getAnimationEventPayload(int index) const;
+    /** @brief Expose latest animation events through the backend-neutral consumer contract. */
+    [[nodiscard]] std::size_t animationEventCount() const noexcept override;
+    /** @brief Return one latest animation event name through the consumer contract. */
+    [[nodiscard]] std::string animationEventName(std::size_t index) const override;
     /** @brief Map a VRM humanoid semantic (for example "head") to a skeleton bone. */
     bool mapHumanoidBone(const std::string& semantic, const std::string& boneName);
     /** @brief Auto-map common VRM humanoid semantics from the currently bound skeleton. */
@@ -279,6 +360,9 @@ public:
     bool detachAttachment(const std::string& name);
     /** @brief Return the number of active bone attachments. */
     int getAttachmentCount() const { return static_cast<int>(attachments_.size()); }
+    /** @brief Sample the latest evaluated semantic/bone point in Avatar world space. */
+    [[nodiscard]] eve::Result<eve::AttachmentPoint> sampleAttachmentPoint(
+        std::string_view name, eve::AttachmentPoint localOffset = {}) const override;
     /** @brief Link this avatar to a node in Scene's current host. */
     bool linkSceneNode(scene::Scene* scene, const std::string& nodeId);
     /** @brief Return whether this avatar is currently scene-driven. */
@@ -400,6 +484,7 @@ private:
     ILive2DBackend *live2d_ = nullptr;
 
     // vroid
+    std::unique_ptr<VrmRuntime> vrm_;
     std::string vroidPath_;
     model3d::ModelData *vroidData_ = nullptr;
     graphics::Renderable3D *renderable3d_ = nullptr;
@@ -413,8 +498,12 @@ private:
     animation::AnimPlayer*                                animPlayer_       = nullptr;
     animation::AnimLayerMixer*                            animLayerMixer_   = nullptr;
     animation::AnimStateMachine*                          animStateMachine_ = nullptr;
+    std::unique_ptr<animation::AnimConstraintStack>       animConstraintStack_;
+    std::unique_ptr<animation::FootIKSolver>              footIKSolver_;
+    std::unique_ptr<animation::DynamicBoneSolver>         dynamicBoneSolver_;
     animation::AnimSkin*                                  animSkin_         = nullptr;
     animation::AnimSkeleton*                              animSkeleton_     = nullptr;
+    std::vector<std::array<float, 16>>                    attachmentPoseMatrices_;
     std::unordered_map<std::string, animation::AnimClip*> motions_;
     std::unordered_map<std::string, std::string>          humanoidBones_;
     std::unordered_map<std::string, std::string>          visemeMorphs_;

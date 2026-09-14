@@ -1,30 +1,51 @@
 # Commandery RTS Demo
 
-一个完全由 Squirrel 组合 EVEngine 通用组件的 RTS + 将领行政 Demo。
+A playable RTS + general/administration composition demo. Domain rules (governors,
+salaries, rebellion, victory) live in this script. Engine modules only store and
+query generic facts (`Orders`, `Production`, `Authority`, `Social`, `Decision`,
+`Sensing`).
 
-运行：
+Run from a current-source debug build:
 
-```powershell
+```sh
+# Linux (this Cloud VM / CI image)
+make debug JOBS=4
+cd examples/commandery-rts
+VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json \
+ALSOFT_DRIVERS=null \
+XDG_RUNTIME_DIR=/tmp/xdg-runtime \
+xvfb-run -a ../../build/linux-debug/src/engine/eve run .
+
+# Windows
 build\win32-debug\src\engine\eve.exe run examples\commandery-rts
 ```
 
-操作：
+Headless MCP (screenshots via `eve_screenshot`, not the Xvfb framebuffer):
 
-- 左键点击蓝色单位：选择单个单位。
-- 按住左键拖动：框选多个己方单位。
-- 右键点击战场：向全部选中单位下达编队移动命令。
-- 将单位移动到经济点附近可占领；坦克占领速度略快。双方同时在场时进度暂停。
-- `1` / `2`：生产步兵 / 坦克。
-- `G`：任命或撤销北方基地总督。
-- `P`：支付军饷，提高忠诚。
-- `U`：拖欠军饷，降低忠诚并增加怨恨。
-- `R`：重置战局。
-- 右侧面板也提供对应按钮。
+```sh
+cd examples/commandery-rts
+VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json ALSOFT_DRIVERS=null \
+  xvfb-run -a ../../build/linux-debug/src/engine/eve run --debug --mcp-port=7529 .
+```
 
-拖欠军饷后，如果将领忠诚低于 25、野心高于 70 且部属支持度足够，将领会带领其基地和直属
-部队反叛。引擎模块不包含 `General`、`Rebellion` 或固定 RTS AI 类型；这些规则全部位于
-`main.nut`。
+Controls:
 
-经济点每 2 秒结算一次收入。北方矿由将领管辖：将领仍是总督且拥有治理权限时，其行政
-属性会提高该矿产出；撤职、失权或叛乱后加成立即消失。经济点易手后收入自动转入新阵营
-国库，国库同时承担造兵与支付军饷的支出。
+- Left click a blue unit to select it. Drag to box-select friendly units.
+- Right click the battlefield to issue a formation move (owned `Orders.replace`).
+- Move units onto an economy point to capture it. Tanks capture slightly faster.
+  Progress pauses while both factions are present.
+- `1` / `2`: train infantry / build a tank (refunds if enqueue fails).
+- `G`: appoint or dismiss the northern governor.
+- `P`: pay salary (loyalty up). `U`: withhold salary (loyalty down; rebellion if
+  loyalty < 25, ambition > 70 and officer support is high).
+- `R`: reset the scenario.
+- The right-hand panel mirrors those buttons.
+
+The opening deploys Crown on the north and bridge mines, Frontier on the east
+mine. Frontier AI starts in `raid`: hold while outnumbered, leave a garrison,
+contest the nearest Crown mine, and train up to four units without flooding the
+queue. It only flips to `assault` after 15 seconds, and only if it outnumbers
+Crown. The match ends when one side has no living units.
+
+The engine module does not contain `General`, `Rebellion`, or a fixed RTS AI
+type; those rules are all in `main.nut`.

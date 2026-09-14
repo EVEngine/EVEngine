@@ -1,4 +1,4 @@
-#include "queue_editing/QueueInspector.h"
+#include "editor/queue/editing/QueueInspector.h"
 
 #include "orders/CommandQueue.h"
 #include "production/Production.h"

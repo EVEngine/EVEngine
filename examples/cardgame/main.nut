@@ -107,6 +107,10 @@ function configureLayout(cfg, cardW, cardH, spacing, x, y) {
 
 function createPokerTable() {
     pokerCard = eve.Card();
+    // Playing-card PNGs have rounded transparent corners. Built-in Card::render
+    // submits opaque dark rectangles first; 2D solids keep that first fragment,
+    // so the PNG would composite onto black instead of the felt.
+    pokerCard.setBuiltInVisuals(false);
     registerCards();
 
     playerCfg = pokerCard.newConfig();
@@ -506,28 +510,38 @@ function handContains(hand, instanceId) {
     return hand != null && hand.findCard(instanceId) != null;
 }
 
+function drawPlayingCardBack(cx, cy, backW, backH, alpha) {
+    // Solid 2D keeps the first fragment, so submit the inner pattern before the outer fill.
+    gfx.drawSolidRect(cx - backW * 0.25, cy - 3.0, backW * 0.5, 6.0, 0.82, 0.62, 0.30, alpha);
+    gfx.drawSolidRect(cx - backW * 0.5 + 9.0, cy - backH * 0.5 + 9.0,
+        backW - 18.0, backH - 18.0, 0.12, 0.035, 0.075, alpha);
+    gfx.drawSolidRect(cx - backW * 0.5 + 6.0, cy - backH * 0.5 + 6.0,
+        backW - 12.0, backH - 12.0, 0.82, 0.62, 0.30, alpha);
+    gfx.drawSolidRect(cx - backW * 0.5, cy - backH * 0.5, backW, backH, 0.34, 0.055, 0.10, alpha);
+}
+
 function renderPlayingCardBacks() {
     pokerCard.capturePresentation();
     local aiHand = pokerCard.findHand("ai");
     local aiHidden = aiHand != null && aiHand.isFaceDown() && !aiHand.isPeek();
-    if (!aiHidden) return;
-
-    for (local i = 0; i < pokerCard.getPresentationCount(); i += 1) {
-        local snap = pokerCard.getPresentation(i);
-        local instanceId = snap.getInstanceId();
-        local inAi = handContains(aiHand, instanceId);
-        if (inAi) {
-            local backW = snap.getW() * snap.getScale();
-            local backH = snap.getH() * snap.getScale();
-            gfx.drawSolidRect(snap.getX() - backW * 0.25, snap.getY() - 3.0,
-                backW * 0.5, 6.0, 0.82, 0.62, 0.30, snap.getAlpha());
-            gfx.drawSolidRect(snap.getX() - backW * 0.5 + 9.0, snap.getY() - backH * 0.5 + 9.0,
-                backW - 18.0, backH - 18.0, 0.12, 0.035, 0.075, snap.getAlpha());
-            gfx.drawSolidRect(snap.getX() - backW * 0.5 + 6.0, snap.getY() - backH * 0.5 + 6.0,
-                backW - 12.0, backH - 12.0, 0.82, 0.62, 0.30, snap.getAlpha());
-            gfx.drawSolidRect(snap.getX() - backW * 0.5, snap.getY() - backH * 0.5,
-                backW, backH, 0.34, 0.055, 0.10, snap.getAlpha());
+    if (aiHidden) {
+        for (local i = 0; i < pokerCard.getPresentationCount(); i += 1) {
+            local snap = pokerCard.getPresentation(i);
+            if (handContains(aiHand, snap.getInstanceId())) {
+                drawPlayingCardBack(snap.getX(), snap.getY(),
+                    snap.getW() * snap.getScale(), snap.getH() * snap.getScale(), snap.getAlpha());
+            }
         }
+    }
+
+    local remaining = pokerCard.getDeck().count();
+    if (remaining <= 0) return;
+    local backW = playerCfg.getCardW() * 0.9;
+    local backH = playerCfg.getCardH() * 0.9;
+    local layers = remaining < 3 ? remaining : 3;
+    for (local i = 0; i < layers; i += 1) {
+        local off = i.tofloat() * 3.0;
+        drawPlayingCardBack(playerCfg.getDeckX() + off, playerCfg.getDeckY() - off, backW, backH, 1.0);
     }
 }
 
@@ -636,8 +650,6 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     renderPlayingCardBacks();
-    pokerCard.render(gfx);
-    pokerCard.renderDeck(gfx);
     renderPokerTable();
     renderPlayingCardFaces();
     ui.beginFrameAndRender();

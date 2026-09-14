@@ -67,6 +67,8 @@ public:
     /** @copydoc IRTSActionExecutor::execute */
     [[nodiscard]] Result<ActionExecutionResult> execute(Unit& unit, const OrderRecord& order,
                                                         const SimulationStep& step) override;
+    /** @brief Forget runtime execution correlations so restored orders are rebound on their next step. */
+    void clear() noexcept;
 
 private:
     struct Impl;

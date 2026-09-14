@@ -31,11 +31,19 @@
 
 struct aiMesh;
 
+namespace eve {
+class Subscription;
+}
+
 namespace eve::graphics {
+struct PbrSurface;
+struct ShaderResourceInputs;
+
 
 class AmbientOcclusion;
 class AntiAliasing;
 class Bloom;
+class DepthOfField;
 class Exposure;
 class DepthPyramid;
 class Camera3D;
@@ -45,6 +53,7 @@ class GlobalIllumination;
 class GrassField;
 class Material;
 class Mesh;
+class PrimitiveScene;
 
 /**
  * @brief One borrowed RGBA8 source rectangle for a batched texture update.
@@ -78,8 +87,10 @@ class Quad;
 class RenderControl;
 class Renderable2D;
 class AlphaMask;
+class MapFog;
 class ScreenSpaceReflection;
 class Shader;
+struct MeshShaderRasterState;
 class Texture;
 class Volumetric;
 class Water;
@@ -175,6 +186,23 @@ public:
 
     /** @brief Renderer backend id used by sibling modules (e.g. Gpgpu). */
     virtual std::string getBackendName() const = 0;
+    /**
+     * @brief Observe this provider's resource lifetime without extending it.
+     * @return Weak token; expiry
+     * invalidates all borrowed resources from this provider.
+     * @ownership Graphics alone owns the token. Consumers
+     * must never retain a strong lock.
+     * @thread Main/render thread only; no concurrent provider destruction or
+     * callbacks.
+     */
+    [[nodiscard]] std::weak_ptr<const void> resourceLifetime() const;
+    /** @brief Register cleanup before this provider destroys its GPU device/resources.
+     * @return Owning subscription, or Conflict if retirement has started.
+     * @lifetime Retain the subscription until cleanup is no longer needed. Either destruction order is safe.
+     * @thread Render thread only. Callback must not throw, recreate or destroy Graphics, or start GPU work.
+     * @note Callbacks run without locks; disposing subscriptions during notification is supported. */
+    [[nodiscard]] Result<eve::Subscription> onResourcesRetiring(std::function<void()> callback) const;
+
 
     /**
      * @brief Whether gbuffer-based post-process shaders (AO, GI) can be created on this
@@ -417,6 +445,14 @@ public:
     }
     double getScreenDPIScale() const { return getCurrentDPIScale(); }
 
+    /**
+     * @brief Returns the authoritative persistent spatial-primitive scene.
+     * @return Shared owner used by long-lived script proxies and the renderer.
+     * @ownership The Graphics module and returned shared pointer co-own the scene.
+     * @thread Mutation is restricted to the graphics owner thread.
+     */
+    [[nodiscard]] std::shared_ptr<PrimitiveScene> getPrimitiveScene() const noexcept { return primitiveScene_; }
+
     /** @brief Internal immediate-mode helper used by RenderSystem / Batcher. */
     virtual void drawSolidRect(float x, float y, float w, float h, const Color &color,
                                BlendMode blend = BlendMode::Alpha) = 0;
@@ -556,12 +592,21 @@ public:
     virtual float getMaxAnisotropy() const = 0;
 
     /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
-     *  Same path returns the same Texture* and reloads pixels in place on repeat calls. */
+     *  Same path returns the same Texture* and reloads pixels in place on repeat calls.
+     *  CPU decode is queued on the thread pool; GPU upload is coalesced automatically
+     *  before the texture is sampled or its size is queried. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
     /** Load a texture from disk with wrap/repeat sampling (for tiling structures).
      *  Non-virtual helper (same pattern as newTextureFromImageData); reads + decodes
      *  via Filesystem/Image then uploads with the requested repeat modes. */
     Texture *newTextureFromFileRepeated(const std::string &filename, bool repeatU, bool repeatV);
+
+    /**
+     * @brief Finish CPU decode and GPU upload for outstanding `newTextureFromFile` results.
+     * @thread Game/render thread that owns the device.
+     * @remarks Called automatically from size queries, 2D flush, and present.
+     */
+    void ensureFileTexturesReady();
 
     /** @brief Reload a path-cached texture from disk in place (pointer stable). False if unbound. */
     virtual bool reloadTextureFromFile(const std::string &filename) = 0;
@@ -931,6 +976,33 @@ public:
     virtual void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                                 Shader *shader) = 0;
 
+    /** @brief Draw a checked range from a resource shader's immutable instance matrix buffer.
+     * @ownership Mesh
+     * and Shader remain Graphics-owned; references are borrowed only for this call.
+     * @lifetime GPU copies remain
+     * alive through submission under Graphics resource ownership.
+     * @thread Render thread, inside an open 3D pass;
+     * no script callbacks or reentrancy.
+     * @param first First matrix record; visible to the vertex shader as
+     * gl_InstanceIndex.
+     * @param count Number of records; zero is a validated no-op.
+     * @return Failure before
+     * recording when unsupported, stale, or out of range.
+     */
+    [[nodiscard]] virtual Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
+                                                               const Color &tint, std::uint32_t first,
+                                                               std::uint32_t count) {
+        (void)mesh;
+        (void)shader;
+        (void)model;
+        (void)tint;
+        (void)first;
+        (void)count;
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "Custom mesh instancing is unavailable on this backend",
+                                                       "graphics.instances"));
+    }
+
     /** @brief Optional normal map for the next drawMesh / drawMeshShader (nullptr = flat). */
     virtual void setMesh3DNormalTexture(Texture *normal) = 0;
 
@@ -954,8 +1026,54 @@ public:
      */
     virtual void setMesh3DSceneDepth(Texture *depth) = 0;
 
+    /**
+     * @brief Optional completed scene-color snapshot for custom mesh shaders.
+     *
+     * Bound at mesh3d shader binding 18 (WebGPU sampler binding 19). The
+     * texture is borrowed and must not be the color attachment currently being
+     * written by the active render pass. nullptr automatically samples the
+     * most recently completed scene-color slot, or a neutral placeholder when
+     * no scene history exists yet.
+     */
+    virtual void setMesh3DSceneColor(Texture *color) = 0;
+
+    /** @brief Observable result of requesting a same-frame mesh SceneColor snapshot. */
+    enum class Mesh3DSceneColorCaptureStatus {
+        ExplicitOverride,
+        Scheduled,
+        Captured,
+        HistoryFallback,
+        Unavailable
+    };
+
+    /**
+     * @brief Make opaque scene color available to subsequent refractive mesh draws.
+     *
+     * Backends may capture immediately or defer the split until command encoding.
+     * An explicit texture installed by setMesh3DSceneColor takes precedence. A
+     * HistoryFallback result is observable quality degradation, not same-frame data.
+     *
+     * @return Capture disposition for the current render frame.
+     * @thread Render-thread affine; call immediately before the first refractive draw.
+     * @reentrancy Does not invoke scripts or caller callbacks.
+     */
+    [[nodiscard]] virtual Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() {
+        return Mesh3DSceneColorCaptureStatus::HistoryFallback;
+    }
+
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+    /** @brief Copy a validated extended surface for subsequent draws; null resets to legacy shading.
+     * @param surface Borrowed snapshot, consumed synchronously on the graphics thread.
+     * @return Unsupported when a backend has no extended renderer; reset always succeeds.
+     * No pointer to the snapshot is retained; its borrowed textures must outlive queued draws.
+     */
+    [[nodiscard]] virtual Result<void> setMesh3DPbrSurface(const PbrSurface* surface) {
+        if (!surface) return Result<void>::success();
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "extended PBR material rendering is unavailable on this backend"));
+    }
+
     /** @brief Select pipeline state for subsequent mesh draws. */
     virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                                   bool doubleSided, float alphaCutoff,
@@ -1068,6 +1186,20 @@ public:
     virtual void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) = 0;
     /** @brief Upload the two dominant local reflection probes for subsequent mesh draws. */
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
+    /** @brief Final display mapping; None preserves linear color before display encoding. */
+    enum class SceneToneMapping { None, Aces };
+    /** @brief Set final scene display mapping on the graphics/render thread.
+     * @details Graphics owns the value
+     * until destruction. No input references or callbacks
+     * are retained. This affects scene presentation, not
+     * linear HDR offscreen textures.
+     * Unsupported backends reject the change and retain their previous mode.
+
+     * * @return Success, InvalidArgument, or Unsupported without partial mutation.
+     */
+    [[nodiscard]] virtual Result<void> setSceneToneMapping(SceneToneMapping mode);
+    /** @brief Return the current final display mapping; graphics/render thread only. */
+    virtual SceneToneMapping getSceneToneMapping() const { return SceneToneMapping::Aces; }
     /** @brief Set linear exposure multiplier used by the final scene tone-map resolve. */
     virtual void setSceneExposure(float exposure) = 0;
     /** @brief Current linear manual exposure multiplier. */
@@ -1086,6 +1218,21 @@ public:
     virtual float getSceneBloomIntensity() const = 0;
     /** @brief Current linear HDR bloom threshold. */
     virtual float getSceneBloomThreshold() const = 0;
+    /**
+     * @brief Configure final-scene Gaussian depth-of-field.
+     * @param focusDistance View-space focus plane.
+     * @param maxBlurPx Max blur radius in texels; <= 0 disables.
+     * @param focusRange Distance from focus where blur reaches the max.
+     * @param nearZ Camera near clip used to linearize hardware depth.
+     * @param farZ Camera far clip used to linearize hardware depth.
+     */
+    virtual void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange,
+                                      float nearZ, float farZ) = 0;
+    virtual float getSceneDofFocusDistance() const = 0;
+    virtual float getSceneDofMaxBlur() const = 0;
+    virtual float getSceneDofFocusRange() const = 0;
+    virtual float getSceneDofNearZ() const = 0;
+    virtual float getSceneDofFarZ() const = 0;
 
     /** @brief Upload CSM constants for subsequent default mesh draws (active=false disables). */
     virtual void setMesh3DShadows(const ShadowUpload &upload) = 0;
@@ -1217,8 +1364,10 @@ public:
     /**
      * @brief Optional overlay drawn inside the swapchain render pass (before end).
      * Used by declarative UI (ImGui). `commandBuffer` is a VkCommandBuffer as void*.
+     * Called with `commandBuffer == nullptr` as a probe: return true only when
+     * this frame has overlay draw data, so the backend can skip an empty UI pass.
      */
-    using PresentOverlayFn = void (*)(void *userdata, void *commandBuffer);
+    using PresentOverlayFn = bool (*)(void *userdata, void *commandBuffer);
     void setPresentOverlay(PresentOverlayFn fn, void *userdata) {
         presentOverlayFn_ = fn;
         presentOverlayUser_ = userdata;
@@ -1356,6 +1505,29 @@ public:
         const std::vector<uint32_t> &fragSpv) = 0;
 
     /**
+     * @brief Replace a mesh program and its immutable set-1 resources atomically.
+     * @param shader Existing
+     * shader owned by this Graphics; borrowed for this call.
+     * @param vertSpv Vertex words; empty retains the
+     * built-in mesh vertex ABI.
+     * @param fragSpv Fragment words using set 0 Frame/albedo and declared set 1
+     * inputs.
+     * @param resources Borrowed image/constant bytes, copied before returning.
+     * @return Success
+     * after publication; failures preserve the old program/resources.
+     * @ownership Graphics owns the shader and
+     * its resources; releaseShader or Graphics
+     * destruction drains in-flight use before releasing them. Inputs
+     * are never retained.
+     * @note Render-thread only, outside submission, not reentrant; invokes no callbacks.
+
+     * * Unsupported backends or missing validation providers return Unsupported unchanged.
+     */
+    [[nodiscard]] virtual Result<void> replaceMeshShaderResources(Shader &shader, const std::vector<uint32_t> &vertSpv,
+                                                                  const std::vector<uint32_t> &fragSpv,
+                                                                  const ShaderResourceInputs  &resources);
+
+    /**
      * @brief Transactionally replace an existing shader with WGSL stages.
      * @param shader Stable graphics-owned shader facade to update.
      * @param vertWgsl Vertex source; empty selects the backend default for the shader kind.
@@ -1398,6 +1570,33 @@ public:
     virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                           const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+    /**
+     * @brief Prepare a custom mesh shader's blend, depth and culling state.
+     * @return Success, Unsupported, or a structured validation failure.
+     * @note Render thread only, before submission. Shader ownership is unchanged.
+     * Failure preserves existing pipelines. Does not invoke callbacks.
+     */
+    [[nodiscard]] virtual eve::Result<void> configureMeshShaderSurface(Shader &, BlendMode, bool, bool) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Custom mesh surface state is unavailable"));
+    }
+    /**
+     * @brief Transactionally configure an owned ordinary mesh shader's raster state.
+     * @param shader
+     * Graphics-owned shader; borrowed synchronously, ownership unchanged.
+     * @param state Value snapshot copied on
+     * success; never retained by reference.
+     * @return Success, Unsupported, or a validation/build failure leaving
+     * prior state intact.
+     * @details Render thread only, outside submission. Does not invoke callbacks. State
+
+     * * survives program/resource replacement and render-target recreation until shader release.
+     */
+    [[nodiscard]] virtual eve::Result<void> configureMeshShaderRaster(Shader                      &shader,
+                                                                      const MeshShaderRasterState &state) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Custom mesh raster state is unavailable"));
+    }
     /**
      * @brief Creates a Mesh3D shader from separate vertex and fragment GLSL sources.
      * @param vertGlsl Vertex shader source.
@@ -1511,6 +1710,11 @@ public:
     Outline *newOutline();
     /** @brief Create a script-owned reusable two-texture alpha-mask compositor. */
     AlphaMask *newAlphaMask();
+    /**
+     * @brief Create a script-owned SLG / large-map war-fog overlay (dual cloud + mask).
+     * @lifetime Caller owns the MapFog*; its Shader is owned by Graphics.
+     */
+    MapFog *newMapFog();
 
     /**
      * @brief Screen-space single-bounce GI. Caller owns GlobalIllumination*;
@@ -1536,13 +1740,16 @@ public:
     /** @brief Pipeline-owned linear-HDR bloom pyramid, created on first use.
      * @lifetime Returned effect remains valid until Graphics shutdown. */
     Bloom *pipelineBloom();
+    /** @brief Pipeline-owned Gaussian depth-of-field, created on first use.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
+    DepthOfField *pipelineDepthOfField();
     /** @brief Pipeline-owned GPU exposure metering and eye adaptation.
      * @lifetime Returned effect remains valid until Graphics shutdown. */
     Exposure *pipelineExposure();
     /** @brief Pipeline-owned shared min/max depth hierarchy for screen-space effects.
      * @lifetime Returned effect remains valid until Graphics shutdown. */
     DepthPyramid *pipelineDepthPyramid();
-    /** @brief Build the shared linear-HDR AA, bloom, and exposure result for final ACES.
+    /** @brief Build the shared linear-HDR AA, DOF, bloom, and exposure result for final ACES.
      * @lifetime Returned texture is Graphics-owned and valid for the current target allocation. */
     Texture *prepareFinalSceneTexture(Texture *scene, Texture *motion = nullptr);
     /** @brief Return a reusable HDR target for composing screen-space lighting.
@@ -1685,6 +1892,19 @@ public:
 	// virtual void drawQuads(int start, int count, const vertex::Attributes &attributes, const vertex::BufferBindings &buffers, Texture *texture) = 0;
 
 protected:
+    struct DeferredFileTexture {
+        std::string key;
+        Texture *texture = nullptr;
+    };
+
+    void requestFileImageDecode(const std::string &key);
+    bool fileTextureSourceExists(const std::string &filename) const;
+    void dropDeferredFileTexture(Texture *texture);
+    virtual bool uploadDeferredFileTexture(Texture *texture, image::ImageData *data);
+
+    std::vector<DeferredFileTexture> deferredFileTextures_;
+    bool realizingFileTextures_ = false;
+
     int width = 0;
     int height = 0;
     int pixelWidth = 0;
@@ -1703,11 +1923,13 @@ protected:
     Shader *currentShader = nullptr;
     Font *currentFont = nullptr;
     std::unique_ptr<RenderControl> renderControl_;
+    std::shared_ptr<PrimitiveScene>                         primitiveScene_;
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<ScreenSpaceReflection> pipelineSSR_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
     std::unique_ptr<Bloom> pipelineBloom_;
+    std::unique_ptr<DepthOfField> pipelineDof_;
     std::unique_ptr<Exposure> pipelineExposure_;
     std::unique_ptr<DepthPyramid> pipelineDepthPyramid_;
     Canvas *spatialAAResolve_ = nullptr;
@@ -1721,6 +1943,7 @@ protected:
 
     /** @brief FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
     Shader *prepareSceneColorResolveShader(Texture *scene);
+    void    retireResourceLifetime() const;
 };
 
 }  // namespace eve::graphics

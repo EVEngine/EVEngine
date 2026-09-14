@@ -79,6 +79,73 @@ generator 的 yield 值。完整可运行示例见
 调用返回对象的 `mount()`、每帧 `update(dt)` 和 `render()` 即可。项目可以完全替换
 这个脚本视图，而继续复用 `DialogueUX` 的历史、已读和自动推进状态。
 
+### 皮肤、显示位置与脚本绘制
+
+`DefaultDialogueUI` 随引擎启动脚本一起打包，不需要游戏引用源码目录。
+Dialogue 只拥有台词、打字进度和选项；视图仅保存可丢弃的显示配置。
+因此切换视图时调用 `setPresentation(options)` 和 `mount()`，不调用 `dlg.reset()`。
+
+```squirrel
+local view = make_default_dialogue_ui(dialogue, dialogueUX, ui, "conversation");
+// Keep the image decoder/provider alive while using image-backed UI skins.
+local skinImages = eve.Image();
+view.setPresentation({
+    skin = "skins/moonlight.9.png",
+    x = 40.0, y = 330.0, width = 864.0, height = 184.0,
+    hint = "Space: continue"
+});
+view.mount();
+// Update after dialogue.update(dt). Consume clicks before rebuilding the view.
+local selected = view.consumeChoice(); // -1 means no choice click
+if (selected >= 0) {
+    if (dialogue.selectChoice(selected)) resumeStory();
+} else if (view.update(dt, voicePlaying)) {
+    resumeStory(); // UX auto/skip already advanced Dialogue once.
+}
+view.render(); // Call once in the frame's rendering phase.
+```
+
+- `skin` 使用现有 UI 的原始 Android `.9.png` 支持：一像素透明标记框，
+  上／左黑线标记拉伸区，下／右黑线标记内容区。每条边只支持一段连续标记，
+  不接受 Android 编译后的二进制 nine-patch。角不随面板拉伸，文字在内容边距内布局。
+  无效资源会抛出包含路径的错误，不替换已挂载的 UI 树；修正配置后重新 `mount()`。
+- 省略 `skin` 使用透明布局容器，不带窗口标题栏。`x/y` 是 UI 屏幕像素位置；
+  `width` 控制文字换行，皮肤的 `height` 控制内容滚动区域。
+  默认按钮按实际选项数量生成，没有八项上限。
+- `layout(frame)` 可逐帧返回 `{x, y}`，用于说话人气泡或跟随世界投影点。
+  投影、屏幕边缘约束由游戏决定。尺寸改变时重新挂载。
+- `drawBackground(frame)` 在标准 UI 渲染前同步执行，适合用 `gfx` 画动态边框、
+  波形、尾巴或入场效果；文字与可点击选项仍由 UI 负责。
+- `draw(frame)` 接管整个绘制过程，不调用默认 UI 渲染；此时可传 `uiInstance = null`。
+  自定义绘制器负责字体、换行、选项绘制、命中测试及键盘／触屏输入。
+  `consumeChoice()` 在此模式返回 -1，游戏将自己的输入交给 Dialogue。
+
+```squirrel
+view.setPresentation({
+    draw = function(frame) {
+        paintSpeechBubble(frame.speakerId, frame.speaker, frame.text);
+        foreach (choice in frame.choices)
+            paintChoice(choice.index, choice.id, choice.label);
+    }
+});
+view.mount();
+```
+
+`frame` 是独立快照，字段为 `speakerId/speaker/text/typing/waitingAdvance/idle/choices`；
+`choices` 包含 `index/id/label`。文字已通过 `DialogueUX.plainText` 去掉控制标签。
+回调修改快照不会修改剧情；需要富文本效果的绘制器可直接查询 Dialogue/DialogueUX。
+`draw` 优先于 `drawBackground` 与 `layout`。回调异常直接传播，不能静默吞掉。
+
+所有视图操作及回调在游戏主线程同步执行，不持有引擎锁；回调不得递归调用视图生命周期方法。
+游戏拥有 Dialogue、UX、UI、字体与纹理资源，它们必须覆盖视图使用期。
+离开场景调用 `unmount()` 隐藏宿主并释放回调引用；皮肤缓存仍由 UI 拥有。
+不要把视图、回调或 GPU 资源写入剧情存档：恢复后从配置重建视图。
+不提供 UI 模块的构建可以只使用 `draw`，不引入 Dialogue 到 UI/Graphics 的原生依赖。
+
+`examples/dialogue` 提供月夜圆角皮肤、信笺边框皮肤与脚本通讯面板；按 4／5／6
+切换，保留当前台词和选项。选项支持鼠标按钮与原有数字键。
+皮肤源码位于 `examples/dialogue/skins/generate.py`，可确定性重新生成。
+
 ### `DialogueVoice`（语音与音频口型）
 
 根表 `dialogueVoice` 管理按 `lineId + locale` 定位的语音。项目先用

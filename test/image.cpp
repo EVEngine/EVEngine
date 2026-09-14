@@ -9,6 +9,7 @@
 #include "medialoader/image/FormatHandler.h"
 
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <functional>
 #include <memory>
@@ -176,22 +177,28 @@ TEST_CASE("image.cloneAndPaste") {
     CHECK(hasGetFn);
 }
 
-TEST_CASE("image.encode.pngRoundTrip") {
+TEST_CASE("image.encode.losslessFormatsRoundTrip") {
     auto* module = img();
-    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
-    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
-    src->setPixel(1, 1, red);
-
-    std::unique_ptr<eve::filesystem::FileData> encoded(
-        src->encode(medialoader::FormatHandler::ENCODED_PNG, "ut_roundtrip.png", false));
-    REQUIRE(encoded.get() != nullptr);
-    CHECK(encoded->getSize() > 0u);
-
-    std::unique_ptr<eve::image::ImageData> decoded(module->newImageData(encoded.get()));
-    REQUIRE(decoded.get() != nullptr);
-    CHECK_EQ(decoded->getWidth(), 2);
-    CHECK_EQ(decoded->getHeight(), 2);
-    CHECK(nearColor(decoded->getPixel(1, 1), red));
+    struct FormatCase {
+        medialoader::FormatHandler::EncodedFormat format;
+        const char*                               filename;
+        Colorf                                    color;
+    };
+    for (const FormatCase& input :
+         {FormatCase{medialoader::FormatHandler::ENCODED_PNG, "ut_roundtrip.png", {1.f, 0.f, 0.f, 1.f}},
+          FormatCase{medialoader::FormatHandler::ENCODED_TGA, "ut_roundtrip.tga", {0.1f, 0.7f, 0.6f, 1.f}}}) {
+        std::printf("image round trip: %s\n", input.filename);
+        std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
+        src->setPixel(1, 1, input.color);
+        std::unique_ptr<eve::filesystem::FileData> encoded(src->encode(input.format, input.filename, false));
+        REQUIRE(encoded != nullptr);
+        REQUIRE(encoded->getSize() > 0u);
+        std::unique_ptr<eve::image::ImageData> decoded(module->newImageData(encoded.get()));
+        REQUIRE(decoded != nullptr);
+        REQUIRE_EQ(decoded->getWidth(), 2);
+        REQUIRE_EQ(decoded->getHeight(), 2);
+        REQUIRE(nearColor(decoded->getPixel(1, 1), input.color));
+    }
 }
 
 TEST_CASE("image.encode.unsupportedFormatThrows") {
@@ -477,22 +484,4 @@ TEST_CASE("image.paste.acrossFormats") {
     const Colorf pasted = dst->getPixel(1, 1);
     CHECK(nearColor(pasted, px));
     CHECK(!nearColor(dst->getPixel(0, 0), px));
-}
-
-TEST_CASE("image.encode.tgaRoundTrip") {
-    auto *module = img();
-    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
-    const Colorf teal{0.1f, 0.7f, 0.6f, 1.0f};
-    src->setPixel(1, 1, teal);
-
-    std::unique_ptr<eve::filesystem::FileData> encoded(
-        src->encode(medialoader::FormatHandler::ENCODED_TGA, "ut_roundtrip.tga", false));
-    REQUIRE(encoded.get() != nullptr);
-    CHECK(encoded->getSize() > 0u);
-
-    std::unique_ptr<eve::image::ImageData> decoded(module->newImageData(encoded.get()));
-    REQUIRE(decoded.get() != nullptr);
-    CHECK_EQ(decoded->getWidth(), 2);
-    CHECK_EQ(decoded->getHeight(), 2);
-    CHECK(nearColor(decoded->getPixel(1, 1), teal));
 }

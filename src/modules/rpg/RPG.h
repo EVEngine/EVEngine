@@ -24,10 +24,12 @@
 #include "rpg/SkillTypes.h"
 #include "rpg/VitalsSystem.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace eve {
+class SubjectRef;
 namespace inventory {
 class Bag;
 class EquipmentSet;
@@ -39,6 +41,8 @@ namespace eve::rpg {
 struct SettlementContext;
 class Tracker;
 class Battle;
+class BattleControl;
+class ProductControl;
 class Party;
 class GameState;
 class WorldState;
@@ -270,6 +274,24 @@ public:
      * @thread Create and drive on the owning simulation thread.
      */
     Battle *newBattle();
+    /**
+     * @brief Create a host-neutral control adapter for a caller-owned battle.
+     * @param battle Borrowed battle that must outlive the returned adapter.
+     * @param instance Stable identity used by player, test and AI clients.
+     * @return Owning adapter or structured validation failure.
+     * @ownership The returned unique pointer owns the adapter and must be reset before battle destruction.
+     * @thread Create and use on the RPG simulation thread.
+     */
+    [[nodiscard]] Result<std::unique_ptr<BattleControl>> newBattleControl(Battle *battle,
+                                                                          SubjectRef instance);
+    /**
+     * @brief Create a unified shop, quest-reward and world-loot control adapter.
+     * @return Owning adapter or structured validation failure.
+     * @ownership Reset the returned unique pointer before GameState, Tracker or Bag destruction.
+     * @thread Create and use on all participants' common simulation thread.
+     */
+    [[nodiscard]] Result<std::unique_ptr<ProductControl>> newProductControl(
+        SubjectRef instance, GameState *gameState, Tracker *tracker, inventory::Bag *bag);
 
     /**
      * @brief 创建一份新的游戏状态（开关/变量）。

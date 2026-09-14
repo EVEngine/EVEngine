@@ -504,3 +504,18 @@ TEST_CASE("map.path.boundLayerAutoSyncsRevision") {
     delete open;
     delete pf;
 }
+
+TEST_CASE("map.path.dynamicEntryPenaltyDetoursWithoutMutatingGrid") {
+    Pathfinder pathfinder(5, 3);
+    std::unique_ptr<Path> direct(pathfinder.findPath(0, 1, 4, 1));
+    REQUIRE(direct.get() != nullptr);
+    CHECK_EQ(direct->getLength(), 5);
+
+    std::unique_ptr<Path> detour(pathfinder.findPath(0, 1, 4, 1,
+        [](int x, int y) { return x == 2 && y == 1 ? 20.0f : 0.0f; }));
+    REQUIRE(detour.get() != nullptr);
+    CHECK_GT(detour->getLength(), direct->getLength());
+    for (int index = 0; index < detour->getLength(); ++index)
+        CHECK(!(detour->getX(index) == 2 && detour->getY(index) == 1));
+    CHECK_EQ(pathfinder.getCellCost(2, 1), 1.0f);
+}

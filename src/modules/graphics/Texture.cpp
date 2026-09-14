@@ -14,6 +14,42 @@ Texture::~Texture() {
     gpuHandle = nullptr;
 }
 
+void Texture::markDeferredFilePixels(Graphics *graphics) {
+    graphics_ = graphics;
+    filePixelsPending_ = graphics != nullptr;
+}
+
+void Texture::clearDeferredFilePixels() { filePixelsPending_ = false; }
+
+void Texture::realizeFilePixelsIfNeeded() const {
+    if (filePixelsPending_ && graphics_) graphics_->ensureFileTexturesReady();
+}
+
+int Texture::getWidth() const {
+    realizeFilePixelsIfNeeded();
+    return width;
+}
+
+int Texture::getHeight() const {
+    realizeFilePixelsIfNeeded();
+    return height;
+}
+
+int Texture::getPixelWidth() const {
+    realizeFilePixelsIfNeeded();
+    return pixelWidth;
+}
+
+int Texture::getPixelHeight() const {
+    realizeFilePixelsIfNeeded();
+    return pixelHeight;
+}
+
+int Texture::getMipmapCount() const {
+    realizeFilePixelsIfNeeded();
+    return mipmapCount;
+}
+
 void Texture::draw(Graphics *, const glm::mat4 &) const {
     // Declarative path uses RenderSystem; immediate draw left for later.
 }

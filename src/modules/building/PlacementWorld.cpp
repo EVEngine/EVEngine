@@ -275,9 +275,50 @@ void PlacementWorld::setTerrainGid(int gid, int semantic) {
 
 void PlacementWorld::clearTerrainGidMap() { terrainGidMap_.clear(); }
 
+void PlacementWorld::setFloorHeight(float height) {
+    if (std::isfinite(height) && height > 0.f) floorHeight_ = height;
+}
+
+PlacementWorld::ChannelMap &PlacementWorld::edgeChannels(EdgeAxis axis, int level) {
+    if (level == 0)
+        return axis == EdgeAxis::Horizontal ? horizontalEdgeChannels_ : verticalEdgeChannels_;
+    return axis == EdgeAxis::Horizontal ? horizontalEdgesByLevel_[level]
+                                        : verticalEdgesByLevel_[level];
+}
+
+const PlacementWorld::ChannelMap *PlacementWorld::findEdgeChannels(EdgeAxis axis,
+                                                                   int level) const {
+    if (level == 0)
+        return axis == EdgeAxis::Horizontal ? &horizontalEdgeChannels_ : &verticalEdgeChannels_;
+    const auto &levels =
+        axis == EdgeAxis::Horizontal ? horizontalEdgesByLevel_ : verticalEdgesByLevel_;
+    const auto found = levels.find(level);
+    return found == levels.end() ? nullptr : &found->second;
+}
+
+PlacementWorld::ChannelMap &PlacementWorld::cornerChannels(int level) {
+    return level == 0 ? cornerChannels_ : cornersByLevel_[level];
+}
+
+const PlacementWorld::ChannelMap *PlacementWorld::findCornerChannels(int level) const {
+    if (level == 0) return &cornerChannels_;
+    const auto found = cornersByLevel_.find(level);
+    return found == cornersByLevel_.end() ? nullptr : &found->second;
+}
+
 // ---- 占用查询 ----
 
 std::vector<int> &PlacementWorld::channelOccupancy(const std::string &channel) {
+    return channelOccupancy(channel, activeLevel_);
+}
+
+std::vector<int> &PlacementWorld::channelOccupancy(const std::string &channel, int level) {
+    if (level != 0) {
+        auto &occupancy = cellChannelsByLevel_[level][channel];
+        const size_t required = size_t(width_) * size_t(height_);
+        if (occupancy.size() != required) occupancy.assign(required, 0);
+        return occupancy;
+    }
     if (channel.empty()) return occupancy_;
     auto &ch = allChannels_[channel];
     if (ch.size() != occupancy_.size()) ch.assign(occupancy_.size(), 0);
@@ -289,8 +330,21 @@ int PlacementWorld::getOccupant(int cellX, int cellY) const {
 }
 
 int PlacementWorld::getOccupantInChannel(const std::string &channel, int cellX, int cellY) const {
+    return getOccupantAtLevel(channel, cellX, cellY, activeLevel_);
+}
+
+int PlacementWorld::getOccupantAtLevel(const std::string &channel, int cellX, int cellY,
+                                       int level) const {
     if (!inBounds(cellX, cellY)) return 0;
     const size_t idx = size_t(cellY) * size_t(width_) + size_t(cellX);
+    if (level != 0) {
+        const auto levelIt = cellChannelsByLevel_.find(level);
+        if (levelIt == cellChannelsByLevel_.end()) return 0;
+        const auto channelIt = levelIt->second.find(channel);
+        return channelIt == levelIt->second.end() || idx >= channelIt->second.size()
+                   ? 0
+                   : channelIt->second[idx];
+    }
     if (channel.empty()) return occupancy_[idx];
     auto it = allChannels_.find(channel);
     if (it == allChannels_.end() || idx >= it->second.size()) return 0;
@@ -298,10 +352,23 @@ int PlacementWorld::getOccupantInChannel(const std::string &channel, int cellX, 
 }
 
 int PlacementWorld::getAnyOccupant(int cellX, int cellY) const {
-    const int occ = getOccupantInChannel(std::string{}, cellX, cellY);
+    return getAnyOccupantAtLevel(cellX, cellY, activeLevel_);
+}
+
+int PlacementWorld::getAnyOccupantAtLevel(int cellX, int cellY, int level) const {
+    const int occ = getOccupantAtLevel(std::string{}, cellX, cellY, level);
     if (occ != 0) return occ;
+    if (level != 0) {
+        const auto levelIt = cellChannelsByLevel_.find(level);
+        if (levelIt == cellChannelsByLevel_.end()) return 0;
+        for (const auto &kv : levelIt->second) {
+            const int value = getOccupantAtLevel(kv.first, cellX, cellY, level);
+            if (value != 0) return value;
+        }
+        return 0;
+    }
     for (const auto &kv : allChannels_) {
-        const int v = getOccupantInChannel(kv.first, cellX, cellY);
+        const int v = getOccupantAtLevel(kv.first, cellX, cellY, 0);
         if (v != 0) return v;
     }
     return 0;
@@ -346,19 +413,174 @@ float PlacementWorld::getBuildingWorldY(int instanceId) const {
     if (it == buildings_.end()) return 0.f;
     const PlacedBuilding &pb = it->second;
     // 真实世界 Y：XZ 平面 = 高度；XY 平面 = 平面第二轴。
-    return grid_->plane == grid::GridPlane::XZ ? pb.elevation : pb.worldY;
+    return grid_->plane == grid::GridPlane::XZ
+               ? pb.elevation + float(pb.level) * floorHeight_
+               : pb.worldY;
 }
 
 float PlacementWorld::getBuildingWorldZ(int instanceId) const {
     auto it = buildings_.find(instanceId);
     if (it == buildings_.end()) return 0.f;
     const PlacedBuilding &pb = it->second;
-    return grid_->plane == grid::GridPlane::XZ ? pb.worldY : pb.elevation;
+    return grid_->plane == grid::GridPlane::XZ
+               ? pb.worldY
+               : pb.elevation + float(pb.level) * floorHeight_;
 }
 
 float PlacementWorld::getBuildingElevation(int instanceId) const {
     auto it = buildings_.find(instanceId);
     return it == buildings_.end() ? 0.f : it->second.elevation;
+}
+
+int PlacementWorld::getBuildingLevel(int instanceId) const {
+    auto it = buildings_.find(instanceId);
+    return it == buildings_.end() ? 0 : it->second.level;
+}
+
+int PlacementWorld::getBuildingSupportCount(int instanceId) const {
+    const auto found = buildings_.find(instanceId);
+    return found == buildings_.end() ? 0 : int(found->second.supportInstanceIds.size());
+}
+
+int PlacementWorld::getBuildingSupportAt(int instanceId, int index) const {
+    const auto found = buildings_.find(instanceId);
+    if (found == buildings_.end() || index < 0 ||
+        index >= int(found->second.supportInstanceIds.size()))
+        return 0;
+    return found->second.supportInstanceIds[size_t(index)];
+}
+
+int PlacementWorld::getBuildingDependentCount(int instanceId) const {
+    int count = 0;
+    for (const auto &[id, placed] : buildings_) {
+        (void)id;
+        if (std::find(placed.supportInstanceIds.begin(), placed.supportInstanceIds.end(),
+                      instanceId) != placed.supportInstanceIds.end())
+            ++count;
+    }
+    return count;
+}
+
+int PlacementWorld::getEdgeOccupant(const std::string &channel, int cellX, int cellY,
+                                    const std::string &direction) const {
+    return getEdgeOccupantAtLevel(channel, cellX, cellY, direction, activeLevel_);
+}
+
+int PlacementWorld::getEdgeOccupantAtLevel(const std::string &channel, int cellX, int cellY,
+                                            const std::string &direction, int level) const {
+    auto canonical = PlacementSystem::canonicalEdge(cellX, cellY, direction);
+    if (!canonical.ok()) return 0;
+    const EdgeAddress edge = std::move(canonical).takeValue();
+    const bool inBounds = edge.axis == EdgeAxis::Horizontal
+                              ? edge.x >= 0 && edge.x < width_ && edge.y >= 0 && edge.y <= height_
+                              : edge.x >= 0 && edge.x <= width_ && edge.y >= 0 && edge.y < height_;
+    if (!inBounds) return 0;
+    const ChannelMap *channels = nullptr;
+    if (level == 0) {
+        channels = edge.axis == EdgeAxis::Horizontal ? &horizontalEdgeChannels_
+                                                      : &verticalEdgeChannels_;
+    } else {
+        const auto &levels = edge.axis == EdgeAxis::Horizontal ? horizontalEdgesByLevel_
+                                                                : verticalEdgesByLevel_;
+        const auto levelIt = levels.find(level);
+        if (levelIt == levels.end()) return 0;
+        channels = &levelIt->second;
+    }
+    const auto it = channels->find(channel);
+    if (it == channels->end()) return 0;
+    const size_t index = edge.axis == EdgeAxis::Horizontal
+                             ? size_t(edge.y) * size_t(width_) + size_t(edge.x)
+                             : size_t(edge.y) * size_t(width_ + 1) + size_t(edge.x);
+    return index < it->second.size() ? it->second[index] : 0;
+}
+
+bool PlacementWorld::isEdgeEmpty(const std::string &channel, int cellX, int cellY,
+                                 const std::string &direction) const {
+    return getEdgeOccupant(channel, cellX, cellY, direction) == 0;
+}
+
+int PlacementWorld::getCornerOccupant(const std::string &channel, int vertexX,
+                                      int vertexY) const {
+    return getCornerOccupantAtLevel(channel, vertexX, vertexY, activeLevel_);
+}
+
+int PlacementWorld::getCornerOccupantAtLevel(const std::string &channel, int vertexX,
+                                             int vertexY, int level) const {
+    if (vertexX < 0 || vertexX > width_ || vertexY < 0 || vertexY > height_) return 0;
+    const ChannelMap *channels = findCornerChannels(level);
+    if (!channels) return 0;
+    const auto found = channels->find(channel);
+    if (found == channels->end()) return 0;
+    const size_t index = size_t(vertexY) * size_t(width_ + 1) + size_t(vertexX);
+    return index < found->second.size() ? found->second[index] : 0;
+}
+
+int PlacementWorld::getAnyCornerOccupantAtLevel(int vertexX, int vertexY, int level) const {
+    const ChannelMap *channels = findCornerChannels(level);
+    if (!channels) return 0;
+    for (const auto &[channel, occupancy] : *channels) {
+        (void)occupancy;
+        const int occupant = getCornerOccupantAtLevel(channel, vertexX, vertexY, level);
+        if (occupant != 0) return occupant;
+    }
+    return 0;
+}
+
+bool PlacementWorld::isCornerEmpty(const std::string &channel, int vertexX, int vertexY) const {
+    return getCornerOccupant(channel, vertexX, vertexY) == 0;
+}
+
+int PlacementWorld::getFreeOccupant(const std::string &channel, float worldX,
+                                    float worldY) const {
+    return getFreeOccupantAtLevel(channel, worldX, worldY, activeLevel_);
+}
+
+int PlacementWorld::getFreeOccupantAtLevel(const std::string &channel, float worldX,
+                                           float worldY, int level) const {
+    for (int instanceId : instanceOrder_) {
+        const auto found = buildings_.find(instanceId);
+        if (found == buildings_.end()) continue;
+        const PlacedBuilding &placed = found->second;
+        if (placed.placementKind != "free" || placed.level != level ||
+            placed.channel != channel)
+            continue;
+        if (PlacementSystem::containsFreePoint(placed, worldX, worldY))
+            return instanceId;
+    }
+    return 0;
+}
+
+int PlacementWorld::getEdgeConnectionMask(int instanceId) const {
+    return static_cast<int>(PlacementSystem::edgeConnectionMask(*this, instanceId));
+}
+
+std::string PlacementWorld::getEdgeVariant(int instanceId) const {
+    return PlacementSystem::edgeVariant(*this, instanceId);
+}
+
+std::string PlacementWorld::getBuildingSurfaceId(int instanceId) const {
+    auto it = buildings_.find(instanceId);
+    return it == buildings_.end() ? std::string{} : it->second.surfaceId;
+}
+
+int64_t PlacementWorld::getBuildingSurfaceRevision(int instanceId) const {
+    auto it = buildings_.find(instanceId);
+    return it == buildings_.end() ? 0 : static_cast<int64_t>(it->second.surfaceRevision);
+}
+
+float PlacementWorld::getBuildingSurfaceNormalX(int instanceId) const {
+    auto it = buildings_.find(instanceId);
+    return it == buildings_.end() ? 0.f : it->second.surfaceNormalX;
+}
+
+float PlacementWorld::getBuildingSurfaceNormalY(int instanceId) const {
+    auto it = buildings_.find(instanceId);
+    return it == buildings_.end() ? 1.f : it->second.surfaceNormalY;
+}
+
+float PlacementWorld::getBuildingSurfaceNormalZ(int instanceId) const {
+    auto it = buildings_.find(instanceId);
+    return it == buildings_.end() ? 0.f : it->second.surfaceNormalZ;
 }
 
 std::string PlacementWorld::getBuildingChannel(int instanceId) const {
@@ -427,6 +649,85 @@ int PlacementWorld::placeGhost(Ghost *ghost) {
     return PlacementSystem::placeGhost(this, ghost);
 }
 
+eve::Result<EdgeCurveGroup> PlacementWorld::edgeCurveGroup(EdgeCurveGroupId id) const {
+    const auto found = edgeCurveGroups_.find(id.value);
+    if (!id || found == edgeCurveGroups_.end()) {
+        return eve::Result<EdgeCurveGroup>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "edge curve group was not found",
+            std::to_string(id.value), {}, "building.edge-curve-group"));
+    }
+    return eve::Result<EdgeCurveGroup>::success(found->second);
+}
+
+eve::Result<EdgeCurveGroup> PlacementWorld::edgeCurveGroupForInstance(int instanceId) const {
+    const auto placed = buildings_.find(instanceId);
+    if (placed == buildings_.end() || !placed->second.edgeCurveGroupId) {
+        return eve::Result<EdgeCurveGroup>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "edge instance is not linked to a curve group",
+            std::to_string(instanceId), {}, "building.edge-curve-group"));
+    }
+    return edgeCurveGroup(placed->second.edgeCurveGroupId);
+}
+
+std::vector<EdgeCurveGroupId> PlacementWorld::edgeCurveGroupIds() const {
+    std::vector<EdgeCurveGroupId> ids;
+    ids.reserve(edgeCurveGroups_.size());
+    for (const auto &[id, group] : edgeCurveGroups_) ids.push_back(group.id);
+    std::sort(ids.begin(), ids.end(), [](EdgeCurveGroupId lhs, EdgeCurveGroupId rhs) {
+        return lhs.value < rhs.value;
+    });
+    return ids;
+}
+
+int PlacementWorld::placeEdge(const std::string &buildingId, int cellX, int cellY,
+                              const std::string &direction) {
+    return PlacementSystem::placeEdge(this, buildingId, cellX, cellY, direction);
+}
+
+bool PlacementWorld::canPlaceEdge(const std::string &buildingId, int cellX, int cellY,
+                                  const std::string &direction) {
+    return PlacementSystem::canPlaceEdge(this, buildingId, cellX, cellY, direction, 0, nullptr);
+}
+
+std::string PlacementWorld::canPlaceEdgeReason(const std::string &buildingId, int cellX, int cellY,
+                                               const std::string &direction) {
+    std::string reason;
+    PlacementSystem::canPlaceEdge(this, buildingId, cellX, cellY, direction, 0, &reason);
+    return reason;
+}
+
+int PlacementWorld::placeCorner(const std::string &buildingId, int vertexX, int vertexY) {
+    return PlacementSystem::placeCorner(this, buildingId, vertexX, vertexY);
+}
+
+bool PlacementWorld::canPlaceCorner(const std::string &buildingId, int vertexX, int vertexY) {
+    return PlacementSystem::canPlaceCorner(this, buildingId, vertexX, vertexY);
+}
+
+std::string PlacementWorld::canPlaceCornerReason(const std::string &buildingId, int vertexX,
+                                                 int vertexY) {
+    std::string reason;
+    PlacementSystem::canPlaceCorner(this, buildingId, vertexX, vertexY, 0, &reason);
+    return reason;
+}
+
+
+int PlacementWorld::placeFree(const std::string &buildingId, float worldX, float worldY,
+                              float elevation, float rotationDeg) {
+    return PlacementSystem::placeFree(this, buildingId, worldX, worldY, elevation, rotationDeg);
+}
+
+bool PlacementWorld::canPlaceFree(const std::string &buildingId, float worldX, float worldY) {
+    return PlacementSystem::canPlaceFree(this, buildingId, worldX, worldY);
+}
+
+std::string PlacementWorld::canPlaceFreeReason(const std::string &buildingId, float worldX,
+                                               float worldY) {
+    std::string reason;
+    PlacementSystem::canPlaceFree(this, buildingId, worldX, worldY, 0, &reason);
+    return reason;
+}
+
 bool PlacementWorld::removeBuilding(int instanceId) {
     return PlacementSystem::removeBuilding(this, instanceId);
 }
@@ -436,5 +737,76 @@ bool PlacementWorld::moveBuilding(int instanceId, int cellX, int cellY, float ro
 }
 
 void PlacementWorld::clearBuildings() { PlacementSystem::clearBuildings(this); }
+
+std::unique_ptr<PlacementWorld> PlacementWorld::cloneState() const {
+    auto copy = std::make_unique<PlacementWorld>(width_, height_, getCellSize());
+    copy->id_ = id_;
+    *copy->grid_ = *grid_;
+    copy->snapMode_ = snapMode_;
+    copy->validateRule_ = validateRule_;
+    copy->floorHeight_ = floorHeight_;
+    copy->activeLevel_ = activeLevel_;
+    copy->occupancy_ = occupancy_;
+    copy->terrain_ = terrain_;
+    copy->terrainOverrides_ = terrainOverrides_;
+    copy->allChannels_ = allChannels_;
+    copy->horizontalEdgeChannels_ = horizontalEdgeChannels_;
+    copy->verticalEdgeChannels_ = verticalEdgeChannels_;
+    copy->cornerChannels_ = cornerChannels_;
+    copy->cellChannelsByLevel_ = cellChannelsByLevel_;
+    copy->horizontalEdgesByLevel_ = horizontalEdgesByLevel_;
+    copy->verticalEdgesByLevel_ = verticalEdgesByLevel_;
+    copy->cornersByLevel_ = cornersByLevel_;
+    copy->buildings_ = buildings_;
+    copy->edgeCurveGroups_ = edgeCurveGroups_;
+    copy->nextEdgeCurveGroupId_ = nextEdgeCurveGroupId_;
+    copy->publishEvents_ = false;
+    copy->extra_ = extra_;
+    copy->instanceOrder_ = instanceOrder_;
+    copy->tileLayer_ = tileLayer_;
+    copy->terrainBound_ = terrainBound_;
+    copy->terrainGidMap_ = terrainGidMap_;
+    return copy;
+}
+
+std::string PlacementWorld::canRemoveBuildingReason(int instanceId) const {
+    if (!hasBuilding(instanceId)) return "not_found";
+    return getBuildingDependentCount(instanceId) > 0 ? "support_in_use" : std::string{};
+}
+
+int PlacementWorld::removeBuildingCascade(int instanceId) {
+    return PlacementSystem::removeBuildingCascade(this, instanceId);
+}
+
+void PlacementWorld::swapState(PlacementWorld& candidate) noexcept {
+    using std::swap;
+    swap(id_, candidate.id_);
+    swap(width_, candidate.width_);
+    swap(height_, candidate.height_);
+    swap(grid_, candidate.grid_);
+    swap(snapMode_, candidate.snapMode_);
+    swap(validateRule_, candidate.validateRule_);
+    swap(floorHeight_, candidate.floorHeight_);
+    swap(activeLevel_, candidate.activeLevel_);
+    swap(occupancy_, candidate.occupancy_);
+    swap(terrain_, candidate.terrain_);
+    swap(terrainOverrides_, candidate.terrainOverrides_);
+    swap(allChannels_, candidate.allChannels_);
+    swap(horizontalEdgeChannels_, candidate.horizontalEdgeChannels_);
+    swap(verticalEdgeChannels_, candidate.verticalEdgeChannels_);
+    swap(cornerChannels_, candidate.cornerChannels_);
+    swap(cellChannelsByLevel_, candidate.cellChannelsByLevel_);
+    swap(horizontalEdgesByLevel_, candidate.horizontalEdgesByLevel_);
+    swap(verticalEdgesByLevel_, candidate.verticalEdgesByLevel_);
+    swap(cornersByLevel_, candidate.cornersByLevel_);
+    swap(buildings_, candidate.buildings_);
+    swap(edgeCurveGroups_, candidate.edgeCurveGroups_);
+    swap(nextEdgeCurveGroupId_, candidate.nextEdgeCurveGroupId_);
+    swap(extra_, candidate.extra_);
+    swap(instanceOrder_, candidate.instanceOrder_);
+    swap(tileLayer_, candidate.tileLayer_);
+    swap(terrainBound_, candidate.terrainBound_);
+    swap(terrainGidMap_, candidate.terrainGidMap_);
+}
 
 }  // namespace eve::building

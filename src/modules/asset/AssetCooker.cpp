@@ -2,6 +2,7 @@
 #include "asset/AssetMigration.h"
 #include "asset/CanonicalImageCook.h"
 #include "asset/CanonicalPcgCook.h"
+#include "asset/ShaderAsset.h"
 
 #include "asset/EvpackCompression.h"
 #include "asset/RuntimeDefinition.h"
@@ -209,6 +210,23 @@ Result<AssetCookReceipt> cookEvaToEvpack(const EvaArchive& source, const AssetCo
             return cookFailure<AssetCookReceipt>(DiagnosticCode::NotFound, "asset definition is missing",
                                                  asset.definition);
         const auto dependencies = runtimeDependencies[asset.asset.id()];
+        if (asset.type == "eve.shader") {
+            if (profile.variant.graphics != "vulkan" || profile.variant.shaderFormat != "spirv-1.6")
+                return cookFailure<AssetCookReceipt>(
+                    DiagnosticCode::Unsupported, "eve.shader/1 requires Vulkan SPIR-V 1.6 target", asset.definition);
+            auto value = Value::fromJson(
+                std::string_view(reinterpret_cast<const char*>(definition->bytes.data()), definition->bytes.size()));
+            if (!value) return Result<AssetCookReceipt>::failure(value.status());
+            auto shader = decodeShaderAsset(value.value());
+            if (!shader) return Result<AssetCookReceipt>::failure(shader.status());
+            const std::string shaderPrefix = "assets/" + asset.asset.id().format() + "/";
+            if (!assetDependencyPolicies.empty() ||
+                std::any_of(canonical.entries.begin(), canonical.entries.end(), [&](const EvaArchiveEntry& entry) {
+                    return entry.path.starts_with(shaderPrefix) && entry.path != asset.definition;
+                }))
+                return cookFailure<AssetCookReceipt>(DiagnosticCode::Unsupported, "eve.shader/1 must be self-contained",
+                                                     asset.definition);
+        }
         if (asset.type == "eve.image") {
             if (std::find(profile.variant.textureFamilies.begin(),
                           profile.variant.textureFamilies.end(), "rgba8") ==

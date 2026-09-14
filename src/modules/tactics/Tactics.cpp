@@ -1,6 +1,7 @@
 #include "tactics/Tactics.h"
 
 #include "common/SquirrelBinding.h"
+#include "common/Capability.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -173,6 +174,33 @@ bool sameHandle(const ecs::EntityHandle& left, const ecs::EntityHandle& right) n
            left.generation == right.generation;
 }
 
+bool controls(const GameplaySession& session, SubjectRef subject) {
+    return session.access != GameplayAccess::PlayerEquivalent ||
+           std::find(session.controlledSubjects.begin(), session.controlledSubjects.end(), subject) !=
+               session.controlledSubjects.end();
+}
+
+LogicalId gameplayId(std::string_view value) {
+    return LogicalId::parse(value).value();
+}
+
+Value cellValue(Cell cell) {
+    return Value(Value::Object{{"layer", Value(cell.layer)}, {"x", Value(cell.x)}, {"y", Value(cell.y)}});
+}
+
+Result<int> integerParameter(const Value& parameters, std::string_view name) {
+    const auto* object = parameters.getIf<Value::Object>();
+    const auto  found = object ? object->find(std::string(name)) : Value::Object::const_iterator{};
+    if (!object || found == object->end() || !found->second.isInt64())
+        return failure<int>(DiagnosticCode::InvalidArgument, "gameplay command parameter must be an integer",
+                            "parameters." + std::string(name));
+    const auto value = found->second.asInt();
+    if (value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max())
+        return failure<int>(DiagnosticCode::InvalidArgument, "gameplay command parameter is out of range",
+                            "parameters." + std::string(name));
+    return Result<int>::success(static_cast<int>(value));
+}
+
 template <typename T>
 std::size_t countLive(const std::vector<ecs::EntityHandle>& handles) {
     return static_cast<std::size_t>(std::count_if(handles.begin(), handles.end(), [](const auto& handle) {
@@ -192,6 +220,8 @@ void releaseLive(std::vector<ecs::EntityHandle>& handles) noexcept {
 
 Module_IMPL(Tactics, new Tactics());
 
+Tactics::Tactics() { cap::addListener<IGameplayControlProvider>(this); }
+
 TacticsBattleSession::~TacticsBattleSession() noexcept {
     auto* value = dynamic_cast<Battle*>(ecs::try_get(battle));
     if (!value) return;
@@ -203,9 +233,190 @@ TacticsBattleSession::~TacticsBattleSession() noexcept {
 }
 
 Tactics::~Tactics() {
+    cap::removeListener<IGameplayControlProvider>(this);
     releaseLive<TacticalUnit>(units_);
     releaseLive<TacticalSide>(sides_);
     releaseLive<Battle>(battles_);
+}
+
+std::string_view Tactics::gameplayDomain() const noexcept { return "tactics"; }
+
+Result<GameplayObservation> Tactics::observeGameplay(const GameplaySession& session,
+                                                       SubjectRef instance) const {
+    Battle* battle = resolveBattle(instance);
+    if (!battle)
+        return failure<GameplayObservation>(DiagnosticCode::NotFound, "tactics gameplay instance was not found",
+                                            "instance");
+    if (session.access == GameplayAccess::PlayerEquivalent) {
+        const bool ownsParticipant = std::any_of(battle->turn()->units.begin(), battle->turn()->units.end(),
+                                                 [&](const ecs::EntityHandle& handle) {
+            auto* unit = dynamic_cast<TacticalUnit*>(ecs::try_get(handle));
+            return unit && controls(session, unit->identity()->subject);
+        });
+        if (!ownsParticipant)
+            return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
+                                                "session controls no participant in this tactics battle",
+                                                "session.controlledSubjects");
+    }
+
+    Value::Array units;
+    for (const auto& handle : battle->turn()->units) {
+        auto* unit = dynamic_cast<TacticalUnit*>(ecs::try_get(handle));
+        if (!unit) continue;
+        units.emplace_back(Value::Object{
+            {"acted", Value(unit->turn()->acted)},
+            {"actionPoints", Value(unit->turn()->actionPoints)},
+            {"alive", Value(unit->turn()->alive)},
+            {"cell", cellValue(unit->position()->cell)},
+            {"controlled", Value(controls(session, unit->identity()->subject))},
+            {"facing", Value(unit->position()->facing)},
+            {"movePoints", Value(unit->turn()->movePoints)},
+            {"subject", Value(unit->identity()->subject.format())},
+        });
+    }
+    const auto active = battle->turn()->activeUnit
+                            ? dynamic_cast<TacticalUnit*>(ecs::try_get(*battle->turn()->activeUnit))
+                            : nullptr;
+    GameplayObservation observation;
+    observation.domain = gameplayId("gameplay:tactics");
+    observation.instance = instance;
+    observation.tick = battle->turn()->tick;
+    observation.revision = battle->turn()->revision.value();
+    observation.state = Value(Value::Object{
+        {"activeUnit", Value(active ? active->identity()->subject.format() : std::string{})},
+        {"phase", Value(std::string(phaseName(battle->turn()->phase)))},
+        {"round", Value(static_cast<std::int64_t>(battle->turn()->round))},
+        {"status", Value(std::string(statusName(battle->turn()->status)))},
+        {"units", Value(std::move(units))},
+    });
+    return Result<GameplayObservation>::success(std::move(observation));
+}
+
+Result<std::vector<GameplayActionDescriptor>> Tactics::availableGameplayActions(
+    const GameplaySession& session, SubjectRef instance, SubjectRef subject) const {
+    Battle* battle = resolveBattle(instance);
+    if (!battle)
+        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::NotFound,
+                                                               "tactics gameplay instance was not found", "instance");
+    if (!controls(session, subject))
+        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::PreconditionViolation,
+                                                               "session does not control the requested subject",
+                                                               "subject");
+    auto* active = battle->turn()->activeUnit
+                       ? dynamic_cast<TacticalUnit*>(ecs::try_get(*battle->turn()->activeUnit))
+                       : nullptr;
+    if (!active || active->identity()->subject != subject || !active->turn()->alive)
+        return Result<std::vector<GameplayActionDescriptor>>::success({});
+
+    Value integerSchema(Value::Object{{"type", Value("integer")}});
+    Value moveSchema(Value::Object{{"layer", integerSchema}, {"x", integerSchema}, {"y", integerSchema}});
+    Value faceSchema(Value::Object{{"facing", integerSchema}});
+    std::vector<GameplayActionDescriptor> actions;
+    if (battle->turn()->phase == BattlePhase::Acting) {
+        actions.push_back({gameplayId("tactics:move"), std::move(moveSchema)});
+        actions.push_back({gameplayId("tactics:face"), std::move(faceSchema)});
+        actions.push_back({gameplayId("tactics:wait"), Value(Value::Object{})});
+        actions.push_back({gameplayId("tactics:end-turn"), Value(Value::Object{})});
+    }
+    return Result<std::vector<GameplayActionDescriptor>>::success(std::move(actions));
+}
+
+Result<GameplayCommandReceipt> Tactics::submitGameplay(const GameplaySession& session, SubjectRef instance,
+                                                        const GameplayCommand& command) {
+    Battle* battle = resolveBattle(instance);
+    if (!battle)
+        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound, "tactics gameplay instance was not found",
+                                               "instance");
+    if (command.id.empty())
+        return failure<GameplayCommandReceipt>(DiagnosticCode::InvalidArgument, "command id must not be empty",
+                                               "command.id");
+    if (!controls(session, command.subject))
+        return failure<GameplayCommandReceipt>(DiagnosticCode::PreconditionViolation,
+                                               "session does not control the command subject", "command.subject");
+    if (command.observedTick != battle->turn()->tick ||
+        command.expectedRevision != battle->turn()->revision.value())
+        return failure<GameplayCommandReceipt>(DiagnosticCode::Conflict,
+                                               "gameplay command was based on a stale observation",
+                                               "command.expectedRevision");
+
+    Value details(Value::Object{});
+    if (command.action == gameplayId("tactics:move")) {
+        auto x = integerParameter(command.parameters, "x");
+        auto y = integerParameter(command.parameters, "y");
+        auto layer = integerParameter(command.parameters, "layer");
+        if (!x) return Result<GameplayCommandReceipt>::failure(x.status());
+        if (!y) return Result<GameplayCommandReceipt>::failure(y.status());
+        if (!layer) return Result<GameplayCommandReceipt>::failure(layer.status());
+        auto moved = BattleSystem::moveUnit(*battle, command.subject, {x.value(), y.value(), layer.value()},
+                                            battle->turn()->tick);
+        if (!moved) return Result<GameplayCommandReceipt>::failure(moved.status());
+        const MoveReceipt receipt = std::move(moved).takeValue();
+        details = Value(Value::Object{{"cost", Value(receipt.cost)},
+                                      {"remainingMovePoints", Value(receipt.remainingMovePoints)}});
+    } else if (command.action == gameplayId("tactics:face")) {
+        auto facing = integerParameter(command.parameters, "facing");
+        if (!facing) return Result<GameplayCommandReceipt>::failure(facing.status());
+        auto faced = BattleSystem::faceUnit(*battle, command.subject, facing.value(), battle->turn()->tick);
+        if (!faced) return Result<GameplayCommandReceipt>::failure(faced.status());
+    } else if (command.action == gameplayId("tactics:wait")) {
+        auto waited = BattleSystem::waitUnit(*battle, command.subject, battle->turn()->tick);
+        if (!waited) return Result<GameplayCommandReceipt>::failure(waited.status());
+    } else if (command.action == gameplayId("tactics:end-turn")) {
+        auto ended = BattleSystem::endTurn(*battle, command.subject);
+        if (!ended) return Result<GameplayCommandReceipt>::failure(ended.status());
+    } else {
+        return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported,
+                                               "unsupported tactics gameplay action", "command.action");
+    }
+
+    GameplayCommandReceipt receipt;
+    receipt.commandId = command.id;
+    receipt.executionId = battle->commands()->values.empty()
+                              ? std::string{}
+                              : "tactics:" + std::to_string(battle->commands()->values.back().sequence);
+    receipt.acceptedTick = battle->turn()->tick;
+    receipt.resultingRevision = battle->turn()->revision.value();
+    receipt.details = std::move(details);
+    return Result<GameplayCommandReceipt>::success(std::move(receipt), Status::success(StatusCode::Applied));
+}
+
+Result<GameplayObservation> Tactics::advanceGameplay(const GameplaySession& session, SubjectRef instance,
+                                                       const SimulationStep& step) {
+    Battle* battle = resolveBattle(instance);
+    if (!battle)
+        return failure<GameplayObservation>(DiagnosticCode::NotFound, "tactics gameplay instance was not found",
+                                            "instance");
+    auto advanced = BattleSystem::advance(*battle, step);
+    if (!advanced) return Result<GameplayObservation>::failure(advanced.status());
+    std::move(advanced).takeValue();
+    return observeGameplay(session, instance);
+}
+
+Result<std::vector<GameplayEvent>> Tactics::gameplayEvents(const GameplaySession& session, SubjectRef instance,
+                                                            std::uint64_t afterSequence) const {
+    auto observed = observeGameplay(session, instance);
+    if (!observed) return Result<std::vector<GameplayEvent>>::failure(observed.status());
+    std::move(observed).takeValue();
+    Battle* battle = resolveBattle(instance);
+    std::vector<GameplayEvent> events;
+    for (const auto& source : battle->events()->values) {
+        if (source.sequence <= afterSequence) continue;
+        GameplayEvent event;
+        event.sequence = source.sequence;
+        event.tick = source.tick;
+        event.type = source.type;
+        event.subject = source.subject;
+        event.causationCommandId = source.causationCommand == 0
+                                       ? std::string{}
+                                       : "tactics:" + std::to_string(source.causationCommand);
+        event.correlationId = source.correlationCommand == 0
+                                  ? std::string{}
+                                  : "tactics:" + std::to_string(source.correlationCommand);
+        event.payload = Value(Value::Object{{"from", Value(std::string(phaseName(source.from)))},
+                                            {"to", Value(std::string(phaseName(source.to)))}});
+        events.push_back(std::move(event));
+    }
+    return Result<std::vector<GameplayEvent>>::success(std::move(events));
 }
 
 Result<ecs::EntityHandle> Tactics::newBattle(SubjectRef subject, std::uint64_t seed) {
@@ -518,6 +729,14 @@ bool Tactics::isStale(TacticsBattleSessionRef reference) noexcept {
 
 Battle* Tactics::resolveBattle(ecs::EntityHandle handle) const noexcept {
     return owns(battles_, handle) ? dynamic_cast<Battle*>(ecs::try_get(handle)) : nullptr;
+}
+
+Battle* Tactics::resolveBattle(SubjectRef subject) const noexcept {
+    const auto found = std::find_if(battles_.begin(), battles_.end(), [&](const ecs::EntityHandle& handle) {
+        auto* battle = dynamic_cast<Battle*>(ecs::try_get(handle));
+        return battle && battle->identity()->subject == subject;
+    });
+    return found == battles_.end() ? nullptr : dynamic_cast<Battle*>(ecs::try_get(*found));
 }
 
 bool Tactics::owns(const std::vector<ecs::EntityHandle>& handles, const ecs::EntityHandle& handle) const noexcept {

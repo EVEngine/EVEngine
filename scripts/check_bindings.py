@@ -2,9 +2,11 @@
 """Binding self-check: every script-facing `addFunc` must appear in the user docs.
 
 This automates the manual step recorded in docs/usr/REVIEW.md ("各目录 C++ 文件
-中的全部 addFunc 均出现在对应章节 API 快查"). It scans the module sources for
-`addFunc("name", ...)` / `addVar("name", ...)` and greps the matching
-docs/usr/modules/*.md chapter for the name.
+中的全部 addFunc 均出现在对应章节 API 快查"). It scans each CMake-declared
+module DIR for `addFunc("name", ...)` / `addVar("name", ...)` (skipping nested
+satellite dirs) and greps the matching docs/usr/modules/*.md chapter for the
+name. Nested packages keep their CMake NAME (e.g. animation_editor), so host
+chapters are not charged with editor bindings.
 
 Exit code is non-zero when a bound name is missing from its doc chapter
 (CI gate). Doc-only names (removed bindings that the doc still lists) are
@@ -15,7 +17,7 @@ debt). That debt is recorded in scripts/check_bindings_gaps.txt as
 "module:name" lines (regenerate with --write-gaps). Under --strict, a bound
 name missing from its doc chapter fails **unless** it is listed there, so the
 debt stays visible as warnings while new drift blocks CI. --modules limits the
-check to the given module dirs.
+check to the given CMake module names.
 
 Usage:
     python3 scripts/check_bindings.py                 # report all gaps (exit 0)
@@ -33,12 +35,14 @@ import re
 import sys
 from pathlib import Path
 
+import check_module_manifest
+
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ROOT / "src" / "modules"
 DOCS = ROOT / "docs" / "usr" / "modules"
 GAPS_FILE = Path(__file__).resolve().parent / "check_bindings_gaps.txt"
 
-# Module dir -> user-doc chapter (doc filename without .md).
+# CMake module NAME -> user-doc chapter (doc filename without .md).
 DOC_ALIASES = {
     "card": "cardgame",
     "data": "data",          # class DataModule
@@ -70,20 +74,63 @@ def write_gaps(entries: list[str]) -> None:
     )
 
 
-def iter_modules() -> list[tuple[str, Path]]:
-    out = []
-    for d in sorted(MODULES.iterdir()):
-        if not d.is_dir():
+def module_roots() -> list[tuple[str, Path]]:
+    """Return (CMake NAME, DIR) for non-core packages, including nested facets."""
+
+    out: list[tuple[str, Path]] = []
+    for declaration in check_module_manifest.parse_manifest():
+        if declaration.core or not declaration.name:
             continue
-        cpp = [p for p in d.rglob("*.cpp") if "third-party" not in str(p)]
-        if cpp:
-            out.append((d.name, d))
+        path = MODULES.joinpath(*declaration.dir.split("/"))
+        if path.is_dir():
+            out.append((declaration.name, path))
+    out.sort(key=lambda item: (item[1].as_posix(), item[0]))
     return out
 
 
-def bound_names(module_dir: Path) -> set[str]:
-    names: set[str] = set()
+def nested_child_heads(module_dir: Path, roots: list[Path]) -> set[str]:
+    """Immediate child names that belong to a nested declared module."""
+
+    heads: set[str] = set()
+    root = module_dir.resolve()
+    for other in roots:
+        if other == module_dir or not other.is_dir():
+            continue
+        try:
+            rel = other.resolve().relative_to(root)
+        except ValueError:
+            continue
+        if rel.parts:
+            heads.add(rel.parts[0])
+    return heads
+
+
+def iter_module_cpp(module_dir: Path, skip_heads: set[str]) -> list[Path]:
+    files: list[Path] = []
     for cpp in module_dir.rglob("*.cpp"):
+        if "third-party" in cpp.as_posix():
+            continue
+        rel = cpp.relative_to(module_dir)
+        if rel.parts and rel.parts[0] in skip_heads:
+            continue
+        files.append(cpp)
+    return files
+
+
+def iter_modules() -> list[tuple[str, Path, set[str]]]:
+    roots = module_roots()
+    dirs = [path for _, path in roots]
+    out: list[tuple[str, Path, set[str]]] = []
+    for name, path in roots:
+        skip = nested_child_heads(path, dirs)
+        if iter_module_cpp(path, skip):
+            out.append((name, path, skip))
+    return out
+
+
+def bound_names(module_dir: Path, skip_heads: set[str]) -> set[str]:
+    names: set[str] = set()
+    for cpp in iter_module_cpp(module_dir, skip_heads):
         text = cpp.read_text(encoding="utf-8", errors="replace")
         names.update(ADDFUNC_RE.findall(text))
     return names
@@ -111,7 +158,7 @@ def main() -> int:
     parser.add_argument("--strict", action="store_true",
                         help="exit non-zero when a bound name is missing from its doc")
     parser.add_argument("--modules", default="",
-                        help="comma-separated module dirs to check (default: all)")
+                        help="comma-separated CMake module names to check (default: all)")
     parser.add_argument("--write-gaps", action="store_true",
                         help="rewrite check_bindings_gaps.txt from the current gaps")
     args = parser.parse_args()
@@ -124,10 +171,11 @@ def main() -> int:
     gap_entries: list[str] = []
     checked = 0
 
-    for module, d in iter_modules():
+    modules = iter_modules()
+    for module, d, skip in modules:
         if selected and module not in selected:
             continue
-        names = bound_names(d)
+        names = bound_names(d, skip)
         if not names:
             continue
         doc = doc_for(module)
@@ -151,11 +199,11 @@ def main() -> int:
                 print(f"ok  {module}: {len(names)} bindings documented")
 
     # Doc-only names: bound surface shrank but the doc still lists old methods.
-    for module, d in iter_modules():
+    for module, d, skip in modules:
         doc = doc_for(module)
         if doc is None:
             continue
-        names = bound_names(d)
+        names = bound_names(d, skip)
         text = doc_text(doc)
         doc_names = set(ADDFUNC_RE.findall(text)) | {
             m for m in re.findall(r"`([a-zA-Z][a-zA-Z0-9_]*)\(\)", text)
@@ -168,7 +216,7 @@ def main() -> int:
     for f in failures:
         print(f"FAIL {f}")
 
-    print(f"checked {checked} bindings across {len(iter_modules())} module dirs")
+    print(f"checked {checked} bindings across {len(modules)} module dirs")
     if args.write_gaps:
         write_gaps(gap_entries)
         print(f"wrote {len(set(gap_entries))} known gaps to {GAPS_FILE}")

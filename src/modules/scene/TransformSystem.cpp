@@ -135,7 +135,8 @@ void TransformSystem::updateHost(SceneHost *host) {
         }
     }
     if (legacy) {
-        updateNode(*t, t->root, glm::mat4(1.f));
+        for (size_t index = 0; index < t->nodes.size(); ++index)
+            if (t->nodes[index].parent < 0) updateNode(*t, static_cast<int>(index), glm::mat4(1.f));
         syncLinks(host);
         for (auto &n : t->nodes) {
             n.localDirty = false;
@@ -157,7 +158,8 @@ void TransformSystem::updateHost(SceneHost *host) {
         t->transformDirty = false;
         return;  // fully clean tree: zero work
     }
-    updateNodeIncremental(*t, t->root, glm::mat4(1.f), false);
+    for (size_t index = 0; index < t->nodes.size(); ++index)
+        if (t->nodes[index].parent < 0) updateNodeIncremental(*t, static_cast<int>(index), glm::mat4(1.f), false);
     t->transformDirty = false;
 }
 

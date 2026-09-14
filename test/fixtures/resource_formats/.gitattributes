@@ -1,0 +1,2 @@
+# Preserve exact fixture bytes validated by manifest SHA-256 hashes.
+* -text

@@ -17,10 +17,11 @@ namespace eve::voxel {
 
 VoxelWorld::VoxelWorld() = default;
 VoxelWorld::VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
-VoxelWorld::~VoxelWorld() = default;
+VoxelWorld::~VoxelWorld() { waitStreamJobs(); }
 
 void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight,
                                   float amplitude, float scale) {
+    waitStreamJobs();
     if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
     terrainSampler_->setSeed(seed);
     terrainSampler_->setBase(0.f);
@@ -36,6 +37,7 @@ void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8
 }
 
 void VoxelWorld::setTerrainParam(const std::string &key, float value) {
+    waitStreamJobs();
     if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
     if (key == "seed") {
         terrainSampler_->setSeed(uint32_t(value));
@@ -82,6 +84,13 @@ void VoxelWorld::setTerrainParam(const std::string &key, float value) {
     }
 }
 
+void VoxelWorld::disableTerrain() {
+    waitStreamJobs();
+    terrainEnabled_ = false;
+    terrainAssetEnabled_ = false;
+    terrainAsset_.clear();
+}
+
 namespace {
 
 /** @brief Sample one terrain column: height plus top-layer texture (sand band). */
@@ -103,6 +112,7 @@ namespace {
 // Cap remesh worker count: enough to parallelize chunk meshing without
 // oversubscribing small devices / browser pthread pools.
 constexpr int kMaxRemeshWorkers = 4;
+constexpr int kMaxStreamJobs = 8;
 }  // namespace
 
 Chunk *VoxelWorld::getOrCreateChunk(int cx, int cy, int cz) {
@@ -134,6 +144,7 @@ void VoxelWorld::removeChunk(int cx, int cy, int cz) {
 }
 
 void VoxelWorld::clear() {
+    waitStreamJobs();
     const bool changed = !chunks_.empty();
     chunks_.clear();
     visible_.clear();
@@ -142,6 +153,7 @@ void VoxelWorld::clear() {
 }
 
 bool VoxelWorld::loadTerrainAsset(data::ByteData *bytes, float heightOffset, float heightScale) {
+    waitStreamJobs();
     if (!bytes || !std::isfinite(heightOffset) || !std::isfinite(heightScale)) return false;
     std::string error;
     if (!terrainAsset_.open(static_cast<const uint8_t *>(bytes->getData()), bytes->getSize(),
@@ -203,6 +215,10 @@ uint8_t VoxelWorld::terrainSurfaceAt(int wx, int wz) const {
     }
 }
 
+void VoxelWorld::setStreamCacheChunks(int extraChunks) {
+    streamCacheChunks_ = extraChunks < 0 ? 0 : extraChunks;
+}
+
 int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks) {
     if (radiusChunks < 0) return 0;
     const int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);
@@ -226,23 +242,68 @@ int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int r
     return int(evict.size());
 }
 
+void VoxelWorld::fillChunkTerrain(Chunk &c, int nx, int ny, int nz) const {
+    const int wy0 = ny * kChunkSize;
+    for (int lz = 0; lz < kChunkSize; ++lz)
+        for (int lx = 0; lx < kChunkSize; ++lx) {
+            int h = 0;
+            uint8_t surface = terrainTop_;
+            const int wx = nx * kChunkSize + lx;
+            const int wz = nz * kChunkSize + lz;
+            if (terrainAssetEnabled_) {
+                h = terrainHeightAt(wx, wz);
+                surface = terrainSurfaceAt(wx, wz);
+            } else {
+                sampleTerrainColumn(terrainSampler_.get(), terrainBase_, terrainAmplitude_,
+                                    terrainTop_, terrainSand_, sandLevel_, wx, wz, h, surface);
+            }
+            for (int ly = 0; ly < kChunkSize; ++ly) {
+                const int wy = wy0 + ly;
+                if (wy <= h - 4)
+                    c.set(lx, ly, lz, terrainStone_);
+                else if (wy <= h - 1)
+                    c.set(lx, ly, lz, terrainSub_);
+                else if (wy == h)
+                    c.set(lx, ly, lz, surface);
+            }
+        }
+}
+
 StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int radiusChunks,
-                                     const std::function<void(Chunk &, int, int, int)> &generator) {
+                                     const std::function<void(Chunk &, int, int, int)> &generator,
+                                     int maxCreates) {
     StreamStats stats;
     if (radiusChunks < 0) return stats;
+    if (maxCreates < 0) maxCreates = 0;
+
+    const int keepRadius = radiusChunks + streamCacheChunks_;
 
     if (!generator && terrainAssetEnabled_) {
         const int assetChunk = terrainAsset_.asset().getChunkSize();
-        const int worldRadius = (radiusChunks + 1) * kChunkSize;
+        const int worldRadius = (keepRadius + 1) * kChunkSize;
         const int assetRadius = assetChunk > 0
             ? int(std::ceil(float(worldRadius) * 1.41421356f / float(assetChunk))) + 1 : 0;
+        const int assetLoads = maxCreates > 0 ? maxCreates : 0;
         terrainAsset_.streamAround(centerX * kChunkSize + kChunkSize / 2,
-                                   centerZ * kChunkSize + kChunkSize / 2, assetRadius);
+                                   centerZ * kChunkSize + kChunkSize / 2, assetRadius, assetLoads);
     }
 
-    // Evict first so far-away dirty chunks are not remeshed below.
-    stats.evicted = unloadChunksOutside(centerX, centerY, centerZ, radiusChunks);
+    // Evict only past the keep radius so recently left chunks stay resident.
+    stats.evicted = unloadChunksOutside(centerX, centerY, centerZ, keepRadius);
+    reapRetiredStreamJobs();
+    restoreRetiredInside(centerX, centerY, centerZ, keepRadius);
+    dropStreamJobsOutside(centerX, centerY, centerZ, keepRadius);
+    const bool asyncTerrain = maxCreates > 0 && !generator && terrainEnabled_ && !terrainAssetEnabled_;
+    if (asyncTerrain)
+        stats.created = harvestStreamJobs(centerX, centerY, centerZ, keepRadius, maxCreates);
 
+    struct Missing {
+        int d2 = 0;
+        int nx = 0;
+        int ny = 0;
+        int nz = 0;
+    };
+    std::vector<Missing> missing;
     const int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);
     for (int dz = -radiusChunks; dz <= radiusChunks; ++dz)
         for (int dy = -radiusChunks; dy <= radiusChunks; ++dy)
@@ -252,44 +313,90 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                 const int nx = centerX + dx;
                 const int ny = centerY + dy;
                 const int nz = centerZ + dz;
-                if (hasChunk(nx, ny, nz)) continue;
-                Chunk *c = getOrCreateChunk(nx, ny, nz);
-                if (generator)
-                    generator(*c, nx, ny, nz);
-                else if (terrainEnabled_ || terrainAssetEnabled_) {
-                    // Heightmap terrain via procgen::TerrainSampler: one column
-                    // per (x, z); sampling world coords keeps chunk seams flush.
-                    const int wy0 = ny * kChunkSize;
-                    for (int lz = 0; lz < kChunkSize; ++lz)
-                        for (int lx = 0; lx < kChunkSize; ++lx) {
-                            int h = 0;
-                            uint8_t surface = terrainTop_;
-                            const int wx = nx * kChunkSize + lx;
-                            const int wz = nz * kChunkSize + lz;
-                            if (terrainAssetEnabled_) {
-                                h = terrainHeightAt(wx, wz);
-                                surface = terrainSurfaceAt(wx, wz);
-                            } else {
-                                sampleTerrainColumn(terrainSampler_.get(), terrainBase_, terrainAmplitude_,
-                                                    terrainTop_, terrainSand_, sandLevel_, wx, wz, h, surface);
-                            }
-                            for (int ly = 0; ly < kChunkSize; ++ly) {
-                                const int wy = wy0 + ly;
-                                if (wy <= h - 4)
-                                    c->set(lx, ly, lz, terrainStone_);
-                                else if (wy <= h - 1)
-                                    c->set(lx, ly, lz, terrainSub_);
-                                else if (wy == h)
-                                    c->set(lx, ly, lz, surface);
-                            }
-                        }
-                }
-                ++stats.created;
+                if (hasChunk(nx, ny, nz) || isStreamJob(nx, ny, nz)) continue;
+                missing.push_back({int(d2), nx, ny, nz});
             }
+    std::sort(missing.begin(), missing.end(), [](const Missing &a, const Missing &b) {
+        if (a.d2 != b.d2) return a.d2 < b.d2;
+        if (a.nx != b.nx) return a.nx < b.nx;
+        if (a.ny != b.ny) return a.ny < b.ny;
+        return a.nz < b.nz;
+    });
+
+    if (asyncTerrain) {
+        thread::JobSystem *jobs = nullptr;
+        try {
+            jobs = thread::Thread::create()->getJobSystem();
+        } catch (...) {
+            jobs = nullptr;
+        }
+        if (jobs && jobs->isRunning()) {
+            int submitted = 0;
+            for (const Missing &m : missing) {
+                if (int(inflight_.size()) >= kMaxStreamJobs) break;
+                if (submitted >= maxCreates) break;
+                StreamJob job;
+                job.cx = m.nx;
+                job.cy = m.ny;
+                job.cz = m.nz;
+                job.chunk = std::make_unique<Chunk>(m.nx, m.ny, m.nz);
+                Chunk *raw = job.chunk.get();
+                try {
+                    CubeTypeRegistry typesCopy = types_;
+                    job.job = jobs->submit([this, raw, nx = m.nx, ny = m.ny, nz = m.nz,
+                                            typesCopy = std::move(typesCopy)]() {
+                        fillChunkTerrain(*raw, nx, ny, nz);
+                        raw->remesh(typesCopy, nullptr, nullptr);
+                    });
+                } catch (...) {
+                    job.job = nullptr;
+                }
+                if (!job.job) {
+                    fillChunkTerrain(*raw, m.nx, m.ny, m.nz);
+                    raw->remesh(types_, nullptr, nullptr);
+                    chunks_.emplace(key(m.nx, m.ny, m.nz), std::move(job.chunk));
+                    ++stats.created;
+                    ++revision_;
+                    continue;
+                }
+                inflight_.push_back(std::move(job));
+                ++submitted;
+            }
+            stats.pending = int(missing.size() - size_t(submitted)) + int(inflight_.size());
+            return stats;
+        }
+    }
+
+    const size_t budget = maxCreates > 0 ? size_t(maxCreates) : missing.size();
+    const size_t createCount = std::min(budget, missing.size());
+    std::vector<Chunk *> created;
+    created.reserve(createCount);
+    for (size_t i = 0; i < createCount; ++i) {
+        const Missing &m = missing[i];
+        Chunk *c = getOrCreateChunk(m.nx, m.ny, m.nz);
+        if (generator)
+            generator(*c, m.nx, m.ny, m.nz);
+        else if (terrainEnabled_ || terrainAssetEnabled_)
+            fillChunkTerrain(*c, m.nx, m.ny, m.nz);
+        created.push_back(c);
+        ++stats.created;
+    }
+    stats.pending = int(missing.size() - createCount) + getInflightStreamCount();
 
     if (stats.created > 0) {
         ++revision_;
-        remeshDirty();
+        remeshChunks(created, 0);
+        if (maxCreates > 0) {
+            static const int nbs[6][3] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0},
+                                          {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+            for (Chunk *c : created) {
+                for (const auto &d : nbs) {
+                    if (Chunk *n = getChunk(c->cx() + d[0], c->cy() + d[1], c->cz() + d[2]))
+                        n->markDirty();
+                }
+            }
+            remeshDirty(1, 0);
+        }
     }
     return stats;
 }
@@ -380,16 +487,127 @@ bool VoxelWorld::loadWorld(data::ByteData *bytes) {
     return deserializeWorld(static_cast<const uint8_t *>(bytes->getData()), bytes->getSize());
 }
 
-int VoxelWorld::remeshDirty(int maxThreads) {
-    std::vector<Chunk *> dirty;
-    dirty.reserve(chunks_.size());
+int VoxelWorld::getDirtyCount() const {
+    int n = 0;
     for (auto &kv : chunks_) {
-        if (kv.second->isDirty()) dirty.push_back(kv.second.get());
+        if (kv.second->isDirty()) ++n;
     }
-    const int count = int(dirty.size());
-    if (count == 0) return 0;
+    return n;
+}
+
+int VoxelWorld::getInflightStreamCount() const {
+    return int(inflight_.size() + retired_.size());
+}
+
+void VoxelWorld::waitStreamJobs() {
+    auto waitAll = [](std::vector<StreamJob> &jobs) {
+        for (StreamJob &job : jobs) {
+            if (!job.job) continue;
+            job.job->wait();
+            delete job.job;
+            job.job = nullptr;
+        }
+        jobs.clear();
+    };
+    waitAll(inflight_);
+    waitAll(retired_);
+}
+
+void VoxelWorld::reapRetiredStreamJobs() {
+    std::vector<StreamJob> keep;
+    keep.reserve(retired_.size());
+    for (StreamJob &job : retired_) {
+        if (job.job && !job.job->isDone()) {
+            keep.push_back(std::move(job));
+            continue;
+        }
+        if (job.job) {
+            job.job->wait();
+            delete job.job;
+        }
+    }
+    retired_ = std::move(keep);
+}
+
+bool VoxelWorld::isStreamJob(int cx, int cy, int cz) const {
+    auto match = [cx, cy, cz](const StreamJob &job) {
+        return job.cx == cx && job.cy == cy && job.cz == cz;
+    };
+    for (const StreamJob &job : inflight_) {
+        if (match(job)) return true;
+    }
+    for (const StreamJob &job : retired_) {
+        if (match(job)) return true;
+    }
+    return false;
+}
+
+void VoxelWorld::restoreRetiredInside(int centerX, int centerY, int centerZ, int radiusChunks) {
+    const int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);
+    std::vector<StreamJob> keep;
+    keep.reserve(retired_.size());
+    for (StreamJob &job : retired_) {
+        const int64_t dx = int64_t(job.cx) - centerX;
+        const int64_t dy = int64_t(job.cy) - centerY;
+        const int64_t dz = int64_t(job.cz) - centerZ;
+        if (dx * dx + dy * dy + dz * dz <= r2)
+            inflight_.push_back(std::move(job));
+        else
+            keep.push_back(std::move(job));
+    }
+    retired_ = std::move(keep);
+}
+
+void VoxelWorld::dropStreamJobsOutside(int centerX, int centerY, int centerZ, int radiusChunks) {
+    const int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);
+    std::vector<StreamJob> keep;
+    keep.reserve(inflight_.size());
+    for (StreamJob &job : inflight_) {
+        const int64_t dx = int64_t(job.cx) - centerX;
+        const int64_t dy = int64_t(job.cy) - centerY;
+        const int64_t dz = int64_t(job.cz) - centerZ;
+        if (dx * dx + dy * dy + dz * dz <= r2) {
+            keep.push_back(std::move(job));
+            continue;
+        }
+        retired_.push_back(std::move(job));
+    }
+    inflight_ = std::move(keep);
+}
+
+int VoxelWorld::harvestStreamJobs(int centerX, int centerY, int centerZ, int radiusChunks,
+                                  int maxHarvest) {
+    const int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);
+    int harvested = 0;
+    std::vector<StreamJob> keep;
+    keep.reserve(inflight_.size());
+    for (StreamJob &job : inflight_) {
+        if (!job.job || !job.job->isDone() || (maxHarvest > 0 && harvested >= maxHarvest)) {
+            keep.push_back(std::move(job));
+            continue;
+        }
+        job.job->wait();
+        delete job.job;
+        job.job = nullptr;
+        const int64_t dx = int64_t(job.cx) - centerX;
+        const int64_t dy = int64_t(job.cy) - centerY;
+        const int64_t dz = int64_t(job.cz) - centerZ;
+        const bool inside = dx * dx + dy * dy + dz * dz <= r2;
+        if (!inside || hasChunk(job.cx, job.cy, job.cz) || !job.chunk) continue;
+        chunks_.emplace(key(job.cx, job.cy, job.cz), std::move(job.chunk));
+        ++harvested;
+    }
+    inflight_ = std::move(keep);
+    if (harvested > 0) ++revision_;
+    return harvested;
+}
+
+void VoxelWorld::remeshChunks(const std::vector<Chunk *> &chunks, int maxThreads) {
+    const int count = int(chunks.size());
+    if (count == 0) return;
 
     const auto remeshOne = [this](Chunk *c) {
+        if (!c) return;
         c->remesh(types_, &VoxelWorld::chunkNeighborSampler, this);
     };
 
@@ -401,31 +619,36 @@ int VoxelWorld::remeshDirty(int maxThreads) {
     }
 
     if (workers <= 1 || count <= 1) {
-        for (Chunk *c : dirty) remeshOne(c);
-        return count;
+        for (Chunk *c : chunks) remeshOne(c);
+        return;
     }
 
-    // Parallel remesh through the engine JobSystem: each child task remeshes
-    // its own slice of distinct chunks. The sampler only reads the chunk map
-    // (no concurrent mutation), and each chunk is touched by exactly one task,
-    // so this is safe. wait() on the loop joins every slice.
     auto *jobs = thread::Thread::create()->getJobSystem();
     thread::Job *loop = nullptr;
     try {
         loop = jobs->parallelFor(0, count,
-            [this, &dirty, &remeshOne](int first, int last) {
-                for (int k = first; k < last; ++k) remeshOne(dirty[size_t(k)]);
+            [this, &chunks, &remeshOne](int first, int last) {
+                for (int k = first; k < last; ++k) remeshOne(chunks[size_t(k)]);
             },
             (count + workers - 1) / workers);
     } catch (...) {
-        // Job allocation failed (resource limits): finish everything serially.
-        // Remesh is idempotent, so any chunks already handled are done twice.
-        for (Chunk *c : dirty) remeshOne(c);
-        return count;
+        for (Chunk *c : chunks) remeshOne(c);
+        return;
     }
     loop->wait();
     delete loop;
-    return count;
+}
+
+int VoxelWorld::remeshDirty(int maxThreads, int maxChunks) {
+    std::vector<Chunk *> dirty;
+    dirty.reserve(chunks_.size());
+    for (auto &kv : chunks_) {
+        if (!kv.second->isDirty()) continue;
+        dirty.push_back(kv.second.get());
+        if (maxChunks > 0 && int(dirty.size()) >= maxChunks) break;
+    }
+    remeshChunks(dirty, maxThreads);
+    return int(dirty.size());
 }
 
 void VoxelWorld::selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ,

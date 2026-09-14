@@ -25,12 +25,18 @@ bool IntVolumeEditCommand::record(int x, int y, int z, int after) {
 
 bool IntVolumeEditCommand::apply() {
     auto* volume = target_ ? target_->query<IIntVolumeTarget>() : nullptr;
-    if (!volume) return false;
-    bool changed = false;
-    for (const auto& change : changes_)
-        changed |= volume->writeInt3(change.x, change.y, change.z, change.after) ==
-                   editing::FieldWriteStatus::Applied;
-    return changed;
+    if (!volume || changes_.empty()) return false;
+    for (std::size_t i = 0; i < changes_.size(); ++i) {
+        if (volume->writeInt3(changes_[i].x, changes_[i].y, changes_[i].z, changes_[i].after) ==
+            editing::FieldWriteStatus::Rejected) {
+            while (i > 0) {
+                --i;
+                (void)volume->writeInt3(changes_[i].x, changes_[i].y, changes_[i].z, changes_[i].before);
+            }
+            return false;
+        }
+    }
+    return true;
 }
 
 void IntVolumeEditCommand::revert() {

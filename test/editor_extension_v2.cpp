@@ -25,10 +25,10 @@ public:
             append,
             [&](const CommandContext&, const EditorValue& payload) {
                 ++calls;
-                return EditorResult<EditorValue>::applied(payload);
+                return eve::editing::applied<EditorValue>(payload);
             },
             ExtensionAudience::Developer | ExtensionAudience::Player | ExtensionAudience::Automation)
-                  .isAccepted());
+                  .ok());
 
         ExtensionToolDescriptor tool;
         tool.id                 = ToolId("park.track.build");
@@ -36,7 +36,7 @@ public:
         tool.category           = "park.track";
         tool.targetRequirements = {CapabilityId("park.target.track-network")};
         tool.audiences          = ExtensionAudience::Developer | ExtensionAudience::Player;
-        CHECK(registry.registerTool(std::move(tool)).isAccepted());
+        CHECK(registry.registerTool(std::move(tool)).ok());
 
         ExtensionPaletteDescriptor developer;
         developer.id        = StableId("park.level-design-palette");
@@ -44,7 +44,7 @@ public:
         developer.tools     = {ToolId("park.track.build")};
         developer.commands  = {CommandId("park.track.append-segment")};
         developer.audiences = ExtensionAudience::Developer;
-        CHECK(registry.registerPalette(std::move(developer)).isAccepted());
+        CHECK(registry.registerPalette(std::move(developer)).ok());
 
         ExtensionPaletteDescriptor player;
         player.id        = StableId("park.build-rides-palette");
@@ -52,12 +52,12 @@ public:
         player.tools     = {ToolId("park.track.build")};
         player.commands  = {CommandId("park.track.append-segment")};
         player.audiences = ExtensionAudience::Player;
-        CHECK(registry.registerPalette(std::move(player)).isAccepted());
+        CHECK(registry.registerPalette(std::move(player)).ok());
 
         ExtensionRuleDescriptor budget;
         budget.id        = RuleId("park.policy.build-cost");
         budget.audiences = ExtensionAudience::Player | ExtensionAudience::Automation;
-        CHECK(registry.registerRule(std::move(budget)).isAccepted());
+        CHECK(registry.registerRule(std::move(budget)).ok());
     }
 
     int calls = 0;
@@ -71,9 +71,9 @@ public:
         command.id = CommandId("throwing.partial");
         CHECK(registry.registerCommand(
             command,
-            [](const CommandContext&, const EditorValue&) { return EditorResult<EditorValue>::applied(EditorValue{}); },
+            [](const CommandContext&, const EditorValue&) { return eve::editing::applied<EditorValue>(EditorValue{}); },
             ExtensionAudience::Developer)
-                  .isAccepted());
+                  .ok());
         throw std::runtime_error("extension load failed");
     }
 };
@@ -84,7 +84,7 @@ TEST_CASE("editor.v2.game_extension_injects_same_tool_into_editor_and_game") {
     EditorCommandService    commands;
     EditorExtensionRegistry extensions(&commands);
     ParkBuilderExtension    park;
-    CHECK(extensions.load(park).isAccepted());
+    CHECK(extensions.load(park).ok());
 
     HostProfile developer = HostProfile::developer();
     HostProfile runtime   = HostProfile::runtimeBuilder();
@@ -108,7 +108,7 @@ TEST_CASE("editor.v2.game_extension_injects_same_tool_into_editor_and_game") {
     CommandContext context;
     context.profile = &runtime;
     auto result     = commands.execute(CommandId("park.track.append-segment"), context, EditorValue("segment"));
-    CHECK(result.isAccepted());
+    CHECK(result.ok());
     CHECK_EQ(park.calls, 1);
 
     CHECK(extensions.unload("park") > 0);
@@ -121,6 +121,6 @@ TEST_CASE("editor.v2.extension_load_exception_rolls_back_partial_registration") 
     EditorExtensionRegistry extensions(&commands);
     ThrowingExtension       throwing;
     auto                    result = extensions.load(throwing);
-    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(result.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK(commands.find(CommandId("throwing.partial")) == nullptr);
 }

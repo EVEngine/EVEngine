@@ -165,6 +165,7 @@ Manifest 的 `unknownFields` v1 固定为 `preserve`：支持的 reader 必须�
 | `eve.mesh` | mesh primitives、LOD、skin、morph、bounds | StaticMesh、Mesh、glTF/FBX |
 | `eve.skeleton` | 骨骼层级、bind pose、retarget metadata | SkeletalMesh、Avatar |
 | `eve.animation-clip` | typed tracks、events、root motion | AnimSequence、AnimationClip |
+| `eve.sprite-animation` | 持有式图像帧时间线、矩形、锚点与采样设置 | Unity SpriteRenderer AnimationClip |
 | `eve.material` | EV shading model 和 typed parameters | UE Material Instance、Unity Material |
 | `eve.scene-template` | typed node hierarchy 和领域 links | Blueprint/Prefab 的数据子集 |
 | `eve.terrain` | heightfield、layer fields、tiles、尺度 | Landscape、Unity Terrain |
@@ -249,7 +250,10 @@ LandscapeGrass 参数及必须报告的原生功能。descriptor 可以由 EVEng
 
 ### 5.3 Unity adapter
 
-v1 支持：
+以下为 v1 目标范围；不是当前实现支持清单。现有包读取、批量导入及尚未完成的转换见
+[Unity 资源导入](../usr/modules/asset-unity-import.md)。
+
+v1 目标支持：
 
 - Texture、Mesh、Avatar/Skeleton、AnimationClip、AudioClip；
 - Standard/URP/HDRP Lit 材质的已声明参数子集；

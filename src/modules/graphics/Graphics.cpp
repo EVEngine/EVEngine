@@ -1,8 +1,10 @@
 #include "graphics/Graphics.h"
 #include "graphics/Bloom.h"
+#include "graphics/DepthOfField.h"
 #include "graphics/Exposure.h"
 #include "graphics/DepthPyramid.h"
 #include "common/Capability.h"
+#include "common/SquirrelBinding.h"
 #include "common/config.h"
 #include "font/FontData.h"
 #include "graphics/ArtifactProvider.h"
@@ -15,23 +17,30 @@
 #else
 #include "graphics/vulkan/Graphics.h"
 #endif
-#include "graphics/AmbientOcclusion.h"
 #include "graphics/AlphaMask.h"
+#include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Font.h"
+#include "graphics/CanvasScriptBindings.h"
 #include "graphics/FogVolume.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
+#include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PrimitiveScene.h"
+#include "graphics/PrimitiveScriptBindings.h"
 #include "graphics/Quad.h"
+#include "graphics/ReflectionProbeCapture.h"
+#include "graphics/ReflectionProbeRegistry.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Renderable3DBindings.h"
 #include "graphics/ScreenSpaceReflection.h"
-#include "graphics/ReflectionProbeCapture.h"
-#include "graphics/ReflectionProbeRegistry.h"
+#include "graphics/ShaderScriptBindings.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
@@ -42,7 +51,11 @@
 #endif
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
+#include "common/Resource.h"
 #include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
+#include "common/StartupTiming.h"
+#include "common/Diagnostic.h"
 #include "filesystem/Filesystem.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
@@ -50,6 +63,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -60,6 +74,7 @@
 namespace eve::graphics {
 
 namespace {
+
 
 bool copyArrayFloats(ssq::Array arr, std::vector<float> &out) {
     const size_t n = arr.size();
@@ -140,6 +155,7 @@ void setShaderScript(Graphics *gfx, ssq::Object obj) {
 }  // namespace
 
 Graphics::Graphics() {
+    primitiveScene_ = std::make_shared<PrimitiveScene>();
     // The window module owns the native window; we own the render surface.
     // Register as its surface host so window never has to include graphics.
     // The query happens after native window creation, so this pointer is valid
@@ -150,6 +166,7 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+    retireResourceLifetime();
     // Derived backends detach first, while their virtual releaseMesh boundary
     // is still live. This base path covers host-only Graphics subclasses.
     detachGraphicsArtifactProvider(this);
@@ -203,12 +220,12 @@ Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
 void Graphics::drawScene3DRGBA(float x, float y, float w, float h, float r, float g, float b, float a) {
     Texture* scene = getSceneColorTexture();
     if (!scene) return;
-    // Scene color A is linear view-depth, not opacity. The default textured
-    // blit multiplies that into SrcAlpha, so the planet composites against
-    // the dark clear color and looks dim. Use the same opaque FXAA resolve
-    // as the engine auto-composite path (aa shader writes alpha = 1).
-    Texture *resolved = prepareFinalSceneTexture(scene);
-    drawTexturedRectShaderUV(resolved, nullptr, x, y, w, h, 0.f, 0.f, 1.f, 1.f,
+    // Queue a scene-color blit at this 2D overlay slot so present() owns
+    // AA/Bloom/Exposure + ACES. Running prepareFinalSceneTexture here would
+    // setCanvas() (ending the still-open scene pass and queueing auto-resolve)
+    // then blit the HDR result through the LDR textured pipeline *on top of*
+    // the auto ACES composite — two fullscreen 3D quads that strobe.
+    drawTexturedRectShaderUV(scene, nullptr, x, y, w, h, 0.f, 0.f, 1.f, 1.f,
                              Color(r, g, b, a), false, BlendMode::Opaque);
 }
 
@@ -237,38 +254,10 @@ RenderControl* Graphics::getRenderControl() {
 void Graphics::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
-    const auto vm = table.getHandle();
-    cls.addFunc("replaceShaderFromGlsl",
-                [vm](Graphics* self, Shader* shader, const std::string& vertex,
-                     const std::string& fragment) {
-                    if (!self || !shader)
-                        return eve::script::projectResult(
-                            vm, Result<void>::failure(Diagnostic::error(
-                                    DiagnosticCode::InvalidArgument,
-                                    "graphics and shader must not be null", "shader", {},
-                                    "graphics.shader_reload.binding")));
-                    return eve::script::projectResult(
-                        vm, self->replaceShaderFromGlsl(*shader, vertex, fragment));
-                });
-    cls.addFunc("replaceShaderFromWgsl",
-                [vm](Graphics* self, Shader* shader, const std::string& vertex,
-                     const std::string& fragment) {
-                    if (!self || !shader)
-                        return eve::script::projectResult(
-                            vm, Result<void>::failure(Diagnostic::error(
-                                    DiagnosticCode::InvalidArgument,
-                                    "graphics and shader must not be null", "shader", {},
-                                    "graphics.shader_reload.binding")));
-                    return eve::script::projectResult(
-                        vm, self->replaceShaderFromWgsl(*shader, vertex, fragment));
-                });
 
-    auto canvasCls =
-        table.addClass<Canvas>("Canvas", std::function<Canvas*()>([]() -> Canvas* { return nullptr; }), true);
-    canvasCls.addFunc("getWidth", &Canvas::getWidth);
-    canvasCls.addFunc("getHeight", &Canvas::getHeight);
-    canvasCls.addFunc("getTexture", &Canvas::getTexture);
-    canvasCls.addFunc("newHDRImageData", &Canvas::newHDRImageData);
+    exposePrimitiveScriptBindings(table, cls);
+    exposeShaderScriptBindings(table, cls);
+    exposeCanvasScriptBindings(table);
 
 #ifndef EVENGINE_WEBGPU
     auto fontCls =
@@ -289,6 +278,35 @@ void Graphics::expose(ssq::Table& table) {
     maskCls.addFunc("setInverted", &AlphaMask::setInverted);
     maskCls.addFunc("getInverted", &AlphaMask::getInverted);
     maskCls.addFunc("draw", &AlphaMask::draw);
+
+    auto mapFogCls =
+        table.addClass<MapFog>("MapFog", std::function<MapFog*()>([]() -> MapFog* { return nullptr; }), true);
+    mapFogCls.addFunc("update", &MapFog::update);
+    mapFogCls.addFunc("setTime", &MapFog::setTime);
+    mapFogCls.addFunc("getTime", &MapFog::getTime);
+    mapFogCls.addFunc("setCloudTexture", &MapFog::setCloudTexture);
+    mapFogCls.addFunc("getCloudTexture", &MapFog::getCloudTexture);
+    mapFogCls.addFunc("setMaskTexture", &MapFog::setMaskTexture);
+    mapFogCls.addFunc("getMaskTexture", &MapFog::getMaskTexture);
+    mapFogCls.addFunc("setCloudTiling", &MapFog::setCloudTiling);
+    mapFogCls.addFunc("setCloudSpeed", &MapFog::setCloudSpeed);
+    mapFogCls.addFunc("setDistort", &MapFog::setDistort);
+    mapFogCls.addFunc("setDistortFix", &MapFog::setDistortFix);
+    mapFogCls.addFunc("setFogColor", &MapFog::setFogColor);
+    mapFogCls.addFunc("setFogAlpha", &MapFog::setFogAlpha);
+    mapFogCls.addFunc("setEdgeSoftness", &MapFog::setEdgeSoftness);
+    mapFogCls.addFunc("setShadowEnabled", &MapFog::setShadowEnabled);
+    mapFogCls.addFunc("setShadow", &MapFog::setShadow);
+    mapFogCls.addFunc("setSelectStrength", &MapFog::setSelectStrength);
+    mapFogCls.addFunc("setDissolveScale", &MapFog::setDissolveScale);
+    mapFogCls.addFunc("setCloudMix", &MapFog::setCloudMix);
+    mapFogCls.addFunc("setCloudDensity", &MapFog::setCloudDensity);
+    mapFogCls.addFunc("getCloudTileA", &MapFog::getCloudTileA);
+    mapFogCls.addFunc("getCloudTileB", &MapFog::getCloudTileB);
+    mapFogCls.addFunc("getFogAlpha", &MapFog::getFogAlpha);
+    mapFogCls.addFunc("getShadowEnabled", &MapFog::getShadowEnabled);
+    mapFogCls.addFunc("makeCloudTexture", &MapFog::makeCloudTexture);
+    mapFogCls.addFunc("draw", &MapFog::draw);
 
     auto texCls =
         table.addClass<Texture>("Texture", std::function<Texture*()>([]() -> Texture* { return nullptr; }), true);
@@ -378,9 +396,16 @@ void Graphics::expose(ssq::Table& table) {
     auto cam = table.addClass<Camera3D>("Camera3D",
                                         std::function<Camera3D*()>([]() { return Camera3D::createCamera(); }), false);
     cam.addFunc("setEye", &Camera3D::setEye);
+    cam.addFunc("getEyeX", &Camera3D::getEyeX);
+    cam.addFunc("getEyeY", &Camera3D::getEyeY);
+    cam.addFunc("getEyeZ", &Camera3D::getEyeZ);
     cam.addFunc("setTarget", &Camera3D::setTarget);
+    cam.addFunc("getTargetX", &Camera3D::getTargetX);
+    cam.addFunc("getTargetY", &Camera3D::getTargetY);
+    cam.addFunc("getTargetZ", &Camera3D::getTargetZ);
     cam.addFunc("setUp", &Camera3D::setUp);
     cam.addFunc("setFov", &Camera3D::setFov);
+    cam.addFunc("getFov", &Camera3D::getFov);
     cam.addFunc("setOrthographic", &Camera3D::setOrthographic);
     cam.addFunc("setPerspective", &Camera3D::setPerspective);
     cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
@@ -395,6 +420,10 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("setBloom", &Camera3D::setBloom);
     cam.addFunc("getBloomIntensity", &Camera3D::getBloomIntensity);
     cam.addFunc("getBloomThreshold", &Camera3D::getBloomThreshold);
+    cam.addFunc("setDepthOfField", &Camera3D::setDepthOfField);
+    cam.addFunc("getDofFocusDistance", &Camera3D::getDofFocusDistance);
+    cam.addFunc("getDofMaxBlur", &Camera3D::getDofMaxBlur);
+    cam.addFunc("getDofFocusRange", &Camera3D::getDofFocusRange);
     cam.addFunc("setEnvProbe", &Camera3D::setEnvProbe);
     cam.addFunc("clearEnvProbe", &Camera3D::clearEnvProbe);
     cam.addFunc("hasEnvProbe", &Camera3D::hasEnvProbe);
@@ -443,62 +472,7 @@ void Graphics::expose(ssq::Table& table) {
     light3d.addFunc("setVolumetricIntensity", &Light3D::setVolumetricIntensity);
     light3d.addFunc("getVolumetricIntensity", &Light3D::getVolumetricIntensity);
 
-    auto ent = table.addClass<Renderable3D>(
-        "Renderable3D", std::function<Renderable3D*()>([]() { return Renderable3D::create(); }), false);
-    ent.addFunc("getEntityId", &Renderable3D::getEntityId);
-    ent.addFunc("getEntityGeneration", &Renderable3D::getEntityGeneration);
-    ent.addFunc("setPosition", &Renderable3D::setPosition);
-    ent.addFunc("setRotation", &Renderable3D::setRotation);
-    ent.addFunc("setYaw", &Renderable3D::setYaw);
-    ent.addFunc("getYaw", &Renderable3D::getYaw);
-    ent.addFunc("setScale", &Renderable3D::setScale);
-    ent.addFunc("setMesh", &Renderable3D::setMesh);
-    ent.addFunc("getMesh", &Renderable3D::getMesh);
-    ent.addFunc("setTexture", &Renderable3D::setTexture);
-    ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
-    ent.addFunc("setHeightTexture", &Renderable3D::setHeightTexture);
-    ent.addFunc("setShader", &Renderable3D::setShader);
-    ent.addFunc("setMaterial", &Renderable3D::setMaterial);
-    ent.addFunc("getMaterial", &Renderable3D::getMaterial);
-    ent.addFunc("setPart", &Renderable3D::setPart);
-    ent.addFunc("setPartSortPriority", &Renderable3D::setPartSortPriority);
-    ent.addFunc("clearPartSortPriority", &Renderable3D::clearPartSortPriority);
-    ent.addFunc("getPartSortPriority", &Renderable3D::getPartSortPriority);
-    ent.addFunc("clearParts", &Renderable3D::clearParts);
-    ent.addFunc("getPartCount", &Renderable3D::getPartCount);
-    ent.addFunc("getPartName", &Renderable3D::getPartName);
-    ent.addFunc("getPartMesh", &Renderable3D::getPartMesh);
-    ent.addFunc("getPartMaterial", &Renderable3D::getPartMaterial);
-    ent.addFunc("setHair", &Renderable3D::setHair);
-    ent.addFunc("getHair", &Renderable3D::getHair);
-    ent.addFunc("setTint", &Renderable3D::setTint);
-    ent.addFunc("getTintR", &Renderable3D::getTintR);
-    ent.addFunc("getTintG", &Renderable3D::getTintG);
-    ent.addFunc("getTintB", &Renderable3D::getTintB);
-    ent.addFunc("getRoughness", &Renderable3D::getRoughness);
-    ent.addFunc("setMetallic", &Renderable3D::setMetallic);
-    ent.addFunc("setRoughness", &Renderable3D::setRoughness);
-    ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
-    ent.addFunc("getTexCellBombScale", &Renderable3D::getTexCellBombScale);
-    ent.addFunc("getTexCellBombStrength", &Renderable3D::getTexCellBombStrength);
-    ent.addFunc("getTexCellBombRotation", &Renderable3D::getTexCellBombRotation);
-    ent.addFunc("setParallax", &Renderable3D::setParallax);
-    ent.addFunc("getParallaxScale", &Renderable3D::getParallaxScale);
-    ent.addFunc("getParallaxMinLayers", &Renderable3D::getParallaxMinLayers);
-    ent.addFunc("getParallaxMaxLayers", &Renderable3D::getParallaxMaxLayers);
-    ent.addFunc("setVisible", &Renderable3D::setVisible);
-    ent.addFunc("setReflectionCaptureMask", &Renderable3D::setReflectionCaptureMask);
-    ent.addFunc("getReflectionCaptureMask", &Renderable3D::getReflectionCaptureMask);
-    ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
-    ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);
-    ent.addFunc("setReceiveShadow", &Renderable3D::setReceiveShadow);
-    ent.addFunc("setCastOcclusion", &Renderable3D::setCastOcclusion);
-    ent.addFunc("getCastOcclusion", &Renderable3D::getCastOcclusion);
-    ent.addFunc("setCamera", &Renderable3D::setCamera);
-    ent.addFunc("setMeshLod", &Renderable3D::setMeshLod);
-    ent.addFunc("clearMeshLod", &Renderable3D::clearMeshLod);
-    ent.addFunc("getMeshLodCount", &Renderable3D::getMeshLodCount);
-    ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
+    detail::exposeRenderable3DBindings(table);
 
     auto sprite2d = table.addClass<Renderable2D>(
         "Sprite2D", std::function<Renderable2D *()>([]() { return Renderable2D::create(); }), false);
@@ -702,6 +676,10 @@ void Graphics::expose(ssq::Table& table) {
     fogVolume.addFunc("getAnisotropy", &FogVolume::getAnisotropy);
     fogVolume.addFunc("setEdgeFalloff", &FogVolume::setEdgeFalloff);
     fogVolume.addFunc("getEdgeFalloff", &FogVolume::getEdgeFalloff);
+    fogVolume.addFunc("setNoise", &FogVolume::setNoise);
+    fogVolume.addFunc("getNoiseAmount", &FogVolume::getNoiseAmount);
+    fogVolume.addFunc("getNoiseScale", &FogVolume::getNoiseScale);
+    fogVolume.addFunc("getNoiseSeed", &FogVolume::getNoiseSeed);
 
     auto grassField = table.addClass<GrassField>(
         "GrassField", std::function<GrassField*()>([]() -> GrassField* { return nullptr; }), true);
@@ -903,6 +881,12 @@ void Graphics::expose(ssq::Table& table) {
     water.addFunc("setScreenSpaceReflection", &Water::setScreenSpaceReflection);
     water.addFunc("getScreenSpaceReflection", &Water::getScreenSpaceReflection);
     water.addFunc("getScreenSpaceReflectionStrength", &Water::getScreenSpaceReflectionStrength);
+    water.addFunc("applyConfigJson", [vm = table.getHandle()](Water* value, const std::string& json) {
+        return eve::script::projectResult(vm, value->applyConfigJson(json));
+    });
+    water.addFunc("configJson", [vm = table.getHandle()](Water* value) {
+        return eve::script::projectResult(vm, value->configJson(), [](std::string json) { return json; });
+    });
     water.addFunc("setViewport", &Water::setViewport);
     water.addFunc("getViewportWidth", &Water::getViewportWidth);
     water.addFunc("getViewportHeight", &Water::getViewportHeight);
@@ -1073,6 +1057,18 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
+    cls.addFunc(
+        "setRenderableTextureFromImageData",
+        [](Graphics *self, Renderable3D *renderable, image::ImageData *data, bool repeatU,
+           bool repeatV) -> Texture * {
+            if (!renderable) throw eve::Exception("setRenderableTextureFromImageData: null Renderable3D");
+            Texture *texture = self->newTextureFromImageData(data, repeatU, repeatV);
+            if (Material *material = renderable->getMaterial())
+                material->setAlbedoTexture(texture);
+            else
+                renderable->setTexture(texture);
+            return texture;
+        });
     cls.addFunc("updateTextureFromImageData", [](Graphics *self, Texture *texture,
                                                   image::ImageData *data) {
         auto updated = self->updateTextureFromImageData(texture, data);
@@ -1140,6 +1136,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
     cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("newAlphaMask", &Graphics::newAlphaMask);
+    cls.addFunc("newMapFog", &Graphics::newMapFog);
     cls.addFunc("getOutline", &Graphics::pipelineOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
@@ -1178,6 +1175,8 @@ AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(
 Outline* Graphics::newOutline() { return new Outline(this); }
 AlphaMask* Graphics::newAlphaMask() { return new AlphaMask(this); }
 
+MapFog* Graphics::newMapFog() { return new MapFog(this); }
+
 GlobalIllumination* Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 
 ScreenSpaceReflection* Graphics::newScreenSpaceReflection() { return new ScreenSpaceReflection(this); }
@@ -1200,6 +1199,11 @@ AntiAliasing* Graphics::pipelineAntiAliasing() {
 Bloom* Graphics::pipelineBloom() {
     if (!pipelineBloom_) pipelineBloom_ = std::make_unique<Bloom>(this);
     return pipelineBloom_.get();
+}
+
+DepthOfField* Graphics::pipelineDepthOfField() {
+    if (!pipelineDof_) pipelineDof_ = std::make_unique<DepthOfField>(this);
+    return pipelineDof_.get();
 }
 
 Exposure* Graphics::pipelineExposure() {
@@ -1236,6 +1240,18 @@ Texture* Graphics::prepareFinalSceneTexture(Texture *scene, Texture *motion) {
         }
         aa->applyTo(this, scene, spatialAAResolve_);
         resolved = spatialAAResolve_->getTexture();
+    }
+    if (getSceneDofMaxBlur() > 0.f && renderControl_) {
+        GBuffer *gb = renderControl_->getGBuffer();
+        if (gb && gb->isValid()) {
+            Texture *depth = getBackendName() == "webgpu" ? gb->getDepthTexture()
+                                                          : gb->getHwDepthTexture();
+            if (depth) {
+                resolved = pipelineDepthOfField()->apply(
+                    resolved, depth, getSceneDofFocusDistance(), getSceneDofMaxBlur(),
+                    getSceneDofFocusRange(), getSceneDofNearZ(), getSceneDofFarZ());
+            }
+        }
     }
     Texture *meterSource = resolved;
     resolved = pipelineBloom()->apply(resolved, getSceneBloomIntensity(),
@@ -1405,6 +1421,7 @@ Texture* Graphics::newTextureFromImageData(image::ImageData* data, const Texture
 
 eve::Result<void> Graphics::updateTextureFromImageData(Texture *texture,
                                                         image::ImageData *data) {
+    ensureFileTexturesReady();
     if (!texture || !data)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "texture and ImageData must be non-null",
@@ -1420,6 +1437,80 @@ eve::Result<void> Graphics::updateTextureFromImageData(Texture *texture,
             "texture is not owned by this backend, dimensions differ, or upload failed",
             "graphics.updateTextureFromImageData"));
     return eve::Result<void>::success();
+}
+
+void Graphics::requestFileImageDecode(const std::string &key) {
+    auto queued = eve::ResourceManager::getInstance().request(key);
+    if (!queued.ok())
+        throw eve::Exception("%s", queued.status().describe().c_str());
+}
+
+bool Graphics::fileTextureSourceExists(const std::string &filename) const {
+    auto *fs = eve::filesystem::Filesystem::create();
+    if (!fs) return false;
+    eve::filesystem::Filesystem::Info info{};
+    return fs->getInfo(filename, info);
+}
+
+void Graphics::dropDeferredFileTexture(Texture *texture) {
+    if (!texture) return;
+    deferredFileTextures_.erase(std::remove_if(deferredFileTextures_.begin(), deferredFileTextures_.end(),
+                                               [texture](const DeferredFileTexture &item) {
+                                                   return item.texture == texture;
+                                               }),
+                                deferredFileTextures_.end());
+    texture->clearDeferredFilePixels();
+}
+
+bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
+    if (!texture || !data) return false;
+    if (data->getFormat() != "RGBA8") return false;
+    return updateTexture(texture, data->getWidth(), data->getHeight(),
+                         static_cast<const uint8_t *>(data->getData()));
+}
+
+void Graphics::ensureFileTexturesReady() {
+    if (deferredFileTextures_.empty() || realizingFileTextures_) return;
+    realizingFileTextures_ = true;
+    StartupStage stage("graphics: realize file textures");
+    struct Guard {
+        Graphics *g;
+        ~Guard() { g->realizingFileTextures_ = false; }
+    } guard{this};
+
+    std::vector<DeferredFileTexture> pending = std::move(deferredFileTextures_);
+    deferredFileTextures_.clear();
+
+    auto restoreUnrealized = [&]() {
+        for (const auto &item : pending) {
+            if (item.texture && item.texture->hasDeferredFilePixels())
+                deferredFileTextures_.push_back(item);
+        }
+    };
+
+    auto &resources = eve::ResourceManager::getInstance();
+    for (const auto &item : pending) {
+        auto waited = resources.waitFor(item.key);
+        if (!waited.ok()) {
+            restoreUnrealized();
+            throw eve::Exception("%s", waited.status().describe().c_str());
+        }
+    }
+
+    try {
+        for (const auto &item : pending) {
+            auto waited = resources.waitFor(item.key);
+            if (!waited.ok())
+                throw eve::Exception("%s", waited.status().describe().c_str());
+            auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
+            if (!data || !uploadDeferredFileTexture(item.texture, data))
+                throw eve::Exception("newTextureFromFile: GPU upload failed '%s'", item.key.c_str());
+            if (item.texture) item.texture->clearDeferredFilePixels();
+        }
+    } catch (...) {
+        restoreUnrealized();
+        throw;
+    }
 }
 
 Texture* Graphics::newTextureFromFileRepeated(const std::string& filename, bool repeatU, bool repeatV) {

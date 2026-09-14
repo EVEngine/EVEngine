@@ -59,6 +59,33 @@ def declared_layers():
     return result
 
 
+def module_source_roots():
+    """Return {module_name: abs path} from the manifest DIR field."""
+    roots = {}
+    for declaration in check_module_manifest.parse_manifest():
+        if declaration.core or not declaration.name:
+            continue
+        roots[declaration.name] = os.path.join(MODULES_DIR, *declaration.dir.split("/"))
+    return roots
+
+
+def include_prefixes(roots):
+    """Longest-first (dir_posix, module_name) so nested facets win."""
+    prefixes = []
+    for name, path in roots.items():
+        rel = os.path.relpath(path, MODULES_DIR).replace("\\", "/")
+        prefixes.append((rel, name))
+    prefixes.sort(key=lambda item: (-len(item[0]), item[0]))
+    return prefixes
+
+
+def resolve_include_module(include, prefixes):
+    for prefix, name in prefixes:
+        if include == prefix or include.startswith(prefix + "/"):
+            return name
+    return None
+
+
 def scan():
     """Return (modules, edges, header_edges).
 
@@ -66,15 +93,27 @@ def scan():
     header_edges[a][b] narrows that to includes in a's own headers, which
     leak into a's public API and are harder to decouple.
     """
-    modules = sorted(
-        d for d in os.listdir(MODULES_DIR) if os.path.isdir(os.path.join(MODULES_DIR, d))
-    )
-    known = set(modules)
+    roots = module_source_roots()
+    modules = sorted(roots)
+    prefixes = include_prefixes(roots)
     edges = defaultdict(lambda: defaultdict(set))
     header_edges = defaultdict(lambda: defaultdict(set))
 
-    for module in modules:
-        for dirpath, _, files in os.walk(os.path.join(MODULES_DIR, module)):
+    for module, root in roots.items():
+        if not os.path.isdir(root):
+            continue
+        nested_heads = set()
+        root_norm = os.path.normpath(root)
+        for other, other_root in roots.items():
+            if other == module or not os.path.isdir(other_root):
+                continue
+            rel = os.path.relpath(os.path.normpath(other_root), root_norm)
+            if rel == "." or rel.startswith(".."):
+                continue
+            nested_heads.add(rel.split(os.sep)[0])
+        for dirpath, dirnames, files in os.walk(root):
+            if os.path.normpath(dirpath) == root_norm:
+                dirnames[:] = [d for d in dirnames if d not in nested_heads]
             for name in files:
                 if not name.endswith(SOURCE_EXT):
                     continue
@@ -82,10 +121,10 @@ def scan():
                 with open(path, encoding="utf-8", errors="ignore") as handle:
                     text = handle.read()
                 for include in INCLUDE_RE.findall(text):
-                    head, _, _ = include.partition("/")
-                    if not _:
+                    if "/" not in include:
                         continue
-                    if head not in known or head == module:
+                    head = resolve_include_module(include, prefixes)
+                    if not head or head == module:
                         continue
                     edges[module][head].add(include)
                     if name.endswith((".h", ".hpp")):

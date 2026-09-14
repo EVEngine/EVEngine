@@ -81,6 +81,9 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     ui->setItemEnabled(false);
     ui->end();
     ui->beginToolbar("toolbar");
+    ui->addIconButton("pointer", "", "select");
+    ui->setItemSelected(true);
+    ui->addIconButton("move", "", "move");
     ui->addIconButton("save", "", "toolbar_save");
     ui->end();
     ui->beginSplitPane("row", 0.3f, "workspace");
@@ -107,6 +110,10 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     CHECK(ui->loadTreeJson(json));
     CHECK(int(findNode(*ui, "enabled")->type) == int(NodeType::Switch));
     CHECK(!findNode(*ui, "active")->enabled);
+    CHECK(findNode(*ui, "select")->checked);
+    CHECK(!findNode(*ui, "move")->checked);
+    ui->setChecked("move", true);
+    CHECK(findNode(*ui, "move")->checked);
     CHECK(findNode(*ui, "search")->tooltip == "Filter scene nodes");
     CHECK(findNode(*ui, "search")->tabIndex == 4);
     CHECK(int(findNode(*ui, "search")->mouseFilter) == int(MouseFilter::Pass));

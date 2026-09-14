@@ -54,6 +54,19 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("last-error-channel", codes)
         self.assertIn("undocumented-raw-pointer-api", codes)
 
+    def test_multiply_assignment_is_not_a_pointer_api(self):
+        for text in ("n *= static_cast<size_t>(d);", "n *= count(shape);"):
+            with self.subTest(text=text):
+                lines = [contracts.SourceLine("fixture.h", 1, text)]
+                self.assertEqual([], contracts.lint_api_shapes(lines))
+
+    def test_named_pointer_apis_still_require_lifetime_contracts(self):
+        for text in ("Widget* get();", "Widget* value = makeWidget();"):
+            with self.subTest(text=text):
+                lines = [contracts.SourceLine("fixture.h", 1, text)]
+                codes = {finding.code for finding in contracts.lint_api_shapes(lines)}
+                self.assertIn("undocumented-raw-pointer-api", codes)
+
     def test_new_link_and_system_need_catalogue_coverage(self):
         metadata = {
             "entries": [

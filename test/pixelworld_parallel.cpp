@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "pixelworld/PixelWorld.h"
-#include "pixelworld_thread/PixelWorldThread.h"
+#include "pixelworld/thread/PixelWorldThread.h"
 #include "thread/JobSystem.h"
 
 #include <algorithm>

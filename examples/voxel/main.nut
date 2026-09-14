@@ -24,7 +24,8 @@ const TILE = 32;        // atlas tile size in pixels
 const TILES_PER_ROW = 4;
 
 // ---------------------------------------------------------------------------
-// 小型列主序矩阵工具（脚本侧合成 proj * view，供 selectVisible 使用）
+// 列主序 view / proj：体素裁剪和 setMesh3DViewProj 要 16 个 float，
+// 从唯一的 Camera3D 现算，不是第二台相机。
 // ---------------------------------------------------------------------------
 function mat4Perspective(fovyDeg, aspect, near, far) {
     local f = 1.0 / tan(fovyDeg * 0.5 * PI / 180.0);
@@ -114,12 +115,22 @@ function setupWorld() {
         cam.setTarget(0.0, 8.0, 0.0);
         cam.setUp(0.0, 1.0, 0.0);
         cam.setFov(50.0);
-        cam.setActive(true);
+        cam.setClipPlanes(0.1, 500.0);
+        // Voxel draws via setMesh3DViewProj; keep Camera3D inactive so
+        // RenderSystem3D cannot composite a second view.
+        cam.setActive(false);
     }
     if (atlas == null) atlas = buildAtlas();
 }
 
 // 鼠标按键编号：1 = 左键，2 = 右键（与 engine mouse::isDown 一致）。
+function updateOrbitCamera() {
+    local dist = 46.0;
+    local height = 30.0 + sin(elapsed * 0.18) * 6.0;
+    cam.setEye(cos(elapsed * 0.22) * dist, height, sin(elapsed * 0.22) * dist);
+    cam.setTarget(0.0, 8.0, 0.0);
+}
+
 function mousePressed(button) {
     local down = mouse.isDown(button);
     local was = (button == 1) ? prevMouse.left : prevMouse.right;
@@ -131,7 +142,7 @@ function mousePressed(button) {
 function handlePick() {
     local mx = mouse.getX();
     local my = mouse.getY();
-    cam.screenToRay(mx, my, gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
+    cam.screenToRay(mx.tofloat(), my.tofloat(), gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
     local ox = cam.getScreenRayOriginX();
     local oy = cam.getScreenRayOriginY();
     local oz = cam.getScreenRayOriginZ();
@@ -144,10 +155,12 @@ function handlePick() {
     local hy = world.getRaycastHitY();
     local hz = world.getRaycastHitZ();
     if (mousePressed(1)) {
-        // 放置：命中方块表面法线方向放木头
-        world.setVoxelByName(hx + world.getRaycastFaceX(),
-                             hy + world.getRaycastFaceY(),
-                             hz + world.getRaycastFaceZ(), "wood");
+        // 放置：射线进入实心块之前的空格（点击的那一面外侧）
+        local px = world.getRaycastPrevX();
+        local py = world.getRaycastPrevY();
+        local pz = world.getRaycastPrevZ();
+        if (px != hx || py != hy || pz != hz)
+            world.setVoxelByName(px, py, pz, "wood");
         world.remeshDirty();
     } else if (mousePressed(2)) {
         // 破坏
@@ -166,19 +179,21 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
-    elapsed += dt;
+    // Wall-clock orbit so a hitch does not add a large dt then appear to jump back.
+    if (has_module("timer")) elapsed = timer.getTime();
+    else elapsed += dt;
+    updateOrbitCamera();
     handlePick();
     if (keyboard.isDown("r")) world.remeshDirty();
 };
 
 eve_render = function() {
-    // 轨道相机：绕目标点缓慢旋转
-    local dist = 46.0;
-    local height = 30.0 + sin(elapsed * 0.18) * 6.0;
-    local eye = [cos(elapsed * 0.22) * dist, height, sin(elapsed * 0.22) * dist];
-    local target = [0.0, 8.0, 0.0];
+    updateOrbitCamera();
+    local eye = [cam.getEyeX(), cam.getEyeY(), cam.getEyeZ()];
+    local target = [cam.getTargetX(), cam.getTargetY(), cam.getTargetZ()];
     local view = mat4LookAt(eye, target, [0.0, 1.0, 0.0]);
-    local proj = mat4Perspective(50.0, config.width.tofloat() / config.height.tofloat(), 0.1, 500.0);
+    local aspect = gfx.getWidth().tofloat() / gfx.getHeight().tofloat();
+    local proj = mat4Perspective(cam.getFov(), aspect, 0.1, 500.0);
     local viewProj = proj.multiplied(view);
 
     local vp = [];

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/AsyncWork.h"
 #include "thread/Channel.h"
 #include "thread/JobSystem.h"
 #include "thread/Task.h"
@@ -44,6 +45,9 @@ public:
     /**
      * @brief Named shared channel (love2d-style). Same name → same Channel instance
      * for the lifetime of the module.
+     * @ownership Borrowed from this Thread module; callers must not delete it.
+     * @lifetime Valid until this Thread module is destroyed. Calls that create or
+     *           query other named channels do not invalidate the returned pointer.
      */
     Channel *getChannel(std::string channelName);
 
@@ -60,6 +64,7 @@ private:
     std::mutex mu_;
     std::unique_ptr<ThreadPool> defaultPool_;
     std::unique_ptr<JobSystem> defaultJobSystem_;
+    std::unique_ptr<eve::caps::IAsyncWorkExecutor> executor_;
     std::map<std::string, std::unique_ptr<Channel>> namedChannels_;
 };
 

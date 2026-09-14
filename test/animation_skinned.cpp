@@ -469,13 +469,13 @@ TEST_CASE("animation.skinned.gpuPaletteOwnsAndValidatesMatrices") {
     matrices[0] = matrices[5] = matrices[10] = matrices[15] = 1.f;
     matrices[16] = matrices[21] = matrices[26] = matrices[31] = 1.f;
     matrices[28] = 3.5f;
-    CHECK(mesh.setSkinPalette(matrices.data(), 2));
+    CHECK(mesh.setSkinPalette(matrices.data(), 2).ok());
     CHECK(mesh.getSkinPaletteCount() == 2);
     CHECK(std::fabs(mesh.skinPalette()[28] - 3.5f) < 1e-6f);
     matrices[28] = 9.f;
     CHECK(std::fabs(mesh.skinPalette()[28] - 3.5f) < 1e-6f);
-    CHECK(!mesh.setSkinPalette(nullptr, 1));
-    CHECK(!mesh.setSkinPalette(matrices.data(), Mesh::kMaxSkinBones + 1));
+    CHECK(!mesh.setSkinPalette(nullptr, 1).ok());
+    CHECK(!mesh.setSkinPalette(matrices.data(), -1).ok());
 }
 
 TEST_CASE("animation.skinned.worldMatrixMatchesTRS") {

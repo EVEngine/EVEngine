@@ -1,0 +1,314 @@
+#include "graphics/PrimitiveScene.h"
+
+#include <algorithm>
+#include <atomic>
+#include <cmath>
+#include <limits>
+#include <type_traits>
+#include <utility>
+
+namespace eve::graphics {
+namespace {
+
+template <class T>
+eve::Result<T> primitiveFailure(eve::DiagnosticCode code, std::string message) {
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "primitive", {}, "graphics"));
+}
+
+bool finite(glm::vec3 value) { return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z); }
+
+bool nonZero(glm::vec3 value) {
+    constexpr float minimumLengthSquared = 1e-12f;
+    return finite(value) && glm::dot(value, value) > minimumLengthSquared;
+}
+
+bool independent(glm::vec3 a, glm::vec3 b) {
+    constexpr float minimumRelativeAreaSquared = 1e-12f;
+    const float aLengthSquared = glm::dot(a, a);
+    const float bLengthSquared = glm::dot(b, b);
+    const glm::vec3 crossValue = glm::cross(a, b);
+    const float areaSquared    = glm::dot(crossValue, crossValue);
+    return aLengthSquared > 0.f && bLengthSquared > 0.f &&
+           areaSquared > minimumRelativeAreaSquared * aLengthSquared * bLengthSquared;
+}
+
+bool formsBasis(glm::vec3 a, glm::vec3 b, glm::vec3 c) {
+    constexpr float minimumRelativeVolumeSquared = 1e-12f;
+    const float volume = glm::dot(a, glm::cross(b, c));
+    return volume * volume > minimumRelativeVolumeSquared * glm::dot(a, a) * glm::dot(b, b) * glm::dot(c, c);
+}
+
+eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
+    const auto& paint = descriptor.paint;
+    const auto& stroke = paint.stroke;
+    if (!std::isfinite(stroke.width) || stroke.width < 0.f ||
+        !std::isfinite(stroke.miterLimit) || stroke.miterLimit <= 0.f ||
+        !std::isfinite(paint.color.r) || !std::isfinite(paint.color.g) ||
+        !std::isfinite(paint.color.b) || !std::isfinite(paint.color.a))
+        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "primitive paint must be finite and valid");
+    if (stroke.dash) {
+        const auto& dash = *stroke.dash;
+        float period = 0.f;
+        if (dash.intervals.empty() || dash.intervals.size() % 2 != 0 || !std::isfinite(dash.phase))
+            return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "invalid primitive dash pattern");
+        for (float interval : dash.intervals) {
+            if (!std::isfinite(interval) || interval <= 0.f)
+                return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "invalid primitive dash interval");
+            period += interval;
+        }
+        if (!std::isfinite(period))
+            return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "primitive dash period overflow");
+    }
+    try {
+        descriptor.paint.validate();
+    } catch (const std::exception& error) {
+        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, error.what());
+    }
+    for (glm::length_t column = 0; column < 4; ++column)
+        for (glm::length_t row = 0; row < 4; ++row)
+            if (!std::isfinite(descriptor.transform[column][row]))
+                return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                              "primitive transform must be finite");
+    const bool valid = std::visit(
+        [](const auto& geometry) {
+            using Geometry = std::decay_t<decltype(geometry)>;
+            if constexpr (std::is_same_v<Geometry, PrimitivePolyline3D>) {
+                return geometry.points.size() >= (geometry.closed ? 3u : 2u) &&
+                       std::all_of(geometry.points.begin(), geometry.points.end(), finite);
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveAabb3D>) {
+                return finite(geometry.minimum) && finite(geometry.maximum) &&
+                       geometry.minimum.x <= geometry.maximum.x && geometry.minimum.y <= geometry.maximum.y &&
+                       geometry.minimum.z <= geometry.maximum.z;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveObb3D>) {
+                return finite(geometry.center) && nonZero(geometry.halfAxes[0]) && nonZero(geometry.halfAxes[1]) &&
+                       nonZero(geometry.halfAxes[2]) && independent(geometry.halfAxes[0], geometry.halfAxes[1]) &&
+                       independent(geometry.halfAxes[1], geometry.halfAxes[2]) &&
+                       independent(geometry.halfAxes[2], geometry.halfAxes[0]) &&
+                       formsBasis(geometry.halfAxes[0], geometry.halfAxes[1], geometry.halfAxes[2]);
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveDisk3D>) {
+                return finite(geometry.center) && nonZero(geometry.normal) && std::isfinite(geometry.radius) &&
+                       geometry.radius > 0.f && geometry.segments >= 3;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveArc3D>) {
+                return finite(geometry.center) && nonZero(geometry.normal) && nonZero(geometry.zeroDirection) &&
+                       independent(geometry.normal, geometry.zeroDirection) &&
+                       std::isfinite(geometry.radius) && geometry.radius > 0.f &&
+                       std::isfinite(geometry.startRadians) && std::isfinite(geometry.sweepRadians) &&
+                       geometry.segments >= 1;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveSphere3D>) {
+                return finite(geometry.center) && std::isfinite(geometry.radius) && geometry.radius > 0.f &&
+                       geometry.segments >= 3;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveCapsule3D> ||
+                                 std::is_same_v<Geometry, PrimitiveCylinder3D>) {
+                return finite(geometry.a) && finite(geometry.b) && nonZero(geometry.b - geometry.a) &&
+                       std::isfinite(geometry.radius) &&
+                       geometry.radius > 0.f && geometry.segments >= 3;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveCone3D>) {
+                return finite(geometry.apex) && nonZero(geometry.axis) && std::isfinite(geometry.height) &&
+                       geometry.height > 0.f && std::isfinite(geometry.radius) && geometry.radius > 0.f &&
+                       geometry.segments >= 3;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveGrid3D>) {
+                return finite(geometry.origin) && nonZero(geometry.axisU) && nonZero(geometry.axisV) &&
+                       independent(geometry.axisU, geometry.axisV) &&
+                       geometry.cellsU > 0 && geometry.cellsV > 0;
+            } else if constexpr (std::is_same_v<Geometry, PrimitiveArrow3D>) {
+                return finite(geometry.from) && finite(geometry.to) && nonZero(geometry.to - geometry.from) &&
+                       std::isfinite(geometry.headLength) &&
+                       geometry.headLength > 0.f && std::isfinite(geometry.headRadius) && geometry.headRadius > 0.f;
+            } else {
+                return std::all_of(geometry.corners.begin(), geometry.corners.end(), finite);
+            }
+        },
+        descriptor.geometry);
+    if (!valid)
+        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                      "primitive geometry is invalid or non-finite");
+    return eve::Result<void>::success();
+}
+
+}  // namespace
+
+PrimitiveScene::PrimitiveScene() {
+    static std::atomic<PrimitiveHandle::owner_type> nextOwner{1};
+    owner_ = nextOwner.fetch_add(1, std::memory_order_relaxed);
+    if (owner_ == 0) owner_ = nextOwner.fetch_add(1, std::memory_order_relaxed);
+}
+
+eve::Result<PrimitiveHandle> PrimitiveScene::add(PrimitiveDescriptor3D descriptor) {
+    auto validation = validateDescriptor(descriptor);
+    if (!validation) return eve::Result<PrimitiveHandle>::failure(validation.status());
+    PrimitiveHandle::index_type index;
+    if (!freeSlots_.empty()) {
+        index = freeSlots_.back();
+        freeSlots_.pop_back();
+        slots_[index].descriptor = std::move(descriptor);
+    } else {
+        if (slots_.size() >= PrimitiveHandle::invalidIndex) {
+            return primitiveFailure<PrimitiveHandle>(eve::DiagnosticCode::Failed,
+                                                     "primitive scene slot capacity exceeded");
+        }
+        index = static_cast<PrimitiveHandle::index_type>(slots_.size());
+        slots_.push_back(Slot{std::move(descriptor), 1, false, {}});
+    }
+    ++liveCount_;
+    return eve::Result<PrimitiveHandle>::success(PrimitiveHandle(owner_, index, slots_[index].generation));
+}
+
+eve::Result<PrimitiveUpdateStatus> PrimitiveScene::update(PrimitiveHandle handle, PrimitiveDescriptor3D descriptor) {
+    if (!matches(handle)) {
+        return primitiveFailure<PrimitiveUpdateStatus>(eve::DiagnosticCode::StaleHandle, "primitive handle is stale");
+    }
+    auto validation = validateDescriptor(descriptor);
+    if (!validation) return eve::Result<PrimitiveUpdateStatus>::failure(validation.status());
+    slots_[handle.index()].descriptor = std::move(descriptor);
+    slots_[handle.index()].cache.reset();
+    return eve::Result<PrimitiveUpdateStatus>::success(PrimitiveUpdateStatus::Updated);
+}
+
+eve::Result<PrimitiveRemoveStatus> PrimitiveScene::remove(PrimitiveHandle handle) {
+    if (!matches(handle)) {
+        return primitiveFailure<PrimitiveRemoveStatus>(eve::DiagnosticCode::StaleHandle, "primitive handle is stale");
+    }
+    Slot& slot = slots_[handle.index()];
+    slot.descriptor.reset();
+    slot.cache.reset();
+    --liveCount_;
+    const auto next = PrimitiveHandle::nextGeneration(slot.generation);
+    if (next) {
+        slot.generation = *next;
+        freeSlots_.push_back(handle.index());
+    } else {
+        slot.retired = true;
+    }
+    return eve::Result<PrimitiveRemoveStatus>::success(PrimitiveRemoveStatus::Removed);
+}
+
+eve::Result<std::size_t> PrimitiveScene::updateMany(std::span<const PrimitiveBatchUpdate> updates) {
+    for (const PrimitiveBatchUpdate& update : updates) {
+        if (!matches(update.handle))
+            return primitiveFailure<std::size_t>(eve::DiagnosticCode::StaleHandle,
+                                                 "primitive batch contains a stale handle");
+        auto validation = validateDescriptor(update.descriptor);
+        if (!validation) return eve::Result<std::size_t>::failure(validation.status());
+    }
+    // Copy every owning payload before publishing any mutation. A later allocation
+    // failure must not leave earlier descriptors in the batch already replaced.
+    std::vector<PrimitiveBatchUpdate> prepared(updates.begin(), updates.end());
+    static_assert(std::is_nothrow_move_assignable_v<PrimitiveDescriptor3D>);
+    for (PrimitiveBatchUpdate& update : prepared) {
+        *slots_[update.handle.index()].descriptor = std::move(update.descriptor);
+        slots_[update.handle.index()].cache.reset();
+    }
+    return eve::Result<std::size_t>::success(updates.size());
+}
+
+const PrimitiveDescriptor3D* PrimitiveScene::tryGet(PrimitiveHandle handle) const noexcept {
+    if (!matches(handle)) return nullptr;
+    return &*slots_[handle.index()].descriptor;
+}
+
+bool PrimitiveScene::isStale(PrimitiveHandle handle) const noexcept { return !matches(handle); }
+
+void PrimitiveScene::clear() {
+    freeSlots_.clear();
+    liveCount_ = 0;
+    for (PrimitiveHandle::index_type index = 0; index < slots_.size(); ++index) {
+        Slot& slot = slots_[index];
+        slot.descriptor.reset();
+        slot.cache.reset();
+        if (slot.retired) continue;
+        const auto next = PrimitiveHandle::nextGeneration(slot.generation);
+        if (next) {
+            slot.generation = *next;
+            freeSlots_.push_back(index);
+        } else {
+            slot.retired = true;
+        }
+    }
+}
+
+void PrimitiveScene::render(PrimitiveSceneCanvas3D& destination) const {
+    auto result = tryRender(destination);
+    std::move(result).expect("primitive scene exceeded its command budget");
+}
+
+eve::Result<void> PrimitiveScene::tryRender(PrimitiveSceneCanvas3D& destination) const {
+    for (const Slot& slot : slots_) {
+        if (!slot.descriptor || !slot.descriptor->visible) continue;
+        const PrimitiveDescriptor3D& descriptor = *slot.descriptor;
+        const bool                   hit        = slot.cache.has_value();
+        if (!hit) {
+            PrimitiveSceneCanvas3D canvas(destination.context_, std::numeric_limits<std::size_t>::max());
+            canvas.concat(descriptor.transform);
+            std::visit(
+                [&](const auto& geometry) {
+                    using Geometry = std::decay_t<decltype(geometry)>;
+                    if constexpr (std::is_same_v<Geometry, PrimitivePolyline3D>) {
+                        canvas.drawPolyline(geometry.points, geometry.closed, descriptor.paint);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveAabb3D>) {
+                        canvas.drawAabb(geometry.minimum, geometry.maximum, descriptor.paint);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveObb3D>) {
+                        canvas.drawObb(geometry.center, geometry.halfAxes, descriptor.paint);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveDisk3D>) {
+                        canvas.drawDisk(geometry.center, geometry.normal, geometry.radius, descriptor.paint,
+                                        geometry.segments);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveArc3D>) {
+                        canvas.drawArc(geometry.center, geometry.normal, geometry.zeroDirection, geometry.radius,
+                                       geometry.startRadians, geometry.sweepRadians, descriptor.paint,
+                                       geometry.segments);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveSphere3D>) {
+                        canvas.drawSphere(geometry.center, geometry.radius, descriptor.paint, geometry.segments);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveCapsule3D>) {
+                        canvas.drawCapsule(geometry.a, geometry.b, geometry.radius, descriptor.paint,
+                                           geometry.segments);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveCylinder3D>) {
+                        canvas.drawCylinder(geometry.a, geometry.b, geometry.radius, descriptor.paint,
+                                            geometry.segments);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveCone3D>) {
+                        canvas.drawCone(geometry.apex, geometry.axis, geometry.height, geometry.radius,
+                                        descriptor.paint, geometry.segments);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveGrid3D>) {
+                        canvas.drawGrid(geometry.origin, geometry.axisU, geometry.axisV, geometry.cellsU,
+                                        geometry.cellsV, descriptor.paint);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveArrow3D>) {
+                        canvas.drawArrow(geometry.from, geometry.to, geometry.headLength, geometry.headRadius,
+                                         descriptor.paint);
+                    } else if constexpr (std::is_same_v<Geometry, PrimitiveFrustum3D>) {
+                        canvas.drawFrustum(geometry.corners, descriptor.paint);
+                    }
+                },
+                descriptor.geometry);
+            slot.cache = std::move(canvas);
+        }
+        const auto& cached = *slot.cache;
+        const auto  count  = cached.commands_.size() + cached.triangles_.size();
+        const auto  used   = destination.commands_.size() + destination.triangles_.size();
+        if (used > destination.hardCommandLimit_ || count > destination.hardCommandLimit_ - used) {
+            destination.statistics_.droppedCommands += count + cached.statistics_.droppedCommands;
+            return primitiveFailure<void>(eve::DiagnosticCode::Failed, "primitive scene command budget exceeded");
+        }
+        // Prepare all owning payloads and capacity before publishing this slot.
+        auto lines     = cached.commands_;
+        auto triangles = cached.triangles_;
+        for (auto& command : lines) command.transform = destination.transform_ * command.transform;
+        for (auto& command : triangles) command.transform = destination.transform_ * command.transform;
+        destination.commands_.reserve(destination.commands_.size() + lines.size());
+        destination.triangles_.reserve(destination.triangles_.size() + triangles.size());
+        static_assert(std::is_nothrow_move_constructible_v<PolylineCommand3D>);
+        static_assert(std::is_nothrow_move_constructible_v<TriangleCommand3D>);
+        for (auto& command : lines) destination.commands_.push_back(std::move(command));
+        for (auto& command : triangles) destination.triangles_.push_back(std::move(command));
+        destination.statistics_.commandCount += cached.statistics_.commandCount;
+        destination.statistics_.segmentCount += cached.statistics_.segmentCount;
+        destination.statistics_.triangleCount += cached.statistics_.triangleCount;
+        destination.statistics_.cacheHits += hit ? 1u : 0u;
+    }
+    return eve::Result<void>::success();
+}
+
+bool PrimitiveScene::matches(PrimitiveHandle handle) const noexcept {
+    if (!handle.isValid() || handle.owner() != owner_ || handle.index() >= slots_.size()) return false;
+    const Slot& slot = slots_[handle.index()];
+    return !slot.retired && slot.descriptor.has_value() && slot.generation == handle.generation();
+}
+
+}  // namespace eve::graphics

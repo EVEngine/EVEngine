@@ -12,7 +12,7 @@ namespace eve::editor {
 namespace {
 
 EditorResult<DiskAssetScanResult> scanError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<DiskAssetScanResult>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<DiskAssetScanResult>(status, RuleId(rule), std::move(message));
 }
 
 std::string textMember(const EditorValue::Object& object, const char* key) {
@@ -44,7 +44,7 @@ EditorResult<void> DiskAssetCatalog::writeSidecar(const std::filesystem::path& c
                                                   std::string typeId, std::uint32_t schemaVersion) {
     const auto source = resolveContent(contentRelativePath);
     if (source.empty() || guid.empty() || typeId.empty())
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.asset.sidecar-invalid"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.asset.sidecar-invalid"),
                                          "Content path, GUID and type are required");
     EditorValue::Object metadata;
     metadata["guid"]                    = EditorValue(guid.value());
@@ -54,12 +54,12 @@ EditorResult<void> DiskAssetCatalog::writeSidecar(const std::filesystem::path& c
     std::error_code             ec;
     std::filesystem::create_directories(sidecar.parent_path(), ec);
     if (ec)
-        return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.asset.sidecar-directory"), ec.message());
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.asset.sidecar-directory"), ec.message());
     const std::filesystem::path temporary = sidecar.string() + ".tmp";
     {
         std::ofstream output(temporary, std::ios::binary | std::ios::trunc);
         if (!output)
-            return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.asset.sidecar-write"),
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.asset.sidecar-write"),
                                              "Cannot open asset sidecar temp file");
         output << editorValueToJson(EditorValue(std::move(metadata)));
     }
@@ -70,8 +70,8 @@ EditorResult<void> DiskAssetCatalog::writeSidecar(const std::filesystem::path& c
         std::filesystem::rename(temporary, sidecar, ec);
     }
     if (ec)
-        return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.asset.sidecar-replace"), ec.message());
-    return EditorResult<void>::applied();
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.asset.sidecar-replace"), ec.message());
+    return eve::editing::applied<void>();
 }
 
 EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
@@ -80,7 +80,7 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
                          "Asset database and Content root are required");
     DiskAssetScanResult result;
     std::error_code     ec;
-    if (!std::filesystem::exists(contentRoot_)) return EditorResult<DiskAssetScanResult>::applied(std::move(result));
+    if (!std::filesystem::exists(contentRoot_)) return eve::editing::applied<DiskAssetScanResult>(std::move(result));
     std::set<AssetGuid> discovered;
     for (std::filesystem::recursive_directory_iterator iterator(contentRoot_, ec), end; iterator != end && !ec;
          iterator.increment(ec)) {
@@ -88,24 +88,29 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
         std::ifstream     input(iterator->path(), std::ios::binary);
         const std::string json{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
         auto              parsed   = editorValueFromJson(json);
-        const auto*       metadata = parsed.value ? parsed.value->getIf<EditorValue::Object>() : nullptr;
+        const auto*       metadata = parsed.ok() ? parsed.value().getIf<EditorValue::Object>() : nullptr;
         const AssetGuid   guid(metadata ? textMember(*metadata, "guid") : std::string{});
         const std::string type = metadata ? textMember(*metadata, "type") : std::string{};
-        if (!parsed.isAccepted() || !metadata || guid.empty() || type.empty()) {
-            result.diagnostics.push_back({RuleId("editor.asset.sidecar-invalid"), DiagnosticSeverity::Error,
-                                          "Invalid asset sidecar: " + iterator->path().generic_string()});
+        if (!parsed.ok() || !metadata || guid.empty() || type.empty()) {
+            result.diagnostics.push_back(editing::ruleDiagnostic(
+                eve::DiagnosticCode::InvalidArgument, RuleId("editor.asset.sidecar-invalid"),
+                DiagnosticSeverity::Error,
+                "Invalid asset sidecar: " + iterator->path().generic_string()));
             continue;
         }
         if (!discovered.emplace(guid).second) {
-            result.diagnostics.push_back({RuleId("editor.asset.duplicate-guid"), DiagnosticSeverity::Error,
-                                          "Duplicate asset GUID: " + guid.value()});
+            result.diagnostics.push_back(editing::ruleDiagnostic(
+                eve::DiagnosticCode::Conflict, RuleId("editor.asset.duplicate-guid"),
+                DiagnosticSeverity::Error, "Duplicate asset GUID: " + guid.value()));
             continue;
         }
         std::filesystem::path source = iterator->path();
         source.replace_extension();
         if (!std::filesystem::is_regular_file(source)) {
-            result.diagnostics.push_back({RuleId("editor.asset.source-missing"), DiagnosticSeverity::Error,
-                                          "Asset sidecar source is missing: " + source.generic_string()});
+            result.diagnostics.push_back(editing::ruleDiagnostic(
+                eve::DiagnosticCode::NotFound, RuleId("editor.asset.source-missing"),
+                DiagnosticSeverity::Error,
+                "Asset sidecar source is missing: " + source.generic_string()));
             continue;
         }
         const auto        relative    = source.lexically_relative(contentRoot_);
@@ -119,9 +124,9 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
         record.sourceHash    = hash;
         record.schemaVersion = 1;
         auto published       = database_->publish(std::move(record));
-        if (!published.isAccepted()) {
-            result.diagnostics.insert(result.diagnostics.end(), published.diagnostics.begin(),
-                                      published.diagnostics.end());
+        if (!published.ok()) {
+            const auto& diagnostics = published.diagnostics();
+            result.diagnostics.insert(result.diagnostics.end(), diagnostics.begin(), diagnostics.end());
             continue;
         }
         ++result.indexed;
@@ -130,9 +135,8 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
         fingerprints_.insert_or_assign(guid, fingerprint);
     }
     if (ec) return scanError(EditorStatus::Failed, "editor.asset.scan-failed", ec.message());
-    EditorResult<DiskAssetScanResult> completed = EditorResult<DiskAssetScanResult>::applied(std::move(result));
-    completed.diagnostics                       = completed.value->diagnostics;
-    return completed;
+    auto diagnostics = result.diagnostics;
+    return eve::editing::applied<DiskAssetScanResult>(std::move(result), std::move(diagnostics));
 }
 
 EditorResult<DiskAssetScanResult> DiskAssetCatalog::poll() { return scan(); }

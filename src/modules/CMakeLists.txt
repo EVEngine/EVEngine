@@ -2,6 +2,8 @@
 # This file only carries the per-module build settings that cannot be expressed
 # in the manifest: extra include directories and compile definitions.
 
+include(${CMAKE_SOURCE_DIR}/cmake/shader_asset_validation.cmake)
+
 # --- sources that follow an optional dependency ------------------------------
 # graphics/Font.cpp is the only bridge from graphics into the font module, so it
 # comes out with font. (The Emscripten build already excluded it by name; the
@@ -275,6 +277,19 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+# create_module() globs both physics bridge TUs; keep exactly one.
+eve_module_enabled(vehicle _has_vehicle)
+eve_module_enabled(physics _has_physics)
+if(_has_vehicle)
+  get_target_property(_eve_vehicle_srcs EVVehicle SOURCES)
+  if(_has_physics)
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "VehiclePhysicsAbsent\\.cpp$")
+  else()
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehiclePhysics\\.cpp$")
+  endif()
+  set_target_properties(EVVehicle PROPERTIES SOURCES "${_eve_vehicle_srcs}")
+endif()
+
 # Poco's MSVC #pragma comment auto-link names libraries without the md/mdd
 # postfix the third-party build was told to use (PocoFoundationd.lib vs
 # PocoFoundationmdd.lib). OBJECT libraries do not inherit compile definitions
@@ -289,6 +304,13 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
 endforeach()
 
 # --- per-module build settings ----------------------------------------------
+
+if(TARGET EVAsset_graphics)
+  eve_configure_shader_asset_validation(EVAsset_graphics)
+endif()
+if(TARGET EVGraphics)
+  eve_configure_shader_asset_validation(EVGraphics)
+endif()
 
 eve_module_enabled(data _has_data)
 if(_has_data)
@@ -369,6 +391,13 @@ eve_module_enabled(audio _has_audio)
 if(_has_audio)
   target_compile_definitions(EVAudio PRIVATE AL_LIBTYPE_STATIC)
 endif()
+eve_module_enabled(audio_editor _has_audio_editor)
+if(_has_audio_editor AND _has_audio AND _has_sound)
+  # Live OpenAL audition is optional. Do not hard-depend on sound: WASM/web
+  # profiles do not ship Wuff/OpenAL, and pulling EVSound into that profile
+  # fails to compile WaveDecoder.h.
+  target_compile_definitions(EVAudio_editor PRIVATE EVE_AUDIO_EDITOR_LIVE=1)
+endif()
 
 eve_module_enabled(physics _has_physics)
 option(EVENGINE_BUILD_PHYSICS_CORE_CHECK
@@ -395,7 +424,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/SimulationBackend.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp)
@@ -407,7 +436,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/SimulationBackend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h)
   foreach(_eve_physics_core_file IN LISTS _eve_physics_core_boundary_files)
@@ -462,7 +491,9 @@ if(_has_gpgpu)
       # INTERFACE: EVGpgpu is an OBJECT library; its private link deps would not
       # reach the final executable, so propagate the SDK archive to consumers.
       target_link_libraries(EVGpgpu INTERFACE ${EVE_SHADERC_LIB})
-      target_compile_definitions(EVGpgpu INTERFACE EVE_HAS_SHADERC=1)
+      # The implementation itself selects shaderc; INTERFACE would only define
+      # the macro for consumers and silently leave VulkanUtil spawning glslc.
+      target_compile_definitions(EVGpgpu PRIVATE EVE_HAS_SHADERC=1)
       message(STATUS "Gpgpu: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
     else()
       message(STATUS "Gpgpu: shaderc lib not found; will spawn glslc at runtime")
@@ -520,16 +551,28 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Params.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointSet.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointDelta.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ProcgenSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGeneration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGenerationAsset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
   set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.h)
   foreach(_eve_procgen_core_file IN LISTS _eve_procgen_core_boundary_files)
     if(NOT EXISTS "${_eve_procgen_core_file}")
@@ -623,4 +666,9 @@ if(_has_ui)
   target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
   target_include_directories(EVUI BEFORE PUBLIC
     ${EVENGINE_VKBUILDER_INCLUDE_DIR})
+endif()
+
+# WebP headers remain private to the image codec implementation.
+if(TARGET EVImage)
+  target_link_libraries(EVImage PRIVATE webpdemux)
 endif()

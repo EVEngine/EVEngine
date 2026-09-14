@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Keep Windows/Ninja compiler invocations below cmd.exe's command-line limit
+# (long include graphs and per-target flags) by letting Ninja pass flags
+# through response files.
+if(CMAKE_HOST_WIN32 AND CMAKE_GENERATOR MATCHES "Ninja")
+    set(CMAKE_NINJA_FORCE_RESPONSE_FILE ON CACHE BOOL
+        "Use response files for Windows Ninja compile and link commands" FORCE)
+endif()
+
 set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
     "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
 
@@ -82,7 +90,7 @@ endif()
 message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "4")
+set(EVENGINE_MINOR_VERSION "5")
 set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "")
 
@@ -95,7 +103,11 @@ option(EVENGINE_BUILD_PROFILE_CHECKS
     "Build independent public-header and optional-capability profile checks" OFF)
 option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
     "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
+option(EVENGINE_BUILD_RENDER_BENCHMARK
+    "Build the windowed engine rendering performance benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
+option(EVENGINE_VULKAN_USE_VMA
+    "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
@@ -212,6 +224,8 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
+    include(${CMAKE_SOURCE_DIR}/cmake/image_webp.cmake)
+    load_image_webp()
     load_asset_zstd()
     load_asset_utf8proc()
     load_webgpu_backend()
@@ -219,23 +233,13 @@ function(main)
     check_ipo()
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-    # cl.exe gets STL/UCRT from %INCLUDE% (vcvars); CMake omits those from compile_commands.json.
-    # Export them so clangd can resolve <cstdint> etc. Configure via cmake/with-msvc.cmd.
-    # Do not use CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES: CMake emits those as
-    # /external:I, which vanilla clangd rejects (drv_unknown_argument) and then
-    # fails the whole TU. -I is accepted by both cl.exe and clang; for cl.exe it
-    # is redundant with %INCLUDE% and does not change search order in practice.
-    if(MSVC AND DEFINED ENV{INCLUDE} AND NOT "$ENV{INCLUDE}" STREQUAL "")
-        set(_eve_msvc_include "$ENV{INCLUDE}")
-        foreach(_eve_std_inc IN LISTS _eve_msvc_include)
-            if(NOT _eve_std_inc STREQUAL "")
-                add_compile_options("-I${_eve_std_inc}")
-            endif()
-        endforeach()
-        unset(_eve_msvc_include)
-        unset(_eve_std_inc)
-        message(STATUS "Exported MSVC INCLUDE paths into compile_commands for clangd")
-    elseif(MSVC)
+    # cl.exe already sees the STL/UCRT via %INCLUDE% from cmake/with-msvc.cmd.
+    # Do not pass those directories as extra -I flags: MSVC /showIncludes then
+    # lists every system header, and a truncated or oversized record makes
+    # Ninja print "premature end of file; recovering" on .ninja_deps and
+    # rebuild every deps=msvc object. clangd should use --query-driver=**/cl.exe
+    # instead of relying on those -I flags in compile_commands.json.
+    if(MSVC AND (NOT DEFINED ENV{INCLUDE} OR "$ENV{INCLUDE}" STREQUAL ""))
         message(STATUS "MSVC INCLUDE unset; clangd may not find STL headers. Use cmake/with-msvc.cmd")
     endif()
     # Chinese Windows (code page 936): source UTF-8 comments/strings otherwise trigger C4819.
@@ -449,7 +453,14 @@ function(main)
             set(EVENGINE_GIT_DIRTY 1)
         endif()
     endif()
-    string(TIMESTAMP EVENGINE_BUILD_TIME "%Y-%m-%d %H:%M:%S %z")
+    # Do not stamp wall-clock time on every configure: that rewrites
+    # BuildInfo.h whenever ninja re-runs CMake, even if no sources changed.
+    set(_eve_build_id "${EVENGINE_GIT_COMMIT}:${EVENGINE_GIT_DIRTY}")
+    if(NOT DEFINED EVENGINE_BUILD_TIME OR NOT _eve_build_id STREQUAL "${EVENGINE_BUILD_ID}")
+        string(TIMESTAMP EVENGINE_BUILD_TIME "%Y-%m-%d %H:%M:%S %z")
+        set(EVENGINE_BUILD_TIME "${EVENGINE_BUILD_TIME}" CACHE INTERNAL "Frozen until git identity changes")
+        set(EVENGINE_BUILD_ID "${_eve_build_id}" CACHE INTERNAL "Git identity for BuildInfo.h")
+    endif()
     if(NOT EVENGINE_TP_DESC)
         set(EVENGINE_TP_DESC "unknown")
     endif()
@@ -457,6 +468,9 @@ function(main)
     add_subdirectory(src/modules)
     if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
         add_subdirectory(benchmarks/pixelworld)
+    endif()
+    if(EVENGINE_BUILD_HOST AND EVENGINE_BUILD_RENDER_BENCHMARK)
+        add_subdirectory(benchmarks/render)
     endif()
     if(EVENGINE_BUILD_HOST)
         add_subdirectory(src/scripts)
@@ -533,22 +547,42 @@ function(load_asset_utf8proc)
 endfunction()
 
 
+# configure_file() always updates the output timestamp. A Ninja CMake re-run
+# would then rebuild every TU that includes config.h / BuildInfo.h even when
+# the generated text is identical.
+function(eve_configure_file_if_changed input output)
+    set(_eve_cfg_tmp "${output}.configure.tmp")
+    configure_file("${input}" "${_eve_cfg_tmp}")
+    execute_process(
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+            "${CMAKE_CURRENT_BINARY_DIR}/${_eve_cfg_tmp}"
+            "${CMAKE_CURRENT_BINARY_DIR}/${output}")
+    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/${_eve_cfg_tmp}")
+endfunction()
+
 # This marco will create a module with the given name and folder
-# It will scan the source code and create a xxx_src.txt file in the build folder
-# When the build is triggered, it will check the real source code and see
-# if there is any change. If there is, it will rescan the source code 
+# It will scan the source code and create a xxx_src.txt file in the build folder. 
 
 macro(create_module libname folder)
-    # Join the exclude lists with ',' instead of ';': the rescan target below is
+    # Join the exclude lists with ',' instead of ';': scan_source.cmake is
     # run through a shell (Ninja on Linux/macOS), where both ';' and '|' are
     # shell metacharacters (command separator / pipe) that would split or
     # execute the -D argument. ',' is safe unquoted on every shell (POSIX sh,
-    # cmd.exe, emcc). The scan/rescan scripts split on ','.
-    string(JOIN "," _eve_excl_dirs_arg ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS})
+    # cmd.exe, emcc). The scan script splits on ','.
+    eve_module_scan_dir("${folder}" _eve_scan_dir)
+    eve_module_nested_scan_excludes("${folder}" _eve_nested_dirs)
+    set(_eve_excl_dirs ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS} ${_eve_nested_dirs})
+    string(JOIN "," _eve_excl_dirs_arg ${_eve_excl_dirs})
     string(JOIN "," _eve_excl_files_arg ${EVENGINE_EXCLUDED_MODULE_FILES})
+    # Scan .cpp files at configure time. New files are picked up by the next
+    # cmake configure (`make debug` reconfigures when the module directory is
+    # newer than this list). Do not attach ALL rescan targets or
+    # CMAKE_CONFIGURE_DEPENDS to the list file: rewriting it at build time
+    # restacks Ninja cmake re-runs and rebuilds every TU.
     execute_process(COMMAND ${CMAKE_COMMAND}
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
-        -Dmodule_name=${folder}
+        -Dscan_dir=${_eve_scan_dir}
+        -Dlist_name=${folder}
         -Dexclude_dirs=${_eve_excl_dirs_arg}
         -Dexclude_files=${_eve_excl_files_arg}
         -P ${CMAKE_SOURCE_DIR}/cmake/scan_source.cmake
@@ -569,27 +603,8 @@ macro(create_module libname folder)
     # include_directories before; see eve_engine_includes in main()).
     target_link_libraries(${libname} PUBLIC eve_engine_includes)
 
-    add_custom_target(check_sources_${folder}
-        ALL
-        COMMAND ${CMAKE_COMMAND} 
-        -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
-        -Dbuild_dir=${CMAKE_BINARY_DIR}
-        -Dmodule_name=${folder}
-        -Dexclude_dirs=${_eve_excl_dirs_arg}
-        -Dexclude_files=${_eve_excl_files_arg}
-        -P ${CMAKE_SOURCE_DIR}/cmake/rescan_source.cmake
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-    
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt)
-    
-    if(EVENGINE_PROFILE_HOSTLESS)
-        # Hostless/core profile targets are compile-only boundaries. Their
-        # headers come from the pinned checkout and they must not pull the
-        # aggregate ExternalProject merely to prove source isolation.
-        add_dependencies(${libname} check_sources_${folder})
-    else()
-        add_dependencies(${libname} third-party check_sources_${folder})
+    if(NOT EVENGINE_PROFILE_HOSTLESS)
+        add_dependencies(${libname} third-party)
     endif()
 endmacro()
 
@@ -639,6 +654,17 @@ function(set_include)
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
         ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
+    if(EVENGINE_VULKAN_USE_VMA AND NOT EVENGINE_WEBGPU AND NOT EMSCRIPTEN)
+        # The Vulkan instance is deliberately created against the 1.0 contract.
+        # Keep VMA on that same contract so Android does not statically import
+        # newer core entry points that its loader only exposes dynamically.
+        target_compile_definitions(eve_engine_includes INTERFACE
+            VKB_ENABLE_VMA=1
+            VMA_VULKAN_VERSION=1000000
+            VMA_STATIC_VULKAN_FUNCTIONS=0
+            VMA_DYNAMIC_VULKAN_FUNCTIONS=1
+        )
+    endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
         # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the

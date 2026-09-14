@@ -38,6 +38,7 @@ class ConsolePanel;
  *  - Breakpoints / watches / pause-step via Debugger
  *  - Optional DAP TCP server for the VS Code eve-debug extension
  *  - Optional MCP TCP server for AI agents (tools/resources/prompts)
+ *  - EveScript LanguageServer (stdio LSP via `eve language-server`, typed API for tests)
  *  - Script-state Snapshot (engine treated as stateless)
  *  - Render: installs RenderFlow as eve::debug::IRenderTracer
  *  - on errors: Weiser-style backward slice for script and/or render pipeline
@@ -84,6 +85,8 @@ public:
     void drawConsolePanel();
 
     bool isAttached() const { return vm_ != nullptr; }
+    /** @brief True when errors also flow through Runtime::setErrorHandler. */
+    bool isRuntimeBound() const { return runtime_ != nullptr; }
     bool renderTraceEnabled() const { return renderTraceEnabled_; }
     bool sampleLocals() const { return sampleLocals_; }
     void setSampleLocals(bool on) { sampleLocals_ = on; }
@@ -108,6 +111,8 @@ public:
 
     const std::string& lastReport() const { return lastReport_; }
     const std::string& lastError() const { return lastError_; }
+    /** @brief Script-side slice from the last `notifyError` (empty if none). */
+    const SliceResult& lastSlice() const { return lastSlice_; }
 
     /** @brief Per-function script profile (line-hook timing). */
     struct ProfileEntry {
@@ -152,6 +157,7 @@ private:
     RenderFlow  renderFlow_;
     std::string lastReport_;
     std::string lastError_;
+    SliceResult lastSlice_;
     std::unordered_map<std::string, ProfileEntry> profile_;
     std::vector<std::pair<std::string, std::chrono::steady_clock::time_point>> profStack_;
 

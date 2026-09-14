@@ -1,0 +1,5 @@
+assets/
+Textures/
+shaders/compiled.nut
+verification/
+eve_snapshot.json

@@ -429,7 +429,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             }
         }
 
-        Runtime runtime(2048, ssq::Libs::ALL);
+        Runtime runtime(8192, ssq::Libs::ALL);
         {
             StartupStage stage("runtime: ModuleManager::expose");
             runtime.initialize();

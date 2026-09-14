@@ -65,11 +65,9 @@ const char* legacyRule(const std::string& code) {
 template <class ResultValue>
 Result<ResultValue> validationError(const property_access::WriteResult& validation,
                                     const PropertyDescriptor&           descriptor) {
-    Result<ResultValue> result;
-    result.status = Status::Rejected;
-    result.diagnostics.push_back({RuleId(legacyRule(validation.code)), DiagnosticSeverity::Error,
-                                  validation.message + ": " + descriptor.path.value()});
-    return result;
+    return failed<ResultValue>(Status::Rejected, eve::DiagnosticCode::PreconditionViolation,
+                               RuleId(legacyRule(validation.code)),
+                               validation.message + ": " + descriptor.path.value());
 }
 
 }  // namespace
@@ -142,9 +140,9 @@ Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const V
         property_access::validatePropertyValue(toPresentationDescriptor(descriptor), toPresentationValue(value));
     if (!validation.accepted) return validationError<void>(validation, descriptor);
     if (descriptor.type == PropertyType::Action && value.type() != Value::Type::Null)
-        return Result<void>::error(Status::Rejected, RuleId("editor.property.type-mismatch"),
+        return eve::editing::failed<void>(Status::Rejected, RuleId("editor.property.type-mismatch"),
                                    "Value type does not match property: " + descriptor.path.value());
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::editing

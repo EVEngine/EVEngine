@@ -15,11 +15,12 @@
 #include "network/UdpSocket.h"
 #include "platform_event/PlatformEvent.h"
 
-#include <thread>
-#include <chrono>
 #include <atomic>
+#include <chrono>
+#include <cstdio>
 #include <cstring>
 #include <string>
+#include <thread>
 
 using eve::platform_event::Message;
 using eve::platform_event::PlatformEvent;
@@ -835,14 +836,21 @@ TEST_CASE("network.UdpRpcRoundtrip") {
 }
 
 TEST_CASE("network.NetHostPeers") {
-    auto* net = eve::network::Network::create();
-    auto* host = net->newHost();
-    REQUIRE(host->start(39680));
-    host->setTimeoutMs(500);
-
+    auto       phaseStart  = std::chrono::steady_clock::now();
+    const auto recordPhase = [&](const char* phase) {
+        const auto now = std::chrono::steady_clock::now();
+        std::fprintf(stderr, "NetHostPeers %s: %.3f ms\n", phase,
+                     std::chrono::duration<double, std::milli>(now - phaseStart).count());
+        phaseStart = now;
+    };
+    auto*       net = eve::network::Network::create();
     std::string hostGot, clientGot;
     int connectedPeer = -1;
     int disconnectedPeer = -1;
+    auto        host             = net->makeHost();
+    REQUIRE(host->start(39680));
+    host->setTimeoutMs(500);
+
     host->setMessageHandler(
         [&hostGot](uint32_t, eve::network::UdpLink::MsgType, uint8_t, const char* d,
                    size_t n) { hostGot.assign(d, n); });
@@ -853,9 +861,9 @@ TEST_CASE("network.NetHostPeers") {
         disconnectedPeer = static_cast<int>(id);
     });
 
-    auto* csock = net->newUdp();
+    auto csock = net->makeUdp();
     REQUIRE(csock->connect("127.0.0.1", 39680));
-    auto* clink = net->newUdpLink(csock);
+    auto clink = net->makeUdpLink(csock.get());
     REQUIRE(clink->setRemote("127.0.0.1", 39680));
     clink->setTimeoutMs(500);
     clink->setMessageHandler(
@@ -863,27 +871,35 @@ TEST_CASE("network.NetHostPeers") {
             clientGot.assign(d, n);
         });
 
+    recordPhase("setup");
     clink->sendString(eve::network::UdpLink::MsgType::Reliable, 0, "ping");
     for (int i = 0; i < 600 && (hostGot.empty() || connectedPeer < 0); ++i) {
         net->pump();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(hostGot == "ping");
-    CHECK(connectedPeer == 1);
-    CHECK(host->peerCount() == 1);
+    recordPhase("receive ping");
+    REQUIRE(hostGot == "ping");
+    REQUIRE(connectedPeer == 1);
+    REQUIRE(host->peerCount() == 1);
 
     host->sendStringTo(1, eve::network::UdpLink::MsgType::Reliable, 0, "pong");
     for (int i = 0; i < 600 && clientGot.empty(); ++i) {
         net->pump();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(clientGot == "pong");
+    recordPhase("receive pong");
+    REQUIRE(clientGot == "pong");
 
     clink->setLossRate(1.0f);
     for (int i = 0; i < 600 && disconnectedPeer < 0; ++i) {
         net->pump();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(disconnectedPeer == 1);
-    CHECK(host->peerCount() == 0);
+    recordPhase("loss and timeout");
+    REQUIRE(disconnectedPeer == 1);
+    REQUIRE(host->peerCount() == 0);
+    clink.reset();
+    csock.reset();
+    host.reset();
+    recordPhase("destroy client and host");
 }

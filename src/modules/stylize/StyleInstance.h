@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
+#include <map>
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 namespace eve::graphics {
@@ -22,6 +23,9 @@ class StylePass;
 class StyleInstance {
 public:
     explicit StyleInstance(std::string style);
+    /** @brief Build an external mesh style from owning resolved scalar defaults; GPU programs are supplied by the
+     * package renderer. */
+    StyleInstance(std::string style, std::map<std::string, float> defaults);
     ~StyleInstance() = default;
 
     StyleInstance(const StyleInstance&)            = delete;
@@ -53,12 +57,18 @@ public:
     /** @brief Create a mesh technique shader and apply compatible overrides. */
     graphics::Shader* newMeshShader(graphics::Graphics* gfx) const;
 
-private:
-    void applyOverrides(graphics::Shader* shader) const;
+    /**
+     * @brief Apply current overrides to an existing compatible shader.
+     * @param shader Immediate borrowed shader; it is not retained.
+     * @thread Render-thread affine when shader is GPU-backed.
+     */
+    void applyToShader(graphics::Shader* shader) const;
 
+private:
     std::string                            style_;
     std::unordered_map<std::string, float> overrides_;
     std::optional<int>                     priority_;
+    std::optional<std::map<std::string, float>> externalDefaults_;
 };
 
 }  // namespace eve::stylize

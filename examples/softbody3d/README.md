@@ -1,9 +1,10 @@
-# Softbody 3D — Cloth
+# Softbody 3D — Cloth and volumetric body
 
-Interactive 3D Verlet cloth demo: a curtain hangs from a top bar and drapes
-over static Box3D bodies (box + sphere). Demonstrates self-collision, the
-dihedral fold-angle limit, particle-vs-rigid-body collision, and the
-Fluid2D-style `interactAt` pointer field.
+Interactive 3D soft-body demo: a Verlet curtain hangs over static Box3D bodies,
+while an orange volumetric body falls, squashes and recovers using overlapping
+shape-matching clusters. It demonstrates cloth self-collision/fold limits and
+the volumetric component's deformation resistance, volume preservation,
+plasticity, and rigid-body collision.
 
 ## Run
 

@@ -4,10 +4,10 @@ namespace eve::editor {
 
 EditorResult<void> EditorValidationService::registerRule(std::string owner, RuleId id, Rule rule) {
     if (owner.empty() || id.empty() || !rule)
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.validation.invalid-rule"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.validation.invalid-rule"),
                                          "Validation owner, rule id and callback are required");
     rules_.insert_or_assign(std::move(id), RegisteredRule{std::move(owner), std::move(rule)});
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::size_t EditorValidationService::unregisterOwner(const std::string& owner) {

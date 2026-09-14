@@ -75,6 +75,16 @@ void VulkanSequence::destroy() {
             (*dev)->freeCommandBuffers(pool, submittedCommandBuffer);
             submittedCommandBuffer = vk::CommandBuffer{};
         }
+        // Abandoning an unsubmitted recording must retire its descriptor leases too.
+        // The caller keeps shaders alive until the Sequence has been destroyed.
+        for (ComputeShader *shader : usedShaders) {
+            auto *vs = dynamic_cast<VulkanComputeShader *>(shader);
+            if (vs) {
+                vs->endSequence();
+                vs->releasePendingDescriptors(*dev);
+            }
+        }
+        usedShaders.clear();
         if (fenceReady) {
             (*dev)->destroyFence(fence, dev->allocation_callbacks);
             fence = nullptr;
@@ -117,15 +127,16 @@ void vulkanSequenceRecordUpload(VulkanSequence *seq, GpuBuffer *dst,
     vkb::GenericBuffer *staging = nullptr;
     for (size_t i = seq->stagingUsed; i < seq->stagingPool.size(); ++i) {
         if (seq->stagingPool[i].capacity >= vk::DeviceSize(nbytes)) {
-            staging = &seq->stagingPool[i];
             std::swap(seq->stagingPool[seq->stagingUsed], seq->stagingPool[i]);
+            staging = &seq->stagingPool[seq->stagingUsed];
             break;
         }
     }
     if (!staging) {
         seq->stagingPool.emplace_back(device, buf::eTransferSrc, vk::DeviceSize(nbytes),
                                       pfb::eHostVisible | pfb::eHostCoherent);
-        staging = &seq->stagingPool.back();
+        std::swap(seq->stagingPool[seq->stagingUsed], seq->stagingPool.back());
+        staging = &seq->stagingPool[seq->stagingUsed];
     }
     ++seq->stagingUsed;
     staging->updateLocal(vkb::FrameSlot::gpuIdle(), src, vk::DeviceSize(nbytes));

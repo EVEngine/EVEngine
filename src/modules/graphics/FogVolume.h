@@ -38,6 +38,19 @@ public:
     /** @brief Fraction of normalized radius used for a smooth edge, in [0,1]. */
     void setEdgeFalloff(float falloff);
     float getEdgeFalloff() const { return edgeFalloff_; }
+    /**
+     * @brief Configure deterministic world-space density variation.
+     * @param amount Blend from uniform density at 0 to full noise at 1.
+     * @param scale World-space noise frequency; values are clamped positive.
+     * @param seed Stable integer variation seed.
+     */
+    void setNoise(float amount, float scale, int seed);
+    /** @brief Density-noise blend amount in [0,1]. */
+    float getNoiseAmount() const { return noiseAmount_; }
+    /** @brief World-space density-noise frequency. */
+    float getNoiseScale() const { return noiseScale_; }
+    /** @brief Stable density-noise seed. */
+    int getNoiseSeed() const { return noiseSeed_; }
 
     /** @brief Normalized analytic density at a world position, including signed extinction. */
     float sampleExtinction(const glm::vec3 &worldPosition) const;
@@ -51,6 +64,9 @@ private:
     glm::vec3 emissive_{0.f};
     float anisotropy_ = 0.f;
     float edgeFalloff_ = 0.2f;
+    float noiseAmount_ = 0.f;
+    float noiseScale_ = 1.f;
+    int noiseSeed_ = 0;
 };
 
 }  // namespace eve::graphics

@@ -23,16 +23,16 @@ TEST_CASE("editor.asset.evaProjectionPublishesOneGenerationAndRejectsAtomically"
          "eve.terrain-material", {}});
 
     auto published = publishEvaAssetProjection(database, manifest, "project://Assets/terrain.eva", "unity/1");
-    REQUIRE(published.isAccepted());
-    CHECK_EQ(published.value->size(), std::size_t(2));
+    REQUIRE(published.ok());
+    CHECK_EQ(published.value().size(), std::size_t(2));
     CHECK_EQ(database.generation(), std::uint64_t(1));
     CHECK_EQ(database.dependencies(AssetGuid(terrain.id().format())).size(), std::size_t(1));
 
     auto conflicting = manifest;
     conflicting.assets[1].asset = terrain;
     auto rejected = publishEvaAssetProjection(database, conflicting, "project://Assets/bad.eva", "unity/1");
-    CHECK(!rejected.isAccepted());
+    CHECK(!rejected.ok());
     CHECK_EQ(database.generation(), std::uint64_t(1));
-    CHECK_EQ(database.find(AssetGuid(material.id().format())).value->sourceUri,
+    CHECK_EQ(database.find(AssetGuid(material.id().format())).value().sourceUri,
              std::string("project://Assets/terrain.eva#assets/material.json"));
 }

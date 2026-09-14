@@ -1,8 +1,11 @@
 #pragma once
 
+#include "common/Result.h"
 #include "graphics/Drawable.h"
 
 #include <cstdint>
+#include <map>
+#include <span>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -19,7 +22,6 @@ namespace eve::graphics {
  */
 class Mesh : public Drawable {
 public:
-    static constexpr int kMaxSkinBones = 128;
     int   indexCount = 0;
     void *gpuHandle  = nullptr;  // vulkan::GpuMesh*
     /** @brief Vertex count of the GPU buffer (morph CPU base may be empty). */
@@ -28,13 +30,24 @@ public:
     bool hasGpuSkinning() const { return gpuSkinned_; }
     /** @brief Number of matrices in the current skinning palette. */
     int getSkinPaletteCount() const { return static_cast<int>(skinPalette_.size() / 16u); }
-    /** @brief Replace the per-draw column-major GPU skinning palette. */
-    bool setSkinPalette(const float *matrices, int matrixCount);
+    /** @brief Copy a dynamically sized column-major palette on the render thread.
+     * Invalid/non-finite input leaves the previous palette unchanged. No borrowed
+     * pointer survives this call. GPU uploads enforce device storage-buffer limits.
+     * @return Success or InvalidArgument; allocation failure leaves state unchanged. */
+    [[nodiscard]] Result<void> setSkinPalette(const float* matrices, int matrixCount);
     /** @brief Packed column-major matrix palette used by graphics backends. */
     const std::vector<float> &skinPalette() const { return skinPalette_; }
     /** @brief Mark whether the backend vertex stream contains skin attributes. */
     void markGpuSkinned(bool value) { gpuSkinned_ = value; }
 
+    /** @brief Copy one packed ST channel; finite values/count are checked atomically.
+     * Render-thread only, no callbacks. Input is borrowed only during this call.
+     */
+    [[nodiscard]] Result<void> setTexcoordSet(uint32_t set, std::span<const float> values);
+    /** @brief Borrow a channel until mutation/destruction; empty means absent. Render-thread only. */
+    std::span<const float> texcoordSet(uint32_t set) const;
+    /** @brief Revision used to invalidate backend UV uploads after a channel changes. */
+    uint64_t texcoordRevision() const { return texcoordRevision_; }
     /**
      * @brief Model-space bounding sphere used for view/cascade frustum culling.
      * Computed from vertex positions at upload time (see computeBounds).
@@ -97,6 +110,9 @@ public:
     const std::vector<float> &importedBitangents() const { return importedBitangents_; }
 
 private:
+    std::map<uint32_t, std::vector<float>> texcoords_;
+    uint64_t                               texcoordRevision_ = 0;
+
     struct MorphTarget {
         std::string name;
         std::vector<float> deltaPos;  // xyz packed, size = vertexCount*3

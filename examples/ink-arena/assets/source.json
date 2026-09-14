@@ -1,0 +1,46 @@
+{
+  "source_package": "Splatoon Mine.unitypackage",
+  "sha256": "cdc542522a6b99ec55ea8a4af99cc78b104170cae640eff1e08acbbdda9ad70c",
+  "reference_files": [
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Shaders/SplatPaint.compute",
+      "guid": "05bd719709285b043a6398bbc22659c6"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Shaders/UnwrapWorld.shader",
+      "guid": "05e87add4165e974a8cff11d73a58738"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Shaders/SplatSmooth.compute",
+      "guid": "0cd1157cd89477446b2bf8ea52239d7a"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Scripts/SplatTestForParticle.cs",
+      "guid": "0d5ab3c3a4317ed4c9b3d50c9bfe1418"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Scripts/SplatManager.cs",
+      "guid": "146ddc7e1c0028441ac07597db873cde"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Scripts/SplatTest.cs",
+      "guid": "53a254e2b15c829438f3d738ed2f31bd"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Scripts/SplatObject.cs",
+      "guid": "c092874cf8b8df54eb36c3ec63037bb0"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/Texture/splats.tga",
+      "guid": "cbdd538033a8ec847888271a11f7cb87"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Scripts/SplatTestForDiving.cs",
+      "guid": "dada8906b625a2546860bf7cf5b47186"
+    },
+    {
+      "path": "Assets/Effect/Paint/Splatoon/version mine/Shaders/SplatObject.shader",
+      "guid": "ddbfa2d4088fc764d9ac8dd38aa0dd1a"
+    }
+  ]
+}

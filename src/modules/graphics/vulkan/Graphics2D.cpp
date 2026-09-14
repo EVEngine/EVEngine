@@ -3,11 +3,13 @@
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/Light.h"
+#include "graphics/PrimitiveDrawList.h"
+#include "graphics/PrimitiveTessellator.h"
 #include "graphics/RenderControl.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -192,7 +194,7 @@ void Graphics::ensureReadbackSlots() {
     // rebuilt under waitIdle (rebuildSwapchainIfNeeded / recreate path).
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
-            device->unmapMemory(slot.staging.memory);
+            slot.staging.unmap();
             slot.mapped = nullptr;
         }
         slot.staging.release();
@@ -281,7 +283,7 @@ void Graphics::syncReadbackCpu() {
 
     auto &slot = screenReadbackSlots[readbackWriteSlot];
     if (!slot.mapped)
-        slot.mapped = device->mapMemory(slot.staging.memory, 0, vk::DeviceSize(bytes));
+        slot.mapped = slot.staging.map();
 
     lastFrameRgba.resize(bytes);
     if (readbackBgra) {
@@ -310,7 +312,7 @@ void Graphics::syncReadbackCpu() {
 void Graphics::destroyReadbackResources() {
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
-            device->unmapMemory(slot.staging.memory);
+            slot.staging.unmap();
             slot.mapped = nullptr;
         }
         slot.staging.release();
@@ -456,9 +458,9 @@ image::ImageData *Graphics::renderEntityIdMask(
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
 
     // 让 RenderControl 的 GBuffer 也指向该槽位（镜像 endGBufferPass），这样
@@ -490,7 +492,7 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     if (w == 0 || h == 0) return nullptr;
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
-    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
+    if (gbufferPending) recordDeferredFrameGraph();
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
@@ -508,9 +510,9 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
     if (attachment == "depth") {
         auto *pixels = static_cast<uint8_t *>(img->getData());
@@ -543,7 +545,7 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
     const uint32_t w = uint32_t(decalWidth);
     const uint32_t h = uint32_t(decalHeight);
     if (w == 0 || h == 0) return nullptr;
-    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
+    if (gbufferPending) recordDeferredFrameGraph();
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
@@ -568,9 +570,9 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
     return img;
 }
@@ -698,6 +700,37 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
     }
     it->batch.addRect(x, y, w, h, color);
     noteSolidOverlay(uint32_t(it - solidBatches.begin()));
+}
+
+void Graphics::drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) {
+    const int  targetWidth  = activeCanvas ? activeCanvas->getWidth() : getWidth();
+    const int  targetHeight = activeCanvas ? activeCanvas->getHeight() : getHeight();
+    const auto triangles    = resolvePrimitiveStrokes2D(canvas, {targetWidth, targetHeight});
+    if (triangles.vertices.empty()) return;
+    auto logicalPoint = [targetWidth, targetHeight](const PrimitiveTriangleVertex &vertex) {
+        const glm::vec2 ndc = glm::vec2(vertex.clipPosition) / vertex.clipPosition.w;
+        return glm::vec2((ndc.x + 1.f) * 0.5f * static_cast<float>(targetWidth),
+                         (ndc.y + 1.f) * 0.5f * static_cast<float>(targetHeight));
+    };
+    auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
+    for (const ResolvedPrimitiveBatch2D &resolvedBatch : triangles.batches2D) {
+        auto it = std::find_if(solidBatches.begin(), solidBatches.end(),
+                               [&](const SolidBatch &batch) { return batch.blend == resolvedBatch.blend; });
+        if (it == solidBatches.end()) {
+            solidBatches.push_back(SolidBatch{resolvedBatch.blend, Batcher{}});
+            it = solidBatches.end() - 1;
+        }
+        for (std::size_t i = resolvedBatch.firstVertex; i < resolvedBatch.firstVertex + resolvedBatch.vertexCount;
+             i += 3) {
+            it->batch.addTriangle(logicalPoint(triangles.vertices[i]), logicalPoint(triangles.vertices[i + 1]),
+                                  logicalPoint(triangles.vertices[i + 2]), triangles.vertices[i].color,
+                                  triangles.vertices[i + 1].color, triangles.vertices[i + 2].color);
+        }
+        const auto          batchIndex = static_cast<std::uint32_t>(it - solidBatches.begin());
+        const std::uint32_t count      = static_cast<std::uint32_t>(resolvedBatch.vertexCount);
+        const std::uint32_t end        = static_cast<std::uint32_t>(it->batch.vertices().size());
+        spans.push_back({OverlayKind::Solid, batchIndex, end - count, count});
+    }
 }
 
 void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -900,14 +933,15 @@ Graphics::SceneColorDistortionStatus Graphics::drawSceneColorDistortionUVRotated
     return SceneColorDistortionStatus::Queued;
 }
 
-void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
+void Graphics::drawUiTextureRects(void* commandBuffer, const std::vector<UiTextureDraw>& draws,
+                                  std::size_t bufferOffset) {
     if (!commandBuffer || draws.empty() || !uiTexturePipeline || uiColorWidth <= 0 ||
         uiColorHeight <= 0)
         return;
 
     vk::CommandBuffer cb(static_cast<VkCommandBuffer>(commandBuffer));
     auto &buffers = currentFrame2DBuffers().uiTexBufs;
-    std::size_t bufferIndex = 0;
+    std::size_t       bufferIndex = bufferOffset;
     setViewportAndScissor(cb, uint32_t(uiColorWidth), uint32_t(uiColorHeight));
 
     for (const UiTextureDraw &draw : draws) {
@@ -926,7 +960,7 @@ void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextu
         for (const auto &vertex : batch.vertices())
             vertices.push_back(TexturedVertex{vertex.pos, vertex.color, vertex.uv});
 
-        if (bufferIndex >= buffers.size()) buffers.emplace_back();
+        while (bufferIndex >= buffers.size()) buffers.emplace_back();
         vkb::HostVertexBuffer &vertexBuffer = buffers[bufferIndex++];
         vertexBuffer.allocate<TexturedVertex>(frameToken(), device, vertices);
 
@@ -1277,6 +1311,7 @@ Shader *Graphics::newShaderFromWgsl(const std::string &, const std::string &) {
 }
 
 void Graphics::flushBatch() {
+    ensureFileTexturesReady();
     if (!initialized) return;
     if (isCanvasActive()) {
         auto *oc = dynamic_cast<OffscreenCanvas *>(activeCanvas);
@@ -1284,231 +1319,6 @@ void Graphics::flushBatch() {
         flushToOffscreen(oc);
     } else {
         flushToSwapchain();
-    }
-}
-
-void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
-    auto solid = std::move(solidBatches);
-    auto textured = std::move(texturedBatches);
-    auto lit = std::move(litBatches);
-    auto spans = std::move(overlaySpans);
-    clear2DBatches();
-
-    const Color cc = canvas->pendingClearColor();
-    const bool needClear = canvas->takePendingClear();
-    bool hasSolid = false;
-    for (const auto &sb : solid)
-        if (!sb.batch.empty()) hasSolid = true;
-    if (!hasSolid && textured.empty() && lit.empty() && !needClear) return;
-
-    // Offscreen color is a single shared image. An in-flight swapchain frame
-    // may still be sampling it (draw canvas to screen last frame), so drain
-    // those frames before transitioning it back to a color attachment.
-    waitForSharedGpuResources();
-
-    auto recordOffscreen = [&](vk::CommandBuffer cb) {
-                                canvas->colorImage().setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
-
-                                vk::ClearValue cv{
-                                    vk::ClearColorValue(std::array<float, 4>{cc.r, cc.g, cc.b, cc.a})};
-                                vk::RenderPassBeginInfo rpBegin{};
-                                rpBegin.renderPass = canvas->isHDR() ? hdrOffscreenRenderPass
-                                                                    : offscreenRenderPass;
-                                rpBegin.framebuffer = canvas->framebuffer();
-                                rpBegin.renderArea.extent =
-                                    vk::Extent2D{uint32_t(canvas->getWidth()), uint32_t(canvas->getHeight())};
-                                rpBegin.clearValueCount = 1;
-                                rpBegin.pClearValues = &cv;
-                                canvas->colorImage().beginColorAttachment();
-                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-
-                                setViewportAndScissor(cb, uint32_t(canvas->getWidth()),
-                                                      uint32_t(canvas->getHeight()));
-
-                                std::vector<vkb::HostVertexBuffer> &solidBufs =
-                                    offscreenBuffers.solidBufs;
-                                std::vector<vkb::HostVertexBuffer> &texBufs = offscreenBuffers.texBufs;
-                                size_t texBufIndex = 0;
-                                const int vw = canvas->getWidth();
-                                const int vh = canvas->getHeight();
-
-                                auto offscreenTexPipe = [&](BlendMode mode) -> vk::Pipeline {
-                                    switch (mode) {
-                                        case BlendMode::Additive:
-                                            return offscreenAdditiveTexPipeline;
-                                        case BlendMode::Premultiplied:
-                                            return offscreenPremultipliedTexPipeline;
-                                        case BlendMode::Multiply:
-                                            return offscreenMultiplyTexPipeline;
-                                        case BlendMode::Opaque:
-                                            return canvas->isHDR() ? hdrOffscreenOpaqueTexPipeline
-                                                                   : offscreenOpaqueTexPipeline;
-                                        case BlendMode::Alpha:
-                                        default:
-                                            return canvas->isHDR() ? hdrOffscreenTexPipeline
-                                                                   : offscreenTexPipeline;
-                                    }
-                                };
-                                auto offscreenSolidPipe = [&](BlendMode mode) -> vk::Pipeline {
-                                    switch (mode) {
-                                        case BlendMode::Additive:
-                                            return offscreenAdditiveSolidPipeline;
-                                        case BlendMode::Premultiplied:
-                                            return offscreenPremultipliedSolidPipeline;
-                                        case BlendMode::Multiply:
-                                            return offscreenMultiplySolidPipeline;
-                                        case BlendMode::Alpha:
-                                            return offscreenSolidAlphaPipeline;
-                                        case BlendMode::Opaque:
-                                        default:
-                                            return offscreenSolidPipeline;
-                                    }
-                                };
-
-                                auto drawOffscreenTextured = [&](TexturedBatch &tb) {
-                                    if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
-                                    auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
-                                    vk::DescriptorSet texSet = gpu->descriptorSet;
-                                    if ((tb.depth && tb.depth->gpuHandle) ||
-                                        (tb.motion && tb.motion->gpuHandle) ||
-                                        (tb.extra && tb.extra->gpuHandle)) {
-                                        auto *depthGpu = tb.depth
-                                                             ? static_cast<GpuTexture *>(tb.depth->gpuHandle)
-                                                             : nullptr;
-                                        auto *motionGpu = tb.motion
-                                                              ? static_cast<GpuTexture *>(tb.motion->gpuHandle)
-                                                              : nullptr;
-                                        auto *extraGpu = tb.extra
-                                                             ? static_cast<GpuTexture *>(tb.extra->gpuHandle)
-                                                             : nullptr;
-                                        auto *specularGpu =
-                                            tb.specular
-                                                ? static_cast<GpuTexture *>(tb.specular->gpuHandle)
-                                                : nullptr;
-                                        if (vk::DescriptorSet combo =
-                                                post2SetFor(gpu, depthGpu, motionGpu, extraGpu,
-                                                            specularGpu))
-                                            texSet = combo;
-                                    }
-                                    Batcher ndc = tb.batch;
-                                    ndc.toNDC(vw, vh);
-                                    std::vector<TexturedVertex> gpuVerts;
-                                    gpuVerts.reserve(ndc.vertices().size());
-                                    for (const auto &v : ndc.vertices())
-                                        gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
-
-                                    if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
-                                    vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
-                                    vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
-
-                                    if (tb.shader && tb.shader->gpuHandle) {
-                                        if (canvas->isHDR())
-                                            ensureShaderHdrOffscreenPipeline(tb.shader);
-                                        else
-                                            ensureShaderOffscreenPipeline(tb.shader);
-                                        auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-                                        vk::Pipeline alphaPipe = canvas->isHDR()
-                                                                     ? gs->hdrOffscreenPipeline
-                                                                     : gs->offscreenPipeline;
-                                        vk::Pipeline opaquePipe =
-                                            canvas->isHDR() ? gs->hdrOffscreenOpaquePipeline
-                                                            : gs->offscreenOpaquePipeline;
-                                        if (!alphaPipe) return;
-                                        vk::Pipeline customPipeline =
-                                            tb.blend == BlendMode::Opaque && opaquePipe
-                                                ? opaquePipe
-                                                : alphaPipe;
-                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                                        customPipeline);
-                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                              shaderPipelineLayout, 0, 1,
-                                                              &texSet, 0, nullptr);
-                                        cb.pushConstants(shaderPipelineLayout,
-                                                         vk::ShaderStageFlagBits::eVertex |
-                                                             vk::ShaderStageFlagBits::eFragment,
-                                                         0, Shader::kPushConstantBytes,
-                                                         tb.shader->pushConstantData());
-                                    } else {
-                                        vk::Pipeline pipe = offscreenTexPipe(tb.blend);
-                                        if (!pipe) return;
-                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                              texPipelineLayout, 0, 1,
-                                                              &texSet, 0, nullptr);
-                                    }
-                                    vk::DeviceSize offset = 0;
-                                    cb.bindVertexBuffers(0, 1, vb, &offset);
-                                    cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
-                                };
-
-                                std::vector<bool> solidUploaded(solid.size(), false);
-                                auto uploadSolid = [&](size_t idx) {
-                                    if (idx >= solid.size() || solidUploaded[idx] ||
-                                        solid[idx].batch.empty())
-                                        return;
-                                    vk::Pipeline pipe = offscreenSolidPipe(solid[idx].blend);
-                                    if (!pipe) return;
-                                    Batcher ndc = solid[idx].batch;
-                                    ndc.toNDC(vw, vh);
-                                    std::vector<ColorVertex> gpuVerts;
-                                    gpuVerts.reserve(ndc.vertices().size());
-                                    for (const auto &v : ndc.vertices())
-                                        gpuVerts.push_back(ColorVertex{v.pos, v.color});
-                                    if (solidBufs.size() <= idx) solidBufs.resize(idx + 1);
-                                    solidBufs[idx].allocate<ColorVertex>(frameToken(), device,
-                                                                         gpuVerts);
-                                    solidUploaded[idx] = true;
-                                };
-
-                                auto drawSolidSpan = [&](uint32_t batchIndex, uint32_t begin,
-                                                         uint32_t count) {
-                                    if (batchIndex >= solid.size() || count == 0 ||
-                                        solid[batchIndex].batch.empty())
-                                        return;
-                                    vk::Pipeline pipe = offscreenSolidPipe(solid[batchIndex].blend);
-                                    if (!pipe) return;
-                                    uploadSolid(batchIndex);
-                                    vk::DeviceSize offset = 0;
-                                    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-                                    cb.bindVertexBuffers(0, 1, solidBufs[batchIndex], &offset);
-                                    cb.draw(count, 1, begin, 0);
-                                };
-
-                                if (!spans.empty()) {
-                                    for (const auto &sp : spans) {
-                                        if (sp.kind == OverlayKind::Solid)
-                                            drawSolidSpan(sp.index, sp.vertBegin, sp.vertCount);
-                                        else if (sp.kind == OverlayKind::Textured &&
-                                                 sp.index < textured.size())
-                                            drawOffscreenTextured(textured[sp.index]);
-                                        else if (sp.kind == OverlayKind::Lit && offscreenLitPipeline &&
-                                                 sp.index < lit.size()) {
-                                            std::vector<LitBatch> one;
-                                            one.push_back(std::move(lit[sp.index]));
-                                            drawLitBatches(cb, vw, vh, offscreenLitPipeline, one,
-                                                           texBufs, texBufIndex, true);
-                                        }
-                                    }
-                                } else {
-                                    for (size_t i = 0; i < solid.size(); ++i) {
-                                        if (!solid[i].batch.empty())
-                                            drawSolidSpan(uint32_t(i), 0,
-                                                          uint32_t(solid[i].batch.vertices().size()));
-                                    }
-                                    for (auto &tb : textured) drawOffscreenTextured(tb);
-                                    if (offscreenLitPipeline)
-                                        drawLitBatches(cb, vw, vh, offscreenLitPipeline, lit, texBufs,
-                                                       texBufIndex, true);
-                                }
-
-                                cb.endRenderPass();
-                                canvas->colorImage().endSampledLayout();
-                            };
-    if (swapchainPassOpen && !sceneColorPassOpen && presentRecording) {
-        recordOffscreen(currentPresentCb());
-    } else {
-        vkb::executeImmediately(device.instance, uploadPool,
-                                device.getQueue(vkb::QueueType::graphics), recordOffscreen);
     }
 }
 
@@ -1763,6 +1573,31 @@ void Graphics::flushToSwapchain() {
         replaySpans(engineSpans);
     };
 
+    auto drawPlacedSceneResolve = [&](TexturedBatch &placed) {
+        if (!sceneResolve) {
+            drawTextured(placed);
+            return;
+        }
+        TexturedBatch blit = *sceneResolve;
+        const glm::vec4 acesColor = sceneResolve->batch.vertices().empty()
+                                        ? glm::vec4(1.f, 1.f, 1.f, 65536.f)
+                                        : sceneResolve->batch.vertices().front().color;
+        const auto &src = placed.batch.vertices();
+        if (src.size() >= 6) {
+            const float x = src[0].pos.x;
+            const float y = src[0].pos.y;
+            const float w = src[1].pos.x - x;
+            const float h = src[2].pos.y - y;
+            const glm::vec4 tint = src[0].color;
+            blit.batch.clear();
+            blit.batch.addTexturedRect(x, y, w, h,
+                                       Color(tint.r * acesColor.r, tint.g * acesColor.g,
+                                             tint.b * acesColor.b, acesColor.a),
+                                       src[0].uv.x, src[0].uv.y, src[1].uv.x, src[2].uv.y);
+        }
+        drawTextured(blit, true);
+    };
+
     // Default: blit 3D fullscreen under script 2D. Scripts that call
     // drawScene3D / drawTexturedRect(getSceneColorTexture()) own the order.
     if (autoScene && sceneResolve) {
@@ -1786,8 +1621,21 @@ void Graphics::flushToSwapchain() {
                 drawSolidSpan(sp.index, sp.vertBegin, sp.vertCount);
             } else if (sp.kind == OverlayKind::Textured && texPipeline &&
                        sp.index < textured.size()) {
-                drawTextured(textured[sp.index]);
-                if (textured[sp.index].texture == sceneTex) drawEngine3D();
+                // Distortion overlays sample scene color; they are not
+                // drawScene3D placements. Replacing them with the ACES
+                // resolve skips particleDistortionPipeline and can cover
+                // the autoScene blit with a near-empty frame.
+                const bool placedScene =
+                    sceneResolve && textured[sp.index].texture == sceneTex &&
+                    textured[sp.index].effect != TexturedBatch::Effect::SceneColorDistortion;
+                if (placedScene) {
+                    drawPlacedSceneResolve(textured[sp.index]);
+                } else {
+                    drawTextured(textured[sp.index]);
+                }
+                if (placedScene) {
+                    drawEngine3D();
+                }
             } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));

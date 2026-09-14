@@ -24,6 +24,16 @@ GpuResidentBufferView VulkanGpuBuffer::residentView() const {
 
 VulkanGpuBuffer::~VulkanGpuBuffer() {
     if (!device_ || !static_cast<VkDevice>(device_->instance)) return;
+#if defined(VKB_ENABLE_VMA)
+    if (vmaAllocation_) {
+        vmaDestroyBuffer(device_->vma_allocator, static_cast<VkBuffer>(buffer_), vmaAllocation_);
+        buffer_ = vk::Buffer{};
+        memory_ = vk::DeviceMemory{};
+        vmaAllocation_ = VK_NULL_HANDLE;
+        device_ = nullptr;
+        return;
+    }
+#endif
     if (buffer_) {
         (*device_)->destroyBuffer(buffer_, device_->allocation_callbacks);
         buffer_ = vk::Buffer{};
@@ -47,6 +57,17 @@ void VulkanGpuBuffer::uploadBytes(const void *src, uint64_t nbytes, uint64_t dst
     auto pool = computeCommandPool(vkg);
 
     if (hostVisible_) {
+#if defined(VKB_ENABLE_VMA)
+        if (vmaAllocation_) {
+            void *base = nullptr;
+            const VkResult result = vmaMapMemory(device_->vma_allocator, vmaAllocation_, &base);
+            if (result != VK_SUCCESS)
+                throw Exception("GpuBuffer.write: VMA map failed: %d", int(result));
+            std::memcpy(static_cast<unsigned char *>(base) + dstOffset, src, size_t(nbytes));
+            vmaUnmapMemory(device_->vma_allocator, vmaAllocation_);
+            return;
+        }
+#endif
         void *ptr = (*device_)->mapMemory(memory_, dstOffset, nbytes, vk::MemoryMapFlags{});
         std::memcpy(ptr, src, size_t(nbytes));
         (*device_)->unmapMemory(memory_);
@@ -76,6 +97,17 @@ void VulkanGpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffs
     auto pool = computeCommandPool(vkg);
 
     if (hostVisible_) {
+#if defined(VKB_ENABLE_VMA)
+        if (vmaAllocation_) {
+            void *base = nullptr;
+            const VkResult result = vmaMapMemory(device_->vma_allocator, vmaAllocation_, &base);
+            if (result != VK_SUCCESS)
+                throw Exception("GpuBuffer.read: VMA map failed: %d", int(result));
+            std::memcpy(dst, static_cast<const unsigned char *>(base) + srcOffset, size_t(nbytes));
+            vmaUnmapMemory(device_->vma_allocator, vmaAllocation_);
+            return;
+        }
+#endif
         void *ptr = (*device_)->mapMemory(memory_, srcOffset, nbytes, vk::MemoryMapFlags{});
         std::memcpy(dst, ptr, size_t(nbytes));
         (*device_)->unmapMemory(memory_);
@@ -90,9 +122,9 @@ void VulkanGpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffs
         vk::BufferCopy bc{vk::DeviceSize(srcOffset), 0, vk::DeviceSize(nbytes)};
         cb.copyBuffer(buffer_, staging.buffer, bc);
     });
-    void *ptr = (*device_)->mapMemory(staging.memory, 0, nbytes, vk::MemoryMapFlags{});
+    void *ptr = staging.map();
     std::memcpy(dst, ptr, size_t(nbytes));
-    (*device_)->unmapMemory(staging.memory);
+    staging.unmap();
 }
 
 void VulkanGpuBuffer::writeData(data::ByteData *data, int dstOffset) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/MeshDeformationCompute.h"
 
 #include <string>
 
@@ -17,16 +18,23 @@ class Sequence;
  * Script: `gpgpu <- eve.Gpgpu(); shader <- gpgpu.newShader(glsl);`
  * ECS: `eve.ShaderSystem` / `eve.EcsShaderSystem` bridge entity float fields to SSBOs.
  */
-class Gpgpu : public Module {
+class Gpgpu : public Module, public IMeshDeformationCompute {
 public:
     Module_REG(Gpgpu);
-    Gpgpu() = default;
-    ~Gpgpu() override = default;
+    Gpgpu();
+    ~Gpgpu() override;
+
+    /** @brief Execute mesh deformation through the active compute backend. */
+    [[nodiscard]] Result<std::vector<float>> deform(MeshDeformationComputeRequest request) override;
 
     /** @brief True when the active Graphics backend can run compute (device initialized). */
     bool isAvailable() const;
 
-    /** @brief Compile compute source for the active backend (Vulkan: GLSL; WebGPU: WGSL). */
+    /** @brief Compatibility-only raw-owning shader factory (Vulkan: GLSL; WebGPU: WGSL).
+     * Vulkan delegates to the
+     * checked compileComputeSpirv/createComputeShader APIs.
+     * Device thread only; caller must delete the shader
+     * before Graphics retires. */
     ComputeShader *newShader(const std::string &source);
 
     /** @brief Load precompiled compute bytecode from Filesystem path (Vulkan: SPIR-V). */

@@ -29,7 +29,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
                 }]
             }]
         };
-        created <- editor.newActionTimelineEditor("test.asset.light-attack", timelineAsset);
+        created <- eve.ActionEditorModule().create("test.asset.light-attack", timelineAsset);
         actionEditor <- created.value;
         configured <- actionEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
@@ -53,7 +53,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         advanced <- actionEditor.update(1.0);
         previewEventCount <- actionEditor.getEventCount();
         snapshotResult <- actionEditor.snapshot();
-        invalidResult <- editor.newActionTimelineEditor("test.asset.invalid", {
+        invalidResult <- eve.ActionEditorModule().create("test.asset.invalid", {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:invalid", durationNs=-1,
             animationUri="", metadata={}, tracks=[]

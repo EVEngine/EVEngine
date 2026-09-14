@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "workload": "terrain-bake-open-random-access",
+  "denseRoundTripDimension": 1024,
+  "sparseRandomAccessDimensions": [1024, 4096, 8192],
+  "chunkSize": 64,
+  "streamRadiusChunks": 2,
+  "maximumLoadsPerMove": 4,
+  "samples": 20,
+  "debugGuardrailsMs": {
+    "denseBake": 20000,
+    "metadataOpen": 1000,
+    "streamP95": 100
+  },
+  "storageModel": "1K allocates and round-trips a dense EVTR; 1K/4K/8K streaming uses a full production-format sparse archive address space and materializes only requested chunks",
+  "run": "make test/linux-debug FILTER=procgen.terrain.performance.real1kRoundTripAnd1k4k8kRandomAccess"
+}

@@ -14,6 +14,10 @@
 #include <string>
 
 namespace eve::graphics {
+struct PbrSurface;
+
+
+class Texture;
 
 struct ReflectionProbeUpload {
     static constexpr int kMaxProbes = 2;
@@ -32,8 +36,8 @@ struct ReflectionProbeUpload {
 class Canvas;
 class Camera3D;
 class Mesh;
+class PrimitiveSceneCanvas3D;
 class Shader;
-class Texture;
 struct ClusteredLightingUpload;
 struct Lighting3DPack;
 struct ShadowUpload;
@@ -56,6 +60,14 @@ public:
     virtual void begin3DFrameToCanvas(Canvas *canvas) = 0;
     virtual void end3DFrameToCanvas() = 0;
 
+    /**
+     * @brief Submits an owning frame-local primitive canvas into the active 3D pass.
+     * @param canvas Synchronously consumed command snapshot; it is never retained.
+     * @thread Render-thread affine and valid only between begin/end 3D frame calls.
+     * @reentrancy Does not invoke scripts or caller callbacks.
+     */
+    virtual void drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) = 0;
+
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
     virtual void setMesh3DView(const glm::mat4 &view) = 0;
     virtual void setMesh3DClip(float nearZ, float farZ) = 0;
@@ -68,7 +80,19 @@ public:
     virtual void setMesh3DNormalTexture(Texture *normal) = 0;
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
     virtual void setMesh3DSceneDepth(Texture *depth) = 0;
+    virtual void setMesh3DSceneColor(Texture *color) = 0;
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+    /** @brief Copy a validated extended surface for subsequent draws; null resets to legacy shading.
+     * @param surface Borrowed snapshot, consumed synchronously on the graphics thread.
+     * @return Unsupported when a backend has no extended renderer; reset always succeeds.
+     * No pointer to the snapshot is retained; its borrowed textures must outlive queued draws.
+     */
+    [[nodiscard]] virtual Result<void> setMesh3DPbrSurface(const PbrSurface* surface) {
+        if (!surface) return Result<void>::success();
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "extended PBR material rendering is unavailable on this backend"));
+    }
+
     virtual void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) = 0;
     virtual void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) = 0;
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;

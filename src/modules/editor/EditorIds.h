@@ -7,9 +7,6 @@ namespace eve::editor {
 /**
  * @brief Compatibility alias for the common UUID-backed editor identifier.
  * @tparam Tag Empty editor tag that keeps unrelated domains non-interchangeable.
- * @remarks Canonical UUID parsing, hashing and ordering live in
- *          `eve::UuidIdAdapter`. Non-UUID editor strings remain accepted as
- *          compatibility spellings and are never treated as persistent UUID text.
  */
 template <class Tag>
 using StrongEditorId = eve::editing::StrongId<Tag>;
@@ -20,9 +17,11 @@ using StrongEditorIdHash = eve::editing::StrongIdHash<Id>;
 
 /**
  * @brief Explicitly projects an editor identifier to its common UUID value.
- * @tparam Tag Editor domain tag.
  * @param id Compatibility-aware editor identifier.
  * @return Canonical UUID, including a deterministic projection for legacy text.
+ * @remarks Canonical UUID parsing, hashing and ordering live in
+ *          `eve::UuidIdAdapter`. Non-UUID editor strings remain accepted as
+ *          compatibility spellings and are never treated as persistent UUID text.
  */
 using eve::editing::canonicalUuid;
 

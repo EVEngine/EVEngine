@@ -22,6 +22,7 @@ test/assets/classic/.downloaded
 # Skinned character: CesiumMan glTF is committed under test/assets/skinned/cesium_man/
 # (see ATTRIBUTION.md). Re-run scripts/download_skinned_character.sh to refresh.
 .vscode/
+.local-tools/
  .superpowers/
 artifacts-local-test/
 imgui.ini

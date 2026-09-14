@@ -25,6 +25,7 @@ void Window::expose(ssq::Class& cls) {
     cls.addFunc("setSize", &Window::setSize);
     cls.addFunc("getWidth", &Window::getWidth);
     cls.addFunc("getHeight", &Window::getHeight);
+    cls.addFunc("hasFocus", &Window::hasFocus);
 
     cls.addFunc("setWindowSettings", &Window::setWindowSettings);
     cls.addFunc("getWindowSettings", &Window::getWindowSettings);

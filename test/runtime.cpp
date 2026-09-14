@@ -109,6 +109,24 @@ outer();
     CHECK(caught);
 }
 
+TEST_CASE("runtimeCaughtErrorExposesThrowSiteViaLastScriptError") {
+    Runtime runtime(256, ssq::Libs::ALL);
+    runtime.initialize();
+    runtime.runSource(R"SQ(
+function boom() { throw "kaboom" }
+function outer() { boom() }
+try { outer() } catch (e) {
+    caught_stack <- eve.lastScriptError()
+}
+)SQ",
+                      "caught.nut");
+    const std::string report = runtime.vm().find("caught_stack").toString();
+    CHECK(report.find("kaboom") != std::string::npos);
+    CHECK(report.find("caught.nut") != std::string::npos);
+    CHECK(report.find("Stack:") != std::string::npos);
+    CHECK(report.find("boom") != std::string::npos);
+}
+
 TEST_CASE("runtimeRuntimeErrorMarksScriptFailedAndRestoresStack") {
     Runtime runtime(256, ssq::Libs::ALL);
     const SQInteger top = runtime.vm().getTop();

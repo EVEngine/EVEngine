@@ -110,8 +110,8 @@ graphics::Mesh *TileMap3D::buildMesh(graphics::Graphics *gfx, map::TileLayer *la
         {1.f, 0.f, 0.f},  {0.f, -1.f, 0.f}, {0.f, 1.f, 0.f},
     };
 
-    const auto pushBoxTile = [&](float cx, float cz, float topY, float botY, float tu0, float tv0,
-                                 float tu1, float tv1) {
+    const auto pushBoxTile = [&](float cx, float cz, float topY, float botY, float tu0, float tv0, float tu1, float tv1,
+                                 uint32_t flags) {
         // Corners (index matches kQuads[kFace]).
         const glm::vec3 corners[8] = {
             {cx - hx, botY, cz - hz}, {cx + hx, botY, cz - hz}, {cx + hx, topY, cz - hz},
@@ -120,6 +120,7 @@ graphics::Mesh *TileMap3D::buildMesh(graphics::Graphics *gfx, map::TileLayer *la
         };
         const float sideU0 = wallU0_, sideV0 = wallV0_, sideU1 = wallU1_, sideV1 = wallV1_;
         for (int f = 0; f < 6; ++f) {
+            if (sideDepth_ == 0.f && f != 5) continue;
             const uint32_t base = uint32_t(pos.size() / 3);
             const bool top = (f == 5);
             const float su0 = top ? tu0 : sideU0;
@@ -133,9 +134,21 @@ graphics::Mesh *TileMap3D::buildMesh(graphics::Graphics *gfx, map::TileLayer *la
                 const glm::vec3 &p = corners[kQuads[f][k]];
                 pos.insert(pos.end(), {p.x, p.y, p.z});
                 nrm.insert(nrm.end(), {n.x, n.y, n.z});
-                uv.insert(uv.end(), {us[k], vs[k]});
+                float u = us[k], v = vs[k];
+                if (top) {
+                    // Invert Tiled's diagonal-then-horizontal/vertical transform
+                    // to map a destination corner back into the source atlas.
+                    float s = (k == 1 || k == 2) ? 1.f : 0.f;
+                    float t = k >= 2 ? 1.f : 0.f;
+                    if (flags & 0x80000000u) s = 1.f - s;
+                    if (flags & 0x40000000u) t = 1.f - t;
+                    if (flags & 0x20000000u) std::swap(s, t);
+                    u = tu0 + s * (tu1 - tu0);
+                    v = tv0 + t * (tv1 - tv0);
+                }
+                uv.insert(uv.end(), {u, v});
             }
-            idx.insert(idx.end(), {base, base + 1, base + 2, base, base + 2, base + 3});
+            idx.insert(idx.end(), {base, base + 2, base + 1, base, base + 3, base + 2});
         }
     };
 
@@ -143,12 +156,13 @@ graphics::Mesh *TileMap3D::buildMesh(graphics::Graphics *gfx, map::TileLayer *la
 
     for (int ty = 0; ty < mapH; ++ty) {
         for (int tx = 0; tx < mapW; ++tx) {
-            const uint32_t gid = eve::map::tileGid(uint32_t(layer->getTile(tx, ty)));
+            const uint32_t raw = uint32_t(layer->getTile(tx, ty));
+            const uint32_t gid = eve::map::tileGid(raw);
             if (gid == 0) continue;
 
             // World X/Z from the layer's 2D projection; elevation from metadata.
-            const float wx = layer->tileToWorldX(tx, ty);
-            const float wz = layer->tileToWorldY(tx, ty);
+            const float wx   = layer->tileToWorldX(tx, ty) + hx;
+            const float wz   = layer->tileToWorldY(tx, ty) + hz;
             const float elev = layer->getTileDataNumber(int(gid), "height") * heightScale_;
             const float topY = elev;
             const float botY = elev - sideDepth_;
@@ -156,7 +170,7 @@ graphics::Mesh *TileMap3D::buildMesh(graphics::Graphics *gfx, map::TileLayer *la
             float tu0 = 0.f, tv0 = 0.f, tu1 = 1.f, tv1 = 1.f;
             if (haveSet) atlasUvForGid(*set, gid, tu0, tv0, tu1, tv1);
 
-            pushBoxTile(wx, wz, topY, botY, tu0, tv0, tu1, tv1);
+            pushBoxTile(wx, wz, topY, botY, tu0, tv0, tu1, tv1, raw);
             ++tileCount_;
         }
     }

@@ -7,7 +7,10 @@ namespace eve {
 namespace sound {
 
 Decoder::Decoder(std::unique_ptr<medialoader::Decoder> impl, std::vector<char> ownedData)
-    : impl(std::move(impl)), ownedData(std::move(ownedData)) {
+    : Decoder(std::move(impl), std::make_shared<const std::vector<char>>(std::move(ownedData))) {}
+
+Decoder::Decoder(std::unique_ptr<medialoader::Decoder> impl, std::shared_ptr<const std::vector<char>> ownedData)
+    : ownedData(std::move(ownedData)), impl(std::move(impl)) {
     if (!this->impl)
         throw eve::Exception("Invalid sound decoder");
 }
@@ -15,11 +18,12 @@ Decoder::Decoder(std::unique_ptr<medialoader::Decoder> impl, std::vector<char> o
 Decoder::~Decoder() = default;
 
 Decoder *Decoder::clone() const {
-    auto *cloned = impl->clone();
+    auto cloned = std::unique_ptr<medialoader::Decoder>(impl->clone());
     if (!cloned)
         throw eve::Exception("Could not clone sound decoder");
-    // medialoader clone reuses the same data pointer; keep a copy of owned bytes.
-    return new Decoder(std::unique_ptr<medialoader::Decoder>(cloned), ownedData);
+    // Provider clones retain the original pointer rather than rebinding it to
+    // a byte-for-byte copy. Keep that exact allocation alive for every clone.
+    return new Decoder(std::move(cloned), ownedData);
 }
 
 int Decoder::decode() { return impl->decode(); }

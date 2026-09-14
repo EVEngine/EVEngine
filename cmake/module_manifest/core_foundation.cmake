@@ -25,15 +25,16 @@ eve_declare_module(NAME math LAYER 0 SCRIPT Math SLOT math
 # Unified grid: layout/topology + projection. Pure math, no Module class.
 eve_declare_module(NAME grid LAYER 0
                    GROUP 2d 3d web)
+# Resettable domain-test search and CPU policy learning; no renderer dependency.
+eve_declare_module(NAME agent LAYER 0 LIB EVAgent SCRIPT Agent SLOT agent
+                   GROUP 2d 3d web)
 # UI-independent property-access contracts shared by game UI, editor UI and
-# automation hosts. This module deliberately has no renderer or script runtime.
+# automation hosts. Core headers (PropertyAccess.h) have no renderer or script
+# runtime. The Squirrel reflection adapter lives in squirrel/ so Inspector can
+# bind script instances without a separate module.
 eve_declare_module(NAME property_access LAYER 0
                    GROUP minimal 2d 3d web)
-# Squirrel reflection adapter for renderer-independent property-access adapters.
 # L1 -- gameplay/model adapters
-eve_declare_module(NAME scriptmodel LAYER 1
-                   DEPS property_access
-                   GROUP minimal 2d 3d web)
 # UI-independent editable-target, command and transaction contracts shared by
 # developer editors, in-game builders and automation hosts.
 eve_declare_module(NAME editing LAYER 1
@@ -55,7 +56,7 @@ eve_declare_module(NAME platform_event REQUIRED LAYER 0 SCRIPT PlatformEvent SLO
                    THIRDPARTY sdl2)
 eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
                    THIRDPARTY sdl2)
-eve_declare_module(NAME system LAYER 0 SCRIPT System SLOT system
+eve_declare_module(NAME system LAYER 0 SCRIPT HostSystem SLOT system
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
 # Profiler: built-in engine-wide profiler. Scoped zones (common/Profile.h) are
@@ -80,9 +81,9 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS action animation_editing asset audio_editing avatar_editing biome_editing building_editing camera_editing crowd_editing decal_editing definitions_editing dialogue_editing domain_gizmo_editing editing fluids_editing graphics_editing hd2d_editing housegen_editing input_editing lighting_editing localization_editing map_editing material_editing network_editing npc_ai_editing particles_editing particles_graphics_editing procgen_editing procgen_graphics_editing profiler_editing property_access queue_editing rx scene_editing sceneloader_editing snow_editing social_editing spritestack_editing stylize_editing tags transaction ui_editing virtualgeometry_editing voxel_editing
+                   DEPS asset editing property_access rx tags transaction
                    GROUP 3d web
-                   OPTIONAL_DEPS animation audio avatar building camera crowd daynight definitions dialogue fluids graphics hd2d housegen image network orders particles physics physics_editing production procgen profiler map scene sceneloader schema snow social spritestack ui virtualgeometry voxel weather)
+                   OPTIONAL_DEPS graphics)
 # L0 -- foundation (continued)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
@@ -148,6 +149,17 @@ eve_declare_module(NAME action LIB EVAction LAYER 1
 eve_declare_module(NAME combat LIB EVCombat LAYER 2
                    DEPS action attributes tags
                    GROUP minimal 2d 3d web)
+# Shared fixed-step/backend contract extracted from the physics host so
+# independently switchable simulation satellites do not depend back upward.
+eve_declare_module(NAME physics_backend DIR physics/backend LAYER 2
+                   THIRDPARTY box2d
+                   GROUP 2d 3d web)
+# L3 -- independently switchable physics simulation satellites
+# Volumetric soft-body domain core. Rendering and authoring are separate
+# nested satellites; custom headless compositions may select only this target.
+eve_declare_module(NAME physics_softbody DIR physics/softbody LAYER 3
+                   DEPS physics_backend schema
+                   GROUP 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
                    GROUP minimal 2d 3d web)

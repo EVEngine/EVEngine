@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
 SHADERS = [
+    ("mesh3d_mtoon.vert", "vert"),
+    ("mesh3d_mtoon.frag", "frag"),
     ("scene_tonemap.frag", "frag"),
     ("mesh3d.vert", "vert"),
     ("mesh3d.frag", "frag"),

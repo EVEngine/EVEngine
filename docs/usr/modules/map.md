@@ -164,6 +164,7 @@ fov.setDetectionMargin(0.0);
 fov.compute();
 if (fov.canDetect(id, tx, ty, targetStealth)) { /* 可见且感知足够 */ }
 local tex = fov.buildMaskTexture(gfx); // RGBA8 FoW 遮罩，调用方拥有
+// 大地图云雾呈现见 gfx.newMapFog()（examples/map-fog）：R=解锁、G=选中、B=溶解
 ```
 
 自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；无变更时 `isDirty()` 为 false，`compute` 会跳过。离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。
@@ -317,3 +318,11 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 **设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)
 **相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/map_fov.cpp`](../../../test/map_fov.cpp)、[`test/hex_level_simulation.cpp`](../../../test/hex_level_simulation.cpp)、[`test/hex_level_data.cpp`](../../../test/hex_level_data.cpp)
 **示例：** [`examples/hex-levels/`](../../../examples/hex-levels/)
+
+### GID 与混合地形编辑
+
+`setTile`、`fillRect`、`fill` 保留完整 32 位 GID。高位携带 Tiled 翻转标志时，C++ `int` 可能为负；使用 `0` 擦除，不要把负值当作空格。
+
+`paintTerrain` / `paintTerrainRect` 解析邻域时保留没有逻辑地形归属的普通 tile。`eraseTerrainRect` 只清空指定矩形并重新解析附近地形，不清空矩形外的普通装饰。
+
+编辑文档的格式支持与运行时 importer 不同，见 [Tilemap 编辑文档与格式读写](../../dev/top-down-level-format.md)。

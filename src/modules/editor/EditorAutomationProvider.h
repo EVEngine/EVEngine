@@ -3,16 +3,13 @@
 #include "common/EditorAutomation.h"
 #include "editor/EditorResult.h"
 #include "editor/EditorSession.h"
+#include "editor/EditorAutomationTargetFactory.h"
 
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
-
-namespace eve::material_editing {
-class IMaterialRuntimeSink;
-}
 
 namespace eve::editor {
 
@@ -50,9 +47,7 @@ private:
     EditorTargetCoordinator*      targets_ = nullptr;
     EditorSession                 session_;
     std::vector<EditorDiagnostic> lastDiagnostics_;
-    // Targets borrow their runtime sinks, so sinks must be destroyed after targets.
-    std::map<TargetId, std::unique_ptr<material_editing::IMaterialRuntimeSink>> ownedMaterialSinks_;
-    std::map<TargetId, std::unique_ptr<IEditableTarget>>      ownedTargets_;
+    std::map<TargetId, AutomationOwnedTarget>                 ownedTargets_;
     std::map<std::string, std::unique_ptr<ObservationSession>> observationSessions_;
     std::uint64_t                                              nextObservationSession_ = 1;
 };

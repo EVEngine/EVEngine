@@ -220,8 +220,8 @@ namespace {
 // Register a C++ ECS entity type so eve.view() (and script Systems built on it)
 // can enumerate live instances and hand them to scripts as wrapped instances.
 template <typename T>
-void registerCppEntityClassForScript() {
-    eve::registerCppEntityView(typeid(T*).hash_code(), [](ssq::Array& out) {
+void registerCppEntityClassForScript(const ssq::Class& cls) {
+    eve::registerCppEntityView(cls, [](ssq::Array& out) {
         HSQUIRRELVM vm = out.getHandle();
         sq_pushobject(vm, out.getRaw());
         ecs::Table* table = ecs::current();
@@ -272,10 +272,8 @@ protected:
     void registerCppBindings() {
         ssq::Table eve(vm.find("eve"));
 
-        registerCppEntityClassForScript<Node>();
-        registerCppEntityClassForScript<Movable>();
-
         auto nodeCls = eve.addClass("Node", std::function<Node*()>([]() -> Node* { return Node::create(); }), false);
+        registerCppEntityClassForScript<Node>(nodeCls);
         nodeCls.addFunc("getId", [](Node* self) { return int(self->id); });
         nodeCls.addFunc("isAlive", [](Node* self) { return ecs::is_entity_visible(self); });
         nodeCls.addFunc("destroy", [](Node* self) { self->release(); });
@@ -286,6 +284,7 @@ protected:
         nodeCls.addFunc("getPos", [](Node* self) -> Node::Position* { return &*self->position(); });
 
         auto movableCls = eve.addClass("Movable", std::function<Movable*()>([]() -> Movable* { return Movable::create(); }), false);
+        registerCppEntityClassForScript<Movable>(movableCls);
         movableCls.addFunc("getId", [](Movable* self) { return int(self->id); });
         movableCls.addFunc("isAlive", [](Movable* self) { return ecs::is_entity_visible(self); });
         movableCls.addFunc("destroy", [](Movable* self) { self->release(); });

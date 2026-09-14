@@ -33,8 +33,19 @@ VulkanComputeShader::~VulkanComputeShader() {
         module_ = vk::ShaderModule{};
     }
     if (dummyBuffer_) {
-        dev->destroyBuffer(dummyBuffer_, device_->allocation_callbacks);
-        dummyBuffer_ = vk::Buffer{};
+#if defined(VKB_ENABLE_VMA)
+        if (dummyVmaAllocation_) {
+            vmaDestroyBuffer(device_->vma_allocator, static_cast<VkBuffer>(dummyBuffer_),
+                             dummyVmaAllocation_);
+            dummyVmaAllocation_ = VK_NULL_HANDLE;
+            dummyBuffer_ = vk::Buffer{};
+            dummyMemory_ = vk::DeviceMemory{};
+        } else
+#endif
+        {
+            dev->destroyBuffer(dummyBuffer_, device_->allocation_callbacks);
+            dummyBuffer_ = vk::Buffer{};
+        }
     }
     if (dummyMemory_) {
         dev->freeMemory(dummyMemory_, device_->allocation_callbacks);
@@ -111,6 +122,9 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
         vkb::GenericBuffer tmp(device, buf::eStorageBuffer | buf::eTransferDst, 4, pfb::eDeviceLocal);
         dummyBuffer_ = tmp.buffer;
         dummyMemory_ = tmp.memory;
+#if defined(VKB_ENABLE_VMA)
+        dummyVmaAllocation_ = tmp.vma_allocation;
+#endif
         // Without detach(), tmp's destructor frees the handles, leaving the
         // dummy SSBO dangling: descriptor writes reference a destroyed buffer
         // (crashes MoltenVK) and ~VulkanComputeShader double-frees it.

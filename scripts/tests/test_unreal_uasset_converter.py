@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -38,6 +39,59 @@ def write_glb(path: Path) -> None:
 
 
 class UnrealUassetConverterTests(unittest.TestCase):
+    def test_publication_staging_inherits_destination_access_and_cleans_up(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = Path(temporary)
+            original_mkdir = Path.mkdir
+            modes = []
+            def mkdir(path, mode=0o777, parents=False, exist_ok=False):
+                modes.append(mode)
+                return original_mkdir(path, mode, parents, exist_ok)
+            with mock.patch.object(Path, "mkdir", mkdir):
+                with converter.publication_staging(parent, "test") as staging:
+                    root = Path(staging)
+                    self.assertEqual(root.parent, parent.resolve())
+                    self.assertTrue(root.is_dir())
+                    (root / "payload").mkdir()
+            self.assertFalse(root.exists())
+            self.assertTrue(modes)
+            self.assertNotIn(0o700, modes)
+
+    def test_quantized_weights_become_float_without_changing_other_payload(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "skin.glb"
+            document = {"asset": {"version": "2.0"},
+                        "buffers": [{"byteLength": 12}],
+                        "bufferViews": [{"buffer": 0, "byteOffset": 4, "byteLength": 8, "byteStride": 4}],
+                        "accessors": [{"bufferView": 0, "componentType": 5121,
+                                       "normalized": True, "count": 2, "type": "VEC4"}],
+                        "meshes": [{"primitives": [{"attributes": {"WEIGHTS_0": 0}}]}]}
+            raw = json.dumps(document).encode()
+            raw += b" " * (-len(raw) % 4)
+            binary = b"KEEP" + bytes([255, 0, 0, 0, 128, 127, 0, 0])
+            chunks = struct.pack("<I4s", len(raw), b"JSON") + raw + struct.pack("<I4s", len(binary), b"BIN\0") + binary
+            path.write_bytes(b"glTF" + struct.pack("<II", 2, 12 + len(chunks)) + chunks)
+            self.assertEqual(converter.normalize_glb_weights(path), 1)
+            output = path.read_bytes()
+            length = struct.unpack_from("<I", output, 12)[0]
+            result = json.loads(output[20:20 + length])
+            accessor = result["accessors"][0]
+            self.assertEqual(accessor["componentType"], 5126)
+            self.assertNotIn("normalized", accessor)
+            payload = output[28 + length:]
+            self.assertEqual(payload[:12], binary)
+            floats = struct.unpack_from("<8f", payload, result["bufferViews"][-1]["byteOffset"])
+            self.assertEqual(floats[:4], (1., 0., 0., 0.))
+            self.assertAlmostEqual(floats[4], 128 / 255)
+            self.assertAlmostEqual(floats[5], 127 / 255)
+            self.assertEqual(converter.normalize_glb_weights(path), 0)
+
+    def test_export_command_enables_material_baking(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            command = converter.build_command(self.make_config(Path(temporary)), MODULE_PATH)
+            self.assertNotIn("-nullrhi", command)
+            self.assertIn("-AllowCommandletRendering", command)
+
     def make_config(self, root: Path, **overrides):
         project = root / "Owned.uproject"
         project.write_text("{}", encoding="utf-8")

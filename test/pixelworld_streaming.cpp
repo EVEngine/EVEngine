@@ -2,8 +2,8 @@
 #include "zeroerr/unittest.h"
 
 #include "pixelworld/PixelWorld.h"
-#include "pixelworld_streaming/PixelWorldStreaming.h"
-#include "pixelworld_streaming/PixelWorldTransport.h"
+#include "pixelworld/streaming/PixelWorldStreaming.h"
+#include "pixelworld/streaming/PixelWorldTransport.h"
 
 #include <algorithm>
 #include <cstdint>

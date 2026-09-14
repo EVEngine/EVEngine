@@ -199,4 +199,44 @@ std::vector<ProjectileState> ProjectileRuntime::states() const {
     return result;
 }
 
+ProjectileRuntimeSnapshot ProjectileRuntime::snapshot() const {
+    ProjectileRuntimeSnapshot result;
+    result.slots.reserve(slots_.size());
+    for (const Slot& slot : slots_) result.slots.push_back({slot.generation, slot.state});
+    return result;
+}
+
+Result<void> ProjectileRuntime::restore(const ProjectileRuntimeSnapshot& snapshot) {
+    if (snapshot.slots.empty() || snapshot.slots.size() > 1048576)
+        return projectileError(DiagnosticCode::InvalidArgument,
+                               "Projectile snapshot pool capacity is outside 1..1048576");
+    std::vector<Slot> staged(snapshot.slots.size());
+    std::size_t active = 0;
+    for (std::size_t index = 0; index < snapshot.slots.size(); ++index) {
+        const auto& input = snapshot.slots[index];
+        staged[index].generation = input.generation;
+        if (!input.state) continue;
+        const auto& state = *input.state;
+        const auto finitePoint = [](const ProjectilePoint& point) {
+            return std::isfinite(point.x) && std::isfinite(point.y) && std::isfinite(point.z);
+        };
+        const auto finiteVector = [](const ProjectileVector& value) {
+            return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z);
+        };
+        if (state.handle.slot != index || state.handle.generation != input.generation ||
+            !state.definitionId.isValid() || !finitePoint(state.position) || !finiteVector(state.velocity) ||
+            !std::isfinite(state.gravity) || state.gravity < 0.0 ||
+            !std::isfinite(state.maxTurnRateDegrees) || state.maxTurnRateDegrees < 0.0 ||
+            state.age.nanoseconds() < 0 || state.lifetime.nanoseconds() <= 0 || state.age >= state.lifetime ||
+            (state.mode == ProjectileMode::Homing && !state.target))
+            return projectileError(DiagnosticCode::InvalidArgument,
+                                   "Projectile snapshot contains an invalid live slot");
+        staged[index].state = state;
+        ++active;
+    }
+    slots_ = std::move(staged);
+    activeCount_ = active;
+    return Result<void>::success();
+}
+
 }  // namespace eve::weapon

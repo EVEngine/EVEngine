@@ -4,8 +4,13 @@ HD-2D 模块把 2D 内容叠加到现有 3D 渲染管线，实现「2D tilemap �
 
 - `TileMap3D`：把 2D tilemap（`map` 模块的 `TileLayer`）挤成 3D 地形网格。
 - `Sprite3D`：把 2D 精灵图/角色帧作为始终正对相机的 billboard 渲染进 3D 场景，支持精灵表帧动画。
+- `Hd2dLook`：参考 [HD2DURP](https://github.com/dulong-lab/HD2DURP) 的景深（DopFix）+ Bloom + 像素采样组合，一键写到 `Camera3D`。
 
 模块绑定在 `eve.Hd2D`，脚本槽位为 `hd2d`。
+
+可运行的真实素材示例在 `examples/hd2d-riverside`：两层 tilemap、河岸与桥、
+凸起平台，以及三个四方向行走角色。用 WASD/方向键移动，1/2/3 切换角色，
+Q/E 转动相机。运行 `make run/win32-debug GAME=examples/hd2d-riverside`。
 
 ## TileMap3D：2D tilemap → 3D 场景
 
@@ -29,9 +34,24 @@ local scale = tile.getHeightScale();    // 读取当前高度缩放
 
 也可以只生成网格、自行接管：`tile.buildMesh(gfx, layer)` 返回 `Mesh`（图集纹理来自 layer 的 tileset）。空的 layer 返回 `null`。
 
+正交地图的格子起点与 `TileLayer.tileToWorldX/Y` 一致，覆盖起点到起点加格子尺寸的区域，
+因此碰撞查询可以直接使用 map 模块的坐标。Tiled 导入的 H/V/对角翻转标记作用于顶面，
+不翻转侧壁。`setSideDepth(0)` 只生成顶面，适合叠加图层；调用方应提供适当高度避免共面。
+这是静态烘焙：修改源 tile 数据后需要重新构建。高度元数据属于 GID，不能表达同一 GID 的逐格不同高度。
+
 ## Sprite3D：2D 角色/动画作为 3D billboard
 
-`Sprite3D` 是一张在 3D 世界里始终正对相机的四边形（圆柱 billboard：只绕世界 Y 轴转向相机、保持竖直），承载一张 2D 纹理（角色立绘或动画帧）。它通过 `eve` 的 `Renderable3D` 进入前向 pass，因此能和地形正确合成并投射阴影。
+`Sprite3D` 是一张在 3D 世界里与相机图像平面平行的四边形（screen-aligned billboard），同时跟随相机的偏航、俯仰和滚转，承载一张 2D 纹理。它通过 `Renderable3D` 与地形进行深度合成；画面边缘的角色也不会因单独朝向相机位置而倾斜。
+
+`setPosition` 默认定位图像中心。角色站立时使用 `setPivot(0.5, 1.0)`，此时位置就是脚底。
+图像脚底若有 4/64 的透明边距，可用 `setPivot(0.5, 60.0/64.0)`，再把位置设在地面。
+Pivot 使用可见图像左上角为 (0,0)、右下角为 (1,1)，旋转、缩放及 UV 翻转不改变世界锚点。
+相机必须在解除绑定前保持有效；退化相机基向量保留最后一次有效朝向。
+
+精灵默认使用 **masked cutout** 材质并开启深度写入（对齐 HD2DURP 的 DopFix /
+`TransparentCutout`）：透明像素丢弃，不透明像素写入深度，景深才能正确对焦角色。
+可用 `setAlphaCutoff` / `setDepthWrite` / `setDoubleSided` 调整；
+`setBillboardMode("yaw")` 切换为仅绕 Y 轴的圆柱 billboard。
 
 ```squirrel
 local hero = hd2d.newSprite(gfx);
@@ -41,6 +61,9 @@ hero.setSize(28.0, 56.0);               // billboard 尺寸
 hero.setTint(1.0, 1.0, 1.0, 1.0);       // 颜色倍率（alpha 参与裁切）
 hero.setVisible(true);
 hero.setCamera(cam);                    // 绑定相机后 update() 每帧转向相机
+hero.setAlphaCutoff(0.5);
+hero.setDepthWrite(true);
+gfx.setTextureSampler(hero.getTexture(), "nearest", "none", 1.0, 0.0); // 清晰像素采样
 
 local tx = hero.getPositionX(); local ty = hero.getPositionY(); local tz = hero.getPositionZ();
 local w = hero.getWidth();  local h = hero.getHeight();
@@ -75,8 +98,37 @@ hero.stop();                               // 暂停动画
 
 直接指定任意图集子矩形：`hero.setFrame(u0, v0, u1, v1)`。
 
+图像左上角对应 billboard 的可见左上角。精灵默认使用 masked 材质，透明像素不写入颜色、
+深度和阴影；角色仍保持默认自发光风格。`setTint` 同步作用于该材质。
+更换网格会停止旧动画；`setFrameIndex` 将索引限制在网格内。`update` 忽略非正数和非有限
+时间增量，较大的有限增量按循环周期推进。`play` 的 fps 必须为有限正数。
+Sprite、Camera 与纹理的调用在渲染线程进行，Graphics 及相关 ECS 对象必须比 Sprite 活得更久。
+
+角色控制、碰撞和相机控制由场景组合已有模块完成；HD2D 负责渲染和帧动画。示例使用 60 Hz
+固定步长、无随机数，足底锚点由图集透明边距确定。示例验收说明和素材
+生成记录见该示例的 README。
+
+## Hd2dLook：景深 + Bloom + 像素采样
+
+`Hd2dLook` 把 HD2DURP 风格的后处理参数写到 `Camera3D`：Gaussian DOF（`Camera3D.setDepthOfField`）
+与 Bloom。DOF 在最终 HDR resolve 中读取 GBuffer 硬件深度；因此角色必须用 cutout
+深度写入（Sprite3D 默认已开启）。
+
+```squirrel
+local look = hd2d.newMiniatureLook(); // 或 hd2d.newLook()
+look.setFocusDistance(18.0);
+look.setFocusRange(12.0);
+look.setMaxBlur(6.0);
+look.apply(camera);
+look.applyPixelSampler(gfx, hero.getTexture());
+```
+
+也可用 `camera.setDepthOfField(focusDistance, maxBlurPx, focusRange)` /
+`camera.setBloom(intensity, threshold)` 直接配置。
+
 ## 模块方法与对象
 
-- `hd2d.getName()`、`hd2d.newTileMap3D()`、`hd2d.newSprite(gfx)`
+- `hd2d.getName()`、`hd2d.newTileMap3D()`、`hd2d.newSprite(gfx)`、`hd2d.newLook()`、`hd2d.newMiniatureLook()`
 - `TileMap3D`：`setSideDepth`/`getSideDepth`、`setHeightScale`/`getHeightScale`、`setWallUV`、`setTint`、`buildMesh`、`buildRenderable`、`getTileCount`
-- `Sprite3D`：`setTexture`/`getTexture`、`setFrame`、`setFlipX`/`setFlipY`、`setFrameGrid`、`getFrameGridColumns`/`getFrameGridRows`、`setFrameIndex`/`getFrameIndex`/`getFrameCount`、`play`/`stop`/`isPlaying`/`update`、`setPosition`/`getPositionX`/`getPositionY`/`getPositionZ`、`setSize`/`getWidth`/`getHeight`、`setTint`、`setVisible`/`getVisible`
+- `Sprite3D`：`setTexture`/`getTexture`、`setFrame`、`setFlipX`/`setFlipY`、`setFrameGrid`、`getFrameGridColumns`/`getFrameGridRows`、`setFrameIndex`/`getFrameIndex`/`getFrameCount`、`play`/`stop`/`isPlaying`/`update`、`setPosition`/`getPositionX`/`getPositionY`/`getPositionZ`、`setSize`/`getWidth`/`getHeight`、`setTint`、`setVisible`/`getVisible`、`setAlphaCutoff`/`getAlphaCutoff`、`setDepthWrite`/`getDepthWrite`、`setDoubleSided`/`getDoubleSided`、`setBillboardMode`/`getBillboardMode`
+- `Hd2dLook`：`setFocusDistance`/`getFocusDistance`、`setMaxBlur`/`getMaxBlur`、`setFocusRange`/`getFocusRange`、`setBloomIntensity`/`getBloomIntensity`、`setBloomThreshold`/`getBloomThreshold`、`apply`、`applyPixelSampler`

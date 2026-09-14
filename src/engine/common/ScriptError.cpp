@@ -92,7 +92,18 @@ ScriptErrorContext captureScriptError(HSQUIRRELVM vm) {
         frame.line = static_cast<int>(si.line);
         ctx.stack.push_back(std::move(frame));
     }
-    if (!ctx.stack.empty()) {
+    // Native binding frames (simplesquirrel type checks, etc.) are often
+    // "NATIVE" with line <= 0. Prefer the first script frame that still has a
+    // line number so reports point at the caller in main.nut, not the stub.
+    for (const ScriptFrame& frame : ctx.stack) {
+        if (frame.line > 0) {
+            ctx.source = frame.source;
+            ctx.function = frame.function;
+            ctx.line = frame.line;
+            break;
+        }
+    }
+    if (ctx.line <= 0 && !ctx.stack.empty()) {
         ctx.source = ctx.stack.front().source;
         ctx.function = ctx.stack.front().function;
         ctx.line = ctx.stack.front().line;
@@ -226,6 +237,12 @@ const ScriptErrorContext* peekLastScriptError(HSQUIRRELVM vm) {
 void clearLastScriptError(HSQUIRRELVM vm) {
     if (!vm) return;
     g_last_errors.erase(vm);
+}
+
+std::string formatLastScriptError(HSQUIRRELVM vm) {
+    const ScriptErrorContext* ctx = peekLastScriptError(vm);
+    if (!ctx || ctx->empty()) return {};
+    return formatScriptError(*ctx);
 }
 
 }  // namespace eve::script

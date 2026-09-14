@@ -18,6 +18,12 @@ static_assert(!std::is_copy_constructible_v<Result<int>>);
 static_assert(!std::is_copy_assignable_v<Result<int>>);
 static_assert(std::is_move_constructible_v<Result<int>>);
 static_assert(!std::is_copy_constructible_v<Result<void>>);
+static_assert(std::is_convertible_v<Result<int>, Result<const int>>);
+static_assert(!std::is_convertible_v<Result<const int>, Result<int>>);
+static_assert(std::is_convertible_v<Result<int*>, Result<const int*>>);
+static_assert(!std::is_convertible_v<Result<const int*>, Result<int*>>);
+static_assert(!std::is_convertible_v<Result<void>, Result<int>>);
+static_assert(!std::is_convertible_v<Result<int>, Result<void>>);
 
 TEST_CASE("common.result.successAndObservationAccessors") {
     auto result = Result<int>::success(42);
@@ -112,6 +118,33 @@ TEST_CASE("common.result.compositionPreservesFailureStatus") {
         return Result<int>::success(99);
     });
     CHECK(recovered.value() == 99);
+}
+
+TEST_CASE("common.result.constConversionConstrainsValue") {
+    auto makeConstValue = []() -> Result<const int> { return Result<int>::success(4); };
+    auto constValue     = makeConstValue();
+    REQUIRE(constValue.ok());
+    CHECK(constValue.value() == 4);
+
+    int  storage        = 8;
+    auto makeConstPointer = [](int* pointer) -> Result<const int*> { return Result<int*>::success(pointer); };
+    auto constPointer     = makeConstPointer(&storage);
+    REQUIRE(constPointer.ok());
+    CHECK(*constPointer.value() == 8);
+
+    auto assigned = Result<const int>::failure(Diagnostic::error(DiagnosticCode::Failed, "placeholder"));
+    CHECK(!assigned.ok());
+    assigned = Result<int>::success(11);
+    CHECK(assigned.value() == 11);
+    assigned = Result<const int>::success(13);
+    CHECK(assigned.value() == 13);
+
+    auto makeConstFailure = []() -> Result<const int> {
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::NotFound, "missing"));
+    };
+    auto failed = makeConstFailure();
+    CHECK(!failed.ok());
+    CHECK(failed.code() == StatusCode::NotFound);
 }
 
 TEST_CASE("common.result.voidStatusAndBoolCheck") {

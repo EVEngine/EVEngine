@@ -1,11 +1,17 @@
 #pragma once
 #include "Object.h"
 #include "common/AssetReloader.h"
+#include "common/BorrowedRef.h"
+#include "common/Result.h"
 
 #include <cstddef>
+#include <condition_variable>
 #include <map>
+#include <memory>
 #include <mutex>
+#include <span>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve {
@@ -85,6 +91,11 @@ protected:
  * provider load() runs outside the lock, so sceneloader's background decode
  * threads can insert entries while the main thread reads them. Reloads (adopt)
  * are expected on the main thread during hot-reload dispatch.
+ *
+ * `request()` / `waitFor()` are the asynchronous programming interface: request
+ * queues CPU decode on `caps::IAsyncWorkExecutor` (the thread module) and
+ * waitFor joins that job. `get()` waits for an in-flight request of the same
+ * key so a prefetch cannot race a later synchronous load into a double decode.
  */
 class ResourceManager : public eve::caps::IAssetReloader {
 public:
@@ -118,6 +129,53 @@ public:
      *             while a ResourceManager operation is holding its internal lock.
      */
     [[nodiscard("resource lookup ownership must be retained or explicitly handled")]] Resource* get(std::string key);
+
+    /**
+     * @brief Queue a cache miss load without blocking for decode to finish.
+     * @param key Normalized VFS path, optionally with `?params`.
+     * @return `NoOp` if already cached, `Pending` if a load is already in flight,
+     *         `Applied` if this call queued or completed a load, `NotFound` if no
+     *         provider claims the key, or `Failed` when inline load throws.
+     * @ownership Does not transfer a resource; the cache remains the owner.
+     * @lifetime The pending job keeps the key alive until waitFor/get/clear.
+     * @thread Safe to call from the game thread. Decode runs on a worker when
+     *         `IAsyncWorkExecutor` is registered, otherwise inline.
+     * @reentrancy Must not be called from `IAssetReloader::load()`.
+     */
+    [[nodiscard("async resource request outcome must be checked")]] eve::Result<void> request(
+        std::string key);
+
+    /**
+     * @brief `request()` every key; stops at the first hard failure.
+     * @param keys Borrowed list of cache keys; duplicates share one in-flight job.
+     */
+    [[nodiscard("async resource request outcome must be checked")]] eve::Result<void> requestAll(
+        std::span<const std::string> keys);
+
+    /**
+     * @brief Cache lookup that never starts a load.
+     * @return Empty when missing or still decoding; borrowed cache entry otherwise.
+     * @ownership Borrowed from the cache.
+     * @nullable Yes — empty optional means not ready.
+     * @lifetime Valid until unload/clear of that entry; do not retain across reload.
+     * @thread Concurrent readers are serialized with the cache mutex.
+     */
+    [[nodiscard]] OptionalRef<Resource> peek(const std::string& key);
+
+    /**
+     * @brief Block until `key` is cached, failed, or unclaimed.
+     * @param key Cache key; starts a load if neither cached nor in flight.
+     * @return Borrowed resource on success; `NotFound` / `Failed` otherwise.
+     * @ownership Borrowed from the cache on success.
+     * @lifetime Same as get().
+     * @thread Game thread; waits for a worker if request() is in flight.
+     * @reentrancy Must not be called from a worker that this wait would join
+     *             on the same pool (deadlock).
+     */
+    [[nodiscard("resource wait outcome must be checked")]] ResultRef<Resource> waitFor(std::string key);
+
+    /** @brief Number of in-flight `request()` jobs (including failed-not-yet-consumed). */
+    size_t pendingCount() const;
 
     /**
      * @brief Drop the exact cache entry `key` (parameters included).
@@ -168,9 +226,21 @@ protected:
 
     void ensureRegistered();
     Resource* loadReplacement(const std::string& key);
+    Resource* loadUncached(const std::string& norm);
+    void runLoadJob(std::string norm, uint64_t epoch);
+
+    struct AsyncLoad {
+        bool done = false;
+        bool failed = false;
+        std::string error;
+        uint64_t epoch = 0;
+    };
 
     std::map<std::string, ref<Resource>> resources;
+    std::unordered_map<std::string, std::shared_ptr<AsyncLoad>> pending_;
     mutable std::mutex mu_;
+    std::condition_variable cv_;
+    uint64_t epoch_ = 1;
     bool registered_ = false;
 };
 

@@ -13,21 +13,6 @@
 
 namespace eve::tensor {
 
-int Graph::product(const int *dims, int rank) {
-    int n = 1;
-    for (int i = 0; i < rank; ++i) {
-        if (dims[i] <= 0) throw eve::Exception("Graph: dims must be > 0");
-        n *= dims[i];
-    }
-    return n;
-}
-
-int Graph::addNode(GraphNode node) {
-    if (node.rank > 0 && node.size <= 0) node.size = product(node.dims, node.rank);
-    nodes_.push_back(std::move(node));
-    return int(nodes_.size()) - 1;
-}
-
 // ---------------------------------------------------------------------------
 // Func: tracing graph builder
 // ---------------------------------------------------------------------------
@@ -346,8 +331,7 @@ Tensor *Func::emitConv1d(const Tensor *x, const Tensor *w, const Tensor *bias, i
     if (bias) {
         int ib = ensureNode(bias);
         const auto &nb = graph_.node(ib);
-        if (nb.rank != 1 || nb.dims[0] != nw.dims[0])
-            throw eve::Exception("Func.conv1d: bias shape mismatch");
+        if (nb.rank != 1 || nb.dims[0] != n.dims[1]) throw eve::Exception("Func.conv1d: bias shape mismatch");
         n.in2 = ib;
     }
     int id = graph_.addNode(std::move(n));
@@ -373,8 +357,7 @@ Tensor *Func::emitConv2d(const Tensor *x, const Tensor *w, const Tensor *bias, i
     if (bias) {
         int ib = ensureNode(bias);
         const auto &nb = graph_.node(ib);
-        if (nb.rank != 1 || nb.dims[0] != nw.dims[0])
-            throw eve::Exception("Func.conv2d: bias shape mismatch");
+        if (nb.rank != 1 || nb.dims[0] != n.dims[1]) throw eve::Exception("Func.conv2d: bias shape mismatch");
         n.in2 = ib;
     }
     int id = graph_.addNode(std::move(n));
@@ -419,8 +402,9 @@ Tensor *Func::emitConcat(const Tensor *const *ins, int n, int axis) {
     if (!ins || n < 2 || n > 4) throw eve::Exception("Func.concat: 2..4 inputs required");
     int ids[4] = {};
     const GraphNode *ns[4] = {};
+    // Importing an eager input may reallocate the graph's node array.
+    for (int k = 0; k < n; ++k) ids[k] = ensureNode(ins[k]);
     for (int k = 0; k < n; ++k) {
-        ids[k] = ensureNode(ins[k]);
         ns[k]  = &graph_.node(ids[k]);
         if (ns[k]->rank != ns[0]->rank)
             throw eve::Exception("Func.concat: rank mismatch");
@@ -535,6 +519,7 @@ Tensor *Func::emitSdpa(const Tensor *q, const Tensor *k, const Tensor *v, const 
     int iq = ensureNode(q);
     int ik = ensureNode(k);
     int iv = ensureNode(v);
+    const int   im = mask ? ensureNode(mask) : -1;
     const auto &nq = graph_.node(iq);
     const auto &nk = graph_.node(ik);
     const auto &nv = graph_.node(iv);
@@ -549,7 +534,6 @@ Tensor *Func::emitSdpa(const Tensor *q, const Tensor *k, const Tensor *v, const 
     n.in2  = iv;
     n.s0   = scale;
     if (mask) {
-        int im = ensureNode(mask);
         const auto &nm = graph_.node(im);
         if (nm.rank != 4 || nm.dims[0] != nq.dims[0] || nm.dims[1] != nq.dims[1] ||
             nm.dims[2] != nq.dims[2] || nm.dims[3] != nk.dims[2])

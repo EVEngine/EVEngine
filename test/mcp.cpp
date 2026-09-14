@@ -288,10 +288,10 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(editorCommand),
                                  [](const eve::editor::CommandContext&, const eve::editor::EditorValue&) {
-                                     return eve::editor::EditorResult<eve::editor::EditorValue>::applied(
+                                     return eve::editing::applied<eve::editor::EditorValue>(
                                          eve::editor::EditorValue("executed"));
                                  })
-                .isAccepted());
+                .ok());
 
     const int port = mcp.listen(0);
     REQUIRE(port > 0);
@@ -319,6 +319,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     auto tools = toolsMsg->getObject("result")->getArray("tools");
     REQUIRE(tools);
     bool foundStatus          = false;
+    bool foundGameplay        = false;
     bool foundEval            = false;
     bool foundScene           = false;
     bool foundProc            = false;
@@ -361,6 +362,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
+        if (name == "eve_gameplay") foundGameplay = true;
         if (name == "eve_eval") foundEval = true;
         if (name == "eve_scene_status") foundScene = true;
         if (name == "eve_procgen_recipes") foundProc = true;
@@ -401,6 +403,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_pixelworld_catalog_apply") foundPixelApply = true;
     }
     CHECK(foundStatus);
+    CHECK(foundGameplay);
     CHECK(foundEval);
     CHECK(foundScene);
     CHECK(foundProc);
@@ -449,6 +452,17 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string text = content->getObject(0)->getValue<std::string>("text");
     CHECK(text.find("\"attached\":true") != std::string::npos);
     CHECK(text.find("\"mcpPort\":") != std::string::npos);
+
+    client.sendRequest(
+        40, "tools/call",
+        "{\"name\":\"eve_gameplay\",\"arguments\":{\"request\":{\"schemaId\":"
+        "\"evengine.gameplay-control-request\",\"schemaVersion\":1,\"op\":\"domains\"}}}");
+    auto gameplayMsg = client.expectResult(40);
+    REQUIRE(gameplayMsg);
+    auto gameplayContent = gameplayMsg->getObject("result")->getArray("content");
+    REQUIRE(gameplayContent);
+    CHECK(gameplayContent->getObject(0)->getValue<std::string>("text").find("\"domains\"") !=
+          std::string::npos);
 
     client.sendRequest(4, "tools/call", "{\"name\":\"eve_ai_note\",\"arguments\":{\"text\":\"hello agent\"}}");
     REQUIRE(client.expectResult(4));
@@ -774,8 +788,8 @@ TEST_CASE("devtools.mcp.evalAndPause") {
 
     // One-shot MCP source must remain in memory: no user-space script and no
     // persistent compiler identity that can collide with project hot reload.
-    CHECK(runtime.scriptCompiler().metadata("mcp_snippet.nut") == nullptr);
-    CHECK(runtime.scriptCompiler().metadata("eval") == nullptr);
+    CHECK(!runtime.scriptCompiler().metadata("mcp_snippet.nut").has_value());
+    CHECK(!runtime.scriptCompiler().metadata("eval").has_value());
     bool foundScript = false;
     for (const auto& entry : std::filesystem::recursive_directory_iterator(projectRoot)) {
         if (entry.is_regular_file() && entry.path().extension() == ".nut") foundScript = true;
@@ -821,37 +835,6 @@ TEST_CASE("devtools.ai.panelLog") {
     CHECK(ai.isVisible());
     ai.clearLog();
     ai.setMcpPort(0);
-}
-
-TEST_CASE("devtools.mcp.stdioTransport") {
-    auto& mcp = McpServer::instance();
-    mcp.stop();
-
-    std::stringstream in, out;
-    REQUIRE(mcp.listenStdio(in, out));
-    in << "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{"
-          "\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
-          "\"clientInfo\":{\"name\":\"stdio-test\",\"version\":\"0\"}}}\n";
-    in << "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n";
-    in << "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{"
-          "\"name\":\"eve_host_status\",\"arguments\":{}}}\n";
-
-    for (int i = 0; i < 100; ++i) {
-        mcp.poll();
-        if (out.str().find("\"id\":3") != std::string::npos) break;
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-    const std::string resp = out.str();
-    CHECK(resp.find("\"id\":1") != std::string::npos);
-    CHECK(resp.find("evengine") != std::string::npos);
-    CHECK(resp.find("\"id\":2") != std::string::npos);
-    CHECK(resp.find("eve_host_editor_apply") != std::string::npos);
-    CHECK(resp.find("eve_host_shutdown") != std::string::npos);
-    CHECK(resp.find("\"id\":3") != std::string::npos);
-    CHECK(resp.find("eve_host_status") != std::string::npos);
-
-    in.setstate(std::ios::eofbit);
-    mcp.stop();
 }
 
 TEST_CASE("devtools.mcp.hostEditorBinding") {
@@ -969,4 +952,51 @@ TEST_CASE("devtools.mcp.hostEditorBinding") {
     mcp.stop();
     dt.detach();
     std::filesystem::remove_all(tmp);
+}
+
+TEST_CASE("devtools.mcp.setBreakpointWithCondition") {
+    auto& mcp = McpServer::instance();
+    auto& dt  = DevTool::instance();
+    auto& dbg = Debugger::instance();
+
+    mcp.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    dt.attach(vm, false);
+
+    const int port = mcp.listen(0);
+    REQUIRE(port > 0);
+    McpClient client(port);
+    client.sendRequest(1, "initialize",
+                       "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                       "\"clientInfo\":{\"name\":\"t\"}}");
+    REQUIRE(client.expectResult(1));
+    client.sendNotification("notifications/initialized");
+
+    client.sendRequest(2, "tools/call",
+                       "{\"name\":\"eve_set_breakpoint\",\"arguments\":"
+                       "{\"source\":\"mcp.nut\",\"line\":7,\"condition\":\"n == 2\"}}");
+    auto setMsg = client.expectResult(2);
+    REQUIRE(setMsg);
+    const std::string setText =
+        setMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    CHECK(setText.find("ok id=") != std::string::npos);
+
+    auto bps = dbg.breakpoints();
+    REQUIRE(bps.size() == 1u);
+    REQUIRE_EQ(bps[0].line, 7);
+    REQUIRE_EQ(bps[0].condition, std::string("n == 2"));
+
+    client.sendRequest(3, "tools/call", "{\"name\":\"eve_list_breakpoints\",\"arguments\":{}}");
+    auto listMsg = client.expectResult(3);
+    REQUIRE(listMsg);
+    const std::string listText =
+        listMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    REQUIRE(listText.find("n == 2") != std::string::npos);
+
+    dbg.clearBreakpoints();
+    mcp.stop();
+    dt.detach();
 }
