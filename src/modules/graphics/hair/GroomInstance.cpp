@@ -106,13 +106,27 @@ Result<void> GroomInstance::bakeProceduralMesh(const float *posXYZ, const float 
 
 void GroomInstance::setForcedLod(int lod) { forcedLod_ = lod; }
 
+int GroomInstance::getForcedLod() const { return forcedLod_; }
+
 void GroomInstance::setScreenSize(float screenSize) {
     screenSize_ = std::clamp(screenSize, 0.f, 1.f);
 }
 
+float GroomInstance::getScreenSize() const { return screenSize_; }
+
 void GroomInstance::setWidthScale(float scale) { widthScale_ = scale > 1e-6f ? scale : 1e-6f; }
 
+float GroomInstance::getWidthScale() const { return widthScale_; }
+
 void GroomInstance::setSideHint(float x, float y, float z) { sideHint_ = glm::vec3(x, y, z); }
+
+Mesh *GroomInstance::getMesh() const { return mesh_; }
+
+Shader *GroomInstance::getShader() const { return shader_; }
+
+Texture *GroomInstance::getTexture() const { return texture_; }
+
+size_t GroomInstance::getGroupCount() const { return asset_.groupCount(); }
 
 Result<void> GroomInstance::rebuild() {
     const GroomGroup *group = primaryGroup();

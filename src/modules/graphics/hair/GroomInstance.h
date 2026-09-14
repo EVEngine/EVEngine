@@ -52,14 +52,14 @@ public:
 
     /** @brief Force LOD index; -1 restores automatic selection. */
     void setForcedLod(int lod);
-    [[nodiscard]] int getForcedLod() const { return forcedLod_; }
+    [[nodiscard]] int getForcedLod() const;
 
     /** @brief Screen-size hint in [0,1] used when forced LOD is disabled. */
     void setScreenSize(float screenSize);
-    [[nodiscard]] float getScreenSize() const { return screenSize_; }
+    [[nodiscard]] float getScreenSize() const;
 
     void setWidthScale(float scale);
-    [[nodiscard]] float getWidthScale() const { return widthScale_; }
+    [[nodiscard]] float getWidthScale() const;
 
     void setSideHint(float x, float y, float z);
 
@@ -69,12 +69,12 @@ public:
     void draw(const glm::mat4 &model);
     void draw();
 
-    [[nodiscard]] Mesh *getMesh() const { return mesh_; }
-    [[nodiscard]] Shader *getShader() const { return shader_; }
-    [[nodiscard]] Texture *getTexture() const { return texture_; }
+    [[nodiscard]] Mesh *getMesh() const;
+    [[nodiscard]] Shader *getShader() const;
+    [[nodiscard]] Texture *getTexture() const;
     [[nodiscard]] int getCurveCount() const;
     [[nodiscard]] int getPointCount() const;
-    [[nodiscard]] size_t getGroupCount() const { return asset_.groupCount(); }
+    [[nodiscard]] size_t getGroupCount() const;
 
 private:
     [[nodiscard]] Result<void> bakeFromStrands(StrandsDatas strands, const char *debugName);
