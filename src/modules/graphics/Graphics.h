@@ -1169,11 +1169,15 @@ public:
      * (lifetime fade in/out); `normalStrength` / `roughnessStrength` /
      * `metalStrength` / `emissiveStrength` gate the per-channel blend in
      * mesh3d.frag.
+     * @param blendMode 0 = premultiplied over, 1 = additive (emissive).
+     * @param projectionMode 0 = planar (local.xy), 1 = triplanar (YZ/XZ/XY blend).
+     * @param blendSharpness Triplanar normal-weight exponent (ignored when planar).
      */
     virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                            Texture *params, const float uvRect[4], float fade,
                            float normalStrength, float roughnessStrength, float metalStrength,
-                           float emissiveStrength, int blendMode = 0) = 0;
+                           float emissiveStrength, int blendMode = 0, int projectionMode = 0,
+                           float blendSharpness = 4.f) = 0;
     virtual void endDecalPass() = 0;
 
     /**

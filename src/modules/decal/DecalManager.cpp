@@ -189,13 +189,31 @@ bool DecalManager::setBlend(int id, const std::string &mode) {
     return false;
 }
 
+bool DecalManager::setProjection(int id, const std::string &mode, float blendSharpness) {
+    int projection = 0;
+    if (mode == "triplanar")
+        projection = 1;
+    else if (mode != "planar" && !mode.empty())
+        return false;
+    if (!std::isfinite(blendSharpness) || blendSharpness <= 0.f) return false;
+    for (auto &d : decals_) {
+        if (d.id != id) continue;
+        d.projectionMode = projection;
+        d.blendSharpness = blendSharpness;
+        return true;
+    }
+    return false;
+}
+
 int DecalManager::replace(int previousId, DecalInstance candidate) {
     const float normalLength2 = candidate.nx * candidate.nx + candidate.ny * candidate.ny +
                                 candidate.nz * candidate.nz;
     if (!std::isfinite(normalLength2) || normalLength2 <= 1e-12f ||
         !std::isfinite(candidate.size) || candidate.size <= 0.f ||
         !std::isfinite(candidate.depth) || candidate.depth <= 0.f ||
-        candidate.blendMode < 0 || candidate.blendMode > 1)
+        candidate.blendMode < 0 || candidate.blendMode > 1 || candidate.projectionMode < 0 ||
+        candidate.projectionMode > 1 || !std::isfinite(candidate.blendSharpness) ||
+        candidate.blendSharpness <= 0.f)
         return 0;
     std::vector<DecalInstance> next = decals_;
     if (previousId != 0) {
@@ -272,7 +290,7 @@ void DecalManager::drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, floa
         if (fade <= 0.001f) continue;
         gfx.drawDecal(decalModel(d), d.albedo, d.normal, d.params, d.uvRect, fade,
                       d.normalStrength, d.roughnessStrength, d.metalStrength, d.emissiveStrength,
-                      d.blendMode);
+                      d.blendMode, d.projectionMode, d.blendSharpness);
     }
 }
 

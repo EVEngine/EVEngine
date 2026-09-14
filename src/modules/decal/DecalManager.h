@@ -33,7 +33,9 @@ struct DecalInstance {
     float roughnessStrength = 0.f;
     float metalStrength = 0.f;
     float emissiveStrength = 0.f;
-    int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
+    int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
+    int projectionMode = 0;  // 0 = planar (local.xy), 1 = triplanar
+    float blendSharpness = 4.f;
     std::string kind;  // quota group ("blood", "dirt", ...)
 };
 
@@ -65,6 +67,11 @@ public:
     bool setUvRect(int id, float x, float y, float w, float h);
     bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
     bool setBlend(int id, const std::string &mode);
+    /**
+     * @brief Projection mode: "planar" (default) or "triplanar".
+     * @param blendSharpness Triplanar |n|^exponent; higher = sharper plane seams.
+     */
+    bool setProjection(int id, const std::string &mode, float blendSharpness = 4.f);
 
     /**
      * @brief Atomically install a fully configured instance and remove a previous generation.

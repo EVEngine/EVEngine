@@ -852,7 +852,8 @@ void Graphics::setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ
 void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
-                         float emissiveStrength, int blendMode) {
+                         float emissiveStrength, int blendMode, int projectionMode,
+                         float blendSharpness) {
     if (!decalPassActive) throw Exception("drawDecal: call beginDecalPass first");
     DecalDraw d{};
     d.model = model;
@@ -868,6 +869,8 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     d.metalStrength = metalStrength;
     d.emissiveStrength = emissiveStrength;
     d.blendMode = blendMode == 1 ? 1 : 0;
+    d.projectionMode = projectionMode == 1 ? 1 : 0;
+    d.blendSharpness = blendSharpness > 0.f ? blendSharpness : 4.f;
     if (decalPassDraws.size() >= kMaxDecalInstances) return;  // SSBO capacity guard
     decalPassDraws.push_back(d);
 }
@@ -950,7 +953,8 @@ void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBuffe
         inst.uvRect = glm::vec4(d.uvRect[0], d.uvRect[1], d.uvRect[2], d.uvRect[3]);
         inst.fadeParams =
             glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
-        inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode), 0.f, 0.f);
+        inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode),
+                                     float(d.projectionMode), d.blendSharpness);
         const vkb::BoundSet set = decalSetFor(slot, gpuAlb, gpuNrm, gpuPrm, &gslot.depthGpu,
                                               &gslot.normalGpu);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,

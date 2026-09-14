@@ -18,6 +18,8 @@
 #include <SDL2/SDL.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -115,6 +117,14 @@ TEST_CASE("decal.managerAtlasBlendSetters") {
     CHECK(mgr.setBlend(id, "over"));
     CHECK(mgr.instances()[0].blendMode == 0);
     CHECK(!mgr.setBlend(id, "bogus"));  // unknown mode rejected
+
+    CHECK(mgr.setProjection(id, "triplanar", 8.f));
+    CHECK(mgr.instances()[0].projectionMode == 1);
+    CHECK(mgr.instances()[0].blendSharpness == 8.f);
+    CHECK(mgr.setProjection(id, "planar", 4.f));
+    CHECK(mgr.instances()[0].projectionMode == 0);
+    CHECK(!mgr.setProjection(id, "bogus", 4.f));
+    CHECK(!mgr.setProjection(id, "triplanar", 0.f));  // sharpness must be > 0
 
     CHECK(mgr.setTextures(id, nullptr, nullptr));
     CHECK(!mgr.setUvRect(99999, 0.f, 0.f, 1.f, 1.f));  // unknown id
@@ -347,6 +357,47 @@ TEST_CASE("decal.gpuHeadlessProjectionReadback") {
     const uint8_t *corner = at(4, 4);
     CHECK_LT(corner[0], 20);  // outside the unit box -> layer stays cleared
     delete img;
+}
+
+// Triplanar mode paints a wall that classic planar projection discards (facing
+// nearly orthogonal to the decal forward). Planar leaves the layer clear.
+TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
+    eve::graphics::Graphics *gfx = nullptr;
+    openHeadlessGfx(gfx, 160, 120);
+
+    auto *wall = makePlane(gfx, 2.f);  // XY plane, normal +Z
+    REQUIRE(wall != nullptr);
+    gfx->getRenderControl()->enable("decal");
+    gfx->getRenderControl()->compile();
+
+    gfx->beginGBufferPass(160, 120);
+    gfx->drawMeshGBuffer(wall, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f,
+                         makeSolidTex(gfx, 255, 255, 255));
+    gfx->endGBufferPass();
+
+    auto *decalTex = makeSolidTex(gfx, 200, 20, 20);
+    // Orient decal forward along +Y (orthogonal to the wall normal +Z).
+    const glm::mat4 model =
+        glm::scale(glm::mat4_cast(glm::rotation(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f))),
+                   glm::vec3(2.f, 2.f, 2.f));
+
+    auto layerCenterRed = [&](int projectionMode) -> bool {
+        gfx->beginDecalPass(160, 120);
+        gfx->setDecalCamera(glm::mat4(1.f), 0.1f, 100.f);
+        gfx->drawDecal(model, decalTex, nullptr, nullptr, nullptr, 1.f, 0.f, 0.f, 0.f, 0.f, 0,
+                       projectionMode, 4.f);
+        gfx->endDecalPass();
+        auto *img = gfx->readDecalLayerToImageData("albedo");
+        REQUIRE(img != nullptr);
+        const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+        const uint8_t *center = px + (size_t(60) * 160u + size_t(80)) * 4u;
+        const bool red = center[0] > 150 && center[1] < 80;
+        delete img;
+        return red;
+    };
+
+    CHECK(!layerCenterRed(0));  // planar rejects grazing faces
+    CHECK(layerCenterRed(1));   // triplanar keeps them
 }
 
 namespace {
