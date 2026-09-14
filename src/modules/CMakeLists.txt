@@ -277,6 +277,12 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+if(TARGET EVAnimation_editor AND _has_animation_editor_bridge)
+  # Runtime clip/skeleton import is an optional bridge. Web authoring profiles
+  # retain the standalone clip editor without pulling Assimp/model3d into WASM.
+  target_compile_definitions(EVAnimation_editor PRIVATE EVE_ANIMATION_EDITOR_RUNTIME=1)
+endif()
+
 # create_module() globs both physics bridge TUs; keep exactly one.
 eve_module_enabled(vehicle _has_vehicle)
 eve_module_enabled(physics _has_physics)

@@ -124,7 +124,7 @@ eve_declare_module(NAME voxelworld_target DIR voxel/voxelworld_target LAYER 7
 # domain editing implementation.
 eve_declare_module(NAME action_editor LAYER 7 SCRIPT ActionEditorModule SLOT actionEditor
                    DEPS action animation editor GROUP 3d)
-eve_declare_module(NAME animation_editor LAYER 7 DEPS animation animation_editing editor
+eve_declare_module(NAME animation_editor LAYER 7 DEPS animation_editing editor
                    SCRIPT AnimationEditorModule SLOT animationEditor GROUP 3d web)
 eve_declare_module(NAME audio_editor LAYER 7 SCRIPT AudioEditorModule SLOT audioEditor
                    DEPS audio_editing editor OPTIONAL_DEPS audio sound GROUP 3d web)
