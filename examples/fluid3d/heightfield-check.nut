@@ -1,0 +1,16 @@
+local definition = checked(fluids.volumeDefaults());
+definition.settings.gravity = [0.0, 0.0, 0.0];
+definition.particles = [];
+local localSolver = checked(fluids.newVolumeSimulator(definition));
+local terrain = checked(fluids.volumeHeightFieldColliderDefaults());
+terrain.label = 71;
+terrain.resolution = [2, 2];
+terrain.size = [1.0, 1.0, 1.0];
+terrain.heights = [0.0, 0.5, 0.0, 0.5];
+checked(localSolver.setHeightFieldColliders([terrain]));
+local particle = checked(fluids.volumeEmissionDefaults()).description.prototype;
+particle.position = [0.5, 0.1, 0.5];
+checked(localSolver.emit([particle]));
+checked(localSolver.step(1.0 / 120.0, 1));
+if (checked(localSolver.contacts()).len() != 1) throw "height-field contact missing";
+::heightFieldPass <- true;

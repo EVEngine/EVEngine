@@ -446,6 +446,8 @@ public:
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    eve::Result<void> updateTextureFromResidentRgba8(Texture* texture, const GpuResidentBufferView& source, int width,
+                                                     int height) override;
     eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
                                           int height, std::span<const std::uint8_t> rgba,
                                           std::size_t bytesPerRow = 0) override;

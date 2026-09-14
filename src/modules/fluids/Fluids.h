@@ -21,6 +21,7 @@
 #include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceFluidSceneRenderer.h"
 #include "fluids/SurfaceWetnessField.h"
+#include "fluids/VolumeFluidShadowCaster.h"
 #include "physics/backend/SimulationBackend.h"
 
 #include <glm/glm.hpp>
@@ -172,6 +173,7 @@ private:
     eve::gpgpu::ComputeShader* shDelta_         = nullptr;
     eve::gpgpu::ComputeShader* shApply_         = nullptr;
     eve::gpgpu::ComputeShader* shIntegrate_     = nullptr;
+    eve::gpgpu::ComputeShader* shAdvance_       = nullptr;
     eve::gpgpu::GpuBuffer*     bufPos_          = nullptr;
     eve::gpgpu::GpuBuffer*     bufVel_          = nullptr;
     eve::gpgpu::GpuBuffer*     bufHead_         = nullptr;
@@ -206,6 +208,12 @@ public:
      * @param width target width in pixels.
      * @param height target height in pixels.
      * @return renderer owned by the module.
+     */
+    /**
+     * @brief Creates the shared screen-space fluid renderer.
+     * @details Dimensions are clamped to [8,1024]
+     * to bound CPU scratch storage,
+     * Vulkan buffers and synchronous readback cost. Owned by this module.
      */
     FluidSurfaceRenderer* newSurfaceRenderer(int width = 160, int height = 160);
 
