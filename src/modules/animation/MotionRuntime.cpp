@@ -52,6 +52,113 @@ eve::Result<void> MotionRuntime::validateStyle(MotionStyle style, int frequency,
 }
 
 
+void MotionRuntime::recycleFloat(FloatSlot &slot) {
+    slot.sink       = nullptr;
+    slot.onUpdate   = {};
+    slot.onComplete = {};
+    slot.onCancel   = {};
+    const auto index = static_cast<std::uint32_t>(&slot - floats_.data());
+    freeFloats_.push_back(index);
+}
+
+void MotionRuntime::recycleVec2(Vec2Slot &slot) {
+    slot.sink       = nullptr;
+    slot.onUpdate   = {};
+    slot.onComplete = {};
+    slot.onCancel   = {};
+    const auto index = static_cast<std::uint32_t>(&slot - vec2s_.data());
+    freeVec2s_.push_back(index);
+}
+
+void MotionRuntime::recycleVec3(Vec3Slot &slot) {
+    slot.sink       = nullptr;
+    slot.onUpdate   = {};
+    slot.onComplete = {};
+    slot.onCancel   = {};
+    const auto index = static_cast<std::uint32_t>(&slot - vec3s_.data());
+    freeVec3s_.push_back(index);
+}
+
+void MotionRuntime::recycleColor(ColorSlot &slot) {
+    slot.sink       = nullptr;
+    slot.onUpdate   = {};
+    slot.onComplete = {};
+    slot.onCancel   = {};
+    const auto index = static_cast<std::uint32_t>(&slot - colors_.data());
+    freeColors_.push_back(index);
+}
+
+void MotionRuntime::recycleQuat(QuatSlot &slot) {
+    slot.sink       = nullptr;
+    slot.onUpdate   = {};
+    slot.onComplete = {};
+    slot.onCancel   = {};
+    const auto index = static_cast<std::uint32_t>(&slot - quats_.data());
+    freeQuats_.push_back(index);
+}
+
+void MotionRuntime::ensureFloatCapacity(std::size_t count) {
+    floats_.reserve(count);
+    freeFloats_.reserve(count);
+    while (floats_.size() < count) {
+        FloatSlot slot;
+        slot.phase      = Phase::Inactive;
+        slot.generation = 1;
+        floats_.push_back(std::move(slot));
+        freeFloats_.push_back(static_cast<std::uint32_t>(floats_.size() - 1));
+    }
+}
+
+void MotionRuntime::ensureVec2Capacity(std::size_t count) {
+    vec2s_.reserve(count);
+    freeVec2s_.reserve(count);
+    while (vec2s_.size() < count) {
+        Vec2Slot slot;
+        slot.phase      = Phase::Inactive;
+        slot.generation = 1;
+        vec2s_.push_back(std::move(slot));
+        freeVec2s_.push_back(static_cast<std::uint32_t>(vec2s_.size() - 1));
+    }
+}
+
+void MotionRuntime::ensureVec3Capacity(std::size_t count) {
+    vec3s_.reserve(count);
+    freeVec3s_.reserve(count);
+    while (vec3s_.size() < count) {
+        Vec3Slot slot;
+        slot.phase      = Phase::Inactive;
+        slot.generation = 1;
+        vec3s_.push_back(std::move(slot));
+        freeVec3s_.push_back(static_cast<std::uint32_t>(vec3s_.size() - 1));
+    }
+}
+
+void MotionRuntime::ensureColorCapacity(std::size_t count) {
+    colors_.reserve(count);
+    freeColors_.reserve(count);
+    while (colors_.size() < count) {
+        ColorSlot slot;
+        slot.phase      = Phase::Inactive;
+        slot.generation = 1;
+        colors_.push_back(std::move(slot));
+        freeColors_.push_back(static_cast<std::uint32_t>(colors_.size() - 1));
+    }
+}
+
+void MotionRuntime::ensureQuatCapacity(std::size_t count) {
+    quats_.reserve(count);
+    freeQuats_.reserve(count);
+    while (quats_.size() < count) {
+        QuatSlot slot;
+        slot.phase      = Phase::Inactive;
+        slot.generation = 1;
+        quats_.push_back(std::move(slot));
+        freeQuats_.push_back(static_cast<std::uint32_t>(quats_.size() - 1));
+    }
+}
+
+
+
 eve::Result<void> MotionRuntime::applyFloat(FloatSlot &slot, float linearT, bool fireUpdate) {
     const float eased = evaluateMotionEase(linearT, slot.ease.c_str());
     if (slot.style == MotionStyle::Tween) {
@@ -72,6 +179,7 @@ eve::Result<void> MotionRuntime::applyFloat(FloatSlot &slot, float linearT, bool
                 slot.phase = Phase::Cancelled;
                 if (slot.onCancel) slot.onCancel();
                 bumpGeneration(slot.generation);
+                recycleFloat(slot);
             }
             return written;
         }
@@ -106,6 +214,7 @@ eve::Result<void> MotionRuntime::applyVec2(Vec2Slot &slot, float linearT, bool f
                 slot.phase = Phase::Cancelled;
                 if (slot.onCancel) slot.onCancel();
                 bumpGeneration(slot.generation);
+                recycleVec2(slot);
             }
             return written;
         }
@@ -141,6 +250,7 @@ eve::Result<void> MotionRuntime::applyVec3(Vec3Slot &slot, float linearT, bool f
                 slot.phase = Phase::Cancelled;
                 if (slot.onCancel) slot.onCancel();
                 bumpGeneration(slot.generation);
+                recycleVec3(slot);
             }
             return written;
         }
@@ -160,6 +270,7 @@ eve::Result<void> MotionRuntime::finishFloat(FloatSlot &slot) {
         slot.phase = Phase::Completed;
         if (slot.onComplete) slot.onComplete();
         bumpGeneration(slot.generation);
+        recycleFloat(slot);
         return okApplied();
     }
     if (slot.loopMode == MotionLoopMode::Yoyo) slot.reverse = !slot.reverse;
@@ -177,6 +288,7 @@ eve::Result<void> MotionRuntime::finishVec2(Vec2Slot &slot) {
         slot.phase = Phase::Completed;
         if (slot.onComplete) slot.onComplete();
         bumpGeneration(slot.generation);
+        recycleVec2(slot);
         return okApplied();
     }
     if (slot.loopMode == MotionLoopMode::Yoyo) slot.reverse = !slot.reverse;
@@ -194,6 +306,7 @@ eve::Result<void> MotionRuntime::finishVec3(Vec3Slot &slot) {
         slot.phase = Phase::Completed;
         if (slot.onComplete) slot.onComplete();
         bumpGeneration(slot.generation);
+        recycleVec3(slot);
         return okApplied();
     }
     if (slot.loopMode == MotionLoopMode::Yoyo) slot.reverse = !slot.reverse;
@@ -317,32 +430,28 @@ eve::Result<MotionHandle> MotionRuntime::occupyFloat(FloatSlot slot) {
     slot.current = slot.from;
 
     std::uint32_t index = 0;
-    bool          found = false;
-    for (; index < floats_.size(); ++index) {
-        if (floats_[index].phase == Phase::Inactive || floats_[index].phase == Phase::Completed ||
-            floats_[index].phase == Phase::Cancelled) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        index = static_cast<std::uint32_t>(floats_.size());
-        floats_.push_back(std::move(slot));
-    } else {
+    if (!freeFloats_.empty()) {
+        index = freeFloats_.back();
+        freeFloats_.pop_back();
         const std::uint32_t gen = floats_[index].generation == 0 ? 1u : floats_[index].generation;
         floats_[index]            = std::move(slot);
         floats_[index].generation = gen;
+    } else {
+        index = static_cast<std::uint32_t>(floats_.size());
+        floats_.push_back(std::move(slot));
     }
 
     MotionHandle handle{index, floats_[index].generation};
     if (floats_[index].phase == Phase::Running) {
         auto applied = applyFloat(floats_[index], 0.f, true);
         if (!applied) return eve::Result<MotionHandle>::failure(applied.status());
-        if (floats_[index].phase != Phase::Running) return eve::Result<MotionHandle>::failure(staleDiag());
+        if (floats_[index].phase != Phase::Running)
+            return eve::Result<MotionHandle>::failure(staleDiag());
         handle.generation = floats_[index].generation;
     }
     return eve::Result<MotionHandle>::success(handle);
 }
+
 
 eve::Result<MotionHandle> MotionRuntime::occupyVec2(Vec2Slot slot) {
     slot.phase   = slot.delayLeft > 0.f ? Phase::Delayed : Phase::Running;
@@ -352,32 +461,28 @@ eve::Result<MotionHandle> MotionRuntime::occupyVec2(Vec2Slot slot) {
     slot.current = slot.from;
 
     std::uint32_t index = 0;
-    bool          found = false;
-    for (; index < vec2s_.size(); ++index) {
-        if (vec2s_[index].phase == Phase::Inactive || vec2s_[index].phase == Phase::Completed ||
-            vec2s_[index].phase == Phase::Cancelled) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        index = static_cast<std::uint32_t>(vec2s_.size());
-        vec2s_.push_back(std::move(slot));
-    } else {
+    if (!freeVec2s_.empty()) {
+        index = freeVec2s_.back();
+        freeVec2s_.pop_back();
         const std::uint32_t gen = vec2s_[index].generation == 0 ? 1u : vec2s_[index].generation;
         vec2s_[index]            = std::move(slot);
         vec2s_[index].generation = gen;
+    } else {
+        index = static_cast<std::uint32_t>(vec2s_.size());
+        vec2s_.push_back(std::move(slot));
     }
 
     MotionHandle handle{index, vec2s_[index].generation};
     if (vec2s_[index].phase == Phase::Running) {
         auto applied = applyVec2(vec2s_[index], 0.f, true);
         if (!applied) return eve::Result<MotionHandle>::failure(applied.status());
-        if (vec2s_[index].phase != Phase::Running) return eve::Result<MotionHandle>::failure(staleDiag());
+        if (vec2s_[index].phase != Phase::Running)
+            return eve::Result<MotionHandle>::failure(staleDiag());
         handle.generation = vec2s_[index].generation;
     }
     return eve::Result<MotionHandle>::success(handle);
 }
+
 
 eve::Result<MotionHandle> MotionRuntime::occupyVec3(Vec3Slot slot) {
     slot.phase   = slot.delayLeft > 0.f ? Phase::Delayed : Phase::Running;
@@ -387,32 +492,28 @@ eve::Result<MotionHandle> MotionRuntime::occupyVec3(Vec3Slot slot) {
     slot.current = slot.from;
 
     std::uint32_t index = 0;
-    bool          found = false;
-    for (; index < vec3s_.size(); ++index) {
-        if (vec3s_[index].phase == Phase::Inactive || vec3s_[index].phase == Phase::Completed ||
-            vec3s_[index].phase == Phase::Cancelled) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        index = static_cast<std::uint32_t>(vec3s_.size());
-        vec3s_.push_back(std::move(slot));
-    } else {
+    if (!freeVec3s_.empty()) {
+        index = freeVec3s_.back();
+        freeVec3s_.pop_back();
         const std::uint32_t gen = vec3s_[index].generation == 0 ? 1u : vec3s_[index].generation;
         vec3s_[index]            = std::move(slot);
         vec3s_[index].generation = gen;
+    } else {
+        index = static_cast<std::uint32_t>(vec3s_.size());
+        vec3s_.push_back(std::move(slot));
     }
 
     MotionHandle handle{index, vec3s_[index].generation};
     if (vec3s_[index].phase == Phase::Running) {
         auto applied = applyVec3(vec3s_[index], 0.f, true);
         if (!applied) return eve::Result<MotionHandle>::failure(applied.status());
-        if (vec3s_[index].phase != Phase::Running) return eve::Result<MotionHandle>::failure(staleDiag());
+        if (vec3s_[index].phase != Phase::Running)
+            return eve::Result<MotionHandle>::failure(staleDiag());
         handle.generation = vec3s_[index].generation;
     }
     return eve::Result<MotionHandle>::success(handle);
 }
+
 
 eve::Result<MotionHandle> MotionRuntime::spawnFloat(const FloatDesc &desc) {
     auto valid = validateDesc(desc.duration, desc.delay, desc.loops, desc.ease.empty() ? "linear" : desc.ease);
@@ -554,30 +655,35 @@ eve::Result<void> MotionRuntime::cancel(MotionHandle handle) {
         slot->phase = Phase::Cancelled;
         if (slot->onCancel) slot->onCancel();
         bumpGeneration(slot->generation);
+        recycleFloat(*slot);
         return okApplied();
     }
     if (auto *slot = const_cast<Vec2Slot *>(resolveVec2(handle))) {
         slot->phase = Phase::Cancelled;
         if (slot->onCancel) slot->onCancel();
         bumpGeneration(slot->generation);
+        recycleVec2(*slot);
         return okApplied();
     }
     if (auto *slot = const_cast<Vec3Slot *>(resolveVec3(handle))) {
         slot->phase = Phase::Cancelled;
         if (slot->onCancel) slot->onCancel();
         bumpGeneration(slot->generation);
+        recycleVec3(*slot);
         return okApplied();
     }
     if (auto *slot = const_cast<ColorSlot *>(resolveColor(handle))) {
         slot->phase = Phase::Cancelled;
         if (slot->onCancel) slot->onCancel();
         bumpGeneration(slot->generation);
+        recycleColor(*slot);
         return okApplied();
     }
     if (auto *slot = const_cast<QuatSlot *>(resolveQuat(handle))) {
         slot->phase = Phase::Cancelled;
         if (slot->onCancel) slot->onCancel();
         bumpGeneration(slot->generation);
+        recycleQuat(*slot);
         return okApplied();
     }
     return eve::Result<void>::failure(staleDiag());
@@ -642,6 +748,7 @@ eve::Result<void> MotionRuntime::applyColor(ColorSlot &slot, float linearT, bool
                 slot.phase = Phase::Cancelled;
                 if (slot.onCancel) slot.onCancel();
                 bumpGeneration(slot.generation);
+                recycleColor(slot);
             }
             return written;
         }
@@ -662,6 +769,7 @@ eve::Result<void> MotionRuntime::applyQuat(QuatSlot &slot, float linearT, bool f
                 slot.phase = Phase::Cancelled;
                 if (slot.onCancel) slot.onCancel();
                 bumpGeneration(slot.generation);
+                recycleQuat(slot);
             }
             return written;
         }
@@ -680,6 +788,7 @@ eve::Result<void> MotionRuntime::finishColor(ColorSlot &slot) {
         slot.phase = Phase::Completed;
         if (slot.onComplete) slot.onComplete();
         bumpGeneration(slot.generation);
+        recycleColor(slot);
         return okApplied();
     }
     if (slot.loopMode == MotionLoopMode::Yoyo) slot.reverse = !slot.reverse;
@@ -697,6 +806,7 @@ eve::Result<void> MotionRuntime::finishQuat(QuatSlot &slot) {
         slot.phase = Phase::Completed;
         if (slot.onComplete) slot.onComplete();
         bumpGeneration(slot.generation);
+        recycleQuat(slot);
         return okApplied();
     }
     if (slot.loopMode == MotionLoopMode::Yoyo) slot.reverse = !slot.reverse;
@@ -784,32 +894,28 @@ eve::Result<MotionHandle> MotionRuntime::occupyColor(ColorSlot slot) {
     slot.current = slot.from;
 
     std::uint32_t index = 0;
-    bool          found = false;
-    for (; index < colors_.size(); ++index) {
-        if (colors_[index].phase == Phase::Inactive || colors_[index].phase == Phase::Completed ||
-            colors_[index].phase == Phase::Cancelled) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        index = static_cast<std::uint32_t>(colors_.size());
-        colors_.push_back(std::move(slot));
-    } else {
+    if (!freeColors_.empty()) {
+        index = freeColors_.back();
+        freeColors_.pop_back();
         const std::uint32_t gen = colors_[index].generation == 0 ? 1u : colors_[index].generation;
         colors_[index]            = std::move(slot);
         colors_[index].generation = gen;
+    } else {
+        index = static_cast<std::uint32_t>(colors_.size());
+        colors_.push_back(std::move(slot));
     }
 
     MotionHandle handle{index, colors_[index].generation};
     if (colors_[index].phase == Phase::Running) {
         auto applied = applyColor(colors_[index], 0.f, true);
         if (!applied) return eve::Result<MotionHandle>::failure(applied.status());
-        if (colors_[index].phase != Phase::Running) return eve::Result<MotionHandle>::failure(staleDiag());
+        if (colors_[index].phase != Phase::Running)
+            return eve::Result<MotionHandle>::failure(staleDiag());
         handle.generation = colors_[index].generation;
     }
     return eve::Result<MotionHandle>::success(handle);
 }
+
 
 eve::Result<MotionHandle> MotionRuntime::occupyQuat(QuatSlot slot) {
     slot.phase   = slot.delayLeft > 0.f ? Phase::Delayed : Phase::Running;
@@ -819,32 +925,28 @@ eve::Result<MotionHandle> MotionRuntime::occupyQuat(QuatSlot slot) {
     slot.current = slot.from;
 
     std::uint32_t index = 0;
-    bool          found = false;
-    for (; index < quats_.size(); ++index) {
-        if (quats_[index].phase == Phase::Inactive || quats_[index].phase == Phase::Completed ||
-            quats_[index].phase == Phase::Cancelled) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        index = static_cast<std::uint32_t>(quats_.size());
-        quats_.push_back(std::move(slot));
-    } else {
+    if (!freeQuats_.empty()) {
+        index = freeQuats_.back();
+        freeQuats_.pop_back();
         const std::uint32_t gen = quats_[index].generation == 0 ? 1u : quats_[index].generation;
         quats_[index]            = std::move(slot);
         quats_[index].generation = gen;
+    } else {
+        index = static_cast<std::uint32_t>(quats_.size());
+        quats_.push_back(std::move(slot));
     }
 
     MotionHandle handle{index, quats_[index].generation};
     if (quats_[index].phase == Phase::Running) {
         auto applied = applyQuat(quats_[index], 0.f, true);
         if (!applied) return eve::Result<MotionHandle>::failure(applied.status());
-        if (quats_[index].phase != Phase::Running) return eve::Result<MotionHandle>::failure(staleDiag());
+        if (quats_[index].phase != Phase::Running)
+            return eve::Result<MotionHandle>::failure(staleDiag());
         handle.generation = quats_[index].generation;
     }
     return eve::Result<MotionHandle>::success(handle);
 }
+
 
 eve::Result<MotionHandle> MotionRuntime::spawnColor(const ColorDesc &desc) {
     auto valid = validateDesc(desc.duration, desc.delay, desc.loops, desc.ease.empty() ? "linear" : desc.ease);

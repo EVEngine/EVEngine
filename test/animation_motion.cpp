@@ -8,7 +8,12 @@
 
 #include "common/Time.h"
 
+#include <chrono>
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <vector>
 #include <utility>
 
 using namespace eve::animation;
@@ -326,4 +331,86 @@ TEST_CASE("animation.motion.oscillationHelpers") {
     CHECK(std::fabs(a - b) < 1e-6f);  // deterministic
     CHECK(a >= -1.f);
     CHECK(a <= 1.f);
+}
+
+TEST_CASE("animation.motion.ensureCapacityRecycle") {
+    auto *anim = Animation::create();
+    anim->ensureMotionCapacity(128);
+    CHECK_EQ(anim->getMotionFloatCapacity(), 128);
+    CHECK_EQ(anim->getMotionFloatFreeCount(), 128);
+
+    float out = 0.f;
+    FloatPointerSink sink(&out);
+    auto handle = anim->motion(0.f, 1.f, 0.1f).ease("linear").bind(sink).expect("spawn");
+    CHECK_EQ(anim->getMotionFloatFreeCount(), 127);
+    CHECK(anim->motions().isActive(handle));
+
+    {
+        auto advanced = anim->advance(stepAt(1, 0.1));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(!anim->motions().isActive(handle));
+    CHECK_EQ(anim->getMotionFloatFreeCount(), 128);  // recycled
+
+    // churn: spawn/complete many times without growing capacity
+    for (int i = 0; i < 64; ++i) {
+        auto h = anim->motion(0.f, 1.f, 0.05f).ease("linear").bind(sink).expect("churn");
+        auto advanced = anim->advance(stepAt(static_cast<std::uint64_t>(2 + i), 0.05));
+        REQUIRE(advanced.ok());
+        CHECK(!anim->motions().isActive(h));
+    }
+    CHECK_EQ(anim->getMotionFloatCapacity(), 128);
+}
+
+TEST_CASE("animation.motion.floatBufferSinkBatch") {
+    auto *anim = Animation::create();
+    std::vector<float> buffer(8, -1.f);
+    std::vector<std::unique_ptr<FloatBufferSink>> sinks;
+    anim->ensureMotionCapacity(8);
+    for (std::size_t i = 0; i < buffer.size(); ++i) {
+        sinks.push_back(std::make_unique<FloatBufferSink>(buffer.data(), i));
+        anim->motion(0.f, static_cast<float>(i + 1), 1.f)
+            .ease("linear")
+            .bind(*sinks.back())
+            .expect("batch spawn");
+    }
+    {
+        auto advanced = anim->advance(stepAt(1, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    for (std::size_t i = 0; i < buffer.size(); ++i) {
+        CHECK(std::fabs(buffer[i] - 0.5f * static_cast<float>(i + 1)) < 1e-3f);
+    }
+}
+
+TEST_CASE("animation.motion.bench10kFloatAdvance") {
+    if (!std::getenv("EVENGINE_MOTION_BENCH")) return;
+
+    constexpr int kCount = 10000;
+    constexpr int kFrames = 120;
+    auto *anim = Animation::create();
+    anim->ensureMotionCapacity(static_cast<std::size_t>(kCount));
+
+    std::vector<float> buffer(static_cast<std::size_t>(kCount), 0.f);
+    std::vector<std::unique_ptr<FloatBufferSink>> sinks;
+    sinks.reserve(static_cast<std::size_t>(kCount));
+    for (int i = 0; i < kCount; ++i) {
+        sinks.push_back(std::make_unique<FloatBufferSink>(buffer.data(), static_cast<std::size_t>(i)));
+        anim->motion(0.f, 1.f, 1.f).ease("linear").bind(*sinks.back()).expect("bench spawn");
+    }
+    CHECK_EQ(anim->getMotionCount(), kCount);
+
+    using clock = std::chrono::steady_clock;
+    const auto t0 = clock::now();
+    for (int f = 0; f < kFrames; ++f) {
+        auto advanced = anim->advance(stepAt(static_cast<std::uint64_t>(1 + f), 1.0 / 60.0));
+        REQUIRE(advanced.ok());
+    }
+    const auto t1 = clock::now();
+    const double ms =
+        std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(t1 - t0).count();
+    std::cout << "[motion-bench] N=" << kCount << " frames=" << kFrames << " total_ms=" << ms
+              << " per_frame_ms=" << (ms / kFrames) << " active=" << anim->getMotionCount()
+              << std::endl;
+    CHECK(ms > 0.0);
 }

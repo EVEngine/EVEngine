@@ -261,6 +261,18 @@ public:
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
     int getMotionCount() const { return motions_.activeCount(); }
+
+    /**
+     * @brief Pre-size motion float pool for churn-free spawn (Phase 4).
+     * @param floatCount Target number of float slots (Inactive + free-list).
+     */
+    void ensureMotionCapacity(std::size_t floatCount) { motions_.ensureCapacity(floatCount); }
+    [[nodiscard]] std::size_t getMotionFloatCapacity() const noexcept {
+        return motions_.floatCapacity();
+    }
+    [[nodiscard]] std::size_t getMotionFloatFreeCount() const noexcept {
+        return motions_.floatFreeCount();
+    }
     int getSpriteAnimCount() const { return static_cast<int>(spriteAnims_.size()); }
     int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
     int getActiveCount() const;

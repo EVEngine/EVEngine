@@ -129,11 +129,25 @@ public:
     MotionRuntime(const MotionRuntime &)            = delete;
     MotionRuntime &operator=(const MotionRuntime &) = delete;
 
-    void ensureFloatCapacity(std::size_t count) { floats_.reserve(count); }
-    void ensureVec2Capacity(std::size_t count) { vec2s_.reserve(count); }
-    void ensureVec3Capacity(std::size_t count) { vec3s_.reserve(count); }
-    void ensureColorCapacity(std::size_t count) { colors_.reserve(count); }
-    void ensureQuatCapacity(std::size_t count) { quats_.reserve(count); }
+    /**
+     * @brief Pre-size float pool slots (Inactive) and reserve storage.
+     * @note Enables O(1) spawn via the free-list without reallocation churn.
+     */
+    void ensureFloatCapacity(std::size_t count);
+    void ensureVec2Capacity(std::size_t count);
+    void ensureVec3Capacity(std::size_t count);
+    void ensureColorCapacity(std::size_t count);
+    void ensureQuatCapacity(std::size_t count);
+
+    /** @brief Convenience: ensure float pool capacity (primary hot path). */
+    void ensureCapacity(std::size_t floatCount) { ensureFloatCapacity(floatCount); }
+
+    [[nodiscard]] std::size_t floatCapacity() const noexcept { return floats_.size(); }
+    [[nodiscard]] std::size_t floatFreeCount() const noexcept { return freeFloats_.size(); }
+    [[nodiscard]] std::size_t vec2Capacity() const noexcept { return vec2s_.size(); }
+    [[nodiscard]] std::size_t vec3Capacity() const noexcept { return vec3s_.size(); }
+    [[nodiscard]] std::size_t colorCapacity() const noexcept { return colors_.size(); }
+    [[nodiscard]] std::size_t quatCapacity() const noexcept { return quats_.size(); }
 
     [[nodiscard]] eve::Result<MotionHandle> spawnFloat(const FloatDesc &desc);
     [[nodiscard]] eve::Result<MotionHandle> spawnVec2(const Vec2Desc &desc);
@@ -271,6 +285,12 @@ private:
     [[nodiscard]] eve::Result<MotionHandle> occupyColor(ColorSlot slot);
     [[nodiscard]] eve::Result<MotionHandle> occupyQuat(QuatSlot slot);
 
+    void recycleFloat(FloatSlot &slot);
+    void recycleVec2(Vec2Slot &slot);
+    void recycleVec3(Vec3Slot &slot);
+    void recycleColor(ColorSlot &slot);
+    void recycleQuat(QuatSlot &slot);
+
     [[nodiscard]] static eve::Result<void> validateDesc(float duration, float delay, int loops,
                                                         const std::string &ease);
     [[nodiscard]] static eve::Result<void> validateStyle(MotionStyle style, int frequency,
@@ -281,6 +301,11 @@ private:
     std::vector<Vec3Slot>  vec3s_;
     std::vector<ColorSlot> colors_;
     std::vector<QuatSlot>  quats_;
+    std::vector<std::uint32_t> freeFloats_;
+    std::vector<std::uint32_t> freeVec2s_;
+    std::vector<std::uint32_t> freeVec3s_;
+    std::vector<std::uint32_t> freeColors_;
+    std::vector<std::uint32_t> freeQuats_;
     eve::SimulationTick    lastTick_    = eve::SimulationTick::zero();
     bool                   hasLastTick_ = false;
 };

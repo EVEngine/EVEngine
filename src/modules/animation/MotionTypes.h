@@ -10,6 +10,7 @@
 
 #include "common/Result.h"
 
+#include <cstddef>
 #include <cstdint>
 
 namespace eve::animation {
@@ -139,6 +140,23 @@ public:
 private:
     float *target_ = nullptr;
 };
+
+/**
+ * @brief Sink that writes into `buffer[index]` (batch-friendly contiguous target).
+ * @ownership Does not own `buffer`; caller must keep the span alive while bound.
+ */
+class FloatBufferSink final : public IMotionFloatSink {
+public:
+    FloatBufferSink(float *buffer, std::size_t index) : buffer_(buffer), index_(index) {}
+
+    [[nodiscard]] eve::Result<void> write(float value) override;
+
+private:
+    float       *buffer_ = nullptr;
+    std::size_t  index_  = 0;
+};
+
+
 
 /**
  * @brief Sink that writes into borrowed float x/y pointers.

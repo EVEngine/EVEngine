@@ -271,6 +271,28 @@ void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
         "newMotionSequence",
         std::function<ScriptMotionSequence *(Animation *)>(
             [](Animation *self) -> ScriptMotionSequence * { return new ScriptMotionSequence(self); }));
+    animationClass.addFunc(
+        "ensureMotionCapacity",
+        std::function<void(Animation *, int)>(
+            [](Animation *self, int count) {
+                if (!self) throw Exception("ensureMotionCapacity: Animation is null");
+                if (count < 0) throw Exception("ensureMotionCapacity: count must be >= 0");
+                self->ensureMotionCapacity(static_cast<std::size_t>(count));
+            }));
+    animationClass.addFunc(
+        "getMotionFloatCapacity",
+        std::function<int(Animation *)>(
+            [](Animation *self) -> int {
+                if (!self) throw Exception("getMotionFloatCapacity: Animation is null");
+                return static_cast<int>(self->getMotionFloatCapacity());
+            }));
+    animationClass.addFunc(
+        "getMotionFloatFreeCount",
+        std::function<int(Animation *)>(
+            [](Animation *self) -> int {
+                if (!self) throw Exception("getMotionFloatFreeCount: Animation is null");
+                return static_cast<int>(self->getMotionFloatFreeCount());
+            }));
 }
 
 }  // namespace eve::animation

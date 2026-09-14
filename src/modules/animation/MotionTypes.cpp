@@ -29,6 +29,16 @@ eve::Result<void> FloatPointerSink::write(float value) {
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
+eve::Result<void> FloatBufferSink::write(float value) {
+    if (!buffer_) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "FloatBufferSink.write: buffer is null"));
+    }
+    buffer_[index_] = value;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+
 eve::Result<void> Vec2PointerSink::write(MotionVec2 value) {
     if (!x_ || !y_) {
         return eve::Result<void>::failure(eve::Diagnostic::error(

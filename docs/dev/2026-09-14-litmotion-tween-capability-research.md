@@ -248,7 +248,7 @@ Squirrel 侧对象若必须存在，用轻量 handle wrapper（只持 `MotionHan
 - 专用振荡 Adapter；Color/Quat 插值（Quat 用 slerp）
 - 可选：文本 scramble（仅当 UI 文本模块有稳定 write sink）
 
-### Phase 4 — 性能硬化
+### Phase 4 — 性能硬化 ✅ 已落地（本分支）
 
 - `ensureCapacity`、池化 recycle、batch binder
 - 基准：N=10k float motion update（对照当前 `vector<Tween*>`）
