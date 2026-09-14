@@ -119,7 +119,7 @@ Result<int> exportTerrainObjectPoints(PointSet& output, const Heightmap& fitness
             const double localZ = z + random.next(float(-jitter), float(jitter)) * 0.5;
             if (localX < 0 || localZ < 0 || localX > s.width || localZ > s.depth) continue;
             const double u = localX / s.width, v = localZ / s.depth;
-            const float strength = textureSample(fitness, u, v);
+            const double strength = textureSample(fitness, u, v);
             if (random.next(s.minimumFitness, 1.0F) > strength) continue;
             const double centerX = s.originX + localX, centerZ = s.originZ + localZ;
             if (s.boundsCollisionCheck && std::any_of(acceptedCenters.begin(), acceptedCenters.end(), [&](const auto& p) {
@@ -151,7 +151,7 @@ Result<int> exportTerrainObjectPoints(PointSet& output, const Heightmap& fitness
                     const double iz = centerZ + std::sin(radians) * offsetX + std::cos(radians) * offsetZ;
                     const double iu = (ix - s.originX) / s.width, iv = (iz - s.originZ) / s.depth;
                     if (iu < 0 || iv < 0 || iu > 1 || iv > 1) continue;
-                    const float instanceStrength = textureSample(fitness, iu, iv);
+                    const double instanceStrength = textureSample(fitness, iu, iv);
                     if (instanceStrength < s.minimumInstanceFitness) continue;
                     if (emitted >= s.maxPoints) return invalid("terrain.objectPoints: point budget exceeded");
                     const Normal normal = normalAt(heights, iu, iv, s.width, s.depth, s.heightScale);

@@ -60,7 +60,7 @@ Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
             const double localZ = z + s.spacing * random.next(-s.jitterPercent, s.jitterPercent) / 2;
             if (localX < 0 || localZ < 0 || localX > s.width || localZ > s.depth) continue;
             const double u = localX / s.width, v = localZ / s.depth;
-            const float strength = textureSample(fitness, u, v);
+            const double strength = textureSample(fitness, u, v);
             if (random.next(s.minimumFitness, 1) > strength) continue;
             const double sampled = textureSample(heights, u, v) * s.heightScale;
             double y = 0;

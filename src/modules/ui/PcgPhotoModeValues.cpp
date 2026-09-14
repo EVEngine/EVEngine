@@ -141,7 +141,9 @@ Result<std::string> PcgPhotoModeValues::snapshotJson() const {
     return Value(Value::Object{{"schema","eve.ui.pcg-photo-mode-values"},{"values",std::move(encoded)},{"version",int64_t{1}}}).toJson();
 }
 Result<void> PcgPhotoModeValues::restoreJson(const std::string&json){
-    if(json.size()>1024U*1024U)return bad<void>("photo-mode values JSON exceeds size limit");auto decoded=Value::fromJson(json);if(!decoded.ok())return Result<void>::failure(decoded.status());
+    if(json.size()>1024U*1024U)return bad<void>("photo-mode values JSON exceeds size limit");
+    auto decoded=Value::fromJson(json);
+    if(!decoded.ok())return Result<void>::failure(decoded.status());
     const auto*root=decoded.value().getIf<Value::Object>();if(!root||root->size()!=3||!root->contains("schema")||!root->contains("version")||!root->contains("values"))return bad<void>("photo-mode values has missing or unknown root fields");
     const auto*schema=root->at("schema").getIf<std::string>();const auto*version=root->at("version").getIf<int64_t>();const auto*object=root->at("values").getIf<Value::Object>();if(!schema||*schema!="eve.ui.pcg-photo-mode-values"||!version||*version!=1||!object||object->size()!=fields().size())return bad<void>("photo-mode values has unsupported schema, version or field count");
     PcgPhotoModeValues candidate;for(const auto&f:fields()){if(!object->contains(f.name))return bad<void>("photo-mode values is missing field: "+f.name);const auto&v=object->at(f.name);switch(f.type){
