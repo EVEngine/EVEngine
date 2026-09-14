@@ -55,15 +55,20 @@ playback.complete().expect("complete");
 local b = anim.newMotion(0, 100, 0.5);
 b.ease("outQuad");
 b.loops(2, "yoyo");
+b.cancelOnError(true);
 local h = b.run();
 print(h.value());
 h.complete();
+print(anim.getMotionCount());
 
 local seq = anim.newMotionSequence();
 seq.append(anim.newMotion(0, 1, 0.3));
 seq.appendInterval(0.1);
 seq.join(anim.newMotion(0, 1, 0.3));
+print(seq.cursor());
+print(seq.itemCount());
 local sh = seq.run();
+print(sh.childCount());
 ```
 
 Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。Punch / Shake 与 Color/Quat 见后续 Phase。
@@ -477,6 +482,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
+- Motion（LitMotion 风格）：`newMotion()`、`newMotionSequence()`、`getMotionCount()`；`MotionBuilder`：`ease()`、`delay()`、`loops()`、`cancelOnError()`、`run()`；`Motion`：`isActive()`、`value()`、`complete()`、`cancel()`；`MotionSequence`：`append()`、`join()`、`insert()`、`appendInterval()`、`cursor()`、`duration()`、`itemCount()`、`run()`；`MotionSequenceHandle`：`isActive()`、`childCount()`、`complete()`、`cancel()`
 - 2D 帧动画：`newSpriteSheet()`、`newSpriteSheetFromSequence()`、`newSpriteSheetFromAtlasJson()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`、`getSpriteSequenceCacheCount()`、`getSpriteSequenceCacheBytes()`、`clearSpriteSequenceCache()`
 - Spine：`newSpineAtlas()`、`newSpineAtlasFromFile()`、`newSpineAtlasFromText()`、`newSpineSkeletonData()`、`newSpineSkeletonDataFromFile()`、`newSpineSkeletonDataFromJson()`、`newSpineSkeleton()`、`newSpineAnim()`、`getSpineAnimCount()`
 - `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`setTexture()`、`getTexture()`、`getFrameCount()`、`findFrame()`、`getFrameName()`、`getFrameX()`、`getFrameY()`、`getFrameWidth()`、`getFrameHeight()`、`getFrameSourceWidth()`、`getFrameSourceHeight()`、`getFrameOffsetX()`、`getFrameOffsetY()`、`applyToQuad()`
