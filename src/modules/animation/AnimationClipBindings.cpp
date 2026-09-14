@@ -22,6 +22,15 @@ void exposeAnimClipBindings(ssq::Table& table) {
     retarget.addFunc("getRootVerticalScale", &AnimRetargetProfile::getRootVerticalScale);
     retarget.addFunc("setUseSkeletonSpaceRotation", &AnimRetargetProfile::setUseSkeletonSpaceRotation);
     retarget.addFunc("getUseSkeletonSpaceRotation", &AnimRetargetProfile::getUseSkeletonSpaceRotation);
+    retarget.addFunc("setSkinnedInteractionPreserve", &AnimRetargetProfile::setSkinnedInteractionPreserve);
+    retarget.addFunc("getSkinnedInteractionPreserve", &AnimRetargetProfile::getSkinnedInteractionPreserve);
+    retarget.addFunc("setInteractionContactThreshold", &AnimRetargetProfile::setInteractionContactThreshold);
+    retarget.addFunc("getInteractionContactThreshold", &AnimRetargetProfile::getInteractionContactThreshold);
+    retarget.addFunc("setInteractionCorrectionWeight", &AnimRetargetProfile::setInteractionCorrectionWeight);
+    retarget.addFunc("getInteractionCorrectionWeight", &AnimRetargetProfile::getInteractionCorrectionWeight);
+    retarget.addFunc("addInteractionIkChain", &AnimRetargetProfile::addInteractionIkChain);
+    retarget.addFunc("clearInteractionIkChains", &AnimRetargetProfile::clearInteractionIkChains);
+    retarget.addFunc("getInteractionCorrectionCount", &AnimRetargetProfile::getInteractionCorrectionCount);
     retarget.addFunc("getMatchedBoneCount", &AnimRetargetProfile::getMatchedBoneCount);
     retarget.addFunc("getUnmatchedBoneCount", &AnimRetargetProfile::getUnmatchedBoneCount);
     retarget.addFunc("getUnmatchedTargetBone", &AnimRetargetProfile::getUnmatchedTargetBone);
