@@ -249,5 +249,28 @@ PointSet filterPointStringAttribute(const PointSet& input, const std::string& na
                                     bool invert);
 /** @brief Deterministically keep points according to density and a root seed. */
 PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
+/**
+ * @brief Remap surface slope (from normals) into density.
+ *
+ * Slope degrees come from acos(normalY). Values outside [minDegrees, maxDegrees]
+ * clamp to the output endpoints; invert reverses the mapping.
+ */
+PointSet densityFromNormal(const PointSet& input, float minDegrees, float maxDegrees, float outputMin,
+                           float outputMax, bool invert);
+/**
+ * @brief Scale and pad each point's local bounds about its center.
+ *
+ * Degenerate (zero-extent) bounds treat |scale| as the full local size before padding.
+ */
+PointSet modifyPointBounds(const PointSet& input, float scaleX, float scaleY, float scaleZ, float padX, float padY,
+                           float padZ);
+/**
+ * @brief Deterministically assign a weighted mesh path string attribute.
+ *
+ * Empty mesh entries are ignored. When every weight is non-positive or every mesh
+ * path is empty, attributes are left unchanged.
+ */
+PointSet assignWeightedMeshAttribute(const PointSet& input, uint32_t seed, const std::string& attribute,
+                                     const std::string* meshes, const float* weights, int entryCount);
 
 }  // namespace eve::procgen

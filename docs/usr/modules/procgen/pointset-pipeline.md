@@ -324,10 +324,26 @@ local trees = graph.execute("prune");
 ```
 
 支持的 operation 可用 `getOperationCount/getOperationId` 枚举，包括：
-`input`、`spatial.sample/filter/project`、`merge`、`copy.points`、`transform`、
-`density.remap`、`attribute.math.float`、
-`filter.float/string`、`attribute.set.float/string`、`density.cull`、
-`self.prune`、`jitter`、`biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
+`input`、`spatial.sample/filter/project`、`mesh.sample`、`spline.sample`、
+`spline.filter.distance`、`merge`、`points.union/intersect/difference`、`copy.points`、
+`transform`、`bounds.modify`、`density.remap`、`density.from.normal`、
+`attribute.math.float`、`filter.float/string/slope`、`attribute.set.float/string`、
+`spawn.mesh`、`density.cull`、`self.prune`、`jitter`、`debug.disable/inspect`、
+`biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
+
+相对 UE PCG 基础节点库，上述一等图节点覆盖了 Mesh/Spline Sampler、点集布尔
+（Difference/Union/Intersection）、Bounds Modifier、Normal→Density、Static Mesh
+权重 Spawner，以及 Disable/Inspect 调试旁路。Landscape / Spline / Actor 源数据仍通过
+`setNodeSpatial` / `setNodePoints` 外部绑定（对应 UE Get Landscape/Spline/Actor Data
+的数据注入角色），不做成从图内拉取关卡对象的隐式节点。Blueprint 自定义节点与
+Attribute Domain Selector 语法不在对标范围内。
+
+`mesh.sample` 要求绑定 `surface.mesh` 空间数据（`SpatialData::meshSurface`）；误绑
+volume/heightfield 会在执行期失败。`spline.sample` 以控制点 PointSet 为输入，
+`spline.filter.distance` 用第二输入作为样条控制点做距离筛选。`points.*` 按稳定
+point id（legacy 回退到 position+seed）做集合运算，区别于 `merge` 的顺序拼接。
+`spawn.mesh` 按权重写入字符串属性（默认 `mesh`），供 Scene sink / 实例化消费；
+`debug.disable` 在 `enabled=0` 时输出空集，`debug.inspect` 为纯旁路以便叠加指标。
 
 `biome.generate` 通过 `setNodeSpatial` 与 `setNodeBiomeRules` 绑定生成域和 Biome 规则，
 反射 `spacing/seed/jitter`；`grammar.generate` 通过 `setNodeShapeGrammar` 绑定 Shape Grammar，

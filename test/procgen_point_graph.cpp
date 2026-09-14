@@ -1,8 +1,10 @@
 #include "procgen/Biome.h"
+#include "procgen/MeshBuild.h"
 #include "procgen/PointGraph.h"
 #include "procgen/ShapeGrammar.h"
 
 #include <cmath>
+#include <memory>
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -546,4 +548,138 @@ TEST_CASE("procgen.pointGraph.expandsShapeGrammarAndRebindsExternalAssets") {
     CHECK_EQ(output->getCount(), 3);
     delete output;
     delete instance;
+}
+
+TEST_CASE("procgen.pointGraph.exposesUeStyleBreadthNodes") {
+    CHECK(PointGraph::getOperationInputCount("mesh.sample") == 0);
+    CHECK(PointGraph::getOperationInputCount("spline.sample") == 1);
+    CHECK(PointGraph::getOperationInputCount("spline.filter.distance") == 2);
+    CHECK(PointGraph::getOperationInputCount("points.union") == 2);
+    CHECK(PointGraph::getOperationInputCount("points.intersect") == 2);
+    CHECK(PointGraph::getOperationInputCount("points.difference") == 2);
+    CHECK(PointGraph::getOperationInputCount("density.from.normal") == 1);
+    CHECK(PointGraph::getOperationInputCount("bounds.modify") == 1);
+    CHECK(PointGraph::getOperationInputCount("spawn.mesh") == 1);
+    CHECK(PointGraph::getOperationInputCount("debug.disable") == 1);
+    CHECK(PointGraph::getOperationInputCount("debug.inspect") == 1);
+    CHECK_EQ(PointGraph::getOperationParamKey("spline.sample", 2), std::string("lateralJitter"));
+    CHECK_EQ(PointGraph::getOperationParamKey("spawn.mesh", 1), std::string("attribute"));
+}
+
+TEST_CASE("procgen.pointGraph.samplesSplinesFiltersDistanceAndBooleans") {
+    PointSet controls;
+    controls.add(0.f, 0.f, 0.f);
+    controls.add(10.f, 0.f, 0.f);
+
+    PointGraph graph;
+    CHECK(graph.addNode("path", "input"));
+    CHECK(graph.addNode("lamps", "spline.sample"));
+    CHECK(graph.addNode("candidates", "input"));
+    CHECK(graph.addNode("near", "spline.filter.distance"));
+    CHECK(graph.addNode("keep", "points.difference"));
+    CHECK(graph.setNodePoints("path", &controls));
+    CHECK(graph.connect("path", "lamps"));
+    CHECK(graph.setNodeFloat("lamps", "spacing", 5.f));
+    CHECK(graph.setNodeInt("lamps", "seed", 7));
+
+    PointSet candidates;
+    candidates.add(0.f, 0.f, 0.f);
+    candidates.add(5.f, 0.f, 0.5f);
+    candidates.add(5.f, 0.f, 8.f);
+    candidates.add(20.f, 0.f, 0.f);
+    CHECK(graph.setNodePoints("candidates", &candidates));
+    CHECK(graph.connect("candidates", "near", 0));
+    CHECK(graph.connect("path", "near", 1));
+    CHECK(graph.setNodeFloat("near", "minDistance", 0.f));
+    CHECK(graph.setNodeFloat("near", "maxDistance", 2.f));
+    CHECK(graph.connect("candidates", "keep", 0));
+    CHECK(graph.connect("near", "keep", 1));
+    CHECK(graph.validate());
+
+    std::unique_ptr<PointSet> lamps(graph.execute("lamps"));
+    REQUIRE(bool(lamps));
+    CHECK(lamps->getCount() >= 2);
+
+    std::unique_ptr<PointSet> near(graph.execute("near"));
+    REQUIRE(bool(near));
+    CHECK_EQ(near->getCount(), 2);
+
+    std::unique_ptr<PointSet> keep(graph.execute("keep"));
+    REQUIRE(bool(keep));
+    CHECK_EQ(keep->getCount(), 2);
+}
+
+TEST_CASE("procgen.pointGraph.mapsNormalsBoundsSpawnAndDebug") {
+    PointSet source;
+    const int flat = source.add(0.f, 0.f, 0.f);
+    const int steep = source.add(1.f, 0.f, 0.f);
+    source.setNormal(flat, 0.f, 1.f, 0.f);
+    source.setNormal(steep, 1.f, 0.f, 0.f);
+    source.setBounds(flat, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    source.setPointSeed(flat, 11);
+    source.setPointSeed(steep, 22);
+
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("density", "density.from.normal"));
+    CHECK(graph.addNode("bounds", "bounds.modify"));
+    CHECK(graph.addNode("spawn", "spawn.mesh"));
+    CHECK(graph.addNode("inspect", "debug.inspect"));
+    CHECK(graph.addNode("disable", "debug.disable"));
+    CHECK(graph.setNodePoints("source", &source));
+    CHECK(graph.connect("source", "density"));
+    CHECK(graph.setNodeFloat("density", "minDegrees", 0.f));
+    CHECK(graph.setNodeFloat("density", "maxDegrees", 90.f));
+    CHECK(graph.connect("density", "bounds"));
+    CHECK(graph.setNodeFloat("bounds", "scaleX", 2.f));
+    CHECK(graph.setNodeFloat("bounds", "scaleY", 2.f));
+    CHECK(graph.setNodeFloat("bounds", "scaleZ", 2.f));
+    CHECK(graph.connect("bounds", "spawn"));
+    CHECK(graph.setNodeString("spawn", "mesh0", "tree.oak"));
+    CHECK(graph.setNodeFloat("spawn", "weight0", 1.f));
+    CHECK(graph.setNodeString("spawn", "mesh1", "tree.pine"));
+    CHECK(graph.setNodeFloat("spawn", "weight1", 1.f));
+    CHECK(graph.setNodeInt("spawn", "seed", 99));
+    CHECK(graph.connect("spawn", "inspect"));
+    CHECK(graph.connect("inspect", "disable"));
+    CHECK(graph.setNodeInt("disable", "enabled", 1));
+    CHECK(graph.validate());
+
+    std::unique_ptr<PointSet> enabled(graph.execute("disable"));
+    REQUIRE(bool(enabled));
+    CHECK_EQ(enabled->getCount(), 2);
+    CHECK(enabled->getDensity(0) < enabled->getDensity(1));
+    CHECK(enabled->getBoundsMaxX(0) > 0.f);
+    CHECK(enabled->hasStringAttribute(0, "mesh"));
+    CHECK(enabled->hasStringAttribute(1, "mesh"));
+
+    CHECK(graph.setNodeInt("disable", "enabled", 0));
+    std::unique_ptr<PointSet> disabled(graph.execute("disable"));
+    REQUIRE(bool(disabled));
+    CHECK_EQ(disabled->getCount(), 0);
+}
+
+TEST_CASE("procgen.pointGraph.meshSampleRequiresMeshSurface") {
+    PointGraph graph;
+    CHECK(graph.addNode("sample", "mesh.sample"));
+    SpatialData box = SpatialData::box(0.f, 0.f, 0.f, 2.f, 0.f, 2.f);
+    CHECK(graph.setNodeSpatial("sample", &box));
+    CHECK(graph.setNodeFloat("sample", "spacing", 1.f));
+    CHECK(graph.validate());
+    PointSet* rejected = graph.execute("sample");
+    CHECK(!rejected);
+    CHECK(graph.getError().find("surface.mesh") != std::string::npos);
+
+    MeshBuild mesh;
+    mesh.addVertex(0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f);
+    mesh.addVertex(4.f, 0.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f);
+    mesh.addVertex(4.f, 0.f, 4.f, 0.f, 1.f, 0.f, 1.f, 1.f);
+    mesh.addVertex(0.f, 0.f, 4.f, 0.f, 1.f, 0.f, 0.f, 1.f);
+    mesh.addTriangle(0, 1, 2);
+    mesh.addTriangle(0, 2, 3);
+    SpatialData surface = SpatialData::meshSurface(mesh, 0.25f);
+    CHECK(graph.setNodeSpatial("sample", &surface));
+    std::unique_ptr<PointSet> sampled(graph.execute("sample"));
+    REQUIRE(bool(sampled));
+    CHECK(sampled->getCount() > 0);
 }
