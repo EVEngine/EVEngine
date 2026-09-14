@@ -76,6 +76,30 @@ public:
     /** @brief Number of frames that received at least one interaction IK correction last retarget. */
     int getInteractionCorrectionCount() const { return interactionCorrectionCount_; }
 
+    /**
+     * @brief Filesystem path to a MeshRet-compatible ONNX model for neural skinned retarget.
+     * Empty path selects the builtin tensor MeshRet graph when animation_tensor is loaded.
+     */
+    void setNeuralModelPath(const std::string& path) { neuralModelPath_ = path; }
+    /** @brief Return the configured neural model path (may be empty). */
+    const std::string& getNeuralModelPath() const { return neuralModelPath_; }
+    /**
+     * @brief Prefer neural MeshRet inference when animation_tensor provides ISmrNeuralRetarget.
+     * Classical two-bone IK remains the fallback when the provider is absent or not ready.
+     */
+    void setNeuralRetargetEnabled(bool enabled) { neuralRetargetEnabled_ = enabled; }
+    /** @brief Return whether neural retarget is preferred when a provider is available. */
+    bool getNeuralRetargetEnabled() const { return neuralRetargetEnabled_; }
+    /**
+     * @brief Backend hint: "auto" (default), "onnx", or "tensor".
+     * Unknown values are treated as "auto".
+     */
+    void setNeuralBackend(const std::string& backend) { neuralBackend_ = backend; }
+    /** @brief Return the neural backend hint. */
+    const std::string& getNeuralBackend() const { return neuralBackend_; }
+    /** @brief Non-zero when the last retarget used the neural MeshRet path. */
+    int getNeuralInferenceCount() const { return neuralInferenceCount_; }
+
     /** @brief Number of target bones mapped by the most recent retarget operation. */
     int getMatchedBoneCount() const { return matchedBoneCount_; }
     /** @brief Number of target bones left at bind pose by the most recent operation. */
@@ -90,20 +114,24 @@ private:
     struct Mapping {
         std::string source, target;
     };
-    std::vector<Mapping>       mappings_;
-    std::string                sourceRoot_;
-    std::string                targetRoot_;
-    bool                       normalizedNameMatching_     = true;
-    bool                       autoRootScale_              = true;
-    bool                       skeletonSpaceRotation_      = true;
-    bool                       skinnedInteractionPreserve_ = false;
-    float                      rootHorizontalScale_        = 1.f;
-    float                      rootVerticalScale_          = 1.f;
-    float                      interactionContactThreshold_ = 0.f;
-    float                      interactionCorrectionWeight_ = 1.f;
-    int                        matchedBoneCount_           = 0;
-    int                        interactionCorrectionCount_ = 0;
-    std::vector<std::string>   unmatchedTargetBones_;
+    std::vector<Mapping>        mappings_;
+    std::string                 sourceRoot_;
+    std::string                 targetRoot_;
+    bool                        normalizedNameMatching_      = true;
+    bool                        autoRootScale_               = true;
+    bool                        skeletonSpaceRotation_       = true;
+    bool                        skinnedInteractionPreserve_  = false;
+    bool                        neuralRetargetEnabled_       = false;
+    float                       rootHorizontalScale_         = 1.f;
+    float                       rootVerticalScale_           = 1.f;
+    float                       interactionContactThreshold_ = 0.f;
+    float                       interactionCorrectionWeight_ = 1.f;
+    int                         matchedBoneCount_            = 0;
+    int                         interactionCorrectionCount_  = 0;
+    int                         neuralInferenceCount_        = 0;
+    std::string                 neuralModelPath_;
+    std::string                 neuralBackend_ = "auto";
+    std::vector<std::string>    unmatchedTargetBones_;
     std::vector<AnimSmrIkChain> interactionIkChains_;
 };
 

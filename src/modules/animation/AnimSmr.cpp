@@ -1,4 +1,6 @@
 #include "animation/AnimSmr.h"
+#include "animation/AnimSmrNeural.h"
+#include "common/Capability.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"
@@ -26,9 +28,7 @@ std::string normalizeToken(const std::string& name) {
     return out;
 }
 
-bool tokenContains(const std::string& token, const char* needle) {
-    return token.find(needle) != std::string::npos;
-}
+bool tokenContains(const std::string& token, const char* needle) { return token.find(needle) != std::string::npos; }
 
 AnimSmrBodyPart classifyBone(const std::string& boneName) {
     const std::string token = normalizeToken(boneName);
@@ -63,9 +63,9 @@ struct Vec3 {
     float x = 0.f, y = 0.f, z = 0.f;
 };
 
-Vec3 add(const Vec3& a, const Vec3& b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
-Vec3 sub(const Vec3& a, const Vec3& b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
-Vec3 mul(const Vec3& a, float s) { return {a.x * s, a.y * s, a.z * s}; }
+Vec3  add(const Vec3& a, const Vec3& b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+Vec3  sub(const Vec3& a, const Vec3& b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+Vec3  mul(const Vec3& a, float s) { return {a.x * s, a.y * s, a.z * s}; }
 float length(const Vec3& a) { return std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
 
 Vec3 transformPoint(const TransformTRS& world, float lx, float ly, float lz) {
@@ -121,7 +121,7 @@ struct ResolvedChain {
     int tip  = -1;
 };
 
-std::vector<ResolvedChain> resolveChains(const AnimSkeleton* skeleton,
+std::vector<ResolvedChain> resolveChains(const AnimSkeleton*                skeleton,
                                          const std::vector<AnimSmrIkChain>& configuredChains) {
     std::vector<ResolvedChain> out;
     for (const AnimSmrIkChain& chain : configuredChains) {
@@ -224,6 +224,64 @@ void writeRotationKey(AnimClip& clip, int boneIndex, int keyIndex, float time, c
 
 }  // namespace
 
+
+AnimSmrSensorCloud AnimSmrSensorCloud::fromSkeletonDense(const AnimSkeleton* skeleton, int ringsPerBone,
+                                                         int pointsPerRing) {
+    if (!skeleton) throw Exception("AnimSmrSensorCloud.fromSkeletonDense: skeleton is null");
+    if (ringsPerBone < 1 || pointsPerRing < 3)
+        throw Exception("AnimSmrSensorCloud.fromSkeletonDense: ringsPerBone>=1 and pointsPerRing>=3 required");
+
+    AnimSmrSensorCloud cloud = fromSkeleton(skeleton);
+    std::vector<int>   firstChild(static_cast<size_t>(skeleton->getBoneCount()), -1);
+    for (int bone = 0; bone < skeleton->getBoneCount(); ++bone) {
+        const int parent = skeleton->getParent(bone);
+        if (parent >= 0 && firstChild[static_cast<size_t>(parent)] < 0) firstChild[static_cast<size_t>(parent)] = bone;
+    }
+
+    for (int bone = 0; bone < skeleton->getBoneCount(); ++bone) {
+        const int child = firstChild[static_cast<size_t>(bone)];
+        if (child < 0) continue;
+        const TransformTRS& childBind = skeleton->bindLocal(child);
+        const float         len =
+            std::sqrt(childBind.px * childBind.px + childBind.py * childBind.py + childBind.pz * childBind.pz);
+        if (len < 1e-5f) continue;
+        const float radius = len * 0.08f;
+        // Build a stable orthonormal frame around the bone axis.
+        float ax = childBind.px / len, ay = childBind.py / len, az = childBind.pz / len;
+        float bx = 0.f, by = 1.f, bz = 0.f;
+        if (std::fabs(ay) > 0.9f) {
+            bx = 1.f;
+            by = 0.f;
+            bz = 0.f;
+        }
+        float cx = ay * bz - az * by, cy = az * bx - ax * bz, cz = ax * by - ay * bx;
+        float cl = std::sqrt(cx * cx + cy * cy + cz * cz);
+        if (cl < 1e-5f) continue;
+        cx /= cl;
+        cy /= cl;
+        cz /= cl;
+        float                 dx = ay * cz - az * cy, dy = az * cx - ax * cz, dz = ax * cy - ay * cx;
+        const std::string     token = normalizeToken(skeleton->getBoneName(bone));
+        const AnimSmrBodyPart part  = classifyBone(skeleton->getBoneName(bone));
+        for (int ring = 0; ring < ringsPerBone; ++ring) {
+            const float t = (static_cast<float>(ring) + 1.f) / (static_cast<float>(ringsPerBone) + 1.f);
+            for (int sample = 0; sample < pointsPerRing; ++sample) {
+                const float   angle = 6.28318530718f * static_cast<float>(sample) / static_cast<float>(pointsPerRing);
+                const float   ca = std::cos(angle), sa = std::sin(angle);
+                AnimSmrSensor sensor;
+                sensor.boneIndex   = bone;
+                sensor.part        = part;
+                sensor.localX      = childBind.px * t + (cx * ca + dx * sa) * radius;
+                sensor.localY      = childBind.py * t + (cy * ca + dy * sa) * radius;
+                sensor.localZ      = childBind.pz * t + (cz * ca + dz * sa) * radius;
+                sensor.semanticKey = token + "#r" + std::to_string(ring) + "p" + std::to_string(sample);
+                cloud.sensors_.push_back(sensor);
+            }
+        }
+    }
+    return cloud;
+}
+
 AnimSmrSensorCloud AnimSmrSensorCloud::fromSkeleton(const AnimSkeleton* skeleton) {
     if (!skeleton) throw Exception("AnimSmrSensorCloud.fromSkeleton: skeleton is null");
 
@@ -231,8 +289,7 @@ AnimSmrSensorCloud AnimSmrSensorCloud::fromSkeleton(const AnimSkeleton* skeleton
     std::vector<int>   firstChild(static_cast<size_t>(skeleton->getBoneCount()), -1);
     for (int bone = 0; bone < skeleton->getBoneCount(); ++bone) {
         const int parent = skeleton->getParent(bone);
-        if (parent >= 0 && firstChild[static_cast<size_t>(parent)] < 0)
-            firstChild[static_cast<size_t>(parent)] = bone;
+        if (parent >= 0 && firstChild[static_cast<size_t>(parent)] < 0) firstChild[static_cast<size_t>(parent)] = bone;
     }
 
     for (int bone = 0; bone < skeleton->getBoneCount(); ++bone) {
@@ -287,9 +344,31 @@ void AnimSmrSensorCloud::evaluateWorldPositions(const AnimPose* pose, std::vecto
 int smrRefineRetargetedClip(const AnimClip& sourceClip, AnimClip& targetClip, const AnimSkeleton* sourceSkeleton,
                             const AnimSkeleton* targetSkeleton, AnimRetargetProfile& profile) {
     if (!sourceSkeleton || !targetSkeleton) throw Exception("smrRefineRetargetedClip: skeleton is null");
+
     if (!profile.skinnedInteractionPreserve_) {
         profile.interactionCorrectionCount_ = 0;
+        profile.neuralInferenceCount_       = 0;
         return 0;
+    }
+
+    profile.neuralInferenceCount_ = 0;
+    if (profile.neuralRetargetEnabled_) {
+        if (auto* neural = cap::query<ISmrNeuralRetarget>()) {
+            if (neural->isReady(&profile)) {
+                SmrNeuralRequest request;
+                request.sourceClip     = &sourceClip;
+                request.targetClip     = &targetClip;
+                request.sourceSkeleton = sourceSkeleton;
+                request.targetSkeleton = targetSkeleton;
+                request.profile        = &profile;
+                auto neuralResult      = neural->retarget(request);
+                if (neuralResult.ok()) {
+                    profile.interactionCorrectionCount_ = neuralResult.value().framesWritten;
+                    profile.neuralInferenceCount_       = std::max(1, neuralResult.value().framesWritten);
+                    return profile.interactionCorrectionCount_;
+                }
+            }
+        }
     }
 
     const AnimSmrSensorCloud         sourceCloud = AnimSmrSensorCloud::fromSkeleton(sourceSkeleton);
@@ -350,9 +429,9 @@ int smrRefineRetargetedClip(const AnimClip& sourceClip, AnimClip& targetClip, co
             const TransformTRS& tipWorld = targetPose.world(subjectSensor.boneIndex);
             const Vec3          tipPos{tipWorld.px, tipWorld.py, tipWorld.pz};
             const Vec3          sensorWorld{targetXYZ[static_cast<size_t>(targetSubject) * 3],
-                                            targetXYZ[static_cast<size_t>(targetSubject) * 3 + 1],
-                                            targetXYZ[static_cast<size_t>(targetSubject) * 3 + 2]};
-            const Vec3 tipTarget = sub(desiredSubject, sub(sensorWorld, tipPos));
+                                   targetXYZ[static_cast<size_t>(targetSubject) * 3 + 1],
+                                   targetXYZ[static_cast<size_t>(targetSubject) * 3 + 2]};
+            const Vec3          tipTarget = sub(desiredSubject, sub(sensorWorld, tipPos));
 
             const ResolvedChain& chain = chains[static_cast<size_t>(chainIndex)];
             if (targetPose.solveTwoBoneIK(targetSkeleton, chain.root, chain.mid, chain.tip, tipTarget.x, tipTarget.y,

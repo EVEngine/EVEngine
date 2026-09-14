@@ -29,24 +29,24 @@ float handChestDistance(const AnimSkeleton& skel, const AnimClip& clip, float ti
     AnimPose pose;
     clip.sample(time, &pose, &skel);
     pose.computeWorld(&skel);
-    const int chest = skel.findBone("Spine");
-    const int hand  = skel.findBone("LeftHand");
-    const float dx  = pose.getWorldPositionX(hand) - pose.getWorldPositionX(chest);
-    const float dy  = pose.getWorldPositionY(hand) - pose.getWorldPositionY(chest);
-    const float dz  = pose.getWorldPositionZ(hand) - pose.getWorldPositionZ(chest);
+    const int   chest = skel.findBone("Spine");
+    const int   hand  = skel.findBone("LeftHand");
+    const float dx    = pose.getWorldPositionX(hand) - pose.getWorldPositionX(chest);
+    const float dy    = pose.getWorldPositionY(hand) - pose.getWorldPositionY(chest);
+    const float dz    = pose.getWorldPositionZ(hand) - pose.getWorldPositionZ(chest);
     return std::sqrt(dx * dx + dy * dy + dz * dz);
 }
 
 bool rotationKeysDiffer(const AnimClip& a, const AnimClip& b, int bone) {
     if (a.getRotationKeyCount(bone) == 0 || b.getRotationKeyCount(bone) == 0) return false;
-    const float ax = a.getRotationKeyX(bone, 0);
-    const float ay = a.getRotationKeyY(bone, 0);
-    const float az = a.getRotationKeyZ(bone, 0);
-    const float aw = a.getRotationKeyW(bone, 0);
-    const float bx = b.getRotationKeyX(bone, 0);
-    const float by = b.getRotationKeyY(bone, 0);
-    const float bz = b.getRotationKeyZ(bone, 0);
-    const float bw = b.getRotationKeyW(bone, 0);
+    const float ax  = a.getRotationKeyX(bone, 0);
+    const float ay  = a.getRotationKeyY(bone, 0);
+    const float az  = a.getRotationKeyZ(bone, 0);
+    const float aw  = a.getRotationKeyW(bone, 0);
+    const float bx  = b.getRotationKeyX(bone, 0);
+    const float by  = b.getRotationKeyY(bone, 0);
+    const float bz  = b.getRotationKeyZ(bone, 0);
+    const float bw  = b.getRotationKeyW(bone, 0);
     const float dot = std::fabs(ax * bx + ay * by + az * bz + aw * bw);
     return dot < 0.999f;
 }
@@ -88,7 +88,7 @@ TEST_CASE("animation.smr.preservesHandTorsoProximityAcrossScale") {
     AnimRetargetProfile fkOnly;
     fkOnly.setSkinnedInteractionPreserve(false);
     std::unique_ptr<AnimClip> fk(clip.retargetWithProfile(&source, &target, &fkOnly));
-    const float fkGap = handChestDistance(target, *fk, 0.f);
+    const float               fkGap = handChestDistance(target, *fk, 0.f);
 
     AnimRetargetProfile smr;
     smr.setSkinnedInteractionPreserve(true);
@@ -96,7 +96,7 @@ TEST_CASE("animation.smr.preservesHandTorsoProximityAcrossScale") {
     smr.setInteractionCorrectionWeight(1.f);
     smr.addInteractionIkChain("LeftShoulder", "LeftElbow", "LeftHand");
     std::unique_ptr<AnimClip> refined(clip.retargetWithProfile(&source, &target, &smr));
-    const float smrGap = handChestDistance(target, *refined, 0.f);
+    const float               smrGap = handChestDistance(target, *refined, 0.f);
 
     CHECK(smr.getInteractionCorrectionCount() >= 1);
     CHECK(fkGap > sourceGap);

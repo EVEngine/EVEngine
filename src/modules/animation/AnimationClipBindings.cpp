@@ -31,6 +31,13 @@ void exposeAnimClipBindings(ssq::Table& table) {
     retarget.addFunc("addInteractionIkChain", &AnimRetargetProfile::addInteractionIkChain);
     retarget.addFunc("clearInteractionIkChains", &AnimRetargetProfile::clearInteractionIkChains);
     retarget.addFunc("getInteractionCorrectionCount", &AnimRetargetProfile::getInteractionCorrectionCount);
+    retarget.addFunc("setNeuralModelPath", &AnimRetargetProfile::setNeuralModelPath);
+    retarget.addFunc("getNeuralModelPath", &AnimRetargetProfile::getNeuralModelPath);
+    retarget.addFunc("setNeuralRetargetEnabled", &AnimRetargetProfile::setNeuralRetargetEnabled);
+    retarget.addFunc("getNeuralRetargetEnabled", &AnimRetargetProfile::getNeuralRetargetEnabled);
+    retarget.addFunc("setNeuralBackend", &AnimRetargetProfile::setNeuralBackend);
+    retarget.addFunc("getNeuralBackend", &AnimRetargetProfile::getNeuralBackend);
+    retarget.addFunc("getNeuralInferenceCount", &AnimRetargetProfile::getNeuralInferenceCount);
     retarget.addFunc("getMatchedBoneCount", &AnimRetargetProfile::getMatchedBoneCount);
     retarget.addFunc("getUnmatchedBoneCount", &AnimRetargetProfile::getUnmatchedBoneCount);
     retarget.addFunc("getUnmatchedTargetBone", &AnimRetargetProfile::getUnmatchedTargetBone);

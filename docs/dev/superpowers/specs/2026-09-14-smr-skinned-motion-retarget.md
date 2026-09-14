@@ -1,7 +1,7 @@
 # Spec: Classical SMR-inspired skinned motion retarget
 
 Date: 2026-09-14  
-Status: Implemented (classical engine port; neural MeshRet/SMRNet deferred)
+Status: Implemented (classical IK + optional neural MeshRet via animation_tensor)
 
 ## Research summary
 
@@ -21,13 +21,21 @@ Shared ideas that are portable without a Python/PyTorch runtime:
    close to the source’s (MeshRet uses a learned decoder + DMI loss; we use a
    classical two-bone IK correction after FK Avatar retarget).
 
-What we deliberately do **not** ship in-engine yet:
+Neural MeshRet path (optional L6 `animation_tensor`):
 
-- Transformer / PointNet weights, adversarial training, Mixamo/ScanRet datasets.
+- Capability `ISmrNeuralRetarget` kept out of the L4 animation module; satellite
+  registers it at boot and revokes on teardown.
+- Builtin tensor MeshRet-style PointNet + Transformer graph (`SmrMeshRetNet`) for
+  zero-weight bring-up; residual blend keeps untrained weights from destroying FK.
+- ONNX runner (`SmrOnnxRunner`) accepts MeshRet-contract models exported by
+  `scripts/export_meshret_onnx.py` (identity stub or trained weights).
+- Profile: `setNeuralRetargetEnabled` / `setNeuralBackend("auto"|"onnx"|"tensor")` /
+  `setNeuralModelPath`. Classical two-bone IK remains the fallback.
+
+Still offline / research-only:
+
+- Prefab MeshRet research weights and Mixamo/ScanRet training pipelines.
 - Full mesh ray-cast SCS and LBS sensor skinning (optional follow-up via `AnimSkin`).
-
-Those remain offline research tooling. This port keeps the runtime deterministic,
-dependency-free, and scriptable.
 
 ## Engine integration
 
@@ -53,8 +61,13 @@ Extend existing offline retarget (`AnimRetargetProfile` +
   - `setInteractionCorrectionWeight(float)` — `[0,1]` IK blend
   - `addInteractionIkChain(root, mid, tip)` / `clearInteractionIkChains()`
   - `getInteractionCorrectionCount()` — diagnostics after retarget
-- `AnimSmrSensorCloud::fromSkeleton(skeleton)` — testable sensor builder
-- `AnimSmr::refineRetargetedClip(...)` — C++ entry used by `retargetWithProfile`
+  - `setNeuralRetargetEnabled(bool)` — default `false`; requires `animation_tensor`
+  - `setNeuralBackend("auto"|"onnx"|"tensor")` / `setNeuralModelPath(path)`
+  - `getNeuralInferenceCount()` — diagnostics after a neural pass
+- `AnimSmrSensorCloud::fromSkeleton(skeleton)` / `fromSkeletonDense(...)`
+- `smrRefineRetargetedClip(...)` — C++ entry used by `retargetWithProfile`
+- `ISmrNeuralRetarget` capability (`animation.ISmrNeuralRetarget`) — L6 provider
+- `scripts/export_meshret_onnx.py` — MeshRet I/O contract identity stub exporter
 
 ## Tests
 
@@ -62,11 +75,13 @@ Extend existing offline retarget (`AnimRetargetProfile` +
 - Preserve hand–torso proximity across a short/tall retarget when SMR is on;
   FK-only retarget leaves a larger gap on the taller target.
 - Profile diagnostics increment when corrections run.
+- Neural: rot6d round-trip, feature batch shapes, tensor backend rewrites clip,
+  classical fallback when neural is disabled.
 
 ## Architecture checklist
 
-- No new module; stays inside `animation`.
-- No upward includes; no neural dependency.
+- Classical path stays inside `animation` (L4).
+- Neural path is L6 `animation_tensor` (deps: animation + tensor) via capability.
 - Fallible inputs keep existing `Exception` style of retarget APIs (same call
   path). Standalone cloud build returns empty rather than ambiguous `bool`.
 - Deterministic: same skeletons/clip/profile → same baked keys.

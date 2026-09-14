@@ -58,6 +58,14 @@ public:
      */
     static AnimSmrSensorCloud fromSkeleton(const AnimSkeleton* skeleton);
 
+    /**
+     * @brief Build denser MeshRet-style SCS rings around each bone segment.
+     * @param ringsPerBone Number of rings along each parent→child segment (>=1).
+     * @param pointsPerRing Samples around each ring (>=3).
+     * @throws Exception if skeleton is null or ring counts are invalid.
+     */
+    static AnimSmrSensorCloud fromSkeletonDense(const AnimSkeleton* skeleton, int ringsPerBone, int pointsPerRing);
+
     int                  getSensorCount() const { return static_cast<int>(sensors_.size()); }
     const AnimSmrSensor& getSensor(int index) const;
     AnimSmrBodyPart      getSensorPart(int index) const;
