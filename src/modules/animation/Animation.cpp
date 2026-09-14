@@ -20,6 +20,8 @@
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
 #include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
+#include "animation/MotionScriptBindings.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
 #include "animation/MotionRuntime.h"
@@ -409,6 +411,8 @@ MotionVec3Builder Animation::motionVec3(MotionVec3 from, MotionVec3 to, float du
     return MotionVec3Builder(motions_, from, to, duration);
 }
 
+MotionSequence Animation::sequence() { return MotionSequence(motions_); }
+
 void Animation::registerTween(Tween *t) {
     if (!t) return;
     t->setOwner(this);
@@ -573,6 +577,7 @@ void Animation::clearAll() {
 void Animation::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Animation::create, false);
     expose(cls);
+    exposeMotionScriptBindings(table, cls);
 
     auto tw = table.addClass<Tween>(
         "Tween", std::function<Tween *()>([]() -> Tween * { return nullptr; }), true);

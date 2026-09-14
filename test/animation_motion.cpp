@@ -3,11 +3,13 @@
 
 #include "animation/Animation.h"
 #include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
 #include "animation/MotionTypes.h"
 
 #include "common/Time.h"
 
 #include <cmath>
+#include <utility>
 
 using namespace eve::animation;
 
@@ -122,4 +124,112 @@ TEST_CASE("animation.motion.staleHandleRejected") {
     auto value = anim->motions().floatValue(handle);
     CHECK(!value.ok());
     value.ignore("expected stale handle");
+}
+
+TEST_CASE("animation.motion.easeBackElasticBounce") {
+    CHECK(evaluateMotionEase(0.f, "inBack") == 0.f);
+    CHECK(evaluateMotionEase(1.f, "outBack") == 1.f);
+    CHECK(evaluateMotionEase(0.5f, "outBack") > 1.f);
+    CHECK(evaluateMotionEase(0.f, "inElastic") == 0.f);
+    CHECK(evaluateMotionEase(1.f, "outElastic") == 1.f);
+    CHECK(evaluateMotionEase(0.f, "inBounce") == 0.f);
+    CHECK(evaluateMotionEase(1.f, "outBounce") == 1.f);
+    CHECK(evaluateMotionEase(0.5f, "inOutBounce") > 0.f);
+}
+
+TEST_CASE("animation.motion.sequenceAppendJoinInterval") {
+    auto *anim = Animation::create();
+    float a = -1.f;
+    float b = -1.f;
+    FloatPointerSink sinkA(&a);
+    FloatPointerSink sinkB(&b);
+
+    auto seq = anim->sequence();
+    {
+        auto scheduled =
+            seq.append(std::move(anim->motion(0.f, 10.f, 1.f).ease("linear").to(sinkA)));
+        REQUIRE(scheduled.ok());
+    }
+    {
+        auto scheduled = seq.appendInterval(0.5f);
+        REQUIRE(scheduled.ok());
+    }
+    {
+        auto scheduled =
+            seq.join(std::move(anim->motion(0.f, 20.f, 1.f).ease("linear").to(sinkB)));
+        REQUIRE(scheduled.ok());
+    }
+    CHECK_EQ(seq.itemCount(), 2);
+    CHECK(std::fabs(seq.duration() - 1.5f) < 1e-4f);
+
+    auto playback = seq.run().expect("sequence run");
+    CHECK_EQ(playback.childCount(), 2);
+    CHECK(playback.isActive());
+
+    // Join starts at the last Append start (t=0), so A and B advance together.
+    {
+        auto advanced = anim->advance(stepAt(1, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(a - 5.f) < 1e-3f);
+    CHECK(std::fabs(b - 10.f) < 1e-3f);
+
+    {
+        auto advanced = anim->advance(stepAt(2, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(a - 10.f) < 1e-3f);
+    CHECK(std::fabs(b - 20.f) < 1e-3f);
+    CHECK(!playback.isActive());
+}
+
+TEST_CASE("animation.motion.sequenceInsertAndComplete") {
+    auto *anim = Animation::create();
+    float x = 0.f;
+    float y = 0.f;
+    FloatPointerSink sinkX(&x);
+    FloatPointerSink sinkY(&y);
+
+    auto seq = anim->sequence();
+    {
+        auto scheduled =
+            seq.append(std::move(anim->motion(0.f, 10.f, 1.f).ease("linear").to(sinkX)));
+        REQUIRE(scheduled.ok());
+    }
+    {
+        auto scheduled = seq.insert(
+            0.5f, std::move(anim->motion(0.f, 100.f, 0.5f).ease("linear").to(sinkY)));
+        REQUIRE(scheduled.ok());
+    }
+
+    auto playback = seq.run().expect("sequence run");
+    {
+        auto advanced = anim->advance(stepAt(1, 0.5));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(x - 5.f) < 1e-3f);
+    CHECK(std::fabs(y - 0.f) < 1e-3f);
+
+    {
+        auto advanced = anim->advance(stepAt(2, 0.25));
+        REQUIRE(advanced.ok());
+    }
+    CHECK(std::fabs(y - 50.f) < 1e-2f);
+
+    {
+        auto done = playback.complete();
+        REQUIRE(done.ok());
+    }
+    CHECK(std::fabs(x - 10.f) < 1e-3f);
+    CHECK(std::fabs(y - 100.f) < 1e-3f);
+    CHECK(!playback.isActive());
+}
+
+TEST_CASE("animation.motion.sequenceRejectsInfiniteLoops") {
+    auto *anim = Animation::create();
+    auto seq   = anim->sequence();
+    auto result =
+        seq.append(std::move(anim->motion(0.f, 1.f, 0.2f).loops(-1, MotionLoopMode::Restart)));
+    CHECK(!result.ok());
+    result.ignore("expected infinite-loop rejection");
 }

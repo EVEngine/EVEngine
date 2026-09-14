@@ -235,11 +235,13 @@ Squirrel 侧对象若必须存在，用轻量 handle wrapper（只持 `MotionHan
 - 回调：`onComplete` / `onCancel`（文档标明脚本闭包分配；C++ 用函数指针 + userData）
 - 测试：`test/animation_motion.cpp` 过程隔离用例
 
-### Phase 2 — Sequence + Ease 扩展
+### Phase 2 — Sequence + Ease 扩展 ✅ 已落地（本分支）
 
 - `MotionSequence` Append / Join / Insert / AppendInterval
-- Ease：Back / Elastic / Bounce；可选 `setEaseCurve(AnimationCurve*)`
-- 与 Phase 1 共用 storage
+- Ease：Back / Elastic / Bounce（`evaluateMotionEase`）
+- Squirrel：`newMotion` / `newMotionSequence` + Handle 包装
+- 与 Phase 1 共用 `MotionRuntime` storage
+- 测试：`test/animation_motion.cpp`（ease + sequence）
 
 ### Phase 3 — Punch / Shake + Color/Quat Adapter
 

@@ -1,6 +1,16 @@
 #include "animation/MotionBuilder.h"
 
+#include "common/Diagnostic.h"
+
 namespace eve::animation {
+namespace {
+
+[[nodiscard]] eve::Diagnostic consumedDiag(const char *api) {
+    return eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                  std::string(api) + ": builder already consumed");
+}
+
+}  // namespace
 
 MotionBuilder::MotionBuilder(MotionRuntime &runtime, float from, float to, float duration)
     : runtime_(runtime) {
@@ -45,14 +55,29 @@ MotionBuilder &MotionBuilder::cancelOnError(bool enabled) {
     return *this;
 }
 
+MotionBuilder &MotionBuilder::to(IMotionFloatSink &sink) {
+    desc_.sink = &sink;
+    return *this;
+}
+
 eve::Result<MotionHandle> MotionBuilder::run() {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionBuilder.run"));
+    consumed_  = true;
     desc_.sink = nullptr;
     return runtime_.spawnFloat(desc_);
 }
 
 eve::Result<MotionHandle> MotionBuilder::bind(IMotionFloatSink &sink) {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionBuilder.bind"));
+    consumed_  = true;
     desc_.sink = &sink;
     return runtime_.spawnFloat(desc_);
+}
+
+eve::Result<MotionRuntime::FloatDesc> MotionBuilder::takeDesc() {
+    if (consumed_) return eve::Result<MotionRuntime::FloatDesc>::failure(consumedDiag("MotionBuilder.takeDesc"));
+    consumed_ = true;
+    return eve::Result<MotionRuntime::FloatDesc>::success(std::move(desc_));
 }
 
 MotionVec2Builder::MotionVec2Builder(MotionRuntime &runtime, MotionVec2 from, MotionVec2 to,
@@ -99,14 +124,30 @@ MotionVec2Builder &MotionVec2Builder::cancelOnError(bool enabled) {
     return *this;
 }
 
+MotionVec2Builder &MotionVec2Builder::to(IMotionVec2Sink &sink) {
+    desc_.sink = &sink;
+    return *this;
+}
+
 eve::Result<MotionHandle> MotionVec2Builder::run() {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionVec2Builder.run"));
+    consumed_  = true;
     desc_.sink = nullptr;
     return runtime_.spawnVec2(desc_);
 }
 
 eve::Result<MotionHandle> MotionVec2Builder::bind(IMotionVec2Sink &sink) {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionVec2Builder.bind"));
+    consumed_  = true;
     desc_.sink = &sink;
     return runtime_.spawnVec2(desc_);
+}
+
+eve::Result<MotionRuntime::Vec2Desc> MotionVec2Builder::takeDesc() {
+    if (consumed_)
+        return eve::Result<MotionRuntime::Vec2Desc>::failure(consumedDiag("MotionVec2Builder.takeDesc"));
+    consumed_ = true;
+    return eve::Result<MotionRuntime::Vec2Desc>::success(std::move(desc_));
 }
 
 MotionVec3Builder::MotionVec3Builder(MotionRuntime &runtime, MotionVec3 from, MotionVec3 to,
@@ -153,14 +194,30 @@ MotionVec3Builder &MotionVec3Builder::cancelOnError(bool enabled) {
     return *this;
 }
 
+MotionVec3Builder &MotionVec3Builder::to(IMotionVec3Sink &sink) {
+    desc_.sink = &sink;
+    return *this;
+}
+
 eve::Result<MotionHandle> MotionVec3Builder::run() {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionVec3Builder.run"));
+    consumed_  = true;
     desc_.sink = nullptr;
     return runtime_.spawnVec3(desc_);
 }
 
 eve::Result<MotionHandle> MotionVec3Builder::bind(IMotionVec3Sink &sink) {
+    if (consumed_) return eve::Result<MotionHandle>::failure(consumedDiag("MotionVec3Builder.bind"));
+    consumed_  = true;
     desc_.sink = &sink;
     return runtime_.spawnVec3(desc_);
+}
+
+eve::Result<MotionRuntime::Vec3Desc> MotionVec3Builder::takeDesc() {
+    if (consumed_)
+        return eve::Result<MotionRuntime::Vec3Desc>::failure(consumedDiag("MotionVec3Builder.takeDesc"));
+    consumed_ = true;
+    return eve::Result<MotionRuntime::Vec3Desc>::success(std::move(desc_));
 }
 
 }  // namespace eve::animation

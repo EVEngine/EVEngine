@@ -35,7 +35,38 @@ anim->motions().cancel(handle);   // 取消并触发 onCancel
 ```
 
 无 sink 时可 `run()`，再用 `motions().floatValue(handle)` 拉取当前值。
-脚本侧完整 fluent/bind API 与 Sequence / Punch 见后续 Phase。
+
+### Sequence（Phase 2）
+
+```cpp
+auto seq = anim->sequence();
+seq.append(std::move(anim->motion(0.f, 1.f, 0.3f).ease("outQuad").to(sinkX))).expect("append");
+seq.appendInterval(0.1f).expect("gap");
+seq.join(std::move(anim->motion(0.f, 1.f, 0.3f).ease("linear").to(sinkY))).expect("join");
+seq.insert(0.05f, std::move(anim->motion(1.f, 0.f, 0.2f).to(sinkZ))).expect("insert");
+auto playback = seq.run().expect("run");
+anim->advance(step);
+playback.complete().expect("complete");
+```
+
+脚本：
+
+```squirrel
+local b = anim.newMotion(0, 100, 0.5);
+b.ease("outQuad");
+b.loops(2, "yoyo");
+local h = b.run();
+print(h.value());
+h.complete();
+
+local seq = anim.newMotionSequence();
+seq.append(anim.newMotion(0, 1, 0.3));
+seq.appendInterval(0.1);
+seq.join(anim.newMotion(0, 1, 0.3));
+local sh = seq.run();
+```
+
+Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。Punch / Shake 与 Color/Quat 见后续 Phase。
 
 ## 基本用法（Tween）
 

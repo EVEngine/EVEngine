@@ -9,14 +9,18 @@
 #include "animation/MotionTypes.h"
 
 #include <string>
+#include <utility>
 
 namespace eve::animation {
+
+class MotionSequence;
 
 /**
  * @brief Configure then bind/run a float motion into a MotionRuntime.
  *
- * @note `bind(sink)` borrows the sink; the caller must keep it alive while the
- *       motion is active. Prefer a stack/test-owned sink or a module-owned one.
+ * @note `bind(sink)` / `to(sink)` borrow the sink; the caller must keep it alive
+ *       while the motion is active. Prefer a stack/test-owned sink or a
+ *       module-owned one.
  */
 class MotionBuilder {
 public:
@@ -30,15 +34,33 @@ public:
     MotionBuilder &onCancel(MotionRuntime::VoidCallback cb);
     MotionBuilder &cancelOnError(bool enabled);
 
+    /**
+     * @brief Attach a sink without spawning (for MotionSequence).
+     * @note Does not start playback; call run()/bind() or hand to a sequence.
+     */
+    MotionBuilder &to(IMotionFloatSink &sink);
+
     /** @brief Start without a sink; read values via MotionRuntime::floatValue. */
     [[nodiscard]] eve::Result<MotionHandle> run();
 
     /** @brief Start and push each sample into `sink` (borrowed). */
     [[nodiscard]] eve::Result<MotionHandle> bind(IMotionFloatSink &sink);
 
+    [[nodiscard]] MotionRuntime &runtime() noexcept { return runtime_; }
+    [[nodiscard]] const MotionRuntime &runtime() const noexcept { return runtime_; }
+
+    /**
+     * @brief Extract the configured desc for sequence scheduling (consumes builder).
+     * @post Further run/bind/takeDesc fail with PreconditionViolation.
+     */
+    [[nodiscard]] eve::Result<MotionRuntime::FloatDesc> takeDesc();
+
 private:
-    MotionRuntime           &runtime_;
-    MotionRuntime::FloatDesc desc_{};
+    friend class MotionSequence;
+
+    MotionRuntime            &runtime_;
+    MotionRuntime::FloatDesc  desc_{};
+    bool                      consumed_ = false;
 };
 
 /** @brief Vec2 fluent builder. */
@@ -53,13 +75,21 @@ public:
     MotionVec2Builder &onComplete(MotionRuntime::VoidCallback cb);
     MotionVec2Builder &onCancel(MotionRuntime::VoidCallback cb);
     MotionVec2Builder &cancelOnError(bool enabled);
+    MotionVec2Builder &to(IMotionVec2Sink &sink);
 
     [[nodiscard]] eve::Result<MotionHandle> run();
     [[nodiscard]] eve::Result<MotionHandle> bind(IMotionVec2Sink &sink);
 
+    [[nodiscard]] MotionRuntime &runtime() noexcept { return runtime_; }
+    [[nodiscard]] const MotionRuntime &runtime() const noexcept { return runtime_; }
+    [[nodiscard]] eve::Result<MotionRuntime::Vec2Desc> takeDesc();
+
 private:
-    MotionRuntime          &runtime_;
-    MotionRuntime::Vec2Desc desc_{};
+    friend class MotionSequence;
+
+    MotionRuntime           &runtime_;
+    MotionRuntime::Vec2Desc  desc_{};
+    bool                     consumed_ = false;
 };
 
 /** @brief Vec3 fluent builder. */
@@ -74,13 +104,21 @@ public:
     MotionVec3Builder &onComplete(MotionRuntime::VoidCallback cb);
     MotionVec3Builder &onCancel(MotionRuntime::VoidCallback cb);
     MotionVec3Builder &cancelOnError(bool enabled);
+    MotionVec3Builder &to(IMotionVec3Sink &sink);
 
     [[nodiscard]] eve::Result<MotionHandle> run();
     [[nodiscard]] eve::Result<MotionHandle> bind(IMotionVec3Sink &sink);
 
+    [[nodiscard]] MotionRuntime &runtime() noexcept { return runtime_; }
+    [[nodiscard]] const MotionRuntime &runtime() const noexcept { return runtime_; }
+    [[nodiscard]] eve::Result<MotionRuntime::Vec3Desc> takeDesc();
+
 private:
-    MotionRuntime          &runtime_;
-    MotionRuntime::Vec3Desc desc_{};
+    friend class MotionSequence;
+
+    MotionRuntime           &runtime_;
+    MotionRuntime::Vec3Desc  desc_{};
+    bool                     consumed_ = false;
 };
 
 }  // namespace eve::animation

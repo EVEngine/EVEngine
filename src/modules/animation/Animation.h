@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
 #include "animation/MotionRuntime.h"
 #include "animation/MotionTypes.h"
 #include "animation/Tween.h"
@@ -220,6 +221,9 @@ public:
     [[nodiscard]] MotionVec2Builder motionVec2(MotionVec2 from, MotionVec2 to, float duration);
     /** @brief LitMotion-style Vec3 motion builder. */
     [[nodiscard]] MotionVec3Builder motionVec3(MotionVec3 from, MotionVec3 to, float duration);
+
+    /** @brief Create an empty LitMotion-style motion sequence on this module runtime. */
+    [[nodiscard]] MotionSequence sequence();
 
     /** @brief Shared motion storage for builders and handle queries. */
     [[nodiscard]] MotionRuntime &motions() noexcept { return motions_; }
