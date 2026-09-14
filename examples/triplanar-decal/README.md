@@ -32,6 +32,7 @@ cd examples/triplanar-decal && ../../build/linux-debug/src/engine/eve run
 
 ## 文件
 
-- `main.nut` — 墙角场景 + Decal API
-- `assets/grid_decal.png` — 高对比网格贴花（拉伸一目了然）
+- `main.nut` — 墙角场景 + Decal API（过程化网格贴图）
+- `assets/grid_decal.png` — 可选离线网格贴花资源
 - `scripts/gen_grid_decal.py` — 重新生成网格贴图
+- `capture_settings.nut` — `capture_root.nut` 截图覆盖项示例

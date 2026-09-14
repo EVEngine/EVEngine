@@ -360,44 +360,72 @@ TEST_CASE("decal.gpuHeadlessProjectionReadback") {
 }
 
 // Triplanar mode paints a wall that classic planar projection discards (facing
-// nearly orthogonal to the decal forward). Planar leaves the layer clear.
+// nearly orthogonal to the decal forward). Planar leaves the wall near the
+// base albedo color.
 TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
+    eve::window::Window *win = nullptr;
     eve::graphics::Graphics *gfx = nullptr;
-    openHeadlessGfx(gfx, 160, 120);
+    openGfxWindow(win, gfx, 320, 240);
 
-    auto *wall = makePlane(gfx, 2.f);  // XY plane, normal +Z
+    // Vertical wall in XY (normal +Z), viewed from +Z.
+    auto *wall = makePlane(gfx, 2.f);
     REQUIRE(wall != nullptr);
+
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 2.6f;
+
+    auto *ent = Renderable3D::create();
+    ent->meshRenderer()->mesh = wall;
+    ent->meshRenderer()->texture = makeSolidTex(gfx, 180, 180, 180);
+    RenderSystem3D::setDirectionalLight(0.2f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+
+    static bool sTripDrawer = false;
+    if (!sTripDrawer) {
+        sTripDrawer = true;
+        RenderSystem3D::addDecalExtraDrawer(
+            [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
+               const glm::mat4 &viewProj, float aspect) {
+                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ,
+                                             viewProj, aspect);
+            });
+    }
     gfx->getRenderControl()->enable("decal");
     gfx->getRenderControl()->compile();
 
-    gfx->beginGBufferPass(160, 120);
-    gfx->drawMeshGBuffer(wall, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f,
-                         makeSolidTex(gfx, 255, 255, 255));
-    gfx->endGBufferPass();
-
     auto *decalTex = makeSolidTex(gfx, 200, 20, 20);
-    // Orient decal forward along +Y (orthogonal to the wall normal +Z).
-    const glm::mat4 model =
-        glm::scale(glm::mat4_cast(glm::rotation(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f))),
-                   glm::vec3(2.f, 2.f, 2.f));
+    auto &mgr = DecalManager::inst();
+    mgr.clearAll();
+    // Project along +Y onto a +Z wall — planar culls, triplanar keeps coverage.
+    const int id = mgr.project(0.f, 0.f, 0.f, 0.f, 1.f, 0.f, decalTex, "trip", 2.f, 2.f, false,
+                               0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    REQUIRE(id > 0);
 
-    auto layerCenterRed = [&](int projectionMode) -> bool {
-        gfx->beginDecalPass(160, 120);
-        gfx->setDecalCamera(glm::mat4(1.f), 0.1f, 100.f);
-        gfx->drawDecal(model, decalTex, nullptr, nullptr, nullptr, 1.f, 0.f, 0.f, 0.f, 0.f, 0,
-                       projectionMode, 4.f);
-        gfx->endDecalPass();
-        auto *img = gfx->readDecalLayerToImageData("albedo");
-        REQUIRE(img != nullptr);
-        const uint8_t *px = static_cast<const uint8_t *>(img->getData());
-        const uint8_t *center = px + (size_t(60) * 160u + size_t(80)) * 4u;
-        const bool red = center[0] > 150 && center[1] < 80;
-        delete img;
-        return red;
+    auto centerRedness = [&]() -> float {
+        gfx->setScreenReadbackEnabled(true);
+        for (int i = 0; i < 3; ++i) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+        }
+        const Color c = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        return c.r - c.g;
     };
 
-    CHECK(!layerCenterRed(0));  // planar rejects grazing faces
-    CHECK(layerCenterRed(1));   // triplanar keeps them
+    REQUIRE(mgr.setProjection(id, "planar", 4.f));
+    const float planarScore = centerRedness();
+
+    REQUIRE(mgr.setProjection(id, "triplanar", 4.f));
+    const float triplanarScore = centerRedness();
+
+    // Triplanar must shift the wall toward the red decal; planar should not.
+    REQUIRE(triplanarScore > 0.12f);
+    REQUIRE(triplanarScore > planarScore + 0.08f);
+
+    mgr.clearAll();
+    win->close();
 }
 
 namespace {
