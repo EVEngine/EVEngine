@@ -446,7 +446,8 @@ public:
     void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
-                   float metalStrength, float emissiveStrength, int blendMode = 0) override;
+                   float metalStrength, float emissiveStrength, int blendMode = 0,
+                   int projectionMode = 0, float blendSharpness = 4.f) override;
     void endDecalPass() override;
     image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
 

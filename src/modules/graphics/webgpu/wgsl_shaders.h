@@ -1329,6 +1329,11 @@ struct DecalOut {
 @group(0) @binding(5) var gbNormal: texture_2d<f32>;
 @group(0) @binding(6) var mainSamp: sampler;
 
+fn sampleAtlas(tex: texture_2d<f32>, localUV: vec2f) -> vec4f {
+    let atl = u.uvRect.xy + clamp(localUV, vec2f(0.0), vec2f(1.0)) * u.uvRect.zw;
+    return textureSample(tex, mainSamp, atl);
+}
+
 @fragment
 fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     let uv = pos.xy * u.texel.xy;
@@ -1346,17 +1351,54 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     let surfaceN = textureLoad(gbNormal, texelPos, 0).xyz * 2.0 - 1.0;
     let decalFwd = normalize(mat3x3f(u.modelR0.xyz, u.modelR1.xyz, u.modelR2.xyz) *
                              vec3f(0.0, 0.0, 1.0));
-    if (dot(surfaceN, decalFwd) < 0.1) { discard; }
+    let useTriplanar = u.extraParams.z > 0.5;
+    let facing = dot(surfaceN, decalFwd);
+    if (useTriplanar) {
+        if (facing < -0.05) { discard; }
+    } else if (facing < 0.1) {
+        discard;
+    }
 
-    let decalUV = clamp(local.xy + 0.5, vec2f(0.0), vec2f(1.0));
-    let atlasUV = u.uvRect.xy + decalUV * u.uvRect.zw;
-    let alb = textureSample(decalAlbedo, mainSamp, atlasUV);
-    let nrm = textureSample(decalNormal, mainSamp, atlasUV);
-    let prm = textureSample(decalParams, mainSamp, atlasUV);
-    var coverage = alb.a * clamp(u.fadeParams.x, 0.0, 1.0);
-    let edge = smoothstep(vec2f(0.0), vec2f(0.06), decalUV) *
-               smoothstep(vec2f(1.0), vec2f(0.94), decalUV);
-    coverage *= edge.x * edge.y;
+    var alb: vec4f;
+    var nrm: vec4f;
+    var prm: vec4f;
+    var edgeFade: f32;
+
+    if (!useTriplanar) {
+        let decalUV = clamp(local.xy + 0.5, vec2f(0.0), vec2f(1.0));
+        alb = sampleAtlas(decalAlbedo, decalUV);
+        nrm = sampleAtlas(decalNormal, decalUV);
+        prm = sampleAtlas(decalParams, decalUV);
+        let edge = smoothstep(vec2f(0.0), vec2f(0.06), decalUV) *
+                   smoothstep(vec2f(1.0), vec2f(0.94), decalUV);
+        edgeFade = edge.x * edge.y;
+    } else {
+        let invR = mat3x3f(u.invModel[0].xyz, u.invModel[1].xyz, u.invModel[2].xyz);
+        let nLocal = normalize(invR * surfaceN);
+        let sharpness = max(u.extraParams.w, 1.0);
+        var w = pow(abs(nLocal), vec3f(sharpness));
+        w = w / max(w.x + w.y + w.z, 1e-5);
+
+        let uvYZ = local.yz + 0.5;
+        let uvXZ = local.xz + 0.5;
+        let uvXY = local.xy + 0.5;
+        alb = sampleAtlas(decalAlbedo, uvYZ) * w.x +
+              sampleAtlas(decalAlbedo, uvXZ) * w.y +
+              sampleAtlas(decalAlbedo, uvXY) * w.z;
+        nrm = sampleAtlas(decalNormal, uvYZ) * w.x +
+              sampleAtlas(decalNormal, uvXZ) * w.y +
+              sampleAtlas(decalNormal, uvXY) * w.z;
+        prm = sampleAtlas(decalParams, uvYZ) * w.x +
+              sampleAtlas(decalParams, uvXZ) * w.y +
+              sampleAtlas(decalParams, uvXY) * w.z;
+
+        let t = local + 0.5;
+        let edge = smoothstep(vec3f(0.0), vec3f(0.06), t) *
+                   smoothstep(vec3f(1.0), vec3f(0.94), t);
+        edgeFade = edge.x * edge.y * edge.z;
+    }
+
+    var coverage = alb.a * clamp(u.fadeParams.x, 0.0, 1.0) * edgeFade;
     if (coverage <= 0.001) { discard; }
 
     var out: DecalOut;
