@@ -1107,8 +1107,11 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
+      # Cold third-party + sccache miss regularly exceeds 40 minutes before
+      # unit_test finishes compiling (PR #389 Linux job 103894839331 timed out
+      # at ~94%). Job budget is 90m; leave headroom for the 30m test step.
       - name: Build linux debug
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
