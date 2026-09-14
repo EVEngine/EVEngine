@@ -62,13 +62,18 @@ void appendCardMesh(CardMeshData &dst, const CardMeshData &src);
 
 /**
  * @brief Upload card arrays as a Graphics-owned Mesh.
+ * @param gfx Graphics factory that owns the resulting GPU mesh.
+ * @ownership Graphics owns the returned Mesh; `gfx` is borrowed for the call only.
+ * @lifetime Returned mesh remains valid until Graphics releases it; `gfx` must outlive the call.
  * @return Mesh pointer owned by Graphics, or null on failure.
  */
 Mesh *uploadCardMesh(Graphics *gfx, const CardMeshData &data);
 
 /**
  * @brief Convenience: single card mesh.
- * @ownership Graphics owns the returned Mesh.
+ * @param gfx Graphics factory that owns the resulting GPU mesh.
+ * @ownership Graphics owns the returned Mesh; `gfx` is borrowed for the call only.
+ * @lifetime Returned mesh remains valid until Graphics releases it; `gfx` must outlive the call.
  */
 Mesh *newCardMesh(Graphics *gfx, float width = 0.12f, float height = 0.45f);
 
@@ -80,7 +85,11 @@ void applyCardDefaults(Material &mat);
 
 /**
  * @brief Create a Material configured for hair cards and optionally bind the hair shader + albedo.
- * @ownership Caller owns the Material*; Graphics owns shader/texture resources.
+ * @param gfx Graphics factory used to create the default hair shader when `hairShader` is null.
+ * @param albedo Optional borrowed albedo texture; Graphics retains ownership.
+ * @param hairShader Optional borrowed hair shader; Graphics retains ownership when non-null.
+ * @ownership Caller owns the returned Material*; `gfx`/`albedo`/`hairShader` are borrowed.
+ * @lifetime Material outlives this call; borrowed shader/texture must outlive Material draws.
  */
 Material *makeCardMaterial(Graphics *gfx, Texture *albedo = nullptr, Shader *hairShader = nullptr);
 
