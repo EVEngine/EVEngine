@@ -348,6 +348,8 @@ TEST_CASE("graphics.hair.groomInstanceMultiGroupAndMarschner") {
     CHECK_EQ(groom->getMarschnerTT(), 0.2f);
     CHECK_EQ(groom->getMarschnerTRT(), 0.f);
 
+    gfx->begin3DFrame();
     groom->draw(glm::mat4(1.f));
+    gfx->present();
     win->close();
 }
