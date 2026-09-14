@@ -569,6 +569,10 @@ TEST_CASE("procgen.pointGraph.exposesUeStyleBreadthNodes") {
     CHECK_EQ(PointGraph::getOperationParamKey("spawn.mesh", 1), std::string("attribute"));
     CHECK_EQ(PointGraph::getOperationParamKey("grid.sample", 0), std::string("width"));
     CHECK_EQ(PointGraph::getOperationParamKey("poisson.sample", 2), std::string("radius"));
+    CHECK(PointGraph::getOperationInputCount("landscape.sample") == 1);
+    CHECK(PointGraph::getOperationInputCount("texture.sample") == 1);
+    CHECK_EQ(PointGraph::getOperationParamKey("landscape.sample", 1), std::string("project"));
+    CHECK_EQ(PointGraph::getOperationParamKey("texture.sample", 1), std::string("attribute"));
 }
 
 TEST_CASE("procgen.pointGraph.samplesGridAndPoissonDisk") {
@@ -638,6 +642,73 @@ TEST_CASE("procgen.pointGraph.samplesGridAndPoissonDisk") {
     CHECK(poissonBudget.validate());
     CHECK(!poissonBudget.execute("scatter"));
     CHECK(poissonBudget.getError().find("budget") != std::string::npos);
+}
+
+TEST_CASE("procgen.pointGraph.samplesLandscapeAndTextureOntoChannels") {
+    Heightmap heights(3, 3);
+    for (int z = 0; z < 3; ++z)
+        for (int x = 0; x < 3; ++x) heights.setHeight(x, z, float(x));
+    SpatialData landscape = SpatialData::heightfield(heights, 0.f, 0.f, 1.f, 1.f);
+
+    PointSet candidates;
+    candidates.add(0.f, 10.f, 1.f);
+    candidates.add(2.f, 10.f, 1.f);
+    candidates.setDensity(0, 0.f);
+    candidates.setDensity(1, 0.f);
+
+    PointGraph landscapeGraph;
+    CHECK(landscapeGraph.addNode("in", "input"));
+    CHECK(landscapeGraph.addNode("sample", "landscape.sample"));
+    CHECK(landscapeGraph.setNodePoints("in", &candidates));
+    CHECK(landscapeGraph.connect("in", "sample"));
+    CHECK(landscapeGraph.setNodeSpatial("sample", &landscape));
+    CHECK(landscapeGraph.setNodeInt("sample", "project", 1));
+    CHECK(landscapeGraph.setNodeString("sample", "attribute", "$Density"));
+    CHECK(landscapeGraph.setNodeFloat("sample", "inputMin", 0.f));
+    CHECK(landscapeGraph.setNodeFloat("sample", "inputMax", 2.f));
+    CHECK(landscapeGraph.validate());
+    std::unique_ptr<PointSet> projected(landscapeGraph.execute("sample"));
+    REQUIRE(bool(projected));
+    CHECK_EQ(projected->getCount(), 2);
+    CHECK_EQ(projected->getY(0), 0.f);
+    CHECK_EQ(projected->getY(1), 2.f);
+    CHECK_EQ(projected->getDensity(0), 0.f);
+    CHECK_EQ(projected->getDensity(1), 1.f);
+
+    Heightmap mask(2, 2);
+    mask.setHeight(0, 0, 0.f);
+    mask.setHeight(1, 0, 1.f);
+    mask.setHeight(0, 1, 0.25f);
+    mask.setHeight(1, 1, 0.75f);
+    SpatialData texture = SpatialData::textureMask(mask, 0.f, 0.f, 1.f, 0.f, 1.f, -1.f, 1.f);
+
+    PointSet maskPoints;
+    maskPoints.add(0.f, 0.f, 0.f);
+    maskPoints.add(1.f, 0.f, 0.f);
+
+    PointGraph textureGraph;
+    CHECK(textureGraph.addNode("in", "input"));
+    CHECK(textureGraph.addNode("sample", "texture.sample"));
+    CHECK(textureGraph.setNodePoints("in", &maskPoints));
+    CHECK(textureGraph.connect("in", "sample"));
+    CHECK(textureGraph.setBindingSpatial("mask", &texture).ok());
+    CHECK(textureGraph.setNodeString("sample", "binding", "mask"));
+    CHECK(textureGraph.setNodeString("sample", "attribute", "coverage"));
+    CHECK(textureGraph.validate());
+    std::unique_ptr<PointSet> covered(textureGraph.execute("sample"));
+    REQUIRE(bool(covered));
+    CHECK_EQ(covered->getFloatAttribute(0, "coverage", -1.f), 0.f);
+    CHECK_EQ(covered->getFloatAttribute(1, "coverage", -1.f), 1.f);
+
+    PointGraph wrongKind;
+    CHECK(wrongKind.addNode("in", "input"));
+    CHECK(wrongKind.addNode("sample", "texture.sample"));
+    CHECK(wrongKind.setNodePoints("in", &maskPoints));
+    CHECK(wrongKind.connect("in", "sample"));
+    CHECK(wrongKind.setNodeSpatial("sample", &landscape));
+    CHECK(wrongKind.validate());
+    CHECK(!wrongKind.execute("sample"));
+    CHECK(wrongKind.getError().find("texture_mask") != std::string::npos);
 }
 
 TEST_CASE("procgen.pointGraph.samplesSplinesFiltersDistanceAndBooleans") {

@@ -340,6 +340,31 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
                 densityFromNormal(*first, floatValue(node, "minDegrees", 0.f), floatValue(node, "maxDegrees", 90.f),
                                   floatValue(node, "outputMin", 0.f), floatValue(node, "outputMax", 1.f),
                                   intValue(node, "invert", 0) != 0);
+    } else if (node.operation == "landscape.sample" || node.operation == "texture.sample") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, node.operation + " requires input: " + id);
+        auto spatialResult = resolveNodeSpatial(node);
+        if (!spatialResult.ok())
+            return ResultRef<const PointSet>::failure(nestedFailure(id, spatialResult.status()));
+        const auto spatial = spatialResult.value();
+        if (node.operation == "landscape.sample" && spatial->getKind() != "surface.heightfield")
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "landscape.sample requires surface.heightfield: " + id);
+        if (node.operation == "texture.sample" && spatial->getKind() != "volume.texture_mask")
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "texture.sample requires volume.texture_mask: " + id);
+        std::string attribute = stringValue(node, "attribute", "$Density");
+        if (attribute.empty()) attribute = "$Density";
+        if (!isPointFloatChannel(attribute))
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, node.operation + " has unknown float channel at node: " + id);
+        PointSet source = *first;
+        if (node.operation == "landscape.sample" && intValue(node, "project", 0) != 0) source = spatial->project(source);
+        node.cache = sampleSpatialOntoChannel(source, *spatial, attribute, floatValue(node, "inputMin", 0.f),
+                                              floatValue(node, "inputMax", node.operation == "texture.sample" ? 1.f : 0.f),
+                                              floatValue(node, "outputMin", 0.f), floatValue(node, "outputMax", 1.f),
+                                              intValue(node, "clamp", 1) != 0, intValue(node, "invert", 0) != 0);
     } else if (node.operation == "attribute.math.float") {
         const std::string attribute       = stringValue(node, "attribute");
         std::string       outputAttribute = stringValue(node, "outputAttribute");
@@ -827,7 +852,8 @@ Result<void> PointGraph::validateNode(const std::string& id, std::unordered_map<
     } else if (node.operation == "get.spatial" || node.operation == "get.landscape" ||
                node.operation == "get.spline" || node.operation == "spatial.sample" ||
                node.operation == "mesh.sample" || node.operation == "spatial.filter" ||
-               node.operation == "spatial.project" || node.operation == "biome.generate") {
+               node.operation == "spatial.project" || node.operation == "biome.generate" ||
+               node.operation == "landscape.sample" || node.operation == "texture.sample") {
         auto spatial = resolveNodeSpatial(node);
         if (!spatial.ok()) return Result<void>::failure(nestedFailure(id, spatial.status()));
         if (node.operation == "get.landscape" && spatial.value()->getKind() != "surface.heightfield")
@@ -838,6 +864,12 @@ Result<void> PointGraph::validateNode(const std::string& id, std::unordered_map<
         if (node.operation == "mesh.sample" && spatial.value()->getKind() != "surface.mesh")
             return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
                                      "mesh.sample requires surface.mesh spatial data: " + id);
+        if (node.operation == "landscape.sample" && spatial.value()->getKind() != "surface.heightfield")
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
+                                     "landscape.sample requires surface.heightfield: " + id);
+        if (node.operation == "texture.sample" && spatial.value()->getKind() != "volume.texture_mask")
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
+                                     "texture.sample requires volume.texture_mask: " + id);
     } else if (node.operation == "grid.sample") {
         if (intValue(node, "width", 8) <= 0 || intValue(node, "depth", 8) <= 0 ||
             floatValue(node, "spacing", 1.f) <= 0.f)

@@ -31,7 +31,8 @@ Source、视锥与时间预算、Biome Rules、Shape Grammar，以及到 Scene �
 PointGraph 定义。
 
 PointGraph 一等节点已覆盖 UE 基础节点库中的 Mesh/Spline Sampler、规则网格与 Poisson
-蓝噪声采样（`grid.sample` / `poisson.sample`）、点集布尔
+蓝噪声采样（`grid.sample` / `poisson.sample`）、Landscape/Texture Sampler
+（`landscape.sample` / `texture.sample`）、点集布尔
 （Union/Intersection/Difference）、Bounds Modifier、Normal→Density、Static Mesh 权重
 Spawner，以及 Disable/Inspect。Landscape/Spline/Actor 源仍通过外部绑定注入；详见
 [PointSet 管线](procgen/pointset-pipeline.md)。
