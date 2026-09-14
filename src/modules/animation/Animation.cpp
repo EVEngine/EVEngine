@@ -19,8 +19,13 @@
 #include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
+#include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
+#include "animation/MotionScriptBindings.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
+#include "animation/MotionRuntime.h"
+#include "animation/Tween.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
@@ -394,6 +399,54 @@ AnimLattice *Animation::newLatticeFromModel(eve::model3d::ModelData *model, int 
 
 AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
 
+MotionBuilder Animation::motion(float from, float to, float duration) {
+    return MotionBuilder(motions_, from, to, duration);
+}
+
+MotionVec2Builder Animation::motionVec2(MotionVec2 from, MotionVec2 to, float duration) {
+    return MotionVec2Builder(motions_, from, to, duration);
+}
+
+MotionVec3Builder Animation::motionVec3(MotionVec3 from, MotionVec3 to, float duration) {
+    return MotionVec3Builder(motions_, from, to, duration);
+}
+
+MotionSequence Animation::sequence() { return MotionSequence(motions_); }
+
+MotionBuilder Animation::punch(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionBuilder Animation::shake(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec2Builder Animation::punchVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec2Builder Animation::shakeVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec3Builder Animation::punchVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec3Builder Animation::shakeVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionColorBuilder Animation::motionColor(MotionColor from, MotionColor to, float duration) {
+    return MotionColorBuilder(motions_, from, to, duration);
+}
+
+MotionQuatBuilder Animation::motionQuat(MotionQuat from, MotionQuat to, float duration) {
+    return MotionQuatBuilder(motions_, from, to, duration);
+}
+
+
+
 void Animation::registerTween(Tween *t) {
     if (!t) return;
     t->setOwner(this);
@@ -466,6 +519,9 @@ eve::Result<void> Animation::advance(const eve::SimulationStep &step) {
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Conflict, "animation SpineAnim child already consumed this tick"));
     }
+    if (motions_.hasCurrentTick() && step.tick <= motions_.currentTick())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation MotionRuntime already consumed this tick"));
 
     // Copy pointer lists: destructors during update must not invalidate iteration.
     std::vector<Tween *> tweenSnap = tweens_;
@@ -491,6 +547,11 @@ eve::Result<void> Animation::advance(const eve::SimulationStep &step) {
         }
     }
 
+    {
+        auto result = motions_.advance(step);
+        if (!result) return eve::Result<void>::failure(result.status());
+    }
+
     lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -514,7 +575,7 @@ void Animation::update(float dt) {
 }
 
 int Animation::getActiveCount() const {
-    int n = 0;
+    int n = motions_.activeCount();
     for (const Tween *t : tweens_) {
         if (t && t->isActive()) ++n;
     }
@@ -550,6 +611,7 @@ void Animation::clearAll() {
 void Animation::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Animation::create, false);
     expose(cls);
+    exposeMotionScriptBindings(table, cls);
 
     auto tw = table.addClass<Tween>(
         "Tween", std::function<Tween *()>([]() -> Tween * { return nullptr; }), true);
@@ -1328,6 +1390,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
+    cls.addFunc("getMotionCount", &Animation::getMotionCount);
     cls.addFunc("getSpriteAnimCount", &Animation::getSpriteAnimCount);
     cls.addFunc("getSpineAnimCount", &Animation::getSpineAnimCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);
