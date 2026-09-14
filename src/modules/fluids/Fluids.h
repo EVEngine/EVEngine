@@ -6,7 +6,7 @@
  * Particles are constrained to mesh SDFs, flow down the surface under
  * tangential gravity, and (later phases) form droplets through cohesion /
  * surface tension. The solver runs on the GPU through the gpgpu module with a
- * CPU reference fallback; the screen-space surface reconstruction pipeline
+ * CPU reference implementation; the screen-space surface reconstruction pipeline
  * consumes the same particle buffers.
  */
 

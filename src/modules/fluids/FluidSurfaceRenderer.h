@@ -186,7 +186,7 @@ public:
      * @param texture Borrowed matching destination texture.
      * @return Success after reconstruction and presentation, or a structured failure.
      * @details Vulkan keeps the shaded RGBA8 buffer device-local. Unsupported backends retain the
-     * normal host-visible color contract and upload fallback. Do not insert CPU color compositing
+     * normal host-visible color contract followed by texture upload. Do not insert CPU color compositing
      * between reconstruction and presentation; use renderVolume plus copyToTexture for those modes.
      */
     [[nodiscard]] Result<void> renderVolumeColorToTexture(const VolumeFluid& sim, graphics::Graphics* graphics,

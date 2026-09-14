@@ -132,7 +132,7 @@ struct VolumeFluidEmission {
  * @details `base` owns emitter-wide material, speed, lifetime, filter and RNG settings.
  * Each shape must be a Distribution description; its pose transforms its owned local
  * samples into solver space. An empty shape contributes its pose origin/direction, and
- * an empty shape list contributes the base pose, matching Fluid3DEmitter's point fallback.
+ * an empty shape list contributes the base pose, matching Fluid3DEmitter's default point behavior.
  * The setup-time operation accepts at most 64 shapes and 4096 total samples, publishes
  * no partial result, retains no input storage and adds no per-step allocation or GPU work.
  * Same ordered inputs produce the same ordered distribution on the same build.
