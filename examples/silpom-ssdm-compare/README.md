@@ -1,13 +1,13 @@
-# SilPOM vs SSDM comparison
+# SilPOM vs SSDM comparison (dihedral corners)
 
-Side-by-side demo of the two public techniques people associate with
-*Crimson Desert* surface relief (Pearl Abyss has not published their exact path):
+Three brick **corners** (two faces meeting at 90°) under a grazing camera.
+A crease is where the public techniques diverge most clearly:
 
-| Panel | Technique | What you should notice at grazing angles |
+| Corner | Technique | What you should notice |
 | --- | --- | --- |
-| Left (warm) | Classic **POM** | Convincing depth *inside* the face; **flat** geometric silhouette |
-| Mid (green) | **SilPOM** | Same POM depth, but fragments whose displaced UV leave the mesh chart are discarded → silhouette follows the height field at UV borders |
-| Right (cool) | **SSDM-style** | View-space slab ray-march + `gl_FragDepth` → silhouette can change without being bound to UV clipping |
+| Left (warm) | Classic **POM** | Depth inside each face; **flat** geometric crease |
+| Mid (green) | **SilPOM** | POM + discard when displaced UV leaves the chart → **gaps / bitten silhouette along the crease** |
+| Right (cool) | **SSDM-style** | POM shading + `gl_FragDepth` pull → **crease stays filled**, depth wins against the floor |
 
 ## Run
 
@@ -34,25 +34,18 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 | `W` / `S` | Pitch |
 | `[` / `]` | Relief scale |
 | `-` / `=` | Max ray-march layers |
-| `1` / `2` / `3` | Focus POM / SilPOM / SSDM panel |
+| `1` / `2` / `3` | Focus POM / SilPOM / SSDM corner |
 
 ## Implementation notes
 
 - Shared CPU references: `src/modules/graphics/ParallaxMap.h`
-  (`silPomCoverage`, `ssdmScreenOffset`, `ssdmCoverage`)
-- Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`
-  (`silPomCoverage`, `parallaxMappedUVSilhouette`) and
-  `src/modules/graphics/shaders/ssdm.glsl`
-- Demo shader is self-contained (`shaders/compare.frag`) so it does not depend
-  on engine include paths at runtime compile time.
-- The SSDM panel is an **educational approximation** of classic screen-space
-  displacement (planar slab + depth write), not a full-scene post-process SSDM
-  pass. It is enough to contrast silhouette behaviour with SilPOM.
+- Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`, `ssdm.glsl`
+- Demo shader is self-contained (`shaders/compare.frag`)
+- Each corner face is its own UV chart `[0,1]^2` (crease is `u=0` on both) so SilPOM can clip there
+- SSDM path uses per-face TBN + POM for UVs (works on both +Z and +X walls) and FragDepth for occlusion — it does **not** discard on chart exits, which is the point of the crease comparison
+- Educational planar approximation of SSDM, not a full-scene post pass
 
-## Floor contact / occlusion
+## Floor contact
 
-The right panel used to look like the floor covered the wall for three separate reasons:
-
-1. **Vulkan ZO depth** — `gl_FragDepth` must be written in `[0,1]` NDC (not OpenGL's `*0.5+0.5`).
-2. **No hole punching** — SSDM misses fall back to POM on the card; discarding let the floor show through.
-3. **Contact layout** — cards sit a few centimeters above the floor, SSDM fades relief near the chart bottom, and out-of-chart hits open the L/R/top silhouette only (the bottom edge stays sealed so the floor cannot show through the contact line).
+Corners sit slightly above the floor; SSDM fades relief near the chart bottom and
+never opens the bottom silhouette, so the floor cannot show through the contact line.

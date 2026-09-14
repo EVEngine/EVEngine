@@ -1,6 +1,7 @@
 #version 450
-// Side-by-side POM / SilPOM / SSDM comparison for a planar brick card.
-// pc.data[0] mode: 0 = classic POM, 1 = Silhouette POM, 2 = SSDM-style relief.
+// Side-by-side POM / SilPOM / SSDM for planar faces (flat cards or dihedral corners).
+// pc.data[0] mode: 0 = classic POM, 1 = Silhouette POM,
+// 2 = SSDM-style (POM shading + FragDepth; no UV-bound discard).
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -179,48 +180,25 @@ void main() {
         }
         coverage = silCoverage(uv, padding);
     } else {
-        // SSDM-style slab march for UVs / silhouette shading.
-        // Depth: do NOT trust the projected hit Z (easy to get wrong with mvp*inv(model)
-        // under Vulkan ZO). Keep the geometric surface and pull the whole card toward
-        // the camera so the grazing floor cannot win inside the panel footprint.
-        vec3 planePos = ubo.model[3].xyz;
-        vec3 viewDir = normalize(vWorldPos - vCameraPos);
-        vec4 hit = ssdmSample(planePos, N, vCameraPos, viewDir, scale, minLayers, maxLayers);
-
-        float h01 = 0.0;
-        if (hit.w > 0.0 && hit.z < 0.5) {
-            // Outside the UV chart: open L/R/top silhouette, but NEVER open the
-            // bottom edge — discarding there lets the floor show through the
-            // contact line (the original "floor covers wall" look).
-            if (hit.y >= 0.0)
-                discard;
-            // hit.y < 0 (below chart): fall through to POM seal at the base.
+        // SSDM-style on general planar faces (including dihedral corners):
+        // use POM for UVs via per-face TBN (works on both +Z and +X walls), and
+        // write FragDepth toward the camera so the crease stays filled — unlike
+        // SilPOM, we never discard when the displaced UV leaves the chart.
+        mat3 TBN = makeTBN(N, vWorldPos, vUV);
+        if (length(TBN[0]) > 1e-4) {
+            vec3 viewTS = normalize(transpose(TBN) * V);
+            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers);
         }
-        if (hit.z > 0.5 && hit.w > 0.0) {
-            uv = hit.xy;
-            vec3 hitPos = vCameraPos + viewDir * hit.w;
-            float thickness = max(scale * 1.5, 1e-3);
-            h01 = clamp(dot(N, hitPos - planePos) / thickness, 0.0, 1.0);
-        } else {
-            // True miss inside the card: geometric surface + POM color fallback.
-            mat3 TBN = makeTBN(N, vWorldPos, vUV);
-            if (length(TBN[0]) > 1e-4) {
-                vec3 viewTS = normalize(transpose(TBN) * V);
-                uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers);
-            }
-            h01 = texture(heightSampler, clamp(uv, 0.0, 1.0)).r;
-        }
-        // Fade relief near the chart bottom so the parallax doesn't look like it
-        // continues under the floor plane (the classic "floor covers wall" illusion).
-        float bottomFade = smoothstep(0.0, 0.08, uv.y);
-        h01 *= bottomFade;
-        if (bottomFade < 0.999) {
-            // blend UV back toward the geometric chart UV near the base
-            uv = mix(vUV, uv, bottomFade);
-        }
+        // Soften at the chart bottom so relief does not look like it continues
+        // under the floor. Still sample / shade — do not discard the contact.
+        float bottomFade = smoothstep(0.0, 0.08, vUV.y);
+        uv = mix(vUV, uv, bottomFade);
+        float h01 = texture(heightSampler, clamp(uv, 0.0, 1.0)).r * bottomFade;
 
         // Pull toward camera (smaller ZO depth). Stronger on brick tops.
-        fragDepth = clamp(gl_FragCoord.z - (0.002 + h01 * 0.003), 0.0, 1.0);
+        // Keeps wall fragments winning against the floor and against the other
+        // face of the corner near the crease.
+        fragDepth = clamp(gl_FragCoord.z - (0.002 + h01 * 0.004), 0.0, 1.0);
     }
 
     if (coverage < 0.5)
