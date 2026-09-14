@@ -321,3 +321,17 @@ public:
 5. 构建与测试证据  
 
 后续 Phase 在本文追加「实施记录」小节，避免第二份真相源。
+
+## 12. 实施记录
+
+### 2026-09-14 — Phase 1 落地
+
+已提交分支 `cursor/graphics-hair-groom-7698`：
+
+- 源码：`src/modules/graphics/hair/{StrandsDatas,Procedural,RibbonBuilder,GroomAsset,GroomInstance,Hair}.*`
+- 工厂：`Graphics::newGroomInstance()`；Squirrel 仅绑定无失败 getter/`draw`（`Result` API 仍为 C++）
+- 测试：`test/hair_groom.cpp` — `ctest -R 'graphics\.hair'` **6/6 Passed**
+- Binding Contract：0 unresolved（getter 必须在 `.cpp` 定义，内联头会报 UNRESOLVED）
+
+下一步按 §7 Phase 2：多 group LOD 表示切换（cards）+ Cluster 视锥剔除。
+
