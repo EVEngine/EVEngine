@@ -41,7 +41,7 @@ struct SmrNeuralResult {
  * @brief Optional MeshRet/SMR neural retarget provider (implemented by animation_tensor).
  *
  * Animation stays free of tensor includes; the L6 satellite registers this capability.
- * When absent or not ready, classical two-bone IK SMR remains the fallback.
+ * When absent or not ready, classical two-bone IK SMR remains the active path.
  *
  * @ownership Provider is owned by AnimationTensor; revoked before destruction.
  * @thread Composition/owner thread only. No callbacks, script re-entry, or background work.

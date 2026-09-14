@@ -85,7 +85,7 @@ public:
     const std::string& getNeuralModelPath() const { return neuralModelPath_; }
     /**
      * @brief Prefer neural MeshRet inference when animation_tensor provides ISmrNeuralRetarget.
-     * Classical two-bone IK remains the fallback when the provider is absent or not ready.
+     * Classical two-bone IK remains the active path when the provider is absent or not ready.
      */
     void setNeuralRetargetEnabled(bool enabled) { neuralRetargetEnabled_ = enabled; }
     /** @brief Return whether neural retarget is preferred when a provider is available. */
