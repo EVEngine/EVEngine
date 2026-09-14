@@ -19,14 +19,14 @@ persist cmpSsdm = null
 persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
-persist cmpYaw = 0.55
-persist cmpPitch = 0.22
-persist cmpOrbit = true
-persist cmpScale = 0.08
+persist cmpYaw = 0.15
+persist cmpPitch = 0.18
+persist cmpOrbit = false
+persist cmpScale = 0.12
 persist cmpMinLayers = 12.0
 persist cmpMaxLayers = 40.0
 persist cmpFocus = 2
-persist cmpStatus = "orbit on"
+persist cmpStatus = "orbit off"
 
 function clampf(v, a, b) {
     if (v < a) return a;
@@ -49,7 +49,7 @@ function brickColor(u, v) {
 }
 
 function buildTextures() {
-    local size = 256;
+    local size = 128;
     local albedo = eve.Image().newEmptyImageData(size, size, "RGBA8");
     local height = eve.Image().newEmptyImageData(size, size, "RGBA8");
     for (local y = 0; y < size; y += 1) {
