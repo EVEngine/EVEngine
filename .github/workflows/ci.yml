@@ -1012,7 +1012,9 @@ jobs:
     runs-on: ubuntu-24.04
     # Full debug build + per-case unit tests + all-example smoke exceeded the
     # previous 60-minute job cap even though each step stayed within its guard.
-    timeout-minutes: 90
+    # Cold third-party restore + read-only sccache (PR) can push the build step
+    # past 40 minutes, so keep headroom for tests afterward.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
@@ -1107,10 +1109,10 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      # Cold third-party + sccache miss regularly exceeds 40 minutes before
-      # unit_test finishes compiling (PR #389 Linux job 103894839331 timed out
-      # at ~94%). Job budget is 90m; leave headroom for the 30m test step.
       - name: Build linux debug
+        # PRs are sccache READ_ONLY and cannot refill the shared cache. A cold
+        # third-party restore plus a full engine rebuild regularly exceeds 40m.
+        # (Also observed on PR #389: timed out at ~94% under the old 40m budget.)
         timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -1295,8 +1297,8 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    # Allow the 100-minute cold optimized sanitizer build and 90-minute test
-    # guards plus dependency/toolchain setup and cache reporting.
+    # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
+    # the 90-minute test guard, plus dependency/toolchain setup and reporting.
     timeout-minutes: 270
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
@@ -1369,11 +1371,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
-        # PRs cannot populate the shared sccache. A new compiler flag set is
-        # therefore a cold build; run 34596121051 reached 67% after 55 minutes,
-        # and run 34823491554 timed out at ~94% after 100 minutes.
-        # Job budget is 270m; leave headroom for the 90m test step.
-        timeout-minutes: 130
+        # PRs cannot populate the shared sccache, so sanitizer flag sets are a
+        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
+        # keep headroom for linking unit_test. Job budget is 270m.
+        timeout-minutes: 140
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
