@@ -47,6 +47,7 @@ bool PointSet::empty() const { return points_.empty(); }
 void PointSet::clear() {
     points_.clear();
     attributes_.clear();
+    dataAttributes_.clear();
 }
 
 void appendPointRow(PointSet& output, const PointSet& input, std::size_t index) {

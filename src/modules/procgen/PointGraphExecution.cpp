@@ -130,45 +130,65 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
                                                                        "input node has no points: " + id);
         else
             node.cache = node.points;
-    } else if (node.operation == "spatial.sample") {
-        const float spacing = floatValue(node, "spacing", 1.f);
-        if (!node.spatial)
+
+    } else if (node.operation == "get.points" || node.operation == "get.actor") {
+        const std::string binding = stringValue(node, "binding", {});
+        if (binding.empty())
             return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
-                                                                       "spatial.sample has no spatial data: " + id);
-        else if (maxNodeOutputPoints_ > 0 &&
-                 spatialSampleUpperBound(*node.spatial, spacing) > uint64_t(maxNodeOutputPoints_))
+                                                                       node.operation + " requires binding: " + id);
+        auto pointsResult = resolveBindingPoints(binding);
+        if (!pointsResult.ok())
+            return ResultRef<const PointSet>::failure(nestedFailure(id, pointsResult.status()));
+        node.cache = *pointsResult.value();
+    } else if (node.operation == "spatial.sample" || node.operation == "get.spatial" ||
+               node.operation == "get.landscape" || node.operation == "get.spline") {
+        const float spacing = floatValue(node, "spacing", 1.f);
+        auto spatialResult = resolveNodeSpatial(node);
+        if (!spatialResult.ok())
+            return ResultRef<const PointSet>::failure(nestedFailure(id, spatialResult.status()));
+        const auto spatial = spatialResult.value();
+        if (node.operation == "get.landscape" && spatial->getKind() != "surface.heightfield")
             return nodeFailure<std::reference_wrapper<const PointSet>>(
-                DiagnosticCode::InvalidArgument, id, "spatial.sample exceeds node point budget at node: " + id);
-        else
-            node.cache =
-                node.spatial->sample(spacing, uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f));
+                DiagnosticCode::InvalidArgument, id, "get.landscape requires surface.heightfield binding: " + id);
+        if (node.operation == "get.spline" && spatial->getKind() != "spline")
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, "get.spline requires spline binding: " + id);
+        if (maxNodeOutputPoints_ > 0 &&
+            spatialSampleUpperBound(*spatial, spacing) > uint64_t(maxNodeOutputPoints_))
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, node.operation + " exceeds node point budget at node: " + id);
+        node.cache =
+            spatial->sample(spacing, uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f));
     } else if (node.operation == "mesh.sample") {
         const float spacing = floatValue(node, "spacing", 1.f);
-        if (!node.spatial)
-            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
-                                                                       "mesh.sample has no spatial data: " + id);
-        else if (node.spatial->getKind() != "surface.mesh")
+        auto spatialResult = resolveNodeSpatial(node);
+        if (!spatialResult.ok())
+            return ResultRef<const PointSet>::failure(nestedFailure(id, spatialResult.status()));
+        const auto spatial = spatialResult.value();
+        if (spatial->getKind() != "surface.mesh")
             return nodeFailure<std::reference_wrapper<const PointSet>>(
                 DiagnosticCode::InvalidArgument, id, "mesh.sample requires surface.mesh spatial data: " + id);
         else if (maxNodeOutputPoints_ > 0 &&
-                 spatialSampleUpperBound(*node.spatial, spacing) > uint64_t(maxNodeOutputPoints_))
+                 spatialSampleUpperBound(*spatial, spacing) > uint64_t(maxNodeOutputPoints_))
             return nodeFailure<std::reference_wrapper<const PointSet>>(
                 DiagnosticCode::InvalidArgument, id, "mesh.sample exceeds node point budget at node: " + id);
         else
             node.cache =
-                node.spatial->sample(spacing, uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f));
+                spatial->sample(spacing, uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f));
     } else if (node.operation == "spatial.filter") {
-        if (!first || !node.spatial)
+        auto spatialResult = resolveNodeSpatial(node);
+        if (!first || !spatialResult.ok())
             return nodeFailure<std::reference_wrapper<const PointSet>>(
                 DiagnosticCode::InvalidArgument, id, "spatial.filter requires input and spatial data: " + id);
         else
-            node.cache = node.spatial->filter(*first, intValue(node, "invert", 0) != 0);
+            node.cache = spatialResult.value()->filter(*first, intValue(node, "invert", 0) != 0);
     } else if (node.operation == "spatial.project") {
-        if (!first || !node.spatial)
+        auto spatialResult = resolveNodeSpatial(node);
+        if (!first || !spatialResult.ok())
             return nodeFailure<std::reference_wrapper<const PointSet>>(
                 DiagnosticCode::InvalidArgument, id, "spatial.project requires input and spatial data: " + id);
         else
-            node.cache = node.spatial->project(*first);
+            node.cache = spatialResult.value()->project(*first);
     } else if (node.operation == "spline.sample") {
         const float spacing = floatValue(node, "spacing", 1.f);
         if (!first)
@@ -511,6 +531,77 @@ ResultRef<const PointSet> PointGraph::evaluate(const std::string& id, std::unord
         else
             node.cache = filterPointBoolAttribute(*first, stringValue(node, "attribute"),
                                                   intValue(node, "value", 1) != 0, intValue(node, "invert", 0) != 0);
+
+    } else if (node.operation == "attribute.partition") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.partition requires input: " + id);
+        else {
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty())
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, "attribute.partition requires attribute: " + id);
+            node.cache = partitionPointAttribute(*first, attribute, stringValue(node, "outputAttribute", "partition"),
+                                                 stringValue(node, "mode", "value"));
+        }
+    } else if (node.operation == "attribute.noise.float") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.noise.float requires input: " + id);
+        else
+            node.cache = noisePointFloatAttribute(*first, stringValue(node, "attribute", "noise"),
+                                                  uint32_t(intValue(node, "seed", 1)),
+                                                  floatValue(node, "frequency", 1.f),
+                                                  floatValue(node, "amplitude", 1.f),
+                                                  floatValue(node, "offset", 0.f));
+    } else if (node.operation == "attribute.math.int") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.math.int requires input: " + id);
+        else {
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty())
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, "attribute.math.int requires attribute: " + id);
+            node.cache = mathPointIntAttribute(*first, attribute, stringValue(node, "outputAttribute"),
+                                               stringValue(node, "operation", "add"),
+                                               intValue(node, "operand", 1), intValue(node, "defaultValue", 0));
+        }
+    } else if (node.operation == "attribute.math.vector") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
+                                                                       "attribute.math.vector requires input: " + id);
+        else {
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty())
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, "attribute.math.vector requires attribute: " + id);
+            node.cache = mathPointVectorAttribute(
+                *first, attribute, stringValue(node, "outputAttribute"), stringValue(node, "operation", "scale"),
+                floatValue(node, "operandX", 1.f), floatValue(node, "operandY", 1.f), floatValue(node, "operandZ", 1.f),
+                floatValue(node, "defaultX", 0.f), floatValue(node, "defaultY", 0.f), floatValue(node, "defaultZ", 0.f));
+        }
+    } else if (node.operation == "attribute.set.data.float" || node.operation == "attribute.set.data.int" ||
+               node.operation == "attribute.set.data.string") {
+        if (!first)
+            return nodeFailure<std::reference_wrapper<const PointSet>>(
+                DiagnosticCode::InvalidArgument, id, node.operation + " requires input: " + id);
+        else {
+            node.cache = *first;
+            const std::string attribute = stringValue(node, "attribute");
+            if (attribute.empty())
+                return nodeFailure<std::reference_wrapper<const PointSet>>(
+                    DiagnosticCode::InvalidArgument, id, node.operation + " requires attribute: " + id);
+            Result<void> written = Result<void>::success();
+            if (node.operation == "attribute.set.data.float")
+                written = setPointDataFloatAttribute(node.cache, attribute, floatValue(node, "value", 0.f));
+            else if (node.operation == "attribute.set.data.int")
+                written = setPointDataIntAttribute(node.cache, attribute, intValue(node, "value", 0));
+            else
+                written = setPointDataStringAttribute(node.cache, attribute, stringValue(node, "value"));
+            if (!written.ok())
+                return ResultRef<const PointSet>::failure(nestedFailure(id, written.status()));
+        }
     } else if (node.operation == "spawn.mesh") {
         if (!first)
             return nodeFailure<std::reference_wrapper<const PointSet>>(DiagnosticCode::InvalidArgument, id,
@@ -691,11 +782,26 @@ Result<void> PointGraph::validateNode(const std::string& id, std::unordered_map<
     const auto& node = found->second;
     if (node.operation == "input" && !node.hasPoints)
         return nodeFailure<void>(DiagnosticCode::InvalidArgument, id, "input node has no points: " + id);
-    else if ((node.operation == "spatial.sample" || node.operation == "mesh.sample" ||
-              node.operation == "spatial.filter" || node.operation == "spatial.project" ||
-              node.operation == "biome.generate") &&
-             !node.spatial)
-        return nodeFailure<void>(DiagnosticCode::InvalidArgument, id, "node has no spatial data: " + id);
+    else if (node.operation == "get.points" || node.operation == "get.actor") {
+        if (stringValue(node, "binding").empty())
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id, node.operation + " requires binding: " + id);
+        auto points = resolveBindingPoints(stringValue(node, "binding"));
+        if (!points.ok()) return Result<void>::failure(nestedFailure(id, points.status()));
+    } else if (node.operation == "get.spatial" || node.operation == "get.landscape" ||
+               node.operation == "get.spline" || node.operation == "spatial.sample" ||
+               node.operation == "mesh.sample" || node.operation == "spatial.filter" ||
+               node.operation == "spatial.project" || node.operation == "biome.generate") {
+        auto spatial = resolveNodeSpatial(node);
+        if (!spatial.ok()) return Result<void>::failure(nestedFailure(id, spatial.status()));
+        if (node.operation == "get.landscape" && spatial.value()->getKind() != "surface.heightfield")
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
+                                     "get.landscape requires surface.heightfield binding: " + id);
+        if (node.operation == "get.spline" && spatial.value()->getKind() != "spline")
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id, "get.spline requires spline binding: " + id);
+        if (node.operation == "mesh.sample" && spatial.value()->getKind() != "surface.mesh")
+            return nodeFailure<void>(DiagnosticCode::InvalidArgument, id,
+                                     "mesh.sample requires surface.mesh spatial data: " + id);
+    }
     else if (node.operation == "biome.generate" && !node.biomeRules)
         return nodeFailure<void>(DiagnosticCode::InvalidArgument, id, "node has no biome rules: " + id);
     else if (node.operation == "grammar.generate" && !node.shapeGrammar)

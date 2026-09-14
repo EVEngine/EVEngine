@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <string_view>
 #include <unordered_map>
@@ -19,7 +20,46 @@ Result<float> invalidChannelFloat(std::string message, std::string path) {
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
-bool isMetadataName(std::string_view name) noexcept { return !name.empty() && name.front() != '$'; }
+bool isMetadataName(std::string_view name) noexcept {
+    return !name.empty() && name.front() != '$' && name.front() != '@';
+}
+
+
+std::string_view stripDomainPrefix(std::string_view name, std::string_view* domain) {
+    if (name.size() >= 6 && name.substr(0, 6) == "@Data.") {
+        *domain = "data";
+        return name.substr(6);
+    }
+    if (name.size() >= 10 && name.substr(0, 10) == "@Elements.") {
+        *domain = "elements";
+        return name.substr(10);
+    }
+    if (name.size() >= 6 && name.substr(0, 6) == "@Last.") {
+        *domain = "elements";  // closed-set alias of incoming Elements domain
+        return name.substr(6);
+    }
+    *domain = "elements";
+    return name;
+}
+
+void rotationBasis(float pitchDeg, float yawDeg, float rollDeg, float* forward, float* right, float* up) {
+    const float deg = 0.017453292519943295f;
+    const float cp = std::cos(pitchDeg * deg), sp = std::sin(pitchDeg * deg);
+    const float cy = std::cos(yawDeg * deg), sy = std::sin(yawDeg * deg);
+    const float cr = std::cos(rollDeg * deg), sr = std::sin(rollDeg * deg);
+    // Yaw-Pitch-Roll (Y-up) basis matching engine point transforms.
+    forward[0] = sy * cp;
+    forward[1] = -sp;
+    forward[2] = cy * cp;
+    right[0] = cy * cr + sy * sp * sr;
+    right[1] = cp * sr;
+    right[2] = -sy * cr + cy * sp * sr;
+    up[0] = -cy * sr + sy * sp * cr;
+    up[1] = cp * cr;
+    up[2] = sy * sr + cy * sp * cr;
+}
+
+
 
 void appendRow(PointSet& output, const PointSet& input, std::size_t index) {
     output.appendPointFrom(input, index).expect("PointSet attribute op requires compatible schemas");
@@ -31,10 +71,16 @@ bool isPointFloatSelector(std::string_view name) noexcept {
     return name == "$Density" || name == "$Seed" || name == "$Steepness" || name == "$Position.X" ||
            name == "$Position.Y" || name == "$Position.Z" || name == "$Normal.X" || name == "$Normal.Y" ||
            name == "$Normal.Z" || name == "$Rotation.Pitch" || name == "$Rotation.Yaw" ||
-           name == "$Rotation.Roll" || name == "$Scale.X" || name == "$Scale.Y" || name == "$Scale.Z" ||
+           name == "$Rotation.Roll" || name == "$Rotation.Forward.X" || name == "$Rotation.Forward.Y" ||
+           name == "$Rotation.Forward.Z" || name == "$Rotation.Right.X" || name == "$Rotation.Right.Y" ||
+           name == "$Rotation.Right.Z" || name == "$Rotation.Up.X" || name == "$Rotation.Up.Y" ||
+           name == "$Rotation.Up.Z" || name == "$Scale.X" || name == "$Scale.Y" || name == "$Scale.Z" ||
            name == "$Color.R" || name == "$Color.G" || name == "$Color.B" || name == "$Color.A" ||
            name == "$BoundsMin.X" || name == "$BoundsMin.Y" || name == "$BoundsMin.Z" || name == "$BoundsMax.X" ||
-           name == "$BoundsMax.Y" || name == "$BoundsMax.Z";
+           name == "$BoundsMax.Y" || name == "$BoundsMax.Z" || name == "$Position.ZYX.X" ||
+           name == "$Position.ZYX.Y" || name == "$Position.ZYX.Z" || name == "$Position.XZY.X" ||
+           name == "$Position.XZY.Y" || name == "$Position.XZY.Z" || name == "$Normal.ZYX.X" ||
+           name == "$Normal.ZYX.Y" || name == "$Normal.ZYX.Z";
 }
 
 bool isPointFloatChannel(std::string_view name) noexcept {
@@ -45,8 +91,16 @@ Result<float> readPointFloatChannel(const PointSet& points, int index, std::stri
     if (index < 0 || index >= points.getCount())
         return invalidChannelFloat("point index is out of range", "index");
     if (name.empty()) return invalidChannelFloat("attribute channel must not be empty", "name");
-    if (name.front() != '$')
-        return Result<float>::success(points.getFloatAttribute(index, std::string(name), defaultValue));
+    if (name.front() != '$') {
+        std::string_view domain = "elements";
+        const std::string_view leaf = stripDomainPrefix(name, &domain);
+        if (leaf.empty()) return invalidChannelFloat("attribute channel must not be empty", "name");
+        if (domain == "data") {
+            if (points.dataAttributes().rowCount() == 0) return Result<float>::success(defaultValue);
+            return Result<float>::success(points.dataAttributes().getFloat(0, leaf).value_or(defaultValue));
+        }
+        return Result<float>::success(points.getFloatAttribute(index, std::string(leaf), defaultValue));
+    }
     if (!isPointFloatSelector(name))
         return invalidChannelFloat("unknown float selector '" + std::string(name) + "'", "name");
 
@@ -76,13 +130,42 @@ Result<float> readPointFloatChannel(const PointSet& points, int index, std::stri
     if (name == "$BoundsMax.X") return Result<float>::success(point.boundsMaxX);
     if (name == "$BoundsMax.Y") return Result<float>::success(point.boundsMaxY);
     if (name == "$BoundsMax.Z") return Result<float>::success(point.boundsMaxZ);
+    float forward[3], right[3], up[3];
+    if (name.rfind("$Rotation.Forward.", 0) == 0 || name.rfind("$Rotation.Right.", 0) == 0 ||
+        name.rfind("$Rotation.Up.", 0) == 0) {
+        rotationBasis(point.pitch, point.yaw, point.roll, forward, right, up);
+        const float* axis = name.rfind("$Rotation.Forward.", 0) == 0 ? forward
+                            : name.rfind("$Rotation.Right.", 0) == 0   ? right
+                                                                      : up;
+        if (!name.empty() && name.back() == 'X') return Result<float>::success(axis[0]);
+        if (!name.empty() && name.back() == 'Y') return Result<float>::success(axis[1]);
+        if (!name.empty() && name.back() == 'Z') return Result<float>::success(axis[2]);
+    }
+    if (name == "$Position.ZYX.X") return Result<float>::success(point.z);
+    if (name == "$Position.ZYX.Y") return Result<float>::success(point.y);
+    if (name == "$Position.ZYX.Z") return Result<float>::success(point.x);
+    if (name == "$Position.XZY.X") return Result<float>::success(point.x);
+    if (name == "$Position.XZY.Y") return Result<float>::success(point.z);
+    if (name == "$Position.XZY.Z") return Result<float>::success(point.y);
+    if (name == "$Normal.ZYX.X") return Result<float>::success(point.normalZ);
+    if (name == "$Normal.ZYX.Y") return Result<float>::success(point.normalY);
+    if (name == "$Normal.ZYX.Z") return Result<float>::success(point.normalX);
     return invalidChannelFloat("unknown float selector '" + std::string(name) + "'", "name");
 }
 
 Result<void> writePointFloatChannel(PointSet& points, int index, std::string_view name, float value) {
     if (index < 0 || index >= points.getCount()) return invalidChannel("point index is out of range", "index");
     if (name.empty()) return invalidChannel("attribute channel must not be empty", "name");
-    if (name.front() != '$') return points.trySetFloatAttribute(index, std::string(name), value);
+    if (name.front() != '$') {
+        std::string_view domain = "elements";
+        const std::string_view leaf = stripDomainPrefix(name, &domain);
+        if (leaf.empty()) return invalidChannel("attribute channel must not be empty", "name");
+        if (domain == "data") {
+            ensurePointSetDataRow(points);
+            return points.mutableDataAttributes().setFloat(0, leaf, value);
+        }
+        return points.trySetFloatAttribute(index, std::string(leaf), value);
+    }
     if (!isPointFloatSelector(name))
         return invalidChannel("unknown float selector '" + std::string(name) + "'", "name");
 
@@ -511,6 +594,144 @@ Result<PointSet> selectPointFloatAttribute(const PointSet& input, const std::str
         if (!written.ok()) return Result<PointSet>::failure(written.status());
     }
     return Result<PointSet>::success(std::move(result));
+}
+
+
+void ensurePointSetDataRow(PointSet& points) {
+    AttributeTable& data = points.mutableDataAttributes();
+    if (data.rowCount() == 0)
+        (void)data.appendRow();
+    else if (data.rowCount() > 1)
+        data.resize(1);
+}
+
+Result<void> setPointDataFloatAttribute(PointSet& points, const std::string& attribute, float value) {
+    if (attribute.empty() || attribute.front() == '$' || attribute.front() == '@')
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "data attribute name is invalid", "attribute"));
+    ensurePointSetDataRow(points);
+    return points.mutableDataAttributes().setFloat(0, attribute, value);
+}
+
+Result<void> setPointDataIntAttribute(PointSet& points, const std::string& attribute, std::int64_t value) {
+    if (attribute.empty() || attribute.front() == '$' || attribute.front() == '@')
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "data attribute name is invalid", "attribute"));
+    ensurePointSetDataRow(points);
+    return points.mutableDataAttributes().setInt(0, attribute, value);
+}
+
+Result<void> setPointDataStringAttribute(PointSet& points, const std::string& attribute, const std::string& value) {
+    if (attribute.empty() || attribute.front() == '$' || attribute.front() == '@')
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "data attribute name is invalid", "attribute"));
+    ensurePointSetDataRow(points);
+    return points.mutableDataAttributes().setString(0, attribute, value);
+}
+
+PointSet partitionPointAttribute(const PointSet& input, const std::string& attribute,
+                                 const std::string& outputAttribute, const std::string& mode) {
+    PointSet result = input;
+    const std::string out = outputAttribute.empty() ? "partition" : outputAttribute;
+    const bool useHash = mode == "hash";
+    for (int i = 0; i < result.getCount(); ++i) {
+        std::int64_t partition = 0;
+        if (result.hasIntAttribute(i, attribute))
+            partition = result.getIntAttribute(i, attribute, 0);
+        else if (result.hasStringAttribute(i, attribute)) {
+            const std::string value = result.getStringAttribute(i, attribute, {});
+            if (useHash) {
+                std::uint64_t hash = 14695981039346656037ull;
+                for (unsigned char c : value) {
+                    hash ^= c;
+                    hash *= 1099511628211ull;
+                }
+                partition = std::int64_t(hash & 0x7fffffffull);
+            } else {
+                // Stable dense-ish id from string bytes without allocating a map.
+                std::uint64_t hash = 14695981039346656037ull;
+                for (unsigned char c : value) {
+                    hash ^= c;
+                    hash *= 1099511628211ull;
+                }
+                partition = std::int64_t(hash & 0xffffull);
+            }
+        } else if (result.hasFloatAttribute(i, attribute)) {
+            partition = std::int64_t(std::llround(result.getFloatAttribute(i, attribute, 0.f)));
+        }
+        result.trySetIntAttribute(i, out, partition).expect("partition write");
+    }
+    return result;
+}
+
+static float hashNoise(uint32_t seed, int index, float x, float z, float frequency) {
+    std::uint32_t h = seed * 747796405u + 2891336453u;
+    h ^= std::uint32_t(index) * 2246822519u;
+    h ^= std::uint32_t(std::int32_t(x * frequency * 1000.f)) * 3266489917u;
+    h ^= std::uint32_t(std::int32_t(z * frequency * 1000.f)) * 668265263u;
+    h ^= h >> 15;
+    h *= 2246822519u;
+    h ^= h >> 13;
+    return float(h & 0x00ffffffu) / float(0x00ffffffu);
+}
+
+PointSet noisePointFloatAttribute(const PointSet& input, const std::string& attribute, uint32_t seed,
+                                  float frequency, float amplitude, float offset) {
+    PointSet result = input;
+    const std::string out = attribute.empty() ? "noise" : attribute;
+    for (int i = 0; i < result.getCount(); ++i) {
+        const auto& p = result.points()[std::size_t(i)];
+        const float n = hashNoise(seed, i, p.x, p.z, frequency) * amplitude + offset;
+        result.trySetFloatAttribute(i, out, n).expect("noise write");
+    }
+    return result;
+}
+
+PointSet mathPointIntAttribute(const PointSet& input, const std::string& attribute,
+                               const std::string& outputAttribute, const std::string& operation, std::int64_t operand,
+                               std::int64_t defaultValue) {
+    PointSet result = input;
+    const std::string out = outputAttribute.empty() ? attribute : outputAttribute;
+    for (int i = 0; i < result.getCount(); ++i) {
+        const std::int64_t value = result.getIntAttribute(i, attribute, defaultValue);
+        std::int64_t output = value;
+        if (operation == "add") output = value + operand;
+        else if (operation == "subtract") output = value - operand;
+        else if (operation == "multiply") output = value * operand;
+        else if (operation == "divide") output = operand == 0 ? value : value / operand;
+        else if (operation == "min") output = std::min(value, operand);
+        else if (operation == "max") output = std::max(value, operand);
+        else if (operation == "modulo") output = operand == 0 ? 0 : value % operand;
+        result.trySetIntAttribute(i, out, output).expect("int math write");
+    }
+    return result;
+}
+
+PointSet mathPointVectorAttribute(const PointSet& input, const std::string& attribute,
+                                  const std::string& outputAttribute, const std::string& operation, float operandX,
+                                  float operandY, float operandZ, float defaultX, float defaultY, float defaultZ) {
+    PointSet result = input;
+    const std::string out = outputAttribute.empty() ? attribute : outputAttribute;
+    for (int i = 0; i < result.getCount(); ++i) {
+        float x = result.getVectorAttributeX(i, attribute, defaultX);
+        float y = result.getVectorAttributeY(i, attribute, defaultY);
+        float z = result.getVectorAttributeZ(i, attribute, defaultZ);
+        if (operation == "add") {
+            x += operandX; y += operandY; z += operandZ;
+        } else if (operation == "subtract") {
+            x -= operandX; y -= operandY; z -= operandZ;
+        } else if (operation == "multiply" || operation == "scale") {
+            x *= operandX; y *= operandY; z *= operandZ;
+        } else if (operation == "divide") {
+            if (operandX != 0.f) x /= operandX;
+            if (operandY != 0.f) y /= operandY;
+            if (operandZ != 0.f) z /= operandZ;
+        } else if (operation == "set") {
+            x = operandX; y = operandY; z = operandZ;
+        }
+        result.trySetVectorAttribute(i, out, x, y, z).expect("vector math write");
+    }
+    return result;
 }
 
 }  // namespace eve::procgen

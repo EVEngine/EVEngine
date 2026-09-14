@@ -328,20 +328,28 @@ local trees = graph.execute("prune");
 `spline.filter.distance`、`merge`、`points.union/intersect/difference`、`copy.points`、
 `transform`、`bounds.modify`、`density.remap`、`density.from.normal`、
 `attribute.math.float`、`attribute.copy/rename/delete/transfer`、`attribute.compare.float`、`attribute.select.float`、`filter.float/int/bool/string/slope`、`attribute.set.float/int/bool/vector/string`、
-`spawn.mesh`、`density.cull`、`self.prune`、`jitter`、`debug.disable/inspect`、
+`spawn.mesh`、`density.cull`、`self.prune`、`jitter`、`debug.disable/inspect`、`get.spatial/landscape/spline/points/actor`、`attribute.partition`、`attribute.noise.float`、`attribute.math.int/vector`、`attribute.set.data.float/int/string`、
 `biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
 
 相对 UE PCG 基础节点库，上述一等图节点覆盖了 Mesh/Spline Sampler、点集布尔
 （Difference/Union/Intersection）、Bounds Modifier、Normal→Density、Static Mesh
-权重 Spawner，以及 Disable/Inspect 调试旁路。Landscape / Spline / Actor 源数据仍通过
-`setNodeSpatial` / `setNodePoints` 外部绑定（对应 UE Get Landscape/Spline/Actor Data
-的数据注入角色），不做成从图内拉取关卡对象的隐式节点。Blueprint 自定义节点与完整的 UE Attribute Domain Selector 语法（多 Domain / `@Data.` 文法）不在对标范围内；图节点支持封闭的 `$Density` / `$Position.X` 等点字段选择器，以及copy/rename/delete/transfer/compare/select 与 int/bool/vector 属性写入。
+权重 Spawner，以及 Disable/Inspect 调试旁路。Landscape / Spline / Actor 源数据通过
+图级命名绑定（`setBindingSpatial` / `setBindingPoints`）与零输入 Get 节点
+（`get.landscape` / `get.spline` / `get.actor` / `get.spatial` / `get.points`）注入，
+也仍可用 `setNodeSpatial` / `setNodePoints` 直接挂到消费节点；二者都不从关卡隐式拉对象。
+`spawn.mesh` 写出的字符串属性可由编辑器侧 `PcgInstancePublisher` 发布到 Scene sink，
+并带可撤销的 remove 逆操作。`inspectNode` 提供列/域/采样快照供 Attribute 面板使用。
+完整 UE Attribute Domain Selector VM 仍不在对标范围内；封闭选择器现支持 `$Density` /
+`$Position.X`、组件重排（`$Position.ZYX.*`）、旋转基向量（`$Rotation.Forward/Right/Up.*`）、
+以及 `@Data.` / `@Elements.` / `@Last.` 域前缀。`attribute.partition` /
+`attribute.noise.float` / `attribute.math.int|vector` / `attribute.set.data.*` 覆盖
+Partition 与更丰富的 metadata 写入。
 
 `mesh.sample` 要求绑定 `surface.mesh` 空间数据（`SpatialData::meshSurface`）；误绑
 volume/heightfield 会在执行期失败。`spline.sample` 以控制点 PointSet 为输入，
 `spline.filter.distance` 用第二输入作为样条控制点做距离筛选。`points.*` 按稳定
 point id（legacy 回退到 position+seed）做集合运算，区别于 `merge` 的顺序拼接。
-`spawn.mesh` 按权重写入字符串属性（默认 `mesh`），供 Scene sink / 实例化消费；
+`spawn.mesh` 按权重写入字符串属性（默认 `mesh`），供 Scene sink / 实例化消费；编辑器可用 `PcgInstancePublisher::planPublish/applyPublish` 发布批次，并用 `apply`/`planRemove` 撤销；
 `debug.disable` 在 `enabled=0` 时输出空集，`debug.inspect` 为纯旁路以便叠加指标。
 
 `biome.generate` 通过 `setNodeSpatial` 与 `setNodeBiomeRules` 绑定生成域和 Biome 规则，

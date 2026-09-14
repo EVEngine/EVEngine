@@ -28,13 +28,21 @@ struct OperationSpec {
 const std::vector<OperationSpec>& operationSpecs() {
     static const std::vector<OperationSpec> value = {
         {"input", 0, {}},
-        {"spatial.sample", 0, {{"spacing", "float", "1"}, {"seed", "int", "1"}, {"jitter", "float", "0"}}},
-        {"mesh.sample", 0, {{"spacing", "float", "1"}, {"seed", "int", "1"}, {"jitter", "float", "0"}}},
-        {"spatial.filter", 1, {{"invert", "bool", "false"}}},
-        {"spatial.project", 1, {}},
+        {"get.spatial", 0, {{"binding", "string", ""}, {"spacing", "float", "1"}, {"seed", "int", "1"},
+                             {"jitter", "float", "0"}}},
+        {"get.landscape", 0, {{"binding", "string", ""}, {"spacing", "float", "1"}, {"seed", "int", "1"},
+                               {"jitter", "float", "0"}}},
+        {"get.spline", 0, {{"binding", "string", ""}, {"spacing", "float", "1"}, {"seed", "int", "1"},
+                            {"jitter", "float", "0"}}},
+        {"get.points", 0, {{"binding", "string", ""}}},
+        {"get.actor", 0, {{"binding", "string", ""}}},
+        {"spatial.sample", 0, {{"binding", "string", ""}, {"spacing", "float", "1"}, {"seed", "int", "1"}, {"jitter", "float", "0"}}},
+        {"mesh.sample", 0, {{"binding", "string", ""}, {"spacing", "float", "1"}, {"seed", "int", "1"}, {"jitter", "float", "0"}}},
+        {"spatial.filter", 1, {{"binding", "string", ""}, {"invert", "bool", "false"}}},
+        {"spatial.project", 1, {{"binding", "string", ""}}},
         {"spline.sample", 1, {{"spacing", "float", "1"}, {"seed", "int", "1"}, {"lateralJitter", "float", "0"}}},
         {"spline.filter.distance", 2, {{"minDistance", "float", "0"}, {"maxDistance", "float", "1"}}},
-        {"biome.generate", 0, {{"spacing", "float", "1"}, {"seed", "int", "1"},
+        {"biome.generate", 0, {{"binding", "string", ""}, {"spacing", "float", "1"}, {"seed", "int", "1"},
                                 {"jitter", "float", "0"}}},
         {"grammar.generate", 1, {{"grammar", "string", ""}, {"seed", "int", "1"},
                                   {"acceptIncomplete", "bool", "true"}}},
@@ -91,6 +99,22 @@ const std::vector<OperationSpec>& operationSpecs() {
                            {"max", "int", "0"}, {"invert", "bool", "false"}}},
         {"filter.bool", 1, {{"attribute", "string", ""}, {"value", "bool", "true"},
                             {"invert", "bool", "false"}}},
+        {"attribute.partition", 1, {{"attribute", "string", ""}, {"outputAttribute", "string", "partition"},
+                                     {"mode", "string", "value"}}},
+        {"attribute.noise.float", 1, {{"attribute", "string", "noise"}, {"seed", "int", "1"},
+                                       {"frequency", "float", "1"}, {"amplitude", "float", "1"},
+                                       {"offset", "float", "0"}}},
+        {"attribute.math.int", 1, {{"attribute", "string", ""}, {"outputAttribute", "string", ""},
+                                    {"operation", "string", "add"}, {"operand", "int", "1"},
+                                    {"defaultValue", "int", "0"}}},
+        {"attribute.math.vector", 1, {{"attribute", "string", ""}, {"outputAttribute", "string", ""},
+                                       {"operation", "string", "scale"}, {"operandX", "float", "1"},
+                                       {"operandY", "float", "1"}, {"operandZ", "float", "1"},
+                                       {"defaultX", "float", "0"}, {"defaultY", "float", "0"},
+                                       {"defaultZ", "float", "0"}}},
+        {"attribute.set.data.float", 1, {{"attribute", "string", ""}, {"value", "float", "0"}}},
+        {"attribute.set.data.int", 1, {{"attribute", "string", ""}, {"value", "int", "0"}}},
+        {"attribute.set.data.string", 1, {{"attribute", "string", ""}, {"value", "string", ""}}},
         {"spawn.mesh", 1, {{"seed", "int", "1"}, {"attribute", "string", "mesh"},
                             {"mesh0", "string", ""}, {"weight0", "float", "1"},
                             {"mesh1", "string", ""}, {"weight1", "float", "0"},
@@ -226,6 +250,157 @@ bool PointGraph::setNodeSpatial(const std::string& id, SpatialData* spatial) {
     invalidateFrom(id);
     return true;
 }
+
+Result<void> PointGraph::setBindingSpatial(const std::string& name, SpatialData* spatial) {
+    if (name.empty() || !spatial)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "binding name and spatial data are required", "binding"));
+    auto& binding = bindings_[name];
+    if (std::find(bindingOrder_.begin(), bindingOrder_.end(), name) == bindingOrder_.end())
+        bindingOrder_.push_back(name);
+    binding.spatial   = std::make_shared<SpatialData>(*spatial);
+    binding.points.reset();
+    binding.isSpatial = true;
+    invalidate();
+    return Result<void>::success();
+}
+
+Result<void> PointGraph::setBindingPoints(const std::string& name, PointSet* points) {
+    if (name.empty() || !points)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "binding name and point set are required", "binding"));
+    auto& binding = bindings_[name];
+    if (std::find(bindingOrder_.begin(), bindingOrder_.end(), name) == bindingOrder_.end())
+        bindingOrder_.push_back(name);
+    binding.points    = std::make_shared<PointSet>(*points);
+    binding.spatial.reset();
+    binding.isSpatial = false;
+    invalidate();
+    return Result<void>::success();
+}
+
+Result<void> PointGraph::clearBinding(const std::string& name) {
+    const auto found = bindings_.find(name);
+    if (found == bindings_.end())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "binding not found: " + name, "binding"));
+    bindings_.erase(found);
+    bindingOrder_.erase(std::remove(bindingOrder_.begin(), bindingOrder_.end(), name), bindingOrder_.end());
+    invalidate();
+    return Result<void>::success();
+}
+
+void PointGraph::clearBindings() {
+    if (bindings_.empty()) return;
+    bindings_.clear();
+    bindingOrder_.clear();
+    invalidate();
+}
+
+int PointGraph::getBindingCount() const { return int(bindingOrder_.size()); }
+
+std::string PointGraph::getBindingName(int index) const {
+    return index >= 0 && index < int(bindingOrder_.size()) ? bindingOrder_[size_t(index)] : std::string();
+}
+
+std::string PointGraph::getBindingType(const std::string& name) const {
+    const auto found = bindings_.find(name);
+    if (found == bindings_.end()) return {};
+    return found->second.isSpatial ? "spatial" : "points";
+}
+
+Result<std::shared_ptr<SpatialData>> PointGraph::resolveNodeSpatial(const Node& node) const {
+    if (node.spatial) return Result<std::shared_ptr<SpatialData>>::success(node.spatial);
+    const std::string binding = stringValue(node, "binding", {});
+    if (binding.empty())
+        return Result<std::shared_ptr<SpatialData>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "node has no spatial data", node.id));
+    const auto found = bindings_.find(binding);
+    if (found == bindings_.end() || !found->second.isSpatial || !found->second.spatial)
+        return Result<std::shared_ptr<SpatialData>>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "spatial binding not found: " + binding, node.id));
+    return Result<std::shared_ptr<SpatialData>>::success(found->second.spatial);
+}
+
+Result<std::shared_ptr<PointSet>> PointGraph::resolveBindingPoints(const std::string& name) const {
+    const auto found = bindings_.find(name);
+    if (found == bindings_.end() || found->second.isSpatial || !found->second.points)
+        return Result<std::shared_ptr<PointSet>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "points binding not found: " + name, name));
+    return Result<std::shared_ptr<PointSet>>::success(found->second.points);
+}
+
+Result<PointGraphInspectReport> PointGraph::inspectNode(const std::string& id, int sampleLimit) const {
+    PointGraphInspectReport report;
+    report.nodeId = id;
+    const auto found = nodes_.find(id);
+    if (found == nodes_.end())
+        return Result<PointGraphInspectReport>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "unknown node: " + id, id));
+    if (!found->second.cacheValid)
+        return Result<PointGraphInspectReport>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "node output is not cached; execute first: " + id, id));
+    const PointSet& points = found->second.cache;
+    report.pointCount = points.getCount();
+
+    const auto addBuiltin = [&](const char* name) {
+        PointGraphColumnInfo info;
+        info.name = name;
+        info.type = "builtin";
+        info.domain = "builtin";
+        report.columns.push_back(std::move(info));
+    };
+    addBuiltin("$Density");
+    addBuiltin("$Position.X");
+    addBuiltin("$Position.Y");
+    addBuiltin("$Position.Z");
+    addBuiltin("$Normal.X");
+    addBuiltin("$Normal.Y");
+    addBuiltin("$Normal.Z");
+    addBuiltin("$Rotation.Yaw");
+    addBuiltin("$Scale.X");
+    addBuiltin("$Seed");
+
+    const AttributeTable& table = points.attributes();
+    for (std::size_t i = 0; i < table.columnCount(); ++i) {
+        PointGraphColumnInfo info;
+        info.name = std::string(table.columnName(i));
+        info.domain = "elements";
+        const auto type = table.typeOf(info.name);
+        if (!type) info.type = "unknown";
+        else if (*type == ProcgenAttributeType::Float) info.type = "float";
+        else if (*type == ProcgenAttributeType::Int) info.type = "int";
+        else if (*type == ProcgenAttributeType::Bool) info.type = "bool";
+        else if (*type == ProcgenAttributeType::Vector) info.type = "vector";
+        else info.type = "string";
+        report.columns.push_back(std::move(info));
+    }
+    const AttributeTable& data = points.dataAttributes();
+    for (std::size_t i = 0; i < data.columnCount(); ++i) {
+        PointGraphColumnInfo info;
+        info.name = std::string(data.columnName(i));
+        info.domain = "data";
+        const auto type = data.typeOf(info.name);
+        if (!type) info.type = "unknown";
+        else if (*type == ProcgenAttributeType::Float) info.type = "float";
+        else if (*type == ProcgenAttributeType::Int) info.type = "int";
+        else if (*type == ProcgenAttributeType::Bool) info.type = "bool";
+        else if (*type == ProcgenAttributeType::Vector) info.type = "vector";
+        else info.type = "string";
+        report.columns.push_back(std::move(info));
+    }
+
+    if (sampleLimit > 0 && report.pointCount > 0) {
+        report.sampleCount = std::min(sampleLimit, report.pointCount);
+        report.sampleFloats.reserve(size_t(report.sampleCount) * 4);
+        for (int i = 0; i < report.sampleCount; ++i) {
+            report.sampleFloats.push_back(points.getDensity(i));
+            report.sampleFloats.push_back(points.points()[size_t(i)].x);
+            report.sampleFloats.push_back(points.points()[size_t(i)].y);
+            report.sampleFloats.push_back(points.points()[size_t(i)].z);
+        }
+    }
+    return Result<PointGraphInspectReport>::success(std::move(report));
+}
+
 
 bool PointGraph::setNodeBiomeRules(const std::string& id, BiomeRules* rules) {
     const auto found = nodes_.find(id);

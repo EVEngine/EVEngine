@@ -1,6 +1,7 @@
 #include "procgen/Biome.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/PointGraph.h"
+#include "procgen/heightmap/Heightmap.h"
 #include "procgen/ShapeGrammar.h"
 
 #include <cmath>
@@ -810,4 +811,101 @@ TEST_CASE("procgen.pointGraph.writesBuiltinDensitySelector") {
     REQUIRE(bool(result));
     CHECK_EQ(result->getDensity(0), 0.4f);
     CHECK_EQ(result->getFloatAttribute(0, "scaled", -1.f), 0.8f);
+}
+
+
+TEST_CASE("procgen.pointGraph.bindingsResolveGetNodesAndInspect") {
+    PointGraph graph;
+    CHECK(graph.addNode("landscape", "get.landscape"));
+    CHECK(graph.addNode("actors", "get.actor"));
+    CHECK(graph.setNodeFloat("landscape", "spacing", 2.f));
+    CHECK(graph.setNodeString("landscape", "binding", "terrain"));
+    CHECK(graph.setNodeString("actors", "binding", "proxies"));
+
+    Heightmap heightmap(4, 4);
+    for (int z = 0; z < 4; ++z)
+        for (int x = 0; x < 4; ++x) heightmap.setHeight(x, z, float(x + z) * 0.25f);
+    SpatialData terrain = SpatialData::heightfield(heightmap, 0.f, 0.f, 1.f, 1.f);
+    CHECK(graph.setBindingSpatial("terrain", &terrain).ok());
+
+    PointSet proxies;
+    proxies.add(1.f, 0.f, 2.f);
+    proxies.add(3.f, 0.f, 4.f);
+    CHECK(graph.setBindingPoints("proxies", &proxies).ok());
+    CHECK_EQ(graph.getBindingCount(), 2);
+    CHECK_EQ(graph.getBindingType("terrain"), std::string("spatial"));
+    CHECK_EQ(graph.getBindingType("proxies"), std::string("points"));
+
+    CHECK(graph.validate());
+    std::unique_ptr<PointSet> landscape(graph.execute("landscape"));
+    REQUIRE(bool(landscape));
+    CHECK(landscape->getCount() > 0);
+
+    std::unique_ptr<PointSet> actors(graph.execute("actors"));
+    REQUIRE(bool(actors));
+    CHECK_EQ(actors->getCount(), 2);
+
+    auto inspect = graph.inspectNode("actors", 2);
+    REQUIRE(inspect.ok());
+    CHECK_EQ(inspect.value().pointCount, 2);
+    CHECK(inspect.value().sampleCount > 0);
+    bool sawBuiltin = false;
+    for (const auto& column : inspect.value().columns)
+        if (column.domain == "builtin") sawBuiltin = true;
+    CHECK(sawBuiltin);
+}
+
+TEST_CASE("procgen.pointGraph.attributeDataDomainPartitionNoiseAndSelectors") {
+    PointSet points;
+    points.add(0.f, 0.f, 0.f);
+    points.add(1.f, 0.f, 0.f);
+    points.setYaw(0, 90.f);
+    auto written = setPointDataFloatAttribute(points, "biomeSeed", 7.5f);
+    REQUIRE(written.ok());
+    CHECK_EQ(points.dataAttributes().rowCount(), 1);
+    CHECK_EQ(points.dataAttributes().getFloat(0, "biomeSeed").value_or(-1.f), 7.5f);
+    CHECK(points.trySetStringAttribute(0, "biome", "forest").ok());
+    CHECK(points.trySetStringAttribute(1, "biome", "forest").ok());
+
+    PointSet partitioned = partitionPointAttribute(points, "biome", "partition", "hash");
+    CHECK(partitioned.hasIntAttribute(0, "partition"));
+    PointSet noisy = noisePointFloatAttribute(partitioned, "noise", 11u, 1.f, 1.f, 0.f);
+    CHECK(noisy.hasFloatAttribute(0, "noise"));
+
+    PointGraph graph;
+    CHECK(graph.addNode("input", "input"));
+    CHECK(graph.addNode("swizzle", "attribute.math.float"));
+    CHECK(graph.connect("input", "swizzle"));
+    CHECK(graph.setNodePoints("input", &noisy));
+    CHECK(graph.setNodeString("swizzle", "attribute", "$Position.ZYX.X"));
+    CHECK(graph.setNodeString("swizzle", "outputAttribute", "swizzledZ"));
+    CHECK(graph.setNodeString("swizzle", "operation", "add"));
+    CHECK(graph.setNodeFloat("swizzle", "operand", 0.f));
+    CHECK(graph.validate());
+    std::unique_ptr<PointSet> result(graph.execute("swizzle"));
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getFloatAttribute(0, "swizzledZ", -1.f), 0.f);
+    // Data domain survives graph copies from the input PointSet.
+    CHECK_EQ(result->dataAttributes().rowCount(), 1);
+    auto dataValue = readPointFloatChannel(*result, 0, "@Data.biomeSeed", -1.f);
+    REQUIRE(dataValue.ok());
+    CHECK_EQ(dataValue.value(), 7.5f);
+    auto lastNoise = readPointFloatChannel(*result, 0, "@Last.noise", -1.f);
+    REQUIRE(lastNoise.ok());
+    CHECK_EQ(lastNoise.value(), result->getFloatAttribute(0, "noise", -2.f));
+    auto forward = readPointFloatChannel(*result, 0, "$Rotation.Forward.X", 0.f);
+    REQUIRE(forward.ok());
+}
+
+TEST_CASE("procgen.pointGraph.spatialSampleAcceptsNamedBinding") {
+    PointGraph graph;
+    CHECK(graph.addNode("sample", "spatial.sample"));
+    CHECK(graph.setNodeString("sample", "binding", "volume"));
+    CHECK(graph.setNodeFloat("sample", "spacing", 2.f));
+    SpatialData volume = SpatialData::box(0.f, 0.f, 0.f, 2.f, 0.f, 2.f);
+    CHECK(graph.setBindingSpatial("volume", &volume).ok());
+    CHECK(graph.validate());
+    std::unique_ptr<PointSet> result(graph.execute("sample"));
+    REQUIRE(bool(result));
+    CHECK(result->getCount() > 0);
 }

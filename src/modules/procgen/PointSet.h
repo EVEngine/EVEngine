@@ -188,6 +188,13 @@ public:
     /** @brief Borrow the authoritative schema-bearing attribute table. */
     const AttributeTable& attributes() const noexcept { return attributes_; }
     /**
+     * @brief Borrow the single-row @Data domain attribute table (graph/set metadata).
+     * Row 0 is the authoritative Data domain; empty until the first Data write.
+     */
+    const AttributeTable& dataAttributes() const noexcept { return dataAttributes_; }
+    /** @brief Mutably access the @Data domain table; callers must keep rowCount 0 or 1. */
+    AttributeTable& mutableDataAttributes() noexcept { return dataAttributes_; }
+    /**
      * @brief Rename one metadata column on this set.
      * @return AttributeTable rename diagnostics without mutating on failure.
      */
@@ -209,6 +216,7 @@ private:
 
     std::vector<ProcgenPoint> points_;
     AttributeTable            attributes_;
+    AttributeTable            dataAttributes_;
 };
 
 /** @brief Stable label-based seed derivation; independent pipeline branches do not perturb each other. */
@@ -254,6 +262,9 @@ PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bo
 PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax, float outputMin, float outputMax,
                            bool clampOutput);
 /** @brief Return whether `name` is a known `$`-prefixed float point-field selector. */
+
+/** @brief Ensure PointSet @Data domain has exactly one row for metadata writes. */
+void ensurePointSetDataRow(PointSet& points);
 [[nodiscard]] bool isPointFloatSelector(std::string_view name) noexcept;
 /** @brief Return whether `name` is a valid float channel (builtin selector or metadata name). */
 [[nodiscard]] bool isPointFloatChannel(std::string_view name) noexcept;
@@ -333,5 +344,28 @@ PointSet modifyPointBounds(const PointSet& input, float scaleX, float scaleY, fl
  */
 PointSet assignWeightedMeshAttribute(const PointSet& input, uint32_t seed, const std::string& attribute,
                                      const std::string* meshes, const float* weights, int entryCount);
+
+/** @brief Assign partition indices from a string/int attribute (mode: value|hash). */
+PointSet partitionPointAttribute(const PointSet& input, const std::string& attribute,
+                                 const std::string& outputAttribute, const std::string& mode);
+/** @brief Write deterministic float noise into a metadata attribute. */
+PointSet noisePointFloatAttribute(const PointSet& input, const std::string& attribute, uint32_t seed,
+                                  float frequency, float amplitude, float offset);
+/** @brief Apply integer math to an int metadata column. */
+PointSet mathPointIntAttribute(const PointSet& input, const std::string& attribute,
+                               const std::string& outputAttribute, const std::string& operation, std::int64_t operand,
+                               std::int64_t defaultValue);
+/** @brief Apply vector math to a vector metadata column. */
+PointSet mathPointVectorAttribute(const PointSet& input, const std::string& attribute,
+                                  const std::string& outputAttribute, const std::string& operation, float operandX,
+                                  float operandY, float operandZ, float defaultX, float defaultY, float defaultZ);
+/** @brief Write a float into the PointSet @Data domain. */
+[[nodiscard]] Result<void> setPointDataFloatAttribute(PointSet& points, const std::string& attribute, float value);
+/** @brief Write an int into the PointSet @Data domain. */
+[[nodiscard]] Result<void> setPointDataIntAttribute(PointSet& points, const std::string& attribute, std::int64_t value);
+/** @brief Write a string into the PointSet @Data domain. */
+[[nodiscard]] Result<void> setPointDataStringAttribute(PointSet& points, const std::string& attribute,
+                                                       const std::string& value);
+
 
 }  // namespace eve::procgen
