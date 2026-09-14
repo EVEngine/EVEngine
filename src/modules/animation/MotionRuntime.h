@@ -162,8 +162,26 @@ private:
     [[nodiscard]] eve::Result<void> stepVec2(Vec2Slot &slot, float dt);
     [[nodiscard]] eve::Result<void> stepVec3(Vec3Slot &slot, float dt);
 
+    /**
+     * @brief Resolve a live float slot by generation-checked handle.
+     * @ownership Borrowed pointer into `floats_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `floats_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
     [[nodiscard]] const FloatSlot *resolveFloat(MotionHandle handle) const;
+    /**
+     * @brief Resolve a live Vec2 slot by generation-checked handle.
+     * @ownership Borrowed pointer into `vec2s_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `vec2s_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
     [[nodiscard]] const Vec2Slot *resolveVec2(MotionHandle handle) const;
+    /**
+     * @brief Resolve a live Vec3 slot by generation-checked handle.
+     * @ownership Borrowed pointer into `vec3s_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `vec3s_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
     [[nodiscard]] const Vec3Slot *resolveVec3(MotionHandle handle) const;
 
     [[nodiscard]] eve::Result<MotionHandle> occupyFloat(FloatSlot slot);
