@@ -40,13 +40,15 @@ TEST_CASE("graphics.HairShader.bindDefaults") {
     eve::graphics::hair::bindDefaults(&sh);
     CHECK(sh.hasUniform("specExp"));
     CHECK(sh.hasUniform("strandDir"));
+    CHECK(sh.hasUniform("diffuseWrap"));
+    CHECK(sh.hasUniform("scatterStrength"));
     CHECK_EQ(sh.getUniformIndex("specExp"), 0);
     CHECK_EQ(sh.getUniformIndex("strandDir"), 6);
-    CHECK_EQ(sh.usedFloats(), 9);
+    CHECK_EQ(sh.usedFloats(), 11);
 }
 
 TEST_CASE("graphics.HairShader.paramNames") {
-    CHECK_EQ(eve::graphics::hair::paramCount(), 9);
+    CHECK_EQ(eve::graphics::hair::paramCount(), 11);
     CHECK_EQ(eve::graphics::hair::paramName(0), std::string("specExp"));
     CHECK_EQ(eve::graphics::hair::paramName(8), std::string("strandDirZ"));
 }

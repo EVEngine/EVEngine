@@ -1627,6 +1627,18 @@ public:
     Shader *newHairShader();
 
     /**
+     * @brief Procedural upright hair/fur card mesh (root at origin, height +Y, face +Z).
+     * @ownership Owned by Graphics.
+     */
+    Mesh *newHairCardMesh(float width = 0.12f, float height = 0.45f);
+
+    /**
+     * @brief Material preconfigured for hair cards (transparent, double-sided, hair shader).
+     * @ownership Caller owns the Material*; shader is owned by Graphics.
+     */
+    Material *newHairCardMaterial(Texture *albedo = nullptr);
+
+    /**
      * @brief Eagerly releases a shader created by this Graphics.
      *
      * Mirrors releaseTexture: the returned handle is borrowed, a successful

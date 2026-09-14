@@ -13,9 +13,10 @@
 namespace eve::graphics::hair {
 namespace {
 
-const std::array<const char *, 9> kParams = {"specExp",      "specStrength", "primaryShift",
-                                             "secondaryShift", "alphaCutoff",  "rimStrength",
-                                             "strandDirX",   "strandDirY",   "strandDirZ"};
+const std::array<const char *, 11> kParams = {
+    "specExp",        "specStrength", "primaryShift", "secondaryShift", "alphaCutoff",
+    "rimStrength",    "strandDirX",   "strandDirY",   "strandDirZ",     "diffuseWrap",
+    "scatterStrength"};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -39,6 +40,8 @@ void bindDefaults(Shader *shader) {
     shader->declareFloat("alphaCutoff");
     shader->declareFloat("rimStrength");
     shader->declareVec3("strandDir");
+    shader->declareFloat("diffuseWrap");
+    shader->declareFloat("scatterStrength");
     shader->sendFloat("specExp", 80.f);
     shader->sendFloat("specStrength", 0.85f);
     shader->sendFloat("primaryShift", 0.08f);
@@ -46,6 +49,8 @@ void bindDefaults(Shader *shader) {
     shader->sendFloat("alphaCutoff", 0.15f);
     shader->sendFloat("rimStrength", 0.35f);
     shader->sendVec3("strandDir", 0.f, 0.f, 0.f);
+    shader->sendFloat("diffuseWrap", 0.35f);
+    shader->sendFloat("scatterStrength", 0.25f);
 }
 
 Shader *createShader(Graphics *gfx) {
