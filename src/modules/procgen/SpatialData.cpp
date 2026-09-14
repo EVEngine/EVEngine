@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <string>
+#include <string_view>
 
 namespace eve::procgen {
 namespace {
@@ -364,6 +366,61 @@ float         SpatialData::getMinZ() const { return bounds_.valid ? bounds_.minZ
 float         SpatialData::getMaxX() const { return bounds_.valid ? bounds_.maxX : 0.f; }
 float         SpatialData::getMaxY() const { return bounds_.valid ? bounds_.maxY : 0.f; }
 float         SpatialData::getMaxZ() const { return bounds_.valid ? bounds_.maxZ : 0.f; }
+
+float SpatialData::sampleScalar(float x, float y, float z, float outsideValue) const {
+    switch (kind_) {
+        case Kind::Heightfield: {
+            if (!heightmap_ || cellSize_ <= 0.f || x < bounds_.minX || x > bounds_.maxX || z < bounds_.minZ ||
+                z > bounds_.maxZ)
+                return outsideValue;
+            return heightmap_->sampleBilinear((x - originX_) / cellSize_, (z - originZ_) / cellSize_) * heightScale_;
+        }
+        case Kind::TextureMask: {
+            if (!heightmap_ || cellSize_ <= 0.f || x < bounds_.minX || x > bounds_.maxX || y < bounds_.minY ||
+                y > bounds_.maxY || z < bounds_.minZ || z > bounds_.maxZ)
+                return outsideValue;
+            return heightmap_->sampleBilinear((x - originX_) / cellSize_, (z - originZ_) / cellSize_);
+        }
+        case Kind::MeshSurface: {
+            if (!mesh_) return outsideValue;
+            float surfaceY = 0.f, nx = 0.f, ny = 1.f, nz = 0.f;
+            if (!closestMeshHeight(*mesh_, x, z, y, surfaceY, nx, ny, nz)) return outsideValue;
+            return surfaceY;
+        }
+        default:
+            return contains(x, y, z) ? 1.f : outsideValue;
+    }
+}
+
+PointSet sampleSpatialOntoChannel(const PointSet& input, const SpatialData& spatial, std::string_view channel,
+                                  float inputMin, float inputMax, float outputMin, float outputMax, bool clampOutput,
+                                  bool invert) {
+    std::string target(channel);
+    if (target.empty()) target = "$Density";
+    float rangeMin = inputMin;
+    float rangeMax = inputMax;
+    if (rangeMin == rangeMax) {
+        if (spatial.getKind() == "surface.heightfield") {
+            rangeMin = spatial.getMinY();
+            rangeMax = spatial.getMaxY();
+        } else {
+            rangeMin = 0.f;
+            rangeMax = 1.f;
+        }
+        if (rangeMin == rangeMax) rangeMax = rangeMin + 1.f;
+    }
+    const float range = rangeMax - rangeMin;
+    PointSet    result = input;
+    for (int index = 0; index < result.getCount(); ++index) {
+        const float raw = spatial.sampleScalar(result.getX(index), result.getY(index), result.getZ(index), rangeMin);
+        float       t   = (raw - rangeMin) / range;
+        if (clampOutput) t = std::clamp(t, 0.f, 1.f);
+        if (invert) t = 1.f - t;
+        const float value = outputMin + t * (outputMax - outputMin);
+        writePointFloatChannel(result, index, target, value).expect("sampleSpatialOntoChannel");
+    }
+    return result;
+}
 
 PointSet SpatialData::sample(float spacing, uint32_t seed, float jitter) const {
     PointSet output;
