@@ -44,8 +44,10 @@ public:
     /**
      * @brief Projection: "planar" (default single-axis) or "triplanar" (no stretch on sides).
      * @param blendSharpness Triplanar blend exponent (typical 2–10; default 4).
+     * @return DecalProjectionStatus::Applied on success.
      */
-    bool setProjection(int id, const std::string &mode, float blendSharpness);
+    [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
+                                                      float blendSharpness);
     bool remove(int id);
     void clearAll();
     int count();

@@ -47,7 +47,7 @@ bool Decal::setBlend(int id, const std::string &mode) {
     return DecalManager::inst().setBlend(id, mode);
 }
 
-bool Decal::setProjection(int id, const std::string &mode, float blendSharpness) {
+DecalProjectionStatus Decal::setProjection(int id, const std::string &mode, float blendSharpness) {
     return DecalManager::inst().setProjection(id, mode, blendSharpness);
 }
 

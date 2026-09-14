@@ -189,20 +189,22 @@ bool DecalManager::setBlend(int id, const std::string &mode) {
     return false;
 }
 
-bool DecalManager::setProjection(int id, const std::string &mode, float blendSharpness) {
+DecalProjectionStatus DecalManager::setProjection(int id, const std::string &mode,
+                                                  float blendSharpness) {
     int projection = 0;
     if (mode == "triplanar")
         projection = 1;
     else if (mode != "planar" && !mode.empty())
-        return false;
-    if (!std::isfinite(blendSharpness) || blendSharpness <= 0.f) return false;
+        return DecalProjectionStatus::InvalidMode;
+    if (!std::isfinite(blendSharpness) || blendSharpness <= 0.f)
+        return DecalProjectionStatus::InvalidSharpness;
     for (auto &d : decals_) {
         if (d.id != id) continue;
         d.projectionMode = projection;
         d.blendSharpness = blendSharpness;
-        return true;
+        return DecalProjectionStatus::Applied;
     }
-    return false;
+    return DecalProjectionStatus::UnknownId;
 }
 
 int DecalManager::replace(int previousId, DecalInstance candidate) {

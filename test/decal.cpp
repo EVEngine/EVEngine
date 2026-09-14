@@ -118,13 +118,14 @@ TEST_CASE("decal.managerAtlasBlendSetters") {
     CHECK(mgr.instances()[0].blendMode == 0);
     CHECK(!mgr.setBlend(id, "bogus"));  // unknown mode rejected
 
-    CHECK(mgr.setProjection(id, "triplanar", 8.f));
+    CHECK(mgr.setProjection(id, "triplanar", 8.f) == DecalProjectionStatus::Applied);
     CHECK(mgr.instances()[0].projectionMode == 1);
     CHECK(mgr.instances()[0].blendSharpness == 8.f);
-    CHECK(mgr.setProjection(id, "planar", 4.f));
+    CHECK(mgr.setProjection(id, "planar", 4.f) == DecalProjectionStatus::Applied);
     CHECK(mgr.instances()[0].projectionMode == 0);
-    CHECK(!mgr.setProjection(id, "bogus", 4.f));
-    CHECK(!mgr.setProjection(id, "triplanar", 0.f));  // sharpness must be > 0
+    CHECK(mgr.setProjection(id, "bogus", 4.f) == DecalProjectionStatus::InvalidMode);
+    CHECK(mgr.setProjection(id, "triplanar", 0.f) == DecalProjectionStatus::InvalidSharpness);
+    CHECK(mgr.setProjection(99999, "triplanar", 4.f) == DecalProjectionStatus::UnknownId);
 
     CHECK(mgr.setTextures(id, nullptr, nullptr));
     CHECK(!mgr.setUvRect(99999, 0.f, 0.f, 1.f, 1.f));  // unknown id
@@ -414,10 +415,10 @@ TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
         return c.r - c.g;
     };
 
-    REQUIRE(mgr.setProjection(id, "planar", 4.f));
+    REQUIRE(mgr.setProjection(id, "planar", 4.f) == DecalProjectionStatus::Applied);
     const float planarScore = centerRedness();
 
-    REQUIRE(mgr.setProjection(id, "triplanar", 4.f));
+    REQUIRE(mgr.setProjection(id, "triplanar", 4.f) == DecalProjectionStatus::Applied);
     const float triplanarScore = centerRedness();
 
     // Triplanar must shift the wall toward the red decal; planar should not.

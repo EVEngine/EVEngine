@@ -40,6 +40,19 @@ struct DecalInstance {
 };
 
 /**
+ * @brief Outcome of DecalManager::setProjection / Decal::setProjection.
+ *
+ * Named status (not bool) so callers can distinguish unknown id, bad mode,
+ * and non-positive sharpness without a parallel lastError channel.
+ */
+enum class DecalProjectionStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidMode = 2,
+    InvalidSharpness = 3,
+};
+
+/**
  * @brief CPU-side decal registry: spawn / remove / fade / quotas, and the
  * per-frame drawer that feeds the graphics decal pass.
  *
@@ -70,8 +83,10 @@ public:
     /**
      * @brief Projection mode: "planar" (default) or "triplanar".
      * @param blendSharpness Triplanar |n|^exponent; higher = sharper plane seams.
+     * @return Applied on success; UnknownId / InvalidMode / InvalidSharpness otherwise.
      */
-    bool setProjection(int id, const std::string &mode, float blendSharpness = 4.f);
+    [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
+                                                      float blendSharpness = 4.f);
 
     /**
      * @brief Atomically install a fully configured instance and remove a previous generation.
