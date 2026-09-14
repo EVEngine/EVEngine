@@ -24,6 +24,7 @@ using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
 using IDomainOperationTargetStaging = editing::IDomainOperationTargetStaging;
 using IEditableTarget               = editing::IEditableTarget;
+using IEditingSnapshotProvider      = editing::IEditingSnapshotProvider;
 using IPropertyProvider             = editing::IPropertyProvider;
 using ObjectId                      = editing::ObjectId;
 using PropertyDescriptor            = editing::PropertyDescriptor;
@@ -53,7 +54,8 @@ using editing::validatePropertyValue;
 class ArchSpaceDocumentTarget final : public virtual IEditableTarget,
                                       public IDomainOperationTarget,
                                       public IDomainOperationTargetStaging,
-                                      public IPropertyProvider {
+                                      public IPropertyProvider,
+                                      public IEditingSnapshotProvider {
 public:
     explicit ArchSpaceDocumentTarget(std::string id);
 
@@ -90,6 +92,10 @@ public:
                                                      std::string roomName, double originX, double originZ, double sizeX,
                                                      double sizeZ, double wallHeight = 3.0, double wallThickness = 0.2,
                                                      double slabThickness = 0.2) const;
+    /** @brief Plan a single wall under a level. */
+    EditorResult<DomainOperation> makeCreateWall(const std::string& levelId, const std::string& wallId,
+                                                 std::string wallName, archspace::Vec2 start, archspace::Vec2 end,
+                                                 double height = 3.0, double thickness = 0.2) const;
     /** @brief Plan a door/window opening on an existing wall. */
     EditorResult<DomainOperation> makeCreateOpening(const std::string& wallId, const std::string& openingId,
                                                     archspace::OpeningKind kind, double t, double width, double height,
@@ -103,7 +109,7 @@ public:
 
     [[nodiscard]] const archspace::Document&    document() const { return document_; }
     [[nodiscard]] std::vector<EditorDiagnostic> validate() const;
-    [[nodiscard]] EditorValue                   snapshotValue() const;
+    [[nodiscard]] EditorValue                   snapshotValue() const override;
     EditorResult<void>                          loadSnapshot(const EditorValue& snapshot);
     /** @brief Build a revision-bound overlay for walls, zones, items and openings. */
     [[nodiscard]] EditorResult<EditorGizmoSnapshot> gizmo() const;

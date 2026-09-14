@@ -72,11 +72,40 @@ public:
                                                std::string roomName, std::vector<Vec2> polygon, double wallHeight,
                                                double wallThickness, double slabThickness);
 
+    /**
+     * @brief Insert a single wall under an existing level.
+     * @return Applied on success; Rejected when the level is missing or geometry is invalid.
+     */
+    [[nodiscard]] eve::Result<void> createWall(const std::string& levelId, const std::string& wallId,
+                                               std::string wallName, Vec2 start, Vec2 end, double height,
+                                               double thickness);
+
+    /**
+     * @brief Insert a door/window opening on an existing wall.
+     * @return Applied on success; Rejected when the wall is missing or parameters are invalid.
+     */
+    [[nodiscard]] eve::Result<void> createOpening(const std::string& wallId, const std::string& openingId,
+                                                  std::string openingName, OpeningKind kind, double t, double width,
+                                                  double height, double sill = 0.0);
+
+    /**
+     * @brief Place a catalog item on an existing level.
+     * @return Applied on success; Rejected when the level is missing or placement is invalid.
+     */
+    [[nodiscard]] eve::Result<void> placeItem(const std::string& levelId, const std::string& itemId,
+                                              std::string itemName, std::string catalogId, Vec3 position,
+                                              double yawDegrees = 0.0);
+
     /** @brief Collect structural and geometric diagnostics as human-readable lines. */
     [[nodiscard]] std::vector<std::string> diagnostics() const;
 
-    /** @brief Build wall boxes and slab fans for viewport upload. */
+    /**
+     * @brief Build wall boxes (with opening cutouts), slabs and item markers for viewport upload.
+     */
     [[nodiscard]] MeshBake bakeMesh() const;
+
+    /** @brief Bake and pack into GPU-upload float arrays with per-triangle normals. */
+    [[nodiscard]] MeshArrays bakeMeshArrays() const { return toMeshArrays(bakeMesh()); }
 
 private:
     [[nodiscard]] bool canParent(NodeKind child, const std::string& parentId) const;

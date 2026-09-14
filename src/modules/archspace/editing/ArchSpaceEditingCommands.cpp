@@ -113,6 +113,28 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
     if (!registered.ok()) return registered;
 
     registered = addCommand(
+        registry, "archspace.wall.create.v1", "Create ArchSpace wall",
+        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+            auto*              doc   = asArchSpace(target);
+            const std::string* level = stringField(request.payload, "levelId");
+            const std::string* wall  = stringField(request.payload, "wallId");
+            const std::string* name  = stringField(request.payload, "name");
+            double             x0 = 0, z0 = 0, x1 = 0, z1 = 0, height = 3.0, thickness = 0.2;
+            if (!doc || !level || level->empty() || !wall || wall->empty() ||
+                !readNumber(request.payload, "startX", x0, true) ||
+                !readNumber(request.payload, "startZ", z0, true) ||
+                !readNumber(request.payload, "endX", x1, true) || !readNumber(request.payload, "endZ", z1, true) ||
+                !readNumber(request.payload, "height", height, false) ||
+                !readNumber(request.payload, "thickness", thickness, false))
+                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.wall",
+                                                   "ArchSpace wall create requires levelId, wallId and endpoints");
+            return planFrom(doc->makeCreateWall(*level, *wall, name ? *name : *wall, archspace::Vec2{x0, z0},
+                                                archspace::Vec2{x1, z1}, height, thickness),
+                            editing::Value::Object{{"wallId", *wall}});
+        });
+    if (!registered.ok()) return registered;
+
+    registered = addCommand(
         registry, "archspace.opening.create.v1", "Create ArchSpace opening",
         [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto*              doc      = asArchSpace(target);
@@ -150,6 +172,26 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                                                    "ArchSpace item place requires levelId, itemId, catalogId, x, z");
             return planFrom(doc->makePlaceItem(*level, *item, *catalog, archspace::Vec3{x, y, z}, yaw),
                             editing::Value::Object{{"itemId", *item}});
+        });
+    if (!registered.ok()) return registered;
+
+    registered = addCommand(
+        registry, "archspace.property.set.v1", "Set ArchSpace property",
+        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+            auto*              doc    = asArchSpace(target);
+            const std::string* object = stringField(request.payload, "objectId");
+            const std::string* path   = stringField(request.payload, "path");
+            const editing::Value* value = field(request.payload, "value");
+            if (!doc || !object || object->empty() || !path || path->empty() || !value)
+                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.property",
+                                                   "ArchSpace property set requires objectId, path and value");
+            editing::SelectionSnapshot selection;
+            selection.channel = "archspace";
+            selection.items.push_back({editing::SelectionDomain::Asset, doc->targetId(), editing::StableId(*object),
+                                       std::string("archspace.node")});
+            return planFrom(doc->makeSet(selection, editing::PropertyPath(*path), *value,
+                                         editing::PropertySetMode::Absolute),
+                            editing::Value::Object{{"objectId", *object}, {"path", *path}});
         });
     if (!registered.ok()) return registered;
 

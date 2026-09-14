@@ -2,6 +2,7 @@
 
 #include "common/Result.h"
 
+#include <cmath>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -67,6 +68,67 @@ struct MeshBake {
     std::vector<std::uint32_t> indices;
     std::vector<std::string>   primitiveIds;
 };
+
+/**
+ * @brief Interleaved GPU-upload arrays derived from MeshBake.
+ *
+ * positions/normals/uvs are xyz / xyz / uv packed floats. indices are triangles.
+ */
+struct MeshArrays {
+    std::vector<float>         positions;
+    std::vector<float>         normals;
+    std::vector<float>         uvs;
+    std::vector<std::uint32_t> indices;
+
+    [[nodiscard]] int vertexCount() const noexcept {
+        return static_cast<int>(positions.size() / 3);
+    }
+    [[nodiscard]] int indexCount() const noexcept { return static_cast<int>(indices.size()); }
+    [[nodiscard]] int triangleCount() const noexcept { return indexCount() / 3; }
+};
+
+/** @brief Convert a MeshBake into flat arrays with per-triangle normals. */
+[[nodiscard]] inline MeshArrays toMeshArrays(const MeshBake& bake) {
+    MeshArrays out;
+    out.positions.reserve(bake.positions.size() * 3);
+    out.normals.reserve(bake.positions.size() * 3);
+    out.uvs.reserve(bake.positions.size() * 2);
+    out.indices = bake.indices;
+    for (const Vec3& p : bake.positions) {
+        out.positions.push_back(static_cast<float>(p.x));
+        out.positions.push_back(static_cast<float>(p.y));
+        out.positions.push_back(static_cast<float>(p.z));
+        out.normals.push_back(0.f);
+        out.normals.push_back(1.f);
+        out.normals.push_back(0.f);
+        out.uvs.push_back(static_cast<float>(p.x));
+        out.uvs.push_back(static_cast<float>(p.z));
+    }
+    for (std::size_t i = 0; i + 2 < bake.indices.size(); i += 3) {
+        const std::uint32_t i0 = bake.indices[i], i1 = bake.indices[i + 1], i2 = bake.indices[i + 2];
+        if (i0 >= bake.positions.size() || i1 >= bake.positions.size() || i2 >= bake.positions.size()) continue;
+        const Vec3& a = bake.positions[i0];
+        const Vec3& b = bake.positions[i1];
+        const Vec3& c = bake.positions[i2];
+        Vec3        n{ (b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y),
+                       (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z),
+                       (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x) };
+        const double len = std::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+        if (len > 1e-8) {
+            n.x /= len;
+            n.y /= len;
+            n.z /= len;
+        } else {
+            n = {0, 1, 0};
+        }
+        for (std::uint32_t idx : {i0, i1, i2}) {
+            out.normals[idx * 3 + 0] = static_cast<float>(n.x);
+            out.normals[idx * 3 + 1] = static_cast<float>(n.y);
+            out.normals[idx * 3 + 2] = static_cast<float>(n.z);
+        }
+    }
+    return out;
+}
 
 /**
  * @brief Stable wire name for a node kind.

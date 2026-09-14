@@ -185,11 +185,24 @@ bool hasErrors(const std::vector<EditorDiagnostic>& values) {
 ArchSpaceDocumentTarget::ArchSpaceDocumentTarget(std::string id) : id_(std::move(id)) {}
 
 TargetDescriptor ArchSpaceDocumentTarget::describe() const {
-    return {TargetId(id_), "archspace-document", revision_, false, {propertyCapabilityId()}};
+    return {TargetId(id_),
+            "archspace-document",
+            revision_,
+            false,
+            {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
 
 void* ArchSpaceDocumentTarget::queryCapability(const CapabilityId& capability) {
-    return capability == propertyCapabilityId() ? static_cast<IPropertyProvider*>(this) : nullptr;
+    if (capability == propertyCapabilityId()) return static_cast<IPropertyProvider*>(this);
+    if (capability == IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<IEditingSnapshotProvider*>(this);
+    return nullptr;
+}
+
+EditorValue ArchSpaceDocumentTarget::snapshotValue() const {
+    return EditorValue::Object{{"schemaId", std::string("eve.archspace.document")},
+                               {"schemaVersion", int64_t{1}},
+                               {"content", contentValue()}};
 }
 
 bool ArchSpaceDocumentTarget::matches(const SelectionSnapshot& selection) const {
@@ -402,7 +415,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSn
     if (hasErrors(staged.validate()))
         return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.invalid",
                                      "ArchSpace property update failed validation");
-    return staged.replacement(staged.contentValue(), path.value());
+    return replacement(staged.contentValue(), path.value());
 }
 
 EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeReset(const SelectionSnapshot& selection,
@@ -425,7 +438,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeBootstrap(const std::
                                      "ArchSpace bootstrap requires an empty document and unique ids");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
-    return staged.replacement(staged.contentValue());
+    return replacement(staged.contentValue());
 }
 
 EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
@@ -449,7 +462,21 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
                                      "ArchSpace room could not be created under the given level");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
-    return staged.replacement(staged.contentValue());
+    return replacement(staged.contentValue());
+}
+
+EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateWall(const std::string& levelId,
+                                                                      const std::string& wallId, std::string wallName,
+                                                                      archspace::Vec2 start, archspace::Vec2 end,
+                                                                      double height, double thickness) const {
+    archspace::Document candidate = document_;
+    auto created = candidate.createWall(levelId, wallId, std::move(wallName), start, end, height, thickness);
+    if (!created.ok())
+        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.wall",
+                                     "ArchSpace wall could not be created under the given level");
+    ArchSpaceDocumentTarget staged(id_);
+    staged.document_ = std::move(candidate);
+    return replacement(staged.contentValue());
 }
 
 EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const std::string&     wallId,
@@ -457,54 +484,29 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const s
                                                                          archspace::OpeningKind kind, double t,
                                                                          double width, double height,
                                                                          double sill) const {
-    const archspace::Node* wall = document_.find(wallId);
-    if (!wall || wall->kind != archspace::NodeKind::Wall)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.archspace.wall",
-                                     "ArchSpace opening requires an existing wall");
-    archspace::Node opening;
-    opening.id                    = openingId;
-    opening.kind                  = archspace::NodeKind::Opening;
-    opening.parentId              = wallId;
-    opening.name                  = openingId;
-    opening.openingKind           = kind;
-    opening.t                     = t;
-    opening.width                 = width;
-    opening.openingHeight         = height;
-    opening.sill                  = sill;
     archspace::Document candidate = document_;
-    auto                inserted  = candidate.insert(std::move(opening));
-    if (!inserted.ok())
+    auto created = candidate.createOpening(wallId, openingId, openingId, kind, t, width, height, sill);
+    if (!created.ok())
         return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.opening",
                                      "ArchSpace opening insert failed validation");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
-    return staged.replacement(staged.contentValue());
+    return replacement(staged.contentValue());
 }
 
 EditorResult<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::string& levelId,
                                                                      const std::string& itemId, std::string catalogId,
                                                                      archspace::Vec3 position,
                                                                      double          yawDegrees) const {
-    const archspace::Node* level = document_.find(levelId);
-    if (!level || level->kind != archspace::NodeKind::Level)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.archspace.level",
-                                     "ArchSpace item requires an existing level");
-    archspace::Node item;
-    item.id                       = itemId;
-    item.kind                     = archspace::NodeKind::Item;
-    item.parentId                 = levelId;
-    item.name                     = itemId;
-    item.catalogId                = std::move(catalogId);
-    item.position                 = position;
-    item.yawDegrees               = yawDegrees;
     archspace::Document candidate = document_;
-    auto                inserted  = candidate.insert(std::move(item));
-    if (!inserted.ok())
+    auto placed =
+        candidate.placeItem(levelId, itemId, itemId, std::move(catalogId), position, yawDegrees);
+    if (!placed.ok())
         return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.item",
                                      "ArchSpace item insert failed validation");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
-    return staged.replacement(staged.contentValue());
+    return replacement(staged.contentValue());
 }
 
 EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const ObjectId& id) const {
@@ -514,7 +516,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const Obje
         return fail<DomainOperation>(EditorStatus::NotFound, "editor.archspace.delete", "ArchSpace node was not found");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
-    return staged.replacement(staged.contentValue());
+    return replacement(staged.contentValue());
 }
 
 EditorResult<void> ArchSpaceDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
@@ -541,12 +543,6 @@ EditorResult<void> ArchSpaceDocumentTarget::commitDomainState(std::unique_ptr<ID
         return fail<void>(EditorStatus::Conflict, "editor.archspace.candidate", "ArchSpace candidate mismatch");
     *this = *typed;
     return eve::editing::applied<void>();
-}
-
-EditorValue ArchSpaceDocumentTarget::snapshotValue() const {
-    return EditorValue::Object{{"schemaId", std::string("eve.archspace.document")},
-                               {"schemaVersion", int64_t{1}},
-                               {"content", contentValue()}};
 }
 
 EditorResult<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snapshot) {

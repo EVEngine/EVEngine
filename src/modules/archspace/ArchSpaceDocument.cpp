@@ -291,6 +291,58 @@ eve::Result<void> Document::createRoom(const std::string& levelId, const std::st
     return ok();
 }
 
+eve::Result<void> Document::createWall(const std::string& levelId, const std::string& wallId, std::string wallName,
+                                       Vec2 start, Vec2 end, double height, double thickness) {
+    const Node* level = find(levelId);
+    if (!level || level->kind != NodeKind::Level)
+        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace wall requires an existing level", "levelId");
+    Node wall;
+    wall.id        = wallId;
+    wall.kind      = NodeKind::Wall;
+    wall.parentId  = levelId;
+    wall.name      = wallName.empty() ? wallId : std::move(wallName);
+    wall.start     = start;
+    wall.end       = end;
+    wall.height    = height;
+    wall.thickness = thickness;
+    return insert(std::move(wall));
+}
+
+eve::Result<void> Document::createOpening(const std::string& wallId, const std::string& openingId,
+                                          std::string openingName, OpeningKind kind, double t, double width,
+                                          double height, double sill) {
+    const Node* wall = find(wallId);
+    if (!wall || wall->kind != NodeKind::Wall)
+        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace opening requires an existing wall", "wallId");
+    Node opening;
+    opening.id            = openingId;
+    opening.kind          = NodeKind::Opening;
+    opening.parentId      = wallId;
+    opening.name          = openingName.empty() ? openingId : std::move(openingName);
+    opening.openingKind   = kind;
+    opening.t             = t;
+    opening.width         = width;
+    opening.openingHeight = height;
+    opening.sill          = sill;
+    return insert(std::move(opening));
+}
+
+eve::Result<void> Document::placeItem(const std::string& levelId, const std::string& itemId, std::string itemName,
+                                      std::string catalogId, Vec3 position, double yawDegrees) {
+    const Node* level = find(levelId);
+    if (!level || level->kind != NodeKind::Level)
+        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace item requires an existing level", "levelId");
+    Node item;
+    item.id         = itemId;
+    item.kind       = NodeKind::Item;
+    item.parentId   = levelId;
+    item.name       = itemName.empty() ? itemId : std::move(itemName);
+    item.catalogId  = std::move(catalogId);
+    item.position   = position;
+    item.yawDegrees = yawDegrees;
+    return insert(std::move(item));
+}
+
 std::vector<std::string> Document::diagnostics() const {
     std::vector<std::string> out;
     if (rootId_.empty() && !nodes_.empty()) out.push_back("document has nodes but no root site");
@@ -323,16 +375,66 @@ std::vector<std::string> Document::diagnostics() const {
 
 MeshBake Document::bakeMesh() const {
     MeshBake bake;
+
+    auto appendWallSegment = [&](const Node& wall, double y, double t0, double t1, double bottom, double top,
+                                 const std::string& id) {
+        if (t1 <= t0 + 1e-6 || top <= bottom + 1e-6) return;
+        const Vec3 a{wall.start.x + (wall.end.x - wall.start.x) * t0, y + bottom,
+                     wall.start.z + (wall.end.z - wall.start.z) * t0};
+        const Vec3 b{wall.start.x + (wall.end.x - wall.start.x) * t1, y + bottom,
+                     wall.start.z + (wall.end.z - wall.start.z) * t1};
+        appendBox(bake, a, b, wall.thickness, top - bottom, id);
+    };
+
     for (const auto& [id, node] : nodes_) {
         if (node.kind == NodeKind::Wall) {
             const Node*  level = find(node.parentId);
             const double y     = level ? level->elevation : 0.0;
-            appendBox(bake, Vec3{node.start.x, y, node.start.z}, Vec3{node.end.x, y, node.end.z}, node.thickness,
-                      node.height, id);
+            const double len   = distance(node.start, node.end);
+            struct Span {
+                double      t0 = 0;
+                double      t1 = 0;
+                OpeningKind kind = OpeningKind::Door;
+                double      sill = 0;
+                double      oh   = 0;
+            };
+            std::vector<Span> openings;
+            for (const auto& childId : node.children) {
+                const Node* child = find(childId);
+                if (!child || child->kind != NodeKind::Opening || len <= kEps) continue;
+                const double halfT = (child->width * 0.5) / len;
+                Span         span;
+                span.t0   = std::clamp(child->t - halfT, 0.0, 1.0);
+                span.t1   = std::clamp(child->t + halfT, 0.0, 1.0);
+                span.kind = child->openingKind;
+                span.sill = child->sill;
+                span.oh   = child->openingHeight;
+                openings.push_back(span);
+            }
+            std::sort(openings.begin(), openings.end(),
+                      [](const Span& a, const Span& b) { return a.t0 < b.t0; });
+            double cursor = 0.0;
+            for (const Span& opening : openings) {
+                appendWallSegment(node, y, cursor, opening.t0, 0.0, node.height, id);
+                if (opening.kind == OpeningKind::Door) {
+                    const double lintel = opening.sill + opening.oh;
+                    appendWallSegment(node, y, opening.t0, opening.t1, lintel, node.height, id + ".lintel");
+                } else {
+                    appendWallSegment(node, y, opening.t0, opening.t1, 0.0, opening.sill, id + ".sill");
+                    const double top = opening.sill + opening.oh;
+                    appendWallSegment(node, y, opening.t0, opening.t1, top, node.height, id + ".head");
+                }
+                cursor = std::max(cursor, opening.t1);
+            }
+            appendWallSegment(node, y, cursor, 1.0, 0.0, node.height, id);
         } else if (node.kind == NodeKind::Slab) {
             const Node*  level = find(node.parentId);
             const double y     = level ? level->elevation : 0.0;
             appendSlab(bake, node.polygon, y, node.slabThickness, id);
+        } else if (node.kind == NodeKind::Item) {
+            const double half = 0.25;
+            appendBox(bake, Vec3{node.position.x - half, node.position.y, node.position.z},
+                      Vec3{node.position.x + half, node.position.y, node.position.z}, half * 2.0, 0.9, id);
         }
     }
     return bake;

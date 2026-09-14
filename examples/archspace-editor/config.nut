@@ -1,9 +1,8 @@
 config = {
     title = "EVEngine ArchSpace Editor",
-    width = 960,
-    height = 540,
+    width = 1280,
+    height = 720,
     debug = true,
     hotReload = true,
-    // Script slots (archspace_editing is a linked library, not a slot).
     modules = ["archspace", "archspaceEditor", "editor", "gfx"],
 };
