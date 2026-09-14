@@ -23,6 +23,16 @@ GroomInstance::~GroomInstance() = default;
 
 const GroomGroup *GroomInstance::primaryGroup() const { return asset_.groupAt(0); }
 
+size_t GroomInstance::resolveLodIndex(const GroomGroup &group) const {
+    if (group.lods.empty()) return 0;
+    if (forcedLod_ >= 0) {
+        size_t lodIndex = size_t(forcedLod_);
+        if (lodIndex >= group.lods.size()) lodIndex = group.lods.size() - 1;
+        return lodIndex;
+    }
+    return selectLodIndex(group.lods, screenSize_);
+}
+
 StrandsDatas GroomInstance::decimatedStrands(const StrandsDatas &src, float curveFraction) const {
     StrandsDatas out;
     if (src.curveCount() == 0) return out;
@@ -56,6 +66,15 @@ StrandsDatas GroomInstance::decimatedStrands(const StrandsDatas &src, float curv
     return out;
 }
 
+Result<void> GroomInstance::rebuildClusterGrid() {
+    const GroomGroup *group = primaryGroup();
+    if (!group) {
+        clusters_.clear();
+        return Result<void>::success();
+    }
+    return clusters_.build(group->strands, clusterCellSize_);
+}
+
 Result<void> GroomInstance::bakeFromStrands(StrandsDatas strands, const char *debugName) {
     auto ok = strands.validate();
     if (!ok.ok()) return Result<void>::failure(ok.status());
@@ -65,16 +84,23 @@ Result<void> GroomInstance::bakeFromStrands(StrandsDatas strands, const char *de
     group.groupId = 0;
     group.strands = std::move(strands);
 
+    // Cards geometric LOD lives in graphics/HairCards (separate agent/PR).
+    // This bake keeps Strands near + None far so LOD selection/cluster cull
+    // can be tested without duplicating card mesh builders.
     GroomLod nearLod;
     nearLod.screenSize = 1.f;
     nearLod.representation = Representation::Strands;
     nearLod.curveFraction = 1.f;
+    GroomLod midLod;
+    midLod.screenSize = 0.35f;
+    midLod.representation = Representation::Strands;
+    midLod.curveFraction = 0.3f;
+    midLod.thicknessScale = 2.f;
     GroomLod farLod;
-    farLod.screenSize = 0.25f;
-    farLod.representation = Representation::Strands;
-    farLod.curveFraction = 0.35f;
-    farLod.thicknessScale = 1.6f;
-    group.lods = {nearLod, farLod};
+    farLod.screenSize = 0.12f;
+    farLod.representation = Representation::None;
+    farLod.curveFraction = 0.05f;
+    group.lods = {nearLod, midLod, farLod};
 
     GroomAsset asset;
     auto add = asset.addGroup(std::move(group));
@@ -86,6 +112,10 @@ Result<void> GroomInstance::setAsset(const GroomAsset &asset) {
     auto ok = asset.validate();
     if (!ok.ok()) return Result<void>::failure(ok.status());
     asset_ = asset;
+    hasVisibilityMask_ = false;
+    visibleCurveIndices_.clear();
+    auto grid = rebuildClusterGrid();
+    if (!grid.ok()) return Result<void>::failure(grid.status());
     return rebuild();
 }
 
@@ -120,6 +150,10 @@ float GroomInstance::getWidthScale() const { return widthScale_; }
 
 void GroomInstance::setSideHint(float x, float y, float z) { sideHint_ = glm::vec3(x, y, z); }
 
+void GroomInstance::setClusterCullingEnabled(bool enabled) { clusterCulling_ = enabled; }
+
+bool GroomInstance::isClusterCullingEnabled() const { return clusterCulling_; }
+
 Mesh *GroomInstance::getMesh() const { return mesh_; }
 
 Shader *GroomInstance::getShader() const { return shader_; }
@@ -128,6 +162,56 @@ Texture *GroomInstance::getTexture() const { return texture_; }
 
 size_t GroomInstance::getGroupCount() const { return asset_.groupCount(); }
 
+int GroomInstance::getActiveLodIndex() const { return activeLodIndex_; }
+
+int GroomInstance::getActiveRepresentation() const { return int(activeRepresentation_); }
+
+size_t GroomInstance::getClusterCount() const { return clusters_.clusterCount(); }
+
+int GroomInstance::getVisibleCurveCount() const {
+    if (hasVisibilityMask_) return int(visibleCurveIndices_.size());
+    const GroomGroup *g = primaryGroup();
+    return g ? int(g->strands.curveCount()) : 0;
+}
+
+Result<void> GroomInstance::ensureDrawResources() {
+    if (!shader_) {
+        shader_ = createShader(gfx_);
+        if (!shader_) {
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "GroomInstance: hair shader failed", "hair.groom.shader"));
+        }
+    }
+    if (!texture_) {
+        const uint8_t white[4] = {210, 170, 120, 255};
+        texture_ = gfx_->newTexture(1, 1, white);
+        if (!texture_) {
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "GroomInstance: texture failed", "hair.groom.texture"));
+        }
+    }
+    return Result<void>::success();
+}
+
+Result<void> GroomInstance::updateVisibility(const float *viewProj16) {
+    if (!viewProj16) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GroomInstance::updateVisibility: null viewProj",
+            "hair.groom.viewProj"));
+    }
+    if (clusters_.clusterCount() == 0) {
+        auto grid = rebuildClusterGrid();
+        if (!grid.ok()) return Result<void>::failure(grid.status());
+    }
+    auto visibleClusters = clusters_.cullClusters(viewProj16);
+    if (!visibleClusters.ok()) return Result<void>::failure(visibleClusters.status());
+    auto curves = clusters_.collectCurveIndices(visibleClusters.value());
+    if (!curves.ok()) return Result<void>::failure(curves.status());
+    visibleCurveIndices_ = std::move(curves).value();
+    hasVisibilityMask_ = true;
+    return rebuild();
+}
+
 Result<void> GroomInstance::rebuild() {
     const GroomGroup *group = primaryGroup();
     if (!group) {
@@ -135,20 +219,37 @@ Result<void> GroomInstance::rebuild() {
             DiagnosticCode::InvalidArgument, "GroomInstance::rebuild: no groups", "hair.groom"));
     }
 
-    size_t lodIndex = 0;
-    if (forcedLod_ >= 0) {
-        lodIndex = size_t(forcedLod_);
-        if (lodIndex >= group->lods.size()) lodIndex = group->lods.size() - 1;
-    } else {
-        lodIndex = selectLodIndex(group->lods, screenSize_);
-    }
+    const size_t lodIndex = resolveLodIndex(*group);
+    activeLodIndex_ = int(lodIndex);
     const GroomLod &lod = group->lods[lodIndex];
+    activeRepresentation_ = lod.representation;
+
     if (lod.representation == Representation::None) {
         mesh_ = nullptr;
         return Result<void>::success();
     }
+    if (lod.representation == Representation::Cards ||
+        lod.representation == Representation::Meshes) {
+        // Cards mesh builders live in graphics/HairCards (PR #400); Meshes later.
+        mesh_ = nullptr;
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported,
+            "GroomInstance::rebuild: Cards/Meshes LOD owned by HairCards / later phase",
+            "hair.groom.representation"));
+    }
 
-    StrandsDatas strands = decimatedStrands(group->strands, lod.curveFraction);
+    StrandsDatas source = group->strands;
+    if (clusterCulling_ && hasVisibilityMask_) {
+        if (visibleCurveIndices_.empty()) {
+            mesh_ = nullptr;
+            return Result<void>::success();
+        }
+        auto filtered = filterStrandsByCurves(group->strands, visibleCurveIndices_);
+        if (!filtered.ok()) return Result<void>::failure(filtered.status());
+        source = std::move(filtered).value();
+    }
+
+    StrandsDatas strands = decimatedStrands(source, lod.curveFraction);
     auto ok = strands.validate();
     if (!ok.ok()) return Result<void>::failure(ok.status());
 
@@ -166,25 +267,7 @@ Result<void> GroomInstance::rebuild() {
             DiagnosticCode::Failed, "GroomInstance::rebuild: mesh upload failed", "hair.groom.mesh"));
     }
 
-    if (!shader_) {
-        shader_ = createShader(gfx_);
-        if (!shader_) {
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, "GroomInstance::rebuild: hair shader failed",
-                "hair.groom.shader"));
-        }
-    }
-
-    if (!texture_) {
-        const uint8_t white[4] = {210, 170, 120, 255};
-        texture_ = gfx_->newTexture(1, 1, white);
-        if (!texture_) {
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, "GroomInstance::rebuild: texture failed",
-                "hair.groom.texture"));
-        }
-    }
-    return Result<void>::success();
+    return ensureDrawResources();
 }
 
 void GroomInstance::draw() { draw(lastModel_); }

@@ -721,6 +721,12 @@ void Graphics::expose(ssq::Table& table) {
     groomInstance.addFunc("getCurveCount", &hair::GroomInstance::getCurveCount);
     groomInstance.addFunc("getPointCount", &hair::GroomInstance::getPointCount);
     groomInstance.addFunc("getGroupCount", &hair::GroomInstance::getGroupCount);
+    groomInstance.addFunc("setClusterCullingEnabled", &hair::GroomInstance::setClusterCullingEnabled);
+    groomInstance.addFunc("isClusterCullingEnabled", &hair::GroomInstance::isClusterCullingEnabled);
+    groomInstance.addFunc("getActiveLodIndex", &hair::GroomInstance::getActiveLodIndex);
+    groomInstance.addFunc("getActiveRepresentation", &hair::GroomInstance::getActiveRepresentation);
+    groomInstance.addFunc("getClusterCount", &hair::GroomInstance::getClusterCount);
+    groomInstance.addFunc("getVisibleCurveCount", &hair::GroomInstance::getVisibleCurveCount);
 
     auto waterfall = table.addClass<Waterfall>(
         "Waterfall", std::function<Waterfall*()>([]() -> Waterfall* { return nullptr; }), true);

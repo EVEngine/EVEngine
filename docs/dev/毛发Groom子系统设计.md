@@ -234,22 +234,23 @@ public:
 
 ### Phase 1 — 数据 + 程序化发丝 + Ribbon 绘制（本迭代）
 
-- [ ] `StrandsDatas` / `validate` / 统计  
-- [ ] `generateOnMesh` / `generateOnPlane`  
-- [ ] `buildRibbons` → `Mesh`  
-- [ ] `GroomInstance::bakeProcedural` + `draw`（复用 `hair::createShader`）  
-- [ ] `Graphics::newGroomInstance` + 脚本绑定  
-- [ ] `test/hair_groom.cpp`：数据不变量、ribbon 拓扑、可选 GPU smoke  
-- [ ] 本设计文档入库  
+- [x] `StrandsDatas` / `validate` / 统计  
+- [x] `generateOnMesh` / `generateOnPlane`  
+- [x] `buildRibbons` → `Mesh`  
+- [x] `GroomInstance::bakeProcedural` + `draw`（复用 `hair::createShader`）  
+- [x] `Graphics::newGroomInstance` + 脚本绑定  
+- [x] `test/hair_groom.cpp`：数据不变量、ribbon 拓扑、可选 GPU smoke  
+- [x] 本设计文档入库  
 
 **验收**：程序化头皮数千丝 ribbon 网格可 draw；单测无 GPU 也能过 validate/拓扑。
 
 ### Phase 2 — GroomAsset 多 Group + LOD + Cluster
 
-- [ ] `GroomAsset` 多 group  
-- [ ] LOD 表：screen size → Representation + curve/vertex decimation + thicknessScale  
-- [ ] `ClusterGrid` 构建与 CPU 视锥剔除  
-- [ ] Cards 烘焙（从 strands 抽子集 billboard）或显式 cards mesh 挂接  
+- [x] `GroomAsset` 多 group  
+- [x] LOD 表：screen size → Representation + curve/vertex decimation + thicknessScale  
+- [x] `ClusterGrid` 构建与 CPU 视锥剔除  
+- [ ] Cards 几何 LOD：**不在本分支重复实现** — 由 `graphics/HairCards`（PR #400 `cursor/hair-cards-dynamicbone-1f76`）负责；本子系统仅保留 `Representation::Cards` 枚举与接线点  
+
 
 ### Phase 3 — 着色与阴影增强
 
@@ -295,7 +296,7 @@ public:
 | 发丝半透明排序爆炸 | 先 cluster 批 + 强制 cards 远景；控制 strandCount |
 | Header 改动导致 Ninja unscanned 陈旧布局 | 改广泛头后 clean 或 touch 依赖 TU |
 | WebGPU 无 SPIR-V hair | 继续走已有 WGSL hair 路径；新 shader 双后端同步 |
-| 范围失控 | 严格按 Phase；本迭代只交付 P1 |
+| 范围失控 | 严格按 Phase；本迭代交付 P1 + P2(Cluster)；Cards 几何交给 HairCards PR |
 
 ---
 
@@ -334,4 +335,16 @@ public:
 - Binding Contract：0 unresolved（getter 必须在 `.cpp` 定义，内联头会报 UNRESOLVED）
 
 下一步按 §7 Phase 2：多 group LOD 表示切换（cards）+ Cluster 视锥剔除。
+
+### 2026-09-14 — Phase 2（Cluster，不含 Cards 烘焙）
+
+同分支续做：
+
+- 新增：`ClusterGrid`（根位置哈希建簇 + AABB + CPU 视锥剔除 + `filterStrandsByCurves`）
+- `GroomInstance`：`setClusterCullingEnabled` + `updateVisibility(viewProj)`；LOD 选择暴露 `getActiveLodIndex` / `getActiveRepresentation`
+- **不**新增 `CardsBuilder`：Cards 几何由 PR #400 `HairCards` 拥有；`Representation::Cards` 暂返回 `Unsupported`
+- 测试：`clusterGridAabbAndCull` / `groomAssetLodRepresentationNone`
+- 脚本：补充 LOD/cluster 只读 getter 与 culling 开关（可失败 API 仍 C++-only）
+
+下一步：与 HairCards 合并后接线 `Representation::Cards`；再进入 §7 Phase 3 着色增强。
 

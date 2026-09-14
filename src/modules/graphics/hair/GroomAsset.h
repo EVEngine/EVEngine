@@ -38,7 +38,8 @@ struct GroomGroup {
 /**
  * @brief Shared CPU groom container (UE `UGroomAsset` analogue).
  *
- * Phase 1 stores strands only; cards/meshes attach in later phases.
+ * Phase 2 stores strands plus LOD tables / cluster cull. Geometric Cards
+ * meshes are owned by `graphics/HairCards` (separate PR); Meshes later.
  *
  * @thread Affine to the caller; not synchronized.
  * @ownership Instance may copy groups on `setAsset`; asset remains caller-owned.

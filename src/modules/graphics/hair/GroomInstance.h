@@ -1,8 +1,12 @@
 #pragma once
 
 #include "common/Result.h"
+#include "graphics/hair/ClusterGrid.h"
 #include "graphics/hair/GroomAsset.h"
 #include "graphics/hair/Procedural.h"
+
+#include <cstdint>
+#include <vector>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -19,9 +23,13 @@ namespace hair {
 /**
  * @brief Runtime groom drawable (UE `UGroomComponent` analogue).
  *
- * Phase 1 copies asset strands (or procedural scalp), expands ribbons, and
- * draws with the built-in Kajiya-Kay hair shader. Caller owns the instance;
- * Graphics owns Mesh / Shader / Texture.
+ * Phase 2 selects the active LOD (Strands ribbons), keeps a `ClusterGrid` for
+ * optional CPU frustum culling, and draws through the built-in Kajiya-Kay hair
+ * shader. Geometric Cards LOD is owned by `graphics/HairCards` (separate PR);
+ * this instance treats `Representation::Cards` / `Meshes` as unsupported until
+ * that path is wired.
+ *
+ * Caller owns the instance; Graphics owns Mesh / Shader / Texture.
  *
  * @thread Render-thread affine; not safe to share across threads.
  * @reentrancy `draw` must not re-enter Graphics resource creation.
@@ -63,7 +71,20 @@ public:
 
     void setSideHint(float x, float y, float z);
 
-    /** @brief Rebuild GPU ribbon mesh from the active LOD. */
+    /**
+     * @brief Enable/disable CPU cluster frustum filtering before mesh bake.
+     * When enabled, call `updateVisibility` with the current view-projection.
+     */
+    void setClusterCullingEnabled(bool enabled);
+    [[nodiscard]] bool isClusterCullingEnabled() const;
+
+    /**
+     * @brief Frustum-cull the primary group's cluster grid and rebuild GPU mesh.
+     * @param viewProj16 Column-major 4x4 view-projection (glm::mat4 layout).
+     */
+    [[nodiscard]] Result<void> updateVisibility(const float *viewProj16);
+
+    /** @brief Rebuild GPU ribbon mesh from the active LOD (and optional visibility mask). */
     [[nodiscard]] Result<void> rebuild();
 
     void draw(const glm::mat4 &model);
@@ -75,20 +96,34 @@ public:
     [[nodiscard]] int getCurveCount() const;
     [[nodiscard]] int getPointCount() const;
     [[nodiscard]] size_t getGroupCount() const;
+    [[nodiscard]] int getActiveLodIndex() const;
+    [[nodiscard]] int getActiveRepresentation() const;
+    [[nodiscard]] size_t getClusterCount() const;
+    [[nodiscard]] int getVisibleCurveCount() const;
 
 private:
     [[nodiscard]] Result<void> bakeFromStrands(StrandsDatas strands, const char *debugName);
     [[nodiscard]] const GroomGroup *primaryGroup() const;
+    [[nodiscard]] size_t resolveLodIndex(const GroomGroup &group) const;
     [[nodiscard]] StrandsDatas decimatedStrands(const StrandsDatas &src, float curveFraction) const;
+    [[nodiscard]] Result<void> rebuildClusterGrid();
+    [[nodiscard]] Result<void> ensureDrawResources();
 
     Graphics *gfx_ = nullptr;
     GroomAsset asset_;
+    ClusterGrid clusters_;
+    std::vector<uint32_t> visibleCurveIndices_;
+    bool clusterCulling_ = false;
+    bool hasVisibilityMask_ = false;
     Mesh *mesh_ = nullptr;
     Shader *shader_ = nullptr;
     Texture *texture_ = nullptr;
     int forcedLod_ = -1;
+    int activeLodIndex_ = 0;
+    Representation activeRepresentation_ = Representation::None;
     float screenSize_ = 1.f;
     float widthScale_ = 1.f;
+    float clusterCellSize_ = 0.15f;
     glm::vec3 sideHint_{1.f, 0.f, 0.f};
     glm::mat4 lastModel_{1.f};
 };
