@@ -324,10 +324,43 @@ local trees = graph.execute("prune");
 ```
 
 支持的 operation 可用 `getOperationCount/getOperationId` 枚举，包括：
-`input`、`spatial.sample/filter/project`、`merge`、`copy.points`、`transform`、
-`density.remap`、`attribute.math.float`、
-`filter.float/string`、`attribute.set.float/string`、`density.cull`、
-`self.prune`、`jitter`、`biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
+`input`、`spatial.sample/filter/project`、`mesh.sample`、`grid.sample`、`poisson.sample`、
+`landscape.sample`、`texture.sample`、
+`spline.sample`、
+`spline.filter.distance`、`merge`、`points.union/intersect/difference`、`copy.points`、
+`transform`、`bounds.modify`、`density.remap`、`density.from.normal`、
+`attribute.math.float`、`attribute.copy/rename/delete/transfer`、`attribute.compare.float`、`attribute.select.float`、`filter.float/int/bool/string/slope`、`attribute.set.float/int/bool/vector/string`、
+`spawn.mesh`、`density.cull`、`self.prune`、`jitter`、`debug.disable/inspect`、`get.spatial/landscape/spline/points/actor`、`attribute.partition`、`attribute.noise.float`、`attribute.math.int/vector`、`attribute.set.data.float/int/string`、
+`biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
+
+相对 UE PCG 基础节点库，上述一等图节点覆盖了 Mesh/Spline Sampler、规则网格与 Poisson
+蓝噪声采样、Landscape/Texture Sampler（把 heightfield / texture mask 连续值写回
+`$Density` 或 float 属性）、点集布尔
+（Difference/Union/Intersection）、Bounds Modifier、Normal→Density、Static Mesh
+权重 Spawner，以及 Disable/Inspect 调试旁路。Landscape / Spline / Actor 源数据通过
+图级命名绑定（`setBindingSpatial` / `setBindingPoints`）与零输入 Get 节点
+（`get.landscape` / `get.spline` / `get.actor` / `get.spatial` / `get.points`）注入，
+也仍可用 `setNodeSpatial` / `setNodePoints` 直接挂到消费节点；二者都不从关卡隐式拉对象。
+`spawn.mesh` 写出的字符串属性可由编辑器侧 `PcgInstancePublisher` 发布到 Scene sink，
+并带可撤销的 remove 逆操作。`inspectNode` 提供列/域/采样快照供 Attribute 面板使用。
+完整 UE Attribute Domain Selector VM 仍不在对标范围内；封闭选择器现支持 `$Density` /
+`$Position.X`、组件重排（`$Position.ZYX.*`）、旋转基向量（`$Rotation.Forward/Right/Up.*`）、
+以及 `@Data.` / `@Elements.` / `@Last.` 域前缀。`attribute.partition` /
+`attribute.noise.float` / `attribute.math.int|vector` / `attribute.set.data.*` 覆盖
+Partition 与更丰富的 metadata 写入。
+
+`mesh.sample` 要求绑定 `surface.mesh` 空间数据（`SpatialData::meshSurface`）；误绑
+volume/heightfield 会在执行期失败。`grid.sample` / `poisson.sample` 为零输入生成节点，
+分别对应脚本 `procgen.sampleGrid` 与 `procgen.poissonDisk`：在 XZ 平面生成规则网格或
+Bridson 蓝噪声点集，并通过 `originX/Y/Z` 平移到世界坐标；二者都受 `setMaxNodeOutputPoints`
+预算约束。`landscape.sample` 要求 `surface.heightfield`，可选择先 `project` 再把高度
+重映射到 `$Density` 或任意 float 通道（`inputMin==inputMax` 时自动用 heightfield Y 范围）。
+`texture.sample` 要求 `volume.texture_mask`，把 mask 标量重映射到同一通道。
+`spline.sample` 以控制点 PointSet 为输入，
+`spline.filter.distance` 用第二输入作为样条控制点做距离筛选。`points.*` 按稳定
+point id（legacy 回退到 position+seed）做集合运算，区别于 `merge` 的顺序拼接。
+`spawn.mesh` 按权重写入字符串属性（默认 `mesh`），供 Scene sink / 实例化消费；编辑器可用 `PcgInstancePublisher::planPublish/applyPublish` 发布批次，并用 `apply`/`planRemove` 撤销；
+`debug.disable` 在 `enabled=0` 时输出空集，`debug.inspect` 为纯旁路以便叠加指标。
 
 `biome.generate` 通过 `setNodeSpatial` 与 `setNodeBiomeRules` 绑定生成域和 Biome 规则，
 反射 `spacing/seed/jitter`；`grammar.generate` 通过 `setNodeShapeGrammar` 绑定 Shape Grammar，
@@ -339,8 +372,11 @@ local trees = graph.execute("prune");
 yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 source metadata 胜出。
 `maxPoints` 在笛卡尔积分配前实施硬上限，防止错误图造成编辑器或流式任务内存爆炸。
 `density.remap` 线性映射 density 范围并可钳制输出；`attribute.math.float` 对 float metadata
-执行 add/subtract/multiply/divide/min/max，可写入新属性并为缺失输入提供确定性默认值。
-零输入范围、非法 operation 和除零会作为节点执行错误报告。
+或 `$Density` 等封闭点字段选择器执行 add/subtract/multiply/divide/min/max，可写入新属性或回写
+选择器，并为缺失 metadata 提供确定性默认值。`attribute.copy` 可在 metadata 列之间复制，也可
+在 `$` 选择器与 float 列之间搬运；`attribute.transfer` 按 index/id/nearest 从第二输入取属性；
+`attribute.compare.float` / `attribute.select.float` 提供比较与条件选择。零输入范围、非法
+operation、未知选择器和除零会作为节点执行错误报告。
 
 `execute(outputId)` 只求值该输出的祖先节点；没有配置变化时复用缓存。节点参数、输入或
 空间数据变化时只失效该节点及其下游，未受影响的分支继续复用结果；`getRevision()` 提供
