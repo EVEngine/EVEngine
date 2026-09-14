@@ -37,6 +37,9 @@ eve_declare_module(NAME housegen_editing LAYER 5
                    DEPS editing
                    OPTIONAL_DEPS housegen
                    GROUP 3d)
+eve_declare_module(NAME archspace_editing LAYER 5
+                   DEPS archspace editing
+                   GROUP 3d)
 eve_declare_module(NAME camera_editing LAYER 5
                    DEPS camera editing
                    GROUP 3d web)
@@ -144,6 +147,10 @@ eve_declare_module(NAME graphics_editor LAYER 7 SCRIPT GraphicsEditorModule SLOT
 eve_declare_module(NAME fluids_editor LAYER 7 DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
 eve_declare_module(NAME hd2d_editor LAYER 7 DEPS editor hd2d_editing GROUP 3d)
 eve_declare_module(NAME housegen_editor LAYER 7 DEPS domain_gizmo_editor editor housegen_editing GROUP 3d)
+eve_declare_module(NAME archspace_editor LAYER 7
+                   DEPS archspace_editing editor
+                   SCRIPT ArchSpaceEditorModule SLOT archspaceEditor
+                   GROUP 3d)
 eve_declare_module(NAME input_editor LAYER 7 DEPS editor input_editing GROUP 2d 3d web)
 eve_declare_module(NAME lighting_editor LAYER 7 DEPS editor lighting_editing GROUP 3d web)
 eve_declare_module(NAME localization_editor LAYER 7 DEPS editor localization_editing GROUP 2d 3d web)

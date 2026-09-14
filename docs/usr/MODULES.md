@@ -53,6 +53,7 @@
 - [建筑放置](modules/building.md)：策略 / 经营类建筑定义、格子占用、鬼影预览与可插拔校验/吸附。
 - [建筑可视化](modules/buildingfx.md)：把放置世界和鬼影同步为 2D/3D 视觉并绘制放置网格。
 - [程序化房屋](modules/housegen.md)：数据驱动的房屋生成（组件库 + 请求 → 布局 JSON）。
+- [建筑空间 ArchSpace](modules/archspace.md)：Pascal 风格的楼层/墙/房间/开口文档编辑（与 building 放置域分离）。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
 - [武器系统](modules/weapon.md)：数据驱动的武器、弹药池、挂点、瞄准、开火、装填与事件查询。
 - [载具系统](modules/vehicle.md)：载具定义、移动命令、座位和炮塔、伤害以及 2D/3D 物理接入。
