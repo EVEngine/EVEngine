@@ -332,7 +332,7 @@ PointSet densityFromNormal(const PointSet& input, float minDegrees, float maxDeg
 /**
  * @brief Scale and pad each point's local bounds about its center.
  *
- * Degenerate (zero-extent) bounds treat |scale| as the full local size before padding.
+ * Zero-extent / degenerate bounds treat |scale| as the full local size before padding.
  */
 PointSet modifyPointBounds(const PointSet& input, float scaleX, float scaleY, float scaleZ, float padX, float padY,
                            float padZ);
@@ -341,6 +341,12 @@ PointSet modifyPointBounds(const PointSet& input, float scaleX, float scaleY, fl
  *
  * Empty mesh entries are ignored. When every weight is non-positive or every mesh
  * path is empty, attributes are left unchanged.
+ *
+ * @ownership @p meshes and @p weights are borrowed for this synchronous call only;
+ *            the function does not retain the pointers after returning.
+ * @lifetime Caller must keep both arrays alive for the duration of the call.
+ * @param meshes Mesh path table of length @p entryCount; may be null when @p entryCount is 0.
+ * @param weights Parallel weight table of length @p entryCount; may be null when @p entryCount is 0.
  */
 PointSet assignWeightedMeshAttribute(const PointSet& input, uint32_t seed, const std::string& attribute,
                                      const std::string* meshes, const float* weights, int entryCount);
