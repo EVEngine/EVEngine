@@ -552,7 +552,7 @@ build/android-debug/build.ninja:
 		-B build/android-debug -S .
 
 build/ios: build/ios/EVEngine.xcodeproj
-	cmake --build build/ios --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios --target deps --config Release -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios && xcodebuild -scheme eve -configuration Release \
@@ -585,7 +585,7 @@ build/ios/EVEngine.xcodeproj:
 		-B build/ios -S .
 
 build/ios-debug: build/ios-debug/EVEngine.xcodeproj
-	cmake --build build/ios-debug --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-debug --target deps --config Debug -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		echo "  Xcode → Settings → Accounts → add Apple ID, then export IOS_DEVELOPMENT_TEAM=<TeamID>"; \
@@ -621,7 +621,7 @@ build/ios-debug/EVEngine.xcodeproj:
 # iOS game app for the simulator (no signing required). Uses its own
 # third-party tree (ios-simulator-debug) so the device deps are not clobbered.
 build/ios-sim-debug: build/ios-sim-debug/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-sim-debug --target deps --config Debug -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
 		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
@@ -648,7 +648,7 @@ build/ios-sim-debug/EVEngine.xcodeproj:
 #   make run/ios-test-debug [FILTER=math.*]   # install + launch on device
 #   make log/ios-test                          # stream test results
 build/ios-debug-test: build/ios-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-debug-test --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
@@ -687,7 +687,7 @@ build/ios-debug-test/EVEngine.xcodeproj:
 # iOS test app for the simulator (no signing required). Uses its own
 # third-party tree (ios-simulator-debug) so the device deps are not clobbered.
 build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug-test --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-sim-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
 		CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
