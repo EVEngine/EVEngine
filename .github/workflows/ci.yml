@@ -1108,7 +1108,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug
-        timeout-minutes: 40
+        # A pull request cannot populate the shared sccache and may legitimately
+        # need a cold compile after a dev merge. The full 3,300+ TU build is
+        # currently just over 40 minutes on the slowest hosted runners.
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
