@@ -48,3 +48,11 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 - The SSDM panel is an **educational approximation** of classic screen-space
   displacement (planar slab + depth write), not a full-scene post-process SSDM
   pass. It is enough to contrast silhouette behaviour with SilPOM.
+
+## Floor contact / occlusion
+
+The right panel used to look like the floor covered the wall for three separate reasons:
+
+1. **Vulkan ZO depth** — `gl_FragDepth` must be written in `[0,1]` NDC (not OpenGL's `*0.5+0.5`).
+2. **No hole punching** — SSDM misses fall back to POM on the card; discarding let the floor show through.
+3. **Contact layout** — cards sit a few centimeters above the floor, and SSDM fades relief near the chart bottom so parallax does not look like it continues under the floor plane.

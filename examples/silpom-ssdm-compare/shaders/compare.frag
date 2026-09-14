@@ -93,7 +93,9 @@ float silCoverage(vec2 uv, float padding) {
 
 vec4 ssdmSample(vec3 planePos, vec3 planeN, vec3 camPos, vec3 viewDir, float scale,
                 float minLayers, float maxLayers) {
-    float thickness = max(scale * 4.0, 1e-3);
+    // Keep slab thickness near the POM scale. scale*4 over-extruded the relief so the
+    // apparent brick bottoms dug into the floor and lost the depth fight.
+    float thickness = max(scale * 1.5, 1e-3);
     vec3 n = normalize(planeN);
     float denom = dot(n, viewDir);
     if (abs(denom) < 1e-5)
@@ -142,7 +144,7 @@ vec3 shadeLit(vec3 albedo, vec3 N, vec3 V) {
     float ndv = max(dot(N, V), 0.0);
     vec3 ambient = ubo.ambient.rgb;
     vec3 diffuse = ubo.lightColor.rgb * ndl;
-    float rim = pow(1.0 - ndv, 3.0) * 0.22;
+    float rim = pow(1.0 - ndv, 3.0) * 0.08;
     return albedo * (ambient + diffuse) + vec3(rim);
 }
 
@@ -160,6 +162,8 @@ void main() {
 
     vec2 uv = vUV;
     float coverage = 1.0;
+    // Vulkan RH_ZO: NDC Z is already [0,1]. Always write FragDepth (any-path rule).
+    float fragDepth = gl_FragCoord.z;
 
     if (mode < 0.5) {
         mat3 TBN = makeTBN(N, vWorldPos, vUV);
@@ -175,25 +179,45 @@ void main() {
         }
         coverage = silCoverage(uv, padding);
     } else {
+        // SSDM-style slab march for UVs / silhouette shading.
+        // Depth: do NOT trust the projected hit Z (easy to get wrong with mvp*inv(model)
+        // under Vulkan ZO). Keep the geometric surface and pull the whole card toward
+        // the camera so the grazing floor cannot win inside the panel footprint.
         vec3 planePos = ubo.model[3].xyz;
         vec3 viewDir = normalize(vWorldPos - vCameraPos);
         vec4 hit = ssdmSample(planePos, N, vCameraPos, viewDir, scale, minLayers, maxLayers);
-        uv = hit.xy;
-        coverage = hit.z;
-        if (coverage > 0.5 && hit.w > 0.0) {
+
+        float h01 = 0.0;
+        if (hit.z > 0.5 && hit.w > 0.0) {
+            uv = hit.xy;
             vec3 hitPos = vCameraPos + viewDir * hit.w;
-            vec4 clip = ubo.mvp * vec4(hitPos, 1.0);
-            float ndcZ = clip.z / max(clip.w, 1e-5);
-            gl_FragDepth = ndcZ * 0.5 + 0.5;
+            float thickness = max(scale * 1.5, 1e-3);
+            h01 = clamp(dot(N, hitPos - planePos) / thickness, 0.0, 1.0);
+        } else {
+            mat3 TBN = makeTBN(N, vWorldPos, vUV);
+            if (length(TBN[0]) > 1e-4) {
+                vec3 viewTS = normalize(transpose(TBN) * V);
+                uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers);
+            }
+            h01 = texture(heightSampler, clamp(uv, 0.0, 1.0)).r;
         }
+        // Fade relief near the chart bottom so the parallax doesn't look like it
+        // continues under the floor plane (the classic "floor covers wall" illusion).
+        float bottomFade = smoothstep(0.0, 0.08, uv.y);
+        h01 *= bottomFade;
+        if (bottomFade < 0.999) {
+            // blend UV back toward the geometric chart UV near the base
+            uv = mix(vUV, uv, bottomFade);
+        }
+
+        // Pull toward camera (smaller ZO depth). Stronger on brick tops.
+        fragDepth = clamp(gl_FragCoord.z - (0.002 + h01 * 0.003), 0.0, 1.0);
     }
 
     if (coverage < 0.5)
         discard;
 
-    // FragDepth must be written on every path if any path writes it.
-    if (mode < 1.5)
-        gl_FragDepth = gl_FragCoord.z;
+    gl_FragDepth = fragDepth;
 
     vec3 albedo = texture(albedoSampler, uv).rgb * vTint.rgb * ubo.tint.rgb;
     if (mode < 0.5)
@@ -201,7 +225,7 @@ void main() {
     else if (mode < 1.5)
         albedo *= vec3(0.90, 1.00, 0.92);
     else
-        albedo *= vec3(0.90, 0.93, 1.06);
+        albedo *= vec3(0.95, 0.96, 1.02);
 
     outColor = vec4(shadeLit(albedo, N, V), 1.0);
 }

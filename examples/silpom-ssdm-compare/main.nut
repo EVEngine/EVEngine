@@ -110,7 +110,7 @@ function makePanel(mode, x) {
     ent.setTint(1.0, 1.0, 1.0, 1.0);
     ent.setCastShadow(false);
     ent.setReceiveShadow(false);
-    ent.setPosition(x, 1.15, 0.0);
+    ent.setPosition(x, 1.08, 0.15);
     return { ent = ent, shader = shader, mode = mode.tofloat() };
 }
 
@@ -126,10 +126,10 @@ function updateCamera() {
     local focusX = (cmpFocus - 2).tofloat() * 2.4;
     local dist = 5.2;
     local cx = focusX + dist * cos(cmpPitch) * sin(cmpYaw);
-    local cy = 1.15 + dist * sin(cmpPitch);
+    local cy = 1.08 + dist * sin(cmpPitch);
     local cz = dist * cos(cmpPitch) * cos(cmpYaw);
     cmpCam.setEye(cx, cy, cz);
-    cmpCam.setTarget(focusX, 1.15, 0.0);
+    cmpCam.setTarget(focusX, 1.08, 0.0);
 }
 
 eve_init = function() {
@@ -142,7 +142,7 @@ eve_init = function() {
         cmpGround = eve.Renderable3D();
         cmpGround.setMesh(gfx.newMeshCube(1.0));
         cmpGround.setPosition(0.0, -0.08, 0.0);
-        cmpGround.setScale(8.0, 0.16, 4.0);
+        cmpGround.setScale(10.0, 0.16, 4.0);
         cmpGround.setTint(0.16, 0.17, 0.20, 1.0);
         cmpGround.setRoughness(0.95);
         cmpGround.setCastShadow(false);
@@ -154,6 +154,12 @@ eve_init = function() {
         cmpCam.setActive(true);
     }
     gfx.setDirectionalLight(-0.55, 0.35, 0.75, 1.45, 1.30, 1.15);
+    // Always re-apply layout so persist doesn't freeze an old contact height.
+    cmpPom.ent.setPosition(-2.4, 1.08, 0.15);
+    cmpSil.ent.setPosition(0.0, 1.08, 0.15);
+    cmpSsdm.ent.setPosition(2.4, 1.08, 0.15);
+    cmpGround.setPosition(0.0, -0.08, 0.0);
+    cmpGround.setScale(10.0, 0.16, 4.0);
     syncPanel(cmpPom); syncPanel(cmpSil); syncPanel(cmpSsdm);
     updateCamera();
     print("SilPOM vs SSDM: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
