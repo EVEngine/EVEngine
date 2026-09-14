@@ -57,7 +57,8 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
 # surfaces, droplet coalescence) with screen-space surface reconstruction.
 eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
-                   DEPS gpgpu graphics image model3d physics physics_backend
+                   DEPS gpgpu graphics image physics physics_backend
+                   OPTIONAL_DEPS model3d
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction

@@ -704,23 +704,27 @@ Result<void> restoreVolumeFluidEmitterCheckpoint(VolumeFluid& solver, VolumeFlui
 }
 }  // namespace eve::fluids
 
-#include <charconv>
+#include <iomanip>
 #include <limits>
+#include <locale>
+#include <sstream>
 #include <stdexcept>
 namespace eve::fluids {
 namespace {
 std::string phaseText(double value) {
-    char buffer[64];
-    auto converted = std::to_chars(buffer, buffer + sizeof(buffer), value, std::chars_format::general,
-                                   std::numeric_limits<double>::max_digits10);
-    if (converted.ec != std::errc{}) throw std::runtime_error("Emitter phase encoding failed");
-    return std::string(buffer, converted.ptr);
+    std::ostringstream stream;
+    stream.imbue(std::locale::classic());
+    stream << std::setprecision(std::numeric_limits<double>::max_digits10) << value;
+    if (!stream) throw std::runtime_error("Emitter phase encoding failed");
+    return stream.str();
 }
 Result<double> restoredPhase(const VolumeFluidEmitterSnapshot& s, unsigned kind, double upper) {
-    double phase  = 0;
-    auto   parsed = std::from_chars(s.phase.data(), s.phase.data() + s.phase.size(), phase);
-    if (s.schema != "eve.volume-fluid-emitter-state" || s.version != 1 || s.kind != kind || parsed.ec != std::errc{} ||
-        parsed.ptr != s.phase.data() + s.phase.size() || !std::isfinite(phase) || phase < 0 || phase >= upper)
+    std::istringstream stream(s.phase);
+    stream.imbue(std::locale::classic());
+    double phase = 0;
+    stream >> std::noskipws >> phase;
+    if (s.schema != "eve.volume-fluid-emitter-state" || s.version != 1 || s.kind != kind || stream.fail() ||
+        !stream.eof() || !std::isfinite(phase) || phase < 0 || phase >= upper)
         return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                          "Invalid emitter state schema, kind or phase",
                                                          "fluids.volume.emitterState"));

@@ -1,4 +1,7 @@
 #include "fluids/VolumeFluidBindingInternal.inc"
+#if defined(EVE_FLUIDS_HAS_MODEL3D)
+#include "model3d/ModelData.h"
+#endif
 
 namespace eve::fluids {
 void exposeVolumeFluidFactory(ssq::Class& cls) {
@@ -30,6 +33,7 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
         return script::projectStatusResult(vm, Status::success(), true, true,
                                            encodeVolumeFluidSdfPose(VolumeFluidSdfPose{}));
     });
+#if defined(EVE_FLUIDS_HAS_MODEL3D)
     cls.addFunc("volumeSdfColliderFromModel", [vm](Fluids*, model3d::ModelData* model, int meshIndex, float sx,
                                                    float sy, float sz, int resolution) {
         const auto failure = [&](const char* message) {
@@ -109,6 +113,7 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
         emission.distribution = std::move(points).takeValue();
         return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
     });
+#endif
     cls.addFunc("volumeEmissionFromImage", [vm](Fluids*, image::ImageData* image, float pixelScale, float maximumSize,
                                                 float spacing, float threshold, bool srgb) {
         if (!image || image->getWidth() <= 0 || image->getHeight() <= 0 || image->getFormat() != "RGBA8" ||

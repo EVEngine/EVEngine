@@ -1,9 +1,11 @@
 #include "fluids/VolumeFluidFoam.h"
 #include <algorithm>
-#include <charconv>
 #include <cmath>
 #include <glm/geometric.hpp>
+#include <iomanip>
 #include <limits>
+#include <locale>
+#include <sstream>
 #include <stdexcept>
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidDiffuse.h"
@@ -109,21 +111,23 @@ Result<unsigned> VolumeFluidFoam::advanceFiltered(const VolumeFluid& source, Vol
 }
 
 VolumeFluidFoamSnapshot VolumeFluidFoam::snapshot() const {
-    char       text[64];
-    const auto converted = std::to_chars(text, text + sizeof(text), credit_, std::chars_format::general,
-                                         std::numeric_limits<double>::max_digits10);
-    if (converted.ec != std::errc{}) throw std::runtime_error("Foam credit encoding failed");
-    return {"eve.volume-fluid-foam", 1, settings_, std::string(text, converted.ptr), randomState_};
+    std::ostringstream stream;
+    stream.imbue(std::locale::classic());
+    stream << std::setprecision(std::numeric_limits<double>::max_digits10) << credit_;
+    if (!stream) throw std::runtime_error("Foam credit encoding failed");
+    return {"eve.volume-fluid-foam", 1, settings_, stream.str(), randomState_};
 }
 Result<void> VolumeFluidFoam::restore(const VolumeFluidFoamSnapshot& state) {
     const auto& s      = state.settings;
     double      credit = 0;
-    const auto  parsed = std::from_chars(state.credit.data(), state.credit.data() + state.credit.size(), credit);
+    std::istringstream stream(state.credit);
+    stream.imbue(std::locale::classic());
+    stream >> std::noskipws >> credit;
     if (state.schema != "eve.volume-fluid-foam" || state.version != 1 || state.randomState == 0 ||
         !range(s.rate, 0.f, 1000000.f) || !range(s.randomness, 0.f, 10.f) ||
         !range(s.vorticityThreshold, 0.f, 1000000.f) || !range(s.densityThreshold, 0.f, 1000000000.f) ||
         !range(s.lifetime, 0.f, 86400.f) || s.lifetime == 0.f || s.maxPerStep == 0 || s.maxPerStep > 4096 ||
-        parsed.ec != std::errc{} || parsed.ptr != state.credit.data() + state.credit.size() || !std::isfinite(credit) ||
+        stream.fail() || !stream.eof() || !std::isfinite(credit) ||
         credit < 0 || credit >= 1)
         return Result<void>::failure(invalid("Invalid foam schema, settings, credit or RNG state"));
     settings_    = s;

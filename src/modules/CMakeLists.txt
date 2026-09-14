@@ -303,6 +303,11 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   target_compile_definitions(${EVE_MODULE_${_mod}_LIB} PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endforeach()
 
+eve_module_enabled(model3d _has_fluids_model3d)
+if(TARGET EVFluids AND _has_fluids_model3d)
+  target_compile_definitions(EVFluids PRIVATE EVE_FLUIDS_HAS_MODEL3D=1)
+endif()
+
 # --- per-module build settings ----------------------------------------------
 
 if(TARGET EVAsset_graphics)

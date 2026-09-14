@@ -10,7 +10,6 @@
 #include "fluids/VolumeFluidCodec.h"
 #include "fluids/VolumeFluidCoupling.h"
 #include "image/ImageData.h"
-#include "model3d/ModelData.h"
 #include "physics/Body3D.h"
 #include "physics/World3D.h"
 

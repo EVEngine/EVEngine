@@ -899,8 +899,6 @@ void FluidSurfaceRenderer::renderCpu() {
         params_.orthographic
             ? glm::orthoRH(-tanHalf * params_.aspect, tanHalf * params_.aspect, -tanHalf, tanHalf, nearZ, farZ)
             : glm::perspectiveRH(glm::radians(params_.fovYDeg), params_.aspect, nearZ, farZ);
-    const glm::mat4 vp = proj * view;
-
     std::fill(depth_.begin(), depth_.end(), 1e30f);
     std::fill(thickness_.begin(), thickness_.end(), 0.f);
     depthScratch_.resize(size_t(pixels));

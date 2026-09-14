@@ -50,15 +50,17 @@ Result<void> FluidSurfaceRenderer::compositeConfiguredSurfaceBlend(std::span<con
     for (size_t offset = 0; offset < expected; offset += 4u) {
         glm::vec4 source, destination;
         for (size_t channel = 0; channel < 4u; ++channel) {
-            source[channel]      = float(color_[offset + channel]) / 255.f;
-            destination[channel] = float(sceneColor[offset + channel]) / 255.f;
+            const auto component = static_cast<glm::vec4::length_type>(channel);
+            source[component]      = float(color_[offset + channel]) / 255.f;
+            destination[component] = float(sceneColor[offset + channel]) / 255.f;
         }
         const glm::vec4 blended =
             glm::clamp(source * blendFluidColor(surfaceBlendSource_, source, destination) +
                            destination * blendFluidColor(surfaceBlendDestination_, source, destination),
                        glm::vec4(0.f), glm::vec4(1.f));
         for (size_t channel = 0; channel < 4u; ++channel)
-            color_[offset + channel] = uint8_t(blended[channel] * 255.f + .5f);
+            color_[offset + channel] =
+                uint8_t(blended[static_cast<glm::vec4::length_type>(channel)] * 255.f + .5f);
     }
     residentColorCurrent_ = false;
     return Result<void>::success();
