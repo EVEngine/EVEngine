@@ -92,53 +92,6 @@ float silCoverage(vec2 uv, float padding) {
     return (mn.x >= 0.0 && mn.y >= 0.0 && mx.x >= 0.0 && mx.y >= 0.0) ? 1.0 : 0.0;
 }
 
-vec4 ssdmSample(vec3 planePos, vec3 planeN, vec3 camPos, vec3 viewDir, float scale,
-                float minLayers, float maxLayers) {
-    // Keep slab thickness near the POM scale. scale*4 over-extruded the relief so the
-    // apparent brick bottoms dug into the floor and lost the depth fight.
-    float thickness = max(scale * 1.5, 1e-3);
-    vec3 n = normalize(planeN);
-    float denom = dot(n, viewDir);
-    if (abs(denom) < 1e-5)
-        return vec4(0.0);
-
-    vec3 frontPos = planePos + n * thickness;
-    float tFront = dot(n, frontPos - camPos) / denom;
-    float tBack = dot(n, planePos - camPos) / denom;
-    float t0 = max(min(tFront, tBack), 0.0);
-    float t1 = max(tFront, tBack);
-    if (t1 <= t0)
-        return vec4(0.0);
-
-    float layers = clamp(mix(max(maxLayers, 1.0), max(minLayers, 1.0),
-                             clamp(abs(dot(n, -viewDir)), 0.0, 1.0)),
-                         1.0, 64.0);
-    float dt = (t1 - t0) / layers;
-    float t = t0;
-
-    mat3 Rt = transpose(mat3(ubo.model));
-    vec3 modelOrigin = ubo.model[3].xyz;
-
-    for (int i = 0; i < 64; ++i) {
-        if (float(i) >= layers)
-            break;
-        vec3 p = camPos + viewDir * t;
-        float hPlane = dot(n, p - planePos);
-        vec3 onPlane = p - n * hPlane;
-        vec3 local = Rt * (onPlane - modelOrigin);
-        vec2 uv = local.xy * 0.5 + 0.5;
-        float height = texture(heightSampler, clamp(uv, 0.0, 1.0)).r;
-        float surfaceH = height * thickness;
-        if (hPlane <= surfaceH + 1e-4) {
-            float cov =
-                (uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0) ? 1.0 : 0.0;
-            return vec4(uv, cov, t);
-        }
-        t += dt;
-    }
-    return vec4(0.0);
-}
-
 vec3 shadeLit(vec3 albedo, vec3 N, vec3 V) {
     vec3 L = normalize(ubo.lightDirIntensity.xyz);
     float ndl = max(dot(N, L), 0.0);
