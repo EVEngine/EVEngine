@@ -94,10 +94,12 @@ eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
                    DEPS graphics map
                    GROUP 3d)
 # L6 -- orchestration
+# Native 3d only: GROUP web would enable animation→model3d on the Emscripten
+# profile, which still trims medialoader_model and then fails at link time.
 eve_declare_module(NAME animation_tensor DIR animation/tensor LAYER 6
                    SCRIPT AnimationTensor SLOT animationTensor
                    DEPS animation tensor
-                   GROUP 3d web)
+                   GROUP 3d)
 eve_declare_module(NAME agent_tensor DIR agent/tensor LAYER 6
                    SCRIPT AgentTensor SLOT agentTensor
                      DEPS agent tensor gpgpu
