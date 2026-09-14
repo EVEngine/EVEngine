@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Result.h"
+#include "common/PcgPhotoModeApply.h"
 
 #include <glm/glm.hpp>
 
@@ -21,6 +23,30 @@ class SceneNodeRef;
 
 namespace eve::camera {
 
+/** @brief Complete Pcg photo-mode post-processing state retained across render-pipeline projections. */
+struct PcgPhotoModePostFxState {
+    float postFxExposure = 13.5f;
+    int64_t postFxExposureMode = 0;
+    bool depthOfFieldActive = true;
+    bool autoDepthOfFieldFocus = true;
+    float focusDistance = 100.f;
+    float aperture = 16.f;
+    float focalLength = 50.f;
+    int64_t kernelSize = 1;
+    int64_t savedFocusMode = 0;
+    int64_t focusModeHdrp = 0;
+    int64_t focusModeUrp = 0;
+    int64_t qualityHdrp = 1;
+    float nearBlurStart = 0.f;
+    float nearBlurEnd = 0.1f;
+    float farBlurStart = 200.f;
+    float farBlurEnd = 2000.f;
+    float blurStartUrp = 2.f;
+    float blurEndUrp = 1000.f;
+    float maximumBlurRadius = 1.f;
+    bool highQualityUrp = false;
+};
+
 /**
  * @brief 3D 摄像机控制器（eve.Camera / eve.CameraController）。
  *
@@ -34,10 +60,10 @@ namespace eve::camera {
  * 所有行为都经过统一的指数阻尼平滑（setSmooth，对应"平滑移动"），
  * 也支持 maxSpeed 限速避免抖动，snap() 可立即到位不做平滑。
  */
-class CameraController {
+class CameraController : public IPhotoModeFieldSink {
 public:
     CameraController();
-    ~CameraController() = default;
+    ~CameraController() override;
 
     // --- 绑定要驱动的摄像机 ---
     void                setCamera(graphics::Camera3D* cam);
@@ -61,6 +87,11 @@ public:
 
     // --- orbit / topdown 参数 ---
     void setRadius(float r);              // orbit 半径 / topdown 高度
+    /** @brief Return the current orbit radius. */ float getRadius() const { return radius_; }
+    /** @brief Set inclusive orbit zoom limits atomically. */
+    [[nodiscard]] Result<void> setRadiusLimits(float minimum, float maximum);
+    /** @brief Return the minimum orbit radius. */ float getMinimumRadius() const { return minimumRadius_; }
+    /** @brief Return the maximum orbit radius. */ float getMaximumRadius() const { return maximumRadius_; }
     void setAzimuth(float deg);           // orbit 方位角
     void setElevation(float deg);         // orbit 仰角
     void setOrbitSpeed(float degPerSec);  // 自动盘旋转速
@@ -71,6 +102,22 @@ public:
     /** @brief Applies device-independent yaw, pitch and zoom deltas. */
     void addInput(float yawDeltaDeg, float pitchDeltaDeg, float zoomDelta);
 
+    /** @brief Register or revoke this controller as the sole photo-mode camera authority. */
+    void setPhotoModeAuthority(bool enabled);
+    /** @brief Return whether this controller currently publishes photo-mode camera fields. */
+    bool getPhotoModeAuthority() const noexcept{return photoModeAuthority_;}
+    /** @brief Return whether this controller owns a photo-mode camera assignment. */
+    PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Apply one camera assignment atomically to this controller and its bound Camera3D. */
+    [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
+    /** @brief Set finite camera roll in degrees. */
+    [[nodiscard]] Result<void> setCameraRoll(float degrees);
+    /** @brief Return current camera roll in degrees. */
+    float getCameraRoll() const noexcept{return cameraRollDeg_;}
+    /** @brief Return Pcg's signed culling-distance adjustment. */
+    float getPcgCullingDistance() const noexcept{return pcgCullingDistance_;}
+    /** @brief Return the complete retained Pcg post-processing state. */
+    const PcgPhotoModePostFxState& getPcgPostFxState() const noexcept{return pcgPostFxState_;}
     // --- framing / lens ---
     /** @brief Screen-space composition offset, expressed as normalized view fractions. */
     void setComposition(float screenX, float screenY);
@@ -217,8 +264,14 @@ private:
     void        evaluateTimelineFloats();
     void        emitTimelineEvent(const TimelineEvent& marker);
     static bool validMode(const std::string& mode);
+    [[nodiscard]] Result<void> applyPcgPostFx(const PhotoModeAssignment& assignment);
+    void projectPcgPostFx();
 
     graphics::Camera3D* cam_ = nullptr;
+    bool photoModeAuthority_ = false;
+    float cameraRollDeg_ = 0.f;
+    float pcgCullingDistance_ = 0.f;
+    PcgPhotoModePostFxState pcgPostFxState_{};
 
     std::string mode_ = "follow";
 
@@ -229,6 +282,8 @@ private:
     glm::vec3   lookAhead_{0.f, 0.f, 0.f};
 
     float radius_        = 10.f;
+    float minimumRadius_ = 0.01f;
+    float maximumRadius_ = 100000.f;
     float azimuthDeg_    = 45.f;
     float elevationDeg_  = 30.f;
     float orbitSpeedDeg_ = 20.f;

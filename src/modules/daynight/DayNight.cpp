@@ -96,6 +96,24 @@ Vec3 attenuatedSunColor(float sunElevation, float turbidity, float mieStrength) 
     return scale(c, 1.f / maxChannel);
 }
 
+Vec3 correlatedColorTemperature(float kelvin) {
+    const float t = std::clamp(kelvin, 1000.f, 40000.f) / 100.f;
+    const float r = t <= 66.f ? 1.f : 1.2929362f * std::pow(t - 60.f, -0.13320476f);
+    const float g = t <= 66.f ? 0.39008158f * std::log(t) - 0.63184144f
+                              : 1.1298909f * std::pow(t - 60.f, -0.07551485f);
+    const float b = t >= 66.f ? 1.f
+                    : t <= 19.f ? 0.f
+                                : 0.5432068f * std::log(t - 10.f) - 1.1962541f;
+    return {std::clamp(r, 0.f, 1.f), std::clamp(g, 0.f, 1.f),
+            std::clamp(b, 0.f, 1.f)};
+}
+
+Vec3 manualSunColor(const PcgManualSunState &sun) {
+    const Vec3 temperature = correlatedColorTemperature(sun.kelvin);
+    return {sun.red * temperature.x, sun.green * temperature.y,
+            sun.blue * temperature.z};
+}
+
 // Convert an elevation/azimuth to a unit direction pointing at the sun.
 // azimuth measured clockwise from +Z, elevation above the horizon.
 inline void sunDirection(float elevDeg, float azimDeg, float &dx, float &dy, float &dz) {
@@ -121,8 +139,10 @@ inline float hashUnit(uint32_t x) { return float(hash13(x) % 10000u) / 9999.f; }
 // Fill one cubemap face's RGBA. `face` in {0..5} order +X,-X,+Y,-Y,+Z,-Z.
 // dirAt(x,y) writes the world direction (unnormalized ok) for a pixel.
 void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
-                 const float sunDir[3], float sunEnergy, float nightAmount,
+                 const float sunDir[3], const Vec3 &directSunColor, float sunEnergy,
+                 float nightAmount,
                  float turbidity, float mieStrength, float exposure, float cloudiness,
+                 float rotationDegrees, const Vec3 &tint,
                  void (*dirAt)(int face, int size, int x, int y, float out[3])) {
     const int n = size;
     for (int y = 0; y < n; ++y) {
@@ -132,6 +152,12 @@ void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
             const float len = std::sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
             if (len < 1e-6f) { d[0] = 0.f; d[1] = 1.f; d[2] = 0.f; }
             else { d[0] /= len; d[1] /= len; d[2] /= len; }
+            if (rotationDegrees != 0.f) {
+                const float angle = deg2rad(rotationDegrees);
+                const float x = d[0] * std::cos(angle) + d[2] * std::sin(angle);
+                d[2] = -d[0] * std::sin(angle) + d[2] * std::cos(angle);
+                d[0] = x;
+            }
 
             const float up = d[1];
             const Vec3 view{d[0], std::max(d[1], 0.002f), d[2]};
@@ -150,8 +176,12 @@ void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
             const float disc = smoothstep(std::cos(deg2rad(0.65f)),
                                           std::cos(deg2rad(0.35f)), dot) * sunEnergy;
             const float sunMass = 1.f / std::max(0.06f, sun.y + 0.12f);
-            const Vec3 sunColor{std::exp(-0.16f * sunMass), std::exp(-0.28f * sunMass),
-                                std::exp(-0.58f * sunMass)};
+            const Vec3 atmosphericSun{std::exp(-0.16f * sunMass),
+                                      std::exp(-0.28f * sunMass),
+                                      std::exp(-0.58f * sunMass)};
+            const Vec3 sunColor{atmosphericSun.x * directSunColor.x,
+                                atmosphericSun.y * directSunColor.y,
+                                atmosphericSun.z * directSunColor.z};
             color = add(color, scale(sunColor, disc * 12.f));
 
             // Stars (only at night, only in the sky hemisphere, avoid the sun).
@@ -169,6 +199,7 @@ void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
                                 0.125f + 0.060f * std::max(up, 0.f)};
             color = add(scale(color, 1.f - cloudiness * 0.82f),
                         scale(overcast, cloudiness));
+            color = {color.x * tint.x, color.y * tint.y, color.z * tint.z};
             color = toneMapSky(color, exposure);
 
             const int i = (y * n + x) * 4;
@@ -215,6 +246,17 @@ struct DayNight::Impl {
     float mieStrength = 1.f;
     float weatherCloudiness = 0.f;
     float weatherFlash = 0.f;
+    PcgManualSunState manualSun;
+    PcgSkyboxState pcgSkybox;
+    PcgFogState pcgFog;
+    PcgAmbientLightState pcgAmbient;
+    graphics::Volumetric *pcgFogTarget = nullptr;
+    bool pcgFogWasActive = false;
+    std::string pcgFogBaseMode = "screenspace";
+    std::string pcgFogBaseQuality = "medium";
+    float pcgFogBaseDensity = 0.85f;
+    float pcgFogBaseStart = 2.f;
+    float pcgFogBaseEnd = 40.f;
 
     // sky cache (regenerate only when the sun bucket changes)
     bool skyboxEnabled = true;
@@ -268,16 +310,135 @@ float DayNight::getSunDirY() const { return impl_->sunDir[1]; }
 float DayNight::getSunDirZ() const { return impl_->sunDir[2]; }
 float DayNight::getSunIntensity() const { return impl_->sunEnergy; }
 float DayNight::getSunR() const {
-    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).x *
-           impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness);
+    const Vec3 color = impl_->manualSun.enabled
+                           ? manualSunColor(impl_->manualSun)
+                           : attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
+                                                impl_->mieStrength);
+    const float multiplier = impl_->pcgAmbient.active
+                                 ? impl_->pcgAmbient.globalLightMultiplier
+                                 : 1.f;
+    return color.x * impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness) * multiplier;
 }
 float DayNight::getSunG() const {
-    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).y *
-           impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness);
+    const Vec3 color = impl_->manualSun.enabled
+                           ? manualSunColor(impl_->manualSun)
+                           : attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
+                                                impl_->mieStrength);
+    const float multiplier = impl_->pcgAmbient.active
+                                 ? impl_->pcgAmbient.globalLightMultiplier
+                                 : 1.f;
+    return color.y * impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness) * multiplier;
 }
 float DayNight::getSunB() const {
-    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).z *
-           impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness);
+    const Vec3 color = impl_->manualSun.enabled
+                           ? manualSunColor(impl_->manualSun)
+                           : attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
+                                                impl_->mieStrength);
+    const float multiplier = impl_->pcgAmbient.active
+                                 ? impl_->pcgAmbient.globalLightMultiplier
+                                 : 1.f;
+    return color.z * impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness) * multiplier;
+}
+
+Result<void> DayNight::setPcgManualSun(const PcgManualSunState &state) {
+    const bool finite = std::isfinite(state.pitchDegrees) &&
+                        std::isfinite(state.rotationDegrees) &&
+                        std::isfinite(state.intensity) && std::isfinite(state.red) &&
+                        std::isfinite(state.green) && std::isfinite(state.blue) &&
+                        std::isfinite(state.kelvin);
+    if (!finite || state.pitchDegrees < 0.f || state.pitchDegrees > 360.f ||
+        state.rotationDegrees < 0.f || state.rotationDegrees > 360.f ||
+        state.intensity < 0.f || state.intensity > 8.f || state.red < 0.f ||
+        state.green < 0.f || state.blue < 0.f || state.kelvin < 1500.f ||
+        state.kelvin > 20000.f) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid Pcg manual-sun state", {}, {},
+            "daynight.pcgManualSun"));
+    }
+    impl_->manualSun = state;
+    impl_->lastSkyBucket = -1;
+    return Result<void>::success();
+}
+
+PcgManualSunState DayNight::getPcgManualSun() const noexcept { return impl_->manualSun; }
+
+Result<void> DayNight::setPcgSkybox(const PcgSkyboxState &state) {
+    const bool finite = std::isfinite(state.rotationDegrees) &&
+                        std::isfinite(state.exposure) && std::isfinite(state.tintRed) &&
+                        std::isfinite(state.tintGreen) && std::isfinite(state.tintBlue);
+    if (!finite || state.rotationDegrees < 0.f || state.rotationDegrees > 360.f ||
+        state.exposure < 0.f || state.exposure > 30.f || state.tintRed < 0.f ||
+        state.tintGreen < 0.f || state.tintBlue < 0.f) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid Pcg skybox state", {}, {},
+            "daynight.pcgSkybox"));
+    }
+    impl_->pcgSkybox = state;
+    impl_->lastSkyBucket = -1;
+    return Result<void>::success();
+}
+
+PcgSkyboxState DayNight::getPcgSkybox() const noexcept { return impl_->pcgSkybox; }
+
+Result<void> DayNight::setPcgFog(const PcgFogState &state) {
+    const float values[] = {state.additionalLinearDistance, state.additionalExponentialDensity,
+                            state.red, state.green, state.blue, state.density,
+                            state.startDistance, state.endDistance,
+                            state.globalDensityMultiplier, state.densityAlbedoRed,
+                            state.densityAlbedoGreen, state.densityAlbedoBlue,
+                            state.densityVolumeDistance};
+    for (float value : values)
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Pcg fog values must be finite", {}, {},
+                "daynight.pcgFog"));
+    const bool invalid = state.additionalLinearDistance < -5000.f ||
+                         state.additionalLinearDistance > 5000.f ||
+                         state.additionalExponentialDensity < 0.f ||
+                         state.additionalExponentialDensity > 0.05f || state.mode < 0 ||
+                         state.mode > 2 || state.red < 0.f || state.green < 0.f ||
+                         state.blue < 0.f || state.density < 0.f || state.density > 0.05f ||
+                         state.startDistance < 0.f || state.startDistance > 5000.f ||
+                         state.endDistance < 0.f || state.endDistance > 5000.f ||
+                         state.globalDensityMultiplier < 0.f ||
+                         state.globalDensityMultiplier > 5.f ||
+                         state.densityAlbedoRed < 0.f || state.densityAlbedoGreen < 0.f ||
+                         state.densityAlbedoBlue < 0.f || state.densityVolumeDistance < 0.01f ||
+                         state.densityVolumeDistance > 1500.f ||
+                         state.densityVolumeEffect < 0 || state.densityVolumeEffect > 4 ||
+                         state.densityVolumeTiling < 0 || state.densityVolumeTiling > 5;
+    if (invalid)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid Pcg fog state", {}, {},
+            "daynight.pcgFog"));
+    impl_->pcgFog = state;
+    return Result<void>::success();
+}
+
+PcgFogState DayNight::getPcgFog() const noexcept { return impl_->pcgFog; }
+
+Result<void> DayNight::setPcgAmbientLight(const PcgAmbientLightState &state) {
+    const float values[] = {state.intensity, state.skyRed, state.skyGreen, state.skyBlue,
+                            state.equatorRed, state.equatorGreen, state.equatorBlue,
+                            state.groundRed, state.groundGreen, state.groundBlue,
+                            state.globalLightMultiplier};
+    for (float value : values) {
+        if (!std::isfinite(value) || value < 0.f)
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,
+                "Pcg ambient-light values must be finite and non-negative", {}, {},
+                "daynight.pcgAmbientLight"));
+    }
+    if (state.intensity > 10.f || state.globalLightMultiplier > 5.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid Pcg ambient-light range", {}, {},
+            "daynight.pcgAmbientLight"));
+    impl_->pcgAmbient = state;
+    return Result<void>::success();
+}
+
+PcgAmbientLightState DayNight::getPcgAmbientLight() const noexcept {
+    return impl_->pcgAmbient;
 }
 void DayNight::setTurbidity(float v) {
     impl_->turbidity = std::clamp(v, 1.5f, 10.f);
@@ -297,28 +458,34 @@ float DayNight::getMieStrength() const { return impl_->mieStrength; }
 
 // Sky / ambient colors are functions of the sun energy and night amount.
 float DayNight::getSkyR() const {
-    const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
+    const float angle = deg2rad(impl_->pcgSkybox.enabled ? impl_->pcgSkybox.rotationDegrees : 0.f);
+    const Vec3 c = toneMapSky(atmosphereRadiance({std::sin(angle), 0.04f, std::cos(angle)},
         {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
-        impl_->mieStrength), impl_->skyExposure);
+        impl_->mieStrength), impl_->pcgSkybox.enabled ? impl_->pcgSkybox.exposure : impl_->skyExposure);
     const float clear = c.x * impl_->sunEnergy + 0.012f * (1.f - impl_->sunEnergy);
-    return clear * (1.f - impl_->weatherCloudiness * 0.72f) +
-           impl_->weatherCloudiness * 0.075f + impl_->weatherFlash * 0.38f;
+    const float result = clear * (1.f - impl_->weatherCloudiness * 0.72f) +
+                         impl_->weatherCloudiness * 0.075f + impl_->weatherFlash * 0.38f;
+    return result * (impl_->pcgSkybox.enabled ? impl_->pcgSkybox.tintRed : 1.f);
 }
 float DayNight::getSkyG() const {
-    const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
+    const float angle = deg2rad(impl_->pcgSkybox.enabled ? impl_->pcgSkybox.rotationDegrees : 0.f);
+    const Vec3 c = toneMapSky(atmosphereRadiance({std::sin(angle), 0.04f, std::cos(angle)},
         {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
-        impl_->mieStrength), impl_->skyExposure);
+        impl_->mieStrength), impl_->pcgSkybox.enabled ? impl_->pcgSkybox.exposure : impl_->skyExposure);
     const float clear = c.y * impl_->sunEnergy + 0.020f * (1.f - impl_->sunEnergy);
-    return clear * (1.f - impl_->weatherCloudiness * 0.72f) +
-           impl_->weatherCloudiness * 0.090f + impl_->weatherFlash * 0.48f;
+    const float result = clear * (1.f - impl_->weatherCloudiness * 0.72f) +
+                         impl_->weatherCloudiness * 0.090f + impl_->weatherFlash * 0.48f;
+    return result * (impl_->pcgSkybox.enabled ? impl_->pcgSkybox.tintGreen : 1.f);
 }
 float DayNight::getSkyB() const {
-    const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
+    const float angle = deg2rad(impl_->pcgSkybox.enabled ? impl_->pcgSkybox.rotationDegrees : 0.f);
+    const Vec3 c = toneMapSky(atmosphereRadiance({std::sin(angle), 0.04f, std::cos(angle)},
         {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
-        impl_->mieStrength), impl_->skyExposure);
+        impl_->mieStrength), impl_->pcgSkybox.enabled ? impl_->pcgSkybox.exposure : impl_->skyExposure);
     const float clear = c.z * impl_->sunEnergy + 0.060f * (1.f - impl_->sunEnergy);
-    return clear * (1.f - impl_->weatherCloudiness * 0.62f) +
-           impl_->weatherCloudiness * 0.125f + impl_->weatherFlash * 0.68f;
+    const float result = clear * (1.f - impl_->weatherCloudiness * 0.62f) +
+                         impl_->weatherCloudiness * 0.125f + impl_->weatherFlash * 0.68f;
+    return result * (impl_->pcgSkybox.enabled ? impl_->pcgSkybox.tintBlue : 1.f);
 }
 float DayNight::getAmbientBrightness() const {
     const float night = impl_->nightLight[1] ? 1.0f : 0.6f;  // starlight boost
@@ -336,14 +503,29 @@ void DayNight::setWeatherInfluence(float cloudiness, float lightningFlash) {
 float DayNight::getWeatherCloudiness() const { return impl_->weatherCloudiness; }
 float DayNight::getWeatherFlash() const { return impl_->weatherFlash; }
 float DayNight::getAmbientR() const {
+    if (impl_->pcgAmbient.active) {
+        const auto &a = impl_->pcgAmbient;
+        return (a.skyRed * 0.5f + a.equatorRed * 0.35f + a.groundRed * 0.15f) *
+               a.intensity;
+    }
     const float ab = getAmbientBrightness();
     return ab * 0.95f;
 }
 float DayNight::getAmbientG() const {
+    if (impl_->pcgAmbient.active) {
+        const auto &a = impl_->pcgAmbient;
+        return (a.skyGreen * 0.5f + a.equatorGreen * 0.35f + a.groundGreen * 0.15f) *
+               a.intensity;
+    }
     const float ab = getAmbientBrightness();
     return ab * (0.95f + 0.05f * impl_->sunEnergy);  // greener in daylight
 }
 float DayNight::getAmbientB() const {
+    if (impl_->pcgAmbient.active) {
+        const auto &a = impl_->pcgAmbient;
+        return (a.skyBlue * 0.5f + a.equatorBlue * 0.35f + a.groundBlue * 0.15f) *
+               a.intensity;
+    }
     const float ab = getAmbientBrightness();
     return ab * (0.95f + 0.15f * impl_->sunEnergy);  // bluer in daylight
 }
@@ -357,6 +539,51 @@ void DayNight::applyAtmosphere(graphics::Volumetric *fog) const {
                             getSunB() + impl_->weatherFlash * 0.9f);
     fog->setIntensity(std::max(0.08f, impl_->sunEnergy + impl_->weatherFlash));
     fog->setTime(impl_->timeOfDay * 18.f);
+    const PcgFogState &pcg = impl_->pcgFog;
+    const bool hasWeatherOffset = pcg.additionalLinearDistance != 0.f ||
+                                  pcg.additionalExponentialDensity != 0.f;
+    const bool pcgFogActive = pcg.overrideDensityVolume || pcg.overrideFog ||
+                               hasWeatherOffset;
+    if (impl_->pcgFogTarget != fog) {
+        impl_->pcgFogTarget = fog;
+        impl_->pcgFogWasActive = false;
+    }
+    if (pcgFogActive && !impl_->pcgFogWasActive) {
+        impl_->pcgFogBaseMode = fog->getMode();
+        impl_->pcgFogBaseQuality = fog->getQuality();
+        impl_->pcgFogBaseDensity = fog->getFloat("density");
+        impl_->pcgFogBaseStart = fog->getFloat("fogStart");
+        impl_->pcgFogBaseEnd = fog->getFloat("fogEnd");
+    } else if (!pcgFogActive && impl_->pcgFogWasActive) {
+        fog->setMode(impl_->pcgFogBaseMode);
+        fog->setQuality(impl_->pcgFogBaseQuality);
+        fog->setDensity(impl_->pcgFogBaseDensity);
+        fog->setFogStart(impl_->pcgFogBaseStart);
+        fog->setFogEnd(impl_->pcgFogBaseEnd);
+    }
+    impl_->pcgFogWasActive = pcgFogActive;
+    if (pcg.overrideDensityVolume) {
+        static constexpr float hazeDensity[] = {0.0025f, 0.005f, 0.01f, 0.02f, 0.04f};
+        fog->setMode("fog");
+        fog->setQuality(pcg.densityVolumeTiling < 2 ? "low" :
+                        pcg.densityVolumeTiling < 4 ? "medium" : "high");
+        fog->setFogColor(pcg.densityAlbedoRed, pcg.densityAlbedoGreen,
+                         pcg.densityAlbedoBlue);
+        fog->setDensity(hazeDensity[pcg.densityVolumeEffect] *
+                        pcg.globalDensityMultiplier);
+        fog->setFogStart(0.f);
+        fog->setFogEnd(pcg.densityVolumeDistance);
+    } else if (pcg.overrideFog || hasWeatherOffset) {
+        fog->setMode("fog");
+        fog->setFogColor(pcg.red, pcg.green, pcg.blue);
+        const float modeScale = pcg.mode == 2 ? 1.5f : 1.f;
+        fog->setDensity((pcg.density + pcg.additionalExponentialDensity) *
+                        pcg.globalDensityMultiplier * modeScale);
+        const float start = std::max(0.f, pcg.startDistance + pcg.additionalLinearDistance);
+        fog->setFogStart(start);
+        fog->setFogEnd(std::max(start + 1.f,
+                                pcg.endDistance + pcg.additionalLinearDistance));
+    }
 }
 
 void DayNight::applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) const {
@@ -367,8 +594,19 @@ void DayNight::applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) 
     };
     const Vec3 sun{impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]};
     const float nightAmount = std::clamp((-impl_->elevDeg) / 12.f, 0.f, 1.f);
+    const float skyRotation = deg2rad(
+        impl_->pcgSkybox.enabled ? impl_->pcgSkybox.rotationDegrees : 0.f);
+    const Vec3 skyTint = impl_->pcgSkybox.enabled
+                             ? Vec3{impl_->pcgSkybox.tintRed, impl_->pcgSkybox.tintGreen,
+                                    impl_->pcgSkybox.tintBlue}
+                             : Vec3{1.f, 1.f, 1.f};
     for (int face = 0; face < 6; ++face) {
-        const Vec3 direction = directions[face];
+        Vec3 direction = directions[face];
+        const float rotatedX = direction.x * std::cos(skyRotation) +
+                               direction.z * std::sin(skyRotation);
+        direction.z = -direction.x * std::sin(skyRotation) +
+                      direction.z * std::cos(skyRotation);
+        direction.x = rotatedX;
         const float up = direction.y;
         const Vec3 view{direction.x, std::max(direction.y, 0.002f), direction.z};
         const Vec3 day = atmosphereRadiance(view, sun, impl_->turbidity, impl_->mieStrength);
@@ -383,7 +621,9 @@ void DayNight::applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) 
         color = add(scale(color, 1.f - impl_->weatherCloudiness * 0.82f),
                     scale(overcast, impl_->weatherCloudiness));
         color = add(color, scale(Vec3{0.75f, 0.90f, 1.20f}, impl_->weatherFlash));
-        color = scale(color, impl_->skyExposure);
+        color = scale(color, impl_->pcgSkybox.enabled ? impl_->pcgSkybox.exposure
+                                                       : impl_->skyExposure);
+        color = {color.x * skyTint.x, color.y * skyTint.y, color.z * skyTint.z};
         probe->setSkyFaceColor(face, color.x, color.y, color.z);
         probe->setSkyFaceTexture(face, impl_->skyFaces[static_cast<size_t>(face)]);
         const float linearLuminance =
@@ -502,29 +742,47 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
 
     // Solar elevation: sine curve peaking at noon (hours=12).
     const float frac = (hours - 6.f) / 12.f;  // -1 at 6h, 0 at 12h, +1 at 18h
-    const float elevDeg = kMaxElevationDeg * std::sin(kPi * frac);
-    const float azimDeg = (hours / 24.f) * 360.f;  // full rotation per day
+    float elevDeg = kMaxElevationDeg * std::sin(kPi * frac);
+    float azimDeg = (hours / 24.f) * 360.f;  // full rotation per day
+    if (impl_->manualSun.enabled) {
+        const float pitch = deg2rad(impl_->manualSun.pitchDegrees);
+        const float rotation = deg2rad(impl_->manualSun.rotationDegrees);
+        impl_->sunDir[0] = -std::cos(pitch) * std::sin(rotation);
+        impl_->sunDir[1] = std::sin(pitch);
+        impl_->sunDir[2] = -std::cos(pitch) * std::cos(rotation);
+        elevDeg = std::asin(std::clamp(impl_->sunDir[1], -1.f, 1.f)) * 180.f / kPi;
+        azimDeg = std::atan2(impl_->sunDir[0], impl_->sunDir[2]) * 180.f / kPi;
+        if (azimDeg < 0.f) azimDeg += 360.f;
+    } else {
+        sunDirection(elevDeg, azimDeg, impl_->sunDir[0], impl_->sunDir[1],
+                     impl_->sunDir[2]);
+    }
     impl_->elevDeg = elevDeg;
     impl_->azimDeg = azimDeg;
 
     // Sun energy: ramps up a few degrees above the horizon.
-    impl_->sunEnergy = std::clamp((elevDeg + 6.f) / 14.f, 0.f, 1.f);
+    impl_->sunEnergy = impl_->manualSun.enabled
+                           ? impl_->manualSun.intensity
+                           : std::clamp((elevDeg + 6.f) / 14.f, 0.f, 1.f);
     const float nightAmount = std::clamp((-elevDeg) / 12.f, 0.f, 1.f);
-
-    sunDirection(elevDeg, azimDeg, impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]);
 
     // Push the directional sun (replaces the legacy directional when no other
     // dir Light3D is active; we keep moon as a Light3D instead so it can have
     // different color/intensity than the sun slot).
-    const Vec3 directSun = attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
-                                               impl_->mieStrength);
+    const Vec3 directSun = impl_->manualSun.enabled
+                               ? manualSunColor(impl_->manualSun)
+                               : attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
+                                                    impl_->mieStrength);
     const float weatherSun = 1.f - 0.82f * impl_->weatherCloudiness;
     const Vec3 flashLight{impl_->weatherFlash * 0.75f, impl_->weatherFlash * 0.90f,
                           impl_->weatherFlash * 1.20f};
+    const float globalLight = impl_->pcgAmbient.active
+                                  ? impl_->pcgAmbient.globalLightMultiplier
+                                  : 1.f;
     gfx->setDirectionalLight(impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2],
-                             directSun.x * impl_->sunEnergy * weatherSun + flashLight.x,
-                             directSun.y * impl_->sunEnergy * weatherSun + flashLight.y,
-                             directSun.z * impl_->sunEnergy * weatherSun + flashLight.z);
+                             directSun.x * impl_->sunEnergy * weatherSun * globalLight + flashLight.x,
+                             directSun.y * impl_->sunEnergy * weatherSun * globalLight + flashLight.y,
+                             directSun.z * impl_->sunEnergy * weatherSun * globalLight + flashLight.z);
 
     // Background matches the sky at the horizon for the clear color.
     const float skyR = getSkyR(), skyG = getSkyG(), skyB = getSkyB();
@@ -541,10 +799,17 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
             for (int f = 0; f < 6; ++f) {
                 std::vector<uint8_t> face(
                     size_t(kSkyCubeSize) * size_t(kSkyCubeSize) * 4);
-                fillSkyFace(face, int(kSkyCubeSize), f, impl_->sunDir,
+                const Vec3 tint = impl_->pcgSkybox.enabled
+                                      ? Vec3{impl_->pcgSkybox.tintRed, impl_->pcgSkybox.tintGreen,
+                                             impl_->pcgSkybox.tintBlue}
+                                      : Vec3{1.f, 1.f, 1.f};
+                fillSkyFace(face, int(kSkyCubeSize), f, impl_->sunDir, directSun,
                             impl_->sunEnergy, nightAmount, impl_->turbidity,
-                            impl_->mieStrength, impl_->skyExposure,
-                            impl_->weatherCloudiness, cubeDir);
+                            impl_->mieStrength,
+                            impl_->pcgSkybox.enabled ? impl_->pcgSkybox.exposure : impl_->skyExposure,
+                            impl_->weatherCloudiness,
+                            impl_->pcgSkybox.enabled ? impl_->pcgSkybox.rotationDegrees : 0.f,
+                            tint, cubeDir);
                 impl_->skyFaces[static_cast<size_t>(f)] =
                     gfx->newTexture(int(kSkyCubeSize), int(kSkyCubeSize), face.data());
                 const size_t center =

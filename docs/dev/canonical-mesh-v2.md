@@ -1,4 +1,4 @@
-# Canonical mesh v2 and multiple UV sets
+# Canonical mesh v3, vertex colors, and multiple UV sets
 
 `eve.mesh/2` preserves source UV set identifiers and all supported coordinate
 streams. There is no fixed UV0/UV1/UV2 array size. Channel descriptors and numeric
@@ -26,6 +26,18 @@ VEC2 accessors are converted to float32 using division by 255/65535, respectivel
 Source strides and offsets are honored. Signed, unnormalized integer, mismatched
 count and malformed semantic names are rejected. Tangents and morph targets are
 outside this change.
+
+
+## Version 3 vertex colors
+
+EVE mesh schema 3 and EVMESH binary version 3 add flag bit 1 and an optional linear
+RGBA float4 after all UV values in each interleaved vertex. The encoder emits v3;
+the decoder retains v1/v2 compatibility and rejects the color flag on v2. Color
+length, finite values, byte budgets, and exact payload size are validated before
+publication. A colored asset is uploaded only through uploadMeshColored; a
+provider without that capability returns Unsupported before it can silently
+drop the stream. Vulkan and WebGPU bind color at vertex location 5 and multiply
+it into the existing material/object tint, preserving locations 3/4 for skinning.
 
 ## Material bindings
 

@@ -16,12 +16,16 @@ namespace eve::procgen {
  * `TerrainAsset::bake` (UNORM16 heights plus hydrology and climate layers).
  * `Evtrn` is the raw float32 `heightfield.bin` payload written next to an
  * `eve.terrain/1` asset definition. They are unrelated blobs, so the format is
- * normally detected from the magic rather than named by the caller.
+ * normally detected from the magic rather than named by the caller. Pcg RAW
+ * variants have no magic and therefore require an explicit format selector.
  */
 enum class TerrainFileFormat : std::uint8_t {
     Auto,  ///< Detect from the leading magic bytes.
     Evtr,  ///< Chunked EVTR archive.
-    Evtrn  ///< Raw EVTRN heightfield blob.
+    Evtrn,   ///< Raw EVTRN heightfield blob.
+    Raw8,    ///< Headerless square 8-bit Pcg RAW samples.
+    Raw16LE, ///< Headerless square 16-bit little-endian (IBM) Pcg RAW samples.
+    Raw16BE  ///< Headerless square 16-bit big-endian (Mac) Pcg RAW samples.
 };
 
 /**
@@ -44,7 +48,7 @@ struct DecodedTerrainFile {
 /**
  * @brief Parse a format selector from a script-facing string.
  *
- * @param name "auto", "evtr" or "evtrn" (case-insensitive); anything else maps to
+ * @param name "auto", "evtr", "evtrn", "raw8", "raw16le" or "raw16be" (case-insensitive); anything else maps to
  *             `TerrainFileFormat::Auto`.
  * @return The parsed selector.
  */

@@ -15,7 +15,13 @@ layout(location=3) out vec3 vWorldPos;
 layout(location=4) out vec3 vCameraPos;
 layout(location=5) out vec3 vViewPos;
 
+vec2 waveDirection(vec2 value){
+    float angle=radians(fract(u.data[5])*720.0),c=cos(angle),s=sin(angle);
+    return mat2(c,-s,s,c)*value;
+}
+
 float waveHeight(vec2 worldXZ){
+    worldXZ=waveDirection(worldXZ);
     float scale=max(u.data[3],.01)*.72;
     float time=u.data[0]*u.data[1];
     float primary=sin(dot(worldXZ,vec2(.91,.31))*scale+time*1.45);

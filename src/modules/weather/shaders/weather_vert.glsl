@@ -32,7 +32,7 @@ void main() {
     // 12 = particle kind: rain 0, snow 1, wind 2.
     float kind = u.data[12];
     float phase = hash12(inPos.xz * 0.5 + vec2(floor(inPos.y * 0.7), 13.0));
-    float speed = max(u.data[3] * inNormal.z, 0.01);
+    float speed = u.data[3] * inNormal.z;
     vec3 velocity = vec3(u.data[1], -speed, u.data[2]);
     vec3 base = inPos + vec3(u.data[13], -speed * u.data[0], u.data[14]);
     if (kind > 1.5) base = inPos; // Wind strands stay anchored; only their light moves.

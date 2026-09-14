@@ -57,4 +57,29 @@ std::vector<std::string> Scene::collectFrustumIdsAt(const std::string &hostName,
     return out;
 }
 
+Result<int> Scene::applyPcgTerrainCullingAt(const std::string &hostName,graphics::Camera3D *cam,
+                                             float viewW,float viewH,const std::string &tag) {
+    SceneHost *host=resolveHost(hostName);
+    if(!host||!cam||!std::isfinite(viewW)||!std::isfinite(viewH)||viewW<=0.f||viewH<=0.f||tag.empty())
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "Pcg terrain culling requires host, camera, positive viewport and tag","scene.pcgTerrainCulling"));
+    auto d=cam->data();
+    const glm::mat4 view=glm::lookAtRH(glm::vec3(d->eyeX,d->eyeY,d->eyeZ),
+        glm::vec3(d->targetX,d->targetY,d->targetZ),glm::vec3(d->upX,d->upY,d->upZ));
+    const glm::mat4 projection=graphics::cameraProjectionVulkanRH_ZO(d->orthographic,
+        glm::radians(d->fovYDeg),d->orthoHeight,viewW/viewH,d->nearZ,d->farZ);
+    const glm::mat4 clip=projection*view, inverse=glm::inverse(clip);
+    std::vector<std::pair<std::string,bool>> changes;
+    host->walkDepthFirst([&](SceneHost*,int,SceneNode& node){
+        if(!node.hasBounds||std::find(node.tags.begin(),node.tags.end(),tag)==node.tags.end()) return;
+        const bool visible=aabbIntersectsFrustum(clip,inverse,worldBoundsOf(node));
+        if(node.visible!=visible) changes.emplace_back(node.id,visible);
+    });
+    for(const auto& [id,visible]:changes) {
+        auto node=host->findById(id); if(!node) continue;
+        node.value()->visible=visible; host->markSubtreeDirtyById(id);
+    }
+    return Result<int>::success(static_cast<int>(changes.size()));
+}
+
 }  // namespace eve::scene

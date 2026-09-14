@@ -2,7 +2,9 @@
 #include "zeroerr/unittest.h"
 
 #include "audio/Audio.h"
+#include "audio/AudioZone.h"
 #include "audio/Source.h"
+#include "audio/UnderwaterAudio.h"
 #include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
@@ -16,6 +18,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <thread>
 #include <vector>
@@ -92,6 +95,51 @@ TEST_CASE("audio.staticSource.playStop") {
     CHECK(!src->isPlaying());
     delete src;
     delete sd;
+}
+
+TEST_CASE("audio.underwater.transitionsAndAtomicValidation") {
+    auto *audio = tryCreateAudio();
+    if (!audio) return;
+    auto *sd = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto *down = audio->newSource(sd);
+    auto *up = audio->newSource(sd);
+    auto *ambience = audio->newSource(sd);
+
+    CHECK(!eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 1.5F));
+    CHECK(!down->isPlaying());
+    CHECK(!ambience->isPlaying());
+    REQUIRE(static_cast<bool>(
+        eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F)));
+    CHECK(down->isPlaying());
+    CHECK(ambience->isPlaying());
+    CHECK(ambience->isLooping());
+    CHECK(ambience->getVolume() == 0.35F);
+
+    REQUIRE(static_cast<bool>(
+        eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F)));
+    CHECK(up->isPlaying());
+    CHECK(!ambience->isPlaying());
+
+    delete ambience;
+    delete up;
+    delete down;
+    delete sd;
+}
+
+TEST_CASE("audio.pcgZone.outputDrivesRealSource") {
+    auto *audio = tryCreateAudio();
+    if (!audio) return;
+    auto *sd = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto *source = audio->newSource(sd);
+    eve::audio::AudioZoneOutput command; command.play=true; command.volume=.35f;
+    REQUIRE(eve::audio::applyAudioZoneOutput(source,command).ok());
+    CHECK(source->isPlaying()); CHECK(source->getVolume()==.35f);
+    command.play=false; command.stop=true; command.volume=0.f;
+    REQUIRE(eve::audio::applyAudioZoneOutput(source,command).ok());
+    CHECK(!source->isPlaying());
+    command.volume=std::numeric_limits<float>::quiet_NaN();
+    CHECK(!eve::audio::applyAudioZoneOutput(source,command).ok());
+    delete source; delete sd;
 }
 
 TEST_CASE("audio.streamSource.pump") {

@@ -134,7 +134,7 @@ void requestSceneColorForRefraction(graphics::Graphics& graphics, MeshEffectInst
         case graphics::Graphics::Mesh3DSceneColorCaptureStatus::ExplicitOverride:
         case graphics::Graphics::Mesh3DSceneColorCaptureStatus::Scheduled:
         case graphics::Graphics::Mesh3DSceneColorCaptureStatus::Captured:
-        case graphics::Graphics::Mesh3DSceneColorCaptureStatus::HistoryFallback:
+        case graphics::Graphics::Mesh3DSceneColorCaptureStatus::HistoryReuse:
         case graphics::Graphics::Mesh3DSceneColorCaptureStatus::Unavailable:
             break;
     }

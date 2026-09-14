@@ -129,8 +129,8 @@ TEST_CASE("asset.migration.meshV1PreservesIdentityAndUvMetadata") {
     auto migrated = migrateEvaArchive(original);
     REQUIRE(migrated.ok());
     REQUIRE_EQ(migrated.value().manifest.assets.front().asset, ref);
-    REQUIRE_EQ(migrated.value().manifest.assets.front().schemaVersion, SchemaVersion(2));
-    REQUIRE_EQ(migrated.value().manifest.dependencies.front().expectedType, std::string("eve.mesh/2"));
+    REQUIRE_EQ(migrated.value().manifest.assets.front().schemaVersion, SchemaVersion(3));
+    REQUIRE_EQ(migrated.value().manifest.dependencies.front().expectedType, std::string("eve.mesh/3"));
     auto value = Value::fromJson(
         std::string(migrated.value().entries.front().bytes.begin(), migrated.value().entries.front().bytes.end()));
     REQUIRE(value.ok());
@@ -138,5 +138,7 @@ TEST_CASE("asset.migration.meshV1PreservesIdentityAndUvMetadata") {
     REQUIRE(!object.contains("texcoord0"));
     REQUIRE_EQ(object.at("texcoordSets").getIf<Value::Array>()->at(0).asInt(), int64_t(0));
     REQUIRE_EQ(object.at("vendorExtension").asInt(), int64_t(42));
+    REQUIRE(!object.at("colors").asBool());
+    REQUIRE_EQ(object.at("schemaVersion").asInt(), int64_t(3));
     REQUIRE_EQ(original.entries.front().bytes, std::vector<uint8_t>(text.begin(), text.end()));
 }

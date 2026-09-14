@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Result.h"
+
 #include <cstdint>
 #include <vector>
 
@@ -33,6 +35,16 @@ public:
     float getSelectionHysteresis() const { return selectionHysteresis_; }
     /** @brief Return published candidates considered by the most recent camera update. */
     int getLastCandidateCount() const { return lastCandidateCount_; }
+    /** @brief Enable Pcg-style hard camera-distance qualification. */
+    void setDistanceCullingEnabled(bool enabled) { distanceCullingEnabled_ = enabled; }
+    /** @brief Return whether hard camera-distance qualification is enabled. */
+    bool getDistanceCullingEnabled() const { return distanceCullingEnabled_; }
+    /** @brief Set the positive Pcg probe render distance; failure preserves the previous value. */
+    [[nodiscard]] Result<void> setMaxRenderDistance(float distance);
+    /** @brief Return the Pcg probe render distance. */
+    float getMaxRenderDistance() const { return maxRenderDistance_; }
+    /** @brief Return probes rejected by the last camera update's hard distance test. */
+    int getLastDistanceCulledCount() const { return lastDistanceCulledCount_; }
     /**
      * @brief Queue coherent recapture for probes whose capture mask intersects @p changedMask.
      * @return Number of probes marked dirty.
@@ -63,6 +75,7 @@ private:
         ReflectionProbeCapture *probe = nullptr;
         uint64_t order = 0;
         uint32_t waitAge = 0;
+        bool distanceCulled = false;
     };
 
     std::vector<Entry> entries_;
@@ -71,6 +84,9 @@ private:
     int lastCapturedFaceCount_ = 0;
     int lastPublishedCount_ = 0;
     int lastCandidateCount_ = 0;
+    int lastDistanceCulledCount_ = 0;
+    bool distanceCullingEnabled_ = false;
+    float maxRenderDistance_ = 650.f;
     float selectionHysteresis_ = 0.75f;
     std::vector<ReflectionProbeCapture *> lastSelected_;
 };

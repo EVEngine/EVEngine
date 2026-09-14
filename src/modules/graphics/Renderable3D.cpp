@@ -197,6 +197,41 @@ void Renderable3D::setMeshLod(int index, Mesh* mesh, float switchDistance) {
     if (index == 0 && mesh) mr->mesh = mesh;
 }
 
+void Renderable3D::MeshRenderer::lodBlendForDistance(float distance, int& primary, int& secondary,
+                                                      float& secondaryWeight) const {
+    primary = lodLevelForDistance(distance);
+    secondary = -1;
+    secondaryWeight = 0.f;
+    if (lodFadeMode == 0 || lodCount <= 0) return;
+    if (lodAnimateCrossFading && lodAnimatedCurrent != -2) {
+        primary = lodAnimatedPrevious == -2 ? lodAnimatedCurrent : lodAnimatedPrevious;
+        secondary = lodAnimatedCurrent;
+        secondaryWeight = std::clamp(lodAnimatedProgress, 0.f, 1.f);
+        if (primary == secondary || secondaryWeight >= 1.f) {
+            primary = secondary;
+            secondary = -1;
+            secondaryWeight = 0.f;
+        }
+        return;
+    }
+    for (int level = 0; level < lodCount; ++level) {
+        const float boundary = level + 1 < lodCount ? lodDistances[level] : lodCullDistance;
+        if (!(boundary > 0.f)) continue;
+        const float start = level == 0 ? 0.f : lodDistances[level - 1];
+        const float width = (boundary - start) * std::clamp(lodFadeWidths[level], 0.f, 1.f);
+        if (width > 0.f && distance >= boundary - width && distance < boundary) {
+            primary = level;
+            secondary = level + 1 < lodCount ? level + 1 : -1;
+            secondaryWeight = std::clamp((distance - (boundary - width)) / width, 0.f, 1.f);
+            return;
+        }
+    }
+}
+
+void Renderable3D::setMeshLodCullDistance(float distance) {
+    meshRenderer()->lodCullDistance = std::isfinite(distance) && distance > 0.f ? distance : 0.f;
+}
+
 void Renderable3D::clearMeshLod() {
     auto mr      = meshRenderer();
     mr->lodCount = 0;
@@ -207,5 +242,124 @@ int Renderable3D::getMeshLodCount() { return meshRenderer()->lodCount; }
 
 int Renderable3D::getMeshLodLevelAtDistance(float distance) { return meshRenderer()->lodLevelForDistance(distance); }
 
+
+Result<void> Renderable3D::setMeshLodRendererState(int index, int skinQuality, int shadowCastingMode,
+                                                   bool receiveShadows, int motionVectorMode,
+                                                   bool skinnedMotionVectors, int lightProbeUsage,
+                                                   int reflectionProbeUsage) {
+    const bool validSkin = skinQuality == 0 || skinQuality == 1 || skinQuality == 2 || skinQuality == 4;
+    const bool validLight = lightProbeUsage == 0 || lightProbeUsage == 1 || lightProbeUsage == 2 ||
+                            lightProbeUsage == 4;
+    if (index < 0 || index >= MeshRenderer::kMaxLodLevels || !validSkin || shadowCastingMode < 0 ||
+        shadowCastingMode > 3 || motionVectorMode < 0 || motionVectorMode > 2 || !validLight ||
+        reflectionProbeUsage < 0 || reflectionProbeUsage > 2)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "mesh LOD renderer state is invalid", "graphics.renderable3d.lod"));
+    auto& state = meshRenderer()->lodRendererStates[index];
+    state.configured = true;
+    state.skinQuality = skinQuality;
+    state.shadowCastingMode = shadowCastingMode;
+    state.receiveShadows = receiveShadows;
+    state.motionVectorMode = motionVectorMode;
+    state.skinnedMotionVectors = skinnedMotionVectors;
+    state.lightProbeUsage = lightProbeUsage;
+    state.reflectionProbeUsage = reflectionProbeUsage;
+    return Result<void>::success();
+}
+
+Result<void> Renderable3D::setMeshLodFadeWidth(int index, float width) {
+    if (index < 0 || index >= MeshRenderer::kMaxLodLevels || !std::isfinite(width) || width < 0.f || width > 1.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "mesh LOD fade width is invalid", "graphics.renderable3d.lod"));
+    meshRenderer()->lodFadeWidths[index] = width;
+    return Result<void>::success();
+}
+
+Result<void> Renderable3D::setMeshLodFadePolicy(int mode, bool animate, float duration) {
+    if (mode < 0 || mode > 2 || !std::isfinite(duration) || duration <= 0.f || (animate && mode == 0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "mesh LOD fade policy is invalid", "graphics.renderable3d.lod"));
+    auto mr = meshRenderer();
+    mr->lodFadeMode = mode;mr->lodAnimateCrossFading = animate;mr->lodCrossFadeDuration = duration;
+    mr->lodAnimatedCurrent = -2;mr->lodAnimatedPrevious = -2;mr->lodAnimatedProgress = 1.f;
+    return Result<void>::success();
+}
+
+int Renderable3D::getMeshLodRendererState(int index, int field) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= mr->lodCount || field < 0 || field > 6) return -1;
+    const auto& state = mr->lodRendererStates[index];
+    switch (field) {
+        case 0: return state.skinQuality;
+        case 1: return state.shadowCastingMode;
+        case 2: return state.receiveShadows ? 1 : 0;
+        case 3: return state.motionVectorMode;
+        case 4: return state.skinnedMotionVectors ? 1 : 0;
+        case 5: return state.lightProbeUsage;
+        case 6: return state.reflectionProbeUsage;
+        default: return -1;
+    }
+}
+
+Result<void> Renderable3D::advanceMeshLodTransition(float distance, float dt) {
+    if (!std::isfinite(distance) || distance < 0.f || !std::isfinite(dt) || dt < 0.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "mesh LOD transition inputs are invalid", "graphics.renderable3d.lod"));
+    auto mr = meshRenderer();const int target = mr->lodLevelForDistance(distance);
+    if (mr->lodAnimatedCurrent == -2) {mr->lodAnimatedCurrent=target;mr->lodAnimatedProgress=1.f;return Result<void>::success();}
+    if (target != mr->lodAnimatedCurrent) {
+        mr->lodAnimatedPrevious=mr->lodAnimatedCurrent;mr->lodAnimatedCurrent=target;mr->lodAnimatedProgress=0.f;
+    }
+    if (mr->lodAnimatedPrevious != -2 && mr->lodAnimatedPrevious != mr->lodAnimatedCurrent) {
+        mr->lodAnimatedProgress=std::min(1.f,mr->lodAnimatedProgress+dt/mr->lodCrossFadeDuration);
+        if (mr->lodAnimatedProgress>=1.f)mr->lodAnimatedPrevious=-2;
+    }
+    return Result<void>::success();
+}
+
+int Renderable3D::getMeshLodSecondaryLevelAtDistance(float distance) {
+    int primary=-1,secondary=-1;float weight=0.f;meshRenderer()->lodBlendForDistance(distance,primary,secondary,weight);
+    return secondary;
+}
+
+float Renderable3D::getMeshLodSecondaryWeightAtDistance(float distance) {
+    int primary=-1,secondary=-1;float weight=0.f;meshRenderer()->lodBlendForDistance(distance,primary,secondary,weight);
+    return weight;
+}
+
+float Renderable3D::getMeshLodCullDistance() { return meshRenderer()->lodCullDistance; }
+
+void Renderable3D::setLayer(int layer) {
+    EV_PARAM_CHECK(layer >= 0, "layer must be in [0,31]");
+    EV_PARAM_CHECK(layer < 32, "layer must be in [0,31]");
+    meshRenderer()->layer = layer;
+}
+
+int Renderable3D::getLayer() { return meshRenderer()->layer; }
+
+Result<void> Renderable3D::setCustomLightProbe(float r, float g, float b) {
+    if (!std::isfinite(r) || !std::isfinite(g) || !std::isfinite(b) || r < 0.f || g < 0.f || b < 0.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "custom light probe irradiance must be finite and nonnegative", "graphics.renderable3d.lightProbe"));
+    meshRenderer()->customLightProbe = true;
+    meshRenderer()->customLightProbeSh = {};
+    constexpr float kY00 = 0.2820947918f;
+    meshRenderer()->customLightProbeSh[0] = glm::vec4(r / kY00, g / kY00, b / kY00, 0.f);
+    return Result<void>::success();
+}
+
+Result<void> Renderable3D::setCustomLightProbeCoefficient(int coefficient, float r, float g, float b) {
+    if (coefficient < 0 || coefficient >= 9 || !std::isfinite(r) || !std::isfinite(g) || !std::isfinite(b))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "custom light probe coefficient requires index 0..8 and finite RGB", "graphics.renderable3d.lightProbe"));
+    meshRenderer()->customLightProbe = true;
+    meshRenderer()->customLightProbeSh[static_cast<size_t>(coefficient)] = glm::vec4(r, g, b, 0.f);
+    return Result<void>::success();
+}
+
+void Renderable3D::clearCustomLightProbe() {
+    meshRenderer()->customLightProbe = false;
+    meshRenderer()->customLightProbeSh = {};
+}
 
 }  // namespace eve::graphics

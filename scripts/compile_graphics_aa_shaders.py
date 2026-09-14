@@ -22,6 +22,7 @@ FRAGS = [
     "exposure_adapt.frag",
     "exposure_apply.frag",
     "depth_pyramid_downsample.frag",
+    "depth_of_field.frag",
     "aa_nfaa.frag",
     "aa_taa.frag",
 ]

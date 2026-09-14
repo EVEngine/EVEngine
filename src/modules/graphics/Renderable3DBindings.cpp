@@ -74,6 +74,7 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("getParallaxMinLayers", &Renderable3D::getParallaxMinLayers);
     ent.addFunc("getParallaxMaxLayers", &Renderable3D::getParallaxMaxLayers);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
+    ent.addFunc("getVisible", &Renderable3D::getVisible);
     ent.addFunc("setReflectionCaptureMask", &Renderable3D::setReflectionCaptureMask);
     ent.addFunc("getReflectionCaptureMask", &Renderable3D::getReflectionCaptureMask);
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
