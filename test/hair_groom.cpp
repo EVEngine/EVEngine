@@ -348,6 +348,16 @@ TEST_CASE("graphics.hair.groomInstanceMultiGroupAndMarschner") {
     CHECK_EQ(groom->getMarschnerTT(), 0.2f);
     CHECK_EQ(groom->getMarschnerTRT(), 0.f);
 
+    CHECK(groom->getShader()->hasUniform("selfShadowStrength"));
+    groom->setSelfShadow(0.6f, 0.2f, 0.5f);
+    CHECK_EQ(groom->getSelfShadowStrength(), 0.6f);
+    CHECK_EQ(groom->getSelfShadowBias(), 0.2f);
+    CHECK_EQ(groom->getRootAoStrength(), 0.5f);
+    groom->setSelfShadow(-1.f, 2.f, -0.5f);
+    CHECK_EQ(groom->getSelfShadowStrength(), 0.f);
+    CHECK_EQ(groom->getSelfShadowBias(), 1.f);
+    CHECK_EQ(groom->getRootAoStrength(), 0.f);
+
     gfx->begin3DFrame();
     groom->draw(glm::mat4(1.f));
     gfx->present();

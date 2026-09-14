@@ -1,8 +1,12 @@
 #version 450
-// Anisotropic hair / fur card fragment (Kajiya-Kay + Marschner-ish lobe weights).
+// Anisotropic hair / fur card fragment (Kajiya-Kay + Marschner-ish lobes + cheap self-shadow).
 // Push: data[0]=specExp, [1]=specStrength, [2]=primaryShift, [3]=secondaryShift,
 //       [4]=alphaCutoff, [5]=rimStrength, [6..8]=strandDir (unused in frag),
-//       [9]=marschnerR, [10]=marschnerTT, [11]=marschnerTRT.
+//       [9]=marschnerR, [10]=marschnerTT, [11]=marschnerTRT,
+//       [12]=selfShadowStrength, [13]=selfShadowBias, [14]=rootAoStrength.
+//
+// Self-shadow is an analytical fiber term + along-strand root AO — not a deep
+// shadow map / transmittance volume (see design doc vs UE groom shadows).
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -46,6 +50,9 @@ void main() {
     float lobeR = max(u.data[9], 0.0);
     float lobeTT = max(u.data[10], 0.0);
     float lobeTRT = max(u.data[11], 0.0);
+    float selfStr = clamp(u.data[12], 0.0, 1.0);
+    float selfBias = clamp(u.data[13], 0.0, 1.0);
+    float rootAoStr = clamp(u.data[14], 0.0, 1.0);
 
     // Shifted tangents approximate Marschner R / TT longitudinal lobes.
     vec3 T1 = normalize(T + shift1 * N);
@@ -63,6 +70,11 @@ void main() {
     vec3 specCol = vec3(r + tt + trt) * specStr * min(vLightColor, vec3(1.5));
     vec3 rim = pow(clamp(1.0 - max(dot(N, V), 0.0), 0.0, 1.0), 3.0) * rimStr * base.rgb;
 
-    vec3 lit = diffuse * min(vLightColor, vec3(1.2)) + specCol + rim;
+    // Analytical fiber self-shadow (depth-bias style wrap); UV.y is strand u.
+    float fiberShadow = mix(1.0, smoothstep(-selfBias, 1.0 - selfBias, dot(N, L)), selfStr);
+    float rootAo = mix(1.0, pow(clamp(vUV.y, 0.0, 1.0), 1.25), rootAoStr);
+    float shadow = clamp(fiberShadow * rootAo, 0.0, 1.0);
+
+    vec3 lit = (diffuse * min(vLightColor, vec3(1.2)) + specCol + rim) * shadow;
     outColor = vec4(clamp(lit, 0.0, 1.0), base.a);
 }

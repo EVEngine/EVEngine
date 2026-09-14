@@ -25,8 +25,8 @@ namespace hair {
  *
  * Rebuilds all groups into one combined ribbon mesh (per-group LOD + optional
  * cluster cull). Geometric Cards LOD remains owned by `graphics/HairCards`
- * (separate PR). Phase 3 exposes Marschner R/TT/TRT lobe weights on the hair
- * shader push constants.
+ * (separate PR). Phase 3 exposes Marschner R/TT/TRT lobe weights and a cheap
+ * analytical self-shadow / root AO on the hair shader push constants.
  *
  * Caller owns the instance; Graphics owns Mesh / Shader / Texture.
  *
@@ -92,6 +92,18 @@ public:
     [[nodiscard]] float getMarschnerTT() const;
     [[nodiscard]] float getMarschnerTRT() const;
 
+    /**
+     * @brief Cheap analytical self-shadow (fiber wrap + along-strand root AO).
+     *
+     * Not a deep shadow map / transmittance volume — see design doc vs UE
+     * groom deep shadows. Strength / bias / rootAo are clamped to [0,1].
+     * Defaults: 0.35 / 0.25 / 0.3. Set strength to 0 to disable.
+     */
+    void setSelfShadow(float strength, float bias, float rootAo);
+    [[nodiscard]] float getSelfShadowStrength() const;
+    [[nodiscard]] float getSelfShadowBias() const;
+    [[nodiscard]] float getRootAoStrength() const;
+
     /** @brief Rebuild GPU ribbon mesh from all groups (LOD + optional visibility). */
     [[nodiscard]] Result<void> rebuild();
 
@@ -139,6 +151,9 @@ private:
     float marschnerR_ = 1.f;
     float marschnerTT_ = 0.45f;
     float marschnerTRT_ = 0.25f;
+    float selfShadowStrength_ = 0.35f;
+    float selfShadowBias_ = 0.25f;
+    float rootAoStrength_ = 0.3f;
     bool clusterCulling_ = false;
     glm::vec3 sideHint_{1.f, 0.f, 0.f};
     glm::mat4 lastModel_{1.f};

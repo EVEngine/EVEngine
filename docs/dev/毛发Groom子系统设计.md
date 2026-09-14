@@ -256,7 +256,7 @@ public:
 ### Phase 3 — 着色与阴影增强
 
 - [x] 在现有 Kajiya-Kay 上增加 Marschner 近似推常量（R/TT/TRT 简化）  
-- [ ] 可选简单自阴影（屏幕空间或深度偏移）；文档说明与 UE deep shadow 差距  
+- [x] 可选简单自阴影（分析型 fiber wrap + root AO 推常量）；文档说明与 UE deep shadow 差距  
 
 ### Phase 4 — Binding / Guides
 
@@ -358,5 +358,15 @@ public:
 - Hair shader：`marschnerR` / `marschnerTT` / `marschnerTRT`（push `data[9..11]`），GLSL + WGSL + SPIR-V 同步；`setMarschnerLobes` / getters + 脚本绑定
 - 测试：`appendRibbonMeshRebasesIndices`、`groomAssetMultiGroup`、`groomInstanceMultiGroupAndMarschner`；HairShader param 计数 9→12
 
-未做：自阴影（Phase 3 剩余）、Cards 接线（等 PR #400）。
+未做：Cards 接线（等 PR #400）。
+
+### 2026-09-14 — Phase 3 自阴影收尾
+
+- Hair shader push `data[12..14]`：`selfShadowStrength` / `selfShadowBias` / `rootAoStrength`
+- 分析型自阴影：`smoothstep` 包裹 N·L + 沿丝 `UV.y` root AO（**不是** deep shadow map / 透射体积）
+- `GroomInstance::setSelfShadow` + 脚本绑定；默认 0.35 / 0.25 / 0.3，strength=0 关闭
+- 与 UE groom deep shadow / virtual shadow map 差距：无发丝密度体积、无级联深度、无屏幕空间透射；仅作近景卡片的廉价接触暗化
+
+下一步：与 HairCards（PR #400）合并后接线 `Representation::Cards`；再进入 §7 Phase 4 Binding/Guides。
+
 

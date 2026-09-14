@@ -165,6 +165,19 @@ float GroomInstance::getMarschnerTT() const { return marschnerTT_; }
 
 float GroomInstance::getMarschnerTRT() const { return marschnerTRT_; }
 
+void GroomInstance::setSelfShadow(float strength, float bias, float rootAo) {
+    selfShadowStrength_ = std::clamp(strength, 0.f, 1.f);
+    selfShadowBias_ = std::clamp(bias, 0.f, 1.f);
+    rootAoStrength_ = std::clamp(rootAo, 0.f, 1.f);
+    applyShadingParams();
+}
+
+float GroomInstance::getSelfShadowStrength() const { return selfShadowStrength_; }
+
+float GroomInstance::getSelfShadowBias() const { return selfShadowBias_; }
+
+float GroomInstance::getRootAoStrength() const { return rootAoStrength_; }
+
 Mesh *GroomInstance::getMesh() const { return mesh_; }
 
 Shader *GroomInstance::getShader() const { return shader_; }
@@ -207,6 +220,9 @@ void GroomInstance::applyShadingParams() {
     shader_->sendFloat("marschnerR", marschnerR_);
     shader_->sendFloat("marschnerTT", marschnerTT_);
     shader_->sendFloat("marschnerTRT", marschnerTRT_);
+    shader_->sendFloat("selfShadowStrength", selfShadowStrength_);
+    shader_->sendFloat("selfShadowBias", selfShadowBias_);
+    shader_->sendFloat("rootAoStrength", rootAoStrength_);
 }
 
 Result<void> GroomInstance::ensureDrawResources() {
