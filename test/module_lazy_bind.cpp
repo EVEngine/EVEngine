@@ -127,6 +127,22 @@ TEST_CASE("moduleExpose.allBindingsPreserveScriptEcsOverrides") {
     )", "lazy-script-ecs.nut");
 }
 
+TEST_CASE("moduleExpose.hostSystemSlotDoesNotAcceptStdlibFunction") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    ModuleManager::expose(runtime);
+    REQUIRE(ModuleManager::expose_pending() >= 0);
+    runtime.runSource(R"(
+        function moduleSlotLive(slot) {
+            return slot in getroottable() && getroottable()[slot] != null &&
+                   typeof getroottable()[slot] == "instance"
+        }
+        if (moduleSlotLive("system")) throw "stdlib system function was accepted as a module instance"
+        system <- eve.HostSystem()
+        if (!moduleSlotLive("system")) throw "HostSystem instance was not accepted"
+        system.limitFrame()
+    )", "host-system-slot-collision.nut");
+}
+
 TEST_CASE("moduleExpose.allBindingsPreserveRenderable3DSurface") {
     Runtime runtime(1024, ssq::Libs::ALL);
     ModuleManager::expose(runtime);
@@ -138,6 +154,9 @@ TEST_CASE("moduleExpose.allBindingsPreserveRenderable3DSurface") {
         renderable.clearMeshLod()
         renderable.setPosition(1.0, 2.0, 3.0)
         renderable.setRoughness(0.8)
+        renderable.setPackedNormalMask(true)
+        renderable.setLayer(8)
+        if (renderable.getLayer() != 8) throw "Renderable3D layer binding was lost"
         renderable.setCastShadow(true)
         renderable.setReceiveShadow(true)
     )", "lazy-graphics-3d.nut");

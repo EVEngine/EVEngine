@@ -39,6 +39,7 @@ class Graphics;
 class Texture;
 class Mesh;
 class Shader;
+class Renderable3D;
 }  // namespace eve::graphics
 
 namespace eve::image {
@@ -51,6 +52,8 @@ class ByteData;
 
 namespace eve::procgen {
 struct PbrTextureSet;
+class GtsTerrainLodSet;
+class PcgMeshLodSet;
 
 /** @brief Handle domain for module-owned procedural parameter objects. */
 struct ProcgenParamsHandleTag {};
@@ -735,6 +738,40 @@ public:
     /** @brief Upload a CPU mesh and return a Graphics-owned borrowed mesh. */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> uploadMeshBorrowed(const MeshBuild    &mesh,
                                                                            graphics::Graphics &gfx);
+    /**
+     * @brief Upload and atomically attach one GTS tile's LOD chain to a renderable.
+     * @param lods Immutable generated or restored LOD set.
+     * @param tileIndex Row-major non-empty tile index.
+     * @param renderable Borrowed renderable updated only after every mesh upload succeeds.
+     * @param gfx Graphics owner that retains all uploaded meshes.
+     * @param worldDiameter World-space bounds diameter used to convert screen thresholds.
+     * @param verticalFovDegrees Camera vertical field of view.
+     * @param originX Parent terrain X position added to the tile pivot offset.
+     * @param originY Parent terrain Y position.
+     * @param originZ Parent terrain Z position added to the tile pivot offset.
+     * @return Success, or a structured validation/upload failure with the renderable unchanged.
+     * @thread Main/render thread only.
+     * @reentrant Not reentrant for the same renderable or Graphics owner.
+     */
+    [[nodiscard]] eve::Result<void> configureGtsTerrainTileLods(
+        const GtsTerrainLodSet& lods, int tileIndex, graphics::Renderable3D& renderable,
+        graphics::Graphics& gfx, float worldDiameter, float verticalFovDegrees,
+        float originX = 0.f, float originY = 0.f, float originZ = 0.f);
+    /**
+     * @brief Upload and atomically attach one generic Pcg mesh LOD chain.
+     * @param lods Immutable CPU LOD set; no reference is retained.
+     * @param renderable Borrowed renderable updated only after every upload succeeds.
+     * @param gfx Graphics owner that retains uploaded meshes beyond this call.
+     * @param worldDiameter Positive world-space bounds diameter used for screen thresholds.
+     * @param verticalFovDegrees Camera vertical field of view in the open interval (0,180).
+     * @return Success, or a structured validation/upload failure with the renderable unchanged.
+     * @thread Main/render thread only.
+     * @reentrant Not reentrant for the same renderable or Graphics owner; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> configurePcgMeshLods(const PcgMeshLodSet& lods,
+                                                           graphics::Renderable3D& renderable,
+                                                           graphics::Graphics& gfx, float worldDiameter,
+                                                           float verticalFovDegrees);
     /** @brief Build + upload to GPU Mesh (owned by Graphics). */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> generateMeshBorrowed(const std::string     &recipeId,
                                                                              ProcgenParamsHandleRef params,

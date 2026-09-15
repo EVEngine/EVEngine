@@ -38,6 +38,43 @@ bool startsWith(std::span<const std::uint8_t> bytes, const std::uint8_t *magic, 
     return bytes.size() >= size && std::memcmp(bytes.data(), magic, size) == 0;
 }
 
+eve::Result<DecodedTerrainFile> decodePcgRaw(std::span<const std::uint8_t> bytes, TerrainFileFormat format) {
+    const std::size_t bytesPerSample = format == TerrainFileFormat::Raw8 ? 1u : 2u;
+    if (bytes.empty() || bytes.size() % bytesPerSample != 0)
+        return terrainFileFailure(eve::DiagnosticCode::InvalidArgument,
+                                  "Pcg RAW byte length does not match its bit depth", "raw");
+    const std::size_t samples = bytes.size() / bytesPerSample;
+    const std::size_t resolution = std::size_t(std::sqrt(double(samples)));
+    if (resolution == 0 || resolution > kMaximumDimension || resolution * resolution != samples)
+        return terrainFileFailure(eve::DiagnosticCode::InvalidArgument,
+                                  "Pcg RAW payload must contain an exact square sample count", "raw");
+    DecodedTerrainFile decoded;
+    decoded.heightmap.resize(int(resolution), int(resolution));
+    decoded.hasSpacing = false;
+    decoded.format = format == TerrainFileFormat::Raw8 ? "raw8" :
+                     format == TerrainFileFormat::Raw16LE ? "raw16le" : "raw16be";
+    float minimum = 1.F, maximum = 0.F;
+    std::size_t cursor = 0;
+    for (std::size_t x = 0; x < resolution; ++x)
+        for (std::size_t y = 0; y < resolution; ++y) {
+            float value;
+            if (bytesPerSample == 1) value = float(bytes[cursor++]) / 255.F;
+            else {
+                const std::uint16_t raw = format == TerrainFileFormat::Raw16LE
+                                              ? std::uint16_t(bytes[cursor] | std::uint16_t(bytes[cursor + 1]) << 8)
+                                              : std::uint16_t(std::uint16_t(bytes[cursor]) << 8 | bytes[cursor + 1]);
+                cursor += 2;
+                value = float(raw) / 65535.F;
+            }
+            decoded.heightmap.setHeight(int(x), int(y), value);
+            minimum = std::min(minimum, value);
+            maximum = std::max(maximum, value);
+        }
+    decoded.minHeight = minimum;
+    decoded.maxHeight = maximum;
+    return eve::Result<DecodedTerrainFile>::success(std::move(decoded));
+}
+
 /** @brief Decode the raw `EVTRN` float32 heightfield payload. */
 eve::Result<DecodedTerrainFile> decodeEvtrn(std::span<const std::uint8_t> bytes) {
     if (bytes.size() < kEvtrnHeader)
@@ -126,6 +163,9 @@ TerrainFileFormat parseTerrainFileFormat(std::string_view name) noexcept {
                    [](unsigned char c) { return char(std::tolower(c)); });
     if (lowered == "evtr") return TerrainFileFormat::Evtr;
     if (lowered == "evtrn") return TerrainFileFormat::Evtrn;
+    if (lowered == "raw8") return TerrainFileFormat::Raw8;
+    if (lowered == "raw16le") return TerrainFileFormat::Raw16LE;
+    if (lowered == "raw16be") return TerrainFileFormat::Raw16BE;
     return TerrainFileFormat::Auto;
 }
 
@@ -147,6 +187,9 @@ eve::Result<DecodedTerrainFile> decodeTerrainFile(std::span<const std::uint8_t> 
                                       "EVTRN magic does not match the requested format", "evtrn");
         return decodeEvtrn(bytes);
     }
+    if (format == TerrainFileFormat::Raw8 || format == TerrainFileFormat::Raw16LE ||
+        format == TerrainFileFormat::Raw16BE)
+        return decodePcgRaw(bytes, format);
     return decodeEvtr(bytes);
 }
 

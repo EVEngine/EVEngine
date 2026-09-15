@@ -147,3 +147,20 @@ if (marker != "") print(marker + ": " + ctrl.getTimelineEventData() + "\n");
 - `Camera3D` 由脚本创建时默认 active，也可用 `setActive` 控制是否被渲染器采用；
   控制器只改其 eye/target，不负责渲染。
 - 示例：[`examples/camera-controllers`](../../../examples/camera-controllers/main.nut)。
+
+### PcgFreeCamera
+
+`eve.PcgFreeCamera()` 移植 Pcg 的自由相机。先用 `configure(enabled,lockCursor,holdRightMouse,lookSpeed,moveSpeed,sprintSpeed,scrollIncrease,increaseValue,roll)` 配置，再将设备输入复制到 `eve.PcgFreeCameraInput()` 的 `mouseX`、`mouseY`、`scroll`、`forward`、`right`、`up`、`sprint`、`rightPressed`、`rightReleased`、`leftPressed`、`escapePressed`、`focused` 字段，并调用 `update(camera,input,dt)`。`capture(camera)` / `release()` 显式控制捕获；`setRoll()`、`getCaptured()`、`getSprintSpeed()`、`getYaw()`、`getPitch()`、`getRoll()` 提供状态。cursor 锁定由窗口层根据 `getCaptured()` 和配置执行。
+### PcgCarCameraSetup
+
+`eve.PcgCarCameraProfile()` 保留 Pcg `CarControllerSetup` 的完整车辆相机默认值：目标高度、距离范围、墙面间距、水平/垂直速度、俯仰限制、缩放率、旋转/缩放阻尼、碰撞层以及 rear-lock 和鼠标轴开关。用 `eve.PcgCarCameraSetup().configure(profile)` 原子复制配置，再调用 `apply(controller,camera,focus,initialYaw,initialPitch)` 绑定真实 `CameraController`、`Camera3D` 与稳定 `SceneNodeRef`。每帧将鼠标轴、滚轮、dt、目标移动状态与目标 yaw 传给 `update(controller,mouseX,mouseY,scroll,dt,targetIsMoving,targetYaw)`；控制器负责距离钳制、轨道相机和遮挡恢复。
+
+通用 `CameraController` 同时公开 `getRadius()`、`setRadiusLimits(minimum,maximum)`、`getMinimumRadius()` 和 `getMaximumRadius()`。距离范围更新是结构化 Result；非法范围不会改变现有配置。
+
+Profile 字段名为 `targetHeight`, `distance`, `offsetFromWall`, `maximumDistance`, `minimumDistance`, `horizontalSpeed`, `verticalSpeed`, `minimumPitch`, `maximumPitch`, `zoomRate`, `rotationDamping`, `zoomDamping`, `collisionLayers`, `lockToRearOfTarget`, `allowMouseHorizontal`, `allowMouseVertical`。
+
+### Pcg PhotoMode Camera 权威租约
+
+CameraController.setPhotoModeAuthority(true) 将已通过 setCamera 绑定的控制器注册为照片模式相机字段唯一所有者；传入 false 或销毁控制器时撤销。getPhotoModeAuthority、setCameraRoll、getCameraRoll 和 getPcgCullingDistance 提供状态。照片模式可直接应用 field of view、Pcg culling adjustment、physical aperture、focal length、roll 与 far clip；缺少绑定 Camera3D 时原子失败。
+
+同一权威也接收 Pcg 的全部 20 个 PostFX 字段。BuiltIn、URP 与 HDRP 的模式、质量和模糊区间会完整保存在 `PcgPhotoModePostFxState`；共享曝光、自动曝光、物理镜头和景深参数会同步投影到绑定的 Camera3D，因此直接进入最终场景合成。URP Gaussian 区间或 HDRP 近远区间生成 EVEngine 的对称 focus range，kernel、最大半径和质量生成最大模糊像素。跨域计划后续失败时，这些保存值与实际 Camera3D 状态一起逆序恢复。

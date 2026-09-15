@@ -17,14 +17,15 @@ bool near(float a, float b, float eps = 1e-3f) { return std::fabs(a - b) < eps; 
 
 class ObstructionMock final : public eve::ICameraObstructionQuery {
 public:
-    bool sphereCast(float, float, float, float, float, float, float, uint64_t maskBits,
-                    int ignoredBodyId, eve::CameraObstructionHit* out) override {
-        seenMask = maskBits; seenIgnored = ignoredBodyId;
-        *out = {true, 42, 0.3f, 0.f, 0.f, 3.f, 0.f, 0.f, -1.f};
+    bool sphereCast(float, float, float, float, float, float, float, uint64_t maskBits, int ignoredBodyId,
+                    eve::CameraObstructionHit* out) override {
+        seenMask    = maskBits;
+        seenIgnored = ignoredBodyId;
+        *out        = {true, 42, 0.3f, 0.f, 0.f, 3.f, 0.f, 0.f, -1.f};
         return true;
     }
-    uint64_t seenMask = 0;
-    int seenIgnored = -1;
+    uint64_t seenMask    = 0;
+    int      seenIgnored = -1;
 };
 
 }  // namespace
@@ -42,6 +43,27 @@ TEST_CASE("camera.modeRoundTrip") {
     CHECK_EQ(cc.getMode(), std::string("cinematic"));
     cc.setMode("not-a-mode");
     CHECK_EQ(cc.getMode(), std::string("cinematic"));
+}
+
+TEST_CASE("graphics.camera3d.layerCullDistancesRoundTrip") {
+    Camera3D* cam = Camera3D::createCamera();
+    CHECK_EQ(cam->getLayerCullDistance(7), 0.f);
+    CHECK_EQ(cam->getShadowLayerCullDistance(7), 0.f);
+    cam->setLayerCullDistance(7, 125.f);
+    cam->setShadowLayerCullDistance(7, 80.f);
+    CHECK_EQ(cam->getLayerCullDistance(7), 125.f);
+    CHECK_EQ(cam->getShadowLayerCullDistance(7), 80.f);
+
+    auto* object = eve::graphics::Renderable3D::create();
+    object->setLayer(7);
+    CHECK_EQ(object->getLayer(), 7);
+
+    cam->setDepthOfField(20.f, 5.f, 12.f);
+    CHECK_EQ(cam->data()->dofFocusDistance, 20.f);
+    CHECK_EQ(cam->data()->dofMaxBlurPx, 5.f);
+    CHECK_EQ(cam->data()->dofFocusRange, 12.f);
+    cam->clearDepthOfField();
+    CHECK_EQ(cam->data()->dofMaxBlurPx, 0.f);
 }
 
 TEST_CASE("camera.paramsRoundTrip") {
@@ -160,16 +182,26 @@ TEST_CASE("camera.collisionRetractsAndRecovers") {
 
 TEST_CASE("camera.dynamicObstructionUsesCapability") {
     ObstructionMock mock;
-    auto* previous = eve::cap::query<eve::ICameraObstructionQuery>();
+    auto*           previous = eve::cap::query<eve::ICameraObstructionQuery>();
     eve::cap::provide<eve::ICameraObstructionQuery>(&mock);
     CameraController cc;
-    Camera3D* cam = Camera3D::createCamera();
-    cc.setCamera(cam); cc.setTarget(0.f, 0.f, 0.f); cc.setOffset(0.f, 0.f, 10.f);
-    cc.setCollisionEnabled(true); cc.setCollisionMask(7); cc.setCollisionIgnoredBody(9); cc.update(0.f);
-    CHECK(cc.isObstructed()); CHECK_EQ(cc.getCollisionBodyId(), 42); CHECK(cam->data()->eyeZ < 3.f);
-    CHECK_EQ(mock.seenMask, uint64_t(7)); CHECK_EQ(mock.seenIgnored, 9);
-    if (previous) eve::cap::provide<eve::ICameraObstructionQuery>(previous);
-    else eve::cap::revoke<eve::ICameraObstructionQuery>(&mock);
+    Camera3D*        cam = Camera3D::createCamera();
+    cc.setCamera(cam);
+    cc.setTarget(0.f, 0.f, 0.f);
+    cc.setOffset(0.f, 0.f, 10.f);
+    cc.setCollisionEnabled(true);
+    cc.setCollisionMask(7);
+    cc.setCollisionIgnoredBody(9);
+    cc.update(0.f);
+    CHECK(cc.isObstructed());
+    CHECK_EQ(cc.getCollisionBodyId(), 42);
+    CHECK(cam->data()->eyeZ < 3.f);
+    CHECK_EQ(mock.seenMask, uint64_t(7));
+    CHECK_EQ(mock.seenIgnored, 9);
+    if (previous)
+        eve::cap::provide<eve::ICameraObstructionQuery>(previous);
+    else
+        eve::cap::revoke<eve::ICameraObstructionQuery>(&mock);
 }
 
 TEST_CASE("camera.directorSelectsPriorityAndBlends") {
@@ -226,7 +258,7 @@ TEST_CASE("camera.timelineCutsAndEmitsMarkers") {
 
 TEST_CASE("camera.timelineQueuesMarkersInterpolatesAndSerializes") {
     CameraController cc;
-    Camera3D* cam = Camera3D::createCamera();
+    Camera3D*        cam = Camera3D::createCamera();
     cc.setCamera(cam);
     REQUIRE(cc.addRig("base", "orbit", 1));
     CHECK(cc.addTimelineEvent(0.1f, "one", "1"));
@@ -234,19 +266,24 @@ TEST_CASE("camera.timelineQueuesMarkersInterpolatesAndSerializes") {
     CHECK(cc.addTimelineFloat(0.f, "fov", 40.f));
     CHECK(cc.addTimelineFloat(1.f, "fov", 80.f));
     CHECK(!cc.addTimelineFloat(0.f, "unknown", 1.f));
-    cc.playTimeline(false); cc.update(0.5f);
+    cc.playTimeline(false);
+    cc.update(0.5f);
     CHECK_EQ(cc.getPendingTimelineEventCount(), 2);
-    const std::string first = cc.consumeTimelineEvent();
-    const std::string firstData = cc.getTimelineEventData();
-    const std::string second = cc.consumeTimelineEvent();
+    const std::string first      = cc.consumeTimelineEvent();
+    const std::string firstData  = cc.getTimelineEventData();
+    const std::string second     = cc.consumeTimelineEvent();
     const std::string secondData = cc.getTimelineEventData();
-    CHECK_EQ(first, std::string("one")); CHECK_EQ(firstData, std::string("1"));
-    CHECK_EQ(second, std::string("two")); CHECK_EQ(secondData, std::string("2"));
+    CHECK_EQ(first, std::string("one"));
+    CHECK_EQ(firstData, std::string("1"));
+    CHECK_EQ(second, std::string("two"));
+    CHECK_EQ(secondData, std::string("2"));
     CHECK(near(cc.getFov(), 60.f));
     const std::string asset = cc.serializeAsset();
-    CameraController loaded;
-    CHECK(loaded.deserializeAsset(asset)); CHECK_EQ(loaded.getRigCount(), 1);
-    CHECK(near(loaded.getTimelineDuration(), 1.f)); CHECK(!loaded.deserializeAsset("{}"));
+    CameraController  loaded;
+    CHECK(loaded.deserializeAsset(asset));
+    CHECK_EQ(loaded.getRigCount(), 1);
+    CHECK(near(loaded.getTimelineDuration(), 1.f));
+    CHECK(!loaded.deserializeAsset("{}"));
 }
 
 TEST_CASE("camera.firstPersonSnap") {

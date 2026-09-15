@@ -1,0 +1,7 @@
+#include "zeroerr/unittest.h"
+#include "ui/PcgScreenshotSavedNotice.h"
+#include <limits>
+using eve::ui::PcgScreenshotSavedNotice;
+TEST_CASE("ui.pcgScreenshotNotice.waitsForEndFrameAndExpires") { PcgScreenshotSavedNotice n; REQUIRE(n.configure(true,1).ok()); REQUIRE(n.request("shots/a.png").ok()); CHECK(n.getPending()); CHECK(!n.getVisible()); REQUIRE(n.tick(10).ok()); CHECK(!n.getVisible()); REQUIRE(n.endFrame(10).ok()); CHECK(n.getVisible()); CHECK(n.getPathVisible()); CHECK_EQ(n.getPath(),"shots/a.png"); REQUIRE(n.tick(10.999f).ok()); CHECK(n.getVisible()); REQUIRE(n.tick(11).ok()); CHECK(!n.getVisible()); }
+TEST_CASE("ui.pcgScreenshotNotice.restartAndDisableCancelOldNotice") { PcgScreenshotSavedNotice n; REQUIRE(n.configure(true,2).ok()); REQUIRE(n.request("a.png").ok()); REQUIRE(n.endFrame(1).ok()); REQUIRE(n.request("b.png").ok()); CHECK(!n.getVisible()); REQUIRE(n.endFrame(2).ok()); REQUIRE(n.tick(3.5f).ok()); CHECK(n.getVisible()); REQUIRE(n.configure(false,2).ok()); CHECK(!n.getVisible()); CHECK(!n.getPending()); REQUIRE(n.request("ignored.png").ok()); CHECK(!n.getPending()); }
+TEST_CASE("ui.pcgScreenshotNotice.invalidInputsAreAtomic") { PcgScreenshotSavedNotice n; REQUIRE(n.configure(true,1).ok()); REQUIRE(n.request("ok.png").ok()); CHECK(!n.configure(true,std::numeric_limits<float>::quiet_NaN()).ok()); CHECK(n.getPending()); CHECK(!n.endFrame(-1).ok()); CHECK(n.getPending()); }

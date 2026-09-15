@@ -43,6 +43,7 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("clearInstanceRange", &Renderable3D::clearInstanceRange);
     ent.addFunc("setTexture", &Renderable3D::setTexture);
     ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
+    ent.addFunc("setPackedNormalMask", &Renderable3D::setPackedNormalMask);
     ent.addFunc("setHeightTexture", &Renderable3D::setHeightTexture);
     ent.addFunc("setShader", &Renderable3D::setShader);
     ent.addFunc("setMaterial", &Renderable3D::setMaterial);
@@ -74,6 +75,9 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("getParallaxMinLayers", &Renderable3D::getParallaxMinLayers);
     ent.addFunc("getParallaxMaxLayers", &Renderable3D::getParallaxMaxLayers);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
+    ent.addFunc("getVisible", &Renderable3D::getVisible);
+    ent.addFunc("setLayer", &Renderable3D::setLayer);
+    ent.addFunc("getLayer", &Renderable3D::getLayer);
     ent.addFunc("setReflectionCaptureMask", &Renderable3D::setReflectionCaptureMask);
     ent.addFunc("getReflectionCaptureMask", &Renderable3D::getReflectionCaptureMask);
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);

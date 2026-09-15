@@ -16,6 +16,7 @@ layout(location = 3) in vec3 vRootPos;
 layout(location = 4) in float vInstanceId;
 layout(location = 5) in vec4 vTint;
 layout(location = 6) in float vAlwaysDark;
+layout(location = 7) in vec3 vInstanceTint;
 
 struct Light3D {
     vec4 posRadius;
@@ -38,6 +39,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
+layout(set = 0, binding = 2) uniform sampler2D normalSampler;
+layout(set = 0, binding = 3) uniform sampler2D maskSampler;
 
 layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     mat4 lightVP[3];
@@ -121,14 +124,15 @@ float sampleGrassShadow(vec3 worldPos, float viewDepth) {
 }
 
 void main() {
+    bool foliage = u.data[12] < 0.0;
     float frames = max(u.data[12], 1.0);
     float duration = max(u.data[1], 1e-4);
     float hash = fract(sin(vInstanceId * 12.9898) * 43758.5453);
     float t = u.data[0] / duration + hash * frames;
     int frame = int(mod(floor(t), frames));
 
-    int cols = int(max(u.data[13], 1.0));
-    int rows = int(max(u.data[14], 1.0));
+    int cols = foliage ? 1 : int(max(u.data[13], 1.0));
+    int rows = foliage ? 1 : int(max(u.data[14], 1.0));
     int grassVars = int(max(u.data[15], 1.0));
     int leafVars = int(max(u.data[16], 1.0));
     int leafRowOffset = int(u.data[17] + 0.5);
@@ -148,7 +152,18 @@ void main() {
         atlasUV = vec2((float(col) + vUV.x) / float(cols),
                        (float(row) + (1.0 - vUV.y)) / float(rows));
     }
-    vec4 mask = texture(albedoSampler, atlasUV) * vTint;
+    vec4 mask = texture(albedoSampler, atlasUV) * vTint * vec4(vInstanceTint, 1.0);
+    if (foliage) {
+        float detailDistance = distance(vRootPos, ubo.cameraPos.xyz);
+        float packedDetail = max(u.data[17], 0.0);
+        float hardDistance = floor(packedDetail);
+        float density = clamp(fract(packedDetail) * 2.0, 0.0, 1.0);
+        if (detailDistance > hardDistance || hash > density)
+            discard;
+        float fade = (1.0 - clamp((detailDistance - u.data[13]) /
+                                  max(u.data[14], 0.0001), 0.0, 1.0)) * 2.0;
+        mask.a *= fade;
+    }
     if (mask.a < max(u.data[4], 0.01))
         discard;
 
@@ -157,6 +172,27 @@ void main() {
     // both backends. Sampling the exact root/ground plane amplifies backend
     // depth precision differences into blanket self-shadowing.
     float vis = sampleGrassShadow(vWorldPos, viewDepth);
+    if (foliage) {
+        vec3 base = mask.rgb * vec3(u.data[6], u.data[7], u.data[8]) * 0.5;
+        float snowFade = clamp((vWorldPos.y - u.data[0]) / max(u.data[15], 0.0001), 0.0, 1.0);
+        float snowMask = mix(0.0, 0.1, snowFade) * clamp(u.data[16], 0.0, 1.0);
+        base = mix(base, clamp(base + vec3(u.data[9], u.data[10], u.data[11]), 0.0, 1.0), snowMask);
+        vec4 surface = clamp(texture(maskSampler, atlasUV), 0.0, 1.0);
+        vec3 tangentNormal = texture(normalSampler, atlasUV).xyz * 2.0 - 1.0;
+        tangentNormal.xy *= max(u.data[1], 0.01);
+        tangentNormal = abs(normalize(tangentNormal));
+        vec3 lightDir = normalize(ubo.lightDirIntensity.xyz);
+        vec3 viewDir = normalize(ubo.cameraPos.xyz - vWorldPos);
+        float diffuse = max(dot(tangentNormal, lightDir), 0.0);
+        float backlight = max(dot(-lightDir, viewDir), 0.0) * (1.0 - surface.b);
+        float smoothness = surface.a * 0.25;
+        vec3 halfDir = normalize(lightDir + viewDir);
+        float specular = pow(max(dot(tangentNormal, halfDir), 0.0), mix(4.0, 64.0, smoothness)) * surface.r;
+        vec3 lighting = ubo.ambient.rgb * surface.g + ubo.lightColor.rgb * ubo.lightDirIntensity.w *
+                        (diffuse * vis + backlight * 0.35 + specular * vis);
+        outColor = vec4(base * lighting, mask.a);
+        return;
+    }
     if (u.data[5] > 0.5 || vAlwaysDark > 0.5)
         vis = 0.0;
 

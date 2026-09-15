@@ -60,29 +60,36 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from,
     if (from.value() > current.value())
         return migrationFailure<Value>(DiagnosticCode::UnknownVersion,
                                        "asset definition is newer than this reader", std::string(type));
+    if (type == "eve.mesh" && current.value() == 3 && (from.value() == 1 || from.value() == 2)) {
+        const auto* object = definition.getIf<Value::Object>();
+        if (!object || !object->contains("schema") || !object->at("schema").isString() ||
+            object->at("schema").asString() != "eve.mesh" || !object->contains("schemaVersion") ||
+            !object->at("schemaVersion").isInt64() ||
+            object->at("schemaVersion").asInt() != static_cast<std::int64_t>(from.value()))
+            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh definition is malformed");
+        auto migrated = *object;
+        if (from.value() == 1) {
+            if (migrated.contains("texcoordSets") || migrated.contains("colors"))
+                return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh/1 contains reserved metadata");
+            if (auto uv = migrated.find("texcoord0"); uv != migrated.end()) {
+                if (!uv->second.isBool())
+                    return migrationFailure<Value>(DiagnosticCode::ParseError, "invalid legacy UV metadata");
+                Value::Array sets;
+                if (uv->second.asBool()) sets.emplace_back(int64_t(0));
+                migrated.erase(uv);
+                migrated["texcoordSets"] = Value(std::move(sets));
+            }
+        } else if (migrated.contains("colors")) {
+            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh/2 contains reserved color metadata");
+        }
+        migrated["colors"] = Value(false);
+        migrated["schemaVersion"] = Value(int64_t(3));
+        return Result<Value>::success(Value(std::move(migrated)));
+    }
     if (from.value() + 1 != current.value())
         return migrationFailure<Value>(DiagnosticCode::Unsupported,
                                        "asset definition is older than the N-1 compatibility window",
                                        std::string(type));
-    if (type == "eve.mesh" && from.value() == 1 && current.value() == 2) {
-        const auto* object = definition.getIf<Value::Object>();
-        if (!object || !object->contains("schema") || !object->at("schema").isString() ||
-            object->at("schema").asString() != "eve.mesh" || !object->contains("schemaVersion") ||
-            !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 1 ||
-            object->contains("texcoordSets"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh/1 is malformed");
-        auto migrated = *object;
-        if (auto uv = migrated.find("texcoord0"); uv != migrated.end()) {
-            if (!uv->second.isBool())
-                return migrationFailure<Value>(DiagnosticCode::ParseError, "invalid legacy UV metadata");
-            Value::Array sets;
-            if (uv->second.asBool()) sets.emplace_back(int64_t(0));
-            migrated.erase(uv);
-            migrated["texcoordSets"] = Value(std::move(sets));
-        }
-        migrated["schemaVersion"] = Value(int64_t(2));
-        return Result<Value>::success(Value(std::move(migrated)));
-    }
     if (type == "eve.material" && from.value() == 1 && current.value() == 2) {
         const auto* object = definition.getIf<Value::Object>();
         if (!object || !object->contains("schema") || !object->at("schema").isString() ||
@@ -158,7 +165,7 @@ Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
     static const std::map<std::string_view, std::uint64_t> versions = {
         {"eve.image", 2},
         {"eve.texture", 1},
-        {"eve.mesh", 2},
+        {"eve.mesh", 3},
         {"eve.skeleton", 1},
         {"eve.animation-clip", 1},
         {"eve.skin", 1},

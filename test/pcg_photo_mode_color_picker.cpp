@@ -1,0 +1,7 @@
+#include "zeroerr/unittest.h"
+#include "ui/PcgPhotoModeColorPicker.h"
+#include <limits>
+using eve::ui::PcgPhotoModeColorPicker;
+TEST_CASE("ui.pcgPhotoModeColorPicker.preservesHdrDoubleApplication") { PcgPhotoModeColorPicker p; REQUIRE(p.open(.2f,.3f,.4f,2.f,true).ok()); CHECK_EQ(p.getRed(),.4f); CHECK_EQ(p.getPreviewRed(),.8f); CHECK_EQ(p.getPreviewGreen(),1.2f); CHECK_EQ(p.getPreviewBlue(),1.6f); CHECK_EQ(p.getHdrSwatch(),.7f); CHECK(p.getOpen()); CHECK_EQ(p.consumeBringToFront(),eve::ui::PcgUiRequestStatus::Requested); CHECK_EQ(p.consumeBringToFront(),eve::ui::PcgUiRequestStatus::None); }
+TEST_CASE("ui.pcgPhotoModeColorPicker.slidersResetAndNegativeHdr") { PcgPhotoModeColorPicker p; REQUIRE(p.setLast(.1f,.2f,.3f,-2.f).ok()); REQUIRE(p.open(1,1,1,1,true).ok()); REQUIRE(p.setRed(.7f).ok()); REQUIRE(p.setGreen(.8f).ok()); REQUIRE(p.setBlue(.9f).ok()); REQUIRE(p.setHdr(3.f).ok()); CHECK_EQ(p.getChangeRevision(),uint64_t(4)); p.reset(); CHECK_EQ(p.getRed(),.1f); CHECK_EQ(p.getAlpha(),-2.f); CHECK_EQ(p.getPreviewRed(),-.2f); CHECK_EQ(p.getChangeRevision(),uint64_t(9)); p.setFocusedName("Fog"); CHECK_EQ(p.getFocusedName(),"(Fog)"); p.close(); CHECK(!p.getOpen()); }
+TEST_CASE("ui.pcgPhotoModeColorPicker.invalidValuesAreAtomic") { PcgPhotoModeColorPicker p; REQUIRE(p.open(.1f,.2f,.3f,1,false).ok()); CHECK(!p.open(std::numeric_limits<float>::infinity(),0,0,1,true).ok()); CHECK_EQ(p.getRed(),.1f); CHECK(!p.setHdr(std::numeric_limits<float>::quiet_NaN()).ok()); CHECK_EQ(p.getAlpha(),1.f); }

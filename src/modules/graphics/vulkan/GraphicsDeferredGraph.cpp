@@ -120,8 +120,14 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         const bool   wantAlpha = d.alphaTest && shadowAlphaPipeline;
         const bool   skinned   = d.skinSet && d.mesh->hasGpuSkinning();
-        vk::Pipeline wanted    = skinned ? (wantAlpha ? shadowSkinAlphaPipeline : shadowSkinPipeline)
-                                         : (wantAlpha ? shadowAlphaPipeline : shadowPipeline);
+        vk::Pipeline wanted{};
+        if (skinned) {
+            wanted = wantAlpha ? (d.doubleSided ? shadowSkinAlphaPipeline : shadowSkinAlphaSingleSidedPipeline)
+                               : (d.doubleSided ? shadowSkinPipeline : shadowSkinSingleSidedPipeline);
+        } else {
+            wanted = wantAlpha ? (d.doubleSided ? shadowAlphaPipeline : shadowAlphaSingleSidedPipeline)
+                               : (d.doubleSided ? shadowPipeline : shadowSingleSidedPipeline);
+        }
         if (wanted != boundPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
             boundPipeline = wanted;
@@ -138,9 +144,17 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
                                       gpuTex->descriptorSet.ptr(), 0, nullptr);
             }
         }
-        if (!skinned)
-            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
+        if (!skinned) {
+            if (wantAlpha) {
+                ShadowAlphaPush push{d.mvp, d.lodFade};
+                cb.pushConstants(shadowAlphaPipelineLayout,
+                                 vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                                 0, sizeof(push), &push);
+            } else {
+                cb.pushConstants(shadowPipelineLayout, vk::ShaderStageFlagBits::eVertex,
+                                 0, sizeof(glm::mat4), &d.mvp);
+            }
+        }
         drawIndexedMesh(cb, *gpuMesh);
     }
 }

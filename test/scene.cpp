@@ -1059,8 +1059,9 @@ TEST_CASE("Scene.pick.rayAndScreen") {
 TEST_CASE("Scene.cull.frustum") {
     Scene *mod = Scene::create();
     mod->mountAs("cu",
-                 node("root", {node("front").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
-                               node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withPosition(10.f, 0.f, 0.f)}))
+                 node("root", {node("front").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withTag("terrain"),
+                               node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withPosition(10.f, 0.f, 0.f).withTag("terrain"),
+                               node("decor").withBounds(-1.f,-1.f,-1.f,1.f,1.f,1.f).withPosition(12.f,0.f,0.f)}))
         .ignore("test setup");
     auto *cam = eve::graphics::Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);
@@ -1074,6 +1075,12 @@ TEST_CASE("Scene.cull.frustum") {
     }
     CHECK(hasFront);
     CHECK(!hasSide);
+    auto applied=mod->applyPcgTerrainCullingAt("cu",cam,640.f,480.f,"terrain");
+    REQUIRE(applied.ok()); CHECK_EQ(applied.value(),1);
+    CHECK(mod->getNodeVisibleAt("cu","front")); CHECK(!mod->getNodeVisibleAt("cu","side"));
+    CHECK(mod->getNodeVisibleAt("cu","decor"));
+    CHECK(!mod->applyPcgTerrainCullingAt("cu",cam,0.f,480.f,"terrain").ok());
+    CHECK(!mod->getNodeVisibleAt("cu","side"));
     ecs::DestroyEntity(cam);
 }
 

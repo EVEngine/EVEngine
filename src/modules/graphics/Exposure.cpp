@@ -52,6 +52,22 @@ Exposure::Exposure(Graphics *gfx) : gfx_(gfx) {
                                  shaders::kExposureApply);
     applyShader_->declareFloat("manualExposure");
     applyShader_->declareFloat("automatic");
+    applyShader_->declareFloat("colorFilterR");
+    applyShader_->declareFloat("colorFilterG");
+    applyShader_->declareFloat("colorFilterB");
+    applyShader_->declareFloat("vignette");
+    applyShader_->declareFloat("lensDistortion");
+    applyShader_->declareFloat("liftR");
+    applyShader_->declareFloat("liftG");
+    applyShader_->declareFloat("liftB");
+    applyShader_->declareFloat("inverseGammaR");
+    applyShader_->declareFloat("inverseGammaG");
+    applyShader_->declareFloat("inverseGammaB");
+    applyShader_->declareFloat("gainR");
+    applyShader_->declareFloat("gainG");
+    applyShader_->declareFloat("gainB");
+    applyShader_->declareFloat("vignetteSmoothness");
+    applyShader_->declareFloat("lensScale");
 }
 
 void Exposure::ensureTargets(int width, int height) {
@@ -75,7 +91,11 @@ void Exposure::ensureTargets(int width, int height) {
 }
 
 Texture *Exposure::apply(Texture *source, float manualExposure, bool automatic, float minEV,
-                         float maxEV, Texture *meterSource, float deltaSeconds) {
+                         float maxEV, const glm::vec3& colorFilter, const glm::vec3& lift,
+                         const glm::vec3& inverseGamma, const glm::vec3& gain, float vignette,
+                         float vignetteSmoothness, float lensDistortion, float lensScale,
+                         Texture *meterSource,
+                         float deltaSeconds) {
     if (!source) throw eve::Exception("Exposure.apply: null source");
     ensureTargets(source->getWidth(), source->getHeight());
     Canvas *previousCanvas = gfx_->getCanvas();
@@ -109,6 +129,22 @@ Texture *Exposure::apply(Texture *source, float manualExposure, bool automatic, 
 
     applyShader_->sendFloat("manualExposure", std::max(manualExposure, 0.f));
     applyShader_->sendFloat("automatic", automatic ? 1.f : 0.f);
+    applyShader_->sendFloat("colorFilterR", std::max(colorFilter.r, 0.f));
+    applyShader_->sendFloat("colorFilterG", std::max(colorFilter.g, 0.f));
+    applyShader_->sendFloat("colorFilterB", std::max(colorFilter.b, 0.f));
+    applyShader_->sendFloat("vignette", std::clamp(vignette, 0.0F, 1.0F));
+    applyShader_->sendFloat("lensDistortion", std::clamp(lensDistortion, 0.0F, 1.0F));
+    applyShader_->sendFloat("liftR", lift.r);
+    applyShader_->sendFloat("liftG", lift.g);
+    applyShader_->sendFloat("liftB", lift.b);
+    applyShader_->sendFloat("inverseGammaR", std::max(inverseGamma.r, 0.001F));
+    applyShader_->sendFloat("inverseGammaG", std::max(inverseGamma.g, 0.001F));
+    applyShader_->sendFloat("inverseGammaB", std::max(inverseGamma.b, 0.001F));
+    applyShader_->sendFloat("gainR", gain.r);
+    applyShader_->sendFloat("gainG", gain.g);
+    applyShader_->sendFloat("gainB", gain.b);
+    applyShader_->sendFloat("vignetteSmoothness", std::clamp(vignetteSmoothness, 0.01F, 1.0F));
+    applyShader_->sendFloat("lensScale", std::clamp(lensScale, 0.01F, 5.0F));
     output_->clear(Color(0.f, 0.f, 0.f, 0.f), {}, {});
     gfx_->setCanvas(output_);
     gfx_->drawTexturedRectShaderDepthMotion(source, exposureTexture, source, applyShader_, 0.f, 0.f,
