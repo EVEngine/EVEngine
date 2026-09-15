@@ -92,7 +92,7 @@ public:
     [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    bool matches(const SelectionSnapshot& selection) const;
+    bool                                        matches(const SelectionSnapshot& selection) const;
     [[nodiscard]] EditorResult<DomainOperation> replacement(const action::ActionTimeline& candidate,
                                                             std::string                   property) const;
     [[nodiscard]] EditorResult<void>            assign(action::ActionTimeline candidate);
@@ -121,6 +121,28 @@ public:
     [[nodiscard]] EditorResult<void> configureWorkspace(EditorWorkspace& workspace) const;
     /** @brief Add an empty semantic track. */
     [[nodiscard]] EditorResult<void> addTrack(action::ActionTrack track);
+    /** @brief Remove one semantic track and all of its items in one undoable transaction. */
+    [[nodiscard]] EditorResult<void> removeTrack(const LogicalId& trackId);
+    /** @brief Rename one track without changing its stable identity. */
+    [[nodiscard]] EditorResult<void> renameTrack(const LogicalId& trackId, std::string label);
+    /** @brief Add one objective animation section to the montage lane. */
+    [[nodiscard]] EditorResult<void> addAnimationSection(action::ActionAnimationSection section);
+    /** @brief Move an animation section while preserving its duration. */
+    [[nodiscard]] EditorResult<void> moveAnimationSection(const LogicalId& sectionId, Duration delta);
+    /** @brief Resize an animation section and its incoming blend window. */
+    [[nodiscard]] EditorResult<void> resizeAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
+                                                            Duration blendIn);
+    /** @brief Atomically edit section timing, blend and animation resource URI. */
+    [[nodiscard]] EditorResult<void> editAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
+                                                          Duration blendIn, std::string animationUri);
+    /** @brief Atomically edit clip-local trim and incoming blend curve. */
+    [[nodiscard]] EditorResult<void> editAnimationSectionSource(const LogicalId& sectionId, Duration sourceStart,
+                                                                Duration                 sourceEnd,
+                                                                action::ActionBlendCurve blendCurve);
+    /** @brief Replace every editable animation-section field in one undo step. */
+    [[nodiscard]] EditorResult<void> editAnimationSectionFull(action::ActionAnimationSection section);
+    /** @brief Remove one animation section from the montage lane. */
+    [[nodiscard]] EditorResult<void> removeAnimationSection(const LogicalId& sectionId);
     /** @brief Add an instantaneous notify to an unlocked track. */
     [[nodiscard]] EditorResult<void> addNotify(const LogicalId& trackId, action::ActionNotify notify);
     /** @brief Add a notify state interval to an unlocked track. */
@@ -138,6 +160,8 @@ public:
     [[nodiscard]] EditorResult<void> removeItem(const LogicalId& itemId);
     /** @brief Mute/unmute one track through an undoable operation. */
     [[nodiscard]] EditorResult<void> setTrackMuted(const LogicalId& trackId, bool muted);
+    /** @brief Lock/unlock one track through an undoable operation. */
+    [[nodiscard]] EditorResult<void> setTrackLocked(const LogicalId& trackId, bool locked);
 
     /** @brief Replace selection with items intersecting a time interval. */
     [[nodiscard]] EditorResult<std::size_t> boxSelect(Duration start, Duration end);
@@ -186,10 +210,12 @@ public:
 
 private:
     struct ClipboardItem {
-        LogicalId                 trackId;
-        bool                      state = false;
-        action::ActionNotify      notify;
-        action::ActionNotifyState notifyState;
+        enum class Kind : std::uint8_t { AnimationSection, Notify, NotifyState };
+        Kind                           kind = Kind::Notify;
+        LogicalId                      trackId;
+        action::ActionAnimationSection animationSection;
+        action::ActionNotify           notify;
+        action::ActionNotifyState      notifyState;
     };
 
     [[nodiscard]] EditorResult<void> commit(action::ActionTimeline candidate, std::string label, std::string mergeKey);

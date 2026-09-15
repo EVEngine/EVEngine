@@ -28,6 +28,13 @@ print(window.getWidth() + "x" + window.getHeight() + "\n");
 
 调用 `setSize(width, height)`，成功后重新读取窗口尺寸，并同步摄像机 viewport 与 UI 布局。退出按钮应调用 `close()`，不要直接终止进程。
 
+### 适配高 DPI 编辑器布局
+
+`getWidth()` / `getHeight()` 返回窗口的逻辑尺寸，适合游戏摄像机和普通 UI 坐标；
+`getPixelWidth()` / `getPixelHeight()` 返回交换链使用的实际像素尺寸，适合截图、
+离屏目标和像素级渲染。`getDPIScale()` 返回实际像素宽度与逻辑宽度的比例。
+编辑器应只选择一种坐标空间完成布局，不要同时使用像素尺寸并再次乘以 DPI 比例。
+
 ## 常见问题
 
 - `setWindowSettings()` 失败：通常是 Graphics 尚未关联，或平台不支持请求的模式。
@@ -38,7 +45,7 @@ print(window.getWidth() + "x" + window.getHeight() + "\n");
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `close()`、`getHeight()`、`getName()`、`getWidth()`、`getWindowSettings()`、`setGraphics()`、`setSize()`、`setWindowSettings()`
+- `close()`、`getDPIScale()`、`getHeight()`、`getName()`、`getPixelHeight()`、`getPixelWidth()`、`getWidth()`、`getWindowSettings()`、`hasFocus()`、`setGraphics()`、`setSize()`、`setWindowSettings()`
 
 ## 使用要点
 
