@@ -44,8 +44,9 @@ Result<void> VolumeFluidShadowCaster::update(const VolumeFluid& fluid, unsigned 
             const glm::vec3 normal = q * directions[v];
             const glm::vec3 point  = candidate[i].position + q * local;
             for (size_t c = 0; c < 3; ++c) {
-                positions_[(i * 6 + v) * 3 + c] = point[c];
-                normals_[(i * 6 + v) * 3 + c]   = normal[c];
+                const auto component = static_cast<glm::vec3::length_type>(c);
+                positions_[(i * 6 + v) * 3 + c] = point[component];
+                normals_[(i * 6 + v) * 3 + c]   = normal[component];
             }
         }
         for (size_t k = 0; k < 24; ++k) indices_[i * 24 + k] = uint32_t(i * 6 + faces[k]);

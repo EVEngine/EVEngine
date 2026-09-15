@@ -406,7 +406,9 @@ Result<void> FluidSurfaceRenderer::renderVolumeCloud(const VolumeFluid& sim, flo
         const float     alpha = (1.f - std::exp(-absorption * density)) * tint.a;
         const float     glow  = .72f + .28f * std::clamp(density * absorption, 0.f, 1.f);
         for (size_t channel = 0; channel < 3; ++channel)
-            color_[i * 4u + channel] = uint8_t(255.f * std::clamp(tint[channel] * glow, 0.f, 1.f));
+            color_[i * 4u + channel] = uint8_t(255.f * std::clamp(
+                                                          tint[static_cast<glm::vec4::length_type>(channel)] * glow,
+                                                          0.f, 1.f));
         color_[i * 4u + 3] = uint8_t(255.f * std::clamp(alpha, 0.f, 1.f));
     }
     auxiliaryCurrent_ = true;
