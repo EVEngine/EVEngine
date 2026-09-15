@@ -77,7 +77,7 @@ Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
             point.id = mix(s.namespaceId ^ (candidate + 1));
             if (!point.id) return invalid("terrain.probes: generated identity is reserved");
             point.x = float(worldX); point.y = float(y); point.z = float(worldZ);
-            point.density = strength; point.boundsMinX = point.boundsMinZ = -s.spacing * 0.5F;
+            point.density = float(strength); point.boundsMinX = point.boundsMinZ = -s.spacing * 0.5F;
             point.boundsMaxX = point.boundsMaxZ = s.spacing * 0.5F; point.boundsMaxY = s.heightScale;
             point.seed = static_cast<std::uint32_t>(mix(point.id ^ static_cast<std::uint32_t>(s.seed)));
             const int row = next.appendPoint(point);

@@ -194,7 +194,7 @@ Result<int> exportTerrainObjectPoints(PointSet& output, const Heightmap& fitness
                     point.x = float(finalX); point.y = float(finalY); point.z = float(finalZ);
                     point.normalX = float(normal.x); point.normalY = float(normal.y); point.normalZ = float(normal.z);
                     point.pitch = float(pitch); point.yaw = float(yaw); point.roll = float(roll);
-                    point.scaleX = float(sx); point.scaleY = float(sy); point.scaleZ = float(sz); point.density = instanceStrength;
+                    point.scaleX = float(sx); point.scaleY = float(sy); point.scaleZ = float(sz); point.density = float(instanceStrength);
                     point.boundsMinX = point.boundsMinZ = -float(radius); point.boundsMaxX = point.boundsMaxZ = float(radius); point.boundsMaxY = float(sy);
                     point.seed = static_cast<std::uint32_t>(mix(point.id ^ static_cast<std::uint32_t>(s.seed)));
                     const int row = next.appendPoint(point);

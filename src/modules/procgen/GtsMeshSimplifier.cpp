@@ -32,6 +32,8 @@ Result<int> simplifyGtsMesh(MeshBuild& output,const MeshBuild& source,float qual
   if(flip){a.locked=true;continue;}a=candidate;b.alive=false;for(auto&t:ts)if(t.alive){if(t.a==chosen.second)t.a=chosen.first;if(t.b==chosen.second)t.b=chosen.first;if(t.c==chosen.second)t.c=chosen.first;if(t.a==t.b||t.b==t.c||t.a==t.c){t.alive=false;--alive;}}}
  MeshBuild next;std::vector<float>colors;std::map<std::pair<uint32_t,uint32_t>,int>map;for(auto&t:ts)if(t.alive){if(t.group>=0)next.setActiveGroup(source.getGroupName(t.group));else next.setActiveGroup("");uint32_t ids[3]{t.a,t.b,t.c},attrs[3]{t.aa,t.ab,t.ac},out[3];for(int k=0;k<3;++k){auto key=std::make_pair(ids[k],attrs[k]);auto found=map.find(key);if(found==map.end()){auto&p=vs[ids[k]];auto&a=vs[attrs[k]];double nl=sqrt(a.nx*a.nx+a.ny*a.ny+a.nz*a.nz);double nx=nl>1e-12?a.nx/nl:a.nx,ny=nl>1e-12?a.ny/nl:a.ny,nz=nl>1e-12?a.nz/nl:a.nz;int index=next.getVertexCount();next.addVertex(float(p.x),float(p.y),float(p.z),float(nx),float(ny),float(nz),float(a.u),float(a.v));if(source.hasVertexColors())colors.insert(colors.end(),{float(a.r),float(a.g),float(a.b),float(a.a)});found=map.emplace(key,index).first;}out[k]=uint32_t(found->second);}next.addTriangle(out[0],out[1],out[2]);}
  if(!colors.empty())next.setVertexColors(std::move(colors)).ignore("validated simplified color stream");
- if(next.empty())return fail<int>("simplification removed the complete mesh");output=std::move(next);return Result<int>::success(alive);
+ if(next.empty())return fail<int>("simplification removed the complete mesh");
+ output=std::move(next);
+ return Result<int>::success(alive);
 }
 }
