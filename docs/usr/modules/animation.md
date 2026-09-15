@@ -233,7 +233,8 @@ local pose = mm.getPose();
 `setPlayRateRange(minimum, maximum)` 返回 `{ok,message}`，配置 Motion Matching
 播放速率的闭区间。可变特征布局会按 UE Pose Search 的规则，累加查询与选中姿势中
 所有未归一化轨迹速度通道的长度，以二者比值作为播放速率并夹到该区间；搜索节流仍按
-模拟时间推进。`getPlayRate()` 返回当前实际速率，默认区间为 `[1,1]`。参数必须满足
+模拟时间推进。`getPlayRateMinimum()` / `getPlayRateMaximum()` 返回当前速率区间，
+`getPlayRate()` 返回当前实际速率，默认区间为 `[1,1]`。参数必须满足
 有限的 `0 < minimum <= maximum <= 10`；失败时保留原区间和当前速率。
 
 `setPoseReselectHistory(seconds)` 复制 UE PoseSearch 的短期姿势历史：正时间步会记录
@@ -451,7 +452,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `getBasePlayer()` 设置基础动画，`addLayer(name, player, mask, mode)` 添加 `override` 或 `additive` 层，其中 Additive 以骨架 bind pose 为参考姿势。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
-- `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`setPlayRateRange()`、`getPlayRate()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
+- `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`setPlayRateRange()`、`getPlayRateMinimum()`、`getPlayRateMaximum()`、`getPlayRate()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
