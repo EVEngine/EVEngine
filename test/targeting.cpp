@@ -295,3 +295,16 @@ TEST_CASE("targeting.sensingWorldProviderSharesFactsAndRequiresDomainRelation") 
     CHECK_EQ(truncated.value().subjects().size(), 1u);
     CHECK_EQ(truncated.value().subjects()[0], ally);
 }
+
+TEST_CASE("targeting.worldAreaCone2DContainsFacingSector") {
+    auto apex = WorldPoint::world2D(0.f, 0.f);
+    REQUIRE(apex.ok());
+    auto cone = WorldArea::cone2D(apex.value(), 1.f, 0.f, 0.785398163f, 10.f);
+    REQUIRE(cone.ok());
+    CHECK(cone.value().contains(WorldPoint::world2D(5.f, 0.f).value()));
+    CHECK(!cone.value().contains(WorldPoint::world2D(0.f, 5.f).value()));
+    CHECK(!cone.value().contains(WorldPoint::world2D(-5.f, 0.f).value()));
+
+    auto bad = WorldArea::cone2D(apex.value(), 0.f, 0.f, 0.5f, 10.f);
+    CHECK(!bad.ok());
+}

@@ -63,8 +63,23 @@ struct QueryBox {
     float maxY = 0.f;
 };
 
+/**
+ * @brief 2D cone/sector shape for QuerySpec (World2D).
+ *
+ * Apex is `(x,y)`. `(dirX,dirY)` is the forward axis (normalized on use).
+ * `halfAngle` is radians in `[0, pi]`; `range` is non-negative distance from the apex.
+ */
+struct QueryCone {
+    float x         = 0.f;
+    float y         = 0.f;
+    float dirX      = 1.f;
+    float dirY      = 0.f;
+    float halfAngle = 0.f;
+    float range     = 0.f;
+};
+
 /** @brief Optional broad-phase shape; monostate means range-only around the origin. */
-using QueryShape = std::variant<std::monostate, QueryCircle, QueryBox>;
+using QueryShape = std::variant<std::monostate, QueryCircle, QueryBox, QueryCone>;
 
 /**
  * @brief Configurable candidate query against SensingWorld.
@@ -147,6 +162,18 @@ public:
     [[nodiscard]] eve::Result<int> box(float minX, float minY, float maxX, float maxY, std::string_view requireTagsCsv,
                                        std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
                                        std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit);
+    /**
+     * @brief Runs a registered TargetingPreset against this world and refreshes resultAt().
+     * @param presetId Stable preset id (e.g. "sensing.builtin.coneSelect").
+     * @param originX Origin X used as QueryOrigin and cone apex.
+     * @param originY Origin Y used as QueryOrigin and cone apex.
+     * @param dirX Forward X for cone filter tasks (normalized on use).
+     * @param dirY Forward Y for cone filter tasks (normalized on use).
+     * @return Number of ranked candidates, or a structured failure.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<int> executePreset(std::string_view presetId, float originX, float originY, float dirX,
+                                                 float dirY);
     /**
      * @brief Returns a candidate from the most recent query, or null for an invalid index.
      * @return Borrowed nullable candidate owned by the query result cache.

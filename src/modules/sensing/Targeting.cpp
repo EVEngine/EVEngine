@@ -182,6 +182,20 @@ Result<WorldArea> WorldArea::box3D(WorldPoint minimum, WorldPoint maximum) {
     return Result<WorldArea>::success(WorldArea(Shape::Box3D, minimum, maximum, 0.f));
 }
 
+Result<WorldArea> WorldArea::cone2D(WorldPoint apex, float dirX, float dirY, float halfAngleRadians, float range) {
+    if (!apex.isValid() || apex.space() != CoordinateSpace::World2D || !std::isfinite(dirX) || !std::isfinite(dirY) ||
+        !std::isfinite(halfAngleRadians) || !std::isfinite(range) || halfAngleRadians < 0.f ||
+        halfAngleRadians > 3.14159265f || range < 0.f || !(std::hypot(dirX, dirY) > 0.f)) {
+        return failure<WorldArea>(
+            DiagnosticCode::InvalidArgument,
+            "WorldArea.cone2D requires World2D apex, non-zero dir, halfAngle in [0,pi], non-negative range");
+    }
+    auto direction = WorldPoint::world2D(dirX, dirY);
+    if (!direction) return failure<WorldArea>(direction.status());
+    return Result<WorldArea>::success(
+        WorldArea(Shape::Cone2D, apex, direction.value(), range, halfAngleRadians));
+}
+
 bool WorldArea::contains(WorldPoint point) const noexcept {
     if (!valid_ || !point.isValid() || point.space() != space_) return false;
     if (shape_ == Shape::Circle2D || shape_ == Shape::Sphere3D) {
@@ -190,6 +204,22 @@ bool WorldArea::contains(WorldPoint point) const noexcept {
         const double dz       = static_cast<double>(point.z()) - first_.z();
         const double distance = dx * dx + dy * dy + dz * dz;
         return distance <= static_cast<double>(radius_) * radius_;
+    }
+    if (shape_ == Shape::Cone2D) {
+        const float dx     = point.x() - first_.x();
+        const float dy     = point.y() - first_.y();
+        const float distSq = dx * dx + dy * dy;
+        if (distSq > radius_ * radius_) return false;
+        if (distSq == 0.f) return true;
+        const float facingLen = std::hypot(second_.x(), second_.y());
+        if (!(facingLen > 0.f)) return false;
+        const float invDist = 1.f / std::sqrt(distSq);
+        const float nx      = dx * invDist;
+        const float ny      = dy * invDist;
+        const float fx      = second_.x() / facingLen;
+        const float fy      = second_.y() / facingLen;
+        const float dot     = std::clamp(nx * fx + ny * fy, -1.f, 1.f);
+        return std::acos(dot) <= halfAngle_;
     }
     return point.x() >= first_.x() && point.x() <= second_.x() && point.y() >= first_.y() && point.y() <= second_.y() &&
            (shape_ == Shape::Box2D || (point.z() >= first_.z() && point.z() <= second_.z()));

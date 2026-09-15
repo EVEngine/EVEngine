@@ -1,4 +1,5 @@
 #include "sensing/Sensing.h"
+#include "sensing/TargetingPipeline.h"
 #include "common/Module.h"
 #include "simplesquirrel/simplesquirrel.hpp"
 #include "zeroerr/assert.h"
@@ -90,6 +91,79 @@ TEST_CASE("sensing.querySpecRanksAndHonorsCountPolicy") {
     REQUIRE(viaQuery.ok());
     REQUIRE(viaCircle.ok());
     CHECK_EQ(viaQuery.value().size(), static_cast<std::size_t>(viaCircle.value()));
+}
+
+TEST_CASE("sensing.queryConeFiltersByFacing") {
+    SensingWorld w;
+    REQUIRE(w.upsert("ahead", 5.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(w.upsert("side", 0.f, 5.f, "red", "unit", "").ok());
+    REQUIRE(w.upsert("behind", -5.f, 0.f, "red", "unit", "").ok());
+
+    QuerySpec cone;
+    cone.shape        = QueryCone{0.f, 0.f, 1.f, 0.f, 0.785398163f, 10.f};
+    cone.requiredTags = {"unit"};
+    cone.maxRange     = 10.f;
+    cone.countPolicy  = CountPolicy::TruncateToMax;
+    cone.sortKey      = SortKey::DistanceAscending;
+    auto ranked       = w.query(QueryOrigin{0.f, 0.f, std::nullopt}, cone);
+    REQUIRE(ranked.ok());
+    CHECK_EQ(ranked.value().size(), 1u);
+    CHECK_EQ(ranked.value().ranked()[0].id, std::string("ahead"));
+}
+
+TEST_CASE("sensing.executePresetRunsBuiltinConeSelect") {
+    SensingWorld w;
+    REQUIRE(w.upsert("ahead", 4.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(w.upsert("left", 0.f, 4.f, "red", "unit", "").ok());
+    REQUIRE(w.upsert("farAhead", 40.f, 0.f, "red", "unit", "").ok());
+
+    TargetingPipeline pipeline = TargetingPipeline::withBuiltins();
+    TargetingPreset   preset;
+    preset.id = "test.coneSelect";
+    {
+        TargetingTaskStep select;
+        select.taskId                = "sensing.select.world";
+        select.querySpec.maxRange    = 20.f;
+        select.querySpec.requiredTags = {"unit"};
+        select.querySpec.countPolicy = CountPolicy::TruncateToMax;
+        select.querySpec.sortKey     = SortKey::None;
+        preset.steps.push_back(std::move(select));
+    }
+    {
+        TargetingTaskStep cone;
+        cone.taskId        = "sensing.filter.cone";
+        cone.coneHalfAngle = 0.5f;
+        cone.coneRange     = 20.f;
+        preset.steps.push_back(std::move(cone));
+    }
+    {
+        TargetingTaskStep sort;
+        sort.taskId = "sensing.sort.distance";
+        preset.steps.push_back(std::move(sort));
+    }
+    {
+        TargetingTaskStep truncate;
+        truncate.taskId        = "sensing.sort.truncate";
+        truncate.truncateCount = 4;
+        preset.steps.push_back(std::move(truncate));
+    }
+    REQUIRE(pipeline.registerPreset(std::move(preset)).ok());
+
+    TargetingSourceContext context;
+    context.world  = &w;
+    context.origin = QueryOrigin{0.f, 0.f, std::nullopt};
+    context.dirX   = 1.f;
+    context.dirY   = 0.f;
+    auto executed  = pipeline.executePreset(context, "test.coneSelect");
+    REQUIRE(executed.ok());
+    CHECK_EQ(executed.value().size(), 1u);
+    CHECK_EQ(executed.value().ranked()[0].id, std::string("ahead"));
+
+    // Shared builtins path used by SensingWorld::executePreset
+    auto viaWorld = w.executePreset("sensing.builtin.coneSelect", 0.f, 0.f, 1.f, 0.f);
+    REQUIRE(viaWorld.ok());
+    CHECK_EQ(viaWorld.value(), 1);
+    CHECK_EQ(w.resultAt(0)->get().id, std::string("ahead"));
 }
 
 TEST_CASE("sensing.worldHandleAndScriptResultContract") {

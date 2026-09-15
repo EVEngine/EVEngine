@@ -1,4 +1,5 @@
 #include "sensing/Sensing.h"
+#include "sensing/TargetingPipeline.h"
 #include "common/SquirrelBinding.h"
 
 #include <algorithm>
@@ -81,6 +82,23 @@ std::vector<std::string> toVector(const std::set<std::string>& values) {
     return std::vector<std::string>(values.begin(), values.end());
 }
 
+bool insideCone(float px, float py, const QueryCone& cone) {
+    const float dx     = px - cone.x;
+    const float dy     = py - cone.y;
+    const float distSq = dx * dx + dy * dy;
+    if (distSq > cone.range * cone.range) return false;
+    if (distSq == 0.f) return true;
+    const float facingLen = std::hypot(cone.dirX, cone.dirY);
+    if (!(facingLen > 0.f)) return false;
+    const float invDist = 1.f / std::sqrt(distSq);
+    const float nx      = dx * invDist;
+    const float ny      = dy * invDist;
+    const float fx      = cone.dirX / facingLen;
+    const float fy      = cone.dirY / facingLen;
+    const float dot     = std::clamp(nx * fx + ny * fy, -1.f, 1.f);
+    return std::acos(dot) <= cone.halfAngle;
+}
+
 bool insideShape(const Subject& subject, const QueryShape& shape) {
     return std::visit(
         [&](const auto& value) -> bool {
@@ -91,9 +109,11 @@ bool insideShape(const Subject& subject, const QueryShape& shape) {
                 const float dx = subject.x - value.x;
                 const float dy = subject.y - value.y;
                 return dx * dx + dy * dy <= value.radius * value.radius;
-            } else {
+            } else if constexpr (std::is_same_v<T, QueryBox>) {
                 return subject.x >= value.minX && subject.x <= value.maxX && subject.y >= value.minY &&
                        subject.y <= value.maxY;
+            } else {
+                return insideCone(subject.x, subject.y, value);
             }
         },
         shape);
@@ -196,6 +216,15 @@ eve::Result<void> QuerySpec::validate() const {
                     value.minX > value.maxX || value.minY > value.maxY) {
                     return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                                 "QueryBox requires finite ordered bounds", "query.shape");
+                }
+            } else if constexpr (std::is_same_v<T, QueryCone>) {
+                if (!finite(value.x) || !finite(value.y) || !finite(value.dirX) || !finite(value.dirY) ||
+                    !finite(value.halfAngle) || !finite(value.range) || value.halfAngle < 0.f ||
+                    value.halfAngle > 3.14159265f || value.range < 0.f || !(std::hypot(value.dirX, value.dirY) > 0.f)) {
+                    return sensingFailure<void>(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "QueryCone requires finite apex/dir, halfAngle in [0,pi], non-negative range, non-zero dir",
+                        "query.shape");
                 }
             }
             return eve::Result<void>::success();
@@ -320,6 +349,22 @@ eve::Result<int> SensingWorld::box(float a, float b, float c, float d, std::stri
     auto        result  = query(QueryOrigin{originX, originY, std::nullopt}, std::move(spec).takeValue());
     if (!result) return sensingFailure<int>(result.status());
     return eve::Result<int>::success(static_cast<int>(std::move(result).takeValue().size()));
+}
+
+eve::Result<int> SensingWorld::executePreset(std::string_view presetId, float originX, float originY, float dirX,
+                                             float dirY) {
+    TargetingSourceContext context;
+    context.world  = this;
+    context.origin = QueryOrigin{originX, originY, std::nullopt};
+    context.dirX   = dirX;
+    context.dirY   = dirY;
+    auto executed  = TargetingPipeline::sharedBuiltins().executePreset(context, presetId);
+    if (!executed) return sensingFailure<int>(executed.status());
+    auto rankedResult = std::move(executed).takeValue();
+    std::vector<RankedCandidate> ranked(rankedResult.ranked().begin(), rankedResult.ranked().end());
+    const int count = static_cast<int>(ranked.size());
+    publishResults(std::move(ranked));
+    return eve::Result<int>::success(count);
 }
 
 eve::OptionalRef<const Candidate> SensingWorld::resultAt(int i) const {
@@ -478,6 +523,20 @@ void Sensing::expose(ssq::Table& t) {
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(world->box(minX, minY, maxX, maxY, required, excluded, includedFactions, excludedFactions,
                                        visibleTo, limit));
+    });
+    w.addFunc("executePreset", [vm, projectCount](ScriptSensingWorld* value, const std::string& presetId, float originX,
+                                                  float originY, float dirX, float dirY) {
+        if (!value)
+            return eve::script::projectResult(vm,
+                                              sensingFailure<int>(eve::DiagnosticCode::InvalidArgument,
+                                                                  "sensing world proxy must not be null", "world"),
+                                              [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
+        auto world = Sensing::resolve(value->reference);
+        if (!world.isBound())
+            return eve::script::projectResult(
+                vm, sensingFailure<int>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"),
+                [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
+        return projectCount(world->executePreset(presetId, originX, originY, dirX, dirY));
     });
     w.addFunc("resultAt", [](ScriptSensingWorld* value, int i) -> Candidate* {
         if (!value) return nullptr;
