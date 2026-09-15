@@ -47,15 +47,17 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 - Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`,
   `ssdm.glsl` (steep POM, soft coverage, horizon trim, height normals,
   self-shadow, planar heightfield march, screen-warp helpers)
-- Demo shader is self-contained (`shaders/compare.frag`) with the full paths:
-  - **SilPOM**: steep POM + soft chart coverage + horizon trim + height
-    normals + self-shadow + `gl_FragDepth` from the hit
-  - **SSDM**: model-space heightfield march through the extruded slab +
-    `gl_FragDepth` from the geometric hit (planar-correct form of SSDM;
-    not a full-scene Gallagher-style pyramid post)
+- Demo shader is self-contained (`shaders/compare.frag`):
+  - **SilPOM / planar SSDM** share one solid model-space heightfield march +
+    soft border feather (no coverage/`horizon` discard — that punched 镂空
+    through mortar) + height normals + self-shadow + `gl_FragDepth`
+  - Misses `chartFill` at the fragment UV so cliff tunnels do not open holes
 - Meshes: thin front card for classic POM; extruded slab for SilPOM/SSDM
 - `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO) so relief never
   punches holes in the floor
+- Grazing views can still read as thin shells: a heightfield has no real
+  vertical brick walls, so mid (more edge-on in the default orbit) looks
+  hollower than right even when both cards use the same mode
 
 ## Honesty bound
 
