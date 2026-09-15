@@ -25,11 +25,12 @@ namespace hair {
 /**
  * @brief Runtime groom drawable (UE `UGroomComponent` analogue).
  *
- * Rebuilds all groups into one combined ribbon mesh (per-group LOD + optional
- * cluster cull). Geometric Cards LOD remains owned by `graphics/HairCards`
- * (separate PR). Phase 3 exposes Marschner R/TT/TRT lobe weights and a cheap
- * analytical self-shadow / root AO on the hair shader push constants. Phase 5
- * adds optional guide XPBD/Verlet via `update(dt)` (no physics-module include).
+ * Rebuilds all groups into one combined GPU mesh (per-group LOD + optional
+ * cluster cull). `Representation::Cards` expands strands through
+ * `graphics/HairCards` polylines; `Strands` uses ribbon quads. Phase 3 exposes
+ * Marschner R/TT/TRT lobe weights and a cheap analytical self-shadow / root AO
+ * on the hair shader push constants. Phase 5 adds optional guide XPBD/Verlet
+ * via `update(dt)` (no physics-module include).
  *
  * Caller owns the instance; Graphics owns Mesh / Shader / Texture.
  *
@@ -107,7 +108,7 @@ public:
     [[nodiscard]] float getSelfShadowBias() const;
     [[nodiscard]] float getRootAoStrength() const;
 
-    /** @brief Rebuild GPU ribbon mesh from all groups (LOD + optional visibility). */
+    /** @brief Rebuild GPU mesh from all groups (LOD + optional visibility). */
     [[nodiscard]] Result<void> rebuild();
 
     /**
@@ -130,7 +131,7 @@ public:
     [[nodiscard]] const GuideSimParams &getGuideSimParams() const;
 
     /**
-     * @brief Advance guide simulation by `dt` and rebuild the ribbon mesh.
+     * @brief Advance guide simulation by `dt` and rebuild the GPU mesh.
      * No-op success when simulation is disabled.
      */
     [[nodiscard]] Result<void> update(float dt);

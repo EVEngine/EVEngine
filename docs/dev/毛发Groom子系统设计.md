@@ -250,7 +250,7 @@ public:
 - [x] LOD 表：screen size → Representation + curve/vertex decimation + thicknessScale  
 - [x] `ClusterGrid` 构建与 CPU 视锥剔除  
 - [x] `GroomInstance` 多 group 合并 ribbon bake（`appendRibbonMesh`）  
-- [ ] Cards 几何 LOD：**不在本分支重复实现** — 由 `graphics/HairCards`（PR #400 `cursor/hair-cards-dynamicbone-1f76`）负责；本子系统仅保留 `Representation::Cards` 枚举与接线点  
+- [x] Cards 几何 LOD：接线 `graphics/HairCards`（PR #400 已合入）；`Representation::Cards` → `buildCardsAlongPolyline` + `uploadCardMesh`；默认 mid LOD 为 Cards  
 
 
 ### Phase 3 — 着色与阴影增强
@@ -297,7 +297,7 @@ public:
 | 发丝半透明排序爆炸 | 先 cluster 批 + 强制 cards 远景；控制 strandCount |
 | Header 改动导致 Ninja unscanned 陈旧布局 | 改广泛头后 clean 或 touch 依赖 TU |
 | WebGPU 无 SPIR-V hair | 继续走已有 WGSL hair 路径；新 shader 双后端同步 |
-| 范围失控 | 严格按 Phase；本迭代交付 P1 + P2(Cluster)；Cards 几何交给 HairCards PR |
+| 范围失控 | 严格按 Phase；Cards 几何由 HairCards 拥有，groom 仅接线 |
 
 ---
 
@@ -385,3 +385,12 @@ public:
 - Cards 接线仍等 PR #400
 
 下一步：与 HairCards（PR #400）合并后接线 `Representation::Cards`；再 Phase 6 Alembic。
+
+### 2026-09-15 — Phase 2 Cards 接线（#400 已合入）
+
+- `merge(dev)` 引入 `graphics/HairCards`；groom 分支 **不** 复制 Cards builder
+- `GroomInstance::rebuild`：`Representation::Cards` → `buildCardsAlongPolyline` / `appendCardMesh` / `uploadCardMesh`；多 group 与 ribbon 共存时优先 primary 表示
+- 默认 `bakeFromStrands` mid LOD：`Representation::Cards`（curveFraction 0.3，thicknessScale 2）
+- 测试：`graphics.hair.groomInstanceCardsLodBakeAndDraw`（force LOD 0/1/2 + Cards draw smoke）
+
+下一步：§7 Phase 6 Alembic 导入（Epic groom 属性表 → `GroomAsset`）。

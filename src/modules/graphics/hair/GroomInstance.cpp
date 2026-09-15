@@ -4,6 +4,7 @@
 #include "common/Exception.h"
 #include "graphics/Color.h"
 #include "graphics/Graphics.h"
+#include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
 #include "graphics/Mesh.h"
 #include "graphics/Shader.h"
@@ -12,8 +13,36 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 namespace eve::graphics::hair {
+namespace {
+
+/** @brief Expand strand curves into HairCards polylines (owned by caller). */
+CardMeshData buildCardsFromStrands(const StrandsDatas &strands, float widthScale) {
+    CardMeshData combined;
+    const float width = std::max(1e-4f, 0.004f * widthScale);
+    std::vector<float> pointsXYZ;
+    for (size_t ci = 0; ci < strands.curveCount(); ++ci) {
+        const auto pts = strands.curvePoints(ci);
+        if (pts.size() < 2) continue;
+        pointsXYZ.clear();
+        pointsXYZ.reserve(pts.size() * 3);
+        float avgRadius = 0.f;
+        for (const StrandPoint &p : pts) {
+            pointsXYZ.push_back(p.position.x);
+            pointsXYZ.push_back(p.position.y);
+            pointsXYZ.push_back(p.position.z);
+            avgRadius += p.radius;
+        }
+        avgRadius /= float(pts.size());
+        const float cardWidth = std::max(width, avgRadius * 4.f * widthScale);
+        appendCardMesh(combined, buildCardsAlongPolyline(pointsXYZ.data(), int(pts.size()), cardWidth));
+    }
+    return combined;
+}
+
+}  // namespace
 
 GroomInstance::GroomInstance(Graphics *gfx) : gfx_(gfx) {
     if (!gfx_) throw eve::Exception("GroomInstance: null graphics");
@@ -86,14 +115,14 @@ Result<void> GroomInstance::bakeFromStrands(StrandsDatas strands, const char *de
     group.groupId = 0;
     group.strands = std::move(strands);
 
-    // Cards geometric LOD lives in graphics/HairCards (separate agent/PR).
+    // Mid LOD uses HairCards geometry (PR #400); far culls to None.
     GroomLod nearLod;
     nearLod.screenSize = 1.f;
     nearLod.representation = Representation::Strands;
     nearLod.curveFraction = 1.f;
     GroomLod midLod;
     midLod.screenSize = 0.35f;
-    midLod.representation = Representation::Strands;
+    midLod.representation = Representation::Cards;
     midLod.curveFraction = 0.3f;
     midLod.thicknessScale = 2.f;
     GroomLod farLod;
@@ -385,8 +414,10 @@ Result<void> GroomInstance::rebuild() {
         activeRepresentation_ = Representation::None;
     }
 
-    RibbonMesh combined;
-    bool anyStrands = false;
+    RibbonMesh ribbonCombined;
+    CardMeshData cardCombined;
+    bool anyRibbon = false;
+    bool anyCards = false;
 
     for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
         const GroomGroup *group = asset_.groupAt(gi);
@@ -395,12 +426,11 @@ Result<void> GroomInstance::rebuild() {
         const size_t lodIndex = resolveLodIndex(*group);
         const GroomLod &lod = group->lods[lodIndex];
         if (lod.representation == Representation::None) continue;
-        if (lod.representation == Representation::Cards ||
-            lod.representation == Representation::Meshes) {
+        if (lod.representation == Representation::Meshes) {
             mesh_ = nullptr;
             return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::Unsupported,
-                "GroomInstance::rebuild: Cards/Meshes LOD owned by HairCards / later phase",
+                "GroomInstance::rebuild: Meshes LOD not implemented yet",
                 "hair.groom.representation"));
         }
 
@@ -419,23 +449,48 @@ Result<void> GroomInstance::rebuild() {
         auto ok = strands.validate();
         if (!ok.ok()) return Result<void>::failure(ok.status());
 
+        if (lod.representation == Representation::Cards) {
+            appendCardMesh(cardCombined,
+                           buildCardsFromStrands(strands, widthScale_ * lod.thicknessScale));
+            anyCards = true;
+            continue;
+        }
+
         RibbonParams ribbon;
         ribbon.sideHint = sideHint_;
         ribbon.widthScale = widthScale_ * lod.thicknessScale;
         auto meshData = buildRibbons(strands, ribbon);
         if (!meshData.ok()) return Result<void>::failure(meshData.status());
-        appendRibbonMesh(combined, meshData.value());
-        anyStrands = true;
+        appendRibbonMesh(ribbonCombined, meshData.value());
+        anyRibbon = true;
     }
 
-    if (!anyStrands || combined.indices.empty()) {
+    // Prefer the primary group's representation when both ribbon and cards exist.
+    const bool useCards =
+        anyCards && (!anyRibbon || activeRepresentation_ == Representation::Cards);
+
+    if (useCards) {
+        if (cardCombined.indices.empty()) {
+            mesh_ = nullptr;
+            return Result<void>::success();
+        }
+        mesh_ = uploadCardMesh(gfx_, cardCombined);
+        if (!mesh_) {
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "GroomInstance::rebuild: card mesh upload failed",
+                "hair.groom.cards"));
+        }
+        return ensureDrawResources();
+    }
+
+    if (!anyRibbon || ribbonCombined.indices.empty()) {
         mesh_ = nullptr;
         return Result<void>::success();
     }
 
-    mesh_ = gfx_->newMeshFromArrays(combined.posXYZ.data(), combined.nrmXYZ.data(),
-                                    combined.uvST.data(), combined.vertexCount(),
-                                    combined.indices.data(), combined.indexCount());
+    mesh_ = gfx_->newMeshFromArrays(ribbonCombined.posXYZ.data(), ribbonCombined.nrmXYZ.data(),
+                                    ribbonCombined.uvST.data(), ribbonCombined.vertexCount(),
+                                    ribbonCombined.indices.data(), ribbonCombined.indexCount());
     if (!mesh_) {
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::Failed, "GroomInstance::rebuild: mesh upload failed", "hair.groom.mesh"));

@@ -532,6 +532,51 @@ TEST_CASE("graphics.hair.guideSimulatorPinsRootsAndFalls") {
     CHECK(!sim.step(-0.1f).ok());
 }
 
+TEST_CASE("graphics.hair.groomInstanceCardsLodBakeAndDraw") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 96, 64);
+
+    GroomInstance *groom = gfx->newGroomInstance();
+    REQUIRE(groom != nullptr);
+    ProceduralParams params;
+    params.strandCount = 24;
+    params.pointsPerStrand = 5;
+    params.seed = 41;
+    auto baked = groom->bakeProceduralPlane(0.2f, 0.2f, params);
+    REQUIRE(baked.ok());
+    REQUIRE(groom->getMesh() != nullptr);
+    CHECK_EQ(groom->getActiveLodIndex(), 0);
+    CHECK_EQ(groom->getActiveRepresentation(), int(Representation::Strands));
+    const int strandsVerts = groom->getMesh()->getVertexCount();
+    CHECK(strandsVerts > 0);
+
+    groom->setForcedLod(1);
+    auto cardsRebuild = groom->rebuild();
+    REQUIRE(cardsRebuild.ok());
+    REQUIRE(groom->getMesh() != nullptr);
+    CHECK_EQ(groom->getActiveLodIndex(), 1);
+    CHECK_EQ(groom->getActiveRepresentation(), int(Representation::Cards));
+    const int cardsVerts = groom->getMesh()->getVertexCount();
+    CHECK(cardsVerts > 0);
+    // Cards expand per-segment quads; topology differs from near ribbon bake.
+    CHECK(cardsVerts != strandsVerts);
+
+    groom->setForcedLod(2);
+    auto noneRebuild = groom->rebuild();
+    REQUIRE(noneRebuild.ok());
+    CHECK_EQ(groom->getActiveLodIndex(), 2);
+    CHECK_EQ(groom->getActiveRepresentation(), int(Representation::None));
+    CHECK(groom->getMesh() == nullptr);
+
+    groom->setForcedLod(1);
+    REQUIRE(groom->rebuild().ok());
+    gfx->begin3DFrame();
+    groom->draw(glm::mat4(1.f));
+    gfx->present();
+    win->close();
+}
+
 TEST_CASE("graphics.hair.groomInstanceGuideSimUpdate") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
