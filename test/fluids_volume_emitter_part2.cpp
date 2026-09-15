@@ -6,32 +6,6 @@
 #include "zeroerr/unittest.h"
 using namespace eve::fluids;
 
-static eve::Value withoutRecentMaterialFields(eve::Value particle) {
-    const auto* current = particle.find("material");
-    eve::Value  material(eve::Value::Object{});
-    for (const auto& key : current->keys())
-        if (key != "atmosphericPressure" && key != "smoothing" && key != "rollingContacts" &&
-            key != "rollingFriction" && key != "dynamicFriction" && key != "staticFriction" && key != "stickiness" &&
-            key != "stickDistance" && key != "frictionCombine" && key != "stickinessCombine")
-            material.set(key, *current->find(key));
-    eve::Value legacy(eve::Value::Object{});
-    for (const auto& key : particle.keys())
-        if (key != "angularVelocity") legacy.set(key, *particle.find(key));
-    legacy.set("material", std::move(material));
-    return legacy;
-}
-
-static void removeV12MaterialFields(eve::Value& description) {
-    auto*       prototype = description.find("prototype");
-    const auto* source    = prototype ? prototype->find("material") : nullptr;
-    REQUIRE(source != nullptr);
-    eve::Value material(eve::Value::Object{});
-    for (const auto& key : source->keys())
-        if (key != "stickiness" && key != "stickDistance" && key != "frictionCombine" && key != "stickinessCombine")
-            material.set(key, *source->find(key));
-    prototype->set("material", std::move(material));
-}
-
 TEST_CASE("fluids.volumeEmitter.movingNozzleInheritsVelocityAndRejectsBadPose") {
     auto created = VolumeFluid::create({});
     REQUIRE(created.ok());
