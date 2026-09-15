@@ -8,20 +8,6 @@
 
 using namespace eve::fluids;
 
-static eve::Value withoutRecentMaterialFields(eve::Value particle) {
-    const auto* current = particle.find("material");
-    eve::Value  material(eve::Value::Object{});
-    for (const auto& key : current->keys())
-        if (key != "atmosphericPressure" && key != "smoothing" && key != "rollingContacts" &&
-            key != "rollingFriction" && key != "dynamicFriction" && key != "staticFriction" && key != "stickiness" &&
-            key != "stickDistance" && key != "frictionCombine" && key != "stickinessCombine")
-            material.set(key, *current->find(key));
-    eve::Value legacy(eve::Value::Object{});
-    for (const auto& key : particle.keys())
-        if (key != "angularVelocity") legacy.set(key, *particle.find(key));
-    legacy.set("material", std::move(material));
-    return legacy;
-}
 static eve::Value withoutSdfColliders(const eve::Value& snapshot) {
     eve::Value legacy(eve::Value::Object{});
     for (const auto& key : snapshot.keys()) {
