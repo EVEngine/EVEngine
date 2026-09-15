@@ -192,7 +192,9 @@ Result<GtsTerrainLodSet> buildGtsTerrainLodsFromHeightmap(const Heightmap&height
 Result<void> buildDefaultGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet&output,const Heightmap&heightmap,
  GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ,int subTileSplits,GtsMeshPivot pivot){
  auto built=buildGtsTerrainLodsFromHeightmap(heightmap,resolution,sizeX,sizeY,sizeZ,subTileSplits,pivot,defaultGtsTerrainLodLevels());
- if(!built)return Result<void>::failure(*built.error());output=std::move(built).takeValue();return Result<void>::success();
+ if(!built)return Result<void>::failure(*built.error());
+ output=std::move(built).takeValue();
+ return Result<void>::success();
 }
 
 Result<void> buildGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet&output,const Heightmap&heightmap,
