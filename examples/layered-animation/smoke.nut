@@ -1,21 +1,26 @@
-// Smoke: build the mixer, advance a few frames, and assert layered pose motion.
+// Smoke: load three KayKit clips, advance solos + layered mix, assert finite poses.
 if (anim == null) anim = eve.Animation();
-if (mixer == null) {
-    // eve_init may not have run under eve_run_script; build on demand.
+if (model3d == null) model3d = eve.Model3D();
+if (slots == null || slots.len() == 0) {
     dofile("main.nut");
     eve_init();
 }
+if (slots.len() != 4) throw "expected 4 slots (3 solos + layered)";
+if (mixer == null) throw "layered mixer missing";
+if (mixer.getLayerCount() != 2) throw "expected upper+hit layers";
+if (mixer.getLayerMode("hit") != "additive") throw "hit mode";
+if (mixer.getLayerAdditiveReference("hit") != "bind") throw "hit reference";
+
 local samples = 0;
-for (local i = 0; i < 8; ++i) {
+for (local i = 0; i < 12; ++i) {
     eve_update(1.0 / 30.0);
-    local pose = mixer.getPose();
-    pose.computeWorld(sk);
-    if (pose.getBoneCount() != 3) throw "unexpected bone count";
-    if (!isfinite(pose.getWorldPositionY(1))) throw "non-finite torso";
+    foreach (slot in slots) {
+        local pose = slot.kind == "solo" ? slot.player.getPose() : mixer.getPose();
+        pose.computeWorld(skeleton);
+        if (pose.getBoneCount() < 8) throw "pose bone count too small";
+        if (!isfinite(pose.getWorldPositionY(1))) throw "non-finite pose in " + slot.label;
+    }
     samples += 1;
 }
-if (samples != 8) throw "smoke samples mismatch";
-if (mixer.getLayerCount() != 2) throw "expected upper+recoil layers";
-if (mixer.getLayerMode("recoil") != "additive") throw "recoil mode";
-if (mixer.getLayerAdditiveReference("recoil") != "bind") throw "recoil reference";
-print("layered-animation smoke ok\n");
+if (samples != 12) throw "smoke samples mismatch";
+print("layered-animation smoke ok (3 clips + mix)\n");
