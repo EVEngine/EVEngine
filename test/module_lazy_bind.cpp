@@ -154,6 +154,9 @@ TEST_CASE("moduleExpose.allBindingsPreserveRenderable3DSurface") {
         renderable.clearMeshLod()
         renderable.setPosition(1.0, 2.0, 3.0)
         renderable.setRoughness(0.8)
+        renderable.setPackedNormalMask(true)
+        renderable.setLayer(8)
+        if (renderable.getLayer() != 8) throw "Renderable3D layer binding was lost"
         renderable.setCastShadow(true)
         renderable.setReceiveShadow(true)
     )", "lazy-graphics-3d.nut");

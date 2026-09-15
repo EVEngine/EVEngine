@@ -39,6 +39,8 @@ void Renderable3D::setTexture(Texture* texture) { meshRenderer()->texture = text
 
 void Renderable3D::setNormalTexture(Texture* texture) { meshRenderer()->normalTexture = texture; }
 
+void Renderable3D::setPackedNormalMask(bool enabled) { meshRenderer()->packedNormalMask = enabled; }
+
 void Renderable3D::setHeightTexture(Texture* texture) { meshRenderer()->heightTexture = texture; }
 
 void Renderable3D::setShader(Shader* shader) { meshRenderer()->shader = shader; }
