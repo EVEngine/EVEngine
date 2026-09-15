@@ -84,9 +84,16 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 
 ## API 快查
 
-- 模块：`newWorld()` / `resolve` / `release` / `isStale`
-- World：`upsert` / `remove` / `setZones` / `query` / `circle` / `box` / `executePreset` / `resultAt` / `setSpatialIndexEnabled` / `spatialIndexEnabled` / `debugLastQueryJson` / `snapshotJson` / `restoreJson`
-- 管线：`TargetingPipeline::withBuiltins` / `registerTask` / `registerPreset` / `execute` / `executePreset`
+| 对象 | API | 说明 |
+|---|---|---|
+| `Sensing` | `getName()` / `newWorld()` | 查询模块名，或创建模块拥有的 `SensingWorld` Result。 |
+| 拥有型 World | `ownership()` / `ownerEpoch()` / `handle()` / `isStale()` / `release()` | 查询世代生命周期或释放 World。 |
+| World | `upsert` / `remove` / `setZones` | 写入/删除主体事实，或更新逻辑 Zone 成员。 |
+| World | `query` / `circle` / `box` / `executePreset` / `resultAt` | 查询候选并读取缓存结果。 |
+| World | `setSpatialIndexEnabled` / `spatialIndexEnabled` / `debugLastQueryJson` | 可选空间广相与上次查询调试 JSON。 |
+| World | `snapshotJson` / `restoreJson` | 确定性快照或事务性恢复 Result。 |
+| `SensingCandidate` | `getId()` / `getX()` / `getY()` / `getDistance()` | `resultAt` 返回的只读候选字段。 |
+| 管线 | `TargetingPipeline::withBuiltins` / `registerTask` / `registerPreset` / `execute` / `executePreset` | C++ Preset 注册与执行。 |
 
 **源码：** [`src/modules/sensing/`](../../../src/modules/sensing/)  
 **设计文档：** [`docs/dev/感知与目标选择系统设计.md`](../../dev/感知与目标选择系统设计.md)  
