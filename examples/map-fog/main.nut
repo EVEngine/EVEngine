@@ -64,7 +64,7 @@ function clearMask() {
 function softWeight(dist, radius) {
     // Soft unlock penumbra: smaller hard core so the frontier thins gradually.
     if (dist >= radius) return 0.0;
-    local core = radius * 0.22;
+    local core = radius * 0.72;
     if (dist <= core) return 1.0;
     local t = (radius - dist) / (radius - core);
     return t * t * (3.0 - 2.0 * t);
@@ -156,11 +156,14 @@ function rebuildMask() {
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
                 // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 2.60);
+                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.85);
+                // Dissolve rim puffs stay on B only — do not stamp R into fog
+                // (that leaked clearCore and dirty hole shadows).
                 stampRimPuffs(x, y, 0.0, sel, dissolving[idx]);
             } else if (unlocked[idx]) {
-                stampSoft(x, y, 1.0, sel, 0.0, 2.60);
-                stampRimPuffs(x, y, 1.0, sel, 0.0);
+                // Firm unlock disc only. Rim sparseness comes from the shader
+                // frontier gate — not from R=1 satellite stamps into fog.
+                stampSoft(x, y, 1.0, sel, 0.0, 1.85);
             } else if (sel > 0.0) {
                 stampSoft(x, y, 0.0, sel, 0.0, 0.90);
             }
@@ -209,17 +212,18 @@ eve_init = function() {
     fog.setCloudTiling(0.48, 0.82);
     fog.setCloudSpeed(0.007, 0.013);
     fog.setCloudMix(0.28);
-    fog.setDistort(0.26);
-    fog.setDistortFix(-0.014, 0.010);
+    fog.setDistort(0.18);
+    fog.setDistortFix(-0.010, 0.008);
     fog.setFogColor(0.96, 0.97, 1.00);
     fog.setFogAlpha(fogAlpha);
-    // Bubbly mask stamps + puff UV warp => lobed unlock rim + hole shadow.
-    fog.setEdgeSoftness(0.28);
-    fog.setShadow(0.042, 0.058, 0.88);
+    // Soft unlock rim; clearCore kills warp leftovers inside the hole.
+    fog.setEdgeSoftness(0.08);
+    fog.setShadowEnabled(true);
+    fog.setShadow(0.018, 0.022, 0.48);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
     // Peak cotton opaque/bright; valleys between blobs clear (not fogAlpha wash).
-    fog.setCloudDensity(0.48, 0.18);
+    fog.setCloudDensity(0.46, 0.14);
     // Wider soft frontier so density thins gradually into islands.
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
