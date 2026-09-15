@@ -308,3 +308,44 @@ TEST_CASE("targeting.worldAreaCone2DContainsFacingSector") {
     auto bad = WorldArea::cone2D(apex.value(), 0.f, 0.f, 0.5f, 10.f);
     CHECK(!bad.ok());
 }
+
+TEST_CASE("targeting.sensingWorldProviderHonorsZoneMembership") {
+    ResetCapabilities reset;
+    SensingWorld      world;
+    const auto        origin = subject("00000000-0000-7000-8000-000000000021");
+    const auto        inside = subject("00000000-0000-7000-8000-000000000022");
+    const auto        outside = subject("00000000-0000-7000-8000-000000000023");
+
+    REQUIRE(world.upsert(origin.format(), 0.f, 0.f, "blue", "unit", "").ok());
+    REQUIRE(world.upsert(inside.format(), 3.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(world.upsert(outside.format(), 4.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(world.setZones(inside.format(), "arena:central").ok());
+    REQUIRE(world.setZones(outside.format(), "arena:edge").ok());
+    CHECK(!world.setZones(outside.format(), "not-a-logical-id").ok());
+
+    auto zoneId = LogicalId::parse("arena:central");
+    REQUIRE(zoneId.has_value());
+    auto zone = eve::sensing::ZoneRef::fromLogicalId(*zoneId);
+    REQUIRE(zone.has_value());
+
+    SensingWorldCandidateProvider provider(world);
+    eve::cap::provide<ISensingCandidateProvider>(&provider);
+    provider.setFactionRelation([](std::string_view, std::string_view) {
+        return eve::Result<TargetDomain>::success(TargetDomain::Enemy);
+    });
+
+    TargetingSpec spec;
+    spec.space       = CoordinateSpace::World2D;
+    spec.domain      = TargetDomain::Enemy;
+    spec.minCount    = 1;
+    spec.maxCount    = 8;
+    spec.maxRange    = 10.f;
+    spec.requiredTags = {"unit"};
+    spec.zone        = *zone;
+
+    TargetingQuery query{origin, world2D(0.f, 0.f), spec};
+    auto           resolved = TargetingResolver{}.resolve(query);
+    REQUIRE(resolved.ok());
+    CHECK_EQ(resolved.value().subjects().size(), 1u);
+    CHECK_EQ(resolved.value().subjects()[0], inside);
+}

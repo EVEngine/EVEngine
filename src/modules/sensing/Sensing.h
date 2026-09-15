@@ -28,6 +28,7 @@ struct Subject {
     std::string           faction;
     std::set<std::string> tags;
     std::set<std::string> visibleTo;
+    std::set<std::string> zones; /**< Logical zone ids (LogicalId text). */
 };
 
 /** @brief A deterministic candidate returned by a spatial query. */
@@ -147,6 +148,14 @@ public:
                                            std::string_view tagsCsv, std::string_view visibleToCsv);
     /** @brief Removes mirrored facts, or returns NotFound when the id is absent. */
     [[nodiscard]] eve::Result<void> remove(std::string_view id);
+    /**
+     * @brief Replaces logical zone membership for an existing subject.
+     * @param id Subject id that must already be registered.
+     * @param zonesCsv Comma-separated LogicalId texts (e.g. "arena:central"); empty clears membership.
+     * @return Applied on success, NotFound when absent, or InvalidArgument for empty/invalid zone ids.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<void> setZones(std::string_view id, std::string_view zonesCsv);
 
     /**
      * @brief Enables or disables an optional SpatialHash2D broadphase (off by default).

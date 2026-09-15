@@ -1,4 +1,5 @@
 #include "sensing/Sensing.h"
+#include "common/Identity.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
 #include "common/SquirrelBinding.h"
@@ -253,6 +254,24 @@ eve::Result<void> SensingWorld::remove(std::string_view id) {
     if (subjects_.erase(key) == 0)
         return sensingFailure<void>(eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id");
     unindexSubject(key);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> SensingWorld::setZones(std::string_view id, std::string_view zonesCsv) {
+    const std::string key(id);
+    auto              it = subjects_.find(key);
+    if (it == subjects_.end())
+        return sensingFailure<void>(eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id");
+    auto zones = csv(zonesCsv);
+    for (const auto& zone : zones) {
+        if (zone.empty())
+            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "zones cannot contain empty keys",
+                                        "subject.zones");
+        if (!eve::LogicalId::parse(zone))
+            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                        "zones entries must be valid LogicalId texts", "subject.zones");
+    }
+    it->second.zones = std::move(zones);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -529,7 +548,7 @@ std::string SensingWorld::snapshotJson() const {
         first = false;
         o << "{\"id\":" << quote(id) << ",\"x\":" << std::setprecision(9) << s.x << ",\"y\":" << s.y
           << ",\"faction\":" << quote(s.faction) << ",\"tags\":" << quote(join(s.tags))
-          << ",\"visibleTo\":" << quote(join(s.visibleTo)) << '}';
+          << ",\"visibleTo\":" << quote(join(s.visibleTo)) << ",\"zones\":" << quote(join(s.zones)) << '}';
     }
     return o.str() + "]}";
 }
@@ -554,6 +573,13 @@ eve::Result<void> SensingWorld::restoreJson(const std::string& j) {
         if (!subject.ok())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "invalid snapshot subject", {}, {}, "sensing.restore"));
+        if (v.has("zones")) {
+            auto zones = next.setZones(v.getString("id"), v.getString("zones"));
+            if (!zones.ok())
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "invalid snapshot subject zones", {}, {},
+                    "sensing.restore"));
+        }
     }
     subjects_ = std::move(next.subjects_);
     results_.clear();
@@ -636,6 +662,17 @@ void Sensing::expose(ssq::Table& t) {
             return eve::script::projectResult(
                 vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
         return eve::script::projectResult(vm, world->remove(id));
+    });
+    w.addFunc("setZones", [vm](ScriptSensingWorld* value, const std::string& id, const std::string& zones) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
+                                         "world"));
+        auto world = Sensing::resolve(value->reference);
+        if (!world.isBound())
+            return eve::script::projectResult(
+                vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
+        return eve::script::projectResult(vm, world->setZones(id, zones));
     });
     auto projectCount = [vm](eve::Result<int>&& result) {
         return eve::script::projectResult(vm, std::move(result),

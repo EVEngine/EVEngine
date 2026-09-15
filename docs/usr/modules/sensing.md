@@ -85,7 +85,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 ## API 快查
 
 - 模块：`newWorld()` / `resolve` / `release` / `isStale`
-- World：`upsert` / `remove` / `query` / `circle` / `box` / `executePreset` / `resultAt` / `setSpatialIndexEnabled` / `spatialIndexEnabled` / `debugLastQueryJson` / `snapshotJson` / `restoreJson`
+- World：`upsert` / `remove` / `setZones` / `query` / `circle` / `box` / `executePreset` / `resultAt` / `setSpatialIndexEnabled` / `spatialIndexEnabled` / `debugLastQueryJson` / `snapshotJson` / `restoreJson`
 - 管线：`TargetingPipeline::withBuiltins` / `registerTask` / `registerPreset` / `execute` / `executePreset`
 
 **源码：** [`src/modules/sensing/`](../../../src/modules/sensing/)  
@@ -103,3 +103,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 - `setSpatialIndexEnabled(true, cellSize)` 打开可选 `SpatialHash2D` 广相（默认关）。过滤/排序仍由 `QuerySpec` 负责；索引只做候选裁剪。
 - `debugLastQueryJson()` 返回上次成功查询的确定性 JSON（`eve.sensing.lastQuery`）：origin、shape、spatial.enabled/used/scanned/accepted、ranked scores。可供 MCP/debug overlay 消费；sensing 不依赖 editor。
 - 当前查询路径保持同步；异步 request 未引入。
+
+## Zone 成员
+
+`setZones(id, "ns:name,...")` 写入主体的逻辑 Zone 成员（`LogicalId` 文本）。`SensingWorldCandidateProvider` 将其投影为 `TargetCandidate.zones`，并支持 `TargetingSpec.zone` 过滤。几何 Zone 文档仍由 crowd/editor 等模块拥有；sensing 只镜像成员关系。

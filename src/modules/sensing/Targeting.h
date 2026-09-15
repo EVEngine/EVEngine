@@ -488,8 +488,9 @@ using FactionRelationFn =
 /**
  * @brief ISensingCandidateProvider adapter over a SensingWorld fact mirror.
  *
- * Supports World2D queries only. Zone and grid constraints are Unsupported until
- * the world stores those facts. Domain filters require an injected FactionRelationFn.
+ * Supports World2D queries only. Grid constraints remain Unsupported. Zone
+ * filters use mirrored subject zone membership (`SensingWorld::setZones`).
+ * Domain filters require an injected FactionRelationFn.
  *
  * @ownership Non-owning pointer to SensingWorld; the world must outlive this provider.
  * @thread Call on the same simulation thread as the bound SensingWorld.

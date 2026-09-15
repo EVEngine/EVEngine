@@ -370,8 +370,6 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
         return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider has no bound SensingWorld");
     if (query.spec.space != CoordinateSpace::World2D)
         return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider supports World2D only");
-    if (query.spec.zone)
-        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider does not store zone membership");
     if (query.spec.gridArea)
         return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider does not support grid areas");
     if (query.spec.domain != TargetDomain::Any && !relation_)
@@ -427,7 +425,24 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
         candidate.subject  = SubjectRef::fromPersistentId(*persistent);
         candidate.location = std::move(location).takeValue();
         candidate.domain   = domain;
-        candidate.tags.assign(world_->subjects().at(ranked.id).tags.begin(), world_->subjects().at(ranked.id).tags.end());
+        const auto& subjectFacts = world_->subjects().at(ranked.id);
+        candidate.tags.assign(subjectFacts.tags.begin(), subjectFacts.tags.end());
+        candidate.zones.clear();
+        candidate.zones.reserve(subjectFacts.zones.size());
+        for (const auto& zoneText : subjectFacts.zones) {
+            auto logical = LogicalId::parse(zoneText);
+            if (!logical)
+                return failure<std::vector<TargetCandidate>>(
+                    DiagnosticCode::InvalidArgument,
+                    "SensingWorld subject zone must be a valid LogicalId", "subject.zones");
+            auto zone = ZoneRef::fromLogicalId(*logical);
+            if (!zone)
+                return failure<std::vector<TargetCandidate>>(
+                    DiagnosticCode::InvalidArgument,
+                    "SensingWorld subject zone must form a valid ZoneRef", "subject.zones");
+            candidate.zones.push_back(*zone);
+        }
+        if (query.spec.zone && !inZone(candidate, query.spec.zone)) continue;
         result.push_back(std::move(candidate));
     }
     return Result<std::vector<TargetCandidate>>::success(std::move(result));
