@@ -148,7 +148,10 @@ fn luma(c: vec3<f32>) -> f32 {
       cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
   fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
   let density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-  let body = mix(0.18, 1.0, density);
+  let porosity = valley * valley * 0.38;
+  let rimThin = mix(1.0, density * density, edgeBand * 1.05);
+  var body = mix(0.04, 0.72, density);
+  body = body * (1.0 - porosity) * rimThin;
 
   if (passMode < 0.5) {
     let sUv = maskUv + shadowOff;
@@ -163,7 +166,7 @@ fn luma(c: vec3<f32>) -> f32 {
     let sDissolveNoise = luma(textureSample(mainTex, mainSampler,
         (cloudUv + shadowOff * vec2<f32>(aspect, 1.0)) * dissolveScale).rgb);
     sFog = sFog * (1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b));
-    let a = hole * sFog * mix(0.55, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
+    let a = hole * sFog * mix(0.40, 0.95, density) * shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 

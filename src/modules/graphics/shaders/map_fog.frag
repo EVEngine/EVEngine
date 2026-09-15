@@ -103,9 +103,16 @@ void main() {
         cloudUv * dissolveScale + vec2(time * 0.015, -time * 0.02)).rgb);
     fogKeep *= 1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve);
 
-    // Thickness from puff luminance — gaps between blobs go translucent.
+    // Puff luminance → coverage. Valleys stay see-through; peaks stay milky.
     float density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-    float body = mix(0.18, 1.0, density);
+    // Interior porosity so terrain peeks through inter-puff gaps (reference look).
+    float porosity = valley * valley * 0.38;
+    // Toward the unlock rim, lean harder on density so coverage thins out
+    // gradually (sparse frontier puffs, terrain shows between them).
+    float rimThin = mix(1.0, density * density, edgeBand * 1.05);
+    // Partial alpha throughout — never a solid paper plate.
+    float body = mix(0.04, 0.72, density);
+    body *= (1.0 - porosity) * rimThin;
 
     if (passMode < 0.5) {
         // Cast shadow onto the unlocked terrain: hole ∩ offset-fog, shaped by
@@ -123,7 +130,7 @@ void main() {
         float sFog = 1.0 - softenEdge(sUnlocked, edgeSoft);
         float sDissolveNoise = luma(texture(MainTex, (cloudUv + shadowOff * vec2(aspect, 1.0)) * dissolveScale).rgb);
         sFog *= 1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b);
-        float a = hole * sFog * mix(0.55, 1.0, density) * shadowStrength * fogAlpha * fragColor.a;
+        float a = hole * sFog * mix(0.40, 0.95, density) * shadowStrength * fogAlpha * fragColor.a;
         outColor = vec4(0.0, 0.0, 0.0, a);
         return;
     }
