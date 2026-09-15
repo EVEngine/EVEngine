@@ -1,10 +1,10 @@
 // Full SilPOM vs full SSDM — planar extruded brick cards.
 //
 // Left  = classic POM   (parallax only; geometric silhouette)
-// Mid   = SilPOM        (steep POM + soft chart clip + horizon trim +
-//                        height normals + self-shadow + FragDepth)
-// Right = SSDM          (model-space heightfield raymarch through the slab +
-//                        FragDepth from the geometric hit)
+// Mid   = SilPOM        (solid geometric heightfield march + soft card-border
+//                        feather + height normals + self-shadow + FragDepth)
+// Right = SSDM          (same solid planar heightfield march; chart softCoverage
+//                        as the silhouette limb signal)
 //
 // Cards are extruded slabs (local Z = height axis) so SilPOM/SSDM can change
 // the silhouette. Cylinders are the wrong domain for these algorithms.
@@ -24,6 +24,8 @@ persist cmpSsdm = null
 persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
+persist cmpTexVer = 0
+const CMP_TEX_VER = 2
 persist cmpYaw = 0.55
 persist cmpPitch = 0.22
 persist cmpOrbit = false
@@ -50,10 +52,20 @@ function brickColor(u, v) {
     local ou = odd ? (bu + 0.5) : bu;
     local fx = fabs(ou - floor(ou) - 0.5);
     local fy = fabs(bv - floor(bv) - 0.5);
-    local mortar = (fx > 0.40 || fy > 0.36) ? 1.0 : 0.0;
-    if (mortar > 0.5) return [0.52, 0.50, 0.46, 0.05];
-    local h = 0.55 + 0.40 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
-    return [0.70 + 0.12 * h, 0.32 + 0.08 * h, 0.24 + 0.05 * h, h];
+    // Wide soft mortar ramps: a heightfield has no real vertical brick walls.
+    // Hard cliffs let grazing rays slip past the edge → 镂空 "shell" bricks.
+    local mx = (fx - 0.28) / 0.22;
+    local my = (fy - 0.24) / 0.22;
+    if (mx < 0.0) mx = 0.0; if (mx > 1.0) mx = 1.0;
+    if (my < 0.0) my = 0.0; if (my > 1.0) my = 1.0;
+    mx = mx * mx * (3.0 - 2.0 * mx);
+    my = my * my * (3.0 - 2.0 * my);
+    local mortar = mx;
+    if (my > mortar) mortar = my;
+    local hBrick = 0.50 + 0.32 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
+    local h = (1.0 - mortar) * hBrick + mortar * 0.12;
+    if (mortar > 0.70) return [0.52, 0.50, 0.46, h];
+    return [0.70 + 0.12 * hBrick, 0.32 + 0.08 * hBrick, 0.24 + 0.05 * hBrick, h];
 }
 
 function buildTextures() {
@@ -187,7 +199,13 @@ function updateCamera() {
 eve_init = function() {
     cmpReady = false;
     gfx.setBackgroundColor(0.10, 0.12, 0.16, 1.0);
-    if (cmpAlbedo == null) buildTextures();
+    if (cmpAlbedo == null || cmpHeight == null || cmpTexVer != CMP_TEX_VER) {
+        buildTextures();
+        cmpTexVer = CMP_TEX_VER;
+    }
+    if (cmpPom != null) { cmpPom.ent.setTexture(cmpAlbedo); cmpPom.ent.setHeightTexture(cmpHeight); }
+    if (cmpSil != null) { cmpSil.ent.setTexture(cmpAlbedo); cmpSil.ent.setHeightTexture(cmpHeight); }
+    if (cmpSsdm != null) { cmpSsdm.ent.setTexture(cmpAlbedo); cmpSsdm.ent.setHeightTexture(cmpHeight); }
     if (cmpSlabMesh == null) cmpSlabMesh = makeSlabMesh();
     if (cmpThinMesh == null) cmpThinMesh = makeThinMesh();
     if (cmpPom == null) cmpPom = makeCard(0, -2.8);
@@ -228,7 +246,7 @@ eve_init = function() {
     updateCamera();
     cmpReady = true;
     print("Full SilPOM vs SSDM: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
-    print("Left=POM  Mid=SilPOM (soft clip+horizon)  Right=SSDM (geometric height march)\n");
+    print("Left=POM  Mid=SilPOM (solid height march)  Right=SSDM (planar height march)\n");
 };
 
 eve_asset_reload <- function(path) {

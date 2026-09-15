@@ -3,11 +3,11 @@
 //
 // pc.data[0] mode:
 //   0 = classic POM  — parallax only; geometric silhouette unchanged
-//   1 = SilPOM       — steep POM + soft chart coverage + horizon trim +
-//                      height normals + self-shadow + FragDepth from hit
-//   2 = SSDM         — model-space heightfield raymarch through the
-//                      extruded slab + FragDepth from geometric hit
-//                      (correct planar form of screen-space displacement)
+//   1 = SilPOM       — solid geometric heightfield march + soft card-border
+//                      feather + height normals + self-shadow + FragDepth
+//                      (NO horizon-trim discard — that punched 镂空 through mortar)
+//   2 = SSDM         — same solid planar heightfield march + chart softCoverage
+//                      as the silhouette limb signal + FragDepth
 //
 // Height.r: 1 = raised toward the card normal (+Z in model space).
 // Card mesh is a slab with local XY in [-1,1] → UV, local Z in [0,1]
@@ -70,7 +70,15 @@ mat3 makeTBN(vec3 N, vec3 worldPos, vec2 uv) {
 }
 
 float heightAt(vec2 uv) {
-    return texture(heightSampler, clamp(uv, 0.0, 1.0)).r;
+    // 5-tap blur softens texel cliffs so the heightfield has slope the march can hit.
+    vec2 texel = 1.0 / vec2(textureSize(heightSampler, 0));
+    vec2 c = clamp(uv, 0.0, 1.0);
+    float h = texture(heightSampler, c).r * 2.0;
+    h += texture(heightSampler, clamp(c + vec2(texel.x, 0.0), 0.0, 1.0)).r;
+    h += texture(heightSampler, clamp(c - vec2(texel.x, 0.0), 0.0, 1.0)).r;
+    h += texture(heightSampler, clamp(c + vec2(0.0, texel.y), 0.0, 1.0)).r;
+    h += texture(heightSampler, clamp(c - vec2(0.0, texel.y), 0.0, 1.0)).r;
+    return h * (1.0 / 6.0);
 }
 
 vec3 localFromWorld(vec3 worldPos) {
@@ -168,8 +176,10 @@ float selfShadow(vec2 hitUV, float hitDepth, vec3 lightTS, float scale,
     return 1.0;
 }
 
-// Geometric SSDM: march the heightfield through the local-space slab.
-// Surface lives at local.z = height(uv). Returns xy=UV, z=coverage, w=hitZ.
+// Geometric heightfield march through the local-space slab.
+// Surface is z = height(uv). Returns xy=UV, z=1 on hit (caller applies soft
+// coverage — packing it into z caused false misses / 镂空 at chart borders),
+// w=hitZ.
 vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLayers) {
     if (abs(dirLocal.z) < 1e-5)
         return vec4(0.0);
@@ -180,20 +190,25 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
     if (tExit <= tEnter)
         return vec4(0.0);
 
+    // Extra layers + distance-to-surface steps reduce cliff tunneling.
     float layers = clamp(mix(max(maxLayers, 1.0), max(minLayers, 1.0),
                              clamp(abs(dirLocal.z), 0.0, 1.0)),
-                         1.0, 64.0);
-    float dt = (tExit - tEnter) / layers;
+                         1.0, 64.0) * 1.5;
+    layers = clamp(layers, 8.0, 96.0);
+    float dtBase = (tExit - tEnter) / layers;
     float t = tEnter;
-    for (int i = 0; i < 64; ++i) {
-        if (float(i) >= layers)
+    float prevD = 1e5;
+    float prevT = tEnter;
+    for (int i = 0; i < 96; ++i) {
+        if (t > tExit)
             break;
         vec3 p = camLocal + dirLocal * t;
         vec2 uv = uvFromLocal(p);
-        if (p.z <= heightAt(uv) + 1e-3) {
-            float tA = max(t - dt, tEnter);
+        float d = p.z - heightAt(uv); // >0 above surface
+        if (d <= 1e-3 || (prevD > 0.0 && d <= 0.0)) {
+            float tA = prevT;
             float tB = t;
-            for (int r = 0; r < 5; ++r) {
+            for (int r = 0; r < 6; ++r) {
                 float tm = 0.5 * (tA + tB);
                 vec3 pm = camLocal + dirLocal * tm;
                 if (pm.z <= heightAt(uvFromLocal(pm)) + 1e-3)
@@ -203,11 +218,36 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
             }
             vec3 ph = camLocal + dirLocal * tB;
             vec2 uvh = uvFromLocal(ph);
-            return vec4(uvh, softCoverage(uvh, 0.02), clamp(ph.z, 0.0, 1.0));
+            if (uvh.x < -0.02 || uvh.y < -0.02 || uvh.x > 1.02 || uvh.y > 1.02)
+                return vec4(0.0);
+            return vec4(uvh, 1.0, clamp(ph.z, 0.0, 1.0));
         }
-        t += dt;
+        float stepT = dtBase;
+        if (d > 0.0 && d < 0.20)
+            stepT = min(dtBase, max(dtBase * 0.2, d * 0.35 / max(abs(dirLocal.z), 0.08)));
+        prevD = d;
+        prevT = t;
+        t += stepT;
     }
     return vec4(0.0);
+}
+
+// When the heightfield march tunnels past a steep cliff, fill from the front
+// face instead of discard — otherwise mortar gaps read as 镂空 shells.
+bool frontFaceFill(vec3 Nw, float scale, float minLayers, float maxLayers,
+                   vec3 lightTS, inout vec2 uv, inout vec3 N, inout float coverage,
+                   inout float fragDepth, inout float shadow) {
+    mat3 nMat = transpose(inverse(mat3(ubo.model)));
+    vec3 nLocal = normalize(nMat * Nw);
+    if (nLocal.z < 0.35)
+        return false;
+    uv = clamp(vUV, 0.0, 1.0);
+    float h = heightAt(uv);
+    coverage = 1.0;
+    fragDepth = fragDepthFromLocal(vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, h));
+    N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+    shadow = selfShadow(uv, 1.0 - h, lightTS, scale, minLayers, maxLayers);
+    return true;
 }
 
 vec3 shadeLit(vec3 albedo, vec3 N, vec3 V, float shadow) {
@@ -255,32 +295,49 @@ void main() {
         fragDepth = fragDepthFromLocal(local);
         shadow = selfShadow(uv, hit.z, lightTS, scale, minLayers, maxLayers);
     } else if (mode < 1.5) {
-        // Full SilPOM.
-        vec4 hit = pomHit(vUV, viewTS, scale, minLayers, maxLayers);
-        uv = hit.xy;
-        coverage = softCoverage(uv, max(feather, 0.015));
-        coverage *= horizonTrim(heightAt(uv), abs(dot(Nw, V)), max(horizon, 0.4));
-        if (coverage < 0.02)
-            discard;
-        N = normalize(TBN * heightNormalTS(uv, scale));
-        vec3 local = localFromWorld(vWorldPos);
-        local.z = mix(local.z, heightAt(uv), 0.9);
-        fragDepth = fragDepthFromLocal(local);
-        shadow = selfShadow(uv, hit.z, lightTS, scale, minLayers, maxLayers);
-    } else {
-        // Full planar SSDM — geometric heightfield march.
+        // SilPOM (planar extruded card): solid heightfield march. Soft feather
+        // only at the card border — never horizon-discard mortar (that was the
+        // original 镂空). Front-face miss fill seals cliff tunnels.
         vec3 camL = localFromWorld(vCameraPos);
         vec3 fragL = localFromWorld(vWorldPos);
         vec3 dirL = normalize(fragL - camL);
         vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
-        if (hit.z < 0.02)
-            discard;
-        uv = hit.xy;
-        coverage = hit.z;
-        vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
-        fragDepth = fragDepthFromLocal(hitLocal);
-        N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-        shadow = selfShadow(uv, 1.0 - hit.w, lightTS, scale, minLayers, maxLayers);
+        if (hit.z < 0.5) {
+            if (!frontFaceFill(Nw, scale, minLayers, maxLayers, lightTS,
+                               uv, N, coverage, fragDepth, shadow))
+                discard;
+        } else {
+            uv = clamp(hit.xy, 0.0, 1.0);
+            float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
+            coverage = (edgeDist < 0.05) ? softCoverage(hit.xy, max(feather, 0.02)) : 1.0;
+            if (coverage < 0.02)
+                discard;
+            vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
+            fragDepth = fragDepthFromLocal(hitLocal);
+            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+            shadow = selfShadow(uv, 1.0 - hit.w, lightTS, scale, minLayers, maxLayers);
+        }
+    } else {
+        // Full planar SSDM — same solid heightfield march; soft chart coverage
+        // as the silhouette limb signal (no interior discard).
+        vec3 camL = localFromWorld(vCameraPos);
+        vec3 fragL = localFromWorld(vWorldPos);
+        vec3 dirL = normalize(fragL - camL);
+        vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
+        if (hit.z < 0.5) {
+            if (!frontFaceFill(Nw, scale, minLayers, maxLayers, lightTS,
+                               uv, N, coverage, fragDepth, shadow))
+                discard;
+        } else {
+            uv = clamp(hit.xy, 0.0, 1.0);
+            coverage = softCoverage(hit.xy, max(feather, 0.015));
+            if (coverage < 0.02)
+                discard;
+            vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
+            fragDepth = fragDepthFromLocal(hitLocal);
+            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+            shadow = selfShadow(uv, 1.0 - hit.w, lightTS, scale, minLayers, maxLayers);
+        }
     }
 
     // RH_ZO: only pull toward the camera so relief never punches holes in the floor.
