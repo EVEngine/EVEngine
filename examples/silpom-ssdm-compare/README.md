@@ -6,8 +6,8 @@ SSDM** on extruded brick cards.
 | Card | Technique | What you should notice |
 | --- | --- | --- |
 | Left (warm) | Classic **POM** | Internal brick depth; **straight geometric** silhouette |
-| Mid (green) | **Full SilPOM** | Steep POM + soft chart clip + horizon trim + height normals + self-shadow + `FragDepth` → **jagged brick silhouette** |
-| Right (cool) | **Full planar SSDM** | Model-space heightfield raymarch through the slab + `FragDepth` from the geometric hit → **continuous extruded outline** |
+| Mid (green) | **Full SilPOM** | Solid planar heightfield march + soft border feather + height normals + self-shadow + `FragDepth` → **jagged brick silhouette** (no horizon-trim discard) |
+| Right (cool) | **Full planar SSDM** | Same solid planar heightfield march + soft border limb + `FragDepth` from the geometric hit → **continuous extruded outline** |
 
 Cards are **extruded slabs** (local Z = height axis). That is the correct domain
 for silhouette-changing relief. Cylinders are not — a wrapped UV chart cannot
