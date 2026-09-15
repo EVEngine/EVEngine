@@ -5,11 +5,16 @@
 #include "common/Result.h"
 #include "common/SquirrelOwnership.h"
 
+#include <cstdint>
+#include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
+#include <span>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 namespace eve::sensing {
@@ -29,6 +34,94 @@ struct Candidate {
     float       x = 0, y = 0, distance = 0;
 };
 
+/** @brief How candidate-count overflow relative to maxCount is handled. */
+enum class CountPolicy : std::uint8_t {
+    /** @brief Fail the query when the filtered set is outside [minCount, maxCount]. */
+    FailIfOutOfRange,
+    /** @brief Keep the best maxCount candidates after sorting (legacy circle/box limit). */
+    TruncateToMax,
+};
+
+/** @brief Ordering applied to ranked query results. */
+enum class SortKey : std::uint8_t {
+    None,
+    DistanceAscending,
+};
+
+/** @brief Circle shape for QuerySpec (World2D). */
+struct QueryCircle {
+    float x      = 0.f;
+    float y      = 0.f;
+    float radius = 0.f;
+};
+
+/** @brief Inclusive axis-aligned box shape for QuerySpec (World2D). */
+struct QueryBox {
+    float minX = 0.f;
+    float minY = 0.f;
+    float maxX = 0.f;
+    float maxY = 0.f;
+};
+
+/** @brief Optional broad-phase shape; monostate means range-only around the origin. */
+using QueryShape = std::variant<std::monostate, QueryCircle, QueryBox>;
+
+/**
+ * @brief Configurable candidate query against SensingWorld.
+ *
+ * This is the single filtering/sorting implementation surface. Script circle/box
+ * helpers and Targeting adapters compose a QuerySpec rather than reimplementing
+ * acceptance rules. Domain/LOS/zone stay outside this World2D fact query; adapters
+ * that need them must inject projection/LOS capabilities explicitly.
+ */
+struct QuerySpec {
+    QueryShape               shape{};
+    float                    minRange = 0.f;
+    float                    maxRange = std::numeric_limits<float>::infinity();
+    std::vector<std::string> requiredTags;
+    std::vector<std::string> excludedTags;
+    std::vector<std::string> includeFactions;
+    std::vector<std::string> excludeFactions;
+    std::optional<std::string> visibleTo;
+    std::uint32_t            minCount    = 0;
+    std::uint32_t            maxCount    = std::numeric_limits<std::uint32_t>::max();
+    CountPolicy              countPolicy = CountPolicy::TruncateToMax;
+    SortKey                  sortKey     = SortKey::DistanceAscending;
+
+    /** @brief Validates ranges, counts, tags and shape invariants. */
+    [[nodiscard]] eve::Result<void> validate() const;
+};
+
+/** @brief World2D origin used for range tests and distance sorting. */
+struct QueryOrigin {
+    float                x = 0.f;
+    float                y = 0.f;
+    std::optional<std::string> subjectId; /**< Optional self id to exclude from results. */
+};
+
+/** @brief One ranked candidate produced by SensingWorld::query. */
+struct RankedCandidate {
+    std::string id;
+    float       x            = 0.f;
+    float       y            = 0.f;
+    float       distance     = 0.f;
+    float       score        = 0.f; /**< Higher is better; Phase 1 uses -distance. */
+    std::string scoreReason;        /**< Stable diagnostic token, e.g. "distance". */
+};
+
+/** @brief Owning ranked result; does not assign a primary target. */
+class CandidateQueryResult {
+public:
+    CandidateQueryResult() = default;
+    explicit CandidateQueryResult(std::vector<RankedCandidate> ranked) : ranked_(std::move(ranked)) {}
+
+    [[nodiscard]] std::span<const RankedCandidate> ranked() const noexcept { return ranked_; }
+    [[nodiscard]] std::size_t size() const noexcept { return ranked_.size(); }
+
+private:
+    std::vector<RankedCandidate> ranked_;
+};
+
 /** @brief Gameplay-facing 2D candidate query service; it never values or selects targets. */
 class SensingWorld {
 public:
@@ -37,6 +130,15 @@ public:
                                            std::string_view tagsCsv, std::string_view visibleToCsv);
     /** @brief Removes mirrored facts, or returns NotFound when the id is absent. */
     [[nodiscard]] eve::Result<void> remove(std::string_view id);
+
+    /**
+     * @brief Runs a configurable candidate query.
+     * @return Owning ranked candidates, or a structured failure.
+     * @remarks Also refreshes the resultAt() cache to match ranked() order.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec);
+
     /** @brief Queries a circle. Filters are CSV; empty fields disable that filter. */
     [[nodiscard]] eve::Result<int> circle(float x, float y, float radius, std::string_view requireTagsCsv,
                                           std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
@@ -49,7 +151,7 @@ public:
      * @brief Returns a candidate from the most recent query, or null for an invalid index.
      * @return Borrowed nullable candidate owned by the query result cache.
      * @ownership SensingWorld owns the candidate cache; callers must not delete or mutate it.
-     * @lifetime Valid until the next circle/box query, restore, or world destruction; copy it for later use.
+     * @lifetime Valid until the next query/circle/box, restore, or world destruction; copy it for later use.
      * @thread Call on the sensing world's owning simulation thread.
      * @reentrancy Do not retain across a callback or another query.
      */
@@ -59,10 +161,13 @@ public:
     /** @brief Restores a snapshot transactionally. */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
+    /** @brief Returns a borrowed view of stored subjects for adapters; valid until mutation. */
+    [[nodiscard]] const std::map<std::string, Subject>& subjects() const noexcept { return subjects_; }
+
 private:
-    bool                           accepts(const Subject&, const std::set<std::string>&, const std::set<std::string>&,
-                                           const std::set<std::string>&, const std::set<std::string>&, std::string_view) const;
-    int  finish(float x, float y, int limit);
+    [[nodiscard]] bool accepts(const Subject& subject, const QuerySpec& spec) const;
+    void               publishResults(std::vector<RankedCandidate> ranked);
+
     std::map<std::string, Subject> subjects_;
     std::vector<Candidate>         results_;
 };

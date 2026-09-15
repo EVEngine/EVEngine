@@ -17,11 +17,14 @@ using eve::PersistentId;
 using eve::physics::TargetingLineOfSightAdapter;
 using eve::physics::World3D;
 using eve::sensing::CoordinateSpace;
+using eve::sensing::CountPolicy;
 using eve::sensing::GridPoint;
 using eve::sensing::ILineOfSightQuery;
 using eve::sensing::ISensingCandidateProvider;
 using eve::sensing::LineOfSightResult;
 using eve::sensing::SensingCandidateProvider;
+using eve::sensing::SensingWorld;
+using eve::sensing::SensingWorldCandidateProvider;
 using eve::sensing::SubjectRef;
 using eve::sensing::TargetCandidate;
 using eve::sensing::TargetDomain;
@@ -241,4 +244,54 @@ TEST_CASE("targeting.physicsAdapterRequiresOneActiveWorld") {
     auto afterRemove = adapter.query(TargetLocation{from}, TargetLocation{to});
     CHECK(!afterRemove.ok());
     CHECK_EQ(afterRemove.code(), eve::StatusCode::Unsupported);
+}
+
+TEST_CASE("targeting.sensingWorldProviderSharesFactsAndRequiresDomainRelation") {
+    ResetCapabilities reset;
+    SensingWorld      world;
+    const auto        origin = subject("00000000-0000-7000-8000-000000000011");
+    const auto        enemy  = subject("00000000-0000-7000-8000-000000000012");
+    const auto        ally   = subject("00000000-0000-7000-8000-000000000013");
+
+    REQUIRE(world.upsert(origin.format(), 0.f, 0.f, "blue", "unit", "").ok());
+    REQUIRE(world.upsert(enemy.format(), 3.f, 4.f, "red", "unit", "").ok());
+    REQUIRE(world.upsert(ally.format(), 2.f, 0.f, "blue", "unit", "").ok());
+
+    SensingWorldCandidateProvider provider(world);
+    eve::cap::provide<ISensingCandidateProvider>(&provider);
+
+    TargetingSpec needsDomain;
+    needsDomain.space     = CoordinateSpace::World2D;
+    needsDomain.domain    = TargetDomain::Enemy;
+    needsDomain.minCount  = 1;
+    needsDomain.maxCount  = 2;
+    needsDomain.maxRange  = 10.f;
+    needsDomain.requiredTags = {"unit"};
+    TargetingQuery blocked{origin, world2D(0.f, 0.f), needsDomain};
+    auto           unsupported = TargetingResolver{}.resolve(blocked);
+    CHECK(!unsupported.ok());
+    CHECK_EQ(unsupported.code(), eve::StatusCode::Unsupported);
+
+    provider.setFactionRelation([](std::string_view originFaction,
+                                   std::string_view candidateFaction) -> eve::Result<TargetDomain> {
+        if (originFaction.empty() || candidateFaction.empty())
+            return eve::Result<TargetDomain>::success(TargetDomain::Neutral);
+        if (originFaction == candidateFaction) return eve::Result<TargetDomain>::success(TargetDomain::Ally);
+        return eve::Result<TargetDomain>::success(TargetDomain::Enemy);
+    });
+
+    auto resolved = TargetingResolver{}.resolve(blocked);
+    REQUIRE(resolved.ok());
+    CHECK_EQ(resolved.value().subjects().size(), 1u);
+    CHECK_EQ(resolved.value().subjects()[0], enemy);
+
+    TargetingSpec truncate = needsDomain;
+    truncate.domain        = TargetDomain::Any;
+    truncate.maxCount      = 1;
+    truncate.countPolicy   = CountPolicy::TruncateToMax;
+    TargetingQuery nearest{origin, world2D(0.f, 0.f), truncate};
+    auto           truncated = TargetingResolver{}.resolve(nearest);
+    REQUIRE(truncated.ok());
+    CHECK_EQ(truncated.value().subjects().size(), 1u);
+    CHECK_EQ(truncated.value().subjects()[0], ally);
 }

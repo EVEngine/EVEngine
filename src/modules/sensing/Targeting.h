@@ -14,6 +14,7 @@
 #include "common/Identity.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
+#include "sensing/Sensing.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -281,8 +282,14 @@ struct TargetingSpec {
     TargetDomain domain = TargetDomain::Any;
     /** @brief Minimum number of candidates required in the resolved set. */
     std::uint32_t minCount = 0;
-    /** @brief Maximum number of candidates accepted; no selection is performed to enforce it. */
+    /** @brief Maximum number of candidates accepted. */
     std::uint32_t maxCount = std::numeric_limits<std::uint32_t>::max();
+    /**
+     * @brief How overflow relative to maxCount is handled.
+     * FailIfOutOfRange preserves historical Action/resolver behavior; TruncateToMax
+     * keeps the nearest maxCount candidates (requires distance-sortable locations).
+     */
+    CountPolicy countPolicy = CountPolicy::FailIfOutOfRange;
     /** @brief Minimum distance, in world units or grid cells according to `space`. */
     float minRange = 0.f;
     /** @brief Maximum distance, in world units or grid cells; positive infinity means unbounded. */
@@ -450,6 +457,41 @@ public:
 
 private:
     std::map<std::string, TargetCandidate> candidates_;
+};
+
+/**
+ * @brief Projects faction string pairs into TargetDomain for SensingWorld adapters.
+ *
+ * Missing relations must not be invented by sensing: callers that request
+ * domain != Any without a relation receive Unsupported.
+ */
+using FactionRelationFn =
+    std::function<Result<TargetDomain>(std::string_view originFaction, std::string_view candidateFaction)>;
+
+/**
+ * @brief ISensingCandidateProvider adapter over a SensingWorld fact mirror.
+ *
+ * Supports World2D queries only. Zone and grid constraints are Unsupported until
+ * the world stores those facts. Domain filters require an injected FactionRelationFn.
+ *
+ * @ownership Non-owning pointer to SensingWorld; the world must outlive this provider.
+ * @thread Call on the same simulation thread as the bound SensingWorld.
+ */
+class SensingWorldCandidateProvider final : public ISensingCandidateProvider {
+public:
+    /** @brief Binds a non-owning SensingWorld; capability registration remains explicit. */
+    explicit SensingWorldCandidateProvider(SensingWorld& world) noexcept : world_(&world) {}
+    ~SensingWorldCandidateProvider() override = default;
+
+    /** @brief Installs optional faction→domain projection used when domain != Any. */
+    void setFactionRelation(FactionRelationFn relation) { relation_ = std::move(relation); }
+
+    /** @copydoc ISensingCandidateProvider::query */
+    [[nodiscard]] Result<std::vector<TargetCandidate>> query(const TargetingQuery& query) const override;
+
+private:
+    SensingWorld*     world_ = nullptr;
+    FactionRelationFn relation_;
 };
 
 /**

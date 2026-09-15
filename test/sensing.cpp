@@ -4,6 +4,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <cstddef>
+#include <optional>
 #include <string>
 
 using namespace eve::sensing;
@@ -49,6 +51,45 @@ TEST_CASE("sensing.snapshotIsTransactional") {
     auto rejected = x.restoreJson("{}");
     CHECK(!rejected.ok());
     CHECK_EQ(x.snapshotJson(), before);
+}
+
+TEST_CASE("sensing.querySpecRanksAndHonorsCountPolicy") {
+    SensingWorld w;
+    REQUIRE(w.upsert("near", 1, 0, "red", "unit", "").ok());
+    REQUIRE(w.upsert("mid", 3, 0, "red", "unit", "").ok());
+    REQUIRE(w.upsert("far", 9, 0, "red", "unit", "").ok());
+
+    QuerySpec truncate;
+    truncate.requiredTags = {"unit"};
+    truncate.minRange     = 0.f;
+    truncate.maxRange     = 10.f;
+    truncate.maxCount     = 2;
+    truncate.countPolicy  = CountPolicy::TruncateToMax;
+    truncate.sortKey      = SortKey::DistanceAscending;
+    auto ranked = w.query(QueryOrigin{0.f, 0.f, std::nullopt}, truncate);
+    REQUIRE(ranked.ok());
+    CHECK_EQ(ranked.value().size(), 2u);
+    CHECK_EQ(ranked.value().ranked()[0].id, std::string("near"));
+    CHECK_EQ(ranked.value().ranked()[1].id, std::string("mid"));
+    CHECK_EQ(w.resultAt(0)->get().id, std::string("near"));
+
+    QuerySpec fail = truncate;
+    fail.countPolicy = CountPolicy::FailIfOutOfRange;
+    auto failed = w.query(QueryOrigin{0.f, 0.f, std::nullopt}, fail);
+    CHECK(!failed.ok());
+    CHECK_EQ(failed.code(), eve::StatusCode::Rejected);
+
+    QuerySpec sugarLike;
+    sugarLike.shape         = QueryCircle{0.f, 0.f, 10.f};
+    sugarLike.requiredTags  = {"unit"};
+    sugarLike.maxRange      = 10.f;
+    sugarLike.maxCount      = 8;
+    sugarLike.countPolicy   = CountPolicy::TruncateToMax;
+    auto viaQuery           = w.query(QueryOrigin{0.f, 0.f, std::nullopt}, sugarLike);
+    auto viaCircle          = w.circle(0.f, 0.f, 10.f, "unit", "", "", "", "", 8);
+    REQUIRE(viaQuery.ok());
+    REQUIRE(viaCircle.ok());
+    CHECK_EQ(viaQuery.value().size(), static_cast<std::size_t>(viaCircle.value()));
 }
 
 TEST_CASE("sensing.worldHandleAndScriptResultContract") {
