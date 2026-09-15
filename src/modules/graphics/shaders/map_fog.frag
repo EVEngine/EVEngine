@@ -91,22 +91,25 @@ void main() {
         (1.0 / 9.0);
     float fogKeep = 1.0 - softenEdge(unlockedSoft, edgeSoft);
 
-    // Wispy band: erode the unlock rim where cloud valleys sit (article organic edge).
+    // Bubbly rim: carve unlock edge in the valleys BETWEEN cotton puffs
+    // (reference FoW has discrete circular lobes + pinholes at the frontier).
     float edgeBand = 4.0 * fogKeep * (1.0 - fogKeep);
-    float valley = 1.0 - smoothstep(0.22, 0.58, noise);
-    fogKeep *= 1.0 - edgeBand * valley * 0.90;
+    float valley = 1.0 - smoothstep(0.18, 0.55, noise);
+    fogKeep *= 1.0 - edgeBand * valley * 1.15;
+    // Extra pinholes near the rim where puff coverage is thin.
+    fogKeep *= 1.0 - edgeBand * (1.0 - smoothstep(0.35, 0.70, noise)) * 0.35;
 
     float dissolveNoise = luma(texture(MainTex,
         cloudUv * dissolveScale + vec2(time * 0.015, -time * 0.02)).rgb);
     fogKeep *= 1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve);
 
-    // Thickness from cloud luminance — valleys more translucent (volume, not paper).
+    // Thickness from puff luminance — gaps between blobs go translucent.
     float density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-    float body = mix(0.28, 1.0, density);
+    float body = mix(0.18, 1.0, density);
 
     if (passMode < 0.5) {
-        // 2D volume cue: darken INSIDE the unlocked hole where the offset mask
-        // still sees fog (previous pass drew under opaque clouds → invisible).
+        // Cast shadow onto the unlocked terrain: hole ∩ offset-fog, shaped by
+        // the same puff density so the shadow silhouette matches the cotton rim.
         vec2 sUv = maskUv + shadowOff;
         vec4 sMask = texture(MaskTex, sUv);
         float sUnlocked =
@@ -120,17 +123,17 @@ void main() {
         float sFog = 1.0 - softenEdge(sUnlocked, edgeSoft);
         float sDissolveNoise = luma(texture(MainTex, (cloudUv + shadowOff * vec2(aspect, 1.0)) * dissolveScale).rgb);
         sFog *= 1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b);
-        float a = hole * sFog * mix(0.65, 1.0, density) * shadowStrength * fogAlpha * fragColor.a;
+        float a = hole * sFog * mix(0.55, 1.0, density) * shadowStrength * fogAlpha * fragColor.a;
         outColor = vec4(0.0, 0.0, 0.0, a);
         return;
     }
 
-    // Painted cloud color dominates; fogRgb is only a light cool wash (not a gray sheet).
-    vec3 col = mix(cloud, fogRgb * cloud, 0.15);
-    col = mix(col, fogRgb, 0.04);
-    col += cloud * (density * 0.12);
+    // Keep puff albedo dominant — near-white peaks, cool-gray self-shadow valleys.
+    vec3 col = mix(cloud, fogRgb * cloud, 0.10);
+    col = mix(col, fogRgb, 0.03);
+    col += cloud * (density * 0.08);
     float blink = selected * selectStrength * selectPulse;
-    col = mix(col, col * 1.14 + vec3(0.12, 0.16, 0.24), clamp(blink, 0.0, 1.0));
+    col = mix(col, col * 1.12 + vec3(0.10, 0.14, 0.22), clamp(blink, 0.0, 1.0));
     float a = fogKeep * body * fogAlpha * fragColor.a;
     outColor = vec4(col, a);
 }

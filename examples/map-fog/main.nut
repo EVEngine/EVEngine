@@ -62,21 +62,16 @@ function clearMask() {
 }
 
 function softWeight(dist, radius) {
-    // Hard core to ~60% radius, then smooth falloff — merges adjacent cells into one hole.
+    // Chunky cotton disc: large hard core, short falloff (reference FoW lobes).
     if (dist >= radius) return 0.0;
-    local core = radius * 0.60;
+    local core = radius * 0.72;
     if (dist <= core) return 1.0;
     local t = (radius - dist) / (radius - core);
     return t * t * (3.0 - 2.0 * t);
 }
 
-function stampSoft(gx, gy, r, g, b, radiusScale) {
-    // Local brush only (fast). Hard-core soft disc in mask-pixel space.
-    local cellPx = maskW.tofloat() / gridW.tofloat();
-    local cellPy = maskH.tofloat() / gridH.tofloat();
-    local px = (gx.tofloat() + 0.5) * cellPx;
-    local py = (gy.tofloat() + 0.5) * cellPy;
-    local radius = radiusScale * cellPx;
+function stampSoftAt(px, py, r, g, b, radius) {
+    // Local brush in mask-pixel space (fast).
     if (radius < 2.0) radius = 2.0;
     local x0 = (px - radius).tointeger();
     local y0 = (py - radius).tointeger();
@@ -106,6 +101,49 @@ function stampSoft(gx, gy, r, g, b, radiusScale) {
     }
 }
 
+function stampSoft(gx, gy, r, g, b, radiusScale) {
+    local cellPx = maskW.tofloat() / gridW.tofloat();
+    local px = (gx.tofloat() + 0.5) * cellPx;
+    local py = (gy.tofloat() + 0.5) * (maskH.tofloat() / gridH.tofloat());
+    stampSoftAt(px, py, r, g, b, radiusScale * cellPx);
+}
+
+function hasFoggedNeighbor(gx, gy) {
+    for (local dy = -1; dy <= 1; ++dy) {
+        for (local dx = -1; dx <= 1; ++dx) {
+            if (dx == 0 && dy == 0) continue;
+            local nx = gx + dx;
+            local ny = gy + dy;
+            if (nx < 0 || ny < 0 || nx >= gridW || ny >= gridH) return true;
+            if (!unlocked[cellIndex(nx, ny)]) return true;
+        }
+    }
+    return false;
+}
+
+function stampRimPuffs(gx, gy, r, g, b) {
+    // Satellite discs along fog frontier → bubbly peninsulas / islands (reference rim).
+    if (!hasFoggedNeighbor(gx, gy)) return;
+    local cellPx = maskW.tofloat() / gridW.tofloat();
+    local cellPy = maskH.tofloat() / gridH.tofloat();
+    local cx = (gx.tofloat() + 0.5) * cellPx;
+    local cy = (gy.tofloat() + 0.5) * cellPy;
+    local h = ((gx * 13 + gy * 7) % 5).tofloat() / 5.0;
+    local offsets = [
+        [0.55, -0.35, 0.70],
+        [-0.40, 0.50, 0.62],
+        [0.30, 0.55, 0.55],
+        [-0.55, -0.25, 0.48]
+    ];
+    for (local i = 0; i < offsets.len(); ++i) {
+        local o = offsets[i];
+        // Skip some satellites for irregularity.
+        if (((gx * 3 + gy * 5 + i * 7) % 4) == 0) continue;
+        local s = (0.85 + 0.30 * h) * o[2];
+        stampSoftAt(cx + o[0] * cellPx, cy + o[1] * cellPy, r, g, b, s * cellPx);
+    }
+}
+
 function rebuildMask() {
     ensureGrid();
     clearMask();
@@ -115,11 +153,13 @@ function rebuildMask() {
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
                 // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.95);
+                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.75);
+                stampRimPuffs(x, y, 0.0, sel, dissolving[idx]);
             } else if (unlocked[idx]) {
-                stampSoft(x, y, 1.0, sel, 0.0, 1.95);
+                stampSoft(x, y, 1.0, sel, 0.0, 1.75);
+                stampRimPuffs(x, y, 1.0, sel, 0.0);
             } else if (sel > 0.0) {
-                stampSoft(x, y, 0.0, sel, 0.0, 0.95);
+                stampSoft(x, y, 0.0, sel, 0.0, 0.90);
             }
         }
     }
@@ -162,21 +202,21 @@ eve_init = function() {
     fog = gfx.newMapFog();
     fog.setCloudTexture(fog.makeCloudTexture(512));
     fog.setMaskTexture(maskTex);
-    // Distinct dual-layer tiling/speed (article): large soft billows, living scroll.
-    fog.setCloudTiling(0.55, 0.95);
-    fog.setCloudSpeed(0.008, 0.015);
-    fog.setCloudMix(0.35);
-    fog.setDistort(0.22);
-    fog.setDistortFix(-0.012, 0.008);
-    fog.setFogColor(0.92, 0.94, 0.98);
+    // Large cotton puffs + dual reverse scroll (reference FoW billows).
+    fog.setCloudTiling(0.48, 0.82);
+    fog.setCloudSpeed(0.007, 0.013);
+    fog.setCloudMix(0.28);
+    fog.setDistort(0.26);
+    fog.setDistortFix(-0.014, 0.010);
+    fog.setFogColor(0.96, 0.97, 1.00);
     fog.setFogAlpha(fogAlpha);
-    // Soft-stamped mask + UV warp => wispy cloudy unlock rim.
-    fog.setEdgeSoftness(0.14);
-    fog.setShadow(0.034, 0.048, 0.78);
+    // Bubbly mask stamps + puff UV warp => lobed unlock rim + hole shadow.
+    fog.setEdgeSoftness(0.11);
+    fog.setShadow(0.042, 0.058, 0.88);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
-    // Thickness from lit cloud luminance; mask still owns the hole.
-    fog.setCloudDensity(0.42, 0.16);
+    // Harder density so gaps between puffs read as pinholes.
+    fog.setCloudDensity(0.55, 0.22);
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };

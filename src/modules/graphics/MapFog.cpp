@@ -141,13 +141,14 @@ fn luma(c: vec3<f32>) -> f32 {
     + textureSample(maskTex, maskSampler, maskUv + vec2<f32>(-softRadius, -softRadius) * 0.707).r) * (1.0 / 9.0);
   var fogKeep = 1.0 - smoothstep(0.5 - edgeSoft, 0.5 + edgeSoft, unlockedSoft);
   let edgeBand = 4.0 * fogKeep * (1.0 - fogKeep);
-  let valley = 1.0 - smoothstep(0.22, 0.58, noise);
-  fogKeep = fogKeep * (1.0 - edgeBand * valley * 0.90);
+  let valley = 1.0 - smoothstep(0.18, 0.55, noise);
+  fogKeep = fogKeep * (1.0 - edgeBand * valley * 1.15);
+  fogKeep = fogKeep * (1.0 - edgeBand * (1.0 - smoothstep(0.35, 0.70, noise)) * 0.35);
   let dissolveNoise = luma(textureSample(mainTex, mainSampler,
       cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
   fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
   let density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-  let body = mix(0.28, 1.0, density);
+  let body = mix(0.18, 1.0, density);
 
   if (passMode < 0.5) {
     let sUv = maskUv + shadowOff;
@@ -162,13 +163,13 @@ fn luma(c: vec3<f32>) -> f32 {
     let sDissolveNoise = luma(textureSample(mainTex, mainSampler,
         (cloudUv + shadowOff * vec2<f32>(aspect, 1.0)) * dissolveScale).rgb);
     sFog = sFog * (1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b));
-    let a = hole * sFog * mix(0.65, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
+    let a = hole * sFog * mix(0.55, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 
-  var col = mix(cloud, fogRgb * cloud, 0.15);
-  col = mix(col, fogRgb, 0.04);
-  col = col + cloud * (density * 0.12);
+  var col = mix(cloud, fogRgb * cloud, 0.10);
+  col = mix(col, fogRgb, 0.03);
+  col = col + cloud * (density * 0.08);
   let blink = selected * selectStrength * selectPulse;
   col = mix(col, col * 1.14 + vec3<f32>(0.12, 0.16, 0.24), clamp(blink, 0.0, 1.0));
   let a = fogKeep * body * fogAlpha * input.color.a;
@@ -273,29 +274,64 @@ void MapFog::setCloudDensity(float contrast, float bias) {
 
 Texture *MapFog::makeCloudTexture(int size) {
     const int            n = std::clamp(size, 16, 512);
-    std::vector<float>   height(size_t(n * n));
+    std::vector<float>   height(size_t(n * n), 0.f);
     std::vector<uint8_t> rgba(size_t(n * n * 4));
-    // Article uses an artist cloud color map. Approximate that look with a
-    // seamless domain-warped height field + soft key light (cool valleys /
-    // warm peaks) so dual-scroll multiply reads as painted billows, not noise.
+    // Reference FoW look: overlapping circular "cotton" puffs with per-blob
+    // lighting (bright top-left / gray bottom-right), not continuous fBm wallpaper.
+    // Toroidal stamps keep the map seamless for dual reverse-scroll.
+
+    struct Puff {
+        float u = 0.f;
+        float v = 0.f;
+        float r = 0.f;
+    };
+    std::vector<Puff> puffs;
+    puffs.reserve(96);
+
+    auto addLayer = [&](int gridX, int gridY, float radiusMin, float radiusMax, uint32_t seed) {
+        for (int j = 0; j < gridY; ++j) {
+            for (int i = 0; i < gridX; ++i) {
+                const float ju = hashWrap(i, j, 1024, seed);
+                const float jv = hashWrap(i, j, 1024, seed + 17u);
+                const float jr = hashWrap(i, j, 1024, seed + 91u);
+                Puff p;
+                p.u = (float(i) + 0.20f + 0.60f * ju) / float(gridX);
+                p.v = (float(j) + 0.20f + 0.60f * jv) / float(gridY);
+                p.r = radiusMin + (radiusMax - radiusMin) * jr;
+                puffs.push_back(p);
+            }
+        }
+    };
+    // Large billows + mid clusters + sparse small edge islands.
+    addLayer(5, 5, 0.11f, 0.18f, 0xA11CE001u);
+    addLayer(8, 8, 0.06f, 0.11f, 0xBEEF42u);
+    addLayer(11, 11, 0.03f, 0.065f, 0xC0FFEEu);
+
+    auto wrapDelta = [](float d) {
+        d -= std::floor(d + 0.5f);
+        return d;
+    };
+
     for (int y = 0; y < n; ++y) {
         for (int x = 0; x < n; ++x) {
-            const float u = float(x) / float(n);
-            const float v = float(y) / float(n);
-
-            // Domain warp stays seamless because fbmSeamless(u+1,v)==fbmSeamless(u,v).
-            const float wu = u + 0.18f * (fbmSeamless(u, v, 2, 0x1111u, 3) - 0.5f);
-            const float wv = v + 0.18f * (fbmSeamless(u, v, 2, 0x2222u, 3) - 0.5f);
-
-            // period>=2 (hashWrap period-1 collapses). Large soft masses.
-            const float large = fbmSeamless(wu, wv, 2, 0xA11CE001u, 5);
-            const float mid   = fbmSeamless(wu, wv, 3, 0xBEEF42u, 4);
-            const float fine  = fbmSeamless(wu, wv, 5, 0xC0FFEEu, 3);
-
-            float soft = billow(large) * 0.62f + billow(mid) * 0.26f + ridged(fine) * 0.12f;
-            soft       = soft * soft * (3.f - 2.f * soft);
-            soft       = std::pow(std::clamp(soft, 0.f, 1.f), 1.35f);
-            height[size_t(y * n + x)] = soft;
+            const float u = (float(x) + 0.5f) / float(n);
+            const float v = (float(y) + 0.5f) / float(n);
+            float h = 0.f;
+            for (const Puff &p : puffs) {
+                const float dx = wrapDelta(u - p.u);
+                const float dy = wrapDelta(v - p.v);
+                const float d  = std::sqrt(dx * dx + dy * dy) / std::max(p.r, 1e-4f);
+                if (d >= 1.f) continue;
+                // Hard-core cotton lobe (reference FoW): flat top, short soft rim.
+                float b = 1.f - d;
+                b       = b * b * (3.f - 2.f * b);  // smoothstep
+                b       = b * b;                     // tighten rim
+                h += b;
+            }
+            // Soft-max plateau so overlapping discs read as merged cotton clumps.
+            h = std::clamp(h * 0.72f, 0.f, 1.f);
+            h = h * h * (3.f - 2.f * h);
+            height[size_t(y * n + x)] = h;
         }
     }
 
@@ -305,8 +341,8 @@ Texture *MapFog::makeCloudTexture(int size) {
         return height[size_t(y * n + x)];
     };
 
-    // Soft key light from upper-left (typical SLG map lighting).
-    const float lx     = 0.55f, ly = 0.70f, lz = 0.45f;
+    // Key light from upper-left — matches reference puff self-shadowing.
+    const float lx     = 0.62f, ly = 0.72f, lz = 0.35f;
     const float invLen = 1.f / std::sqrt(lx * lx + ly * ly + lz * lz);
     const float Lx = lx * invLen, Ly = ly * invLen, Lz = lz * invLen;
 
@@ -316,32 +352,24 @@ Texture *MapFog::makeCloudTexture(int size) {
             const float hx = sampleH(x + 1, y) - sampleH(x - 1, y);
             const float hy = sampleH(x, y + 1) - sampleH(x, y - 1);
 
-            // Cheap local AO so valleys read darker than a flat height remap.
-            float ao = 0.f;
-            for (int dy = -2; dy <= 2; dy += 2) {
-                for (int dx = -2; dx <= 2; dx += 2) {
-                    ao += sampleH(x + dx, y + dy);
-                }
-            }
-            ao = std::clamp(1.15f - (ao * (1.f / 9.f) - h) * 2.2f, 0.f, 1.f);
-
-            float nx = -hx * 3.2f, ny = -hy * 3.2f, nz = 0.42f;
+            float nx = -hx * 4.5f, ny = -hy * 4.5f, nz = 0.38f;
             const float nlen = std::sqrt(nx * nx + ny * ny + nz * nz);
             nx /= nlen;
             ny /= nlen;
             nz /= nlen;
             const float ndotl = std::max(nx * Lx + ny * Ly + nz * Lz, 0.f);
-            const float lit   = 0.28f + 0.72f * ndotl;
+            // Stepped-ish shading: bright white peaks, mid gray-blue valleys.
+            const float lit = 0.22f + 0.78f * ndotl;
+            float shade     = std::clamp(0.12f + h * lit * 0.95f, 0.f, 1.f);
+            shade           = std::pow(shade, 0.85f);
 
-            // Cool blue-gray valleys → warm cream peaks (painted cloud palette).
-            const float shade = std::clamp(0.08f + h * h * lit * 0.95f * ao, 0.f, 1.f);
-            const float t     = std::clamp(shade * 1.05f, 0.f, 1.f);
-            const float coolR = 0.55f, coolG = 0.62f, coolB = 0.78f;
-            const float warmR = 0.98f, warmG = 0.96f, warmB = 0.92f;
+            const float coolR = 0.72f, coolG = 0.78f, coolB = 0.88f;  // self-shadow
+            const float warmR = 1.00f, warmG = 1.00f, warmB = 0.99f;  // highlight
+            const float t     = std::clamp(shade, 0.f, 1.f);
             const float r =
-                std::clamp(coolR * (1.f - t) + warmR * t + ndotl * 0.08f * h, 0.f, 1.f);
+                std::clamp(coolR * (1.f - t) + warmR * t + ndotl * 0.06f * h, 0.f, 1.f);
             const float g =
-                std::clamp(coolG * (1.f - t) + warmG * t + ndotl * 0.04f * h, 0.f, 1.f);
+                std::clamp(coolG * (1.f - t) + warmG * t + ndotl * 0.03f * h, 0.f, 1.f);
             const float b = std::clamp(coolB * (1.f - t) + warmB * t, 0.f, 1.f);
 
             const size_t i = size_t((y * n + x) * 4);
