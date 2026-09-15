@@ -464,10 +464,14 @@ void Graphics::createMesh3DClusteredPipeline() {
 void Graphics::destroyShadowResources() {
     resetDeferredFrameGraphs();
     destroyPipeline(device, shadowPipeline);
+    destroyPipeline(device, shadowSingleSidedPipeline);
     destroyPipelineLayout(device, shadowPipelineLayout);
     destroyPipeline(device, shadowAlphaPipeline);
+    destroyPipeline(device, shadowAlphaSingleSidedPipeline);
     destroyPipeline(device, shadowSkinPipeline);
+    destroyPipeline(device, shadowSkinSingleSidedPipeline);
     destroyPipeline(device, shadowSkinAlphaPipeline);
+    destroyPipeline(device, shadowSkinAlphaSingleSidedPipeline);
     destroyPipelineLayout(device, shadowAlphaPipelineLayout);
     for (auto &slot : shadowMaps) {
         for (int i = 0; i < ShadowConfig::kCascades; ++i) {
@@ -1624,6 +1628,18 @@ void Graphics::createShadowResources() {
                            vk::FrontFace::eClockwise)
             .setDepthBias(0.0f, 0.5f)
             .build(shadowPass);
+    shadowSingleSidedPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(shadowPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
@@ -1632,7 +1648,8 @@ void Graphics::createShadowResources() {
     // discards transparent texels so shadows follow the silhouette.
     shadowAlphaPipelineLayout = device.createPipelineLayout()
                                     .set(texSetLayout)
-                                    .push<glm::mat4>(vk::ShaderStageFlagBits::eVertex)
+                                    .push<ShadowAlphaPush>(vk::ShaderStageFlagBits::eVertex |
+                                                           vk::ShaderStageFlagBits::eFragment)
                                     .build();
     std::vector<uint32_t> alphaVert(mesh3d_shadow_alpha_vert_spv,
                                     mesh3d_shadow_alpha_vert_spv +
@@ -1656,6 +1673,18 @@ void Graphics::createShadowResources() {
                            vk::FrontFace::eClockwise)
             .setDepthBias(0.0f, 0.5f)
             .build(shadowPass);
+    shadowAlphaSingleSidedPipeline =
+        device.createPipeline()
+            .useClassicPipeline(alphaVertModule, alphaFragModule)
+            .setPipelineLayout(shadowAlphaPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
 
@@ -1672,6 +1701,18 @@ void Graphics::createShadowResources() {
                                             vk::FrontFace::eClockwise)
                              .setDepthBias(0.0f, 0.5f)
                              .build(shadowPass);
+    shadowSkinSingleSidedPipeline = device.createPipeline()
+                                        .useClassicPipeline(skinVert, frag)
+                                        .setPipelineLayout(skinPassPipelineLayout)
+                                        .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                                 .addInputBinding<MeshVertex>()
+                                                                 .addAttributeDescription<MeshVertex>())
+                                        .setDynamicStatesViewportScissor()
+                                        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                       vk::CullModeFlagBits::eBack,
+                                                       vk::FrontFace::eClockwise)
+                                        .setDepthBias(0.0f, 0.5f)
+                                        .build(shadowPass);
     auto skinAlphaFrag = embeddedSpirv(mesh3d_shadow_skin_alpha_frag_spv);
     shadowSkinAlphaPipeline = device.createPipeline()
                                   .useClassicPipeline(skinVert, skinAlphaFrag)
@@ -1685,6 +1726,18 @@ void Graphics::createShadowResources() {
                                                  vk::FrontFace::eClockwise)
                                   .setDepthBias(0.0f, 0.5f)
                                   .build(shadowPass);
+    shadowSkinAlphaSingleSidedPipeline = device.createPipeline()
+                                             .useClassicPipeline(skinVert, skinAlphaFrag)
+                                             .setPipelineLayout(skinPassPipelineLayout)
+                                             .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                                      .addInputBinding<MeshVertex>()
+                                                                      .addAttributeDescription<MeshVertex>())
+                                             .setDynamicStatesViewportScissor()
+                                             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                            vk::CullModeFlagBits::eBack,
+                                                            vk::FrontFace::eClockwise)
+                                             .setDepthBias(0.0f, 0.5f)
+                                             .build(shadowPass);
 
     // Clear every ping-pong copy so sampling before the first real shadow pass
     // sees SHADER_READ_ONLY rather than UNDEFINED.

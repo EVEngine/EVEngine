@@ -174,6 +174,7 @@ struct VSIn {
     @location(2) uv: vec2f,
     @location(3) joints: vec4u,
     @location(4) weights: vec4f,
+    @location(5) color: vec4f,
 };
 struct Light3D {
     posRadius: vec4f,
@@ -202,6 +203,13 @@ struct Frame {
     skinInfo: vec4f,
     reflectionProbeCenter: array<vec4f, 2>,
     reflectionProbeExtent: array<vec4f, 2>,
+    diffuseProbeSh: array<vec4f, 9>,
+    diffuseProbeInfo: vec4f,
+    diffuseVolumePosition: array<vec4f, 8>,
+    diffuseVolumeExtent: array<vec4f, 8>,
+    diffuseVolumeSh: array<vec4f, 72>,
+    diffuseVolumeInfo: vec4f,
+    lodFade: vec4f,
 };
 
 struct VSOut {
@@ -232,10 +240,15 @@ fn vs_main(in: VSIn) -> VSOut {
     var localPos = vec4f(in.pos, 1.0);
     var localNormal = in.normal;
     if (ubo.skinInfo.x > 0.5) {
-        let skin = in.weights.x * skinBones[in.joints.x]
-                 + in.weights.y * skinBones[in.joints.y]
-                 + in.weights.z * skinBones[in.joints.z]
-                 + in.weights.w * skinBones[in.joints.w];
+        var weights = in.weights;
+        if (ubo.skinInfo.y < 3.5) { weights.z = 0.0; weights.w = 0.0; }
+        if (ubo.skinInfo.y < 1.5) { weights.y = 0.0; }
+        let weightSum = dot(weights, vec4f(1.0));
+        if (weightSum > 1e-8) { weights /= weightSum; }
+        let skin = weights.x * skinBones[in.joints.x]
+                 + weights.y * skinBones[in.joints.y]
+                 + weights.z * skinBones[in.joints.z]
+                 + weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
         localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
     }
@@ -248,7 +261,7 @@ fn vs_main(in: VSIn) -> VSOut {
     let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * localNormal;
     out.vNormal = normalize(nrm);
     out.vUV = in.uv;
-    out.vTint = ubo.tint;
+    out.vTint = ubo.tint * in.color;
     out.vCameraPos = ubo.cameraPos.xyz;
     return out;
 }
@@ -277,6 +290,18 @@ struct Frame {
     cloudWind: vec4f,
     virtualTexture: vec4f,
     virtualAtlas: vec4f,
+    envProbeCenter: vec4f,
+    envProbeExtent: vec4f,
+    skinInfo: vec4f,
+    reflectionProbeCenter: array<vec4f, 2>,
+    reflectionProbeExtent: array<vec4f, 2>,
+    diffuseProbeSh: array<vec4f, 9>,
+    diffuseProbeInfo: vec4f,
+    diffuseVolumePosition: array<vec4f, 8>,
+    diffuseVolumeExtent: array<vec4f, 8>,
+    diffuseVolumeSh: array<vec4f, 72>,
+    diffuseVolumeInfo: vec4f,
+    lodFade: vec4f,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -584,6 +609,12 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let uvDy = dpdy(in.vUV);
     let worldDx = dpdx(in.vWorldPos);
     let worldDy = dpdy(in.vWorldPos);
+    if (ubo.lodFade.z > 0.5) {
+        let lodHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+        let rejected = select((lodHash < 1.0 - ubo.lodFade.x),
+                              (lodHash >= ubo.lodFade.x), ubo.lodFade.y < 0.5);
+        if (rejected) { discard; }
+    }
     var nGeom = normalize(in.vNormal);
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
@@ -608,12 +639,20 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
     let count = i32(ubo.lightDir.w + 0.5);
-    var nSmp: vec3f;
+    var packedNormal: vec4f;
     if (ubo.virtualTexture.x > 0.5) {
-        nSmp = sampleVirtualTexture(normalSampler, uv, uvDx, uvDy).xyz;
+        packedNormal = sampleVirtualTexture(normalSampler, uv, uvDx, uvDy);
     } else {
-        nSmp = textureCellBomb(normalSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
-                               ubo.texBomb.z, uvDx, uvDy).xyz;
+        packedNormal = textureCellBomb(normalSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
+                                       ubo.texBomb.z, uvDx, uvDy);
+    }
+    var nSmp = packedNormal.xyz;
+    var terrainAo = 1.0;
+    if (ubo.virtualAtlas.z > 0.5) {
+        let normalXY = packedNormal.rg * 2.0 - 1.0;
+        nSmp = vec3f(packedNormal.rg, sqrt(1.0 - clamp(dot(normalXY, normalXY), 0.0, 1.0)) * 0.5 + 0.5);
+        terrainAo = clamp(packedNormal.b, 0.0, 1.0);
+        rough = clamp(1.0 - packedNormal.a, 0.04, 1.0);
     }
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
@@ -667,10 +706,60 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let hemi = clamp(n.y * 0.5 + 0.5, 0.0, 1.0);
     let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
-    let irr = mix(gndIrr, skyIrr, hemi);
-    var color = albedo * irr * (1.0 - metallic) + lo;
+    var irr = mix(gndIrr, skyIrr, hemi);
+    let shBasis = array<f32, 9>(0.2820947918, 0.4886025119 * n.y, 0.4886025119 * n.z,
+        0.4886025119 * n.x, 1.0925484306 * n.x * n.y, 1.0925484306 * n.y * n.z,
+        0.3153915653 * (3.0 * n.z * n.z - 1.0), 1.0925484306 * n.x * n.z,
+        0.5462742153 * (n.x * n.x - n.y * n.y));
+    if (ubo.diffuseVolumeInfo.x > 0.5) {
+        var volumeIrradiance = vec3f(0.0);
+        var volumeWeight = 0.0;
+        var cellMin = ubo.diffuseVolumePosition[0].xyz;
+        var cellMax = cellMin;
+        if (ubo.diffuseVolumeInfo.y > 0.5) {
+            for (var probe = 1; probe < 8; probe += 1) {
+                if (probe >= i32(ubo.diffuseVolumeInfo.x + 0.5)) { break; }
+                cellMin = min(cellMin, ubo.diffuseVolumePosition[probe].xyz);
+                cellMax = max(cellMax, ubo.diffuseVolumePosition[probe].xyz);
+            }
+        }
+        let cellT = clamp((in.vWorldPos - cellMin) / max(cellMax - cellMin, vec3f(0.0001)),
+                          vec3f(0.0), vec3f(1.0));
+        for (var probe = 0; probe < 8; probe += 1) {
+            if (probe >= i32(ubo.diffuseVolumeInfo.x + 0.5)) { break; }
+            let extent = max(ubo.diffuseVolumeExtent[probe].xyz, vec3f(0.0001));
+            let delta = abs(in.vWorldPos - ubo.diffuseVolumePosition[probe].xyz);
+            if (ubo.diffuseVolumeInfo.y > 0.5 || all(delta <= extent)) {
+                var weight: f32;
+                if (ubo.diffuseVolumeInfo.y > 0.5) {
+                    let activeAxis = (cellMax - cellMin) > vec3f(0.0001);
+                    let lowerCorner = abs(ubo.diffuseVolumePosition[probe].xyz - cellMax) > vec3f(0.0001);
+                    var axisWeight = select(cellT, vec3f(1.0) - cellT, lowerCorner);
+                    axisWeight = select(vec3f(1.0), axisWeight, activeAxis);
+                    weight = axisWeight.x * axisWeight.y * axisWeight.z;
+                } else {
+                    weight = 1.0 / max(length(delta / extent), 0.05);
+                }
+                var probeIrradiance = vec3f(0.0);
+                for (var coefficient = 0; coefficient < 9; coefficient += 1) {
+                    probeIrradiance += ubo.diffuseVolumeSh[probe * 9 + coefficient].rgb *
+                                       shBasis[coefficient];
+                }
+                volumeIrradiance += max(probeIrradiance, vec3f(0.0)) * weight;
+                volumeWeight += weight;
+            }
+        }
+        if (volumeWeight > 0.0) { irr = volumeIrradiance / volumeWeight; }
+    } else if (ubo.diffuseProbeInfo.x > 0.5) {
+        irr = vec3f(0.0);
+        for (var coefficient = 0; coefficient < 9; coefficient += 1) {
+            irr += ubo.diffuseProbeSh[coefficient].rgb * shBasis[coefficient];
+        }
+        irr = max(irr, vec3f(0.0));
+    }
+    var color = albedo * irr * (1.0 - metallic) * terrainAo + lo;
     let wrap = max(dot(n, primaryL) * 0.5 + 0.5, 0.0);
-    color += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
+    color += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic) * terrainAo;
     let envIntensity = ubo.lightColor.w;
     if (envIntensity > 1e-4) {
         let r = reflect(-v, n);
@@ -679,7 +768,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let f = fresnelSchlick(max(dot(n, v), 0.0), f0);
         color += envSpec * f;
         let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
-        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
+        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45 * terrainAo;
     }
     // Screen-space ambient occlusion (G-buffer SSAO pass output; strength in
     // texBomb.w is 0 when AO is disabled via RenderControl, which also keeps
@@ -702,6 +791,7 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(5) color: vec4f,
 };
 struct Frame {
     mvp: mat4x4f,
@@ -757,7 +847,7 @@ fn vs_main(in: VSIn) -> VSOut {
     let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * in.normal;
     out.vNormal = normalize(nrm);
     out.vUV = in.uv;
-    out.vTint = ubo.tint;
+    out.vTint = ubo.tint * in.color;
     out.vCameraPos = ubo.cameraPos.xyz;
     return out;
 }
@@ -969,6 +1059,21 @@ fn clusterIndex(frag: vec2f, viewDepth: f32) -> u32 {
     let sz = clamp(i32(floor((depth - nearZ) / (farZ - nearZ) * f32(slices))), 0, slices - 1);
     return u32((sz * tilesY + ty) * tilesX + tx);
 }
+fn applyClusteredNormalMap(nInput: vec3f, mapSample: vec3f, dp1: vec3f, dp2: vec3f,
+                           duv1: vec2f, duv2: vec2f) -> vec3f {
+    let mapN = mapSample * 2.0 - 1.0;
+    let n = normalize(nInput);
+    let det = duv1.x * duv2.y - duv2.x * duv1.y;
+    if (abs(det) < 1e-6) { return n; }
+    let invDet = 1.0 / det;
+    var tangent = (dp1 * duv2.y - dp2 * duv1.y) * invDet;
+    var bitangent = (dp2 * duv1.x - dp1 * duv2.x) * invDet;
+    tangent -= n * dot(n, tangent);
+    if (length(tangent) < 1e-4 || length(bitangent) < 1e-4) { return n; }
+    tangent = normalize(tangent);
+    bitangent = normalize(bitangent - n * dot(n, bitangent) - tangent * dot(tangent, bitangent));
+    return normalize(mat3x3f(tangent, bitangent, n) * mapN);
+}
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     let uvDx = dpdx(in.vUV);
@@ -988,13 +1093,21 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var albedo = base.rgb;
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
-    var nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
+    var packedNormal = textureSample(normalSampler, mainSamp, in.vUV);
     if (ubo.virtualTexture.x > 0.5) {
-        nSmp = sampleClusteredVirtualTexture(normalSampler, in.vUV, uvDx, uvDy).xyz;
+        packedNormal = sampleClusteredVirtualTexture(normalSampler, in.vUV, uvDx, uvDy);
+    }
+    var nSmp = packedNormal.xyz;
+    var terrainAo = 1.0;
+    if (ubo.virtualAtlas.z > 0.5) {
+        let normalXY = packedNormal.rg * 2.0 - 1.0;
+        nSmp = vec3f(packedNormal.rg, sqrt(1.0 - clamp(dot(normalXY, normalXY), 0.0, 1.0)) * 0.5 + 0.5);
+        terrainAo = clamp(packedNormal.b, 0.0, 1.0);
+        rough = clamp(1.0 - packedNormal.a, 0.04, 1.0);
     }
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
-        n = normalize(nSmp * 2.0 - 1.0);
+        n = applyClusteredNormalMap(n, nSmp, dpdx(in.vWorldPos), dpdy(in.vWorldPos), uvDx, uvDy);
     }
     var emissive = vec3f(0.0);
     let decalPos = clamp(vec2<i32>(in.fragCoord.xy), vec2<i32>(0),
@@ -1039,7 +1152,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
     let irr = mix(gndIrr, skyIrr, hemi);
-    var color = albedo * irr * (1.0 - metallic) + lo + emissive;
+    var color = albedo * irr * (1.0 - metallic) * terrainAo + lo + emissive;
     let envIntensity = ubo.lightColor.w;
     if (envIntensity > 1e-4) {
         let r = reflect(-v, n);
@@ -1048,7 +1161,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let f = fresnelSchlick(max(dot(n, v), 0.0), f0);
         color += envSpec * f;
         let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
-        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
+        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45 * terrainAo;
     }
     let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
@@ -1087,10 +1200,15 @@ struct Push {
 fn vs_main(in: VSIn) -> @builtin(position) vec4f {
     var localPos = vec4f(in.pos, 1.0);
     if (pc.skinInfo.x > 0.5) {
-        let skin = in.weights.x * skinBones[in.joints.x]
-                 + in.weights.y * skinBones[in.joints.y]
-                 + in.weights.z * skinBones[in.joints.z]
-                 + in.weights.w * skinBones[in.joints.w];
+        var weights = in.weights;
+        if (pc.skinInfo.y < 3.5) { weights.z = 0.0; weights.w = 0.0; }
+        if (pc.skinInfo.y < 1.5) { weights.y = 0.0; }
+        let weightSum = dot(weights, vec4f(1.0));
+        if (weightSum > 1e-8) { weights /= weightSum; }
+        let skin = weights.x * skinBones[in.joints.x]
+                 + weights.y * skinBones[in.joints.y]
+                 + weights.z * skinBones[in.joints.z]
+                 + weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
     }
     let clipPos = pc.mvp * localPos;
@@ -1126,10 +1244,15 @@ fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     var localPos = vec4f(in.pos, 1.0);
     if (pc.skinInfo.x > 0.5) {
-        let skin = in.weights.x * skinBones[in.joints.x]
-                 + in.weights.y * skinBones[in.joints.y]
-                 + in.weights.z * skinBones[in.joints.z]
-                 + in.weights.w * skinBones[in.joints.w];
+        var weights = in.weights;
+        if (pc.skinInfo.y < 3.5) { weights.z = 0.0; weights.w = 0.0; }
+        if (pc.skinInfo.y < 1.5) { weights.y = 0.0; }
+        let weightSum = dot(weights, vec4f(1.0));
+        if (weightSum > 1e-8) { weights /= weightSum; }
+        let skin = weights.x * skinBones[in.joints.x]
+                 + weights.y * skinBones[in.joints.y]
+                 + weights.z * skinBones[in.joints.z]
+                 + weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
     }
     let clipPos = pc.mvp * localPos;
@@ -1140,11 +1263,24 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kMesh3DShadowAlphaFragWgsl = R"wgsl(
+struct Push {
+    mvp: mat4x4f,
+    model: mat4x4f,
+    lodFade: vec4f,
+    skinInfo: vec4f,
+};
+@group(0) @binding(0) var<uniform> pc: Push;
 @group(0) @binding(1) var albedoTexture: texture_2d<f32>;
 @group(0) @binding(2) var albedoSampler: sampler;
 @fragment
-fn fs_main(@location(0) uv: vec2f) {
+fn fs_main(@location(0) uv: vec2f, @builtin(position) fragCoord: vec4f) {
     if (textureSample(albedoTexture, albedoSampler, uv).a < 0.05) { discard; }
+    if (pc.lodFade.z > 0.5) {
+        let h = fract(dot(floor(fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+        let rejected = select((h < 1.0 - pc.lodFade.x), (h >= pc.lodFade.x),
+                              pc.lodFade.y < 0.5);
+        if (rejected) { discard; }
+    }
 }
 )wgsl";
 
@@ -1189,10 +1325,15 @@ fn vs_main(in: VSIn) -> VSOut {
     var localPos = vec4f(in.pos, 1.0);
     var localNormal = in.normal;
     if (pc.skinInfo.x > 0.5) {
-        let skin = in.weights.x * skinBones[in.joints.x]
-                 + in.weights.y * skinBones[in.joints.y]
-                 + in.weights.z * skinBones[in.joints.z]
-                 + in.weights.w * skinBones[in.joints.w];
+        var weights = in.weights;
+        if (pc.skinInfo.y < 3.5) { weights.z = 0.0; weights.w = 0.0; }
+        if (pc.skinInfo.y < 1.5) { weights.y = 0.0; }
+        let weightSum = dot(weights, vec4f(1.0));
+        if (weightSum > 1e-8) { weights /= weightSum; }
+        let skin = weights.x * skinBones[in.joints.x]
+                 + weights.y * skinBones[in.joints.y]
+                 + weights.z * skinBones[in.joints.z]
+                 + weights.w * skinBones[in.joints.w];
         localPos = skin * localPos;
         localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
     }

@@ -11,9 +11,43 @@
 
 namespace eve::graphics {
 
+/** @brief Pcg procedural water mesh shape. Custom meshes remain caller-supplied Mesh resources. */
+enum class WaterMeshType : std::uint8_t { Plane = 0, Circle = 1 };
+
+/** @brief Authored dimensions and density for Pcg-compatible procedural water geometry. */
+struct WaterMeshSettings {
+    float sizeX = 200.0F;
+    float sizeY = 30.0F;
+    float sizeZ = 200.0F;
+    float densityX = 50.0F;
+    float densityY = 50.0F;
+    float height = 0.0F;
+    WaterMeshType type = WaterMeshType::Plane;
+};
+
+/** @brief Calculate Pcg PWS_WaterSystem's triangle count without allocating a mesh. */
+[[nodiscard]] Result<int> calculateWaterMeshTriangles(const WaterMeshSettings& settings);
+
 class Graphics;
 class Mesh;
 class Texture;
+
+/** @brief One linear RGB stop in a Pcg-compatible water depth gradient. */
+struct WaterGradientColorStop { float time = 0.0F; glm::vec3 color{0.0F}; };
+/** @brief One linear alpha stop in a Pcg-compatible water depth gradient. */
+struct WaterGradientAlphaStop { float time = 0.0F; float alpha = 1.0F; };
+
+/** @brief Caller-owned color and alpha keys used to bake a water depth-ramp texture. */
+struct WaterDepthGradient {
+    std::vector<WaterGradientColorStop> colorStops;
+    std::vector<WaterGradientAlphaStop> alphaStops;
+    /** @brief Add a finite normalized RGB stop, preserving no external reference. */
+    [[nodiscard]] Result<void> addColorStop(float time, float red, float green, float blue);
+    /** @brief Add a finite normalized alpha stop, preserving no external reference. */
+    [[nodiscard]] Result<void> addAlphaStop(float time, float alpha);
+    /** @brief Remove all owned color and alpha stops. */
+    void clear();
+};
 
 /**
  * @brief Dynamic water surface with sky reflection and animated ripples.
@@ -41,6 +75,14 @@ public:
 
     /** @brief Build a flat XZ plane (Y-up) sized sizeX × sizeZ with UVs in [0,1]². */
     void createPlane(float sizeX, float sizeZ, int segX, int segZ);
+
+    /**
+     * @brief Validate, generate and atomically publish a Pcg-compatible plane or concentric-circle mesh.
+     * @param settings Borrowed immutable dimensions, height, density and shape.
+     * @return Published vertex count. Failure preserves the current mesh.
+     * @thread Graphics owner thread only. No callback or borrowed pointer survives the call.
+     */
+    [[nodiscard]] Result<int> createProceduralMesh(const WaterMeshSettings& settings);
 
     /** @brief Advance the animation clock by dt seconds. */
     void update(float dt);
@@ -73,6 +115,24 @@ public:
 
     void setWaveScale(float scale);
     float getWaveScale() const { return config_.waveScale; }
+
+    /** @brief Set Pcg PWS_WaterSystem wave direction in finite degrees around world Y. */
+    [[nodiscard]] Result<void> setWaveDirectionAngle(float degrees);
+    /** @brief Return the normalized wave direction angle in [0,360). */
+    float getWaveDirectionAngle() const { return waveDirectionAngle_; }
+
+    /**
+     * @brief Bake Pcg GenerateColorDepth semantics and atomically publish the clamp-sampled texture.
+     * @param gradient Borrowed immutable color and alpha keys.
+     * @param resolution Square texture resolution in [2,4096]; columns sample x/resolution.
+     * @return Generated pixel count. Failure preserves the current ramp.
+     * @thread Graphics owner thread only; no pointer or callback survives the call.
+     */
+    [[nodiscard]] Result<int> setDepthGradient(const WaterDepthGradient& gradient, int resolution);
+    /** @brief Return the Graphics-owned current depth-ramp texture, or null when disabled. */
+    Texture* getDepthGradientTexture() const { return depthGradientTexture_; }
+    /** @brief Disable depth-ramp sampling without destroying the Graphics-owned texture. */
+    void clearDepthGradient() { depthGradientTexture_ = nullptr; }
 
     void setWaterColor(float r, float g, float b);
     void setReflectionTint(float r, float g, float b);
@@ -151,6 +211,8 @@ private:
     Mesh *mesh_ = nullptr;
 
     float time_ = 0.f;
+    float waveDirectionAngle_ = 0.0F;
+    Texture* depthGradientTexture_ = nullptr;
     WaterStyleConfig config_;
     float viewportW_ = 0.f;
     float viewportH_ = 0.f;

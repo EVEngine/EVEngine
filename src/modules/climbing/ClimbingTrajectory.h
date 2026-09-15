@@ -18,7 +18,9 @@ inline Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept {
 
 /**
  * Internal deterministic path shared by candidate validation and authoritative execution.
- * Mantles rise clear of the lip before crossing it; vault and ledge approaches retain an arc.
+ * Mantles and wall-contact vaults rise clear of the lip before crossing it.
+ * Vaults with takeoff clearance and ledge
+ * approaches retain an arc.
  */
 inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
                             const ClimbingActionDefinition& action, const ClimbingProfileDefinition& profile,
@@ -27,8 +29,13 @@ inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
     const bool surfaceFollow = action.trajectory == ClimbingTrajectoryKind::SurfaceFollow ||
                                action.trajectory == ClimbingTrajectoryKind::AnchorToAnchor;
     const bool ballistic = action.trajectory == ClimbingTrajectoryKind::BallisticArc;
+    const float frontX          = start.x - candidate.frontPoint.x;
+    const float frontZ          = start.z - candidate.frontPoint.z;
+    const float contactDistance = profile.capsuleRadius + 2.f * profile.skin;
+    const bool  contactVault    = action.kind == ClimbingActionKind::Vault &&
+                              frontX * frontX + frontZ * frontZ <= contactDistance * contactDistance;
     if (!ballistic && !surfaceFollow &&
-        (action.kind == ClimbingActionKind::Mantle || action.kind == ClimbingActionKind::ClimbUp)) {
+        (action.kind == ClimbingActionKind::Mantle || action.kind == ClimbingActionKind::ClimbUp || contactVault)) {
         constexpr float riseEnd   = 0.4f;
         constexpr float crossEnd  = 0.85f;
         const float     clearance = std::max({start.y, candidate.topPoint.y + profile.skin,

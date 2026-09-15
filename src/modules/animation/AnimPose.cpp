@@ -1,5 +1,7 @@
 #include "animation/AnimPose.h"
+#include <array>
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimTransformInternal.h"
 
 #include "common/Exception.h"
 
@@ -68,35 +70,6 @@ void blendLocalRotation(TransformTRS& local, const Quat& target, float weight) {
               local.qx, local.qy, local.qz, local.qw);
 }
 
-TransformTRS mulTRS(const TransformTRS& parent, const TransformTRS& local) {
-    // world = parent * local (TRS, scale ignored in rotation path for FK positions)
-    TransformTRS out;
-    // Rotate local translation by parent rotation, then add parent translation * scales.
-    const float qx = parent.qx, qy = parent.qy, qz = parent.qz, qw = parent.qw;
-    const float lx = local.px * parent.sx;
-    const float ly = local.py * parent.sy;
-    const float lz = local.pz * parent.sz;
-    // q * v
-    const float ix = qw * lx + qy * lz - qz * ly;
-    const float iy = qw * ly + qz * lx - qx * lz;
-    const float iz = qw * lz + qx * ly - qy * lx;
-    const float iw = -qx * lx - qy * ly - qz * lz;
-    out.px         = parent.px + (ix * qw + iw * -qx + iy * -qz - iz * -qy);
-    out.py         = parent.py + (iy * qw + iw * -qy + iz * -qx - ix * -qz);
-    out.pz         = parent.pz + (iz * qw + iw * -qz + ix * -qy - iy * -qx);
-
-    // Quaternion multiply parent * local
-    out.qw = parent.qw * local.qw - parent.qx * local.qx - parent.qy * local.qy - parent.qz * local.qz;
-    out.qx = parent.qw * local.qx + parent.qx * local.qw + parent.qy * local.qz - parent.qz * local.qy;
-    out.qy = parent.qw * local.qy - parent.qx * local.qz + parent.qy * local.qw + parent.qz * local.qx;
-    out.qz = parent.qw * local.qz + parent.qx * local.qy - parent.qy * local.qx + parent.qz * local.qw;
-    out.normalizeRotation();
-
-    out.sx = parent.sx * local.sx;
-    out.sy = parent.sy * local.sy;
-    out.sz = parent.sz * local.sz;
-    return out;
-}
 
 }  // namespace
 
@@ -239,7 +212,7 @@ void AnimPose::computeWorld(const AnimSkeleton* skeleton) {
             worlds_[static_cast<size_t>(i)] = locals_[static_cast<size_t>(i)];
         } else {
             worlds_[static_cast<size_t>(i)] =
-                mulTRS(worlds_[static_cast<size_t>(parent)], locals_[static_cast<size_t>(i)]);
+                detail::mulTRS(worlds_[static_cast<size_t>(parent)], locals_[static_cast<size_t>(i)]);
         }
     }
 }
@@ -264,28 +237,102 @@ bool AnimPose::aimBone(const AnimSkeleton* skeleton, int boneIndex, float target
 bool AnimPose::solveTwoBoneIK(const AnimSkeleton* skeleton, int rootBone, int midBone, int tipBone, float targetX,
                               float targetY, float targetZ, float weight) {
     if (!skeleton) throw Exception("AnimPose.solveTwoBoneIK: skeleton is null");
+    requireBone(midBone);
+    computeWorld(skeleton);
+    const auto pole = world(midBone);
+    return solveTwoBoneIKPoleImpl(skeleton, rootBone, midBone, tipBone, targetX, targetY, targetZ, pole.px, pole.py,
+                                  pole.pz, weight);
+}
+
+bool AnimPose::solveTwoBoneIKPoleImpl(const AnimSkeleton* skeleton, int rootBone, int midBone, int tipBone,
+                                      float targetX, float targetY, float targetZ, float poleX, float poleY,
+                                      float poleZ, float weight) {
+    if (!skeleton) throw Exception("AnimPose.solveTwoBoneIK: skeleton is null");
     requireBone(rootBone);
     requireBone(midBone);
     requireBone(tipBone);
     if (skeleton->getParent(midBone) != rootBone || skeleton->getParent(tipBone) != midBone) return false;
 
-    bool changed = false;
-    for (int pass = 0; pass < 2; ++pass) {
-        for (int joint : {midBone, rootBone}) {
-            computeWorld(skeleton);
-            const auto& j = world(joint);
-            const auto& t = world(tipBone);
-            Quat        delta;
-            if (!fromTo(t.px - j.px, t.py - j.py, t.pz - j.pz, targetX - j.px, targetY - j.py, targetZ - j.pz, delta)) {
-                continue;
-            }
-            const Quat desiredWorld = quatMul(delta, {j.qx, j.qy, j.qz, j.qw});
-            blendLocalRotation(local(joint), worldToLocalRotation(skeleton, this, joint, desiredWorld), weight);
-            changed = true;
-        }
-    }
+    if (!std::isfinite(targetX) || !std::isfinite(targetY) || !std::isfinite(targetZ) || !std::isfinite(poleX) ||
+        !std::isfinite(poleY) || !std::isfinite(poleZ) || !std::isfinite(weight))
+        throw Exception("AnimPose.solveTwoBoneIK: nonfinite target or weight");
     computeWorld(skeleton);
-    return changed;
+    using Vector  = std::array<double, 3>;
+    auto position = [](const TransformTRS& t) -> Vector { return {t.px, t.py, t.pz}; };
+    auto sub      = [](Vector a, Vector b) -> Vector { return {a[0] - b[0], a[1] - b[1], a[2] - b[2]}; };
+    auto dot      = [](Vector a, Vector b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; };
+    auto cross    = [](Vector a, Vector b) -> Vector {
+        return {a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]};
+    };
+    const Vector a = position(world(rootBone)), b = position(world(midBone)), c = position(world(tipBone));
+    const Vector ab = sub(b, a), bc = sub(c, b);
+    const double upper = std::sqrt(dot(ab, ab)), lower = std::sqrt(dot(bc, bc));
+    if (upper < 1e-7 || lower < 1e-7) return false;
+    Vector direction = sub(Vector{targetX, targetY, targetZ}, a);
+    double distance  = std::sqrt(dot(direction, direction));
+    if (distance < 1e-7) {
+        direction = sub(c, a);
+        distance  = std::sqrt(dot(direction, direction));
+    }
+    if (distance < 1e-7) {
+        direction = ab;
+        distance  = upper;
+    }
+    for (auto& value : direction) value /= distance;
+    const double requested =
+        std::sqrt(dot(sub(Vector{targetX, targetY, targetZ}, a), sub(Vector{targetX, targetY, targetZ}, a)));
+    const double reach     = std::clamp(requested, std::max(std::abs(upper - lower), 1e-7), upper + lower);
+    const double along     = (upper * upper - lower * lower + reach * reach) / (2 * reach);
+    const double height    = std::sqrt(std::max(upper * upper - along * along, 0.0));
+    Vector       pole      = sub(Vector{poleX, poleY, poleZ}, a);
+    const double projected = dot(pole, direction);
+    for (int i = 0; i < 3; ++i) pole[i] -= projected * direction[i];
+    double poleLength = std::sqrt(dot(pole, pole));
+    if (poleLength < 1e-7) {
+        pole       = cross(cross(ab, bc), direction);
+        poleLength = std::sqrt(dot(pole, pole));
+    }
+    if (poleLength < 1e-7) {
+        // A fully straight chain has no bend plane. Choose the least parallel
+        // axis deterministically; subsequent calls retain the resulting plane.
+        int axis = 0;
+        for (int i = 1; i < 3; ++i)
+            if (std::abs(direction[i]) < std::abs(direction[axis])) axis = i;
+        pole                    = {0, 0, 0};
+        pole[axis]              = 1;
+        const double projection = dot(pole, direction);
+        for (int i = 0; i < 3; ++i) pole[i] -= projection * direction[i];
+        poleLength = std::sqrt(dot(pole, pole));
+    }
+    Vector knee{}, tip{};
+    for (int i = 0; i < 3; ++i) {
+        knee[i] = a[i] + direction[i] * along + pole[i] * height / poleLength;
+        tip[i]  = a[i] + direction[i] * reach;
+    }
+    const auto originalRoot = local(rootBone), originalMid = local(midBone);
+    Quat       delta;
+    if (!fromTo(float(ab[0]), float(ab[1]), float(ab[2]), float(knee[0] - a[0]), float(knee[1] - a[1]),
+                float(knee[2] - a[2]), delta))
+        return false;
+    const auto root = world(rootBone);
+    const Quat rootRotation =
+        worldToLocalRotation(skeleton, this, rootBone, quatMul(delta, {root.qx, root.qy, root.qz, root.qw}));
+    blendLocalRotation(local(rootBone), rootRotation, 1.f);
+    computeWorld(skeleton);
+    const auto mid = world(midBone), end = world(tipBone);
+    if (fromTo(end.px - mid.px, end.py - mid.py, end.pz - mid.pz, float(tip[0] - mid.px), float(tip[1] - mid.py),
+               float(tip[2] - mid.pz), delta)) {
+        const Quat midRotation =
+            worldToLocalRotation(skeleton, this, midBone, quatMul(delta, {mid.qx, mid.qy, mid.qz, mid.qw}));
+        blendLocalRotation(local(midBone), midRotation, 1.f);
+    }
+    const auto solvedRoot = local(rootBone), solvedMid = local(midBone);
+    local(rootBone) = originalRoot;
+    local(midBone)  = originalMid;
+    blendLocalRotation(local(rootBone), {solvedRoot.qx, solvedRoot.qy, solvedRoot.qz, solvedRoot.qw}, weight);
+    blendLocalRotation(local(midBone), {solvedMid.qx, solvedMid.qy, solvedMid.qz, solvedMid.qw}, weight);
+    computeWorld(skeleton);
+    return true;
 }
 
 float AnimPose::getWorldPositionX(int boneIndex) const {

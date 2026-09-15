@@ -67,7 +67,11 @@ public:
                  float weight = 1.f);
 
     /**
-     * @brief Solve a root-mid-tip chain toward a world-space target using CCD.
+     * @brief Analytically solve a root-mid-tip chain toward a world-space target.
+     * @details Preserves segment lengths and the current bend plane, with a deterministic
+     * plane for a straight chain. Unreachable targets clamp to the chain's reach;
+     * full-weight reachable targets are exact up to float rounding for rigid/uniformly
+     * scaled chains. Blends solved local rotations once, then updates world transforms.
      * @param skeleton Skeleton
      * defining the hierarchy.
      * @param rootBone Root joint index.
@@ -80,7 +84,8 @@ public:
      * @param targetZ World-space target Z.
      * @param weight Blend weight in [0, 1].
      * @return
-     * False for an invalid chain or degenerate target, otherwise true.
+     * False for an invalid chain or zero-length segment, otherwise true.
+     * Nonfinite targets/weights throw before changing local transforms.
      */
     bool solveTwoBoneIK(const AnimSkeleton* skeleton, int rootBone, int midBone, int tipBone, float targetX,
                         float targetY, float targetZ, float weight = 1.f);
@@ -107,6 +112,8 @@ public:
 
 private:
     void requireBone(int boneIndex) const;
+    bool solveTwoBoneIKPoleImpl(const AnimSkeleton* skeleton, int rootBone, int midBone, int tipBone, float targetX,
+                                float targetY, float targetZ, float poleX, float poleY, float poleZ, float weight);
 
     std::vector<TransformTRS> locals_;
     std::vector<TransformTRS> worlds_;

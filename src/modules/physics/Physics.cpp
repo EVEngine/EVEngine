@@ -11,8 +11,10 @@
 #include "physics/Shape3D.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
+#include "physics/TerrainLoadGravity.h"
 
 #include "common/Exception.h"
+#include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -64,6 +66,25 @@ Fluid2D *Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
 void Physics::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Physics::create, false);
     expose(cls);
+    auto terrainLoadState = table.addClass<TerrainLoadGravityState>("TerrainLoadGravityState");
+    terrainLoadState.addFunc("isMonitoring", &TerrainLoadGravityState::isMonitoring);
+    terrainLoadState.addFunc("isActivationScheduled",
+                             &TerrainLoadGravityState::isActivationScheduled);
+    terrainLoadState.addFunc("isCompleted", &TerrainLoadGravityState::isCompleted);
+    terrainLoadState.addFunc("getDelayElapsed", &TerrainLoadGravityState::getDelayElapsed);
+    table.addFunc("beginTerrainLoadGravity",
+                  [vm = table.getHandle()](TerrainLoadGravityState* state, Body3D* body,
+                                           bool terrainFound) {
+        return eve::script::projectResult(vm,
+                                          beginTerrainLoadGravity(state, body, terrainFound));
+    });
+    table.addFunc("advanceTerrainLoadGravity",
+                  [vm = table.getHandle()](TerrainLoadGravityState* state, Body3D* body,
+                                           bool terrainLoaded, float dt, float delay) {
+        return eve::script::projectResult(
+            vm, advanceTerrainLoadGravity(state, body, terrainLoaded, dt, delay),
+            [](bool activated) { return eve::Value(activated); });
+    });
 
     auto world = table.addClass<World>(
         "World", std::function<World *()>([]() -> World * { return nullptr; }), true);

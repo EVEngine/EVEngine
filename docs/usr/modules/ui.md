@@ -328,6 +328,18 @@ ui.setHostWorldOverlap(true, 10, 4.0, 96.0)
   `editors/*.vm.nut` 或 `editors/*.editor.json`；`hotReloadStatus()` 返回 watcher、
   成功/失败计数与最近诊断。正常保存会由 MCP 主机自动触发，无需重启。
 
+## Canvas 高度驱动的父布局
+
+`ParentScalerSettings`、`ParentScalerInput`、`ParentScalerState`、`ParentScalerOutput` 和
+`evaluateParentScaler(state,output,settings,input)` 对应 Pcg `ParentScaler`。`scaleWithCanvas=true` 且存在
+Canvas 和目标时，FullScreen 输出原始 `canvasHeight`；`partScreen=true` 时按 Pcg 公式将其钳制到
+`[0.1,maxHeight]`。只有 Canvas 高度变化或 `lastScaleHeight==0` 时才令 `applyHeight=true`，调用者再把
+`height` 应用到每个仍有效的目标 Rect，保留各自宽度。
+
+脚本字段包括 `scaleWithCanvas`、`partScreen`、`maxHeight`、`hasCanvas`、`targetCount`、`canvasHeight`、
+`lastScaleHeight`、`applyHeight` 和 `height`。状态与输出由调用者持有；零目标不会消耗高度变化，后续加入目标
+仍能获得写入。无效目标由调用者跳过，负目标数或非有限高度在修改 state/output 前失败。
+
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
@@ -336,3 +348,98 @@ ui.setHostWorldOverlap(true, 10, 4.0, 96.0)
 
 **源码：** [`src/modules/ui/`](../../../src/modules/ui/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `ui`。
+
+PhotoMode 的 Photo 域由 `PcgPhotoModePhotoAuthority` 保存并统一发布。它覆盖场景身份、
+截图分辨率、EXR/JPG/PNG/TGA 格式、加载保存设置、关闭时恢复，以及 FPS、准星和三分法
+叠层开关。分辨率索引 0 使用当前 drawable 尺寸，1..9 精确映射 Pcg 的 640×480 到
+7680×4320 档位；`screenshotSize()` 与 `screenshotExtension()` 供捕获和 UI 调用方读取。
+authority 只保存稳定值，不持有 widget；实际叠层仍由 UIHost 使用现有 UI API 构建。
+
+### Pcg 截图按钮与颜色预览同步
+
+`AutoAssignTakePhotoEvent` 的启动期按钮接线使用现有 `ui.onClick(id, callback)`：回调中调用 `gfx.saveFramePng(path)`；首次启用 readback 后若尚无已呈现帧会返回 `false`，下一帧再次调用。该组合对应 Unity `Button.onClick -> ScreenShotter.TakeHiResShot`，并允许调用者显式选择输出路径。
+
+`eve.PcgColorPreviewSync()` 对应 `ColorPreviewSync.OnEnable`。调用 `sync(r,g,b,a)` 后，通过 `getRed()`、`getGreen()`、`getBlue()`、`getAlpha()` 取得按钮 highlighted color：纯黑源色映射到 `(0.5,0.5,0.5,1)`，其余颜色严格乘以原脚本硬编码的 `2.5`。非有限输入返回结构化错误且保留原状态。
+
+### PcgDraggableWindow
+
+`eve.PcgDraggableWindow()` 对应照片模式的 `DraggableUIWindow`。`configure(x,y,width,height,screenWidth,screenHeight,canvasScale)` 保存初始 anchored position；`drag(deltaX,deltaY)` 按 canvas scale 换算并复现 Pcg 的 X 负向、Y 正向边界钳制。`pointerDown(middleButtonDown)` 总是产生置顶请求，中键同时复位；用 `consumeBringToFront()` 消费请求，并通过 `getX()` / `getY()` 将结果交给 `ui.setHostPos`。
+
+### PcgPhotoModePanels
+
+`eve.PcgPhotoModePanels()` 保留七个 Pcg 照片模式页签的固定编号：Camera=0、Unity=1、Terrain=2、Lighting=3、Water=4、PostFX=5、PhotoMode=6。`select(panel)` 原子关闭其余六个面板并选择目标；`getSelected()`、`isActive(panel)`、`getRevision()` 提供快照，`consumeScrollReset()` 通知调用者重建 scroll content 并把滚动条置顶。
+
+`eve.PcgPhotoModePanelButton()` 通过 `configure(nonSelectedRGBA,selectedRGBA)` 保存两组颜色，`setSelected()` 同时控制按钮 normal/selected 色和面板布局开关。读取接口为 `getNormalR()`、`getNormalG()`、`getNormalB()`、`getNormalA()`、`getHighlightR()`、`getLayoutEnabled()`、`getSelected()`；highlight 始终来自选中色，与 Pcg 注册逻辑一致。
+
+### PcgPhotoModeColorPicker
+
+`eve.PcgPhotoModeColorPicker()` 实现照片模式颜色选择器。`open(r,g,b,a,hdr)`、`setLast(...)`、`setFocusedName(name)`、`close()` 管理打开、旧值和标题；`setRed()`、`setGreen()`、`setBlue()`、`setHdr()` 对应四条滑杆，`reset()` 恢复旧值。读取接口包括 `getRed/Green/Blue/Alpha`、`getPreviewRed/Green/Blue`、`getHdrSwatch()`、`getHdrEnabled()`、`getOpen()`、`getFocusedName()`、`getChangeRevision()` 和 `consumeBringToFront()`。HDR alpha 大于 1 或小于 0 时严格保留 Pcg 打开阶段和预览阶段的两次 RGB 乘法。
+预览通道的完整方法名为 `getPreviewRed()`、`getPreviewGreen()`、`getPreviewBlue()`。
+
+### PcgScreenshotSavedNotice
+
+`eve.PcgScreenshotSavedNotice()` 对应截图保存提示。`configure(enabled,showSeconds)` 设置开关和持续时间；截图成功后调用 `request(path)`，在该帧渲染结束调用 `endFrame(unscaledNow)` 才显示，再用 `tick(unscaledNow)` 到期隐藏。`getVisible()`、`getPathVisible()`、`getPath()`、`getPending()` 返回 UI 快照。重复 request 会取消旧显示并从新的 end-of-frame 重新计时。
+
+### PcgTooltipManager
+
+`eve.PcgTooltipManager()` 合并移植 Tooltip、TooltipManager、TooltipProfile 和 TooltipTrigger。`configure(interactionMode,theme,delay,bottomOffset,topOffset,wrapLimit)` 中 interactionMode 为 UI=0、SceneObjects=1、Both=2，theme 为 Light=0、Dark=1。`addTooltip()`、`removeTooltip()` 管理 profile；`enter(source,id,now)` 做 Pcg 的首个 substring 匹配，`enterText(source,content,header,now)` 对应 Trigger 自带文本，`exit(source)`、`hide()` 和 `tick(now,mouseX,mouseY,screenWidth,screenHeight,anyInput)` 管理延迟、位置与隐藏。
+
+状态通过 `getVisible()`、`getPending()`、`getHeader()`、`getText()`、`getHeaderVisible()`、`getWrapEnabled()`、`getPivotX()`、`getPivotY()`、`getBackgroundR()`、`getForeground()`、`getCount()` 读取。
+
+### PcgControllerSelection
+
+`eve.PcgControllerSelection()` 对应 `UIControllerSelection`。用 `add(name,controllerType,widgetId)` 按 Inspector 顺序登记说明项，`refresh(currentController)` 选择第一个类型匹配项并生成互斥可见快照；没有匹配时返回成功但 value=false，保留之前状态。通过 `getCount()`、`getSelectedIndex()`、`getVisible(index)`、`getWidgetId(index)` 读取，再用 `ui.setVisible` 应用到稳定 widget id。
+
+### PcgPhotoModeRuntimeUI
+
+`eve.PcgPhotoModeRuntimeUI()` 对应 `PhotoModeUtils` 与 `PhotoModeUIHelper` 的运行时控件状态。`configure(kind,name,value,current,min,max,imageFound)` 的 kind 从 Field=0 到 Vector3=13。各 `get*Visible()` 返回原 prefab 的互斥可见快照，`getInitialCallbackRevision()` 记录配置后主动派发初值的次数。
+
+### PcgLoadingScreen
+
+`eve.PcgLoadingScreen()` 接收 TerrainLoader 的四类加载事件。`configure(fadeOutSpeed)` 设置背景每秒
+衰减的 alpha；`onLoadProgressStarted()` 显示画布并把背景和进度复位，
+`onLoadProgressUpdated(progress)` 更新进度且在值达到 1 时自动执行 `onLoadProgressEnded()`。
+结束会隐藏进度条和文本并开始淡出，调用方每帧用 `tick(deltaTime)` 推进；alpha 到零后画布关闭。
+
+超时诊断使用 `beginTimeout()` 开始事务，`addMissingScene(terrainName,impostorName)` 返回索引，随后用
+`addRegularReference(index,name)` 和 `addImpostorReference(index,name)` 收集仍引用该场景的对象，最后
+`endTimeout()` 原子发布与 Pcg 相同结构的诊断并开始淡出。`getCanvasVisible`、`getProgressVisible`、
+`getTextVisible`、`getFading`、`getProgress`、`getBackgroundAlpha` 和 `getTimeoutMessage` 返回 UI 快照。
+
+`markSliderUsed()`、`setSliderValue()`、`applyFloatInput()` 保留滑杆与文本框同步规则；`updateWrap(text)` 复现 68 字符 metrics 换行，包括无空格硬切时跳过切点字符的原始行为。
+
+状态查询包括 `getKind()`、`getName()`、`getValueText()`、`getValue()`、`getMinimum()`、`getMaximum()`、
+`getWholeNumbers()`、`getUsingSlider()`、`getInputRefresh()`、`getLabelVisible()`、
+`getSecondLabelVisible()`、`getSliderVisible()`、`getInputVisible()`、`getToggleVisible()`、
+`getButtonVisible()`、`getDropdownVisible()`、`getImageVisible()`、`getHeaderVisible()`、`getColorVisible()`、
+`getVector2Visible()`、`getVector3Visible()` 和 `getInitialCallbackRevision()`。
+
+### PcgPhotoModeValues
+
+`eve.PcgPhotoModeValues()` 完整保存 Pcg `PhotoModeValues` 的 102 个字段及原始默认值。字段名沿用 `m_*` 配置名；`getFieldCount/getFieldName/getFieldType` 提供稳定 schema，类型编号为 Bool=0、Int=1、Float=2、String=3、Color=4。使用对应 `setBool/setInt/setFloat/setString/setColor` 与 `getBool/getInt/getFloat/getString`；颜色先 `selectColor(name)`，再读取 RGBA。`resetDefaults()` 原子恢复原始配置。
+
+`snapshotJson()` 输出 `eve.ui.pcg-photo-mode-values` schema version 1，并包含全部 102 字段；`restoreJson(json)` 要求精确 schema、版本和字段集合，拒绝未知或缺失字段，解析到临时候选对象后一次性交换，因此任何错误都保留当前配置。
+
+### PcgPhotoModeSession
+
+`eve.PcgPhotoModeSession()` 对应 `PhotoMode.cs` 的进入、加载和退出事务。`begin(capturedJson,savedJson,loadSaved,savedEver,currentPipeline,savedPipeline,sceneName,lightingProfile)` 保存进入前快照，仅在管线、场景和光照配置均匹配时加载保存值。`getLoadDecision()` 返回 Current=0、Saved=1、SaveCurrent=2。`replaceWorkingJson()` 原子更新运行值；`end(resetOnDisable,applicationPlaying)` 选择工作值或进入前快照作为 `outputJson()`。
+
+退出后 `getRemovePhotoCameraRequested()` 和 `getUnfreezePlayerRequested()` 始终为真；只有两个退出参数均为真时 `getRestoreRequested()` 为真。调用者按这些请求恢复各权威模块并清理临时对象。
+
+脚本方法：`begin()`、`replaceWorkingJson()`、`end()`、`workingJson()`、`outputJson()`、`getActive()`、`getRestoreRequested()`、`getRemovePhotoCameraRequested()`、`getUnfreezePlayerRequested()`、`getLoadDecision()`、`getRevision()`。
+
+### PcgPhotoModeRanges
+
+`eve.PcgPhotoModeRanges()` 完整保存 `PhotoModeMinAndMaxValues` 的 57 组范围。`getCount/getName` 按原声明顺序枚举；`select(name)` 后用 `getMinimum/getMaximum/getIntegral` 读取。`setRange()` 原子替换自定义范围，整数范围要求整数端点；`clamp(name,value)` 返回钳制结果。`m_densityVolumeFogDistance` 的默认上限保留正无穷。
+
+### Pcg PhotoMode 跨域应用事务
+
+PcgPhotoModeApplyPlan 比较两个完整 PcgPhotoModeValues 快照，按 Pcg 源字段声明顺序输出变更，并把字段路由到 Photo、System、Graphics、Camera、Streaming、Weather、Lighting、Water、PostFx、Terrain、Grass 或 Audio 权威域。executeRegistered() 通过 eve.photo-mode.apply capability 同步执行；未安装提供者会返回可观察的 Unsupported 错误。任一字段失败时，先前字段按逆序恢复，getRollbackComplete() 报告恢复是否完整。脚本可用 compileJson、命令枚举和执行状态来驱动照片模式。
+
+脚本方法：compileJson、executeRegistered、getCommandCount、getCommandField、getCommandDomain、getAppliedCount、getRollbackComplete、getRevision。
+
+照片模式注册执行器会把 m_globalVolume 通过现有 IAudioQuery 写入真实 Audio master volume。其他字段由实现 IPhotoModeFieldSink 的模块 listener 接收；每个字段必须恰有一个提供者，缺失或重复所有者都会使事务失败并触发逆序回滚。
+
+### Pcg Lighting profile 身份
+
+PhotoMode 的 `m_isUsingPcgLighting` 与 `m_selectedPcgLightingProfile` 由 `PcgPhotoModePhotoAuthority` 作为持久化身份联合保存。`lightingProfileMatches(currentProfile)` 同时比较 profile 索引和 Pcg/custom 模式；`PcgPhotoModeSession.begin()` 也使用这两个条件与场景名、渲染管线共同决定是否允许加载旧设置。

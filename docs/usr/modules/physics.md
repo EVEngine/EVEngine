@@ -1007,6 +1007,19 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `isAngularYLocked()`、`isAngularZLocked()`、`isContinuousCollisionEnabled()`、`isLinearXLocked()`、`isLinearYLocked()`、`isLinearZLocked()`、`isSleepEnabled()`、`isWarmStartingEnabled()`
 - `sample()`、`sampleNormal()`、`setDistanceLength()`、`setSleepThreshold()`
 
+## 等待流送地形后激活刚体
+
+`TerrainLoadGravityState`、`beginTerrainLoadGravity(state,body,terrainFound)` 和
+`advanceTerrainLoadGravity(state,body,terrainLoaded,dt,activationDelay)` 对应 Pcg
+`RigidbodyWaitForTerrainLoad`。调用者先用世界流送索引判断刚体位置是否落在某个 terrain scene 内；存在时
+begin 保存原 gravity scale 并临时设为 0，不存在时直接进入 completed 且不修改刚体。每帧注入当前 regular
+load state 和 dt；首次观察到 loaded 后启动延时，延时到期时恢复原 gravity scale，并返回 `value=true`
+一次，调用者可据此启用自己拥有的附属组件。
+
+这项状态机有意保留 Pcg `Invoke` 的语义：延时一旦排定，之后短暂的 unloaded 观察不会取消激活。状态与
+Body3D 都由调用者持有，函数不保存指针、不调用未知回调；无效对象、负数或非有限时间会在修改前失败。
+`isMonitoring()`、`isActivationScheduled()`、`isCompleted()` 和 `getDelayElapsed()` 可用于存档外的运行诊断。
+
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。

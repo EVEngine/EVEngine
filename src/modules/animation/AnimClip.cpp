@@ -47,7 +47,8 @@ void AnimClip::addPositionKey(int boneIndex, float time, float x, float y, float
     ensureBone(boneIndex);
     auto& keys = tracks_[static_cast<size_t>(boneIndex)].positions;
     keys.push_back({time, x, y, z});
-    std::sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
+    if (keys.size() > 1 && keys[keys.size() - 2].t >= time)
+        std::sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
 }
 
@@ -67,7 +68,8 @@ void AnimClip::addRotationKey(int boneIndex, float time, float x, float y, float
     k.w        = tmp.qw;
     auto& keys = tracks_[static_cast<size_t>(boneIndex)].rotations;
     keys.push_back(k);
-    std::sort(keys.begin(), keys.end(), [](const QuatKey& a, const QuatKey& b) { return a.t < b.t; });
+    if (keys.size() > 1 && keys[keys.size() - 2].t >= time)
+        std::sort(keys.begin(), keys.end(), [](const QuatKey& a, const QuatKey& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
 }
 
@@ -76,7 +78,8 @@ void AnimClip::addScaleKey(int boneIndex, float time, float x, float y, float z)
     ensureBone(boneIndex);
     auto& keys = tracks_[static_cast<size_t>(boneIndex)].scales;
     keys.push_back({time, x, y, z});
-    std::sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
+    if (keys.size() > 1 && keys[keys.size() - 2].t >= time)
+        std::sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
 }
 
@@ -446,6 +449,19 @@ void AnimClip::applyPlanarRootMotion(int boneIndex, float speedX, float speedZ) 
         keys.push_back({duration_, speedX * duration_, 0.f, speedZ * duration_});
         return;
     }
+    // Importers commonly reduce a constant in-place root track to one key at
+    // t=0. Preserve its endpoint values before adding travel, otherwise every
+    // added displacement is zero and the clip remains stationary.
+    if (keys.front().t > 0.f) {
+        auto start = keys.front();
+        start.t    = 0.f;
+        keys.insert(keys.begin(), start);
+    }
+    if (keys.back().t < duration_) {
+        auto end = keys.back();
+        end.t    = duration_;
+        keys.push_back(end);
+    }
     for (auto& k : keys) {
         k.x += speedX * k.t;
         k.z += speedZ * k.t;
@@ -489,8 +505,8 @@ void AnimClip::sampleVec3(const std::vector<Vec3Key>& keys, float time, float& x
         z = keys.back().z;
         return;
     }
-    const auto upper =
-        std::upper_bound(keys.begin(), keys.end(), time, [](float value, const Vec3Key& key) { return value < key.t; });
+    const auto  upper = std::upper_bound(keys.data(), keys.data() + keys.size(), time,
+                                         [](float value, const Vec3Key& key) { return value < key.t; });
     const auto& b   = *upper;
     const auto& a   = *(upper - 1);
     const float den = b.t - a.t;
@@ -519,8 +535,8 @@ void AnimClip::sampleQuat(const std::vector<QuatKey>& keys, float time, float& x
         w = keys.back().w;
         return;
     }
-    const auto upper =
-        std::upper_bound(keys.begin(), keys.end(), time, [](float value, const QuatKey& key) { return value < key.t; });
+    const auto  upper = std::upper_bound(keys.data(), keys.data() + keys.size(), time,
+                                         [](float value, const QuatKey& key) { return value < key.t; });
     const auto& b   = *upper;
     const auto& a   = *(upper - 1);
     const float den = b.t - a.t;

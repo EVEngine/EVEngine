@@ -71,3 +71,20 @@ function paste() {
     if (dst.getPixelR(2, 0) > 0.01) return false;
     return true;
 }
+
+function pcgScale() {
+    local api=eve.Image();
+    local point=api.newEmptyImageData(3,2,"RGBA32F");
+    for(local y=0;y<2;++y) for(local x=0;x<3;++x) point.setPixel(x,y,x+y*3,y,0.0,1.0);
+    local pointResult=point.scalePcg(2,4,"point");
+    if(!pointResult.ok || pointResult.value!=8 || point.getWidth()!=2 || point.getHeight()!=4) return false;
+    if(point.getPixelR(1,3)!=4.0) return false;
+
+    local bilinear=api.newEmptyImageData(2,2,"RGBA32F");
+    bilinear.setPixel(0,0,0.0,0.0,0.0,1.0);bilinear.setPixel(1,0,1.0,0.0,0.0,1.0);
+    bilinear.setPixel(0,1,0.0,1.0,0.0,1.0);bilinear.setPixel(1,1,1.0,1.0,0.0,1.0);
+    local linearResult=bilinear.scalePcg(2,2,"bilinear");
+    if(!linearResult.ok || bilinear.getPixelR(1,1)!=0.5 || bilinear.getPixelG(1,1)!=0.5) return false;
+    local failed=bilinear.scalePcg(2,2,"cubic");
+    return !failed.ok && bilinear.getWidth()==2 && bilinear.getPixelR(1,1)==0.5;
+}

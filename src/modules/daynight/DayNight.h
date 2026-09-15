@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Result.h"
 
 #include <string>
 #include <vector>
@@ -13,6 +14,56 @@ class Volumetric;
 }  // namespace eve::graphics
 
 namespace eve::daynight {
+
+/** @brief Persistent manual sun settings projected from Pcg Photo Mode. */
+struct PcgManualSunState {
+    bool enabled = false;
+    float pitchDegrees = 75.f;
+    float rotationDegrees = 0.f;
+    float intensity = 1.f;
+    float red = 1.f;
+    float green = 1.f;
+    float blue = 1.f;
+    float kelvin = 6500.f;
+};
+
+/** @brief Persistent Pcg skybox override settings. */
+struct PcgSkyboxState {
+    bool enabled = false;
+    float rotationDegrees = 0.f;
+    float exposure = 1.f;
+    float tintRed = 0.f;
+    float tintGreen = 0.f;
+    float tintBlue = 0.f;
+};
+
+/** @brief Joint Pcg Photo Mode fog and density-volume state. */
+struct PcgFogState {
+    float additionalLinearDistance = 0.f;
+    float additionalExponentialDensity = 0.f;
+    bool overrideFog = false;
+    int mode = 1;
+    float red = 0.f, green = 0.f, blue = 0.f;
+    float density = 0.01f;
+    float startDistance = 100.f;
+    float endDistance = 1000.f;
+    float globalDensityMultiplier = 1.f;
+    bool overrideDensityVolume = false;
+    float densityAlbedoRed = 1.f, densityAlbedoGreen = 1.f, densityAlbedoBlue = 1.f;
+    float densityVolumeDistance = 250.f;
+    int densityVolumeEffect = 1;
+    int densityVolumeTiling = 3;
+};
+
+/** @brief Pcg ambient-gradient colors and global direct-light multiplier. */
+struct PcgAmbientLightState {
+    bool active = false;
+    float intensity = 1.f;
+    float skyRed = 0.7027151f, skyGreen = 0.881016f, skyBlue = 1.001631f;
+    float equatorRed = 0.6302439f, equatorGreen = 0.7919513f, equatorBlue = 0.85f;
+    float groundRed = 0.5f, groundGreen = 0.4142857f, groundBlue = 0.3321428f;
+    float globalLightMultiplier = 1.f;
+};
 
 /**
  * @brief DayNight module — a time-of-day cycle that drives the sun, sky and light.
@@ -77,6 +128,43 @@ public:
     float getSunG() const;
     /** @brief Atmosphere-attenuated direct sunlight blue channel, including intensity. */
     float getSunB() const;
+    /**
+     * @brief Atomically replace the persistent Pcg manual-sun state.
+     * @param state Candidate settings; angles must be in [0,360], intensity in [0,8],
+     * color channels finite and non-negative, and kelvin in [1500,20000].
+     * @return Success after the authoritative state changes, or InvalidArgument with no mutation.
+     * @thread Game thread only. The value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgManualSun(const PcgManualSunState &state);
+    /** @brief Return the authoritative manual-sun settings by value. */
+    PcgManualSunState getPcgManualSun() const noexcept;
+    /**
+     * @brief Atomically replace Pcg's persistent skybox override.
+     * @param state Rotation in [0,360], exposure in [0,30], and finite non-negative tint.
+     * @return Success, or InvalidArgument without changing the previous state.
+     * @thread Game thread only; the value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgSkybox(const PcgSkyboxState &state);
+    /** @brief Return the authoritative Pcg skybox override by value. */
+    PcgSkyboxState getPcgSkybox() const noexcept;
+    /**
+     * @brief Atomically replace all Pcg fog and density-volume controls.
+     * @param state Candidate joint state using Pcg Photo Mode ranges and enum indices.
+     * @return Success, or InvalidArgument without mutating the previous state.
+     * @thread Game thread only; the value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgFog(const PcgFogState &state);
+    /** @brief Return the authoritative Pcg fog state by value. */
+    PcgFogState getPcgFog() const noexcept;
+    /**
+     * @brief Atomically replace Pcg ambient colors, intensity and direct-light multiplier.
+     * @param state Finite non-negative colors, intensity in [0,10], multiplier in [0,5].
+     * @return Success, or InvalidArgument without changing the previous state.
+     * @thread Game thread only; the value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgAmbientLight(const PcgAmbientLightState &state);
+    /** @brief Return the authoritative Pcg ambient-light state by value. */
+    PcgAmbientLightState getPcgAmbientLight() const noexcept;
 
     // ---- atmosphere ----
     /** @brief Set aerosol turbidity. 1.5 is very clear; 10 is hazy. */

@@ -131,6 +131,7 @@ struct MeshVertex {
     glm::vec2 uv;
     glm::u16vec4 joints{0};
     glm::vec4 weights{0.f};
+    glm::vec4 color{1.f};
     // Optional imported tangent basis; w=0 explicitly denotes an absent stream.
     glm::vec4 tangent{0.f};
 
@@ -148,7 +149,8 @@ struct MeshVertex {
             {2, binding, vk::Format::eR32G32Sfloat, offsetof(MeshVertex, uv)},
             {3, binding, vk::Format::eR16G16B16A16Uint, offsetof(MeshVertex, joints)},
             {4, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, weights)},
-            {5, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, tangent)},
+            {5, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, color)},
+            {6, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, tangent)},
         };
     }
 };
@@ -182,6 +184,13 @@ struct Mesh3DUBO {
     glm::vec4 skinInfo{0.f};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
+    glm::vec4 diffuseProbeSh[9]{};
+    glm::vec4 diffuseProbeInfo{0.f};  // x = enabled
+    glm::vec4 diffuseVolumePosition[Lighting3DPack::kMaxDiffuseVolumeProbes]{};
+    glm::vec4 diffuseVolumeExtent[Lighting3DPack::kMaxDiffuseVolumeProbes]{};
+    glm::vec4 diffuseVolumeSh[Lighting3DPack::kMaxDiffuseVolumeProbes * 9]{};
+    glm::vec4 diffuseVolumeInfo{0.f};  // x = probe count
+    glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f}; // coverage, complementary pattern, enabled
 };
 
 struct SkinPassUBO {
@@ -532,6 +541,16 @@ public:
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    /**
+     * @brief Create a mesh with a packed linear RGBA vertex-color stream.
+     * @return Factory-owned mesh, or nullptr when validation or backend allocation fails.
+     * @ownership The resource factory owns the returned mesh; release it through releaseMesh.
+     * @lifetime Valid until releaseMesh, graphics shutdown, or device loss.
+     * @thread Graphics thread; all input arrays are borrowed and consumed synchronously.
+     */
+    Mesh *newMeshFromArraysColored(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                   const float *colorRGBA, int vertexCount,
+                                   const uint32_t *indices, int indexCount) override;
     /** @brief Return layout facts from the owned Vulkan mesh upload. */
     [[nodiscard]] std::optional<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh *mesh) const override;
     bool bakeMeshMorph(Mesh *mesh) override;
@@ -568,6 +587,7 @@ public:
                                 const std::string &faceDir, Texture *atlas, int tilesPerRow = 16,
                                 const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
+    void setMesh3DPackedNormalMask(bool enabled) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
                                  int atlasSlotsX, int atlasSlotsY,
@@ -582,6 +602,7 @@ public:
                                        const std::string &alphaTechnique = "cutoff") override;
     void              setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void              setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
+    void              setMesh3DLodDither(float weight, bool reverse, bool enabled) override;
     void              setMesh3DLighting(const Lighting3DPack &pack) override;
     void setCloudShadows(float strength, float worldCell, float time, float windSpeed, float windAngle, float coverage,
                          float detail) override;
@@ -597,6 +618,30 @@ public:
     SceneToneMapping           getSceneToneMapping() const override { return sceneToneMapping_; }
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     float getSceneExposure() const override { return sceneExposure; }
+    void setSceneColorFilter(const glm::vec3& color) override {
+        sceneColorFilter = glm::max(color, glm::vec3(0.f));
+    }
+    glm::vec3 getSceneColorFilter() const override { return sceneColorFilter; }
+    void setSceneLiftGammaGain(const glm::vec3& lift, const glm::vec3& inverseGamma,
+                               const glm::vec3& gain) override {
+        sceneLift = lift;
+        sceneInverseGamma = glm::max(inverseGamma, glm::vec3(0.001F));
+        sceneGain = gain;
+    }
+    glm::vec3 getSceneLift() const override { return sceneLift; }
+    glm::vec3 getSceneInverseGamma() const override { return sceneInverseGamma; }
+    glm::vec3 getSceneGain() const override { return sceneGain; }
+    void setSceneTransitionFx(float vignette, float vignetteSmoothness,
+                              float lensDistortion, float lensScale) override {
+        sceneTransitionVignette = std::clamp(vignette, 0.0F, 1.0F);
+        sceneTransitionVignetteSmoothness = std::clamp(vignetteSmoothness, 0.01F, 1.0F);
+        sceneTransitionLensDistortion = std::clamp(lensDistortion, 0.0F, 1.0F);
+        sceneTransitionLensScale = std::clamp(lensScale, 0.01F, 5.0F);
+    }
+    float getSceneTransitionVignette() const override { return sceneTransitionVignette; }
+    float getSceneTransitionVignetteSmoothness() const override { return sceneTransitionVignetteSmoothness; }
+    float getSceneTransitionLensDistortion() const override { return sceneTransitionLensDistortion; }
+    float getSceneTransitionLensScale() const override { return sceneTransitionLensScale; }
     void setSceneAutoExposure(bool enabled, float minEV, float maxEV) override {
         sceneAutoExposure = enabled;
         sceneAutoExposureMinEV = minEV;
@@ -626,9 +671,12 @@ public:
     float getSceneDofFarZ() const override { return sceneDofFarZ; }
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
+    void setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) override;
     void beginShadowPass(int cascadeIndex) override;
-    void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
-    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr) override;
+    void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, bool doubleSided = true) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
+                             bool doubleSided = true, float lodWeight = 1.f,
+                             bool lodFadeReverse = false, bool lodDither = false) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
@@ -956,6 +1004,14 @@ private:
     vk::Pipeline sceneTonemapPipeline;
     SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
     float sceneExposure = 1.f;
+    glm::vec3 sceneColorFilter{1.f};
+    glm::vec3 sceneLift{0.f};
+    glm::vec3 sceneInverseGamma{1.f};
+    glm::vec3 sceneGain{1.f};
+    float sceneTransitionVignette = 0.0F;
+    float sceneTransitionVignetteSmoothness = 0.2F;
+    float sceneTransitionLensDistortion = 0.0F;
+    float sceneTransitionLensScale = 1.0F;
     bool sceneAutoExposure = false;
     float sceneAutoExposureMinEV = -8.f;
     float sceneAutoExposureMaxEV = 8.f;
@@ -1072,6 +1128,7 @@ private:
     bool mesh3dSurfaceDoubleSided = false;
     float mesh3dAlphaCutoff = 0.5f;
     std::string mesh3dAlphaTechnique = "cutoff";
+    glm::vec4 mesh3dLodFade{1.f, 0.f, 0.f, 0.f};
     float mesh3dTexBombScale = 4.f;
     float mesh3dTexBombStrength = 0.f;
     float mesh3dTexBombRot = 1.f;
@@ -1083,6 +1140,7 @@ private:
     Lighting3DPack mesh3dLighting{};
     ShadowUpload mesh3dShadows{};
     bool mesh3dShadowReceive = true;
+    int mesh3dSkinInfluenceLimit = 4;
 
     // Clustered forward (separate set layout / pipeline; default PBR only).
     bool mesh3dClusteredActive = false;
@@ -1289,21 +1347,31 @@ private:
     vkb::BuiltRenderPass shadowRenderPass{};
     vk::PipelineLayout shadowPipelineLayout{};
     vk::Pipeline shadowPipeline{};
+    vk::Pipeline shadowSingleSidedPipeline{};
     vk::PipelineLayout shadowAlphaPipelineLayout{};
     vk::Pipeline shadowAlphaPipeline{};
+    vk::Pipeline shadowAlphaSingleSidedPipeline{};
     vk::PipelineLayout skinPassPipelineLayout{};
     vk::DescriptorSetLayout skinPassSetLayout{};
     vk::UniqueDescriptorSetLayout skinPassSetLayoutUnique;
     vk::Pipeline shadowSkinPipeline{};
+    vk::Pipeline shadowSkinSingleSidedPipeline{};
     vk::Pipeline shadowSkinAlphaPipeline{};
+    vk::Pipeline shadowSkinAlphaSingleSidedPipeline{};
     int shadowPassCascade = -1;
     struct ShadowDraw {
         Mesh *mesh = nullptr;
         glm::mat4 mvp{1.f};
         Texture *albedo = nullptr;
         bool alphaTest = false;  // use the alpha-cutout shadow pipeline
+        bool doubleSided = true;
+        glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
         vk::DescriptorSet skinSet{};
         uint32_t skinUboOffset = 0;
+    };
+    struct ShadowAlphaPush {
+        glm::mat4 mvp{1.f};
+        glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
     };
     std::vector<ShadowDraw> shadowPassDraws;
     std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];

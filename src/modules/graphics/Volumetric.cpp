@@ -16,6 +16,7 @@
 #include "graphics/shaders/volumetric_fog_frag_spv.inc"
 #include "graphics/shaders/volumetric_froxel_frag_spv.inc"
 #include "graphics/shaders/volumetric_cloud_frag_spv.inc"
+#include "graphics/shaders/volumetric_directional_cookie_frag_spv.inc"
 #include "graphics/shaders/VolumetricWgsl.h"
 
 #include <algorithm>
@@ -189,6 +190,20 @@ Shader *createFroxelShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createDirectionalCookieShader(Graphics *gfx) {
+    std::vector<uint32_t> frag(volumetric_directional_cookie_frag_spv,
+                               volumetric_directional_cookie_frag_spv +
+                                   volumetric_directional_cookie_frag_spv_count);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolDirectionalCookie);
+    sh->declareMatrix("invViewProj");
+    sh->declareFloat("worldSize");
+    sh->declareFloat("intensity");
+    sh->declareFloat("lightDx");
+    sh->declareFloat("lightDy");
+    sh->declareFloat("lightDz");
+    return sh;
+}
+
 Shader *createCloudShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("Volumetric: null graphics");
     std::vector<uint32_t> frag(volumetric_cloud_frag_spv,
@@ -238,6 +253,7 @@ Volumetric::Volumetric(Graphics *gfx) : gfx_(gfx) {
     shader_ = createScreenspaceShader(gfx);
     rayShader_ = createRayMarchShader(gfx);
     fogShader_ = createFogShader(gfx);
+    directionalCookieShader_ = createDirectionalCookieShader(gfx);
     cloudShader_ = createCloudShader(gfx);
     froxelShader_ = createFroxelShader(gfx);
     atmosphereVolume_ = std::make_unique<AtmosphereVolume>();
@@ -687,6 +703,26 @@ void Volumetric::applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     gfx->setCanvas(dest);
     applyFog(gfx, linearDepth);
     gfx->setCanvas(prev);
+}
+
+Result<void> Volumetric::projectDirectionalCookie(Graphics *gfx, Texture *depth, Texture *cookie,
+                                                   float worldSize, float intensity) {
+    if (!gfx || !depth || !cookie || !std::isfinite(worldSize) || worldSize <= 0.f ||
+        !std::isfinite(intensity) || intensity < 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "Volumetric.projectDirectionalCookie: valid providers and finite non-negative settings required"));
+    directionalCookieShader_->sendMatrix("invViewProj", invViewProj_);
+    directionalCookieShader_->sendFloat("worldSize", worldSize);
+    directionalCookieShader_->sendFloat("intensity", intensity);
+    directionalCookieShader_->sendFloat("lightDx", lightDir_.x);
+    directionalCookieShader_->sendFloat("lightDy", lightDir_.y);
+    directionalCookieShader_->sendFloat("lightDz", lightDir_.z);
+    const float width = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
+    const float height = gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
+    gfx->drawTexturedRectShaderDepth(cookie, depth, directionalCookieShader_, 0.f, 0.f, width,
+                                     height, Color(1.f, 1.f, 1.f, 1.f));
+    return Result<void>::success();
 }
 
 void Volumetric::renderClouds(Graphics *gfx, Texture *linearDepth) {

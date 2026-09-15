@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Result.h"
+
 #include <string>
 #include <memory>
 #include <glm/mat4x4.hpp>
@@ -146,6 +148,20 @@ public:
     void applyFog(Graphics *gfx, Texture *linearDepth);
     void applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
+    /**
+     * @brief Project a repeating directional-light cookie over visible scene surfaces.
+     * @param gfx Borrowed graphics provider used synchronously.
+     * @param depth Hardware depth texture used to reconstruct world positions.
+     * @param cookie Borrowed repeating RGB cookie sampled synchronously.
+     * @param worldSize Cookie repeat size in world units; must be positive.
+     * @param intensity Non-negative overlay intensity.
+     * @return Success or InvalidArgument; validation completes before drawing.
+     * @thread Render thread only; no argument is retained.
+     */
+    [[nodiscard]] Result<void> projectDirectionalCookie(Graphics *gfx, Texture *depth,
+                                                         Texture *cookie, float worldSize,
+                                                         float intensity = 1.f);
+
     /** @brief Render the bounded cloud layer using scene linear depth for occlusion. */
     void renderClouds(Graphics *gfx, Texture *linearDepth);
     void renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
@@ -214,6 +230,7 @@ private:
     Shader *shader_ = nullptr;    // owned by Graphics (screenspace)
     Shader *rayShader_ = nullptr; // owned by Graphics (ray march)
     Shader *fogShader_ = nullptr; // owned by Graphics (volumetric fog)
+    Shader *directionalCookieShader_ = nullptr; // owned by Graphics
     Shader *cloudShader_ = nullptr; // owned by Graphics (volumetric clouds)
     Shader *froxelShader_ = nullptr; // owned by Graphics (froxel atlas composite)
     std::unique_ptr<AtmosphereVolume> atmosphereVolume_;

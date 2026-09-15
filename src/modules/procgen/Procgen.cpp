@@ -15,17 +15,28 @@
 #include "image/ImageData.h"
 
 #include "procgen/GeneratorRegistry.h"
+#include "procgen/GtsMeshSplitter.h"
+#include "procgen/GtsTerrainLod.h"
+#include "procgen/PcgMeshLod.h"
+#include "procgen/PcgMeshLodBackup.h"
+#include "procgen/GtsTerrainExportSettings.h"
+#include "procgen/GtsTerrainLodRuntime.h"
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainFile.h"
+#include "procgen/heightmap/TerrainImageAdapter.h"
+#include "procgen/heightmap/TerrainCurveTexture.h"
+#include "procgen/heightmap/TerrainGrassAdapter.h"
+#include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
+#include "graphics/RenderSystem3D.h"
 #include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
@@ -2232,11 +2243,92 @@ eve::script::Borrowed<graphics::Mesh> Procgen::generateMeshBorrowed(const std::s
 
 eve::script::Borrowed<graphics::Mesh> Procgen::uploadMeshBorrowed(const MeshBuild& mesh, graphics::Graphics& gfx) {
     if (mesh.empty()) return {};
-    graphics::Mesh* uploaded =
-        gfx.newMeshFromArrays(mesh.positions().data(), mesh.normals().data(), mesh.uvs().data(), mesh.getVertexCount(),
-                              mesh.indices().data(), mesh.getIndexCount());
+    graphics::Mesh* uploaded = gfx.newMeshFromArraysColored(mesh.positions().data(), mesh.normals().data(),
+        mesh.uvs().data(),mesh.hasVertexColors()?mesh.colors().data():nullptr,mesh.getVertexCount(),
+        mesh.indices().data(),mesh.getIndexCount());
     return eve::script::Borrowed<graphics::Mesh>(uploaded,
                                                  static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(&gfx)));
+}
+
+eve::Result<void> Procgen::configureGtsTerrainTileLods(
+    const GtsTerrainLodSet& lods,int tileIndex,graphics::Renderable3D& renderable,graphics::Graphics& gfx,
+    float worldDiameter,float verticalFovDegrees,float originX,float originY,float originZ) {
+    const auto* tile=lods.tileAt(tileIndex);
+    if(!tile||tile->levels.empty()||tile->levels.size()>graphics::Renderable3D::MeshRenderer::kMaxLodLevels||
+       !std::isfinite(worldDiameter)||worldDiameter<=0.f||!std::isfinite(verticalFovDegrees)||
+       verticalFovDegrees<=0.f||verticalFovDegrees>=180.f||!std::isfinite(originX)||!std::isfinite(originY)||!std::isfinite(originZ))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "GTS terrain tile render configuration is invalid","procgen.configureGtsTerrainTileLods"));
+    std::vector<graphics::Mesh*> uploaded;uploaded.reserve(tile->levels.size());
+    for(const auto& level:tile->levels){auto mesh=uploadMeshBorrowed(level,gfx);if(!mesh.isBound())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+            "GTS terrain tile contains an empty or unuploadable LOD","procgen.configureGtsTerrainTileLods"));uploaded.push_back(mesh.get());}
+    renderable.clearMeshLod();
+    for(int level=0;level<static_cast<int>(uploaded.size());++level){float distance=level==0?0.f:lods.getLevelSwitchDistance(level-1,worldDiameter,verticalFovDegrees);renderable.setMeshLod(level,uploaded[level],distance);}
+    renderable.setMeshLodCullDistance(lods.getLevelSwitchDistance(static_cast<int>(uploaded.size())-1,worldDiameter,verticalFovDegrees));
+    renderable.setPosition(originX+tile->offsetX,originY,originZ+tile->offsetZ);
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> Procgen::configurePcgMeshLods(const PcgMeshLodSet& lods,
+                                                  graphics::Renderable3D& renderable,
+                                                  graphics::Graphics& gfx, float worldDiameter,
+                                                  float verticalFovDegrees) {
+    const int count = lods.getLevelCount();
+    if (count <= 0 || count > graphics::Renderable3D::MeshRenderer::kMaxLodLevels ||
+        !std::isfinite(worldDiameter) || worldDiameter <= 0.F || !std::isfinite(verticalFovDegrees) ||
+        verticalFovDegrees <= 0.F || verticalFovDegrees >= 180.F)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Pcg mesh LOD render configuration is invalid",
+            "procgen.configurePcgMeshLods"));
+    std::vector<graphics::Mesh*> uploaded;
+    uploaded.reserve(static_cast<std::size_t>(count));
+    for (int level = 0; level < count; ++level) {
+        const MeshBuild* source = lods.meshAt(level);
+        if (!source) return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Pcg mesh LOD level is missing",
+            "procgen.configurePcgMeshLods"));
+        auto mesh = uploadMeshBorrowed(*source, gfx);
+        if (!mesh.isBound()) return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Pcg mesh LOD level could not be uploaded",
+            "procgen.configurePcgMeshLods"));
+        uploaded.push_back(mesh.get());
+    }
+    auto candidate = *renderable.meshRenderer();
+    candidate.lodCount = 0;
+    for (int level = 0; level < graphics::Renderable3D::MeshRenderer::kMaxLodLevels; ++level) {
+        candidate.lodMeshes[level] = nullptr;
+        candidate.lodRendererStates[level] = {};
+    }
+    for (int level = 0; level < count; ++level) {
+        const float distance = level == 0 ? 0.F : lods.getSwitchDistance(level - 1, worldDiameter, verticalFovDegrees);
+        candidate.lodMeshes[level] = uploaded[static_cast<std::size_t>(level)];
+        candidate.lodCount = level + 1;
+        if (level == 0) candidate.mesh = uploaded[0];
+        if (level > 0) candidate.lodDistances[level - 1] = distance;
+        const auto* state = lods.rendererStateAt(level);
+        if (!state) return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Pcg mesh LOD renderer state is missing",
+            "procgen.configurePcgMeshLods"));
+        auto& target = candidate.lodRendererStates[level];
+        target.configured = true;
+        target.skinQuality = state->skinQuality;
+        target.shadowCastingMode = state->shadowCastingMode;
+        target.receiveShadows = state->receiveShadows;
+        target.motionVectorMode = state->motionVectorMode;
+        target.skinnedMotionVectors = state->skinnedMotionVectors;
+        target.lightProbeUsage = state->lightProbeUsage;
+        target.reflectionProbeUsage = state->reflectionProbeUsage;
+        candidate.lodFadeWidths[level] = lods.getFadeWidth(level);
+    }
+    const float cullDistance = lods.getSwitchDistance(count - 1, worldDiameter, verticalFovDegrees);
+    candidate.lodCullDistance = cullDistance > 0.F ? cullDistance : 0.F;
+    candidate.lodFadeMode = lods.getFadeMode();
+    candidate.lodAnimateCrossFading = lods.getAnimateCrossFading();
+    candidate.lodCrossFadeDuration = lods.getCrossFadeAnimationDuration();
+    candidate.lodAnimatedCurrent=-2;candidate.lodAnimatedPrevious=-2;candidate.lodAnimatedProgress=1.F;
+    *renderable.meshRenderer() = candidate;
+    return eve::Result<void>::success();
 }
 
 int Procgen::getMeshRecipeCount() const {
@@ -3468,9 +3560,300 @@ void Procgen::expose(ssq::Table &table) {
     mesh.addFunc("getNormalZ", &MeshBuild::getNormalZ);
     mesh.addFunc("getUvU", &MeshBuild::getUvU);
     mesh.addFunc("getUvV", &MeshBuild::getUvV);
+    mesh.addFunc("hasVertexColors", [](const MeshBuild* self) { return self && self->hasVertexColors(); });
+    mesh.addFunc("getColor", [](const MeshBuild* self,int vertex,int component) {
+        return self ? self->getColor(vertex,component) : 1.f;
+    });
     mesh.addFunc("getIndex", &MeshBuild::getIndex);
     mesh.addFunc("setMeta", &MeshBuild::setMeta);
     mesh.addFunc("getMeta", &MeshBuild::getMeta);
+
+    auto splitResult=table.addClass("GtsMeshSplitResult",ssq::Class::Ctor<GtsMeshSplitResult()>());
+    splitResult.addFunc("getColumnCount",[](const GtsMeshSplitResult* value){return value?value->getColumnCount():0;});
+    splitResult.addFunc("getRowCount",[](const GtsMeshSplitResult* value){return value?value->getRowCount():0;});
+    splitResult.addFunc("getTileCount",[](const GtsMeshSplitResult* value){return value?value->getTileCount():0;});
+    splitResult.addFunc("getTileOffsetX",[](const GtsMeshSplitResult* value,int index){return value?value->getTileOffsetX(index):0.f;});
+    splitResult.addFunc("getTileOffsetZ",[](const GtsMeshSplitResult* value,int index){return value?value->getTileOffsetZ(index):0.f;});
+    splitResult.addFunc("copyTileMesh",[vm](const GtsMeshSplitResult* self,int index)->ssq::Object {
+        if(!self)return ssq::Object(vm);
+        auto object=eve::script::makeOwnedSquirrelInstance<MeshBuild>(vm,self->copyTileMesh(index));
+        if(!object){object.ignore("failed to create split mesh Squirrel instance");return ssq::Object(vm);}
+        return std::move(object).takeValue();
+    });
+    table.addFunc("splitGtsMesh",[vm](GtsMeshSplitResult* output,const MeshBuild* source,
+                                      int xSplits,int zSplits,int pivot){
+        auto result=output&&source?splitGtsMeshInto(*output,*source,xSplits,zSplits,static_cast<GtsMeshPivot>(pivot))
+            :procgenBindingFailure<void>(DiagnosticCode::InvalidArgument,"GTS split output and source are required","mesh");
+        return eve::script::projectResult(vm,std::move(result));
+    });
+
+    auto pcgMeshTransform=table.addClass("PcgMeshTransform",ssq::Class::Ctor<PcgMeshTransform()>());
+    pcgMeshTransform.addFunc("setElement",[vm](PcgMeshTransform* self,int row,int column,float value){
+        if(!self)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh transform is required","mesh"));
+        return eve::script::projectResult(vm,self->setElement(row,column,value));
+    });
+    pcgMeshTransform.addFunc("getElement",[](const PcgMeshTransform* self,int row,int column){
+        return self?self->getElement(row,column):0.F;
+    });
+    auto pcgMeshCombinePlan=table.addClass("PcgMeshCombinePlan",ssq::Class::Ctor<PcgMeshCombinePlan()>());
+    pcgMeshCombinePlan.addFunc("appendSource",[vm](PcgMeshCombinePlan* self,const MeshBuild* source,
+                                                       const PcgMeshTransform* transform,
+                                                       const std::string& materialId){
+        if(!self||!source||!transform)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh combine plan, source and transform are required","mesh"));
+        return eve::script::projectResult(vm,self->appendSource(*source,*transform,materialId));
+    });
+    pcgMeshCombinePlan.addFunc("clear",[](PcgMeshCombinePlan* self){if(self)self->clear();});
+    pcgMeshCombinePlan.addFunc("getSourceCount",[](const PcgMeshCombinePlan* self){
+        return self?self->getSourceCount():0;
+    });
+    table.addFunc("combinePcgStaticMeshes",[vm](MeshBuild* output,const PcgMeshCombinePlan* plan){
+        if(!output||!plan)return eve::script::projectResult(vm,procgenBindingFailure<int>(
+            DiagnosticCode::InvalidArgument,!output?"Pcg mesh combine output is required":
+                                                    "Pcg mesh combine plan is required","mesh"),
+            [](int value){return Value(static_cast<std::int64_t>(value));});
+        return eve::script::projectResult(vm,combinePcgStaticMeshesInto(*output,*plan),
+                                          [](int value){return Value(static_cast<std::int64_t>(value));});
+    });
+
+    auto pcgMeshLodBackup=table.addClass("PcgMeshLodBackup",ssq::Class::Ctor<PcgMeshLodBackup()>());
+    pcgMeshLodBackup.addFunc("capture",[vm](PcgMeshLodBackup* self,graphics::Renderable3D* renderable){
+        if(!self||!renderable)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh LOD backup and renderable are required","capture"));
+        return eve::script::projectResult(vm,self->capture(*renderable));
+    });
+    pcgMeshLodBackup.addFunc("restore",[vm](PcgMeshLodBackup* self,graphics::Renderable3D* renderable){
+        if(!self||!renderable)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh LOD backup and renderable are required","restore"));
+        return eve::script::projectResult(vm,self->restore(*renderable));
+    });
+    pcgMeshLodBackup.addFunc("discard",[](PcgMeshLodBackup* self){if(self)self->discard();});
+    pcgMeshLodBackup.addFunc("isCaptured",[](const PcgMeshLodBackup* self){return self&&self->isCaptured();});
+    pcgMeshLodBackup.addFunc("getEntityId",[](const PcgMeshLodBackup* self){return self?self->getEntityId():0u;});
+    pcgMeshLodBackup.addFunc("getEntityGeneration",[](const PcgMeshLodBackup* self){
+        return self?self->getEntityGeneration():0u;
+    });
+
+    auto pcgMeshLodProfile=table.addClass("PcgMeshLodProfile",ssq::Class::Ctor<PcgMeshLodProfile()>());
+    pcgMeshLodProfile.addFunc("appendLevel",[vm](PcgMeshLodProfile* self,float transition,float fade,float quality,
+                                                   bool combineMeshes,bool combineSubMeshes){
+        return eve::script::projectResult(vm,self->appendLevel(transition,fade,quality,combineMeshes,combineSubMeshes));
+    });
+    pcgMeshLodProfile.addFunc("clear",[](PcgMeshLodProfile* self){self->clear();});
+    pcgMeshLodProfile.addFunc("getLevelCount",[](const PcgMeshLodProfile* self){return self->getLevelCount();});
+    pcgMeshLodProfile.addFunc("getTransitionHeight",[](const PcgMeshLodProfile* self,int index){
+        const auto* level=self?self->levelAt(index):nullptr;return level?level->screenRelativeTransitionHeight:-1.F;
+    });
+    pcgMeshLodProfile.addFunc("getFadeWidth",[](const PcgMeshLodProfile* self,int index){
+        const auto* level=self?self->levelAt(index):nullptr;return level?level->fadeTransitionWidth:-1.F;
+    });
+    pcgMeshLodProfile.addFunc("getQuality",[](const PcgMeshLodProfile* self,int index){
+        const auto* level=self?self->levelAt(index):nullptr;return level?level->quality:-1.F;
+    });
+    pcgMeshLodProfile.addFunc("setLevelRendererState",[vm](PcgMeshLodProfile* self,int index,int skinQuality,
+        int shadowMode,bool receiveShadows,int motionMode,bool skinnedMotion,int lightProbe,int reflectionProbe){
+        if(!self)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh LOD profile is required","renderer-state"));
+        return eve::script::projectResult(vm,self->setLevelRendererState(index,skinQuality,shadowMode,
+            receiveShadows,motionMode,skinnedMotion,lightProbe,reflectionProbe));
+    });
+    pcgMeshLodProfile.addFunc("getLevelRendererState",[](const PcgMeshLodProfile* self,int index,int field){
+        return self?self->getLevelRendererState(index,field):-1;
+    });
+    pcgMeshLodProfile.addFunc("setFadePolicy",[vm](PcgMeshLodProfile* self,int mode,bool animate,float duration){
+        if(!self)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh LOD profile is required","fade-policy"));
+        return eve::script::projectResult(vm,self->setFadePolicy(mode,animate,duration));
+    });
+    pcgMeshLodProfile.addFunc("getFadeMode",[](const PcgMeshLodProfile* self){return self->getFadeMode();});
+    pcgMeshLodProfile.addFunc("getAnimateCrossFading",[](const PcgMeshLodProfile* self){
+        return self->getAnimateCrossFading();
+    });
+    pcgMeshLodProfile.addFunc("getCrossFadeAnimationDuration",[](const PcgMeshLodProfile* self){
+        return self->getCrossFadeAnimationDuration();
+    });
+    auto pcgMeshLods=table.addClass("PcgMeshLodSet",ssq::Class::Ctor<PcgMeshLodSet()>());
+    pcgMeshLods.addFunc("getLevelCount",[](const PcgMeshLodSet* self){return self->getLevelCount();});
+    pcgMeshLods.addFunc("getTransitionHeight",[](const PcgMeshLodSet* self,int index){return self->getTransitionHeight(index);});
+    pcgMeshLods.addFunc("getFadeWidth",[](const PcgMeshLodSet* self,int index){return self->getFadeWidth(index);});
+    pcgMeshLods.addFunc("getQuality",[](const PcgMeshLodSet* self,int index){return self->getQuality(index);});
+    pcgMeshLods.addFunc("selectLevel",[](const PcgMeshLodSet* self,float height){return self->selectLevel(height);});
+    pcgMeshLods.addFunc("getSwitchDistance",[](const PcgMeshLodSet* self,int level,float diameter,float fov){
+        return self->getSwitchDistance(level,diameter,fov);
+    });
+    pcgMeshLods.addFunc("copyLevelMesh",[vm](const PcgMeshLodSet* self,int level)->ssq::Object{
+        const auto* mesh=self?self->meshAt(level):nullptr;if(!mesh)return ssq::Object(vm);
+        auto object=eve::script::makeOwnedSquirrelInstance<MeshBuild>(vm,std::make_unique<MeshBuild>(*mesh));
+        if(!object){object.ignore("failed to create Pcg LOD mesh Squirrel instance");return ssq::Object(vm);}
+        return std::move(object).takeValue();
+    });
+    table.addFunc("buildPcgMeshLods",[vm](PcgMeshLodSet* output,const MeshBuild* source,
+                                            const PcgMeshLodProfile* profile){
+        if(!output||!source||!profile)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh LOD output, source and profile are required","mesh"));
+        return eve::script::projectResult(vm,buildPcgMeshLodsInto(*output,*source,*profile));
+    });
+    table.addFunc("buildPcgCombinedMeshLods",[vm](PcgMeshLodSet* output,const PcgMeshCombinePlan* plan,
+                                                    const PcgMeshLodProfile* profile){
+        if(!output||!plan||!profile)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg combined mesh LOD output, plan and profile are required","mesh"));
+        return eve::script::projectResult(vm,buildPcgCombinedMeshLodsInto(*output,*plan,*profile));
+    });
+    table.addFunc("configurePcgMeshLods",[vm](Procgen* self,const PcgMeshLodSet* lods,
+                                                graphics::Renderable3D* renderable,graphics::Graphics* gfx,
+                                                float diameter,float fov){
+        if(!self||!lods||!renderable||!gfx)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"Pcg mesh LOD runtime arguments are required","runtime"));
+        return eve::script::projectResult(vm,self->configurePcgMeshLods(*lods,*renderable,*gfx,diameter,fov));
+    });
+
+    auto terrainMeshSettings=table.addClass("GtsTerrainMeshSettings",ssq::Class::Ctor<GtsTerrainMeshSettings()>());
+    terrainMeshSettings.addFunc("getSaveResolution",[](const GtsTerrainMeshSettings* self){return self->getSaveResolution();});
+    terrainMeshSettings.addFunc("setSaveResolution",[vm](GtsTerrainMeshSettings* self,int value){return eve::script::projectResult(vm,self->setSaveResolution(value));});
+    terrainMeshSettings.addFunc("getLodCount",[](const GtsTerrainMeshSettings* self){return self->getLodCount();});
+    terrainMeshSettings.addFunc("setLodCount",[vm](GtsTerrainMeshSettings* self,int value){return eve::script::projectResult(vm,self->setLodCount(value));});
+    terrainMeshSettings.addFunc("getSubTiles",[](const GtsTerrainMeshSettings* self){return self->getSubTiles();});
+    terrainMeshSettings.addFunc("setSubTiles",[vm](GtsTerrainMeshSettings* self,int value){return eve::script::projectResult(vm,self->setSubTiles(value));});
+    terrainMeshSettings.addFunc("getLodQuality",[](const GtsTerrainMeshSettings* self,int index){return self->getLodQuality(index);});
+    terrainMeshSettings.addFunc("setLodQuality",[vm](GtsTerrainMeshSettings* self,int index,float value){return eve::script::projectResult(vm,self->setLodQuality(index,value));});
+    terrainMeshSettings.addFunc("getLodTransitionHeight",[](const GtsTerrainMeshSettings* self,int index){return self->getLodTransitionHeight(index);});
+    terrainMeshSettings.addFunc("snapshotJson",[vm](const GtsTerrainMeshSettings* self){return eve::script::projectResult(vm,self->snapshotJson(),[](const std::string&value){return value;});});
+    terrainMeshSettings.addFunc("restoreJson",[vm](GtsTerrainMeshSettings* self,const std::string&json){return eve::script::projectResult(vm,self->restoreJson(json));});
+    auto terrainExportSettings=table.addClass("GtsTerrainExportSettings",ssq::Class::Ctor<GtsTerrainExportSettings()>());
+    terrainExportSettings.addFunc("appendSourcePreset",[vm](GtsTerrainExportSettings* self,int mode,int level,float quality,float transition){return eve::script::projectResult(vm,self->appendSourcePreset(mode,level,quality,transition));});
+    terrainExportSettings.addFunc("appendImpostorPreset",[vm](GtsTerrainExportSettings* self,int mode,int level,float quality,float transition){return eve::script::projectResult(vm,self->appendImpostorPreset(mode,level,quality,transition));});
+    terrainExportSettings.addFunc("getSourceLodCount",[](const GtsTerrainExportSettings* self){return self->getSourceLodCount();});
+    terrainExportSettings.addFunc("getImpostorLodCount",[](const GtsTerrainExportSettings* self){return self->getImpostorLodCount();});
+    terrainExportSettings.addFunc("snapshotJson",[vm](const GtsTerrainExportSettings* self){return eve::script::projectResult(vm,self->snapshotJson(),[](const std::string& value){return value;});});
+    terrainExportSettings.addFunc("restoreJson",[vm](GtsTerrainExportSettings* self,const std::string& json){return eve::script::projectResult(vm,self->restoreJson(json));});
+    auto terrainLods=table.addClass("GtsTerrainLodSet",ssq::Class::Ctor<GtsTerrainLodSet()>());
+    terrainLods.addFunc("getColumnCount",&GtsTerrainLodSet::getColumnCount);
+    terrainLods.addFunc("getRowCount",&GtsTerrainLodSet::getRowCount);
+    terrainLods.addFunc("getTileCount",&GtsTerrainLodSet::getTileCount);
+    terrainLods.addFunc("getLevelCount",&GtsTerrainLodSet::getLevelCount);
+    terrainLods.addFunc("getTileOffsetX",[](const GtsTerrainLodSet* self,int tile){auto* value=self?self->tileAt(tile):nullptr;return value?value->offsetX:0.f;});
+    terrainLods.addFunc("getTileOffsetZ",[](const GtsTerrainLodSet* self,int tile){auto* value=self?self->tileAt(tile):nullptr;return value?value->offsetZ:0.f;});
+    terrainLods.addFunc("getLevelQuality",[](const GtsTerrainLodSet* self,int level){auto* value=self?self->levelAt(level):nullptr;return value?value->quality:0.f;});
+    terrainLods.addFunc("getLevelTransitionHeight",[](const GtsTerrainLodSet* self,int level){auto* value=self?self->levelAt(level):nullptr;return value?value->screenRelativeTransitionHeight:0.f;});
+    terrainLods.addFunc("selectLevel",&GtsTerrainLodSet::selectLevel);
+    terrainLods.addFunc("getLevelSwitchDistance",&GtsTerrainLodSet::getLevelSwitchDistance);
+    terrainLods.addFunc("selectLevelForCamera",&GtsTerrainLodSet::selectLevelForCamera);
+    terrainLods.addFunc("snapshotJson",[vm](const GtsTerrainLodSet* self){
+        return eve::script::projectResult(vm,self->snapshotJson(),[](const std::string& value){return value;});
+    });
+    terrainLods.addFunc("restoreJson",[vm](GtsTerrainLodSet* self,const std::string& json){
+        return eve::script::projectResult(vm,self->restoreJson(json));
+    });
+    terrainLods.addFunc("copyLevelMesh",[vm](const GtsTerrainLodSet* self,int tile,int level)->ssq::Object{
+        auto* value=self?self->tileAt(tile):nullptr;if(!value||level<0||level>=static_cast<int>(value->levels.size()))return ssq::Object(vm);
+        auto object=eve::script::makeOwnedSquirrelInstance<MeshBuild>(
+            vm,std::make_unique<MeshBuild>(value->levels[level]));
+        if(!object){object.ignore("failed to create terrain LOD mesh Squirrel instance");return ssq::Object(vm);}
+        return std::move(object).takeValue();
+    });
+    table.addFunc("buildDefaultGtsTerrainLods",[vm](GtsTerrainLodSet* output,const MeshBuild* source,
+                                                     int xSplits,int zSplits,int pivot){
+        if(!output||!source)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"GTS terrain LOD output and source are required","mesh"));
+        auto built=buildGtsTerrainLods(*source,xSplits,zSplits,static_cast<GtsMeshPivot>(pivot),defaultGtsTerrainLodLevels());
+        if(!built)return eve::script::projectResult(vm,Result<void>::failure(*built.error()));
+        *output=std::move(built).takeValue();
+        return eve::script::projectResult(vm,Result<void>::success());
+    });
+    table.addFunc("buildGtsTerrainBaseMesh",[vm](MeshBuild* output,const Heightmap* heightmap,
+        int resolution,float sizeX,float sizeY,float sizeZ){
+        if(!output||!heightmap)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"GTS terrain mesh output and heightmap are required","heightmap"));
+        return eve::script::projectResult(vm,buildGtsTerrainBaseMesh(*output,*heightmap,
+            static_cast<GtsTerrainSaveResolution>(resolution),sizeX,sizeY,sizeZ));
+    });
+    table.addFunc("buildDefaultGtsTerrainLodsFromHeightmap",[vm](GtsTerrainLodSet* output,
+        const Heightmap* heightmap,int resolution,float sizeX,float sizeY,float sizeZ,int subTiles,int pivot){
+        if(!output||!heightmap)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"GTS terrain LOD output and heightmap are required","heightmap"));
+        return eve::script::projectResult(vm,buildDefaultGtsTerrainLodsFromHeightmapInto(*output,*heightmap,
+            static_cast<GtsTerrainSaveResolution>(resolution),sizeX,sizeY,sizeZ,subTiles,static_cast<GtsMeshPivot>(pivot)));
+    });
+    table.addFunc("buildGtsTerrainLodsFromHeightmap",[vm](GtsTerrainLodSet* output,const Heightmap* heightmap,
+        const GtsTerrainMeshSettings* settings,float sizeX,float sizeY,float sizeZ,int pivot){
+        if(!output||!heightmap||!settings)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"GTS terrain LOD output, heightmap and settings are required","heightmap"));
+        return eve::script::projectResult(vm,buildGtsTerrainLodsFromHeightmapInto(*output,*heightmap,*settings,
+            sizeX,sizeY,sizeZ,static_cast<GtsMeshPivot>(pivot)));
+    });
+    table.addFunc("buildGtsTerrainExportLodsFromHeightmap",[vm](GtsTerrainLodSet* output,const Heightmap* heightmap,
+        const GtsTerrainExportSettings* settings,float sizeX,float sizeY,float sizeZ,int subTiles,int pivot){
+        if(!output||!heightmap||!settings)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"GTS terrain export output, heightmap and settings are required","heightmap"));
+        return eve::script::projectResult(vm,buildGtsTerrainExportLodsFromHeightmapInto(*output,*heightmap,*settings,
+            sizeX,sizeY,sizeZ,subTiles,static_cast<GtsMeshPivot>(pivot)));
+    });
+    table.addFunc("buildGtsTerrainColliderMeshFromHeightmap",[vm](MeshBuild* output,const Heightmap* heightmap,
+        const GtsTerrainExportSettings* settings,float sizeX,float sizeY,float sizeZ){
+        if(!output||!heightmap||!settings)return eve::script::projectResult(vm,procgenBindingFailure<void>(
+            DiagnosticCode::InvalidArgument,"GTS collider output, heightmap and settings are required","heightmap"));
+        return eve::script::projectResult(vm,buildGtsTerrainColliderMeshFromHeightmapInto(
+            *output,*heightmap,settings->getWorkflow(),sizeX,sizeY,sizeZ));
+    });
+    table.addFunc("encodeGtsTerrainObj",[vm](const Heightmap* heightmap,int resolution,float sizeX,float sizeY,float sizeZ,int faceMode){
+        if(!heightmap)return eve::script::projectResult(vm,procgenBindingFailure<std::string>(
+            DiagnosticCode::InvalidArgument,"GTS OBJ heightmap is required","heightmap"),[](const std::string& value){return value;});
+        return eve::script::projectResult(vm,encodeGtsTerrainObj(*heightmap,static_cast<GtsTerrainSaveResolution>(resolution),
+            sizeX,sizeY,sizeZ,static_cast<GtsTerrainObjFaceMode>(faceMode)),[](const std::string& value){return value;});
+    });
+    table.addFunc("encodeGtsMaskedTerrainObj",[vm](const Heightmap* heightmap,const Heightmap* maskmap,int resolution,
+        float sizeX,float sizeY,float sizeZ,int faceMode,float threshold,bool invert){
+        if(!heightmap||!maskmap)return eve::script::projectResult(vm,procgenBindingFailure<std::string>(
+            DiagnosticCode::InvalidArgument,"GTS masked OBJ heightmap and maskmap are required","heightmap"),
+            [](const std::string& value){return value;});
+        return eve::script::projectResult(vm,encodeGtsMaskedTerrainObj(*heightmap,*maskmap,
+            static_cast<GtsTerrainSaveResolution>(resolution),sizeX,sizeY,sizeZ,
+            static_cast<GtsTerrainObjFaceMode>(faceMode),threshold,invert),[](const std::string& value){return value;});
+    });
+    table.addFunc("bakeGtsTerrainVertexColors",[vm](MeshBuild* output,const MeshBuild* source,
+        const image::ImageData* bakedTexture,int edgeMode,int smoothingIterations,float terrainSizeX,
+        float terrainSizeZ,bool linearize){
+        if(!output||!source||!bakedTexture)return eve::script::projectResult(vm,procgenBindingFailure<int>(
+            DiagnosticCode::InvalidArgument,"GTS vertex-color output, source and texture are required","mesh"),[](int value){return value;});
+        return eve::script::projectResult(vm,bakeGtsTerrainVertexColorsInto(*output,*source,*bakedTexture,
+            static_cast<GtsTerrainNormalEdgeMode>(edgeMode),smoothingIterations,terrainSizeX,terrainSizeZ,linearize),
+            [](int value){return value;});
+    });
+    auto terrainLodRuntime=table.addClass("GtsTerrainLodRuntime",ssq::Class::Ctor<GtsTerrainLodRuntime()>());
+    terrainLodRuntime.addFunc("replace",[vm](GtsTerrainLodRuntime* self,const GtsTerrainLodSet* lods,Procgen* procgen,
+        graphics::Graphics* gfx,float diameter,float fov,float x,float y,float z){
+        if(!self||!lods||!procgen||!gfx)return eve::script::projectResult(vm,procgenBindingFailure<std::uint64_t>(
+            DiagnosticCode::InvalidArgument,"GTS terrain runtime replace arguments are required","runtime"),[](std::uint64_t v){return static_cast<std::int64_t>(v);});
+        return eve::script::projectResult(vm,self->replace(*lods,*procgen,*gfx,diameter,fov,x,y,z),[](std::uint64_t v){return static_cast<std::int64_t>(v);});
+    });
+    terrainLodRuntime.addFunc("replaceAndHideSource",[vm](GtsTerrainLodRuntime* self,const GtsTerrainLodSet* lods,
+        Procgen* procgen,graphics::Graphics* gfx,graphics::Renderable3D* source,float diameter,float fov,float x,float y,float z){
+        if(!self||!lods||!procgen||!gfx||!source)return eve::script::projectResult(vm,procgenBindingFailure<std::uint64_t>(
+            DiagnosticCode::InvalidArgument,"GTS terrain runtime source handoff arguments are required","runtime"),[](std::uint64_t v){return static_cast<std::int64_t>(v);});
+        return eve::script::projectResult(vm,self->replaceAndHideSource(*lods,*procgen,*gfx,*source,diameter,fov,x,y,z),
+            [](std::uint64_t v){return static_cast<std::int64_t>(v);});
+    });
+    terrainLodRuntime.addFunc("clear",[vm](GtsTerrainLodRuntime* self){return eve::script::projectResult(vm,self->clear(),[](int v){return v;});});
+    terrainLodRuntime.addFunc("applyMaterial",[vm](GtsTerrainLodRuntime* self,graphics::Material* material){
+        if(!self||!material)return eve::script::projectResult(vm,procgenBindingFailure<int>(DiagnosticCode::InvalidArgument,"GTS terrain material is required","material"),[](int v){return v;});
+        return eve::script::projectResult(vm,self->applyMaterial(*material),[](int v){return v;});
+    });
+    terrainLodRuntime.addFunc("getTileCount",&GtsTerrainLodRuntime::getTileCount);
+    terrainLodRuntime.addFunc("getRevision",&GtsTerrainLodRuntime::getRevision);
+    terrainLodRuntime.addFunc("getRenderable",&GtsTerrainLodRuntime::getRenderable);
+    terrainLodRuntime.addFunc("getSourceTerrain",&GtsTerrainLodRuntime::getSourceTerrain);
+    auto terrainLodAssets=table.addClass("GtsTerrainLodAssetPlan",ssq::Class::Ctor<GtsTerrainLodAssetPlan()>());
+    terrainLodAssets.addFunc("getEntryCount",&GtsTerrainLodAssetPlan::getEntryCount);
+    terrainLodAssets.addFunc("getTileIndex",&GtsTerrainLodAssetPlan::getTileIndex);
+    terrainLodAssets.addFunc("getLevelIndex",&GtsTerrainLodAssetPlan::getLevelIndex);
+    terrainLodAssets.addFunc("getObjectName",&GtsTerrainLodAssetPlan::getObjectName);
+    terrainLodAssets.addFunc("getMeshName",&GtsTerrainLodAssetPlan::getMeshName);
+    terrainLodAssets.addFunc("getRelativePath",&GtsTerrainLodAssetPlan::getRelativePath);
+    table.addFunc("planGtsTerrainLodAssets",[vm](GtsTerrainLodAssetPlan* output,const GtsTerrainLodSet* lods,const std::string& name,const std::string& folder){
+        if(!output||!lods)return eve::script::projectResult(vm,procgenBindingFailure<void>(DiagnosticCode::InvalidArgument,"GTS terrain export output and LOD set are required","assets"));
+        return eve::script::projectResult(vm,planGtsTerrainLodAssetsInto(*output,*lods,name,folder));
+    });
 
     auto sampler = table.addClass<TerrainSampler>(
         "ProcgenTerrainSampler", std::function<TerrainSampler*()>([]() -> TerrainSampler* { return nullptr; }), true);
@@ -3514,15 +3897,10 @@ void Procgen::expose(ssq::Table &table) {
     sampler.addFunc("getClampMin", &TerrainSampler::getClampMin);
     sampler.addFunc("getClampMax", &TerrainSampler::getClampMax);
 
-    auto heightmap = table.addClass<Heightmap>(
-        "ProcgenHeightmap", std::function<Heightmap*()>([]() -> Heightmap* { return nullptr; }), true);
-    heightmap.addFunc("resize", &Heightmap::resize);
-    heightmap.addFunc("getWidth", &Heightmap::getWidth);
-    heightmap.addFunc("getHeight", &Heightmap::getHeight);
-    heightmap.addFunc("setHeight", &Heightmap::setHeight);
-    heightmap.addFunc("height", &Heightmap::height);
-    heightmap.addFunc("sampleBilinear", &Heightmap::sampleBilinear);
-    heightmap.addFunc("sampleBilinearSeamless", &Heightmap::sampleBilinearSeamless);
+    exposeHeightmap(table);
+    exposeTerrainImageAdapter(table);
+    exposeTerrainCurveTexture(table);
+    exposeTerrainGrassAdapter(table);
 
     auto terrainLayers = table.addClass<TerrainLayers>(
         "ProcgenTerrainLayers", std::function<TerrainLayers*()>([]() -> TerrainLayers* { return nullptr; }), true);
@@ -4497,6 +4875,16 @@ void Procgen::expose(ssq::Class &cls) {
                                 .status(),
                             false, false);
                     return projectBorrowedResult(vm, value->uploadMeshBorrowed(*mesh, *gfx), "mesh");
+                });
+    cls.addFunc("configureGtsTerrainTileLods",
+                [vm = cls.getHandle()](Procgen* value,const GtsTerrainLodSet* lods,int tileIndex,
+                                       graphics::Renderable3D* renderable,graphics::Graphics* gfx,
+                                       float worldDiameter,float verticalFovDegrees,float originX,float originY,float originZ){
+                    if(!value||!lods||!renderable||!gfx)return eve::script::projectResult(vm,
+                        procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                            "configureGtsTerrainTileLods requires LODs, Renderable3D and Graphics","mesh"));
+                    return eve::script::projectResult(vm,value->configureGtsTerrainTileLods(
+                        *lods,tileIndex,*renderable,*gfx,worldDiameter,verticalFovDegrees,originX,originY,originZ));
                 });
     cls.addFunc("deriveSeed", &Procgen::deriveSeed);
     cls.addFunc("beginSystem", [vm = cls.getHandle()](Procgen*, const std::string& name, uint32_t seed) -> ssq::Table {

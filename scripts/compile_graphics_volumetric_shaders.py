@@ -17,6 +17,7 @@ FRAGS = [
     "volumetric_fog.frag",
     "volumetric_froxel.frag",
     "volumetric_cloud.frag",
+    "volumetric_directional_cookie.frag",
 ]
 
 

@@ -1,0 +1,5 @@
+#include "zeroerr/unittest.h"
+#include "ui/PcgControllerSelection.h"
+using eve::ui::PcgControllerSelection;
+TEST_CASE("ui.pcgControllerSelection.firstMatchWins") { PcgControllerSelection s; REQUIRE(s.add("Flying",1,"flying").ok()); REQUIRE(s.add("Duplicate",1,"duplicate").ok()); REQUIRE(s.add("Third",3,"third").ok()); auto r=s.refresh(1); REQUIRE(r.ok()); CHECK(r.value()); CHECK_EQ(s.getSelectedIndex(),0); auto a=s.getVisible(0);auto b=s.getVisible(1);auto c=s.getVisible(2);REQUIRE(a.ok());REQUIRE(b.ok());REQUIRE(c.ok());CHECK(a.value());CHECK(!b.value());CHECK(!c.value());auto id=s.getWidgetId(0);REQUIRE(id.ok());CHECK_EQ(id.value(),"flying"); }
+TEST_CASE("ui.pcgControllerSelection.noMatchPreservesSnapshot") { PcgControllerSelection s; REQUIRE(s.add("A",1,"a").ok()); REQUIRE(s.add("B",2,"b").ok()); REQUIRE(s.refresh(2).ok()); auto miss=s.refresh(99);REQUIRE(miss.ok());CHECK(!miss.value());CHECK_EQ(s.getSelectedIndex(),1);auto visible=s.getVisible(1);REQUIRE(visible.ok());CHECK(visible.value());CHECK(!s.getVisible(2).ok());CHECK(!s.add("",3,"x").ok());CHECK_EQ(s.getCount(),2); }
