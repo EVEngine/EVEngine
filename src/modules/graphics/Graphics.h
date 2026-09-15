@@ -51,6 +51,9 @@ class Drawable;
 class GBuffer;
 class GlobalIllumination;
 class GrassField;
+namespace hair {
+class GroomInstance;
+}
 class Material;
 class Mesh;
 class PrimitiveScene;
@@ -1668,6 +1671,16 @@ public:
      * its Mesh / Shader / Texture are owned by Graphics.
      */
     GrassField *newGrassField();
+
+    /**
+     * @brief High-quality groom/hair instance (UE GroomComponent analogue).
+     * See graphics/hair/ and docs/dev/毛发Groom子系统设计.md.
+     * @ownership Caller owns the returned GroomInstance*; its Mesh / Shader /
+     * Texture remain owned by Graphics.
+     * @lifetime Returned instance is valid until the caller deletes it; Graphics
+     * must outlive draws that use its GPU resources.
+     */
+    hair::GroomInstance *newGroomInstance();
 
     /**
      * @brief Flowing waterfall (falling water sheet) with sky reflection, downward

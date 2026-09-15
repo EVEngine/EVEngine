@@ -1,8 +1,12 @@
 #version 450
-// Anisotropic hair / fur card fragment (Kajiya-Kay + wrap/scatter).
+// Anisotropic hair / fur card fragment (Kajiya-Kay + Marschner-ish lobes + cheap self-shadow).
 // Push: data[0]=specExp, [1]=specStrength, [2]=primaryShift, [3]=secondaryShift,
-//       [4]=alphaCutoff, [5]=rimStrength, [6..8]=strandDir,
-//       [9]=diffuseWrap, [10]=scatterStrength.
+//       [4]=alphaCutoff, [5]=rimStrength, [6..8]=strandDir (unused in frag),
+//       [9]=marschnerR, [10]=marschnerTT, [11]=marschnerTRT,
+//       [12]=selfShadowStrength, [13]=selfShadowBias, [14]=rootAoStrength.
+//
+// Self-shadow is an analytical fiber term + along-strand root AO — not a deep
+// shadow map / transmittance volume (see design doc vs UE groom shadows).
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -43,31 +47,34 @@ void main() {
     float shift1 = u.data[2];
     float shift2 = u.data[3];
     float rimStr = max(u.data[5], 0.0);
-    float wrap = clamp(u.data[9], 0.0, 1.0);
-    float scatter = max(u.data[10], 0.0);
+    float lobeR = max(u.data[9], 0.0);
+    float lobeTT = max(u.data[10], 0.0);
+    float lobeTRT = max(u.data[11], 0.0);
+    float selfStr = clamp(u.data[12], 0.0, 1.0);
+    float selfBias = clamp(u.data[13], 0.0, 1.0);
+    float rootAoStr = clamp(u.data[14], 0.0, 1.0);
 
-    // Shift tangents for primary / secondary highlights (Marschner-style approximation).
+    // Shifted tangents approximate Marschner R / TT longitudinal lobes.
     vec3 T1 = normalize(T + shift1 * N);
     vec3 T2 = normalize(T + shift2 * N);
+    // TRT: softer third lobe biased toward the back-light direction.
+    vec3 T3 = normalize(T - 0.5 * shift1 * N);
 
-    float spec1 = kajiyaKay(T1, L, V, specExp);
-    float spec2 = kajiyaKay(T2, L, V, specExp * 0.65) * 0.45;
+    float r = kajiyaKay(T1, L, V, specExp) * lobeR;
+    float tt = kajiyaKay(T2, L, V, specExp * 0.65) * 0.45 * lobeTT;
+    float trt = kajiyaKay(T3, -L, V, specExp * 0.35) * 0.35 * lobeTRT;
 
-    // Soft wrap diffuse keeps hair from looking like solid plastic cards.
-    float ndotl = dot(N, L);
-    float wrapL = clamp((ndotl + wrap) / max(1.0 + wrap, 1e-3), 0.0, 1.0);
-    vec3 diffuse = base.rgb * (0.18 + 0.82 * wrapL);
+    float ndotl = max(dot(N, L), 0.0);
+    vec3 diffuse = base.rgb * (0.22 + 0.78 * ndotl);
 
-    // Cheap back-scatter / dual-scattering stand-in for card thickness.
-    float back = max(dot(-N, L), 0.0);
-    vec3 scatterCol = base.rgb * scatter * back * back;
-
-    vec3 light = min(vLightColor, vec3(1.4));
-    vec3 specCol = vec3(spec1 + spec2) * specStr * light;
-    // Warm secondary lobe tint (approximate TT/TRT residual).
-    specCol += vec3(1.0, 0.82, 0.65) * spec2 * 0.35 * light;
+    vec3 specCol = vec3(r + tt + trt) * specStr * min(vLightColor, vec3(1.5));
     vec3 rim = pow(clamp(1.0 - max(dot(N, V), 0.0), 0.0, 1.0), 3.0) * rimStr * base.rgb;
 
-    vec3 lit = diffuse * light + scatterCol * light + specCol + rim;
+    // Analytical fiber self-shadow (depth-bias style wrap); UV.y is strand u.
+    float fiberShadow = mix(1.0, smoothstep(-selfBias, 1.0 - selfBias, dot(N, L)), selfStr);
+    float rootAo = mix(1.0, pow(clamp(vUV.y, 0.0, 1.0), 1.25), rootAoStr);
+    float shadow = clamp(fiberShadow * rootAo, 0.0, 1.0);
+
+    vec3 lit = (diffuse * min(vLightColor, vec3(1.2)) + specCol + rim) * shadow;
     outColor = vec4(clamp(lit, 0.0, 1.0), base.a);
 }

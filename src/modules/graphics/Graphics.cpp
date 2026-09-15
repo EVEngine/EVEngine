@@ -12,6 +12,7 @@
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
 #include "graphics/HairCards.h"
+#include "graphics/hair/GroomInstance.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -702,6 +703,41 @@ void Graphics::expose(ssq::Table& table) {
     grassField.addFunc("getDenseCount", &GrassField::getDenseCount);
     grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
 
+    auto groomInstance = table.addClass<hair::GroomInstance>(
+        "GroomInstance",
+        std::function<hair::GroomInstance *()>([]() -> hair::GroomInstance * { return nullptr; }),
+        true);
+    // Fallible bake/rebuild stay C++-only (Result); scripts use factory + draw getters.
+    groomInstance.addFunc("draw", static_cast<void (hair::GroomInstance::*)()>(&hair::GroomInstance::draw));
+    groomInstance.addFunc("setForcedLod", &hair::GroomInstance::setForcedLod);
+    groomInstance.addFunc("getForcedLod", &hair::GroomInstance::getForcedLod);
+    groomInstance.addFunc("setScreenSize", &hair::GroomInstance::setScreenSize);
+    groomInstance.addFunc("getScreenSize", &hair::GroomInstance::getScreenSize);
+    groomInstance.addFunc("setWidthScale", &hair::GroomInstance::setWidthScale);
+    groomInstance.addFunc("getWidthScale", &hair::GroomInstance::getWidthScale);
+    groomInstance.addFunc("setSideHint", &hair::GroomInstance::setSideHint);
+    groomInstance.addFunc("getMesh", &hair::GroomInstance::getMesh);
+    groomInstance.addFunc("getShader", &hair::GroomInstance::getShader);
+    groomInstance.addFunc("getTexture", &hair::GroomInstance::getTexture);
+    groomInstance.addFunc("getCurveCount", &hair::GroomInstance::getCurveCount);
+    groomInstance.addFunc("getPointCount", &hair::GroomInstance::getPointCount);
+    groomInstance.addFunc("getGroupCount", &hair::GroomInstance::getGroupCount);
+    groomInstance.addFunc("setClusterCullingEnabled", &hair::GroomInstance::setClusterCullingEnabled);
+    groomInstance.addFunc("isClusterCullingEnabled", &hair::GroomInstance::isClusterCullingEnabled);
+    groomInstance.addFunc("getActiveLodIndex", &hair::GroomInstance::getActiveLodIndex);
+    groomInstance.addFunc("getActiveRepresentation", &hair::GroomInstance::getActiveRepresentation);
+    groomInstance.addFunc("getClusterCount", &hair::GroomInstance::getClusterCount);
+    groomInstance.addFunc("getVisibleCurveCount", &hair::GroomInstance::getVisibleCurveCount);
+    groomInstance.addFunc("setMarschnerLobes", &hair::GroomInstance::setMarschnerLobes);
+    groomInstance.addFunc("getMarschnerR", &hair::GroomInstance::getMarschnerR);
+    groomInstance.addFunc("getMarschnerTT", &hair::GroomInstance::getMarschnerTT);
+    groomInstance.addFunc("getMarschnerTRT", &hair::GroomInstance::getMarschnerTRT);
+    groomInstance.addFunc("setSelfShadow", &hair::GroomInstance::setSelfShadow);
+    groomInstance.addFunc("getSelfShadowStrength", &hair::GroomInstance::getSelfShadowStrength);
+    groomInstance.addFunc("getSelfShadowBias", &hair::GroomInstance::getSelfShadowBias);
+    groomInstance.addFunc("getRootAoStrength", &hair::GroomInstance::getRootAoStrength);
+    groomInstance.addFunc("isGuideSimulationEnabled", &hair::GroomInstance::isGuideSimulationEnabled);
+
     auto waterfall = table.addClass<Waterfall>(
         "Waterfall", std::function<Waterfall*()>([]() -> Waterfall* { return nullptr; }), true);
     waterfall.addFunc("createSheet", &Waterfall::createSheet);
@@ -1101,6 +1137,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newHairCardMaterial", &Graphics::newHairCardMaterial);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
+    cls.addFunc("newGroomInstance", &Graphics::newGroomInstance);
     cls.addFunc("newWaterfall", &Graphics::newWaterfall);
     cls.addFunc("newReflectionProbeCapture", &Graphics::newReflectionProbeCapture);
     cls.addFunc("newReflectionProbeRegistry", &Graphics::newReflectionProbeRegistry);
@@ -1301,6 +1338,8 @@ Material* Graphics::newHairCardMaterial(Texture *albedo) {
 Shader* Graphics::newGrassShader() { return grass::createShader(this); }
 
 GrassField* Graphics::newGrassField() { return new GrassField(this); }
+
+hair::GroomInstance *Graphics::newGroomInstance() { return new hair::GroomInstance(this); }
 
 Waterfall* Graphics::newWaterfall() { return new Waterfall(this); }
 Water*     Graphics::newWater() { return new Water(this); }

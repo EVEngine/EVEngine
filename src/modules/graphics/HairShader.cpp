@@ -13,10 +13,12 @@
 namespace eve::graphics::hair {
 namespace {
 
-const std::array<const char *, 11> kParams = {
-    "specExp",        "specStrength", "primaryShift", "secondaryShift", "alphaCutoff",
-    "rimStrength",    "strandDirX",   "strandDirY",   "strandDirZ",     "diffuseWrap",
-    "scatterStrength"};
+const std::array<const char *, 15> kParams = {
+    "specExp",           "specStrength",     "primaryShift",       "secondaryShift",
+    "alphaCutoff",       "rimStrength",      "strandDirX",         "strandDirY",
+    "strandDirZ",        "marschnerR",       "marschnerTT",        "marschnerTRT",
+    "selfShadowStrength", "selfShadowBias",  "rootAoStrength"};
+
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -40,8 +42,12 @@ void bindDefaults(Shader *shader) {
     shader->declareFloat("alphaCutoff");
     shader->declareFloat("rimStrength");
     shader->declareVec3("strandDir");
-    shader->declareFloat("diffuseWrap");
-    shader->declareFloat("scatterStrength");
+    shader->declareFloat("marschnerR");
+    shader->declareFloat("marschnerTT");
+    shader->declareFloat("marschnerTRT");
+    shader->declareFloat("selfShadowStrength");
+    shader->declareFloat("selfShadowBias");
+    shader->declareFloat("rootAoStrength");
     shader->sendFloat("specExp", 80.f);
     shader->sendFloat("specStrength", 0.85f);
     shader->sendFloat("primaryShift", 0.08f);
@@ -49,8 +55,13 @@ void bindDefaults(Shader *shader) {
     shader->sendFloat("alphaCutoff", 0.15f);
     shader->sendFloat("rimStrength", 0.35f);
     shader->sendVec3("strandDir", 0.f, 0.f, 0.f);
-    shader->sendFloat("diffuseWrap", 0.35f);
-    shader->sendFloat("scatterStrength", 0.25f);
+    shader->sendFloat("marschnerR", 1.f);
+    shader->sendFloat("marschnerTT", 0.45f);
+    shader->sendFloat("marschnerTRT", 0.25f);
+    // Mild analytical self-shadow on by default; set strength 0 to disable.
+    shader->sendFloat("selfShadowStrength", 0.35f);
+    shader->sendFloat("selfShadowBias", 0.25f);
+    shader->sendFloat("rootAoStrength", 0.3f);
 }
 
 Shader *createShader(Graphics *gfx) {
