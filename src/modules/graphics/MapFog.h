@@ -134,18 +134,18 @@ private:
     float fogR_            = 0.96f;
     float fogG_            = 0.97f;
     float fogB_            = 1.00f;
-    float fogAlpha_        = 0.94f;
-    float edgeSoft_        = 0.08f;
+    float fogAlpha_        = 0.96f;
+    float edgeSoft_        = 0.16f;
     bool  shadowEnabled_   = true;
-    float shadowOffX_      = 0.022f;
-    float shadowOffY_      = 0.028f;
-    float shadowStrength_  = 0.55f;
+    float shadowOffX_      = 0.045f;
+    float shadowOffY_      = 0.058f;
+    float shadowStrength_  = 0.95f;
     float selectStrength_  = 0.85f;
     float dissolveScale_   = 1.8f;
-    float cloudMix_        = 0.28f;
-    // Peak-biased: dense cotton stays opaque/bright; only low cover goes clear.
-    float densityContrast_ = 0.46f;
-    float densityBias_     = 0.14f;
+    float cloudMix_        = 0.30f;
+    // Dense deep sheet; frontier raises the cover gate for rim islands.
+    float densityContrast_ = 0.28f;
+    float densityBias_     = 0.06f;
     float drawAspect_      = 1.f;
 };
 

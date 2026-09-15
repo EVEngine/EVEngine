@@ -29,7 +29,7 @@ persist mapW = 0.0
 persist mapH = 0.0
 persist cellW = 0.0
 persist cellH = 0.0
-persist fogAlpha = 0.94
+persist fogAlpha = 0.96
 persist prevLeft = false
 persist status = "LMB select · Space unlock · R reset"
 
@@ -62,9 +62,9 @@ function clearMask() {
 }
 
 function softWeight(dist, radius) {
-    // Soft unlock penumbra: smaller hard core so the frontier thins gradually.
+    // Firm core (clearCore stays solid) + wide soft penumbra for gradual rim.
     if (dist >= radius) return 0.0;
-    local core = radius * 0.72;
+    local core = radius * 0.50;
     if (dist <= core) return 1.0;
     local t = (radius - dist) / (radius - core);
     return t * t * (3.0 - 2.0 * t);
@@ -156,14 +156,12 @@ function rebuildMask() {
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
                 // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.85);
-                // Dissolve rim puffs stay on B only — do not stamp R into fog
-                // (that leaked clearCore and dirty hole shadows).
+                stampSoft(x, y, 0.0, sel, dissolving[idx], 2.15);
                 stampRimPuffs(x, y, 0.0, sel, dissolving[idx]);
             } else if (unlocked[idx]) {
-                // Firm unlock disc only. Rim sparseness comes from the shader
-                // frontier gate — not from R=1 satellite stamps into fog.
-                stampSoft(x, y, 1.0, sel, 0.0, 1.85);
+                // Soft unlock disc — solid core clears the hole; soft ring
+                // feeds the shader frontier (dense → clumps → islands).
+                stampSoft(x, y, 1.0, sel, 0.0, 2.15);
             } else if (sel > 0.0) {
                 stampSoft(x, y, 0.0, sel, 0.0, 0.90);
             }
@@ -209,21 +207,22 @@ eve_init = function() {
     fog.setCloudTexture(fog.makeCloudTexture(512));
     fog.setMaskTexture(maskTex);
     // Large cotton puffs + dual reverse scroll (reference FoW billows).
-    fog.setCloudTiling(0.48, 0.82);
-    fog.setCloudSpeed(0.007, 0.013);
-    fog.setCloudMix(0.28);
-    fog.setDistort(0.18);
+    fog.setCloudTiling(0.42, 0.72);
+    fog.setCloudSpeed(0.006, 0.011);
+    fog.setCloudMix(0.30);
+    fog.setDistort(0.20);
     fog.setDistortFix(-0.010, 0.008);
-    fog.setFogColor(0.96, 0.97, 1.00);
+    fog.setFogColor(0.98, 0.99, 1.00);
     fog.setFogAlpha(fogAlpha);
-    // Soft unlock rim; clearCore kills warp leftovers inside the hole.
-    fog.setEdgeSoftness(0.08);
+    // Soft approach for gradual rim sparseness; clearCore keeps hole clean.
+    fog.setEdgeSoftness(0.16);
     fog.setShadowEnabled(true);
-    fog.setShadow(0.018, 0.022, 0.48);
+    // Readable puff-silhouette cast shadow into the unlock hole (reference).
+    fog.setShadow(0.045, 0.058, 0.95);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
-    // Peak cotton opaque/bright; valleys between blobs clear (not fogAlpha wash).
-    fog.setCloudDensity(0.46, 0.14);
+    // Dense deep sheet; frontier raises cover gate → sparse islands at rim.
+    fog.setCloudDensity(0.28, 0.06);
     // Wider soft frontier so density thins gradually into islands.
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");

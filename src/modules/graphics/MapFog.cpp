@@ -128,18 +128,17 @@ fn sampleUnlockSoft(uv: vec2<f32>, softRadius: f32) -> f32 {
   let cloudUv = vec2<f32>(input.uv.x * aspect, input.uv.y);
   let sampleA = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileA, speedA, time, 1.0));
   let sampleB = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileB, speedB, time, -1.0));
-  // Lit albedo + height alpha. Peek-through is puff coverage, not fogAlpha.
   let cloudBase = mix(sampleA.rgb, sampleB.rgb, cloudMix);
-  let cloudMul = clamp(sampleA.rgb * sampleB.rgb * 1.25, vec3<f32>(0.0), vec3<f32>(1.0));
-  let cloud = mix(cloudBase, cloudMul, 0.42);
+  let cloudMul = clamp(sampleA.rgb * sampleB.rgb * 1.12, vec3<f32>(0.0), vec3<f32>(1.0));
+  let cloud = mix(cloudBase, cloudMul, 0.28);
   let noise = luma(cloud);
-  var cover = max(sampleA.a, sampleB.a) + sampleA.a * sampleB.a * 0.35;
+  var cover = max(sampleA.a, sampleB.a) + sampleA.a * sampleB.a * 0.45;
   cover = clamp(cover, 0.0, 1.0);
 
-  let softRadius = max(edgeSoft * 0.25, 0.006);
+  let softRadius = max(edgeSoft * 0.35, 0.008);
   let baseUv = input.uv + fix;
-  // Hard clear core — soft taps leaked hole into fog and dirtied shadows.
-  let clearCore = smoothstep(0.82, 0.96, textureSample(maskTex, maskSampler, baseUv).r);
+  // Hard unwarped clear core — warp must not drag fog into the unlock hole.
+  let clearCore = smoothstep(0.84, 0.96, textureSample(maskTex, maskSampler, baseUv).r);
   let warpScale = 1.0 - clearCore;
 
   let warpNoise = luma(mix(
@@ -156,41 +155,55 @@ fn sampleUnlockSoft(uv: vec2<f32>, softRadius: f32) -> f32 {
   let selected = maskSample.g;
   let dissolve = maskSample.b;
 
+  // Soft unlock drives approach/frontier. Do NOT multiply fog by (1-unlocked):
+  // that creates a muddy alpha wash. Sparseness is cover islands, not fade.
   let unlockedAmt = softenEdge(sampleUnlockSoft(maskUv, softRadius), edgeSoft);
-  var fogAmt = (1.0 - unlockedAmt) * (1.0 - clearCore);
+  let fogAmt = 1.0 - clearCore;
   var frontier = 4.0 * unlockedAmt * (1.0 - unlockedAmt);
   frontier = clamp(frontier, 0.0, 1.0);
   frontier = frontier * frontier * (3.0 - 2.0 * frontier);
   frontier = frontier * (1.0 - clearCore);
-  let valley = 1.0 - smoothstep(0.20, 0.58, mix(noise, cover, 0.55));
-  fogAmt = fogAmt * (1.0 - frontier * valley * 0.55);
-  fogAmt = fogAmt * (1.0 - frontier * (1.0 - smoothstep(0.30, 0.68, cover)) * 0.28);
-  let sparsePow = mix(1.0, 2.6, frontier);
-  var fogKeep = fogAmt * mix(1.0, pow(max(cover, 1e-3), sparsePow), frontier);
+  let approach = smoothstep(0.05, 0.78, unlockedAmt) * (1.0 - clearCore);
+  let breakAmt = clamp(frontier * 0.70 + approach * 0.95, 0.0, 1.0);
+
+  let sheet = smoothstep(0.08, 0.42, cover);
+  let sparsePow = mix(1.35, 6.2, breakAmt);
+  var fogKeep = fogAmt * mix(sheet, pow(max(cover, 1e-3), sparsePow), breakAmt);
+  let valley = 1.0 - smoothstep(0.10, 0.50, mix(noise, cover, 0.50));
+  fogKeep = fogKeep * (1.0 - breakAmt * valley * 0.82);
+  fogKeep = fogKeep * (1.0 - approach * (1.0 - smoothstep(0.32, 0.72, cover)) * 0.65);
+
   let dissolveNoise = luma(textureSample(mainTex, mainSampler,
       cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
   fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
-  let gate = densityBias + frontier * 0.28;
-  let density = smoothstep(gate, clamp(gate + densityContrast * mix(1.0, 0.70, frontier), 0.0, 1.0),
-                           mix(noise, cover, 0.72));
-  var body = mix(0.28, 1.0, density);
-  body = body * mix(1.0, density * density, frontier * 0.70);
+
+  let gate = densityBias + breakAmt * 0.48;
+  let density = smoothstep(gate, clamp(gate + densityContrast * mix(1.0, 0.42, breakAmt), 0.0, 1.0),
+                           mix(noise, cover, 0.82));
+  let body = mix(0.94, 1.0, density);
 
   if (passMode < 0.5) {
-    // Rim contact shadow only (tiny offset — large offsets ghosted the hole).
-    let hole = clearCore;
-    let rimOff = shadowOff * 0.35;
-    let neighbor = textureSample(maskTex, maskSampler, baseUv + rimOff).r;
-    let overhang = 1.0 - smoothstep(0.55, 0.90, neighbor);
-    let a = hole * overhang * shadowStrength * fogAlpha * input.color.a;
+    // Drop-shadow of the puff silhouette onto unlocked ground only:
+    // sample cloud cover at uv - shadowOff so the cast matches the fog lobes.
+    let groundVisible = 1.0 - fogKeep;
+    let unlocked = smoothstep(0.38, 0.80, textureSample(maskTex, maskSampler, baseUv).r);
+    let sUnlock = textureSample(maskTex, maskSampler, baseUv + shadowOff).r;
+    let overhang = 1.0 - smoothstep(0.48, 0.84, sUnlock);
+    let castUv = cloudUv - vec2<f32>(shadowOff.x * aspect, shadowOff.y);
+    let castA = textureSample(mainTex, mainSampler, scrollUV(castUv, tileA, speedA, time, 1.0));
+    let castB = textureSample(mainTex, mainSampler, scrollUV(castUv, tileB, speedB, time, -1.0));
+    let castCover = clamp(max(castA.a, castB.a) + castA.a * castB.a * 0.45, 0.0, 1.0);
+    let puffCast = smoothstep(0.12, 0.52, castCover);
+    let a = groundVisible * unlocked * overhang * puffCast *
+            shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 
-  var col = mix(cloud, fogRgb * cloud, 0.08);
-  col = mix(col, fogRgb, 0.02);
-  col = col + cloud * (density * 0.10);
+  let cool = fogRgb * vec3<f32>(0.88, 0.90, 0.95);
+  var col = mix(cool * cloud, cloud, clamp(density * 1.02, 0.0, 1.0));
+  col = mix(col, fogRgb * 0.98 + cloud * 0.02, 0.03);
   let blink = selected * selectStrength * selectPulse;
-  col = mix(col, col * 1.12 + vec3<f32>(0.10, 0.14, 0.22), clamp(blink, 0.0, 1.0));
+  col = mix(col, col * 1.08 + vec3<f32>(0.06, 0.10, 0.14), clamp(blink, 0.0, 1.0));
   let a = fogKeep * body * fogAlpha * input.color.a;
   return vec4<f32>(col, a);
 }
@@ -321,11 +334,11 @@ Texture *MapFog::makeCloudTexture(int size) {
             }
         }
     };
-    // Hierarchical cotton: overlapping billows form a dense deep-fog sheet;
-    // rim sparseness is driven by the shader frontier gate, not empty packing.
-    addLayer(6, 6, 0.14f, 0.22f, 0xA11CE001u);
-    addLayer(9, 9, 0.07f, 0.12f, 0xBEEF42u);
-    addLayer(13, 13, 0.030f, 0.058f, 0xC0FFEEu);
+    // Reference cotton: large lit lobes with clear valleys between them.
+    // Deep fog still merges into a sheet; frontier gate sparsifies the rim.
+    addLayer(4, 4, 0.18f, 0.30f, 0xA11CE001u);
+    addLayer(6, 6, 0.08f, 0.15f, 0xBEEF42u);
+    addLayer(9, 9, 0.032f, 0.060f, 0xC0FFEEu);
 
     auto wrapDelta = [](float d) {
         d -= std::floor(d + 0.5f);
@@ -348,8 +361,8 @@ Texture *MapFog::makeCloudTexture(int size) {
                 b       = b * b;                     // tighten rim
                 h += b;
             }
-            // Soft-max plateau: merged cotton sheet; keep valleys soft, not empty.
-            h = std::clamp(h * 0.55f, 0.f, 1.f);
+            // Soft-max plateau: merged sheet with deeper valleys (terrain peeks).
+            h = std::clamp(h * 0.52f, 0.f, 1.f);
             h = h * h * (3.f - 2.f * h);
             height[size_t(y * n + x)] = h;
         }
@@ -372,29 +385,28 @@ Texture *MapFog::makeCloudTexture(int size) {
             const float hx = sampleH(x + 1, y) - sampleH(x - 1, y);
             const float hy = sampleH(x, y + 1) - sampleH(x, y - 1);
 
-            float nx = -hx * 4.5f, ny = -hy * 4.5f, nz = 0.38f;
+            // Directional lobe shading — milky top-left, cool gray underside.
+            float nx = -hx * 3.2f, ny = -hy * 3.2f, nz = 0.48f;
             const float nlen = std::sqrt(nx * nx + ny * ny + nz * nz);
             nx /= nlen;
             ny /= nlen;
             nz /= nlen;
             const float ndotl = std::max(nx * Lx + ny * Ly + nz * Lz, 0.f);
-            // Lit cotton billows: bright white peaks, cool gray-blue self-shadow.
-            const float lit = 0.28f + 0.62f * ndotl;
-            float shade     = std::clamp(0.18f + h * lit * 0.82f, 0.f, 1.f);
-            shade           = std::pow(shade, 0.85f);
+            const float lit = 0.38f + 0.55f * ndotl;
+            float shade     = std::clamp(0.22f + h * lit * 0.78f, 0.f, 1.f);
+            shade           = std::pow(shade, 0.92f);
 
-            const float coolR = 0.72f, coolG = 0.78f, coolB = 0.88f;
-            const float warmR = 1.00f, warmG = 1.00f, warmB = 0.99f;
+            const float coolR = 0.68f, coolG = 0.72f, coolB = 0.80f;
+            const float warmR = 1.00f, warmG = 1.00f, warmB = 0.995f;
             const float t     = std::clamp(shade, 0.f, 1.f);
             const float r =
-                std::clamp(coolR * (1.f - t) + warmR * t + ndotl * 0.06f * h, 0.f, 1.f);
+                std::clamp(coolR * (1.f - t) + warmR * t + ndotl * 0.04f * h, 0.f, 1.f);
             const float g =
-                std::clamp(coolG * (1.f - t) + warmG * t + ndotl * 0.03f * h, 0.f, 1.f);
+                std::clamp(coolG * (1.f - t) + warmG * t + ndotl * 0.025f * h, 0.f, 1.f);
             const float b = std::clamp(coolB * (1.f - t) + warmB * t, 0.f, 1.f);
 
-            // Partial luminous coverage: dense cores stay solid; soft valleys
-            // between lobes go see-through so terrain peeks — not fogAlpha wash.
-            float a = std::clamp((h - 0.03f) / 0.42f, 0.f, 1.f);
+            // Opaque cores, clearer valleys — terrain peeks only in gaps.
+            float a = std::clamp((h - 0.10f) / 0.26f, 0.f, 1.f);
             a       = a * a * (3.f - 2.f * a);  // smoothstep
 
             const size_t i = size_t((y * n + x) * 4);
