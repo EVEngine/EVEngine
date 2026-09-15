@@ -9,43 +9,253 @@
 
 namespace eve::procgen {
 namespace {
-constexpr std::size_t kMaxJsonBytes=256U*1024U*1024U,kMaxTiles=65536,kMaxLevels=32,kMaxVertices=8U*1024U*1024U;
-template<class T>Result<T>bad(const char*m){return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,m,"procgen.gtsTerrainLod.codec"));}
-bool exact(const Value::Object&o,std::initializer_list<const char*>names){if(o.size()!=names.size())return false;for(auto*n:names)if(!o.contains(n))return false;return true;}
-const double*num(const Value&v){return v.getIf<double>();}
-Value options(const GtsMeshSimplificationOptions&o){return Value::Object{{"aggressiveness",o.aggressiveness},{"enableSmartLink",o.enableSmartLink},{"maxIterationCount",o.maxIterationCount},{"preserveBorderEdges",o.preserveBorderEdges},{"preserveSurfaceCurvature",o.preserveSurfaceCurvature},{"preserveUvFoldoverEdges",o.preserveUvFoldoverEdges},{"preserveUvSeamEdges",o.preserveUvSeamEdges},{"vertexLinkDistance",o.vertexLinkDistance}};}
-bool decodeOptions(const Value&v,GtsMeshSimplificationOptions&o){auto*p=v.getIf<Value::Object>();if(!p||!exact(*p,{"aggressiveness","enableSmartLink","maxIterationCount","preserveBorderEdges","preserveSurfaceCurvature","preserveUvFoldoverEdges","preserveUvSeamEdges","vertexLinkDistance"}))return false;auto ag=num(p->at("aggressiveness")),link=num(p->at("vertexLinkDistance"));auto count=p->at("maxIterationCount").getIf<int64_t>();auto smart=p->at("enableSmartLink").getIf<bool>(),border=p->at("preserveBorderEdges").getIf<bool>(),curve=p->at("preserveSurfaceCurvature").getIf<bool>(),fold=p->at("preserveUvFoldoverEdges").getIf<bool>(),seam=p->at("preserveUvSeamEdges").getIf<bool>();if(!ag||!link||!count||!smart||!border||!curve||!fold||!seam||!std::isfinite(*ag)||*ag<=0||!std::isfinite(*link)||*link<0||*count<=0||*count>100000)return false;o.aggressiveness=*ag;o.vertexLinkDistance=*link;o.maxIterationCount=int(*count);o.enableSmartLink=*smart;o.preserveBorderEdges=*border;o.preserveSurfaceCurvature=*curve;o.preserveUvFoldoverEdges=*fold;o.preserveUvSeamEdges=*seam;return true;}
-Value encodeMesh(const MeshBuild&m){Value::Array p,n,u,c,i,g;p.reserve(m.positions().size());n.reserve(m.normals().size());u.reserve(m.uvs().size());c.reserve(m.colors().size());i.reserve(m.indices().size());g.reserve(m.getIndexCount()/3);for(float x:m.positions())p.emplace_back(x);for(float x:m.normals())n.emplace_back(x);for(float x:m.uvs())u.emplace_back(x);for(float x:m.colors())c.emplace_back(x);for(auto x:m.indices())i.emplace_back(int64_t(x));for(int t=0;t<m.getIndexCount()/3;++t){int group=m.getTriangleGroup(t);g.emplace_back(group>=0?m.getGroupName(group):std::string{});}return Value::Object{{"colors",std::move(c)},{"groups",std::move(g)},{"indices",std::move(i)},{"normals",std::move(n)},{"positions",std::move(p)},{"uvs",std::move(u)}};}
-bool decodeFloatArray(const Value&v,std::vector<float>&out,std::size_t max){auto*a=v.getIf<Value::Array>();if(!a||a->size()>max)return false;out.reserve(a->size());for(auto&x:*a){auto*d=num(x);if(!d||!std::isfinite(*d)||*d<-std::numeric_limits<float>::max()||*d>std::numeric_limits<float>::max())return false;out.push_back(float(*d));}return true;}
-bool decodeMesh(const Value&v,MeshBuild&out,bool legacy){auto*o=v.getIf<Value::Object>();if(!o||!(legacy?exact(*o,{"groups","indices","normals","positions","uvs"}):exact(*o,{"colors","groups","indices","normals","positions","uvs"})))return false;std::vector<float>p,n,u,c;if(!decodeFloatArray(o->at("positions"),p,kMaxVertices*3)||!decodeFloatArray(o->at("normals"),n,kMaxVertices*3)||!decodeFloatArray(o->at("uvs"),u,kMaxVertices*2)||(!legacy&&!decodeFloatArray(o->at("colors"),c,kMaxVertices*4))||p.size()%3||u.size()%2||n.size()!=p.size()||u.size()/2!=p.size()/3||(!c.empty()&&c.size()/4!=p.size()/3))return false;auto*indices=o->at("indices").getIf<Value::Array>();auto*groups=o->at("groups").getIf<Value::Array>();if(!indices||indices->size()%3||indices->size()>kMaxVertices*6||!groups||groups->size()!=indices->size()/3)return false;MeshBuild m;for(size_t x=0;x<p.size()/3;++x)m.addVertex(p[x*3],p[x*3+1],p[x*3+2],n[x*3],n[x*3+1],n[x*3+2],u[x*2],u[x*2+1]);if(!c.empty()&&!m.setVertexColors(std::move(c)).ok())return false;for(size_t t=0;t<groups->size();++t){auto*name=(*groups)[t].getIf<std::string>();if(!name||name->size()>1024)return false;uint32_t ids[3];for(int corner=0;corner<3;++corner){auto*id=(*indices)[t*3+corner].getIf<int64_t>();if(!id||*id<0||*id>=int64_t(p.size()/3))return false;ids[corner]=uint32_t(*id);}if(ids[0]==ids[1]||ids[1]==ids[2]||ids[0]==ids[2])return false;m.setActiveGroup(*name);m.addTriangle(ids[0],ids[1],ids[2]);}out=std::move(m);return true;}
+constexpr std::size_t kMaxJsonBytes = 256U * 1024U * 1024U, kMaxTiles = 65536, kMaxLevels = 32,
+                      kMaxVertices = 8U * 1024U * 1024U;
+template <class T>
+Result<T> bad(const char* m) {
+    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, m, "procgen.gtsTerrainLod.codec"));
+}
+bool exact(const Value::Object& o, std::initializer_list<const char*> names) {
+    if (o.size() != names.size()) return false;
+    for (auto* n : names)
+        if (!o.contains(n)) return false;
+    return true;
+}
+const double* num(const Value& v) { return v.getIf<double>(); }
+Value         options(const GtsMeshSimplificationOptions& o) {
+    return Value::Object{{"aggressiveness", o.aggressiveness},
+                         {"enableSmartLink", o.enableSmartLink},
+                         {"maxIterationCount", o.maxIterationCount},
+                         {"preserveBorderEdges", o.preserveBorderEdges},
+                         {"preserveSurfaceCurvature", o.preserveSurfaceCurvature},
+                         {"preserveUvFoldoverEdges", o.preserveUvFoldoverEdges},
+                         {"preserveUvSeamEdges", o.preserveUvSeamEdges},
+                         {"vertexLinkDistance", o.vertexLinkDistance}};
+}
+bool decodeOptions(const Value& v, GtsMeshSimplificationOptions& o) {
+    auto* p = v.getIf<Value::Object>();
+    if (!p || !exact(*p, {"aggressiveness", "enableSmartLink", "maxIterationCount", "preserveBorderEdges",
+                          "preserveSurfaceCurvature", "preserveUvFoldoverEdges", "preserveUvSeamEdges",
+                          "vertexLinkDistance"}))
+        return false;
+    auto ag = num(p->at("aggressiveness")), link = num(p->at("vertexLinkDistance"));
+    auto count = p->at("maxIterationCount").getIf<int64_t>();
+    auto smart = p->at("enableSmartLink").getIf<bool>(), border = p->at("preserveBorderEdges").getIf<bool>(),
+         curve = p->at("preserveSurfaceCurvature").getIf<bool>(), fold = p->at("preserveUvFoldoverEdges").getIf<bool>(),
+         seam = p->at("preserveUvSeamEdges").getIf<bool>();
+    if (!ag || !link || !count || !smart || !border || !curve || !fold || !seam || !std::isfinite(*ag) || *ag <= 0 ||
+        !std::isfinite(*link) || *link < 0 || *count <= 0 || *count > 100000)
+        return false;
+    o.aggressiveness           = *ag;
+    o.vertexLinkDistance       = *link;
+    o.maxIterationCount        = int(*count);
+    o.enableSmartLink          = *smart;
+    o.preserveBorderEdges      = *border;
+    o.preserveSurfaceCurvature = *curve;
+    o.preserveUvFoldoverEdges  = *fold;
+    o.preserveUvSeamEdges      = *seam;
+    return true;
+}
+Value encodeMesh(const MeshBuild& m) {
+    Value::Array p, n, u, c, i, g;
+    p.reserve(m.positions().size());
+    n.reserve(m.normals().size());
+    u.reserve(m.uvs().size());
+    c.reserve(m.colors().size());
+    i.reserve(m.indices().size());
+    g.reserve(m.getIndexCount() / 3);
+    for (float x : m.positions()) p.emplace_back(x);
+    for (float x : m.normals()) n.emplace_back(x);
+    for (float x : m.uvs()) u.emplace_back(x);
+    for (float x : m.colors()) c.emplace_back(x);
+    for (auto x : m.indices()) i.emplace_back(int64_t(x));
+    for (int t = 0; t < m.getIndexCount() / 3; ++t) {
+        int group = m.getTriangleGroup(t);
+        g.emplace_back(group >= 0 ? m.getGroupName(group) : std::string{});
+    }
+    return Value::Object{{"colors", std::move(c)},  {"groups", std::move(g)},    {"indices", std::move(i)},
+                         {"normals", std::move(n)}, {"positions", std::move(p)}, {"uvs", std::move(u)}};
+}
+bool decodeFloatArray(const Value& v, std::vector<float>& out, std::size_t max) {
+    auto* a = v.getIf<Value::Array>();
+    if (!a || a->size() > max) return false;
+    out.reserve(a->size());
+    for (auto& x : *a) {
+        auto* d = num(x);
+        if (!d || !std::isfinite(*d) || *d < -std::numeric_limits<float>::max() ||
+            *d > std::numeric_limits<float>::max())
+            return false;
+        out.push_back(float(*d));
+    }
+    return true;
+}
+bool decodeMesh(const Value& v, MeshBuild& out, bool legacy) {
+    auto* o = v.getIf<Value::Object>();
+    if (!o || !(legacy ? exact(*o, {"groups", "indices", "normals", "positions", "uvs"})
+                       : exact(*o, {"colors", "groups", "indices", "normals", "positions", "uvs"})))
+        return false;
+    std::vector<float> p, n, u, c;
+    if (!decodeFloatArray(o->at("positions"), p, kMaxVertices * 3) ||
+        !decodeFloatArray(o->at("normals"), n, kMaxVertices * 3) ||
+        !decodeFloatArray(o->at("uvs"), u, kMaxVertices * 2) ||
+        (!legacy && !decodeFloatArray(o->at("colors"), c, kMaxVertices * 4)) || p.size() % 3 || u.size() % 2 ||
+        n.size() != p.size() || u.size() / 2 != p.size() / 3 || (!c.empty() && c.size() / 4 != p.size() / 3))
+        return false;
+    auto* indices = o->at("indices").getIf<Value::Array>();
+    auto* groups  = o->at("groups").getIf<Value::Array>();
+    if (!indices || indices->size() % 3 || indices->size() > kMaxVertices * 6 || !groups ||
+        groups->size() != indices->size() / 3)
+        return false;
+    MeshBuild m;
+    for (size_t x = 0; x < p.size() / 3; ++x)
+        m.addVertex(p[x * 3], p[x * 3 + 1], p[x * 3 + 2], n[x * 3], n[x * 3 + 1], n[x * 3 + 2], u[x * 2], u[x * 2 + 1]);
+    if (!c.empty() && !m.setVertexColors(std::move(c)).ok()) return false;
+    for (size_t t = 0; t < groups->size(); ++t) {
+        auto* name = (*groups)[t].getIf<std::string>();
+        if (!name || name->size() > 1024) return false;
+        uint32_t ids[3];
+        for (int corner = 0; corner < 3; ++corner) {
+            auto* id = (*indices)[t * 3 + corner].getIf<int64_t>();
+            if (!id || *id < 0 || *id >= int64_t(p.size() / 3)) return false;
+            ids[corner] = uint32_t(*id);
+        }
+        if (ids[0] == ids[1] || ids[1] == ids[2] || ids[0] == ids[2]) return false;
+        m.setActiveGroup(*name);
+        m.addTriangle(ids[0], ids[1], ids[2]);
+    }
+    out = std::move(m);
+    return true;
+}
+}  // namespace
+
+Result<std::string> GtsTerrainMeshSettings::snapshotJson() const {
+    Value::Array qualities;
+    for (float quality : lodQuality_) qualities.emplace_back(quality);
+    return Value(Value::Object{{"lodCount", lodCount_},
+                               {"lodQuality", std::move(qualities)},
+                               {"saveResolution", saveResolution_},
+                               {"schema", "eve.procgen.gts-terrain-mesh-settings"},
+                               {"subTiles", subTiles_},
+                               {"version", 1}})
+        .toJson();
 }
 
-Result<std::string> GtsTerrainMeshSettings::snapshotJson()const{
- Value::Array qualities;for(float quality:lodQuality_)qualities.emplace_back(quality);
- return Value(Value::Object{{"lodCount",lodCount_},{"lodQuality",std::move(qualities)},
-  {"saveResolution",saveResolution_},{"schema","eve.procgen.gts-terrain-mesh-settings"},
-  {"subTiles",subTiles_},{"version",1}}).toJson();
+Result<void> GtsTerrainMeshSettings::restoreJson(const std::string& json) {
+    if (json.size() > 64U * 1024U) return bad<void>("GTS terrain mesh settings JSON exceeds size limit");
+    auto parsed = Value::fromJson(json);
+    if (!parsed) return Result<void>::failure(parsed.status());
+    auto* root = parsed.value().getIf<Value::Object>();
+    if (!root || !exact(*root, {"lodCount", "lodQuality", "saveResolution", "schema", "subTiles", "version"}))
+        return bad<void>("GTS terrain mesh settings fields are invalid");
+    auto* schema     = root->at("schema").getIf<std::string>();
+    auto* version    = root->at("version").getIf<int64_t>();
+    auto* resolution = root->at("saveResolution").getIf<int64_t>();
+    auto* count      = root->at("lodCount").getIf<int64_t>();
+    auto* subTiles   = root->at("subTiles").getIf<int64_t>();
+    auto* qualities  = root->at("lodQuality").getIf<Value::Array>();
+    if (!schema || *schema != "eve.procgen.gts-terrain-mesh-settings" || !version || *version != 1 || !resolution ||
+        *resolution < 0 || *resolution > 4 || !count || *count < 1 || *count > 4 || !subTiles || *subTiles < 0 ||
+        *subTiles > 5 || !qualities || qualities->size() != 4)
+        return bad<void>("GTS terrain mesh settings schema or values are invalid");
+    GtsTerrainMeshSettings candidate;
+    auto                   a = candidate.setSaveResolution(int(*resolution));
+    if (!a) return a;
+    auto b = candidate.setLodCount(int(*count));
+    if (!b) return b;
+    auto c = candidate.setSubTiles(int(*subTiles));
+    if (!c) return c;
+    for (int i = 0; i < 4; ++i) {
+        auto* quality = num((*qualities)[size_t(i)]);
+        if (!quality) return bad<void>("GTS terrain mesh LOD quality is invalid");
+        auto set = candidate.setLodQuality(i, float(*quality));
+        if (!set) return set;
+    }
+    *this = std::move(candidate);
+    return Result<void>::success();
 }
 
-Result<void> GtsTerrainMeshSettings::restoreJson(const std::string&json){
- if(json.size()>64U*1024U)return bad<void>("GTS terrain mesh settings JSON exceeds size limit");
- auto parsed=Value::fromJson(json);if(!parsed)return Result<void>::failure(parsed.status());
- auto*root=parsed.value().getIf<Value::Object>();if(!root||!exact(*root,{"lodCount","lodQuality","saveResolution","schema","subTiles","version"}))return bad<void>("GTS terrain mesh settings fields are invalid");
- auto*schema=root->at("schema").getIf<std::string>();auto*version=root->at("version").getIf<int64_t>();
- auto*resolution=root->at("saveResolution").getIf<int64_t>();auto*count=root->at("lodCount").getIf<int64_t>();
- auto*subTiles=root->at("subTiles").getIf<int64_t>();auto*qualities=root->at("lodQuality").getIf<Value::Array>();
- if(!schema||*schema!="eve.procgen.gts-terrain-mesh-settings"||!version||*version!=1||!resolution||*resolution<0||*resolution>4||!count||*count<1||*count>4||!subTiles||*subTiles<0||*subTiles>5||!qualities||qualities->size()!=4)return bad<void>("GTS terrain mesh settings schema or values are invalid");
- GtsTerrainMeshSettings candidate;auto a=candidate.setSaveResolution(int(*resolution));if(!a)return a;
- auto b=candidate.setLodCount(int(*count));if(!b)return b;auto c=candidate.setSubTiles(int(*subTiles));if(!c)return c;
- for(int i=0;i<4;++i){auto*quality=num((*qualities)[size_t(i)]);if(!quality)return bad<void>("GTS terrain mesh LOD quality is invalid");auto set=candidate.setLodQuality(i,float(*quality));if(!set)return set;}
- *this=std::move(candidate);return Result<void>::success();
+Result<std::string> GtsTerrainLodSet::snapshotJson() const {
+    if (tiles_.size() > kMaxTiles || settings_.empty() || settings_.size() > kMaxLevels)
+        return bad<std::string>("GTS terrain LOD set exceeds codec limits");
+    Value::Array settings, tiles;
+    for (auto& s : settings_)
+        settings.emplace_back(Value::Object{{"options", options(s.simplification)},
+                                            {"quality", s.quality},
+                                            {"transitionHeight", s.screenRelativeTransitionHeight}});
+    for (auto& t : tiles_) {
+        Value::Array levels;
+        for (auto& m : t.levels) levels.emplace_back(encodeMesh(m));
+        tiles.emplace_back(
+            Value::Object{{"levels", std::move(levels)}, {"offsetX", t.offsetX}, {"offsetZ", t.offsetZ}});
+    }
+    auto json = Value(Value::Object{{"columns", columns_},
+                                    {"rows", rows_},
+                                    {"schema", "eve.procgen.gts-terrain-lod"},
+                                    {"settings", std::move(settings)},
+                                    {"tiles", std::move(tiles)},
+                                    {"version", 2}})
+                    .toJson();
+    if (!json) return json;
+    if (json.value().size() > kMaxJsonBytes) return bad<std::string>("GTS terrain LOD JSON exceeds size limit");
+    return json;
 }
 
-Result<std::string> GtsTerrainLodSet::snapshotJson() const{
- if(tiles_.size()>kMaxTiles||settings_.empty()||settings_.size()>kMaxLevels)return bad<std::string>("GTS terrain LOD set exceeds codec limits");Value::Array settings,tiles;for(auto&s:settings_)settings.emplace_back(Value::Object{{"options",options(s.simplification)},{"quality",s.quality},{"transitionHeight",s.screenRelativeTransitionHeight}});for(auto&t:tiles_){Value::Array levels;for(auto&m:t.levels)levels.emplace_back(encodeMesh(m));tiles.emplace_back(Value::Object{{"levels",std::move(levels)},{"offsetX",t.offsetX},{"offsetZ",t.offsetZ}});}auto json=Value(Value::Object{{"columns",columns_},{"rows",rows_},{"schema","eve.procgen.gts-terrain-lod"},{"settings",std::move(settings)},{"tiles",std::move(tiles)},{"version",2}}).toJson();if(!json)return json;if(json.value().size()>kMaxJsonBytes)return bad<std::string>("GTS terrain LOD JSON exceeds size limit");return json;
+Result<void> GtsTerrainLodSet::restoreJson(const std::string& json) {
+    if (json.size() > kMaxJsonBytes) return bad<void>("GTS terrain LOD JSON exceeds size limit");
+    auto parsed = Value::fromJson(json);
+    if (!parsed) return Result<void>::failure(parsed.status());
+    auto* root = parsed.value().getIf<Value::Object>();
+    if (!root || !exact(*root, {"columns", "rows", "schema", "settings", "tiles", "version"}))
+        return bad<void>("GTS terrain LOD root fields are invalid");
+    auto* schema   = root->at("schema").getIf<std::string>();
+    auto* version  = root->at("version").getIf<int64_t>();
+    auto* columns  = root->at("columns").getIf<int64_t>();
+    auto* rows     = root->at("rows").getIf<int64_t>();
+    auto* settings = root->at("settings").getIf<Value::Array>();
+    auto* tiles    = root->at("tiles").getIf<Value::Array>();
+    if (!schema || *schema != "eve.procgen.gts-terrain-lod" || !version || (*version != 1 && *version != 2) ||
+        !columns || !rows || *columns <= 0 || *rows <= 0 || *columns > 65536 || *rows > 65536 || !settings ||
+        settings->empty() || settings->size() > kMaxLevels || !tiles || tiles->size() > kMaxTiles ||
+        uint64_t(*columns) * uint64_t(*rows) != tiles->size())
+        return bad<void>("GTS terrain LOD schema, layout or counts are invalid");
+    GtsTerrainLodSet candidate;
+    candidate.columns_ = int(*columns);
+    candidate.rows_    = int(*rows);
+    float previous     = 1;
+    for (auto& encoded : *settings) {
+        auto* o = encoded.getIf<Value::Object>();
+        if (!o || !exact(*o, {"options", "quality", "transitionHeight"}))
+            return bad<void>("GTS terrain LOD setting fields are invalid");
+        auto *                     q = num(o->at("quality")), *h = num(o->at("transitionHeight"));
+        GtsTerrainLodLevelSettings s;
+        if (!q || !h || !std::isfinite(*q) || *q < 0 || *q > 1 || !std::isfinite(*h) || *h < 0 || *h >= previous ||
+            !decodeOptions(o->at("options"), s.simplification))
+            return bad<void>("GTS terrain LOD setting values are invalid");
+        s.quality                        = float(*q);
+        s.screenRelativeTransitionHeight = float(*h);
+        previous                         = s.screenRelativeTransitionHeight;
+        candidate.settings_.push_back(s);
+    }
+    for (auto& encoded : *tiles) {
+        auto* o = encoded.getIf<Value::Object>();
+        if (!o || !exact(*o, {"levels", "offsetX", "offsetZ"}))
+            return bad<void>("GTS terrain LOD tile fields are invalid");
+        auto *x = num(o->at("offsetX")), *z = num(o->at("offsetZ"));
+        auto* levels = o->at("levels").getIf<Value::Array>();
+        if (!x || !z || !std::isfinite(*x) || !std::isfinite(*z) || !levels ||
+            levels->size() != candidate.settings_.size())
+            return bad<void>("GTS terrain LOD tile values are invalid");
+        GtsTerrainLodTile tile;
+        tile.offsetX = float(*x);
+        tile.offsetZ = float(*z);
+        for (auto& m : *levels) {
+            MeshBuild decoded;
+            if (!decodeMesh(m, decoded, *version == 1)) return bad<void>("GTS terrain LOD mesh is invalid");
+            tile.levels.push_back(std::move(decoded));
+        }
+        candidate.tiles_.push_back(std::move(tile));
+    }
+    *this = std::move(candidate);
+    return Result<void>::success();
 }
-
-Result<void> GtsTerrainLodSet::restoreJson(const std::string&json){
- if(json.size()>kMaxJsonBytes)return bad<void>("GTS terrain LOD JSON exceeds size limit");auto parsed=Value::fromJson(json);if(!parsed)return Result<void>::failure(parsed.status());auto*root=parsed.value().getIf<Value::Object>();if(!root||!exact(*root,{"columns","rows","schema","settings","tiles","version"}))return bad<void>("GTS terrain LOD root fields are invalid");auto*schema=root->at("schema").getIf<std::string>();auto*version=root->at("version").getIf<int64_t>();auto*columns=root->at("columns").getIf<int64_t>();auto*rows=root->at("rows").getIf<int64_t>();auto*settings=root->at("settings").getIf<Value::Array>();auto*tiles=root->at("tiles").getIf<Value::Array>();if(!schema||*schema!="eve.procgen.gts-terrain-lod"||!version||(*version!=1&&*version!=2)||!columns||!rows||*columns<=0||*rows<=0||*columns>65536||*rows>65536||!settings||settings->empty()||settings->size()>kMaxLevels||!tiles||tiles->size()>kMaxTiles||uint64_t(*columns)*uint64_t(*rows)!=tiles->size())return bad<void>("GTS terrain LOD schema, layout or counts are invalid");GtsTerrainLodSet candidate;candidate.columns_=int(*columns);candidate.rows_=int(*rows);float previous=1;for(auto&encoded:*settings){auto*o=encoded.getIf<Value::Object>();if(!o||!exact(*o,{"options","quality","transitionHeight"}))return bad<void>("GTS terrain LOD setting fields are invalid");auto*q=num(o->at("quality")),*h=num(o->at("transitionHeight"));GtsTerrainLodLevelSettings s;if(!q||!h||!std::isfinite(*q)||*q<0||*q>1||!std::isfinite(*h)||*h<0||*h>=previous||!decodeOptions(o->at("options"),s.simplification))return bad<void>("GTS terrain LOD setting values are invalid");s.quality=float(*q);s.screenRelativeTransitionHeight=float(*h);previous=s.screenRelativeTransitionHeight;candidate.settings_.push_back(s);}for(auto&encoded:*tiles){auto*o=encoded.getIf<Value::Object>();if(!o||!exact(*o,{"levels","offsetX","offsetZ"}))return bad<void>("GTS terrain LOD tile fields are invalid");auto*x=num(o->at("offsetX")),*z=num(o->at("offsetZ"));auto*levels=o->at("levels").getIf<Value::Array>();if(!x||!z||!std::isfinite(*x)||!std::isfinite(*z)||!levels||levels->size()!=candidate.settings_.size())return bad<void>("GTS terrain LOD tile values are invalid");GtsTerrainLodTile tile;tile.offsetX=float(*x);tile.offsetZ=float(*z);for(auto&m:*levels){MeshBuild decoded;if(!decodeMesh(m,decoded,*version==1))return bad<void>("GTS terrain LOD mesh is invalid");tile.levels.push_back(std::move(decoded));}candidate.tiles_.push_back(std::move(tile));}*this=std::move(candidate);return Result<void>::success();
-}
-}
+}  // namespace eve::procgen
