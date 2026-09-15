@@ -16,7 +16,7 @@ namespace eve::fluids {
  *
  * The renderer is backend-neutral at its public boundary and uses Graphics'
  * sphere mesh + PBR path. On Vulkan this writes regular scene depth and receives
- * environment lighting; WebGPU consumes the same transforms as a fallback.
+ * environment lighting; WebGPU consumes the same transforms through its standard path.
  */
 class SurfaceFluidSceneRenderer {
 public:

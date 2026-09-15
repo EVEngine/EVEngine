@@ -557,6 +557,36 @@ public:
     virtual bool updateTexture(Texture *texture, int width, int height, const uint8_t *rgba) = 0;
 
     /**
+     * @brief Copy a same-device resident RGBA8 buffer into an existing texture.
+     * @param texture Borrowed
+     * single-mip texture owned by this Graphics backend.
+     * @param source Borrowed tightly packed RGBA8 buffer
+     * slice; its producer must be complete.
+     * @param width Source width, which must match the texture.
+     *
+     * @param height Source height, which must match the texture.
+     * @return Success after the copy is visible to
+     * subsequent draws, or Unsupported when the backend cannot import it.
+     * @ownership Neither the texture nor
+     * native buffer handle is retained.
+     * @lifetime The source buffer must remain alive through this synchronous
+     * render-thread call.
+     * @thread Render-thread affine; the caller must complete writes to source before
+     * calling.
+     */
+    [[nodiscard]] virtual eve::Result<void> updateTextureFromResidentRgba8(Texture*                     texture,
+                                                                           const GpuResidentBufferView& source,
+                                                                           int width, int height) {
+        (void)texture;
+        (void)source;
+        (void)width;
+        (void)height;
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                                                 "Resident texture upload is unavailable",
+                                                                 "graphics.updateTextureFromResidentRgba8"));
+    }
+
+    /**
      * @brief Upload one tightly packed or row-strided RGBA8 rectangle into mip level zero.
      * @param texture Borrowed texture owned by this Graphics backend.
      * @param x Destination pixel offset from the left edge.

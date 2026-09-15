@@ -81,11 +81,34 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     vk::MemoryPropertyFlags mem =
         staging ? (pfb::eHostVisible | pfb::eHostCoherent) : pfb::eDeviceLocal;
 
-    auto *b = new VulkanGpuBuffer();
+    auto b          = std::make_unique<VulkanGpuBuffer>();
     b->device_ = &device;
     b->size_ = vk::DeviceSize(byteSize);
     b->usage_ = staging ? "staging" : "storage";
     b->hostVisible_ = staging;
+
+#if defined(VKB_ENABLE_VMA)
+    if (staging && device.hasVmaAllocator()) {
+        // Readback must prefer CPU-cached memory. Host coherence alone can select
+        // uncached memory, making the CPU memcpy much slower than the GPU copy.
+        // Coherence remains required; cached memory is only a performance preference.
+        VkBufferCreateInfo info{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        info.size        = b->size_;
+        info.usage       = static_cast<VkBufferUsageFlags>(flags);
+        info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VmaAllocationCreateInfo allocation{};
+        allocation.requiredFlags    = static_cast<VkMemoryPropertyFlags>(mem);
+        allocation.preferredFlags   = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+        VkBuffer          rawBuffer = VK_NULL_HANDLE;
+        VmaAllocationInfo allocated{};
+        const VkResult    result =
+            vmaCreateBuffer(device.vma_allocator, &info, &allocation, &rawBuffer, &b->vmaAllocation_, &allocated);
+        if (result != VK_SUCCESS) throw Exception("Gpgpu.newBuffer: staging allocation failed: %d", int(result));
+        b->buffer_ = rawBuffer;
+        b->memory_ = allocated.deviceMemory;
+        return b.release();
+    }
+#endif
 
     vkb::GenericBuffer tmp(device, flags, b->size_, mem);
     b->buffer_ = tmp.buffer;
@@ -94,7 +117,7 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     b->vmaAllocation_ = tmp.vma_allocation;
 #endif
     tmp.detach();
-    return b;
+    return b.release();
 }
 
 void vulkanDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ) {

@@ -929,3 +929,16 @@ TEST_CASE("RenderSystem3D.readTextureBackPixels") {
 
     win->close();
 }
+TEST_CASE("RenderSystem3D.shadowExtraDrawerOwnerTokens") {
+    using eve::graphics::RenderSystem3D;
+    CHECK(RenderSystem3D::addShadowExtraDrawer({}) == 0);
+    const auto first  = RenderSystem3D::addShadowExtraDrawer([](auto&, const auto&, const auto&) {});
+    const auto second = RenderSystem3D::addShadowExtraDrawer([](auto&, const auto&, const auto&) {});
+    REQUIRE(first != 0);
+    REQUIRE(second != 0);
+    CHECK(first != second);
+    RenderSystem3D::removeShadowExtraDrawer(first);
+    RenderSystem3D::removeShadowExtraDrawer(first);
+    RenderSystem3D::removeShadowExtraDrawer(second);
+    RenderSystem3D::removeShadowExtraDrawer(0);
+}
