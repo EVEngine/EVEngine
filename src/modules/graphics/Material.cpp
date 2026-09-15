@@ -57,6 +57,12 @@ void Material::setShadingModel(const std::string &model) {
     if (shadingModel_ == "hair") {
         isHair_ = true;
         surfaceMode_ = SurfaceMode::Transparent;
+        blendMode_ = BlendMode::Alpha;
+        doubleSided_ = true;
+        depthWrite_ = false;
+        castShadow_ = false;
+        alphaCutoff_ = 0.15f;
+        if (sortPriority_ == 0) sortPriority_ = 10;
     }
 }
 
@@ -95,6 +101,12 @@ void Material::setHair(bool hair) {
     if (hair) {
         shadingModel_ = "hair";
         surfaceMode_ = SurfaceMode::Transparent;
+        blendMode_ = BlendMode::Alpha;
+        doubleSided_ = true;
+        depthWrite_ = false;
+        castShadow_ = false;
+        alphaCutoff_ = 0.15f;
+        if (sortPriority_ == 0) sortPriority_ = 10;
     }
 }
 

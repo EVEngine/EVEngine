@@ -45,6 +45,10 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     Texture *stable = texture;
     REQUIRE(gfx->updateTexture(texture, 1, 1, green));
     REQUIRE(texture == stable);
+    // Same-size streaming updates must retain the Vulkan image and descriptor.
+    // The former replacement path exhausted the shared descriptor pool after
+    // a few hundred frames in the volume-fluid presentation loop.
+    for (int frame = 0; frame < 400; ++frame) REQUIRE(gfx->updateTexture(texture, 1, 1, (frame & 1) ? red : green));
     REQUIRE(!gfx->updateTexture(texture, 2, 1, green));
     REQUIRE(gfx->updateTextureRegion(texture, 0, 0, 1, 1, red).ok());
     CHECK(!gfx->updateTextureRegion(texture, 1, 0, 1, 1, red).ok());

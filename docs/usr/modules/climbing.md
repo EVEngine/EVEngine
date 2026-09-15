@@ -213,3 +213,24 @@ Graphics adapter 可以选择颜色与绘制方式；`climbing` 本身不反向�
   execution 创建之前返回错误。
 - action 的 `eventMetadata` 随 started/contact/land/terminal 事件一同进入 owning 队列和
   snapshot；事件消费者不必再反查可能已热重载的 definition。
+
+
+## 已变形的根运动输入
+
+`ClimbingMotionInput::rootMotionPolicy` 默认 `ApplyActionWarp`，维持原有轨迹与
+warp 行为。动画适配层已经按接触窗口完成变形时，可选择 `PreserveSuppliedDelta`，
+并设置 `hasRootMotion`：runtime 消费本帧提供的位移，不再叠加程序轨迹或要求它
+收敛到程序轨迹终点；实际运动仍受胶囊碰撞及残差预算约束。
+
+`obstacleCollision` 默认 `Collide`。`IgnoreTraversedShape` 只对当前 advance 查询
+排除 execution 保存且经代际验证的障碍 shape，保留角色自身过滤和所有其他 shape
+的碰撞。它不修改世界过滤器或持久碰撞状态。无根运动、无效枚举或过期 shape
+在推进 tick 前失败。上述值由调用方拥有，在世界的仿真线程同步消费，不保存指针、
+不调用回调，不新增持久格式；时间来自注入的 tick/dt。
+
+Squirrel 对应入口为
+`runtime.advanceWarped(world, tick, dt, dx, dy, dz, facingX, facingZ, ignoreObstacle)`，
+返回与 `advance` 相同的结构化结果。游戏必须使用返回的实际位置，并在动作结束后
+恢复普通移动与地面检测。此入口只负责运动消费，动画窗口与骨骼约束属于适配层。
+
+`runtime.probeMode(world, feetX, feetY, feetZ, facingX, facingZ, speed, verticalSpeed, grounded)` evaluates a traversal candidate for the supplied movement state without starting execution; inspect `ok` and diagnostics before consuming `value`.

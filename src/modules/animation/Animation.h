@@ -1,5 +1,9 @@
 #pragma once
 
+#include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
+#include "animation/MotionRuntime.h"
+#include "animation/MotionTypes.h"
 #include "animation/Tween.h"
 #include "common/Module.h"
 #include "common/Time.h"
@@ -125,6 +129,23 @@ public:
      * @lifetime Valid until script GC releases it.
      */
     DynamicBoneSolver *newDynamicBoneSolver(AnimSkeleton *skeleton);
+
+    /**
+     * @brief Add a hair/tail spring chain with card-friendly defaults.
+     * @return Chain index, or -1 on failure.
+     */
+    int setupHairChain(DynamicBoneSolver *solver, const std::string &rootBone,
+                       const std::string &tipBone, float stiffness = 0.12f,
+                       float damping = 0.18f, float inertia = 0.8f, float endLength = 0.08f,
+                       bool selfCollision = true);
+
+    /**
+     * @brief Attach a head sphere collider for hair chains.
+     * @return Collider count after add, or -1 on failure.
+     */
+    int setupHairHeadCollider(DynamicBoneSolver *solver, const std::string &boneName,
+                              float radius = 0.12f);
+
     /**
      * @brief Create a paired-foot IK solver for a borrowed skeleton.
      * @ownership Returned object is owned by script GC.
@@ -208,7 +229,45 @@ public:
      */
     AnimTrail *newTrail(int capacity = 64);
 
-    /** @brief Advance all registered tweens, sprite anims, and spine anims. */
+    /**
+     * @brief LitMotion-style float motion builder (C++ fluent API).
+     * @example runtime().motion(0.f, 1.f, 0.5f).ease("outQuad").bind(sink);
+     */
+    [[nodiscard]] MotionBuilder motion(float from, float to, float duration);
+    /** @brief LitMotion-style Vec2 motion builder. */
+    [[nodiscard]] MotionVec2Builder motionVec2(MotionVec2 from, MotionVec2 to, float duration);
+    /** @brief LitMotion-style Vec3 motion builder. */
+    [[nodiscard]] MotionVec3Builder motionVec3(MotionVec3 from, MotionVec3 to, float duration);
+
+    /** @brief Create an empty LitMotion-style motion sequence on this module runtime. */
+
+    /**
+     * @brief LitMotion-style punch (damped sine about `from`, strength=`strength`).
+     * @example runtime().punch(0.f, 12.f, 0.4f).frequency(18).dampingRatio(0.f).bind(sink);
+     */
+    [[nodiscard]] MotionBuilder punch(float from, float strength, float duration);
+    /** @brief LitMotion-style shake (punch with deterministic random signs). */
+    [[nodiscard]] MotionBuilder shake(float from, float strength, float duration);
+    /** @brief Vec2 punch builder. */
+    [[nodiscard]] MotionVec2Builder punchVec2(MotionVec2 from, MotionVec2 strength, float duration);
+    /** @brief Vec2 shake builder. */
+    [[nodiscard]] MotionVec2Builder shakeVec2(MotionVec2 from, MotionVec2 strength, float duration);
+    /** @brief Vec3 punch builder. */
+    [[nodiscard]] MotionVec3Builder punchVec3(MotionVec3 from, MotionVec3 strength, float duration);
+    /** @brief Vec3 shake builder. */
+    [[nodiscard]] MotionVec3Builder shakeVec3(MotionVec3 from, MotionVec3 strength, float duration);
+    /** @brief Color tween builder (lerp). */
+    [[nodiscard]] MotionColorBuilder motionColor(MotionColor from, MotionColor to, float duration);
+    /** @brief Quaternion tween builder (slerp). */
+    [[nodiscard]] MotionQuatBuilder motionQuat(MotionQuat from, MotionQuat to, float duration);
+
+    [[nodiscard]] MotionSequence sequence();
+
+    /** @brief Shared motion storage for builders and handle queries. */
+    [[nodiscard]] MotionRuntime &motions() noexcept { return motions_; }
+    [[nodiscard]] const MotionRuntime &motions() const noexcept { return motions_; }
+
+    /** @brief Advance all registered tweens, motions, sprite anims, and spine anims. */
     [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
 
     /** @brief Last scheduler tick consumed by the checked module pump. */
@@ -218,6 +277,19 @@ public:
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
+    int getMotionCount() const { return motions_.activeCount(); }
+
+    /**
+     * @brief Pre-size motion float pool for churn-free spawn (Phase 4).
+     * @param floatCount Target number of float slots (Inactive + free-list).
+     */
+    void ensureMotionCapacity(std::size_t floatCount) { motions_.ensureCapacity(floatCount); }
+    [[nodiscard]] std::size_t getMotionFloatCapacity() const noexcept {
+        return motions_.floatCapacity();
+    }
+    [[nodiscard]] std::size_t getMotionFloatFreeCount() const noexcept {
+        return motions_.floatFreeCount();
+    }
     int getSpriteAnimCount() const { return static_cast<int>(spriteAnims_.size()); }
     int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
     int getActiveCount() const;
@@ -243,6 +315,7 @@ private:
     std::vector<Tween *>      tweens_;
     std::vector<SpriteAnim *> spriteAnims_;
     std::vector<SpineAnim *>  spineAnims_;
+    MotionRuntime             motions_;
     eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
     bool                      hasLastTick_ = false;
 };

@@ -214,6 +214,27 @@ local fall = gfx.newWaterfall();
 fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
 ```
 
+### GroomInstance 毛发 / 发片
+
+`newGroomInstance()` 创建运行时 groom 绘制体（C++ 侧完成 bake / rebuild；可失败的 Result API 仍仅限 C++）。脚本侧用 LOD、着色与只读计数器驱动绘制：
+
+- LOD / 几何：`setForcedLod` / `getForcedLod`（`-1` 恢复自动）、`setScreenSize` / `getScreenSize`、`setWidthScale` / `getWidthScale`、`setSideHint`、`getActiveLodIndex` / `getActiveRepresentation`（`0=Strands`、`1=Cards`、`2=Meshes`、`3=None`）
+- Cluster 剔除：`setClusterCullingEnabled` / `isClusterCullingEnabled`、`getClusterCount`、`getVisibleCurveCount`
+- Marschner 近似：`setMarschnerLobes(r, tt, trt)`、`getMarschnerR` / `getMarschnerTT` / `getMarschnerTRT`
+- 分析型自阴影：`setSelfShadow(strength, bias, rootAo)`、`getSelfShadowStrength` / `getSelfShadowBias` / `getRootAoStrength`
+- 只读：`getCurveCount` / `getPointCount` / `getGroupCount`、`getMesh` / `getShader` / `getTexture`、`isGuideSimulationEnabled`、`draw`
+
+默认 mid LOD 走 `HairCards` 几何；guide 仿真的 enable/update 仍为 C++-only。
+
+```squirrel
+local groom = gfx.newGroomInstance();
+groom.setScreenSize(0.4);
+groom.setForcedLod(1); // Cards
+groom.setMarschnerLobes(1.0, 0.45, 0.25);
+groom.setSelfShadow(0.35, 0.25, 0.3);
+groom.draw();
+```
+
 ### 风格化水体配置
 
 `Water.applyConfigJson(json)` 使用 `eve.graphics.stylized-water` 版本化 schema 一次性校验并应用深浅水色、波浪、泡沫、透明度、折射、反射和焦散参数；失败时保留原配置。`Water.configJson()` 返回当前配置的规范 JSON，可用于编辑器属性面板、预设保存和运行时复制。
@@ -268,7 +289,8 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
-- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
+- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
+- `GroomInstance`：`setForcedLod`、`getForcedLod`、`setScreenSize`、`getScreenSize`、`setWidthScale`、`getWidthScale`、`setSideHint`、`setClusterCullingEnabled`、`isClusterCullingEnabled`、`getActiveLodIndex`、`getActiveRepresentation`、`getClusterCount`、`getVisibleCurveCount`、`setMarschnerLobes`、`getMarschnerR`、`getMarschnerTT`、`getMarschnerTRT`、`setSelfShadow`、`getSelfShadowStrength`、`getSelfShadowBias`、`getRootAoStrength`、`getCurveCount`、`getPointCount`、`getGroupCount`、`isGuideSimulationEnabled`
 - `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`

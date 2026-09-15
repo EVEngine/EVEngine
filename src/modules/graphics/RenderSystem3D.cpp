@@ -31,7 +31,12 @@ namespace eve::graphics {
 namespace {
 
 std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
-std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
+struct ShadowExtraDrawerEntry {
+    uint64_t                          token = 0;
+    RenderSystem3D::ShadowExtraDrawer drawer;
+};
+std::vector<ShadowExtraDrawerEntry>           g_shadowDrawers;
+uint64_t                                      g_nextShadowDrawerToken = 1;
 std::vector<RenderSystem3D::DecalExtraDrawer> g_decalDrawers;
 struct CaptureExtraDrawerEntry {
     uint64_t token = 0;
@@ -417,9 +422,18 @@ void RenderSystem3D::removeCaptureExtraDrawer(uint64_t token) {
         g_captureDrawers.end());
 }
 
-void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
-    if (!drawer) return;
-    g_shadowDrawers.push_back(std::move(drawer));
+uint64_t RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
+    if (!drawer) return 0;
+    const uint64_t token = g_nextShadowDrawerToken++;
+    g_shadowDrawers.push_back(ShadowExtraDrawerEntry{token, std::move(drawer)});
+    return token;
+}
+
+void RenderSystem3D::removeShadowExtraDrawer(uint64_t token) {
+    if (token == 0) return;
+    g_shadowDrawers.erase(std::remove_if(g_shadowDrawers.begin(), g_shadowDrawers.end(),
+                                         [token](const ShadowExtraDrawerEntry& entry) { return entry.token == token; }),
+                          g_shadowDrawers.end());
 }
 
 void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
@@ -790,7 +804,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                     gfx.drawMeshShadow(item.mesh, shadowUpload.ubo.lightVP[c] * item.model);
             }
             // Extra shadow casters (billboard/card geometry not in the ECS).
-            for (const auto &drawer : g_shadowDrawers) drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
+            for (const auto& entry : g_shadowDrawers) entry.drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
             gfx.endShadowPass();
             eve::debug::rtPassEnd("ShadowPass");
         }

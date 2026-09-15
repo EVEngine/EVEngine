@@ -3844,7 +3844,8 @@ void Graphics::setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ
 void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
-                         float emissiveStrength, int blendMode) {
+                         float emissiveStrength, int blendMode, int projectionMode,
+                         float blendSharpness) {
     if (!decalPassActive) return;
     DecalDraw draw;
     draw.model = model;
@@ -3853,7 +3854,9 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     draw.params = params ? params : decalFlatParams;
     if (uvRect) draw.uvRect = glm::vec4(uvRect[0], uvRect[1], uvRect[2], uvRect[3]);
     draw.fadeParams = glm::vec4(fade, normalStrength, roughnessStrength, metalStrength);
-    draw.extraParams = glm::vec4(emissiveStrength, float(blendMode == 1), 0.f, 0.f);
+    draw.extraParams =
+        glm::vec4(emissiveStrength, float(blendMode == 1), float(projectionMode == 1),
+                  blendSharpness > 0.f ? blendSharpness : 4.f);
     decalPassDraws.push_back(draw);
 }
 

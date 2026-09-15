@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace eve::procgen {
 
@@ -91,6 +92,15 @@ public:
     float         getMaxZ() const;
 
     /**
+     * @brief Sample a continuous scalar at a world position.
+     *
+     * Heightfields return surface height (ignoring input Y). Texture masks return the
+     * underlying mask value when XZ (and Y for extrusion) are in bounds. Other kinds
+     * return 1 when @ref contains is true and @p outsideValue otherwise.
+     */
+    float sampleScalar(float x, float y, float z, float outsideValue = 0.f) const;
+
+    /**
      * @brief Deterministically sample a 3D lattice inside the domain.
      * @param spacing Distance between candidates on all axes.
      * @param seed Root seed used for stable point seeds and jitter.
@@ -122,5 +132,13 @@ private:
     std::shared_ptr<SpatialData> left_;
     std::shared_ptr<SpatialData> right_;
 };
+
+/**
+ * @brief Remap @ref SpatialData::sampleScalar onto a float channel (`$Density` or metadata).
+ * When @p inputMin equals @p inputMax, heightfields auto-use Y bounds and texture masks use 0..1.
+ */
+PointSet sampleSpatialOntoChannel(const PointSet& input, const SpatialData& spatial, std::string_view channel,
+                                  float inputMin, float inputMax, float outputMin, float outputMax, bool clampOutput,
+                                  bool invert);
 
 }  // namespace eve::procgen

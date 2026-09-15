@@ -1,12 +1,20 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "animation/AnimPoseSource.h"
 #include "common/Time.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 namespace eve::animation {
+
+/** @brief Deterministic built-in curve used by cross-fade pose interpolation. */
+enum class AnimBlendCurve : std::uint8_t {
+    Linear,
+    EaseInOut,
+};
 
 class AnimClip;
 class AnimSkeleton;
@@ -15,19 +23,25 @@ class AnimSkeleton;
  * @brief Single-clip (or cross-fading) 3D animation player.
  * Script type: `AnimPlayer`.
  */
-class AnimPlayer {
+class AnimPlayer : public IAnimPoseSource {
 public:
     explicit AnimPlayer(AnimSkeleton* skeleton);
-    ~AnimPlayer() = default;
+    ~AnimPlayer() override = default;
 
     AnimPlayer(const AnimPlayer&)            = delete;
     AnimPlayer& operator=(const AnimPlayer&) = delete;
 
-    AnimSkeleton* getSkeleton() const { return skeleton_; }
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimSkeleton* getSkeleton() const override { return skeleton_; }
 
     void play(AnimClip* clip);
     /** @brief Cross-fade to clip over blendSeconds (keeps sampling previous until done). */
     void crossFade(AnimClip* clip, float blendSeconds);
+    /** @brief Select the curve used by subsequent and active cross-fades. */
+    void setBlendCurve(AnimBlendCurve curve) noexcept { blendCurve_ = curve; }
 
     void stop();
     void pause();
@@ -46,8 +60,17 @@ public:
     bool isPlaying() const { return playing_ && clip_ != nullptr; }
     bool isPaused() const { return paused_; }
 
+    /** @brief Borrow the selected clip, or null if none is selected.
+     * The caller owns the clip and must keep it alive during playback and this borrow.
+     * Playback changes can replace the selected clip; no ownership is transferred.
+     * @thread Owner thread only, outside advance; no callbacks or reentrancy.
+     */
     AnimClip* getClip() const { return clip_; }
-    AnimPose* getPose();
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimPose* getPose() override;
     /** @brief Select the bone whose per-frame motion is extracted (default 0). */
     void  setRootMotionBone(int boneIndex);
     int   getRootMotionBone() const { return rootMotionBone_; }
@@ -65,21 +88,21 @@ public:
     float getUpdateRate() const { return updateRate_; }
 
     /** @brief Number of events crossed by the most recent play/update call. */
-    int getEventCount() const { return static_cast<int>(events_.size()); }
+    int getEventCount() const override { return static_cast<int>(events_.size()); }
     /** @brief Name of a dispatched event, or empty for invalid index. */
-    std::string getEventName(int index) const;
+    std::string getEventName(int index) const override;
     /** @brief Payload of a dispatched event, or empty for invalid index. */
-    std::string getEventPayload(int index) const;
+    std::string getEventPayload(int index) const override;
     /** @brief Clear currently dispatched events. update() also clears them at frame start. */
     void clearEvents() { events_.clear(); }
 
     /** @brief Advance playback and sample into internal pose. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step) override;
 
     /** @brief Last scheduler tick consumed by the checked playback API. */
-    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept override { return lastTick_; }
     /** @brief Whether the player has consumed at least one checked step. */
-    [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
+    [[nodiscard]] bool hasCurrentTick() const noexcept override { return hasLastTick_; }
 
     /** @brief Legacy seconds facade retained for scripts and old callers. */
     void update(float dt);
@@ -103,6 +126,7 @@ private:
     float                    blendDuration_   = 0.f;
     float                    blendElapsed_    = 0.f;
     bool                     blending_        = false;
+    AnimBlendCurve           blendCurve_      = AnimBlendCurve::Linear;
     bool                     playing_         = false;
     bool                     paused_          = false;
     bool                     hasLoopOverride_ = false;

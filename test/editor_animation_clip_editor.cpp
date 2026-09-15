@@ -1,4 +1,7 @@
 #include "animation/editor/AnimationClipEditor.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
 #include "editor/EditorWorkspace.h"
 
 #include "zeroerr/assert.h"
@@ -22,8 +25,10 @@ TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
     CHECK_EQ(workspace.getPanelContext(3), std::string("timeline"));
 
     REQUIRE(editor.setViewport(640.0f, 36.0f, 120.0f).ok());
-    CHECK_EQ(editor.trackCount(), 2);
-    CHECK(editor.keyCount() >= 4);
+    CHECK_EQ(editor.trackCount(), 6);
+    CHECK_EQ(editor.boneCount(), 6);
+    CHECK_EQ(editor.boneParent(3), std::string("Chest"));
+    CHECK(editor.keyCount() >= 12);
     CHECK_EQ(editor.eventCount(), 1);
     CHECK(editor.primitiveCount() > 0);
     CHECK_EQ(editor.preview().documentRevision, editor.revision());
@@ -56,4 +61,65 @@ TEST_CASE("editor.animation.clip_editor_pointer_selects_bone_and_rejects_invalid
     auto rejected = editor.setDuration(0.0);
     CHECK(!rejected.ok());
     CHECK_EQ(editor.duration(), 2.0);
+}
+
+TEST_CASE("editor.animation.clip_editor_keys_edits_and_deletes_joint_transform") {
+    AnimationClipEditor editor("preview.walk");
+    REQUIRE(editor.selectBone("Spine").ok());
+    REQUIRE(editor.seekSeconds(1.0).ok());
+    const int beforeKeys = editor.keyCount();
+
+    REQUIRE(editor.setSelectedPosition(1.25, 2.5, -0.5).ok());
+    CHECK(editor.hasSelectedKey());
+    CHECK_EQ(editor.keyCount(), beforeKeys + 1);
+    CHECK(std::abs(editor.selectedPositionX() - 1.25) < 0.0001);
+    CHECK(std::abs(editor.selectedPositionY() - 2.5) < 0.0001);
+    CHECK(std::abs(editor.selectedPositionZ() + 0.5) < 0.0001);
+
+    REQUIRE(editor.setSelectedRotation(15.0, 30.0, -20.0).ok());
+    CHECK(std::abs(editor.selectedRotationX() - 15.0) < 0.01);
+    CHECK(std::abs(editor.selectedRotationY() - 30.0) < 0.01);
+    CHECK(std::abs(editor.selectedRotationZ() + 20.0) < 0.01);
+    REQUIRE(editor.setSelectedScale(1.1, 1.2, 1.3).ok());
+    CHECK(std::abs(editor.selectedScaleY() - 1.2) < 0.0001);
+
+    REQUIRE(editor.moveSelectedKey(1.25).ok());
+    CHECK(std::abs(editor.selectedKeyTime() - 1.25) < 0.0001);
+    REQUIRE(editor.deleteSelectedKey().ok());
+    CHECK(!editor.hasSelectedKey());
+    CHECK_EQ(editor.keyCount(), beforeKeys);
+    REQUIRE(editor.undo().ok());
+    CHECK_EQ(editor.keyCount(), beforeKeys + 1);
+}
+
+TEST_CASE("editor.animation.clip_editor_round_trips_real_runtime_skeleton_and_clip") {
+    eve::animation::AnimSkeleton skeleton;
+    const int root = skeleton.addBone("Root");
+    const int hand = skeleton.addBone("Hand", root);
+    skeleton.setBindPosition(hand, 0.0f, 1.0f, 0.0f);
+
+    eve::animation::AnimClip clip("attack");
+    clip.setDuration(1.0f);
+    clip.setSampleRate(30.0f);
+    clip.setLoop(false);
+    clip.addPositionKey(root, 0.0f, 0.0f, 0.0f, 0.0f);
+    clip.addPositionKey(root, 1.0f, 1.0f, 0.0f, 0.0f);
+    clip.addRotationKey(hand, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    clip.addRotationKey(hand, 1.0f, 0.0f, 0.7071067f, 0.0f, 0.7071067f);
+
+    AnimationClipEditor editor("runtime.attack");
+    REQUIRE(editor.loadRuntimeClip(skeleton, clip).ok());
+    CHECK_EQ(editor.boneCount(), 2);
+    CHECK_EQ(editor.boneName(1), std::string("Hand"));
+    CHECK_EQ(editor.boneParent(1), std::string("Root"));
+    REQUIRE(editor.selectBone("Hand").ok());
+    REQUIRE(editor.seekSeconds(0.5).ok());
+    REQUIRE(editor.setSelectedPosition(0.25, 1.25, -0.5).ok());
+    REQUIRE(editor.writeRuntimeClip(clip, skeleton).ok());
+
+    eve::animation::AnimPose pose(2);
+    clip.sample(0.5f, &pose, &skeleton);
+    CHECK(std::abs(pose.getLocalPositionX(hand) - 0.25f) < 0.0001f);
+    CHECK(std::abs(pose.getLocalPositionY(hand) - 1.25f) < 0.0001f);
+    CHECK(std::abs(pose.getLocalPositionZ(hand) + 0.5f) < 0.0001f);
 }

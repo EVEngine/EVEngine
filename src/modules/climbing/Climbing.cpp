@@ -1,6 +1,7 @@
 #include "climbing/Climbing.h"
 
 #include "climbing/ClimbingCodec.h"
+#include "climbing/ClimbingRuntimeInternal.h"
 #include "climbing/ClimbingTrajectory.h"
 
 #include "animation/AnimClip.h"
@@ -16,279 +17,8 @@
 #include <utility>
 
 namespace eve::climbing {
-namespace {
+using namespace runtime_detail;
 
-constexpr float epsilon = 1e-5f;
-constexpr std::size_t maxDebugEntries = 64;
-
-class RuntimeTelemetryScope {
-public:
-    RuntimeTelemetryScope(ClimbingTelemetryBuffer& buffer, ClimbingRuntimeCounters& counters,
-                          eve::SimulationTick tick) noexcept
-        : buffer_(buffer), counters_(counters), tick_(tick), start_(std::chrono::steady_clock::now()) {}
-
-    ~RuntimeTelemetryScope() {
-        const auto elapsed = std::chrono::steady_clock::now() - start_;
-        buffer_.record({tick_, static_cast<std::uint64_t>(
-                                   std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count()),
-                        counters_});
-    }
-
-private:
-    ClimbingTelemetryBuffer&              buffer_;
-    ClimbingRuntimeCounters&              counters_;
-    eve::SimulationTick                  tick_;
-    std::chrono::steady_clock::time_point start_;
-};
-
-template <class T>
-void boundedDebugPush(std::vector<T>& values, T value) {
-    if (values.size() < maxDebugEntries) values.push_back(std::move(value));
-}
-
-template <class T>
-eve::Result<T> climbingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing"));
-}
-
-bool finite(float value) { return std::isfinite(value); }
-
-bool finite(Vec3 value) { return finite(value.x) && finite(value.y) && finite(value.z); }
-
-float lengthSquared(Vec3 value) { return value.x * value.x + value.y * value.y + value.z * value.z; }
-float length(Vec3 value) { return std::sqrt(lengthSquared(value)); }
-
-Vec3 operator+(Vec3 lhs, Vec3 rhs) { return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z}; }
-Vec3 operator-(Vec3 lhs, Vec3 rhs) { return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z}; }
-Vec3 operator*(Vec3 value, float scale) { return {value.x * scale, value.y * scale, value.z * scale}; }
-
-Vec3 normalizedHorizontal(Vec3 value) {
-    value.y            = 0.f;
-    const float length = std::sqrt(lengthSquared(value));
-    return length > epsilon ? value * (1.f / length) : Vec3{};
-}
-
-Vec3 clampMagnitude(Vec3 value, float maximum) {
-    const float magnitude = length(value);
-    return magnitude > maximum && magnitude > epsilon ? value * (maximum / magnitude) : value;
-}
-
-struct WarpChannels {
-    bool horizontal = false;
-    bool vertical   = false;
-    bool facing     = false;
-};
-
-WarpChannels activeWarpChannels(const ClimbingActionDefinition& action, float normalizedTime) {
-    if (action.warpWindows.empty()) return {true, true, true};
-    for (const ClimbingWarpWindow& window : action.warpWindows)
-        if (normalizedTime + epsilon >= window.start && normalizedTime <= window.end + epsilon)
-            return {window.horizontal, window.vertical, window.facing};
-    return {};
-}
-
-bool activeBranchWindow(const ClimbingActionDefinition& action, float normalizedTime) {
-    return std::any_of(action.branchWindows.begin(), action.branchWindows.end(), [&](const auto& window) {
-        return normalizedTime + epsilon >= window.start && normalizedTime <= window.end + epsilon;
-    });
-}
-
-const std::string* activeBranchComboTag(const ClimbingActionDefinition& action, float normalizedTime) {
-    const auto found = std::find_if(action.branchWindows.begin(), action.branchWindows.end(),
-                                    [&](const auto& window) {
-                                        return normalizedTime + epsilon >= window.start &&
-                                               normalizedTime <= window.end + epsilon;
-                                    });
-    return found == action.branchWindows.end() ? nullptr : &found->comboTag;
-}
-
-float activeContactWeight(const ClimbingActionDefinition& action, ClimbingContactTarget target,
-                          float normalizedTime) {
-    float weight = 0.f;
-    for (const ClimbingContactConstraint& constraint : action.contactConstraints) {
-        if (constraint.target == target && normalizedTime + epsilon >= constraint.start &&
-            normalizedTime <= constraint.end + epsilon)
-            weight = std::max(weight, constraint.maxWeight);
-    }
-    return weight;
-}
-
-Vec3 terminalVelocityFor(const ClimbingActionDefinition& action, Vec3 actualDelta, float inverseDelta) {
-    Vec3 velocity = actualDelta * inverseDelta;
-    switch (action.landingPolicy) {
-        case ClimbingLandingPolicy::PreserveMomentum: break;
-        case ClimbingLandingPolicy::MatchGround: velocity.y = 0.f; break;
-        case ClimbingLandingPolicy::Stop: velocity = {}; break;
-    }
-    switch (action.terminalVelocityPolicy) {
-        case ClimbingTerminalVelocityPolicy::Preserve: break;
-        case ClimbingTerminalVelocityPolicy::ClampDownward: velocity.y = std::min(velocity.y, 0.f); break;
-        case ClimbingTerminalVelocityPolicy::Zero: velocity.y = 0.f; break;
-    }
-    return velocity;
-}
-
-float finalWarpWindowEnd(const ClimbingActionDefinition& action) {
-    return action.warpWindows.empty() ? 1.f : action.warpWindows.back().end;
-}
-
-float signedHorizontalAngle(Vec3 from, Vec3 to) {
-    from = normalizedHorizontal(from);
-    to   = normalizedHorizontal(to);
-    if (lengthSquared(from) <= epsilon || lengthSquared(to) <= epsilon) return 0.f;
-    const float crossY = from.z * to.x - from.x * to.z;
-    const float dot    = std::clamp(from.x * to.x + from.z * to.z, -1.f, 1.f);
-    return std::atan2(crossY, dot);
-}
-
-bool isActivePhase(ClimbingPhase phase) {
-    return phase != ClimbingPhase::Idle && phase != ClimbingPhase::Completed && phase != ClimbingPhase::Cancelled &&
-           phase != ClimbingPhase::Failed;
-}
-
-bool isRuntimeProbeKind(ClimbingActionKind kind) {
-    return kind == ClimbingActionKind::Vault || kind == ClimbingActionKind::Mantle ||
-           kind == ClimbingActionKind::LedgeGrab || kind == ClimbingActionKind::ClimbUp ||
-           kind == ClimbingActionKind::WallRun || kind == ClimbingActionKind::Slide;
-}
-
-bool isObstacleProbeKind(ClimbingActionKind kind) {
-    return kind == ClimbingActionKind::Vault || kind == ClimbingActionKind::Mantle ||
-           kind == ClimbingActionKind::LedgeGrab || kind == ClimbingActionKind::ClimbUp;
-}
-
-bool endsAtAnchorHang(ClimbingActionKind kind) {
-    return kind == ClimbingActionKind::LedgeGrab || kind == ClimbingActionKind::Shimmy ||
-           kind == ClimbingActionKind::CornerInner || kind == ClimbingActionKind::CornerOuter ||
-           kind == ClimbingActionKind::LedgeJump || kind == ClimbingActionKind::ClimbDown ||
-           kind == ClimbingActionKind::LadderMount || kind == ClimbingActionKind::LadderClimb ||
-           kind == ClimbingActionKind::BeamBalance || kind == ClimbingActionKind::PoleSwing ||
-           kind == ClimbingActionKind::BarSwing;
-}
-
-std::int64_t quantizeMillimeters(float value) {
-    const double scaled = std::round(static_cast<double>(value) * 1000.0);
-    return static_cast<std::int64_t>(std::clamp(scaled, static_cast<double>(std::numeric_limits<std::int32_t>::min()),
-                                                static_cast<double>(std::numeric_limits<std::int32_t>::max())));
-}
-
-const ClimbingActionDefinition* findAction(const ClimbingProfile& profile, std::string_view id) {
-    const auto found = std::find_if(profile.actions.begin(), profile.actions.end(),
-                                    [id](const auto& action) { return action.id == id; });
-    return found == profile.actions.end() ? nullptr : &*found;
-}
-
-bool candidateLess(const ClimbingCandidate& lhs, const ClimbingCandidate& rhs) {
-    if (lhs.score != rhs.score) return lhs.score < rhs.score;
-    if (lhs.actionId != rhs.actionId) return lhs.actionId < rhs.actionId;
-    if (lhs.obstacleBodyId != rhs.obstacleBodyId) return lhs.obstacleBodyId < rhs.obstacleBodyId;
-    return lhs.obstacleShapeId < rhs.obstacleShapeId;
-}
-
-bool containsAnyTag(const std::vector<std::string>& actionTags, const std::vector<std::string>& policyTags) {
-    return std::any_of(actionTags.begin(), actionTags.end(), [&](const std::string& tag) {
-        return std::find(policyTags.begin(), policyTags.end(), tag) != policyTags.end();
-    });
-}
-
-bool actionEnabledForPose(const ClimbingProfile& profile, const ClimbingActionDefinition& action,
-                          const ClimbingPose& pose) {
-    if (!profile.defaultActionIds.empty() &&
-        std::find(profile.defaultActionIds.begin(), profile.defaultActionIds.end(), action.id) ==
-            profile.defaultActionIds.end())
-        return false;
-    if (!profile.allowedActionTags.empty() && !containsAnyTag(action.tags, profile.allowedActionTags)) return false;
-    if (containsAnyTag(action.tags, profile.deniedActionTags)) return false;
-    const auto required = pose.grounded ? ClimbingSourceMode::Grounded : ClimbingSourceMode::Airborne;
-    return (static_cast<std::uint8_t>(action.sourceModes) & static_cast<std::uint8_t>(required)) != 0;
-}
-
-bool probeRecipeMatchesKind(const ClimbingActionDefinition& action) {
-    switch (action.probeRecipe) {
-        case ClimbingProbeRecipe::Automatic: return true;
-        case ClimbingProbeRecipe::Obstacle:
-            return action.kind == ClimbingActionKind::Vault || action.kind == ClimbingActionKind::Mantle;
-        case ClimbingProbeRecipe::Ledge:
-            return action.kind == ClimbingActionKind::LedgeGrab || action.kind == ClimbingActionKind::ClimbUp;
-        case ClimbingProbeRecipe::Wall: return action.kind == ClimbingActionKind::WallRun;
-        case ClimbingProbeRecipe::Ground: return action.kind == ClimbingActionKind::Slide;
-        case ClimbingProbeRecipe::AnchorGraph: return !isRuntimeProbeKind(action.kind);
-    }
-    return false;
-}
-
-bool parseTagSelector(std::string_view selector, std::string_view prefix, int& value) {
-    if (!selector.starts_with(prefix)) return false;
-    const std::string_view digits = selector.substr(prefix.size());
-    if (digits.empty()) return false;
-    const char* begin = digits.data();
-    const char* end = begin + digits.size();
-    const auto parsed = std::from_chars(begin, end, value);
-    return parsed.ec == std::errc{} && parsed.ptr == end;
-}
-
-bool supportSelectorsMatch(const ClimbingActionDefinition& action, int shapeTag, int materialId) {
-    for (const std::string& selector : action.requiredSupportTags) {
-        int expected = 0;
-        if (parseTagSelector(selector, "shape:", expected)) {
-            if (shapeTag != expected) return false;
-        } else if (parseTagSelector(selector, "material:", expected)) {
-            if (materialId != expected) return false;
-        } else {
-            return false;
-        }
-    }
-    return true;
-}
-
-std::int64_t weightedMillimeters(float value, std::int32_t weight) {
-    return quantizeMillimeters(value) * static_cast<std::int64_t>(weight);
-}
-
-std::int64_t selectionCost(const ClimbingProfile& profile, const ClimbingActionDefinition& action,
-                           const ClimbingPose& pose, Vec3 targetDirection, Vec3 targetDelta,
-                           float heightError, float distance, std::int64_t stableTieBreak = 0) {
-    const Vec3 forward = normalizedHorizontal(pose.forward);
-    targetDirection    = normalizedHorizontal(targetDirection);
-    if (lengthSquared(targetDirection) <= epsilon) targetDirection = forward;
-
-    Vec3 intentDirection = normalizedHorizontal(pose.inputMode == ClimbingInputMode::Precision
-                                                    ? pose.lookIntent
-                                                    : pose.moveIntent);
-    if (lengthSquared(intentDirection) <= epsilon) intentDirection = forward;
-
-    const float directionDot = std::clamp(forward.x * targetDirection.x + forward.z * targetDirection.z,
-                                          -1.f, 1.f);
-    const float intentDot = std::clamp(intentDirection.x * targetDirection.x +
-                                           intentDirection.z * targetDirection.z,
-                                       -1.f, 1.f);
-    const bool precision = pose.inputMode == ClimbingInputMode::Precision;
-    const float assistScale = 1.f - profile.autoAssistStrength * (precision ? 0.15f : 0.5f);
-    const float directionModeScale = precision ? 1.5f : 0.75f;
-    const float speedModeScale = precision ? 0.5f : 1.5f;
-    const float translationModeScale = precision ? 1.25f : 0.75f;
-    const float rotationModeScale = precision ? 1.5f : 0.75f;
-    const float intentModeScale = precision ? 1.5f : 0.5f;
-    const float horizontalDelta = std::sqrt(targetDelta.x * targetDelta.x + targetDelta.z * targetDelta.z);
-    const float warpTranslation = std::sqrt(horizontalDelta * horizontalDelta + targetDelta.y * targetDelta.y);
-    const float warpRotation = std::acos(directionDot);
-    const float intentMismatch = 1.f - intentDot;
-
-    return static_cast<std::int64_t>(action.selectionBias) * 1000000ll +
-           weightedMillimeters((1.f - directionDot) * assistScale * directionModeScale,
-                               profile.scoreWeights.direction) +
-           weightedMillimeters(std::fabs(pose.speed - action.minSpeed) * speedModeScale,
-                               profile.scoreWeights.approachSpeed) +
-           weightedMillimeters(heightError, profile.scoreWeights.height) +
-           weightedMillimeters(distance, profile.scoreWeights.distance) +
-           weightedMillimeters(warpTranslation * translationModeScale,
-                               profile.scoreWeights.warpTranslation) +
-           weightedMillimeters(warpRotation * rotationModeScale, profile.scoreWeights.warpRotation) +
-           weightedMillimeters(intentMismatch * intentModeScale, profile.scoreWeights.intentMismatch) +
-           stableTieBreak;
-}
-
-}  // namespace
 
 void ClimbingCandidateSet::consider(ClimbingCandidate candidate) {
     std::string actionId;
@@ -311,7 +41,7 @@ void ClimbingCandidateSet::considerWithActionId(ClimbingCandidate candidate, std
         store(values_[size_++]);
         return;
     }
-    auto worst = std::max_element(values_.begin(), values_.end(), candidateLess);
+    auto       worst  = std::max_element(values_.begin(), values_.end(), isCandidateLess);
     const bool better = candidate.score != worst->score
                             ? candidate.score < worst->score
                             : actionId != worst->actionId
@@ -323,7 +53,7 @@ void ClimbingCandidateSet::considerWithActionId(ClimbingCandidate candidate, std
 }
 
 void ClimbingCandidateSet::sortAndLimit(std::size_t limit) {
-    std::sort(values_.begin(), values_.begin() + static_cast<std::ptrdiff_t>(size_), candidateLess);
+    std::sort(values_.begin(), values_.begin() + static_cast<std::ptrdiff_t>(size_), isCandidateLess);
     size_ = std::min(size_, std::min(limit, Capacity));
 }
 
@@ -453,8 +183,8 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
     if (!world.isValid())
         return climbingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                      "physics world is no longer valid", "world");
-    if (!finite(pose.feet) || !finite(pose.forward) || !finite(pose.speed) || pose.speed < 0.f ||
-        !finite(pose.verticalSpeed) || !finite(pose.moveIntent) || !finite(pose.lookIntent))
+    if (!isFinite(pose.feet) || !isFinite(pose.forward) || !isFinite(pose.speed) || pose.speed < 0.f ||
+        !isFinite(pose.verticalSpeed) || !isFinite(pose.moveIntent) || !isFinite(pose.lookIntent))
         return climbingFailure<void>(
             eve::DiagnosticCode::InvalidArgument, "pose values must be finite and speed non-negative", "pose");
     const Vec3 forward = normalizedHorizontal(pose.forward);
@@ -518,8 +248,8 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
     };
 
     const bool hasSlide = std::any_of(profile_.actions.begin(), profile_.actions.end(), [&](const auto& action) {
-        return action.kind == ClimbingActionKind::Slide && actionEnabledForPose(profile_, action, pose) &&
-               probeRecipeMatchesKind(action);
+        return action.kind == ClimbingActionKind::Slide && isActionEnabledForPose(profile_, action, pose) &&
+               isProbeRecipeMatchingKind(action);
     });
     if (hasSlide && pose.grounded) {
         const Vec3 groundStart{pose.feet.x, pose.feet.y + 0.25f, pose.feet.z};
@@ -534,8 +264,8 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
                                                                     groundStart, groundEnd});
         if (ground.hit && broadPhaseContains(ground.shape) && ground.normalY >= profile_.minTopNormalY) {
             for (const auto& action : profile_.actions) {
-                if (action.kind != ClimbingActionKind::Slide || !actionEnabledForPose(profile_, action, pose) ||
-                    !probeRecipeMatchesKind(action))
+                if (action.kind != ClimbingActionKind::Slide || !isActionEnabledForPose(profile_, action, pose) ||
+                    !isProbeRecipeMatchingKind(action))
                     continue;
                 if (pose.speed + epsilon < action.minSpeed) {
                     rejectCandidate();
@@ -543,7 +273,7 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
                         boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "below_min_speed"});
                     continue;
                 }
-                if (!supportSelectorsMatch(action, ground.shapeTag, ground.materialId)) {
+                if (!isSupportSelectorMatch(action, ground.shapeTag, ground.materialId)) {
                     rejectCandidate();
                     if (debugCapture_ == ClimbingDebugCapture::Enabled)
                         boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "support_tag_rejected"});
@@ -597,8 +327,8 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
     }
 
     const bool hasWallRun = std::any_of(profile_.actions.begin(), profile_.actions.end(), [&](const auto& action) {
-        return action.kind == ClimbingActionKind::WallRun && actionEnabledForPose(profile_, action, pose) &&
-               probeRecipeMatchesKind(action);
+        return action.kind == ClimbingActionKind::WallRun && isActionEnabledForPose(profile_, action, pose) &&
+               isProbeRecipeMatchingKind(action);
     });
     if (hasWallRun) {
         const Vec3 chest{pose.feet.x, pose.feet.y + profile_.capsuleHeight * 0.55f, pose.feet.z};
@@ -619,10 +349,10 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
             Vec3 tangent{normal.z, 0.f, -normal.x};
             if (tangent.x * forward.x + tangent.z * forward.z < 0.f) tangent = tangent * -1.f;
             for (const auto& action : profile_.actions) {
-                if (action.kind != ClimbingActionKind::WallRun || !actionEnabledForPose(profile_, action, pose) ||
-                    !probeRecipeMatchesKind(action) || pose.speed + epsilon < action.minSpeed)
+                if (action.kind != ClimbingActionKind::WallRun || !isActionEnabledForPose(profile_, action, pose) ||
+                    !isProbeRecipeMatchingKind(action) || pose.speed + epsilon < action.minSpeed)
                     continue;
-                if (!supportSelectorsMatch(action, hit.shapeTag, hit.materialId)) {
+                if (!isSupportSelectorMatch(action, hit.shapeTag, hit.materialId)) {
                     rejectCandidate();
                     continue;
                 }
@@ -676,10 +406,11 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
         }
     }
 
-    const bool hasObstacleProbe = std::any_of(profile_.actions.begin(), profile_.actions.end(), [&](const auto& action) {
-        return isObstacleProbeKind(action.kind) && actionEnabledForPose(profile_, action, pose) &&
-               probeRecipeMatchesKind(action);
-    });
+    const bool hasObstacleProbe =
+        std::any_of(profile_.actions.begin(), profile_.actions.end(), [&](const auto& action) {
+            return isObstacleProbeKind(action.kind) && isActionEnabledForPose(profile_, action, pose) &&
+                   isProbeRecipeMatchingKind(action);
+        });
     if (!hasObstacleProbe) return finalizeCandidates();
     // A single chest-height ray skips low vault obstacles entirely. The obstacle recipe starts just above the
     // capsule's lower hemisphere so it can see every valid obstacle above the profile's physical skin; top and
@@ -723,8 +454,8 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
     float depthProbeDistance = 0.f;
     bool needsDepthEvidence = false;
     for (const ClimbingActionDefinition& action : profile_.actions) {
-        if (!isObstacleProbeKind(action.kind) || !actionEnabledForPose(profile_, action, pose) ||
-            !probeRecipeMatchesKind(action))
+        if (!isObstacleProbeKind(action.kind) || !isActionEnabledForPose(profile_, action, pose) ||
+            !isProbeRecipeMatchingKind(action))
             continue;
         if (action.minDepth > baseDepth + epsilon || action.maxDepth < 999.f || action.maxCurvature < 999.f) {
             needsDepthEvidence = true;
@@ -760,13 +491,13 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
     }
 
     for (const ClimbingActionDefinition& action : profile_.actions) {
-        if (!actionEnabledForPose(profile_, action, pose)) {
+        if (!isActionEnabledForPose(profile_, action, pose)) {
             rejectCandidate();
             if (debugCapture_ == ClimbingDebugCapture::Enabled)
                 boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "definition_policy_rejected"});
             continue;
         }
-        if (!probeRecipeMatchesKind(action)) {
+        if (!isProbeRecipeMatchingKind(action)) {
             rejectCandidate();
             if (debugCapture_ == ClimbingDebugCapture::Enabled)
                 boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "probe_recipe_rejected"});
@@ -787,7 +518,7 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
         }
         if (measuredDepth + epsilon < action.minDepth || measuredDepth - epsilon > action.maxDepth ||
             topSlope - epsilon > action.maxSlopeRadians || measuredCurvature - epsilon > action.maxCurvature ||
-            !supportSelectorsMatch(action, top.shapeTag, top.materialId)) {
+            !isSupportSelectorMatch(action, top.shapeTag, top.materialId)) {
             rejectCandidate();
             if (debugCapture_ == ClimbingDebugCapture::Enabled)
                 boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "support_geometry_rejected"});
@@ -910,464 +641,6 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
         candidates.considerWithActionId(std::move(candidate), action.id);
     }
     return finalizeCandidates();
-}
-
-eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, eve::SimulationStep step) {
-    return advance(world, step, {});
-}
-
-eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, eve::SimulationStep step,
-                                                      const ClimbingMotionInput& motion) {
-    lastQueryCount_ = 0;
-    lastCounters_ = {};
-    lastCounters_.workload = ClimbingWorkload::Active;
-    lastCounters_.queryBudget = ClimbingQueryBudgets::Active;
-    RuntimeTelemetryScope telemetryScope(telemetry_, lastCounters_, step.tick);
-    if (!isActivePhase(phase_) || !execution_)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::PreconditionViolation,
-                                                "no climbing execution is active", "runtime.phase");
-    Execution& execution = *execution_;
-    lastCounters_.selectedCost = execution.candidate.score;
-    if (world.runtimeHandle() != execution.candidate.world)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle,
-                                                "execution belongs to another or stale physics world", "world");
-    if (step.tick <= execution.lastTick)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::Conflict,
-                                                "simulation tick must increase exactly once per update", "step.tick");
-    if (step.delta.nanoseconds() <= 0)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::InvalidArgument,
-                                                "simulation delta must be positive", "step.delta");
-    if (!finite(motion.rootTranslation) || !finite(motion.facing) || !finite(motion.pelvisOffset) ||
-        !finite(motion.rootYawRadians) || length(motion.pelvisOffset) > profile_.maxPelvisDeviation + epsilon)
-        return climbingFailure<ClimbingAdvance>(
-            eve::DiagnosticCode::InvalidArgument,
-            "authored motion must be finite and pelvis deviation must remain inside the profile limit", "motion");
-    auto eventCapacity = requireEventCapacity(4, step.tick);
-    if (!eventCapacity) return eve::Result<ClimbingAdvance>::failure(eventCapacity.status());
-
-    const bool graphBound = execution.anchorGraph.isValid() && !execution.anchorReservation.id.isZero();
-    float graphPointSpeed = -1.f;
-    if (graphBound) {
-        auto graph = Climbing::resolveAnchorGraph(execution.anchorGraph);
-        auto resolved = graph.isBound()
-                            ? graph->resolveNodeKinematics(world, execution.anchorNode)
-                            : climbingFailure<ResolvedClimbingAnchorNode>(
-                                  eve::DiagnosticCode::StaleHandle, "anchor graph instance handle is stale",
-                                  "execution.anchorGraph");
-        auto reservation = graph.isBound()
-                               ? graph->validateReservation(execution.anchorReservation)
-                               : climbingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                       "anchor graph instance handle is stale",
-                                                       "execution.anchorGraph");
-        if (!resolved || !reservation) {
-            enqueueEvent(
-                {ClimbingEventKind::Cancelled, execution.candidate.actionId, step.tick, execution.executionId});
-            phase_ = ClimbingPhase::Cancelled;
-            terminalCode_ = "climbing.anchor.stale";
-            if (graph.isBound() && reservation) {
-                auto released = graph->release(execution.anchorReservation);
-                released.ignore("stale graph anchor resolution releases live occupancy");
-            }
-            execution_.reset();
-            return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle,
-                                                    "graph anchor or occupancy reservation is stale",
-                                                    "execution.anchor");
-        }
-        execution.candidate.obstacleBody = resolved.value().body;
-        execution.candidate.topPoint = resolved.value().position;
-        execution.candidate.frontPoint = resolved.value().position;
-        execution.candidate.surfaceNormal = resolved.value().normal;
-        execution.candidate.surfaceTangent = resolved.value().tangent;
-        execution.candidate.leftHandAnchor = resolved.value().leftHandSocket;
-        execution.candidate.rightHandAnchor = resolved.value().rightHandSocket;
-        if (execution.action.kind == ClimbingActionKind::LadderDismount ||
-            execution.action.kind == ClimbingActionKind::BeamBalance) {
-            execution.candidate.landingFeet = resolved.value().position;
-        } else {
-            execution.candidate.landingFeet =
-                resolved.value().position +
-                resolved.value().normal *
-                    (profile_.capsuleRadius + profile_.skin + execution.action.hangBodyOffset);
-            execution.candidate.landingFeet.y =
-                resolved.value().position.y - execution.action.hangFeetBelowLedge;
-        }
-        graphPointSpeed = length(resolved.value().pointVelocity);
-    }
-
-    physics::Body3D* obstacle = world.findBody(execution.candidate.obstacleBody);
-    if (!obstacle) {
-        enqueueEvent({ClimbingEventKind::Cancelled, execution.candidate.actionId, step.tick, execution.executionId});
-        phase_        = ClimbingPhase::Cancelled;
-        terminalCode_ = "climbing.anchor.stale";
-        if (graphBound) {
-            auto released = releaseAnchorReservation();
-            released.ignore("destroyed anchor body releases graph occupancy");
-        }
-        execution_.reset();
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle, "climbing target handle is stale",
-                                                "execution.candidate.obstacleBody");
-    }
-    const float platformSpeed = graphPointSpeed >= 0.f
-                                    ? graphPointSpeed
-                                    : std::sqrt(obstacle->getLinearVelocityX() * obstacle->getLinearVelocityX() +
-                                                obstacle->getLinearVelocityY() * obstacle->getLinearVelocityY() +
-                                                obstacle->getLinearVelocityZ() * obstacle->getLinearVelocityZ());
-    if (platformSpeed > profile_.maxPlatformSpeed + epsilon) {
-        enqueueEvent({ClimbingEventKind::Cancelled, execution.candidate.actionId, step.tick, execution.executionId});
-        phase_        = ClimbingPhase::Cancelled;
-        terminalCode_ = "climbing.anchor.platform_speed";
-        if (graphBound) {
-            auto released = releaseAnchorReservation();
-            released.ignore("unsafe anchor platform speed releases graph occupancy");
-        }
-        execution_.reset();
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::PreconditionViolation,
-                                                "climbing target exceeded the platform speed limit",
-                                                "execution.candidate.obstacleBody");
-    }
-    if (!graphBound) {
-        auto worldTop = obstacle->localToWorldPointOwned(execution.candidate.bodyLocalTop.x,
-                                                         execution.candidate.bodyLocalTop.y,
-                                                         execution.candidate.bodyLocalTop.z);
-        if (!worldTop) return eve::Result<ClimbingAdvance>::failure(worldTop.status());
-        auto worldLanding = obstacle->localToWorldPointOwned(
-            execution.candidate.bodyLocalLanding.x, execution.candidate.bodyLocalLanding.y,
-            execution.candidate.bodyLocalLanding.z);
-        if (!worldLanding) return eve::Result<ClimbingAdvance>::failure(worldLanding.status());
-        execution.candidate.topPoint = {worldTop.value().x, worldTop.value().y, worldTop.value().z};
-        if (execution.candidate.kind == ClimbingActionKind::ClimbUp) {
-            execution.candidate.landingFeet =
-                execution.candidate.topPoint - execution.candidate.surfaceNormal * execution.action.landingForward;
-        } else {
-            execution.candidate.landingFeet = {worldLanding.value().x, worldLanding.value().y,
-                                                worldLanding.value().z};
-        }
-        execution.candidate.leftHandAnchor =
-            execution.candidate.topPoint - execution.candidate.surfaceTangent * (execution.action.handSpacing * 0.5f);
-        execution.candidate.rightHandAnchor =
-            execution.candidate.topPoint + execution.candidate.surfaceTangent * (execution.action.handSpacing * 0.5f);
-    }
-
-    physics::QueryFilter3D filter = profile_.queryFilter;
-    filter.ignoredBodyId          = execution.candidate.ignoredBodyId;
-    if (phase_ == ClimbingPhase::Hanging || phase_ == ClimbingPhase::Balanced ||
-        phase_ == ClimbingPhase::Swinging) {
-        const float lowerY = execution.currentFeet.y + profile_.capsuleRadius + profile_.skin;
-        const float upperY = execution.currentFeet.y + profile_.capsuleHeight - profile_.capsuleRadius + profile_.skin;
-        auto        overlap =
-            world.queryCapsuleOwned(execution.currentFeet.x, lowerY, execution.currentFeet.z, execution.currentFeet.x,
-                                    upperY, execution.currentFeet.z, profile_.capsuleRadius, filter);
-        if (!overlap) return eve::Result<ClimbingAdvance>::failure(overlap.status());
-        ++lastQueryCount_;
-        lastCounters_.queryCount = lastQueryCount_;
-        if (overlap.value().bodyCount != 0) {
-            enqueueEvent({ClimbingEventKind::Failed, execution.candidate.actionId, step.tick, execution.executionId});
-            phase_        = ClimbingPhase::Failed;
-            terminalCode_ = "climbing.candidate.clearance_blocked";
-            if (graphBound) {
-                auto released = releaseAnchorReservation();
-                released.ignore("blocked hanging clearance releases graph occupancy");
-            }
-            execution_.reset();
-            return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::PreconditionViolation,
-                                                    "hanging capsule clearance became blocked", "execution.clearance");
-        }
-        execution.lastTick = step.tick;
-        ClimbingAdvance output{phase_,
-                               execution.candidate.actionId,
-                               execution.currentFeet,
-                               {},
-                               {},
-                               {},
-                               1.f,
-                               false,
-                               false,
-                               execution.candidate.support};
-        output.leftHandAnchor  = execution.candidate.leftHandAnchor;
-        output.rightHandAnchor = execution.candidate.rightHandAnchor;
-        const bool handHold = phase_ != ClimbingPhase::Balanced;
-        const bool authoredContacts = !execution.action.contactConstraints.empty();
-        output.leftHandWeight = authoredContacts
-                                    ? activeContactWeight(execution.action, ClimbingContactTarget::LeftHand, 1.f)
-                                    : (handHold ? 1.f : 0.f);
-        output.rightHandWeight = authoredContacts
-                                     ? activeContactWeight(execution.action, ClimbingContactTarget::RightHand, 1.f)
-                                     : (handHold ? 1.f : 0.f);
-        output.leftFootWeight = activeContactWeight(execution.action, ClimbingContactTarget::LeftFoot, 1.f);
-        output.rightFootWeight = activeContactWeight(execution.action, ClimbingContactTarget::RightFoot, 1.f);
-        output.pelvisWeight = activeContactWeight(execution.action, ClimbingContactTarget::Pelvis, 1.f);
-        output.contactWeight = std::max({output.leftHandWeight, output.rightHandWeight, output.leftFootWeight,
-                                         output.rightFootWeight, output.pelvisWeight});
-        output.executionId     = execution.executionId;
-        output.compactCollisionActive = execution.compactCollisionActive;
-        output.branchWindowOpen       = execution.branchWindowOpen;
-        output.cameraCueProfile       = profile_.cameraCueProfile;
-        output.cameraCue              = execution.action.cameraCue;
-        output.animationClipId        = execution.action.animation.clipId;
-        output.animationGraphNodeId   = execution.action.animation.graphNodeId;
-        output.animationMirrored      = execution.action.animation.mirrored;
-        return eve::Result<ClimbingAdvance>::success(std::move(output));
-    }
-
-    if (phase_ == ClimbingPhase::Dropping) {
-        const float dt = static_cast<float>(step.delta.seconds());
-        execution.velocity.x += world.getGravityX() * dt;
-        execution.velocity.y += world.getGravityY() * dt;
-        execution.velocity.z += world.getGravityZ() * dt;
-        const Vec3  desired = execution.velocity * dt;
-        const float lowerY  = execution.currentFeet.y + profile_.capsuleRadius;
-        const float upperY  = execution.currentFeet.y + profile_.capsuleHeight - profile_.capsuleRadius;
-        auto        moved   = world.moveCapsuleOwned(execution.currentFeet.x, lowerY, execution.currentFeet.z,
-                                                     execution.currentFeet.x, upperY, execution.currentFeet.z,
-                                                     profile_.capsuleRadius, desired.x, desired.y, desired.z, filter);
-        if (!moved) return eve::Result<ClimbingAdvance>::failure(moved.status());
-        ++lastQueryCount_;
-        lastCounters_.queryCount = lastQueryCount_;
-        const physics::CapsuleMove3D movement = std::move(moved).takeValue();
-        lastCounters_.moverIterations = static_cast<std::uint32_t>(std::max(0, movement.iterations));
-        const Vec3                   actual{movement.deltaX, movement.deltaY, movement.deltaZ};
-        lastCounters_.warpResidual = desired - actual;
-        execution.currentFeet = execution.currentFeet + actual;
-        execution.lastTick    = step.tick;
-        ClimbingAdvance output{ClimbingPhase::Dropping,
-                               execution.candidate.actionId,
-                               execution.currentFeet,
-                               desired,
-                               actual,
-                               desired - actual,
-                               1.f,
-                               movement.constrained,
-                               movement.grounded,
-                               HangSupport::None};
-        output.executionId = execution.executionId;
-        output.cameraCueProfile = profile_.cameraCueProfile;
-        output.cameraCue        = execution.action.cameraCue;
-        output.animationClipId = execution.action.animation.clipId;
-        output.animationGraphNodeId = execution.action.animation.graphNodeId;
-        output.animationMirrored = execution.action.animation.mirrored;
-        if (movement.grounded) {
-            phase_        = ClimbingPhase::Completed;
-            terminalCode_ = "climbing.completed";
-            output.phase  = phase_;
-            enqueueEvent({ClimbingEventKind::Landed, output.actionId, step.tick, execution.executionId});
-            enqueueEvent({ClimbingEventKind::Completed, output.actionId, step.tick, execution.executionId});
-            output.terminalVelocity = terminalVelocityFor(execution.action, actual, 1.f / dt);
-            output.hasTerminalVelocity = true;
-            execution_.reset();
-        }
-        return eve::Result<ClimbingAdvance>::success(std::move(output));
-    }
-
-    auto       elapsed  = execution.elapsed.tryAdd(step.delta);
-    if (!elapsed) return eve::Result<ClimbingAdvance>::failure(elapsed.status());
-    execution.elapsed            = std::move(elapsed).takeValue();
-    execution.lastTick           = step.tick;
-    const double durationSeconds = execution.duration.seconds();
-    const float  t       = static_cast<float>(std::clamp(execution.elapsed.seconds() / durationSeconds, 0.0, 1.0));
-    const Vec3 planned =
-        detail::trajectoryPoint(execution.startFeet, execution.candidate, execution.action, profile_, t);
-    const Vec3 proceduralDelta = planned - execution.currentFeet;
-    Vec3       baseDelta       = proceduralDelta;
-    if (motion.hasRootMotion) {
-        const float authoredLength = length(motion.rootTranslation);
-        const float targetLength   = length(proceduralDelta);
-        const float scale = authoredLength > epsilon
-                                ? std::clamp(targetLength / authoredLength, execution.action.rootMotionScaleMin,
-                                             execution.action.rootMotionScaleMax)
-                                : execution.action.rootMotionScaleMin;
-        baseDelta         = motion.rootTranslation * scale;
-    }
-
-    const WarpChannels channels  = activeWarpChannels(execution.action, t);
-    const Vec3         warpError = planned - (execution.currentFeet + baseDelta);
-    Vec3               appliedWarp;
-    if (channels.horizontal) {
-        Vec3        horizontal{warpError.x, 0.f, warpError.z};
-        const float remaining = std::max(0.f, execution.action.horizontalWarpBudget - execution.horizontalWarpUsed);
-        horizontal    = clampMagnitude(horizontal, std::min(execution.action.maxTranslationWarpPerTick, remaining));
-        appliedWarp.x = horizontal.x;
-        appliedWarp.z = horizontal.z;
-    }
-    if (channels.vertical) {
-        const float remaining = std::max(0.f, execution.action.verticalWarpBudget - execution.verticalWarpUsed);
-        appliedWarp.y = std::clamp(warpError.y, -std::min(execution.action.maxTranslationWarpPerTick, remaining),
-                                   std::min(execution.action.maxTranslationWarpPerTick, remaining));
-    }
-    const float remainingTotalWarp =
-        std::max(0.f, profile_.maxTotalWarpBudget - execution.horizontalWarpUsed - execution.verticalWarpUsed);
-    appliedWarp = clampMagnitude(appliedWarp, std::min(execution.action.maxTranslationWarpPerTick, remainingTotalWarp));
-    execution.horizontalWarpUsed += length({appliedWarp.x, 0.f, appliedWarp.z});
-    execution.verticalWarpUsed += std::fabs(appliedWarp.y);
-    const Vec3 desired = baseDelta + appliedWarp;
-
-    float desiredYawDelta = motion.rootYawRadians;
-    if (channels.facing) {
-        const Vec3  targetFacing = execution.candidate.surfaceNormal * -1.f;
-        const float yawError     = signedHorizontalAngle(motion.facing, targetFacing) - motion.rootYawRadians;
-        const float remaining    = std::max(0.f, execution.action.facingWarpBudgetRadians - execution.facingWarpUsed);
-        const float correction   = std::clamp(yawError, -std::min(execution.action.maxYawWarpRadiansPerTick, remaining),
-                                              std::min(execution.action.maxYawWarpRadiansPerTick, remaining));
-        execution.facingWarpUsed += std::fabs(correction);
-        desiredYawDelta += correction;
-    }
-    const float authoredLeftHand = activeContactWeight(execution.action, ClimbingContactTarget::LeftHand, t);
-    const float authoredRightHand = activeContactWeight(execution.action, ClimbingContactTarget::RightHand, t);
-    bool leftContact = authoredLeftHand > epsilon;
-    bool rightContact = authoredRightHand > epsilon;
-    bool landContact = false;
-    bool compactRequested = false;
-    bool compactForTick = execution.compactCollisionActive;
-    bool branchForTick = execution.action.branchWindows.empty() ? execution.branchWindowOpen
-                                                                 : activeBranchWindow(execution.action, t);
-    for (ClimbingNotifyKind notify : motion.notifies) {
-        switch (notify) {
-            case ClimbingNotifyKind::ContactLeftHand: leftContact = true; break;
-            case ClimbingNotifyKind::ContactRightHand: rightContact = true; break;
-            case ClimbingNotifyKind::CollisionCompact:
-                compactRequested = true;
-                compactForTick   = true;
-                break;
-            case ClimbingNotifyKind::BranchOpen: branchForTick = true; break;
-            case ClimbingNotifyKind::BranchClose: branchForTick = false; break;
-            case ClimbingNotifyKind::Land:
-                landContact   = true;
-                compactForTick = false;
-                branchForTick  = false;
-                break;
-        }
-    }
-    const float collisionHeight = compactForTick ? profile_.compactCapsuleHeight : profile_.capsuleHeight;
-    const float lowerY = execution.currentFeet.y + profile_.capsuleRadius;
-    const float upperY = execution.currentFeet.y + collisionHeight - profile_.capsuleRadius;
-    auto        moved  = world.moveCapsuleOwned(execution.currentFeet.x, lowerY, execution.currentFeet.z,
-                                                execution.currentFeet.x, upperY, execution.currentFeet.z,
-                                                profile_.capsuleRadius, desired.x, desired.y, desired.z, filter);
-    if (!moved) return eve::Result<ClimbingAdvance>::failure(moved.status());
-    ++lastQueryCount_;
-    lastCounters_.queryCount = lastQueryCount_;
-    const physics::CapsuleMove3D movement = std::move(moved).takeValue();
-    lastCounters_.moverIterations = static_cast<std::uint32_t>(std::max(0, movement.iterations));
-    const Vec3                   actual{movement.deltaX, movement.deltaY, movement.deltaZ};
-    execution.currentFeet         = execution.currentFeet + actual;
-    execution.lastPlannedFeet     = planned;
-    const Vec3 residual           = desired - actual;
-    lastCounters_.warpResidual    = residual;
-    execution.accumulatedResidual = execution.accumulatedResidual + residual;
-    execution.compactCollisionActive = compactForTick;
-    execution.branchWindowOpen       = branchForTick;
-    if (debugCapture_ == ClimbingDebugCapture::Enabled)
-        boundedDebugPush(motionEvidence_, ClimbingMotionEvidence{step.tick, planned, execution.currentFeet, residual,
-                                                                  collisionHeight, movement.constrained});
-    ClimbingAdvance output{ClimbingPhase::Climbing,
-                           execution.candidate.actionId,
-                           execution.currentFeet,
-                           desired,
-                           actual,
-                           residual,
-                           t,
-                           movement.constrained,
-                           movement.grounded,
-                           execution.candidate.support};
-    output.executionId     = execution.executionId;
-    output.appliedWarp     = appliedWarp;
-    output.desiredYawDelta = desiredYawDelta;
-    output.cameraCueProfile = profile_.cameraCueProfile;
-    output.cameraCue        = execution.action.cameraCue;
-    output.animationClipId = execution.action.animation.clipId;
-    output.animationGraphNodeId = execution.action.animation.graphNodeId;
-    output.animationMirrored = execution.action.animation.mirrored;
-    output.leftHandAnchor  = execution.candidate.leftHandAnchor;
-    output.rightHandAnchor = execution.candidate.rightHandAnchor;
-    if (leftContact && !execution.leftContactEmitted) {
-        execution.leftContactEmitted = true;
-        enqueueEvent({ClimbingEventKind::ContactLeftHand, output.actionId, step.tick, execution.executionId});
-    }
-    if (rightContact && !execution.rightContactEmitted) {
-        execution.rightContactEmitted = true;
-        enqueueEvent({ClimbingEventKind::ContactRightHand, output.actionId, step.tick, execution.executionId});
-    }
-    if (landContact) execution.landContactReleased = true;
-    if (execution.action.contactConstraints.empty()) {
-        output.leftHandWeight = execution.leftContactEmitted && !execution.landContactReleased ? 1.f : 0.f;
-        output.rightHandWeight = execution.rightContactEmitted && !execution.landContactReleased ? 1.f : 0.f;
-    } else if (!execution.landContactReleased) {
-        output.leftHandWeight = authoredLeftHand;
-        output.rightHandWeight = authoredRightHand;
-        output.leftFootWeight = activeContactWeight(execution.action, ClimbingContactTarget::LeftFoot, t);
-        output.rightFootWeight = activeContactWeight(execution.action, ClimbingContactTarget::RightFoot, t);
-        output.pelvisWeight = activeContactWeight(execution.action, ClimbingContactTarget::Pelvis, t);
-    }
-    output.contactWeight = std::max({output.leftHandWeight, output.rightHandWeight, output.leftFootWeight,
-                                     output.rightFootWeight, output.pelvisWeight});
-    output.compactCollisionRequested = compactRequested;
-    output.compactCollisionActive    = execution.compactCollisionActive;
-    output.branchWindowOpen          = execution.branchWindowOpen;
-    if (const std::string* comboTag = activeBranchComboTag(execution.action, t))
-        output.branchComboTag = *comboTag;
-    if (t < 0.1f)
-        phase_ = ClimbingPhase::Aligning;
-    else if (t < 0.2f)
-        phase_ = ClimbingPhase::Launching;
-    else if (t < 0.8f)
-        phase_ = ClimbingPhase::Climbing;
-    else if (t < 0.95f)
-        phase_ = ClimbingPhase::Landing;
-    else
-        phase_ = ClimbingPhase::Recovering;
-    output.phase = phase_;
-    const Vec3 remainingTargetError = planned - execution.currentFeet;
-    const bool authoredWarpMissed   = motion.hasRootMotion && t + epsilon >= finalWarpWindowEnd(execution.action) &&
-                                      length(remainingTargetError) > profile_.maxWarpResidual + epsilon;
-    if (length(execution.accumulatedResidual) > profile_.maxWarpResidual + epsilon || authoredWarpMissed) {
-        phase_        = ClimbingPhase::Failed;
-        terminalCode_ = "climbing.warp.budget_exceeded";
-        output.phase  = phase_;
-        enqueueEvent({ClimbingEventKind::Failed, output.actionId, step.tick, execution.executionId});
-        if (graphBound) {
-            auto released = releaseAnchorReservation();
-            released.ignore("failed anchor motion releases graph occupancy");
-        }
-        execution_.reset();
-    } else if (t >= 1.f - epsilon) {
-        if (graphBound && endsAtAnchorHang(execution.candidate.kind)) {
-            if (execution.candidate.kind == ClimbingActionKind::BeamBalance)
-                phase_ = ClimbingPhase::Balanced;
-            else if (execution.candidate.kind == ClimbingActionKind::PoleSwing ||
-                     execution.candidate.kind == ClimbingActionKind::BarSwing)
-                phase_ = ClimbingPhase::Swinging;
-            else
-                phase_ = ClimbingPhase::Hanging;
-            execution.branchWindowOpen = true;
-            output.branchWindowOpen = true;
-            enqueueEvent({execution.candidate.kind == ClimbingActionKind::LedgeGrab
-                              ? ClimbingEventKind::Hanging
-                              : ClimbingEventKind::AnchorReached,
-                          output.actionId, step.tick, execution.executionId});
-        } else if (execution.candidate.kind == ClimbingActionKind::LedgeGrab) {
-            phase_ = ClimbingPhase::Hanging;
-            execution.branchWindowOpen = true;
-            output.branchWindowOpen    = true;
-            enqueueEvent({ClimbingEventKind::Hanging, output.actionId, step.tick, execution.executionId});
-        } else {
-            phase_        = ClimbingPhase::Completed;
-            terminalCode_ = "climbing.completed";
-            if (execution.candidate.kind != ClimbingActionKind::WallRun)
-                enqueueEvent({ClimbingEventKind::Landed, output.actionId, step.tick, execution.executionId});
-            enqueueEvent({ClimbingEventKind::Completed, output.actionId, step.tick, execution.executionId});
-            if (graphBound) {
-                auto released = releaseAnchorReservation();
-                released.ignore("completed graph dismount releases occupancy");
-            }
-        }
-        output.phase = phase_;
-        if (phase_ == ClimbingPhase::Completed) {
-            output.terminalVelocity = terminalVelocityFor(execution.action, actual,
-                                                           static_cast<float>(1.0 / step.delta.seconds()));
-            output.hasTerminalVelocity = true;
-            execution_.reset();
-        }
-    }
-    return eve::Result<ClimbingAdvance>::success(std::move(output));
 }
 
 eve::Result<void> ClimbingRuntime::drop(eve::SimulationTick tick) {

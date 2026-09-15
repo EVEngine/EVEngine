@@ -95,6 +95,10 @@ public:
     [[nodiscard("check screen-space reconstruction")]]
     virtual eve::Result<void> reconstruct(std::span<const glm::vec3> positions, float particleRadius) = 0;
 
+    /** @brief Removes reconstructed color behind borrowed linear scene depth without allocating. */
+    [[nodiscard("check scene-depth composition")]]
+    virtual eve::Result<void> occlude(std::span<const float> sceneDepth, float depthBias = 0.001f) = 0;
+
     /** @brief Output width in pixels. */
     [[nodiscard]] virtual int width() const noexcept = 0;
     /** @brief Output height in pixels. */
@@ -169,6 +173,7 @@ public:
     ScreenSpaceSurfaceReconstructionAdapter& operator=(const ScreenSpaceSurfaceReconstructionAdapter&) = delete;
 
     [[nodiscard]] eve::Result<void> reconstruct(std::span<const glm::vec3> positions, float particleRadius) override;
+    [[nodiscard]] eve::Result<void> occlude(std::span<const float> sceneDepth, float depthBias = 0.001f) override;
     [[nodiscard]] int               width() const noexcept override;
     [[nodiscard]] int               height() const noexcept override;
     [[nodiscard]] std::span<const float>        depth() const noexcept override;
