@@ -51,14 +51,20 @@ void main() {
 
     vec2 cloudUv = vec2(fragUV.x * aspect, fragUV.y);
 
-    vec3 sampleA = texture(MainTex, scrollUV(cloudUv, tileA, speedA, time, 1.0)).rgb;
-    vec3 sampleB = texture(MainTex, scrollUV(cloudUv, tileB, speedB, time, -1.0)).rgb;
-    // Dual reverse scroll (article): keep color-map structure — average + multiply.
-    // Heavy screen-blend washed lit clouds to flat white on Lavapipe/soft maps.
-    vec3 cloudBase = mix(sampleA, sampleB, cloudMix);
-    vec3 cloudMul = clamp(sampleA * sampleB * 1.25, 0.0, 1.0);
+    vec4 sampleA = texture(MainTex, scrollUV(cloudUv, tileA, speedA, time, 1.0));
+    vec4 sampleB = texture(MainTex, scrollUV(cloudUv, tileB, speedB, time, -1.0));
+    // Dual reverse scroll: lit albedo + height alpha from the cotton map.
+    // Do NOT lower global fogAlpha — peek-through comes from puff coverage only.
+    vec3 cloudBase = mix(sampleA.rgb, sampleB.rgb, cloudMix);
+    vec3 cloudMul = clamp(sampleA.rgb * sampleB.rgb * 1.25, 0.0, 1.0);
     vec3 cloud = mix(cloudBase, cloudMul, 0.42);
     float noise = luma(cloud);
+    // Soft-max of lobe alphas so overlapping scrolls merge like cotton clumps,
+    // while empty space between metaballs stays clear (terrain peeks through).
+    float coverA = sampleA.a;
+    float coverB = sampleB.a;
+    float cover = max(coverA, coverB) + coverA * coverB * 0.35;
+    cover = clamp(cover, 0.0, 1.0);
 
     // Low-frequency warp (article: desaturate cloud color map as mask UV noise).
     float warpNoise = luma(mix(
@@ -103,16 +109,13 @@ void main() {
         cloudUv * dissolveScale + vec2(time * 0.015, -time * 0.02)).rgb);
     fogKeep *= 1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve);
 
-    // Puff luminance → coverage. Valleys stay see-through; peaks stay milky.
-    float density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-    // Interior porosity so terrain peeks through inter-puff gaps (reference look).
-    float porosity = valley * valley * 0.38;
-    // Toward the unlock rim, lean harder on density so coverage thins out
-    // gradually (sparse frontier puffs, terrain shows between them).
-    float rimThin = mix(1.0, density * density, edgeBand * 1.05);
-    // Partial alpha throughout — never a solid paper plate.
-    float body = mix(0.04, 0.72, density);
-    body *= (1.0 - porosity) * rimThin;
+    // Coverage comes from puff height-alpha (gaps between blobs), shaped by
+    // density bias/contrast. Peaks stay fully opaque + bright ("透亮"); only
+    // inter-puff valleys go clear — not a global fogAlpha wash.
+    // Cover + luma density: solid lit cores, soft valleys partially clear.
+    float density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0),
+                               mix(noise, cover, 0.65));
+    float body = mix(0.20, 1.0, density);
 
     if (passMode < 0.5) {
         // Cast shadow onto the unlocked terrain: hole ∩ offset-fog, shaped by
@@ -130,15 +133,15 @@ void main() {
         float sFog = 1.0 - softenEdge(sUnlocked, edgeSoft);
         float sDissolveNoise = luma(texture(MainTex, (cloudUv + shadowOff * vec2(aspect, 1.0)) * dissolveScale).rgb);
         sFog *= 1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b);
-        float a = hole * sFog * mix(0.40, 0.95, density) * shadowStrength * fogAlpha * fragColor.a;
+        float a = hole * sFog * mix(0.55, 1.0, density) * shadowStrength * fogAlpha * fragColor.a;
         outColor = vec4(0.0, 0.0, 0.0, a);
         return;
     }
 
-    // Keep puff albedo dominant — near-white peaks, cool-gray self-shadow valleys.
-    vec3 col = mix(cloud, fogRgb * cloud, 0.10);
-    col = mix(col, fogRgb, 0.03);
-    col += cloud * (density * 0.08);
+    // Bright cotton albedo — keep peaks milky/white; cool tint only in self-shadow.
+    vec3 col = mix(cloud, fogRgb * cloud, 0.08);
+    col = mix(col, fogRgb, 0.02);
+    col += cloud * (density * 0.10);
     float blink = selected * selectStrength * selectPulse;
     col = mix(col, col * 1.12 + vec3(0.10, 0.14, 0.22), clamp(blink, 0.0, 1.0));
     float a = fogKeep * body * fogAlpha * fragColor.a;

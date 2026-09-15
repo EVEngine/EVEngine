@@ -109,12 +109,15 @@ fn luma(c: vec3<f32>) -> f32 {
   let aspect = max(u.data[23], 1e-4);
 
   let cloudUv = vec2<f32>(input.uv.x * aspect, input.uv.y);
-  let sampleA = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileA, speedA, time, 1.0)).rgb;
-  let sampleB = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileB, speedB, time, -1.0)).rgb;
-  let cloudBase = mix(sampleA, sampleB, cloudMix);
-  let cloudMul = clamp(sampleA * sampleB * 1.25, vec3<f32>(0.0), vec3<f32>(1.0));
+  let sampleA = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileA, speedA, time, 1.0));
+  let sampleB = textureSample(mainTex, mainSampler, scrollUV(cloudUv, tileB, speedB, time, -1.0));
+  // Lit albedo + height alpha. Peek-through is puff coverage, not fogAlpha.
+  let cloudBase = mix(sampleA.rgb, sampleB.rgb, cloudMix);
+  let cloudMul = clamp(sampleA.rgb * sampleB.rgb * 1.25, vec3<f32>(0.0), vec3<f32>(1.0));
   let cloud = mix(cloudBase, cloudMul, 0.42);
   let noise = luma(cloud);
+  var cover = max(sampleA.a, sampleB.a) + sampleA.a * sampleB.a * 0.35;
+  cover = clamp(cover, 0.0, 1.0);
 
   let warpNoise = luma(mix(
     textureSample(mainTex, mainSampler, scrollUV(cloudUv, max(tileA * 0.20, 0.12), speedA * 0.28, time, 1.0)).rgb,
@@ -147,11 +150,10 @@ fn luma(c: vec3<f32>) -> f32 {
   let dissolveNoise = luma(textureSample(mainTex, mainSampler,
       cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
   fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
-  let density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0), noise);
-  let porosity = valley * valley * 0.38;
-  let rimThin = mix(1.0, density * density, edgeBand * 1.05);
-  var body = mix(0.04, 0.72, density);
-  body = body * (1.0 - porosity) * rimThin;
+  // Cover + luma density: solid lit cores, soft valleys partially clear.
+  let density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0),
+                           mix(noise, cover, 0.65));
+  let body = mix(0.20, 1.0, density);
 
   if (passMode < 0.5) {
     let sUv = maskUv + shadowOff;
@@ -166,15 +168,15 @@ fn luma(c: vec3<f32>) -> f32 {
     let sDissolveNoise = luma(textureSample(mainTex, mainSampler,
         (cloudUv + shadowOff * vec2<f32>(aspect, 1.0)) * dissolveScale).rgb);
     sFog = sFog * (1.0 - smoothstep(sMask.b - 0.12, sMask.b + 0.12, sDissolveNoise) * step(1e-4, sMask.b));
-    let a = hole * sFog * mix(0.40, 0.95, density) * shadowStrength * fogAlpha * input.color.a;
+    let a = hole * sFog * mix(0.55, 1.0, density) * shadowStrength * fogAlpha * input.color.a;
     return vec4<f32>(0.0, 0.0, 0.0, a);
   }
 
-  var col = mix(cloud, fogRgb * cloud, 0.10);
-  col = mix(col, fogRgb, 0.03);
-  col = col + cloud * (density * 0.08);
+  var col = mix(cloud, fogRgb * cloud, 0.08);
+  col = mix(col, fogRgb, 0.02);
+  col = col + cloud * (density * 0.10);
   let blink = selected * selectStrength * selectPulse;
-  col = mix(col, col * 1.14 + vec3<f32>(0.12, 0.16, 0.24), clamp(blink, 0.0, 1.0));
+  col = mix(col, col * 1.12 + vec3<f32>(0.10, 0.14, 0.22), clamp(blink, 0.0, 1.0));
   let a = fogKeep * body * fogAlpha * input.color.a;
   return vec4<f32>(col, a);
 }
@@ -305,7 +307,9 @@ Texture *MapFog::makeCloudTexture(int size) {
             }
         }
     };
-    // Large billows + mid clusters + sparse small edge islands.
+    // Dense cotton sheet: large billows + mid clusters + small islands.
+    // Soft valleys between lobes stay luminous/see-through ("透亮"); do not
+    // punch swiss-cheese holes or lower global fogAlpha.
     addLayer(5, 5, 0.11f, 0.18f, 0xA11CE001u);
     addLayer(8, 8, 0.06f, 0.11f, 0xBEEF42u);
     addLayer(11, 11, 0.03f, 0.065f, 0xC0FFEEu);
@@ -331,7 +335,7 @@ Texture *MapFog::makeCloudTexture(int size) {
                 b       = b * b;                     // tighten rim
                 h += b;
             }
-            // Soft-max plateau so overlapping discs read as merged cotton clumps.
+            // Soft-max plateau: merged cotton sheet with soft luminous valleys.
             h = std::clamp(h * 0.72f, 0.f, 1.f);
             h = h * h * (3.f - 2.f * h);
             height[size_t(y * n + x)] = h;
@@ -361,13 +365,13 @@ Texture *MapFog::makeCloudTexture(int size) {
             ny /= nlen;
             nz /= nlen;
             const float ndotl = std::max(nx * Lx + ny * Ly + nz * Lz, 0.f);
-            // Stepped-ish shading: bright white peaks, mid gray-blue valleys.
+            // Lit cotton billows: bright white peaks, cool gray-blue self-shadow.
             const float lit = 0.22f + 0.78f * ndotl;
             float shade     = std::clamp(0.12f + h * lit * 0.95f, 0.f, 1.f);
             shade           = std::pow(shade, 0.85f);
 
-            const float coolR = 0.72f, coolG = 0.78f, coolB = 0.88f;  // self-shadow
-            const float warmR = 1.00f, warmG = 1.00f, warmB = 0.99f;  // highlight
+            const float coolR = 0.72f, coolG = 0.78f, coolB = 0.88f;
+            const float warmR = 1.00f, warmG = 1.00f, warmB = 0.99f;
             const float t     = std::clamp(shade, 0.f, 1.f);
             const float r =
                 std::clamp(coolR * (1.f - t) + warmR * t + ndotl * 0.06f * h, 0.f, 1.f);
@@ -375,11 +379,16 @@ Texture *MapFog::makeCloudTexture(int size) {
                 std::clamp(coolG * (1.f - t) + warmG * t + ndotl * 0.03f * h, 0.f, 1.f);
             const float b = std::clamp(coolB * (1.f - t) + warmB * t, 0.f, 1.f);
 
+            // Partial luminous coverage: dense cores stay solid; soft valleys
+            // between lobes go see-through so terrain peeks — not fogAlpha wash.
+            float a = std::clamp((h - 0.02f) / 0.50f, 0.f, 1.f);
+            a       = a * a * (3.f - 2.f * a);  // smoothstep
+
             const size_t i = size_t((y * n + x) * 4);
             rgba[i + 0]    = uint8_t(r * 255.f + 0.5f);
             rgba[i + 1]    = uint8_t(g * 255.f + 0.5f);
             rgba[i + 2]    = uint8_t(b * 255.f + 0.5f);
-            rgba[i + 3]    = 255;
+            rgba[i + 3]    = uint8_t(a * 255.f + 0.5f);
         }
     }
     return graphics_->newTexture(n, n, rgba.data(), true, true);

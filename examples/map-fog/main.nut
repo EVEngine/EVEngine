@@ -29,7 +29,7 @@ persist mapW = 0.0
 persist mapH = 0.0
 persist cellW = 0.0
 persist cellH = 0.0
-persist fogAlpha = 0.76
+persist fogAlpha = 0.94
 persist prevLeft = false
 persist status = "LMB select · Space unlock · R reset"
 
@@ -215,8 +215,8 @@ eve_init = function() {
     fog.setShadow(0.042, 0.058, 0.88);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
-    // Partial coverage: valleys translucent, rim density falls off.
-    fog.setCloudDensity(0.48, 0.32);
+    // Peak cotton opaque/bright; valleys between blobs clear (not fogAlpha wash).
+    fog.setCloudDensity(0.55, 0.18);
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };
