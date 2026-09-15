@@ -25,6 +25,7 @@ import sys
 from collections import defaultdict
 
 import check_module_manifest
+import utf8_stdio
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES_DIR = os.path.join(REPO, "src", "modules")
@@ -289,4 +290,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

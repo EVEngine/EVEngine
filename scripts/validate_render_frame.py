@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from PIL import Image, ImageStat
+import utf8_stdio
 
 
 def validate(path: Path) -> tuple[float, float]:
@@ -39,4 +40,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

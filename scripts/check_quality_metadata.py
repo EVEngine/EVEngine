@@ -37,6 +37,7 @@ from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any, Iterable, Mapping
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_METADATA = ROOT / "scripts" / "quality_debt_allowlist.json"
@@ -443,4 +444,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

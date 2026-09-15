@@ -13,6 +13,7 @@ import json
 import re
 import sys
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 GAPS = ROOT / "scripts" / "check_bindings_gaps.txt"
@@ -71,4 +72,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

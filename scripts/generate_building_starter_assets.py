@@ -60,4 +60,4 @@ ImageDraw.Draw(im).polygon([(32, 0), (63, 23), (32, 45), (0, 23)], fill=(255, 25
 im.save(out / 'cursor.png')
 mapping = {n: i + 1 for i, n in enumerate(files)}
 v = {n: list(range(121 + i * 4, 125 + i * 4)) for i, n in enumerate(variants)}
-(out / 'catalog.nut').write_text('c14Gids <- {' + ','.join(('[%d]=%d' % p for p in mapping.items())) + '};\nc14Variants <- {' + ','.join(('[%d]=[%s]' % (n, ','.join(map(str, g))) for n, g in v.items())) + '};\n')
+(out / 'catalog.nut').write_text('c14Gids <- {' + ','.join(('[%d]=%d' % p for p in mapping.items())) + '};\nc14Variants <- {' + ','.join(('[%d]=[%s]' % (n, ','.join(map(str, g))) for n, g in v.items())) + '};\n', encoding='utf-8')
