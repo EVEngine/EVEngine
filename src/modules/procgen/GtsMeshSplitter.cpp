@@ -9,7 +9,8 @@ template<class T> Result<T> fail(const char* message) { return Result<T>::failur
     Diagnostic::error(DiagnosticCode::InvalidArgument,message,"procgen.gtsMeshSplit")); }
 Vertex mix(const Vertex&a,const Vertex&b,float t) {
     Vertex r{}; const float* pa=&a.x; const float* pb=&b.x; float* pr=&r.x;
-    for(int i=0;i<12;++i)pr[i]=pa[i]+(pb[i]-pa[i])*t; return r;
+    for(int i=0;i<12;++i)pr[i]=pa[i]+(pb[i]-pa[i])*t;
+    return r;
 }
 template<class Distance> std::vector<Vertex> clip(const std::vector<Vertex>& in,Distance distance) {
     std::vector<Vertex> out; if(in.empty())return out; out.reserve(in.size()+1);
@@ -26,7 +27,13 @@ template<class Distance> std::vector<Vertex> clip(const std::vector<Vertex>& in,
     }
     return out;
 }
-bool finiteVertex(const Vertex& v) { const float* p=&v.x; for(int i=0;i<12;++i)if(!std::isfinite(p[i]))return false; return true; }
+bool finiteVertex(const Vertex& v) {
+    const float* p=&v.x;
+    for(int i=0;i<12;++i) {
+        if(!std::isfinite(p[i]))return false;
+    }
+    return true;
+}
 bool nonDegenerate(const Vertex&a,const Vertex&b,const Vertex&c){
  const double abx=double(b.x)-a.x,aby=double(b.y)-a.y,abz=double(b.z)-a.z;
  const double acx=double(c.x)-a.x,acy=double(c.y)-a.y,acz=double(c.z)-a.z;
@@ -88,7 +95,8 @@ Result<GtsMeshSplitResult> splitGtsMesh(const MeshBuild& source,int xSplits,int 
             else tile.mesh.setActiveGroup("");
             const auto add=[&](const Vertex&v){const auto n=static_cast<std::uint32_t>(tile.mesh.getVertexCount());
                 tile.mesh.addVertex(v.x-pivotX,v.y,v.z-pivotZ,v.nx,v.ny,v.nz,v.u,v.v);
-                if(source.hasVertexColors())tileColors.insert(tileColors.end(),{v.r,v.g,v.b,v.a});return n;};
+                if(source.hasVertexColors())tileColors.insert(tileColors.end(),{v.r,v.g,v.b,v.a});
+                return n;};
             for(std::size_t k=1;k+1<polygon.size();++k){
                 if(!nonDegenerate(polygon[0],polygon[k],polygon[k+1]))continue;
                 tile.mesh.addTriangle(add(polygon[0]),add(polygon[k]),add(polygon[k+1]));
