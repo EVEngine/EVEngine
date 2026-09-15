@@ -149,6 +149,8 @@ class SceneLoader : public Module {
 public:
     Module_REG(SceneLoader);
 
+    /** @brief Construct the loader and publish its optional action-block provider. */
+    SceneLoader();
     ~SceneLoader() override;
 
     /** @brief Full load: build the GameObject tree from `path`, mount it, return host. */

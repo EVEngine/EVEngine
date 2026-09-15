@@ -478,6 +478,17 @@ float AnimClip::wrapTime(float time) const {
     return clampf(time, 0.f, duration_);
 }
 
+std::unique_ptr<AnimClip> AnimClip::clone() const {
+    auto result         = std::make_unique<AnimClip>(name_);
+    result->duration_    = duration_;
+    result->loop_        = loop_;
+    result->sampleRate_  = sampleRate_;
+    result->tracks_      = tracks_;
+    result->events_      = events_;
+    result->syncMarkers_ = syncMarkers_;
+    return result;
+}
+
 void AnimClip::sampleVec3(const std::vector<Vec3Key>& keys, float time, float& x, float& y, float& z, bool& ok) {
     ok = false;
     if (keys.empty()) return;

@@ -56,7 +56,35 @@ Module_IMPL(Camera, new Camera());
 
 CameraController::CameraController() = default;
 
-CameraController::~CameraController(){if(photoModeAuthority_)cap::removeListener<IPhotoModeFieldSink>(this);}
+CameraController::~CameraController() {
+    cap::removeListener<action::IActionCameraCueSink>(this);
+    if (photoModeAuthority_) cap::removeListener<IPhotoModeFieldSink>(this);
+}
+
+bool CameraController::getActionCuesEnabled() const {
+    for (std::size_t index = 0; index < cap::listenerCount<action::IActionCameraCueSink>(); ++index)
+        if (cap::listenerAt<action::IActionCameraCueSink>(index) == this) return true;
+    return false;
+}
+
+void CameraController::setActionCuesEnabled(bool enabled) {
+    const bool current = getActionCuesEnabled();
+    if (enabled && !current)
+        cap::addListener<action::IActionCameraCueSink>(this);
+    else if (!enabled && current)
+        cap::removeListener<action::IActionCameraCueSink>(this);
+}
+
+bool CameraController::supports(const LogicalId&) const noexcept { return getActionCuesEnabled(); }
+
+Result<void> CameraController::trigger(const action::ActionCameraCueBinding& binding,
+                                       const action::ActionNotifyContext&) {
+    addImpulse(static_cast<float>(binding.positionAmplitude), static_cast<float>(binding.rotationAmplitude),
+               static_cast<float>(binding.duration.seconds()), binding.seed);
+    addFovImpulse(static_cast<float>(binding.fovAmplitude), static_cast<float>(binding.duration.seconds()));
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 void CameraController::setPhotoModeAuthority(bool enabled){
  if(enabled==photoModeAuthority_)return;
  if(enabled)cap::addListener<IPhotoModeFieldSink>(this);else cap::removeListener<IPhotoModeFieldSink>(this);
@@ -895,6 +923,8 @@ void Camera::expose(ssq::Table& table) {
 
     cc.addFunc("setCamera", &CameraController::setCamera);
     cc.addFunc("getCamera", &CameraController::getCamera);
+    cc.addFunc("setActionCuesEnabled", &CameraController::setActionCuesEnabled);
+    cc.addFunc("getActionCuesEnabled", &CameraController::getActionCuesEnabled);
     cc.addFunc("setPhotoModeAuthority", &CameraController::setPhotoModeAuthority);
     cc.addFunc("getPhotoModeAuthority", [](const CameraController* self){return self->getPhotoModeAuthority();});
     cc.addFunc("setCameraRoll", [vm=table.getHandle()](CameraController* self,float value){return eve::script::projectResult(vm,self->setCameraRoll(value));});

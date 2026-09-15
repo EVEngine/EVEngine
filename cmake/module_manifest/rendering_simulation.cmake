@@ -26,7 +26,7 @@ eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SL
                    GROUP 2d 3d web)
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS platform_event graphics scene
+                   DEPS action platform_event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
@@ -73,6 +73,15 @@ eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
                    GROUP 3d web)
+# Optional Action adapter for generation-safe 3D body-pair collision windows.
+eve_declare_module(NAME physics_action DIR physics/action LAYER 5
+                   DEPS action physics
+                   GROUP 3d web)
+# Optional map-backed steering provider. Keeping this bridge above both owners
+# lets headless/minimal combat builds omit the rendering-heavy map closure.
+eve_declare_module(NAME combat_navigation DIR combat/navigation LAYER 5
+                   DEPS combat map
+                   GROUP 2d 3d)
 eve_declare_module(NAME pixelworld_physics LAYER 5 SCRIPT PixelWorldPhysics SLOT pixelworldPhysics
                    DEPS pixelworld physics
                    GROUP 2d)

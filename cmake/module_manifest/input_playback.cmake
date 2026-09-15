@@ -54,7 +54,7 @@ eve_declare_module(NAME touch LAYER 2 SCRIPT Touch SLOT touch
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME audio LAYER 2 SCRIPT Audio SLOT audio
-                   DEPS platform_event sound
+                   DEPS action platform_event sound
                    OPTIONAL_DEPS scene
                    THIRDPARTY openal
                    GROUP 2d 3d)
