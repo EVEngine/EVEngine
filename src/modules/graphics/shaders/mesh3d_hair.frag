@@ -1,7 +1,8 @@
 #version 450
-// Anisotropic hair / fur card fragment (Kajiya-Kay + alpha cutout).
+// Anisotropic hair / fur card fragment (Kajiya-Kay + wrap/scatter).
 // Push: data[0]=specExp, [1]=specStrength, [2]=primaryShift, [3]=secondaryShift,
-//       [4]=alphaCutoff, [5]=rimStrength, [6..8]=strandDir (unused in frag).
+//       [4]=alphaCutoff, [5]=rimStrength, [6..8]=strandDir,
+//       [9]=diffuseWrap, [10]=scatterStrength.
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -42,6 +43,8 @@ void main() {
     float shift1 = u.data[2];
     float shift2 = u.data[3];
     float rimStr = max(u.data[5], 0.0);
+    float wrap = clamp(u.data[9], 0.0, 1.0);
+    float scatter = max(u.data[10], 0.0);
 
     // Shift tangents for primary / secondary highlights (Marschner-style approximation).
     vec3 T1 = normalize(T + shift1 * N);
@@ -50,12 +53,21 @@ void main() {
     float spec1 = kajiyaKay(T1, L, V, specExp);
     float spec2 = kajiyaKay(T2, L, V, specExp * 0.65) * 0.45;
 
-    float ndotl = max(dot(N, L), 0.0);
-    vec3 diffuse = base.rgb * (0.22 + 0.78 * ndotl);
+    // Soft wrap diffuse keeps hair from looking like solid plastic cards.
+    float ndotl = dot(N, L);
+    float wrapL = clamp((ndotl + wrap) / max(1.0 + wrap, 1e-3), 0.0, 1.0);
+    vec3 diffuse = base.rgb * (0.18 + 0.82 * wrapL);
 
-    vec3 specCol = vec3(spec1 + spec2) * specStr * min(vLightColor, vec3(1.5));
+    // Cheap back-scatter / dual-scattering stand-in for card thickness.
+    float back = max(dot(-N, L), 0.0);
+    vec3 scatterCol = base.rgb * scatter * back * back;
+
+    vec3 light = min(vLightColor, vec3(1.4));
+    vec3 specCol = vec3(spec1 + spec2) * specStr * light;
+    // Warm secondary lobe tint (approximate TT/TRT residual).
+    specCol += vec3(1.0, 0.82, 0.65) * spec2 * 0.35 * light;
     vec3 rim = pow(clamp(1.0 - max(dot(N, V), 0.0), 0.0, 1.0), 3.0) * rimStr * base.rgb;
 
-    vec3 lit = diffuse * min(vLightColor, vec3(1.2)) + specCol + rim;
+    vec3 lit = diffuse * light + scatterCol * light + specCol + rim;
     outColor = vec4(clamp(lit, 0.0, 1.0), base.a);
 }

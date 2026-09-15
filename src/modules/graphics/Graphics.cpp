@@ -11,6 +11,7 @@
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
+#include "graphics/HairCards.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -1096,6 +1097,8 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));
     cls.addFunc("newMeshShaderVF", &Graphics::newMeshShaderVF);
     cls.addFunc("newHairShader", &Graphics::newHairShader);
+    cls.addFunc("newHairCardMesh", &Graphics::newHairCardMesh);
+    cls.addFunc("newHairCardMaterial", &Graphics::newHairCardMaterial);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
     cls.addFunc("newWaterfall", &Graphics::newWaterfall);
@@ -1286,6 +1289,14 @@ Outline* Graphics::pipelineOutline() {
 AntiAliasing* Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
 Shader* Graphics::newHairShader() { return hair::createShader(this); }
+
+Mesh* Graphics::newHairCardMesh(float width, float height) {
+    return hair::newCardMesh(this, width, height);
+}
+
+Material* Graphics::newHairCardMaterial(Texture *albedo) {
+    return hair::makeCardMaterial(this, albedo, nullptr);
+}
 
 Shader* Graphics::newGrassShader() { return grass::createShader(this); }
 
