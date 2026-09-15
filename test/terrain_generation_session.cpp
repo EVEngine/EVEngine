@@ -91,8 +91,8 @@ TEST_CASE("procgen.session.effectHistoryMatchesDirectComposition") {
     REQUIRE(applyTerrainHeightMix(expected, mask, mask, mix).ok());
     REQUIRE(session.heightMix(mask, mask, mix).ok());
     CHECK(session.getOperationCount() == 7);
-    std::fill(mask.data().begin(), mask.data().end(), 0);
-    std::fill(curve.data().begin(), curve.data().end(), 0);
+    std::fill(mask.data().begin(), mask.data().end(), 0.0F);
+    std::fill(curve.data().begin(), curve.data().end(), 0.0F);
     REQUIRE(session.undo().ok());
     REQUIRE(session.redo().ok());
     REQUIRE(session.replay().ok());

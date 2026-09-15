@@ -156,14 +156,14 @@ bool decodeLod(const Value& encoded, GtsTerrainExportLodSettings& output) {
 }
 bool decodeWorkflow(const Value& encoded,GtsTerrainExportWorkflow& output,bool legacyV2=false) {
     auto* object=encoded.getIf<Value::Object>();
-    if(!object||!exact(*object,{"action","addMeshColliderToImpostor","addObjectColliders","addTerrainCollider",
+    if(!object||(!exact(*object,{"action","addMeshColliderToImpostor","addObjectColliders","addTerrainCollider",
         "addTreeColliders","bakeCombinedCollisionMesh","colliderResolution","colliderSimplifyQuality","colliderType",
         "convertSourceTerrains","convertTreesToObjects","copyPcgObjects","copyPcgObjectsToImpostor",
         "createColliderScenes","createImpostorScenes","impostorRange","invertExportMask","objFaceMode","selection","sourceTreatment"})&&
        !(legacyV2&&exact(*object,{"action","addMeshColliderToImpostor","addObjectColliders","addTerrainCollider",
         "addTreeColliders","bakeCombinedCollisionMesh","colliderResolution","colliderSimplifyQuality","colliderType",
         "convertSourceTerrains","convertTreesToObjects","copyPcgObjects","copyPcgObjectsToImpostor",
-        "createColliderScenes","createImpostorScenes","impostorRange","invertExportMask","selection","sourceTreatment"})))return false;
+        "createColliderScenes","createImpostorScenes","impostorRange","invertExportMask","selection","sourceTreatment"}))))return false;
     auto integer=[&](const char* name){return object->at(name).getIf<int64_t>();};
     auto boolean=[&](const char* name){return object->at(name).getIf<bool>();};
     auto* action=integer("action"),*resolution=integer("colliderResolution"),*type=integer("colliderType"),
@@ -329,7 +329,9 @@ Result<void> buildGtsTerrainExportLodsFromHeightmapInto(GtsTerrainLodSet& output
     MeshBuild base;auto built=buildGtsTerrainBaseMesh(base,heightmap,first->saveResolution,sizeX,sizeY,sizeZ);
     if(!built)return built;
     auto lods=buildGtsTerrainLods(base,subTiles,subTiles,pivot,levels.value());
-    if(!lods)return Result<void>::failure(lods.status());output=std::move(lods).takeValue();return Result<void>::success();
+    if(!lods)return Result<void>::failure(lods.status());
+    output=std::move(lods).takeValue();
+    return Result<void>::success();
 }
 Result<void> buildGtsTerrainColliderMeshFromHeightmapInto(MeshBuild& output,const Heightmap& heightmap,
     const GtsTerrainExportWorkflow& workflow,float sizeX,float sizeY,float sizeZ) {
@@ -339,7 +341,9 @@ Result<void> buildGtsTerrainColliderMeshFromHeightmapInto(MeshBuild& output,cons
     MeshBuild base;auto built=buildGtsTerrainBaseMesh(base,heightmap,workflow.colliderResolution,sizeX,sizeY,sizeZ);
     if(!built)return built;
     MeshBuild simplified;auto reduced=simplifyGtsMesh(simplified,base,workflow.colliderSimplifyQuality);
-    if(!reduced)return Result<void>::failure(reduced.status());output=std::move(simplified);return Result<void>::success();
+    if(!reduced)return Result<void>::failure(reduced.status());
+    output=std::move(simplified);
+    return Result<void>::success();
 }
 
 Result<std::string> encodeGtsTerrainObj(const Heightmap& heightmap,GtsTerrainSaveResolution resolution,
@@ -445,7 +449,8 @@ Result<int> bakeGtsTerrainVertexColorsInto(MeshBuild& output,const MeshBuild& so
             const float abx=positions[b*3]-positions[a*3],aby=positions[b*3+1]-positions[a*3+1],abz=positions[b*3+2]-positions[a*3+2];
             const float acx=positions[c*3]-positions[a*3],acy=positions[c*3+1]-positions[a*3+1],acz=positions[c*3+2]-positions[a*3+2];
             float nx=aby*acz-abz*acy,ny=abz*acx-abx*acz,nz=abx*acy-aby*acx;const float length=std::sqrt(nx*nx+ny*ny+nz*nz);
-            if(!(length>0.f)||!std::isfinite(length))return invalid<int>("GTS sharp terrain mesh contains a degenerate triangle");nx/=length;ny/=length;nz/=length;
+            if(!(length>0.f)||!std::isfinite(length))return invalid<int>("GTS sharp terrain mesh contains a degenerate triangle");
+            nx/=length;ny/=length;nz/=length;
             for(auto vertex:{a,b,c}){normals[vertex*3]=nx;normals[vertex*3+1]=ny;normals[vertex*3+2]=nz;}}
         for(const auto& [key,value]:source.metadata())candidate.setMeta(key,value);}
     auto applied=candidate.setVertexColors(std::move(vertexColors));if(!applied)return Result<int>::failure(applied.status());
