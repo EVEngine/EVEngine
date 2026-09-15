@@ -47,6 +47,10 @@ bool Decal::setBlend(int id, const std::string &mode) {
     return DecalManager::inst().setBlend(id, mode);
 }
 
+DecalProjectionStatus Decal::setProjection(int id, const std::string &mode, float blendSharpness) {
+    return DecalManager::inst().setProjection(id, mode, blendSharpness);
+}
+
 bool Decal::remove(int id) { return DecalManager::inst().remove(id); }
 
 void Decal::clearAll() { DecalManager::inst().clearAll(); }
@@ -81,6 +85,7 @@ void Decal::expose(ssq::Class &cls) {
     cls.addFunc("setUvRect", &Decal::setUvRect);
     cls.addFunc("setTextures", &Decal::setTextures);
     cls.addFunc("setBlend", &Decal::setBlend);
+    cls.addFunc("setProjection", &Decal::setProjection);
     cls.addFunc("remove", &Decal::remove);
     cls.addFunc("clearAll", &Decal::clearAll);
     cls.addFunc("count", &Decal::count);

@@ -400,7 +400,7 @@ TEST_CASE("animation.layers.overrideMaskAndAdditive") {
     basePlayer.play(base.get());
     upperPlayer.play(upper.get());
     AnimBoneMask upperMask(sk.get());
-    CHECK(upperMask.setBoneAndChildren("child", 1.f));
+    CHECK(upperMask.setBoneAndChildren("hip", 1.f));
     AnimLayerMixer mixer(sk.get());
     CHECK(mixer.setBasePlayer(&basePlayer));
     CHECK_EQ(mixer.addLayer("upper", &upperPlayer, &upperMask, "override"), 0);
@@ -420,6 +420,112 @@ TEST_CASE("animation.layers.overrideMaskAndAdditive") {
     CHECK(mixer.setLayerWeight("recoil", 0.5f));
     mixer.update(0.5f);
     CHECK(std::fabs(mixer.getPose()->getLocalPositionY(1) - 1.5f) < 1e-5f);
+}
+
+
+TEST_CASE("animation.layers.poseSourcesAndAdditiveReference") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     walk(makeLocomotionClip("walk", 1.f, 1.f));
+
+    // Absolute upper pose used with bind-pose additive reference.
+    std::unique_ptr<AnimClip> upperAbs(new AnimClip("upperAbs"));
+    upperAbs->setDuration(1.f);
+    upperAbs->setLoop(true);
+    upperAbs->addPositionKey(1, 0.f, 0.f, 1.f, 0.f);
+    upperAbs->addPositionKey(1, 1.f, 0.f, 3.f, 0.f);
+
+    // Identity-delta clip: translation is already the additive offset.
+    std::unique_ptr<AnimClip> upperDelta(new AnimClip("upperDelta"));
+    upperDelta->setDuration(1.f);
+    upperDelta->setLoop(true);
+    upperDelta->addPositionKey(1, 0.f, 0.f, 0.f, 0.f);
+    upperDelta->addPositionKey(1, 1.f, 0.f, 2.f, 0.f);
+
+    AnimPlayer basePlayer(sk.get());
+    basePlayer.play(walk.get());
+
+    AnimGraph upperGraph(sk.get());
+    const int upperClip = upperGraph.addClip(upperAbs.get());
+    upperGraph.setRoot(upperClip);
+
+    AnimBoneMask upperMask(sk.get());
+    CHECK(upperMask.setBoneAndChildren("hip", 1.f));
+
+    AnimLayerMixer mixer(sk.get());
+    CHECK(mixer.setBasePlayer(&basePlayer));
+    CHECK_EQ(mixer.addGraphLayer("upper", &upperGraph, &upperMask, "additive"), 0);
+    CHECK(mixer.setLayerWeight("upper", 0.5f));
+    CHECK_EQ(mixer.getLayerMode("upper"), std::string("additive"));
+    CHECK_EQ(mixer.getLayerAdditiveReference("upper"), std::string("bind"));
+    mixer.update(0.5f);
+    // bind-local hip Y is 1; absolute sample Y at t=0.5 is 2; delta=(2-1); weight 0.5 -> +0.5 on base.
+    // Base locomotion at t=0.5 keeps hip near bind Y (~1.05 from bob keys) — tolerate range.
+    CHECK(mixer.getPose()->getLocalPositionY(1) > 1.2f);
+
+    // Switch the same absolute clip to identity reference and expect a larger lift
+    // because the absolute Y is treated as a raw delta.
+    CHECK(mixer.setLayerAdditiveReferenceCompat("upper", "identity"));
+    CHECK_EQ(mixer.getLayerAdditiveReference("upper"), std::string("identity"));
+
+    AnimPlayer deltaPlayer(sk.get());
+    deltaPlayer.play(upperDelta.get());
+    CHECK(mixer.removeLayer("upper"));
+    CHECK_EQ(mixer.addLayer("upperDelta", &deltaPlayer, &upperMask, "additive"), 0);
+    CHECK(mixer.setLayerAdditiveReferenceCompat("upperDelta", "identity"));
+    CHECK(mixer.setLayerWeight("upperDelta", 0.5f));
+    mixer.update(0.5f);
+    // Identity delta Y at t=0.5 is 1; weight 0.5 adds ~0.5 on top of locomotion hip (~1).
+    CHECK(mixer.getPose()->getLocalPositionY(1) > 1.4f);
+}
+
+TEST_CASE("animation.layers.disabledLayersStillAdvance") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     walk(makeLocomotionClip("walk", 1.f, 1.f));
+    std::unique_ptr<AnimClip>     upper(new AnimClip("upper"));
+    upper->setDuration(1.f);
+    upper->setLoop(true);
+    upper->addPositionKey(1, 0.f, 0.f, 1.f, 0.f);
+    upper->addPositionKey(1, 1.f, 2.f, 1.f, 0.f);
+
+    AnimPlayer basePlayer(sk.get());
+    AnimPlayer upperPlayer(sk.get());
+    basePlayer.play(walk.get());
+    upperPlayer.play(upper.get());
+    AnimBoneMask upperMask(sk.get());
+    CHECK(upperMask.setBoneAndChildren("hip", 1.f));
+    AnimLayerMixer mixer(sk.get());
+    CHECK(mixer.setBasePlayer(&basePlayer));
+    CHECK_EQ(mixer.addLayer("upper", &upperPlayer, &upperMask, "override"), 0);
+    CHECK(mixer.setLayerEnabled("upper", false));
+    mixer.update(0.5f);
+    const float disabledTime = upperPlayer.getTime();
+    CHECK(disabledTime > 0.4f);
+    // Disabled layers still advance, so re-enabling resumes from mid-clip rather than t=0.
+    CHECK(mixer.setLayerEnabled("upper", true));
+    CHECK(upperPlayer.getTime() >= disabledTime);
+    mixer.update(0.25f);
+    CHECK(upperPlayer.getTime() > disabledTime);
+}
+
+TEST_CASE("animation.graph.additiveReferenceBindMatchesMixer") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     base(makeLocomotionClip("walk", 0.f, 1.f));
+    std::unique_ptr<AnimClip>     abs(new AnimClip("abs"));
+    abs->setDuration(1.f);
+    abs->setLoop(true);
+    abs->addPositionKey(1, 0.f, 0.f, 3.f, 0.f);
+    abs->addPositionKey(1, 1.f, 0.f, 3.f, 0.f);
+
+    AnimGraph graph(sk.get());
+    const int baseNode = graph.addClip(base.get());
+    const int absNode  = graph.addClip(abs.get());
+    const int addNode  = graph.addAdditive(baseNode, absNode, 1.f);
+    graph.setRoot(addNode);
+    CHECK(graph.setAdditiveReferenceCompat(addNode, "bind"));
+    CHECK_EQ(graph.getAdditiveReference(addNode), std::string("bind"));
+    graph.update(0.f);
+    // Absolute Y=3 against bind Y=1 => +2 on base bind (~1) => ~3.
+    CHECK(std::fabs(graph.getPose()->getLocalPositionY(1) - 3.f) < 0.1f);
 }
 
 TEST_CASE("animation.player.eventsSurviveLoopBoundaries") {

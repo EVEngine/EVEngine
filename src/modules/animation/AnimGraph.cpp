@@ -1,6 +1,7 @@
 #include "animation/AnimGraph.h"
 
 #include "animation/AnimClip.h"
+#include "animation/AnimMath.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimationTime.h"
 #include "common/Exception.h"
@@ -152,28 +153,47 @@ void AnimGraph::blendMasked(AnimPose& out, const AnimPose& base, const AnimPose&
     }
 }
 
+eve::Result<void> AnimGraph::setAdditiveReference(int node, const std::string& reference) {
+    Node& n = requireNode(node);
+    if (n.kind != Kind::Additive)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "AnimGraph.setAdditiveReference requires an Additive node"));
+    if (reference == "bind" || reference == "bind_pose" || reference == "BindPose")
+        n.additiveReference = AnimAdditiveReference::BindPose;
+    else if (reference == "identity" || reference == "Identity")
+        n.additiveReference = AnimAdditiveReference::Identity;
+    else
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "AnimGraph additive reference must be \"bind\" or \"identity\""));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool AnimGraph::setAdditiveReferenceCompat(int node, const std::string& reference) {
+    auto result = setAdditiveReference(node, reference);
+    if (!result) {
+        result.ignore("AnimGraph.setAdditiveReferenceCompat");
+        return false;
+    }
+    return true;
+}
+
+std::string AnimGraph::getAdditiveReference(int node) const {
+    if (node < 0 || node >= getNodeCount()) return {};
+    const Node& n = nodes_[static_cast<size_t>(node)];
+    if (n.kind != Kind::Additive) return {};
+    return n.additiveReference == AnimAdditiveReference::Identity ? "identity" : "bind";
+}
+
 void AnimGraph::applyAdditive(AnimPose& out, const AnimPose& base, const AnimPose& delta, float weight,
-                              const std::vector<float>* mask) const {
+                              const std::vector<float>* mask, AnimAdditiveReference reference) const {
     out.resize(base.getBoneCount());
+    const TransformTRS identity = TransformTRS::identity();
     for (int i = 0; i < base.getBoneCount(); ++i) {
-        const float         w = clampf(weight * (mask ? (*mask)[static_cast<size_t>(i)] : 1.f), 0.f, 1.f);
-        const TransformTRS& a = base.local(i);
-        const TransformTRS& d = delta.local(i);
-        TransformTRS        r = a;
-        r.px += d.px * w;
-        r.py += d.py * w;
-        r.pz += d.pz * w;
-        r.sx *= lerpf(1.f, d.sx, w);
-        r.sy *= lerpf(1.f, d.sy, w);
-        r.sz *= lerpf(1.f, d.sz, w);
-        float qx, qy, qz, qw;
-        slerpQuat(0.f, 0.f, 0.f, 1.f, d.qx, d.qy, d.qz, d.qw, w, qx, qy, qz, qw);
-        r.qx = a.qw * qx + a.qx * qw + a.qy * qz - a.qz * qy;
-        r.qy = a.qw * qy - a.qx * qz + a.qy * qw + a.qz * qx;
-        r.qz = a.qw * qz + a.qx * qy - a.qy * qx + a.qz * qw;
-        r.qw = a.qw * qw - a.qx * qx - a.qy * qy - a.qz * qz;
-        r.normalizeRotation();
-        out.local(i) = r;
+        const float w = clampf(weight * (mask ? (*mask)[static_cast<size_t>(i)] : 1.f), 0.f, 1.f);
+        out.local(i)  = base.local(i);
+        if (w <= 0.f) continue;
+        const TransformTRS& ref = reference == AnimAdditiveReference::BindPose ? skeleton_->bindLocal(i) : identity;
+        applyAdditiveTRS(out.local(i), delta.local(i), ref, w);
     }
 }
 
@@ -233,7 +253,8 @@ const AnimPose& AnimGraph::evaluate(int id) {
         case Kind::Blend: blendMasked(node.cache, evaluate(node.a), evaluate(node.b), node.weight, nullptr); break;
         case Kind::Layer: blendMasked(node.cache, evaluate(node.a), evaluate(node.b), node.weight, &node.mask); break;
         case Kind::Additive:
-            applyAdditive(node.cache, evaluate(node.a), evaluate(node.b), node.weight, &node.mask);
+            applyAdditive(node.cache, evaluate(node.a), evaluate(node.b), node.weight, &node.mask,
+                          node.additiveReference);
             break;
         case Kind::OneShot: {
             const AnimPose& base = evaluate(node.a);

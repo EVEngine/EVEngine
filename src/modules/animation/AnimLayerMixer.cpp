@@ -1,7 +1,10 @@
 #include "animation/AnimLayerMixer.h"
 
+#include "animation/AnimGraph.h"
+#include "animation/AnimMath.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimStateMachine.h"
 #include "animation/AnimationTime.h"
 #include "common/Exception.h"
 
@@ -16,12 +19,17 @@ float layerBoneWeight(const AnimBoneMask* mask, float layerWeight, int boneIndex
     return clampf(layerWeight * maskWeight, 0.f, 1.f);
 }
 
-void multiplyQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw, float& ox, float& oy,
-                  float& oz, float& ow) {
-    ow = aw * bw - ax * bx - ay * by - az * bz;
-    ox = aw * bx + ax * bw + ay * bz - az * by;
-    oy = aw * by - ax * bz + ay * bw + az * bx;
-    oz = aw * bz + ax * by - ay * bx + az * bw;
+eve::Result<AnimAdditiveReference> parseAdditiveReference(const std::string& reference) {
+    if (reference == "bind" || reference == "bind_pose" || reference == "BindPose")
+        return eve::Result<AnimAdditiveReference>::success(AnimAdditiveReference::BindPose);
+    if (reference == "identity" || reference == "Identity")
+        return eve::Result<AnimAdditiveReference>::success(AnimAdditiveReference::Identity);
+    return eve::Result<AnimAdditiveReference>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "animation additive reference must be \"bind\" or \"identity\""));
+}
+
+const char* additiveReferenceName(AnimAdditiveReference reference) {
+    return reference == AnimAdditiveReference::Identity ? "identity" : "bind";
 }
 
 }  // namespace
@@ -67,27 +75,138 @@ AnimLayerMixer::AnimLayerMixer(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     skeleton_->applyBindPose(&pose_);
 }
 
-bool AnimLayerMixer::setBasePlayer(AnimPlayer* player) {
-    if (player && player->getSkeleton() != skeleton_) return false;
+bool AnimLayerMixer::sourceAlreadyAttached(const IAnimPoseSource* source) const {
+    if (!source) return false;
+    if (baseSource_ == source) return true;
     for (const Layer& layer : layers_)
-        if (layer.player == player) return false;
-    basePlayer_ = player;
+        if (layer.source == source) return true;
+    return false;
+}
+
+eve::Result<void> AnimLayerMixer::attachSource(IAnimPoseSource* source, const char* role) {
+    if (!source)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 std::string("animation mixer ") + role + " is null"));
+    if (source == this)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation mixer cannot attach itself as a pose source"));
+    if (source->getSkeleton() != skeleton_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, std::string("animation mixer ") + role + " skeleton mismatch"));
+    if (sourceAlreadyAttached(source))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, std::string("animation mixer ") + role + " is already attached"));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> AnimLayerMixer::setBaseSource(IAnimPoseSource* source) {
+    if (!source) {
+        baseSource_ = nullptr;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+    // Allow replacing the current base with itself without conflict.
+    if (source == baseSource_) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    if (source == this)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation mixer cannot attach itself as a pose source"));
+    if (source->getSkeleton() != skeleton_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "animation mixer base skeleton mismatch"));
+    for (const Layer& layer : layers_)
+        if (layer.source == source)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "animation mixer base is already a layer"));
+    baseSource_ = source;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool AnimLayerMixer::setBasePlayer(AnimPlayer* player) {
+    auto result = setBaseSource(player);
+    if (!result) {
+        result.ignore("AnimLayerMixer.setBasePlayer compatibility facade");
+        return false;
+    }
     return true;
 }
 
+bool AnimLayerMixer::setBaseGraph(AnimGraph* graph) {
+    auto result = setBaseSource(graph);
+    if (!result) {
+        result.ignore("AnimLayerMixer.setBaseGraph compatibility facade");
+        return false;
+    }
+    return true;
+}
+
+bool AnimLayerMixer::setBaseStateMachine(AnimStateMachine* stateMachine) {
+    auto result = setBaseSource(stateMachine);
+    if (!result) {
+        result.ignore("AnimLayerMixer.setBaseStateMachine compatibility facade");
+        return false;
+    }
+    return true;
+}
+
+AnimPlayer* AnimLayerMixer::getBasePlayer() const { return dynamic_cast<AnimPlayer*>(baseSource_); }
+
+eve::Result<int> AnimLayerMixer::addPoseLayer(const std::string& name, IAnimPoseSource* source, AnimBoneMask* mask,
+                                              const std::string& mode) {
+    if (name.empty())
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "animation mixer layer name is empty"));
+    if (findLayer(name))
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "animation mixer layer name already exists"));
+    if (mode != "override" && mode != "additive")
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation mixer layer mode must be \"override\" or \"additive\""));
+    if (mask && mask->getSkeleton() != skeleton_)
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "animation mixer layer mask skeleton mismatch"));
+    auto attached = attachSource(source, "layer");
+    if (!attached) return eve::Result<int>::failure(attached.status());
+
+    layers_.push_back({name, source, mask, 1.f, mode == "additive", true, AnimAdditiveReference::BindPose});
+    return eve::Result<int>::success(static_cast<int>(layers_.size()) - 1);
+}
+
 int AnimLayerMixer::addLayer(const std::string& name, AnimPlayer* player, AnimBoneMask* mask, const std::string& mode) {
-    if (name.empty() || !player || player == basePlayer_ || player->getSkeleton() != skeleton_ || findLayer(name))
+    auto result = addPoseLayer(name, player, mask, mode);
+    if (!result) {
+        result.ignore("AnimLayerMixer.addLayer compatibility facade");
         return -1;
-    for (const Layer& layer : layers_)
-        if (layer.player == player) return -1;
-    if (mask && mask->getSkeleton() != skeleton_) return -1;
-    if (mode != "override" && mode != "additive") return -1;
-    layers_.push_back({name, player, mask, 1.f, mode == "additive", true});
-    return static_cast<int>(layers_.size()) - 1;
+    }
+    return std::move(result).takeValue();
+}
+
+int AnimLayerMixer::addGraphLayer(const std::string& name, AnimGraph* graph, AnimBoneMask* mask,
+                                  const std::string& mode) {
+    auto result = addPoseLayer(name, graph, mask, mode);
+    if (!result) {
+        result.ignore("AnimLayerMixer.addGraphLayer compatibility facade");
+        return -1;
+    }
+    return std::move(result).takeValue();
+}
+
+int AnimLayerMixer::addStateMachineLayer(const std::string& name, AnimStateMachine* stateMachine, AnimBoneMask* mask,
+                                         const std::string& mode) {
+    auto result = addPoseLayer(name, stateMachine, mask, mode);
+    if (!result) {
+        result.ignore("AnimLayerMixer.addStateMachineLayer compatibility facade");
+        return -1;
+    }
+    return std::move(result).takeValue();
 }
 
 AnimLayerMixer::Layer* AnimLayerMixer::findLayer(const std::string& name) {
     for (auto& layer : layers_)
+        if (layer.name == name) return &layer;
+    return nullptr;
+}
+
+const AnimLayerMixer::Layer* AnimLayerMixer::findLayer(const std::string& name) const {
+    for (const auto& layer : layers_)
         if (layer.name == name) return &layer;
     return nullptr;
 }
@@ -114,19 +233,64 @@ bool AnimLayerMixer::setLayerEnabled(const std::string& name, bool enabled) {
     return true;
 }
 
+eve::Result<void> AnimLayerMixer::setLayerAdditiveReference(const std::string& name, const std::string& reference) {
+    Layer* layer = findLayer(name);
+    if (!layer)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "animation mixer layer not found"));
+    if (!layer->additive)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation mixer additive reference requires an additive layer"));
+    auto parsed = parseAdditiveReference(reference);
+    if (!parsed) return eve::Result<void>::failure(parsed.status());
+    layer->additiveReference = std::move(parsed).takeValue();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool AnimLayerMixer::setLayerAdditiveReferenceCompat(const std::string& name, const std::string& reference) {
+    auto result = setLayerAdditiveReference(name, reference);
+    if (!result) {
+        result.ignore("AnimLayerMixer.setLayerAdditiveReferenceCompat");
+        return false;
+    }
+    return true;
+}
+
 std::string AnimLayerMixer::getLayerName(int index) const {
     if (index < 0 || index >= getLayerCount()) return {};
     return layers_[static_cast<size_t>(index)].name;
 }
 
-void AnimLayerMixer::collectEvents(const std::string& layerName, AnimPlayer* player) {
-    if (!player) return;
-    for (int i = 0; i < player->getEventCount(); ++i)
-        events_.push_back({layerName, player->getEventName(i), player->getEventPayload(i)});
+float AnimLayerMixer::getLayerWeight(const std::string& name) const {
+    const Layer* layer = findLayer(name);
+    return layer ? layer->weight : 0.f;
+}
+
+bool AnimLayerMixer::getLayerEnabled(const std::string& name) const {
+    const Layer* layer = findLayer(name);
+    return layer && layer->enabled;
+}
+
+std::string AnimLayerMixer::getLayerMode(const std::string& name) const {
+    const Layer* layer = findLayer(name);
+    if (!layer) return {};
+    return layer->additive ? "additive" : "override";
+}
+
+std::string AnimLayerMixer::getLayerAdditiveReference(const std::string& name) const {
+    const Layer* layer = findLayer(name);
+    if (!layer) return {};
+    return additiveReferenceName(layer->additiveReference);
+}
+
+void AnimLayerMixer::collectEvents(const std::string& layerName, IAnimPoseSource* source) {
+    if (!source) return;
+    for (int i = 0; i < source->getEventCount(); ++i)
+        events_.push_back({layerName, source->getEventName(i), source->getEventPayload(i)});
 }
 
 void AnimLayerMixer::applyOverride(const Layer& layer) {
-    AnimPose* layerPose = layer.player->getPose();
+    AnimPose* layerPose = layer.source->getPose();
     for (int bone = 0; bone < pose_.getBoneCount(); ++bone) {
         const float weight = layerBoneWeight(layer.mask, layer.weight, bone);
         if (weight <= 0.f) continue;
@@ -135,47 +299,29 @@ void AnimLayerMixer::applyOverride(const Layer& layer) {
 }
 
 void AnimLayerMixer::applyAdditive(const Layer& layer) {
-    AnimPose* layerPose = layer.player->getPose();
+    AnimPose* layerPose = layer.source->getPose();
     for (int bone = 0; bone < pose_.getBoneCount(); ++bone) {
         const float weight = layerBoneWeight(layer.mask, layer.weight, bone);
         if (weight <= 0.f) continue;
-        TransformTRS&       base      = pose_.local(bone);
-        const TransformTRS& sample    = layerPose->local(bone);
-        const TransformTRS& reference = skeleton_->bindLocal(bone);
-        base.px += (sample.px - reference.px) * weight;
-        base.py += (sample.py - reference.py) * weight;
-        base.pz += (sample.pz - reference.pz) * weight;
-        base.sx *= lerpf(1.f, std::fabs(reference.sx) > 1e-8f ? sample.sx / reference.sx : 1.f, weight);
-        base.sy *= lerpf(1.f, std::fabs(reference.sy) > 1e-8f ? sample.sy / reference.sy : 1.f, weight);
-        base.sz *= lerpf(1.f, std::fabs(reference.sz) > 1e-8f ? sample.sz / reference.sz : 1.f, weight);
-
-        float dx, dy, dz, dw;
-        multiplyQuat(sample.qx, sample.qy, sample.qz, sample.qw, -reference.qx, -reference.qy, -reference.qz,
-                     reference.qw, dx, dy, dz, dw);
-        float ax, ay, az, aw;
-        slerpQuat(0.f, 0.f, 0.f, 1.f, dx, dy, dz, dw, weight, ax, ay, az, aw);
-        float qx, qy, qz, qw;
-        multiplyQuat(base.qx, base.qy, base.qz, base.qw, ax, ay, az, aw, qx, qy, qz, qw);
-        base.qx = qx;
-        base.qy = qy;
-        base.qz = qz;
-        base.qw = qw;
-        base.normalizeRotation();
+        const TransformTRS& reference = layer.additiveReference == AnimAdditiveReference::Identity
+                                            ? TransformTRS::identity()
+                                            : skeleton_->bindLocal(bone);
+        applyAdditiveTRS(pose_.local(bone), layerPose->local(bone), reference, weight);
     }
 }
 
 void AnimLayerMixer::compose() {
     events_.clear();
-    if (basePlayer_) {
-        pose_.copyFrom(basePlayer_->getPose());
-        collectEvents("base", basePlayer_);
+    if (baseSource_) {
+        pose_.copyFrom(baseSource_->getPose());
+        collectEvents("base", baseSource_);
     } else {
         skeleton_->applyBindPose(&pose_);
     }
     for (const Layer& layer : layers_) {
-        if (!layer.enabled || !layer.player) continue;
+        if (!layer.enabled || !layer.source) continue;
         if (layer.weight <= 0.f) continue;
-        collectEvents(layer.name, layer.player);
+        collectEvents(layer.name, layer.source);
         if (layer.additive)
             applyAdditive(layer);
         else
@@ -189,23 +335,23 @@ eve::Result<void> AnimLayerMixer::advance(const eve::SimulationStep& step) {
     if (!seconds) return eve::Result<void>::failure(seconds.status());
     (void)std::move(seconds).takeValue();
 
-    // The mixer owns the evaluation boundary: all referenced players consume
-    // the same injected step before their poses are combined.
-    if (basePlayer_ && basePlayer_->hasCurrentTick() && step.tick <= basePlayer_->currentTick())
+    // The mixer owns the evaluation boundary: every attached source consumes the
+    // same injected step (including disabled layers, so their clocks stay in sync).
+    if (baseSource_ && baseSource_->hasCurrentTick() && step.tick <= baseSource_->currentTick())
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "animation mixer base player already consumed this tick"));
+            eve::DiagnosticCode::Conflict, "animation mixer base source already consumed this tick"));
     for (const Layer& layer : layers_) {
-        if (layer.enabled && layer.player && layer.player->hasCurrentTick() && step.tick <= layer.player->currentTick())
+        if (layer.source && layer.source->hasCurrentTick() && step.tick <= layer.source->currentTick())
             return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "animation mixer layer player already consumed this tick"));
+                eve::DiagnosticCode::Conflict, "animation mixer layer source already consumed this tick"));
     }
-    if (basePlayer_) {
-        auto result = basePlayer_->advance(step);
+    if (baseSource_) {
+        auto result = baseSource_->advance(step);
         if (!result) return eve::Result<void>::failure(result.status());
     }
     for (const Layer& layer : layers_) {
-        if (!layer.enabled || !layer.player) continue;
-        auto result = layer.player->advance(step);
+        if (!layer.source) continue;
+        auto result = layer.source->advance(step);
         if (!result) return eve::Result<void>::failure(result.status());
     }
     compose();

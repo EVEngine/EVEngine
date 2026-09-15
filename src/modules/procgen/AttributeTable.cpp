@@ -1,5 +1,6 @@
 #include "procgen/AttributeTable.h"
 
+#include <algorithm>
 #include <utility>
 
 namespace eve::procgen {
@@ -89,6 +90,78 @@ bool AttributeTable::has(std::size_t row, std::string_view name) const {
     const auto found = columns_.find(std::string(name));
     if (found == columns_.end() || row >= rows_) return false;
     return std::visit([row](const auto& values) { return values[row].has_value(); }, found->second.storage);
+}
+
+Result<void> AttributeTable::renameColumn(std::string_view from, std::string_view to) {
+    if (from.empty() || to.empty()) return invalidAttribute("attribute name must not be empty", "name");
+    if (!from.empty() && from.front() == '$')
+        return invalidAttribute("builtin selectors cannot be renamed", "from");
+    if (!to.empty() && to.front() == '$')
+        return invalidAttribute("builtin selectors cannot be rename targets", "to");
+    if (from == to) return Result<void>::success();
+    const std::string fromKey(from);
+    const std::string toKey(to);
+    const auto        source = columns_.find(fromKey);
+    if (source == columns_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "attribute '" + fromKey + "' does not exist", "from"));
+    if (columns_.find(toKey) != columns_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::AlreadyExists, "attribute '" + toKey + "' already exists", "to"));
+
+    AttributeTable staged = *this;
+    auto           moved  = staged.columns_.extract(fromKey);
+    moved.key()           = toKey;
+    staged.columns_.insert(std::move(moved));
+    for (std::string& name : staged.order_)
+        if (name == fromKey) {
+            name = toKey;
+            break;
+        }
+    *this = std::move(staged);
+    return Result<void>::success();
+}
+
+Result<void> AttributeTable::removeColumn(std::string_view name) {
+    if (name.empty()) return invalidAttribute("attribute name must not be empty", "name");
+    if (name.front() == '$') return invalidAttribute("builtin selectors cannot be deleted", "name");
+    const std::string key(name);
+    if (columns_.find(key) == columns_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "attribute '" + key + "' does not exist", "name"));
+
+    AttributeTable staged = *this;
+    staged.columns_.erase(key);
+    staged.order_.erase(std::remove(staged.order_.begin(), staged.order_.end(), key), staged.order_.end());
+    *this = std::move(staged);
+    return Result<void>::success();
+}
+
+Result<void> AttributeTable::copyColumn(std::string_view from, std::string_view to) {
+    if (from.empty() || to.empty()) return invalidAttribute("attribute name must not be empty", "name");
+    if (from.front() == '$' || to.front() == '$')
+        return invalidAttribute("copyColumn only supports metadata column names", "name");
+    if (from == to) return Result<void>::success();
+    const std::string fromKey(from);
+    const std::string toKey(to);
+    const auto        source = columns_.find(fromKey);
+    if (source == columns_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "attribute '" + fromKey + "' does not exist", "from"));
+
+    AttributeTable staged  = *this;
+    auto           ensured = staged.ensureColumn(toKey, source->second.type);
+    if (!ensured.ok()) return Result<void>::failure(ensured.status());
+    const auto stagedSource = staged.columns_.find(fromKey);
+    std::visit(
+        [&](auto& targetValues) {
+            using Values             = std::decay_t<decltype(targetValues)>;
+            const auto& sourceValues = std::get<Values>(stagedSource->second.storage);
+            targetValues             = sourceValues;
+        },
+        ensured.value()->storage);
+    *this = std::move(staged);
+    return Result<void>::success();
 }
 
 Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view name, ProcgenAttributeType type) {

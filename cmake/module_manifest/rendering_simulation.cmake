@@ -123,6 +123,9 @@ eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
                    DEPS data graphics image model3d
                    GROUP 3d)
+eve_declare_module(NAME archspace LIB EVArchSpace LAYER 4 SCRIPT ArchSpace SLOT archspace
+                   DEPS data
+                   GROUP 3d)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
                    DEPS attributes decision definitions effects graphics transaction)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo

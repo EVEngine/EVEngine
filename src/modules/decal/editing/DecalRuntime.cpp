@@ -72,6 +72,9 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
     candidate.metalStrength = static_cast<float>(number(document, "channel.metal"));
     candidate.emissiveStrength = static_cast<float>(number(document, "channel.emissive"));
     candidate.blendMode = *document.value("blend.mode")->getIf<std::string>() == "add" ? 1 : 0;
+    candidate.projectionMode =
+        *document.value("projection.mode")->getIf<std::string>() == "triplanar" ? 1 : 0;
+    candidate.blendSharpness = static_cast<float>(number(document, "projection.blendSharpness"));
     candidate.lifetime = static_cast<float>(number(document, "lifetime.seconds"));
     candidate.fadeIn = static_cast<float>(number(document, "lifetime.fadeIn"));
     candidate.fadeOut = static_cast<float>(number(document, "lifetime.fadeOut"));

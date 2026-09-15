@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "animation/AnimPoseSource.h"
 #include "common/StateValue.h"
 #include "common/Time.h"
 
@@ -17,15 +18,19 @@ class AnimSkeleton;
  * @brief Clip-driven animation state machine with float/bool/trigger parameters
  * and cross-fade transitions. Script type: `AnimStateMachine`.
  */
-class AnimStateMachine {
+class AnimStateMachine : public IAnimPoseSource {
 public:
     explicit AnimStateMachine(AnimSkeleton *skeleton);
-    ~AnimStateMachine();
+    ~AnimStateMachine() override;
 
     AnimStateMachine(const AnimStateMachine &)            = delete;
     AnimStateMachine &operator=(const AnimStateMachine &) = delete;
 
-    AnimSkeleton *getSkeleton() const { return skeleton_; }
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimSkeleton *getSkeleton() const override { return skeleton_; }
 
     void addState(const std::string &name, AnimClip *clip);
     void setEntry(const std::string &name);
@@ -60,15 +65,21 @@ public:
         return it != triggers_.end() && it->second;
     }
 
-    AnimPose *getPose();
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimPose *getPose() override;
     float getStateTime() const { return stateTime_; }
     bool isBlending() const { return blending_; }
 
     /** @brief Advance state and pose using one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step) override;
 
     /** @brief Last scheduler tick consumed by the checked state-machine API. */
-    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept override { return lastTick_; }
+    /** @brief Whether advance has consumed at least one checked step. */
+    [[nodiscard]] bool hasCurrentTick() const noexcept override { return hasLastTick_; }
 
     /** @brief Legacy seconds facade retained for scripts and old callers. */
     void update(float dt);

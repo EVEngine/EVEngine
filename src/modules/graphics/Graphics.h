@@ -51,6 +51,9 @@ class Drawable;
 class GBuffer;
 class GlobalIllumination;
 class GrassField;
+namespace hair {
+class GroomInstance;
+}
 class Material;
 class Mesh;
 class PrimitiveScene;
@@ -1169,11 +1172,15 @@ public:
      * (lifetime fade in/out); `normalStrength` / `roughnessStrength` /
      * `metalStrength` / `emissiveStrength` gate the per-channel blend in
      * mesh3d.frag.
+     * @param blendMode 0 = premultiplied over, 1 = additive (emissive).
+     * @param projectionMode 0 = planar (local.xy), 1 = triplanar (YZ/XZ/XY blend).
+     * @param blendSharpness Triplanar normal-weight exponent (ignored when planar).
      */
     virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                            Texture *params, const float uvRect[4], float fade,
                            float normalStrength, float roughnessStrength, float metalStrength,
-                           float emissiveStrength, int blendMode = 0) = 0;
+                           float emissiveStrength, int blendMode = 0, int projectionMode = 0,
+                           float blendSharpness = 4.f) = 0;
     virtual void endDecalPass() = 0;
 
     /**
@@ -1623,6 +1630,18 @@ public:
     Shader *newHairShader();
 
     /**
+     * @brief Procedural upright hair/fur card mesh (root at origin, height +Y, face +Z).
+     * @ownership Owned by Graphics.
+     */
+    Mesh *newHairCardMesh(float width = 0.12f, float height = 0.45f);
+
+    /**
+     * @brief Material preconfigured for hair cards (transparent, double-sided, hair shader).
+     * @ownership Caller owns the Material*; shader is owned by Graphics.
+     */
+    Material *newHairCardMaterial(Texture *albedo = nullptr);
+
+    /**
      * @brief Eagerly releases a shader created by this Graphics.
      *
      * Mirrors releaseTexture: the returned handle is borrowed, a successful
@@ -1652,6 +1671,16 @@ public:
      * its Mesh / Shader / Texture are owned by Graphics.
      */
     GrassField *newGrassField();
+
+    /**
+     * @brief High-quality groom/hair instance (UE GroomComponent analogue).
+     * See graphics/hair/ and docs/dev/毛发Groom子系统设计.md.
+     * @ownership Caller owns the returned GroomInstance*; its Mesh / Shader /
+     * Texture remain owned by Graphics.
+     * @lifetime Returned instance is valid until the caller deletes it; Graphics
+     * must outlive draws that use its GPU resources.
+     */
+    hair::GroomInstance *newGroomInstance();
 
     /**
      * @brief Flowing waterfall (falling water sheet) with sky reflection, downward
