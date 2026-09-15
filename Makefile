@@ -481,13 +481,17 @@ build/linux-asan: build/linux-asan/Makefile
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
+# Keep heap, stack and undefined-behavior instrumentation plus engine assertions,
+# but omit per-global ASan redzones: the monolithic unit_test has enough globals
+# for those redzones alone to exceed x86-64's PC-relative relocation range.
+# Disabling linker relaxation also avoids GOTPCREL overflows near that limit.
 build/linux-asan/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
-		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
-		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
+		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
-		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
 		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
 		-DEVENGINE_ENABLE_ASSERTS=ON \
 		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
@@ -548,7 +552,7 @@ build/android-debug/build.ninja:
 		-B build/android-debug -S .
 
 build/ios: build/ios/EVEngine.xcodeproj
-	cmake --build build/ios --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios --target deps --config Release -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios && xcodebuild -scheme eve -configuration Release \
@@ -581,7 +585,7 @@ build/ios/EVEngine.xcodeproj:
 		-B build/ios -S .
 
 build/ios-debug: build/ios-debug/EVEngine.xcodeproj
-	cmake --build build/ios-debug --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-debug --target deps --config Debug -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		echo "  Xcode → Settings → Accounts → add Apple ID, then export IOS_DEVELOPMENT_TEAM=<TeamID>"; \
@@ -617,7 +621,7 @@ build/ios-debug/EVEngine.xcodeproj:
 # iOS game app for the simulator (no signing required). Uses its own
 # third-party tree (ios-simulator-debug) so the device deps are not clobbered.
 build/ios-sim-debug: build/ios-sim-debug/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-sim-debug --target deps --config Debug -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
 		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
@@ -644,7 +648,7 @@ build/ios-sim-debug/EVEngine.xcodeproj:
 #   make run/ios-test-debug [FILTER=math.*]   # install + launch on device
 #   make log/ios-test                          # stream test results
 build/ios-debug-test: build/ios-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-debug-test --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
@@ -683,7 +687,7 @@ build/ios-debug-test/EVEngine.xcodeproj:
 # iOS test app for the simulator (no signing required). Uses its own
 # third-party tree (ios-simulator-debug) so the device deps are not clobbered.
 build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug-test --target deps -j $(ANDROID_JOBS)
+	cmake --build build/ios-sim-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
 		CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
@@ -1033,7 +1037,11 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 # by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
 # ~70x slower when several shared one process on CI, so bundles are excluded
 # unless requested (FILTER=bundle/<file> or ctest -L bundle).
-CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/')
+# Full FPS sweeps are opt-in; correctness still covers every ClassicScenes asset.
+# Run FILTER=ClassicScenes.perf.maxFps or INCLUDE_BENCHMARKS=1 to include them.
+INCLUDE_BENCHMARKS ?= 0
+CTEST_BENCHMARK_SEL = $(if $(FILTER),,$(if $(filter 1,$(INCLUDE_BENCHMARKS)),,-LE benchmark))
+CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/') $(CTEST_BENCHMARK_SEL)
 
 # Retry each failed test once before reporting it (see CI-DEBUG-PLAYBOOK:
 # xvfb display allocation, first-run network fetches and TCP echo timing can
@@ -1150,7 +1158,7 @@ sdk/ios-debug: build/ios-debug
 
 sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
 sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug:
-	@plat=$@; plat=$${plat#sdk/}; \
+	@set -e; plat=$@; plat=$${plat#sdk/}; \
 	  cmake --install "build/$$plat" --prefix "dist/eve-sdk/$$plat"; \
 	  echo "Installed target SDK -> dist/eve-sdk/$$plat"
 

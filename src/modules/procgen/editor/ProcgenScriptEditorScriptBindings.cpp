@@ -6,6 +6,7 @@
 #include "editor/EditorWorkspace.h"
 #include "procgen/PointSet.h"
 #include "procgen/editor/ProcgenEditorModule.h"
+#include "procgen/editor/MeshModifierEditor.h"
 #include "procgen/editor/ProcgenScriptEditor.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -72,6 +73,27 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     auto procgenEditor   = table.addClass<ScriptProcgenScriptEditor>(
         "ProcgenScriptEditor",
         std::function<ScriptProcgenScriptEditor*()>([]() -> ScriptProcgenScriptEditor* { return nullptr; }), true);
+    auto meshEditor = table.addClass<MeshModifierEditor>(
+        "MeshModifierEditor", std::function<MeshModifierEditor*()>([]() -> MeshModifierEditor* { return nullptr; }),
+        true);
+    meshEditor.addFunc("configureWorkspace", [vm](MeshModifierEditor* self, editor::EditorWorkspace* workspace) {
+        if (!self || !workspace)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh modifier editor and workspace required");
+        return project(vm, self->configureWorkspace(*workspace));
+    });
+    meshEditor.addFunc("activateTool", [vm](MeshModifierEditor* self, editor::EditorWorkspace* workspace,
+                                             const std::string& tool) {
+        if (!self || !workspace)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh modifier editor and workspace required");
+        return project(vm, self->activateTool(*workspace, tool));
+    });
+    meshEditor.addFunc("observeRevision", [vm](MeshModifierEditor* self, const std::string& document, int revision) {
+        if (!self || revision < 0)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "valid editor and revision required");
+        return project(vm, self->observeRevision(document, static_cast<std::uint64_t>(revision)));
+    });
+    meshEditor.addFunc("getTargetId", [](MeshModifierEditor* self) { return self ? self->targetId() : std::string{}; });
+    meshEditor.addFunc("getActiveTool", [](MeshModifierEditor* self) { return self ? self->activeTool() : std::string{}; });
 
     procgenEditor.addFunc("configureWorkspace",
                           [vm](ScriptProcgenScriptEditor* self, editor::EditorWorkspace* workspace) {
@@ -247,6 +269,17 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
         result.set("value", owned);
         result.set("ownership", std::string("owned"));
+        return result;
+    });
+    moduleClass.addFunc("createMeshModifier", [vm](ProcgenEditorModule*, const std::string& targetId) {
+        if (targetId.empty())
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh target id must not be empty", "targetId");
+        auto object = script::makeOwnedSquirrelInstance<MeshModifierEditor>(
+            vm, std::make_unique<MeshModifierEditor>(targetId));
+        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+        ssq::Object owned = std::move(object).takeValue();
+        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        result.set("value", owned); result.set("ownership", std::string("owned"));
         return result;
     });
 }

@@ -90,7 +90,7 @@ endif()
 message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "4")
+set(EVENGINE_MINOR_VERSION "5")
 set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "-dev")
 

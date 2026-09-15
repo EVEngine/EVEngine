@@ -18,6 +18,8 @@
 #include <SDL2/SDL.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -115,6 +117,15 @@ TEST_CASE("decal.managerAtlasBlendSetters") {
     CHECK(mgr.setBlend(id, "over"));
     CHECK(mgr.instances()[0].blendMode == 0);
     CHECK(!mgr.setBlend(id, "bogus"));  // unknown mode rejected
+
+    CHECK(mgr.setProjection(id, "triplanar", 8.f) == DecalProjectionStatus::Applied);
+    CHECK(mgr.instances()[0].projectionMode == 1);
+    CHECK(mgr.instances()[0].blendSharpness == 8.f);
+    CHECK(mgr.setProjection(id, "planar", 4.f) == DecalProjectionStatus::Applied);
+    CHECK(mgr.instances()[0].projectionMode == 0);
+    CHECK(mgr.setProjection(id, "bogus", 4.f) == DecalProjectionStatus::InvalidMode);
+    CHECK(mgr.setProjection(id, "triplanar", 0.f) == DecalProjectionStatus::InvalidSharpness);
+    CHECK(mgr.setProjection(99999, "triplanar", 4.f) == DecalProjectionStatus::UnknownId);
 
     CHECK(mgr.setTextures(id, nullptr, nullptr));
     CHECK(!mgr.setUvRect(99999, 0.f, 0.f, 1.f, 1.f));  // unknown id
@@ -347,6 +358,75 @@ TEST_CASE("decal.gpuHeadlessProjectionReadback") {
     const uint8_t *corner = at(4, 4);
     CHECK_LT(corner[0], 20);  // outside the unit box -> layer stays cleared
     delete img;
+}
+
+// Triplanar mode paints a wall that classic planar projection discards (facing
+// nearly orthogonal to the decal forward). Planar leaves the wall near the
+// base albedo color.
+TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+
+    // Vertical wall in XY (normal +Z), viewed from +Z.
+    auto *wall = makePlane(gfx, 2.f);
+    REQUIRE(wall != nullptr);
+
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 2.6f;
+
+    auto *ent = Renderable3D::create();
+    ent->meshRenderer()->mesh = wall;
+    ent->meshRenderer()->texture = makeSolidTex(gfx, 180, 180, 180);
+    RenderSystem3D::setDirectionalLight(0.2f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+
+    static bool sTripDrawer = false;
+    if (!sTripDrawer) {
+        sTripDrawer = true;
+        RenderSystem3D::addDecalExtraDrawer(
+            [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
+               const glm::mat4 &viewProj, float aspect) {
+                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ,
+                                             viewProj, aspect);
+            });
+    }
+    gfx->getRenderControl()->enable("decal");
+    gfx->getRenderControl()->compile();
+
+    auto *decalTex = makeSolidTex(gfx, 200, 20, 20);
+    auto &mgr = DecalManager::inst();
+    mgr.clearAll();
+    // Project along +Y onto a +Z wall — planar culls, triplanar keeps coverage.
+    const int id = mgr.project(0.f, 0.f, 0.f, 0.f, 1.f, 0.f, decalTex, "trip", 2.f, 2.f, false,
+                               0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    REQUIRE(id > 0);
+
+    auto centerRedness = [&]() -> float {
+        gfx->setScreenReadbackEnabled(true);
+        for (int i = 0; i < 3; ++i) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+        }
+        const Color c = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        return c.r - c.g;
+    };
+
+    REQUIRE(mgr.setProjection(id, "planar", 4.f) == DecalProjectionStatus::Applied);
+    const float planarScore = centerRedness();
+
+    REQUIRE(mgr.setProjection(id, "triplanar", 4.f) == DecalProjectionStatus::Applied);
+    const float triplanarScore = centerRedness();
+
+    // Triplanar must shift the wall toward the red decal; planar should not.
+    REQUIRE(triplanarScore > 0.12f);
+    REQUIRE(triplanarScore > planarScore + 0.08f);
+
+    mgr.clearAll();
+    win->close();
 }
 
 namespace {

@@ -102,10 +102,11 @@ eve::action::ActionTimeline lightAttackTimeline(float clipDuration) {
                                      id("presentation:audio"),
                                      seconds(clipDuration * 0.32),
                                      {{"uri", eve::Value("asset://audio/sword-whoosh")}}});
-    presentation.notifies.push_back({id("kaykit-notify:swing-vfx"),
-                                     id("presentation:vfx"),
-                                     seconds(clipDuration * 0.34),
-                                     {{"uri", eve::Value("asset://vfx/sword-arc")}}});
+    presentation.notifies.push_back(
+        {id("kaykit-notify:swing-vfx"),
+         id("presentation:vfx"),
+         seconds(clipDuration * 0.34),
+         {{"uri", eve::Value("asset://vfx/sword-arc")}, {"lifetimeSeconds", eve::Value(0.45)}}});
     presentation.notifies.push_back({id("kaykit-notify:impact-camera"),
                                      id("presentation:camera"),
                                      seconds(clipDuration * 0.46),

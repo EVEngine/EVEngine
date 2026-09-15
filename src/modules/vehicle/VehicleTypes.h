@@ -34,6 +34,7 @@ class WeaponMountEntity;
 namespace eve::vehicle {
 
 class VehicleOrderQueueAdapter;
+class VehiclePhysicsBinding;
 
 /** @brief RTS 命令类型。 */
 enum class VehicleOrderType : uint8_t { Move, AttackMove, Attack, Stop, Hold };
@@ -278,11 +279,15 @@ public:
         std::vector<MountSlot> list;
     };
 
-    /** @brief 物理刚体（不拥有；physics 模块管理生命周期）。 */
+    /**
+     * @brief 跨帧物理绑定；不透明实现持有 generation link 和弱 world 生命周期。
+     *
+     * Physics world 是刚体权威 owner。最后一个组件副本销毁时，仅在 world 仍存活且
+     * link 仍可解析时销毁刚体；world 先销毁时 binding 自动变 stale，绝不解引用旧地址。
+     */
     struct PhysicsBody {
-        eve::physics::Body*   body2d = nullptr;
-        eve::physics::Body3D* body3d = nullptr;
-        std::string           space;  // "2d" | "3d" | ""
+        std::shared_ptr<VehiclePhysicsBinding> binding;
+        std::string                            space;  // "2d" | "3d" | ""
     };
 
     /** @brief 悬架运行时状态（与模板 wheels 一一对应）。 */

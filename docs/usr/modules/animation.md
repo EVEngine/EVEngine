@@ -2,16 +2,110 @@
 
 **脚本入口：** `eve.Animation()`
 
-支持八类能力：
+支持九类能力：
 
-1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
-2. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
-3. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
-4. **3D 骨骼动画播放与动画图**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、`AnimGraph`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
-5. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
-6. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
-7. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
-8. **程序化骨骼**：`DynamicBoneSolver` 提供弹簧骨、碰撞、风场和距离休眠；`FootIKSolver` 提供地面探测、脚掌对齐、锁足和骨盆补偿
+1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）——兼容保留
+2. **Motion（LitMotion 风格）**：typed float/Vec2/Vec3 补间，Builder + Push Bind + Handle
+3. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
+4. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
+5. **3D 骨骼动画播放与动画图**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、`AnimGraph`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+6. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
+7. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
+8. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
+9. **程序化骨骼**：`DynamicBoneSolver` 提供弹簧骨、碰撞、风场和距离休眠；`FootIKSolver` 提供地面探测、脚掌对齐、锁足和骨盆补偿
+
+## Motion（LitMotion 风格 Push 补间）
+
+C++ 入口（Phase 1）：`Animation::motion` / `motionVec2` / `motionVec3` 返回 Builder；
+`bind(sink)` 时入库播放。Sink 由调用方提供（`FloatPointerSink` / 自定义
+`IMotionFloatSink`），跨模块写回不要让 `animation` 直接 include 上层。
+
+```cpp
+float x = 0.f;
+FloatPointerSink sink(&x);
+auto handle = anim->motion(0.f, 200.f, 0.6f)
+                  .ease("outQuad")
+                  .delay(0.1f)
+                  .loops(2, MotionLoopMode::Yoyo)
+                  .bind(sink)
+                  .expect("spawn");
+anim->advance(step);          // 与 Tween 共用 SimulationStep 泵
+anim->motions().complete(handle); // 跳到终点并触发 onComplete
+anim->motions().cancel(handle);   // 取消并触发 onCancel
+```
+
+无 sink 时可 `run()`，再用 `motions().floatValue(handle)` 拉取当前值。
+
+### Sequence（Phase 2）
+
+```cpp
+auto seq = anim->sequence();
+seq.append(std::move(anim->motion(0.f, 1.f, 0.3f).ease("outQuad").to(sinkX))).expect("append");
+seq.appendInterval(0.1f).expect("gap");
+seq.join(std::move(anim->motion(0.f, 1.f, 0.3f).ease("linear").to(sinkY))).expect("join");
+seq.insert(0.05f, std::move(anim->motion(1.f, 0.f, 0.2f).to(sinkZ))).expect("insert");
+auto playback = seq.run().expect("run");
+anim->advance(step);
+playback.complete().expect("complete");
+```
+
+脚本：
+
+```squirrel
+local b = anim.newMotion(0, 100, 0.5);
+b.ease("outQuad");
+b.loops(2, "yoyo");
+b.cancelOnError(true);
+local h = b.run();
+print(h.value());
+h.complete();
+print(anim.getMotionCount());
+
+local seq = anim.newMotionSequence();
+seq.append(anim.newMotion(0, 1, 0.3));
+seq.appendInterval(0.1);
+seq.join(anim.newMotion(0, 1, 0.3));
+print(seq.cursor());
+print(seq.itemCount());
+local sh = seq.run();
+print(sh.childCount());
+```
+
+Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。
+
+Punch / Shake（有限时长阻尼正弦；`to`/`strength` 为振幅）与 Color/Quat：
+
+```cpp
+anim->punch(0.f, 12.f, 0.4f).frequency(18).dampingRatio(0.f).bind(sinkX);
+anim->shake(0.f, 0.2f, 0.5f).frequency(20).seed(7).bind(sinkX);
+anim->motionColor(MotionColor{0,0,0,1}, MotionColor{1,0,0,1}, 0.3f).bind(colorSink);
+anim->motionQuat(MotionQuat{0,0,0,1}, MotionQuat{0,1,0,0}, 0.3f).bind(quatSink);
+```
+
+脚本：
+
+```squirrel
+local p = anim.newMotionPunch(0, 12, 0.4);
+p.frequency(18);
+p.dampingRatio(0.0);
+local h = p.run();
+local s = anim.newMotionShake(0, 0.2, 0.5);
+s.frequency(20);
+s.seed(7);
+s.run();
+```
+
+## 基本用法（Tween）
+
+```squirrel
+local anim = eve.Animation();
+local move = anim.newTween(0.6);
+move.setFrom("x", 0);
+move.setTo("x", 200);
+move.setEase("outQuad");
+move.start();
+anim.update(dt);
+```
 
 ## 程序化骨骼与 Foot IK
 
@@ -21,12 +115,11 @@ solver 活得更久。`update` 使用固定子步并限制单帧最大步数，�
 
 ```squirrel
 local dynamic = anim.newDynamicBoneSolver(skeleton);
-local hair = dynamic.addChainByName("hair_root", "hair_tip", 0.12, 0.18, 0.8);
-dynamic.setChainEndLength(hair, 0.08);
-dynamic.setChainSelfCollision(hair, true);
+// 发卡/马尾推荐：setupHairChain 带上 tip 延伸与自碰撞默认值
+local hair = anim.setupHairChain(dynamic, "hair_root", "hair_tip");
+anim.setupHairHeadCollider(dynamic, "head", 0.12);
 dynamic.setGlobalGravity(0, -9.81, 0);
 dynamic.setExternalForce(windX, windY, windZ);
-dynamic.addBoneColliderSphere("head", 0, 0.08, 0, 0.12, false);
 dynamic.update(pose, dt);
 
 local feet = anim.newFootIKSolver(skeleton);
@@ -200,7 +293,7 @@ local pose = graph.getPose();
 ```
 
 `addLayer(base, overlay, weight)` 默认 mask 全为 0，须显式设置参与骨骼；
-`addAdditive(base, delta, weight)` 默认作用于全身。Additive clip 应以 identity
+`addAdditive(base, delta, weight)` 默认作用于全身；默认参考是 identity（样本本身就是局部空间 delta），可用 `setAdditiveReference(node, "bind"|"identity")` 改为相对 bind pose，并用 `getAdditiveReference(node)` 读取当前参考。Additive clip 应以 identity
 姿态为参考：位移为差值、旋转为差值四元数、缩放以 1 为基准。
 one-shot 的 shot 输入当前应是 clip 节点，用该 clip 的时长决定结束和淡出。
 
@@ -410,6 +503,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
+- Motion（LitMotion 风格）：`newMotion()`、`newMotionPunch()`、`newMotionShake()`、`newMotionSequence()`、`ensureMotionCapacity()`、`getMotionFloatCapacity()`、`getMotionFloatFreeCount()`、`getMotionCount()`；`MotionBuilder`：`ease()`、`delay()`、`loops()`、`cancelOnError()`、`frequency()`、`dampingRatio()`、`seed()`、`run()`；`Motion`：`isActive()`、`value()`、`complete()`、`cancel()`；`MotionSequence`：`append()`、`join()`、`insert()`、`appendInterval()`、`cursor()`、`duration()`、`itemCount()`、`run()`；`MotionSequenceHandle`：`isActive()`、`childCount()`、`complete()`、`cancel()`
 - 2D 帧动画：`newSpriteSheet()`、`newSpriteSheetFromSequence()`、`newSpriteSheetFromAtlasJson()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`、`getSpriteSequenceCacheCount()`、`getSpriteSequenceCacheBytes()`、`clearSpriteSequenceCache()`
 - Spine：`newSpineAtlas()`、`newSpineAtlasFromFile()`、`newSpineAtlasFromText()`、`newSpineSkeletonData()`、`newSpineSkeletonDataFromFile()`、`newSpineSkeletonDataFromJson()`、`newSpineSkeleton()`、`newSpineAnim()`、`getSpineAnimCount()`
 - `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`setTexture()`、`getTexture()`、`getFrameCount()`、`findFrame()`、`getFrameName()`、`getFrameX()`、`getFrameY()`、`getFrameWidth()`、`getFrameHeight()`、`getFrameSourceWidth()`、`getFrameSourceHeight()`、`getFrameOffsetX()`、`getFrameOffsetY()`、`applyToQuad()`
@@ -422,20 +516,21 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`compress()`、`retarget()`、`sample()`、`wrapTime()`。自定义时间轴可通过 `getTrackCount()`、`getPositionKeyCount()`、`getPositionKeyTime()`、`getPositionKeyX()`、`getPositionKeyY()`、`getPositionKeyZ()`、`getRotationKeyCount()`、`getRotationKeyTime()`、`getRotationKeyX()`、`getRotationKeyY()`、`getRotationKeyZ()`、`getRotationKeyW()`、`getScaleKeyCount()`、`getScaleKeyTime()`、`getScaleKeyX()`、`getScaleKeyY()`、`getScaleKeyZ()` 枚举关键帧，通过 `setPositionKey()`、`setRotationKey()`、`setScaleKey()`、`removePositionKey()`、`removeRotationKey()`、`removeScaleKey()` 和 `clearTrack()` 原位编辑；事件标记使用 `addEvent()`、`setEvent()`、`removeEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`getEventPayload()`；步态同步标记使用 `addSyncMarker()`、`setSyncMarker()`、`removeSyncMarker()`、`getSyncMarkerCount()`、`getSyncMarkerTime()`、`getSyncMarkerName()`。这些是 UI 无关的数据接口，项目可以组合成骨骼时间轴、Avatar 动作面板或游戏内动画工具，无需引擎内置固定窗口。
-- AnimRetargetProfile：用 `addBoneMapping()` / `clearBoneMappings()` 管理 Avatar 式骨骼映射；`setNormalizedNameMatching()` / `getNormalizedNameMatching()` 配置自动匹配；`setRootBones()`、`setAutoRootScale()`、`getAutoRootScale()`、`setRootTranslationScale()`、`getRootHorizontalScale()`、`getRootVerticalScale()`、`setUseSkeletonSpaceRotation()`、`getUseSkeletonSpaceRotation()` 配置重定向；通过 `getMatchedBoneCount()`、`getUnmatchedBoneCount()`、`getUnmatchedTargetBone()` 读取最近一次烘焙诊断；配合 `retargetWithProfile()` 使用。
+- AnimRetargetProfile：用 `addBoneMapping()` / `clearBoneMappings()` 管理 Avatar 式骨骼映射；`setNormalizedNameMatching()` / `getNormalizedNameMatching()` 配置自动匹配；`setRootBones()`、`setAutoRootScale()`、`getAutoRootScale()`、`setRootTranslationScale()`、`getRootHorizontalScale()`、`getRootVerticalScale()`、`setUseSkeletonSpaceRotation()`、`getUseSkeletonSpaceRotation()` 配置重定向；`setSkinnedInteractionPreserve()` / `getSkinnedInteractionPreserve()`、`setInteractionContactThreshold()` / `getInteractionContactThreshold()`、`setInteractionCorrectionWeight()` / `getInteractionCorrectionWeight()`、`addInteractionIkChain()` / `clearInteractionIkChains()` 配置 MeshRet 风格蒙皮交互保持；`setNeuralRetargetEnabled()` / `getNeuralRetargetEnabled()`、`setNeuralBackend()` / `getNeuralBackend()`、`setNeuralModelPath()` / `getNeuralModelPath()` 配置可选神经 MeshRet 路径；通过 `getMatchedBoneCount()`、`getUnmatchedBoneCount()`、`getUnmatchedTargetBone()`、`getInteractionCorrectionCount()`、`getNeuralInferenceCount()` 读取最近一次烘焙诊断；配合 `retargetWithProfile()` 使用。
+- AnimSmrSensorCloud：`fromSkeleton()` 生成骨骼附着传感器，`getSensorCount()` / `getSensorPart()` / `evaluateWorldPositions()` 供诊断或自定义交互查询。
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`aimBone()`、`solveTwoBoneIK()`、`getWorld*()`、`getWorldMatrixElement()`
 - `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`updateMatrixPalette()`、`getMatrixPaletteElement()`、`bindGpuMesh()`、`updateGpuMesh()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`；每次更新跨过的事件由 `getEventCount()`、`getEventName()`、`getEventPayload()` 读取，`clearEvents()` 可提前清空。
-- `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
+- `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`setAdditiveReference()`、`getAdditiveReference()`、`getPose()`、`update()`
 - `AnimBoneMask`：由 `newBoneMask()` 创建；`setAll()`、`setBoneWeight()`、`setBoneWeightByName()`、`setBoneAndChildren()`、`getBoneWeight()`、`getBoneCount()` 定义逐骨权重。
-- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `getBasePlayer()` 设置基础动画，`addLayer(name, player, mask, mode)` 添加 `override` 或 `additive` 层，其中 Additive 以骨架 bind pose 为参考姿势。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
+- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `setBaseGraph()` / `setBaseStateMachine()` 设置基础姿态源，`getBasePlayer()` 读取当前基础 Player（若基础是 Graph/StateMachine 则为 `null`），`addLayer` / `addGraphLayer` / `addStateMachineLayer` 添加 `override` 或 `additive` 层。Additive 默认以骨架 bind pose 为参考，可用 `setLayerAdditiveReference(name, "bind"|"identity")` 切换。禁用层仍会推进时间。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`getLayerWeight()`、`getLayerEnabled()`、`getLayerMode()`、`getLayerAdditiveReference()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
-- 程序化骨骼工厂：`newDynamicBoneSolver()`、`newFootIKSolver()`。
+- 程序化骨骼工厂：`newDynamicBoneSolver()`、`newFootIKSolver()`；发卡便捷：`setupHairChain()`、`setupHairHeadCollider()`。
 - `DynamicBoneSolver`：`setSkeleton()`、`addChain()`、`addChainByName()`、`clearChains()`、`getChainCount()`、`setChainEnabled()`、`isChainEnabled()`、`isChainSleeping()`、`setChainParticleParameters()`、`setChainFreezeAxis()`、`setChainEndLength()`、`setChainEndOffset()`、`clearChainEnd()`、`setChainSelfCollision()`、`setGlobalGravity()`、`getGlobalGravityX()`、`getGlobalGravityY()`、`getGlobalGravityZ()`、`setExternalForce()`、`setWeight()`、`getWeight()`、`setPositionResponse()`、`setRotationResponse()`、`setObjectMoveResponse()`、`getObjectMoveResponse()`、`setTeleportThreshold()`、`getTeleportThreshold()`、`setDistanceReference()`、`setDistanceLimit()`、`addColliderSphere()`、`addColliderCapsule()`、`addBoneColliderSphere()`、`addBoneColliderCapsule()`、`removeCollider()`、`clearColliders()`、`getColliderCount()`、`setColliderEnabled()`、`setColliderRadius()`、`setColliderInside()`、`update()`。
 - `FootIKSolver`：`setSkeleton()`、`setPelvisBone()`、`configureLeftLeg()`、`configureRightLeg()`、`configureLeftToe()`、`configureRightToe()`、`setGroundQuery()`、`setLeftContact()`、`setRightContact()`、`setMinGroundNormalY()`、`setMaxPelvisOffset()`、`setFootLockEnabled()`、`setFootLockThresholds()`、`setContactGraceTime()`、`isLeftFootLocked()`、`isRightFootLocked()`、`apply()`。
 
@@ -451,6 +546,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - 离线导入后可调用 `clip.compress(positionError, rotationErrorDegrees, scaleError)`，以逐轨道曲线误差为上限删除冗余关键帧；首尾关键帧、clip 属性和 gameplay notify 均保留。
 - 简单同构骨架可继续使用 `sourceClip.retarget(sourceSkeleton, targetSkeleton)`。它现在默认使用骨架空间 Bind Pose 校正，并支持忽略大小写、标点及 `mixamorig:` 等命名空间的骨名匹配；输出按 clip 的 sample rate 离线烘焙，可继续压缩、进入状态机或 Animation Graph。
 - 不同命名或体型应创建 AnimRetargetProfile 实例，用 `addBoneMapping(sourceName, targetName)` 建立 Avatar 式映射，`setRootBones(sourcePelvis, targetPelvis)` 指定 Retarget Root，随后调用 `sourceClip.retargetWithProfile(sourceSkeleton, targetSkeleton, profile)`。根位移默认按两副骨架的空间范围等比缩放，可用 `setAutoRootScale(false)` 或 `setRootTranslationScale(horizontal, vertical)` 调整；`getMatchedBoneCount()`、`getUnmatchedBoneCount()` 和 `getUnmatchedTargetBone(i)` 提供导入诊断。若需兼容旧的局部骨轴算法，可关闭 `setUseSkeletonSpaceRotation(false)`。
+- 体型差导致手贴胸、双脚交叉等部位关系被破坏时，可开启 `setSkinnedInteractionPreserve(true)`：引擎在 FK 烘焙后用骨骼附着传感器重建源动作的身体部位相对关系，并通过双骨 IK 拉回末端（经典 SMR/MeshRet 思路，不依赖神经网络权重）。可用 `addInteractionIkChain(root, mid, tip)` 指定手臂/腿链，用 `getInteractionContactThreshold()` / `getInteractionCorrectionWeight()` 读取阈值，用 `getInteractionCorrectionCount()` 确认修正帧数。若构建包含 `animation_tensor`，可再开 `setNeuralRetargetEnabled(true)`（`getNeuralRetargetEnabled()`）并用 `setNeuralBackend("tensor"|"onnx")` / `getNeuralBackend()`、`setNeuralModelPath` / `getNeuralModelPath()` 走 MeshRet 神经路径，用 `getNeuralInferenceCount()` 确认推理帧数；模块未加载或推理失败时自动回退到双骨 IK。
 - 批量角色求值使用 `AnimBatch`：通过 `anim.newBatch()` 创建，逐角色 `add(clip, skeleton, pose, time, lodLevel)`，最后 `evaluate(workerCount)`；另提供 `clear()`、`getCount()` 和 `getLastWorkerCount()`。`workerCount=0` 自动采用硬件并发度，任务以无锁原子索引分发，且拒绝同一 Pose 的并发写入。Pose 混合的平移/缩放在 x86/x64 使用 SSE 路径。
 - 骨骼 LOD 以 0 为最高细节。`skeleton.setBoneLodLimit(bone, highestLod)` 指定骨骼保留到哪一级，`skeleton.getBoneLodLimit(bone)` 可查询；`clip.sampleLod(...)` 和 `AnimBatch` 会让被裁剪轨道回退到目标 Bind Pose。根骨、碰撞骨和 IK 末端应保留较高 limit，手指与装饰骨通常只保留 LOD 0。
 - 程序化后处理使用 `anim.newConstraintStack(skeleton)`。`AnimConstraintStack` 按插入顺序执行 `addAim()`、`addTwoBoneIK()` 和 `addFootIK()`，通过 `apply(pose)` 一次求解；`clear()` 与 `getCount()` 管理队列。Foot IK 将髋-膝-足链种植到地面高度并按地面法线调整足部局部 +Z，可传 sole offset 与权重。

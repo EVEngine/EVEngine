@@ -47,6 +47,7 @@ bool PointSet::empty() const { return points_.empty(); }
 void PointSet::clear() {
     points_.clear();
     attributes_.clear();
+    dataAttributes_.clear();
 }
 
 void appendPointRow(PointSet& output, const PointSet& input, std::size_t index) {
@@ -432,6 +433,18 @@ std::string PointSet::getStringAttribute(int index, const std::string& name, con
 
 bool PointSet::hasStringAttribute(int index, const std::string& name) const {
     return index >= 0 && attributes_.getString(size_t(index), name).has_value();
+}
+
+Result<void> PointSet::tryRenameAttribute(const std::string& from, const std::string& to) {
+    return attributes_.renameColumn(from, to);
+}
+
+Result<void> PointSet::tryDeleteAttribute(const std::string& name) {
+    return attributes_.removeColumn(name);
+}
+
+Result<void> PointSet::tryCopyAttribute(const std::string& from, const std::string& to) {
+    return attributes_.copyColumn(from, to);
 }
 
 std::string PointSet::getAttributeType(int index, const std::string& name) const {
@@ -985,42 +998,6 @@ PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax
     return result;
 }
 
-PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
-                                 const std::string& outputAttribute, const std::string& operation, float operand,
-                                 float defaultValue) {
-    PointSet result = input;
-    for (size_t index = 0; index < result.points().size(); ++index) {
-        const float value  = result.getFloatAttribute(int(index), attribute, defaultValue);
-        float output = value;
-        if (operation == "add")
-            output += operand;
-        else if (operation == "subtract")
-            output -= operand;
-        else if (operation == "multiply")
-            output *= operand;
-        else if (operation == "divide")
-            output /= operand;
-        else if (operation == "min")
-            output = std::min(output, operand);
-        else if (operation == "max")
-            output = std::max(output, operand);
-        result.trySetFloatAttribute(int(index), outputAttribute, output)
-            .expect("mathPointFloatAttribute output schema");
-    }
-    return result;
-}
-
-PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
-                                   bool invert) {
-    if (minValue > maxValue) std::swap(minValue, maxValue);
-    PointSet output;
-    for (size_t index = 0; index < input.points().size(); ++index) {
-        const auto value   = input.attributes().getFloat(index, name);
-        const bool matches = value && *value >= minValue && *value <= maxValue;
-        if (matches != invert) appendPointRow(output, input, index);
-    }
-    return output;
-}
 
 PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
                                     bool invert) {
@@ -1043,6 +1020,93 @@ PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplie
         if (unitFloat(branchSeed) < chance) appendPointRow(output, input, i);
     }
     return output;
+}
+
+PointSet densityFromNormal(const PointSet& input, float minDegrees, float maxDegrees, float outputMin, float outputMax,
+                           bool invert) {
+    if (minDegrees > maxDegrees) std::swap(minDegrees, maxDegrees);
+    PointSet      result     = input;
+    const float   range      = std::max(0.000001f, maxDegrees - minDegrees);
+    constexpr float radToDeg = 57.29577951308232f;
+    for (size_t index = 0; index < result.points().size(); ++index) {
+        auto&       point  = result.mutablePoint(index);
+        const float ny     = std::clamp(point.normalY, -1.f, 1.f);
+        const float degrees = std::acos(ny) * radToDeg;
+        float       t       = (degrees - minDegrees) / range;
+        t                   = std::clamp(t, 0.f, 1.f);
+        if (invert) t = 1.f - t;
+        point.density   = outputMin + t * (outputMax - outputMin);
+        point.steepness = std::clamp(degrees / 90.f, 0.f, 1.f);
+    }
+    return result;
+}
+
+PointSet modifyPointBounds(const PointSet& input, float scaleX, float scaleY, float scaleZ, float padX, float padY,
+                           float padZ) {
+    PointSet result = input;
+    padX            = std::max(0.f, padX);
+    padY            = std::max(0.f, padY);
+    padZ            = std::max(0.f, padZ);
+    for (size_t index = 0; index < result.points().size(); ++index) {
+        auto&       point = result.mutablePoint(index);
+        const float cx    = 0.5f * (point.boundsMinX + point.boundsMaxX);
+        const float cy    = 0.5f * (point.boundsMinY + point.boundsMaxY);
+        const float cz    = 0.5f * (point.boundsMinZ + point.boundsMaxZ);
+        float       hx    = 0.5f * (point.boundsMaxX - point.boundsMinX);
+        float       hy    = 0.5f * (point.boundsMaxY - point.boundsMinY);
+        float       hz    = 0.5f * (point.boundsMaxZ - point.boundsMinZ);
+        if (hx <= 0.f) hx = 0.5f * std::abs(scaleX);
+        else
+            hx *= scaleX;
+        if (hy <= 0.f) hy = 0.5f * std::abs(scaleY);
+        else
+            hy *= scaleY;
+        if (hz <= 0.f) hz = 0.5f * std::abs(scaleZ);
+        else
+            hz *= scaleZ;
+        point.boundsMinX = cx - hx - padX;
+        point.boundsMaxX = cx + hx + padX;
+        point.boundsMinY = cy - hy - padY;
+        point.boundsMaxY = cy + hy + padY;
+        point.boundsMinZ = cz - hz - padZ;
+        point.boundsMaxZ = cz + hz + padZ;
+    }
+    return result;
+}
+
+PointSet assignWeightedMeshAttribute(const PointSet& input, uint32_t seed, const std::string& attribute,
+                                     const std::string* meshes, const float* weights, int entryCount) {
+    PointSet result = input;
+    if (attribute.empty() || !meshes || !weights || entryCount <= 0) return result;
+    float total = 0.f;
+    for (int entry = 0; entry < entryCount; ++entry)
+        if (!meshes[entry].empty() && weights[entry] > 0.f) total += weights[entry];
+    if (total <= 0.f) return result;
+    for (size_t index = 0; index < result.points().size(); ++index) {
+        const auto&    point      = result.points()[index];
+        const uint32_t branchSeed = mix32(seed ^ point.seed ^ uint32_t(index) ^ 0x6d657368u);
+        float          cursor     = unitFloat(branchSeed) * total;
+        std::string    chosen;
+        for (int entry = 0; entry < entryCount; ++entry) {
+            if (meshes[entry].empty() || weights[entry] <= 0.f) continue;
+            cursor -= weights[entry];
+            if (cursor <= 0.f) {
+                chosen = meshes[entry];
+                break;
+            }
+        }
+        if (chosen.empty()) {
+            for (int entry = entryCount - 1; entry >= 0; --entry)
+                if (!meshes[entry].empty() && weights[entry] > 0.f) {
+                    chosen = meshes[entry];
+                    break;
+                }
+        }
+        if (!chosen.empty())
+            result.trySetStringAttribute(int(index), attribute, chosen)
+                .expect("assignWeightedMeshAttribute schema");
+    }
+    return result;
 }
 
 }  // namespace eve::procgen
