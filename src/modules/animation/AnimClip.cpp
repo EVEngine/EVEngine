@@ -2,6 +2,7 @@
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimSmr.h"
 
 #include "common/Exception.h"
 
@@ -684,6 +685,26 @@ std::string AnimRetargetProfile::getUnmatchedTargetBone(int index) const {
     return unmatchedTargetBones_[static_cast<size_t>(index)];
 }
 
+void AnimRetargetProfile::setInteractionContactThreshold(float distance) {
+    if (distance < 0.f) throw Exception("AnimRetargetProfile.setInteractionContactThreshold: distance must be >= 0");
+    interactionContactThreshold_ = distance;
+}
+
+void AnimRetargetProfile::setInteractionCorrectionWeight(float weight) {
+    if (weight < 0.f || weight > 1.f)
+        throw Exception("AnimRetargetProfile.setInteractionCorrectionWeight: weight must be in [0,1]");
+    interactionCorrectionWeight_ = weight;
+}
+
+void AnimRetargetProfile::addInteractionIkChain(const std::string& rootBone, const std::string& midBone,
+                                                const std::string& tipBone) {
+    if (rootBone.empty() || midBone.empty() || tipBone.empty())
+        throw Exception("AnimRetargetProfile.addInteractionIkChain: bone name must not be empty");
+    interactionIkChains_.push_back(AnimSmrIkChain{rootBone, midBone, tipBone});
+}
+
+void AnimRetargetProfile::clearInteractionIkChains() { interactionIkChains_.clear(); }
+
 namespace {
 
 struct RetargetQuat {
@@ -921,6 +942,11 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
                 world.qw                          = worldRotation.w;
             }
         }
+    }
+    if (profile->skinnedInteractionPreserve_) {
+        smrRefineRetargetedClip(*this, *out, sourceSkeleton, targetSkeleton, *profile);
+    } else {
+        profile->interactionCorrectionCount_ = 0;
     }
     return out.release();
 }

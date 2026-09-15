@@ -129,6 +129,23 @@ public:
      * @lifetime Valid until script GC releases it.
      */
     DynamicBoneSolver *newDynamicBoneSolver(AnimSkeleton *skeleton);
+
+    /**
+     * @brief Add a hair/tail spring chain with card-friendly defaults.
+     * @return Chain index, or -1 on failure.
+     */
+    int setupHairChain(DynamicBoneSolver *solver, const std::string &rootBone,
+                       const std::string &tipBone, float stiffness = 0.12f,
+                       float damping = 0.18f, float inertia = 0.8f, float endLength = 0.08f,
+                       bool selfCollision = true);
+
+    /**
+     * @brief Attach a head sphere collider for hair chains.
+     * @return Collider count after add, or -1 on failure.
+     */
+    int setupHairHeadCollider(DynamicBoneSolver *solver, const std::string &boneName,
+                              float radius = 0.12f);
+
     /**
      * @brief Create a paired-foot IK solver for a borrowed skeleton.
      * @ownership Returned object is owned by script GC.
