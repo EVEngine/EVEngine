@@ -1674,8 +1674,11 @@ public:
 
     /**
      * @brief High-quality groom/hair instance (UE GroomComponent analogue).
-     * Caller owns GroomInstance*; its Mesh / Shader / Texture are owned by Graphics.
      * See graphics/hair/ and docs/dev/毛发Groom子系统设计.md.
+     * @ownership Caller owns the returned GroomInstance*; its Mesh / Shader /
+     * Texture remain owned by Graphics.
+     * @lifetime Returned instance is valid until the caller deletes it; Graphics
+     * must outlive draws that use its GPU resources.
      */
     hair::GroomInstance *newGroomInstance();
 

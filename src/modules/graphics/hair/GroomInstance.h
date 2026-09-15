@@ -167,6 +167,10 @@ private:
     };
 
     [[nodiscard]] Result<void> bakeFromStrands(StrandsDatas strands, const char *debugName);
+    /**
+     * @ownership Borrowed pointer into `asset_`; not transferred.
+     * @lifetime Valid until the next asset replace/rebuild that mutates groups.
+     */
     [[nodiscard]] const GroomGroup *primaryGroup() const;
     [[nodiscard]] size_t resolveLodIndex(const GroomGroup &group) const;
     [[nodiscard]] StrandsDatas decimatedStrands(const StrandsDatas &src, float curveFraction) const;
