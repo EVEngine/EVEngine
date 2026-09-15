@@ -1,7 +1,12 @@
 #version 450
-// Side-by-side POM / SilPOM / SSDM for planar faces (flat cards or dihedral corners).
+// Side-by-side POM / SilPOM / SSDM for cylinders (and other charted surfaces).
 // pc.data[0] mode: 0 = classic POM, 1 = Silhouette POM,
 // 2 = SSDM-style (POM shading + FragDepth; no UV-bound discard).
+//
+// Cylinder charts wrap in U (seam at 0/1) and are open in V (top/bottom limbs).
+// POM/SSDM wrap U when sampling so the seam stays continuous; SilPOM does not —
+// it discards when the displaced UV leaves [0,1]^2, which opens the seam and
+// bites the top/bottom silhouette.
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -59,7 +64,14 @@ mat3 makeTBN(vec3 N, vec3 worldPos, vec2 uv) {
     return mat3(T, B, n);
 }
 
-vec2 pomUV(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers) {
+float heightAt(vec2 uv, bool wrapU) {
+    vec2 s = wrapU ? vec2(fract(uv.x), clamp(uv.y, 0.0, 1.0))
+                   : clamp(uv, 0.0, 1.0);
+    return texture(heightSampler, s).r;
+}
+
+vec2 pomUV(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers,
+           bool wrapU) {
     if (scale < 1e-5)
         return uv;
     float layers = mix(max(maxLayers, 1.0), max(minLayers, 1.0),
@@ -70,26 +82,34 @@ vec2 pomUV(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers) 
     vec2 deltaUV = ((viewTS.xy / vz) * scale) / layers;
     vec2 curUV = uv;
     float curDepth = 0.0;
-    float curMapDepth = 1.0 - texture(heightSampler, curUV).r;
+    float curMapDepth = 1.0 - heightAt(curUV, wrapU);
     for (int i = 0; i < 64; ++i) {
         if (curDepth >= curMapDepth || float(i) >= layers)
             break;
         curUV -= deltaUV;
-        curMapDepth = 1.0 - texture(heightSampler, curUV).r;
+        curMapDepth = 1.0 - heightAt(curUV, wrapU);
         curDepth += layerDepth;
     }
     vec2 prevUV = curUV + deltaUV;
     float after = curMapDepth - curDepth;
-    float before = (1.0 - texture(heightSampler, prevUV).r) - (curDepth - layerDepth);
+    float before = (1.0 - heightAt(prevUV, wrapU)) - (curDepth - layerDepth);
     float denom = after - before;
     float weight = (abs(denom) < 1e-5) ? 0.5 : clamp(after / denom, 0.0, 1.0);
-    return mix(curUV, prevUV, weight);
+    vec2 hit = mix(curUV, prevUV, weight);
+    // Keep unwrapped hit for SilPOM coverage; wrap only for continuous sampling.
+    return hit;
 }
 
 float silCoverage(vec2 uv, float padding) {
     vec2 mn = uv - vec2(padding);
     vec2 mx = (1.0 + padding) - uv;
     return (mn.x >= 0.0 && mn.y >= 0.0 && mx.x >= 0.0 && mx.y >= 0.0) ? 1.0 : 0.0;
+}
+
+vec2 sampleUV(vec2 uv, bool wrapU) {
+    if (wrapU)
+        return vec2(fract(uv.x), clamp(uv.y, 0.0, 1.0));
+    return clamp(uv, 0.0, 1.0);
 }
 
 vec3 shadeLit(vec3 albedo, vec3 N, vec3 V) {
@@ -118,40 +138,41 @@ void main() {
     float coverage = 1.0;
     // Vulkan RH_ZO: NDC Z is already [0,1]. Always write FragDepth (any-path rule).
     float fragDepth = gl_FragCoord.z;
+    bool wrapU = true;
 
     if (mode < 0.5) {
         mat3 TBN = makeTBN(N, vWorldPos, vUV);
         if (length(TBN[0]) > 1e-4) {
             vec3 viewTS = normalize(transpose(TBN) * V);
-            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers);
+            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers, true);
         }
+        wrapU = true;
     } else if (mode < 1.5) {
+        // SilPOM: no U wrap — leaving the chart (seam or top/bottom) discards.
         mat3 TBN = makeTBN(N, vWorldPos, vUV);
         if (length(TBN[0]) > 1e-4) {
             vec3 viewTS = normalize(transpose(TBN) * V);
-            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers);
+            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers, false);
         }
         coverage = silCoverage(uv, padding);
+        wrapU = false;
     } else {
-        // SSDM-style on general planar faces (including dihedral corners):
-        // use POM for UVs via per-face TBN (works on both +Z and +X walls), and
-        // write FragDepth toward the camera so the crease stays filled — unlike
-        // SilPOM, we never discard when the displaced UV leaves the chart.
+        // SSDM-style on cylinders: wrap U like POM so the seam stays filled,
+        // never discard on chart exits, and pull FragDepth toward the camera.
         mat3 TBN = makeTBN(N, vWorldPos, vUV);
         if (length(TBN[0]) > 1e-4) {
             vec3 viewTS = normalize(transpose(TBN) * V);
-            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers);
+            uv = pomUV(vUV, viewTS, scale, minLayers, maxLayers, true);
         }
-        // Soften at the chart bottom so relief does not look like it continues
+        // Soften near chart bottom so relief does not look like it continues
         // under the floor. Still sample / shade — do not discard the contact.
         float bottomFade = smoothstep(0.0, 0.08, vUV.y);
         uv = mix(vUV, uv, bottomFade);
-        float h01 = texture(heightSampler, clamp(uv, 0.0, 1.0)).r * bottomFade;
+        float h01 = heightAt(uv, true) * bottomFade;
 
         // Pull toward camera (smaller ZO depth). Stronger on brick tops.
-        // Keeps wall fragments winning against the floor and against the other
-        // face of the corner near the crease.
         fragDepth = clamp(gl_FragCoord.z - (0.002 + h01 * 0.004), 0.0, 1.0);
+        wrapU = true;
     }
 
     if (coverage < 0.5)
@@ -159,7 +180,7 @@ void main() {
 
     gl_FragDepth = fragDepth;
 
-    vec3 albedo = texture(albedoSampler, uv).rgb * vTint.rgb * ubo.tint.rgb;
+    vec3 albedo = texture(albedoSampler, sampleUV(uv, wrapU)).rgb * vTint.rgb * ubo.tint.rgb;
     if (mode < 0.5)
         albedo *= vec3(1.00, 0.93, 0.88);
     else if (mode < 1.5)

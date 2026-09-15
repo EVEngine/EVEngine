@@ -1,13 +1,13 @@
-# SilPOM vs SSDM comparison (dihedral corners)
+# SilPOM vs SSDM comparison (cylinders)
 
-Three brick **corners** (two faces meeting at 90°) under a grazing camera.
-A crease is where the public techniques diverge most clearly:
+Three brick **cylinders** under a grazing camera. A cylinder UV chart wraps once
+around the barrel (`u` seam at 0/1) and is open at the top/bottom (`v` limbs):
 
-| Corner | Technique | What you should notice |
+| Cylinder | Technique | What you should notice |
 | --- | --- | --- |
-| Left (warm) | Classic **POM** | Depth inside each face; **flat** geometric crease |
-| Mid (green) | **SilPOM** | POM + discard when displaced UV leaves the chart → **gaps / bitten silhouette along the crease** |
-| Right (cool) | **SSDM-style** | POM shading + `gl_FragDepth` pull → **crease stays filled**, depth wins against the floor |
+| Left (warm) | Classic **POM** | Depth on the barrel; **geometric** silhouette; seam can wrap |
+| Mid (green) | **SilPOM** | POM + discard when displaced UV leaves the chart → **seam gaps** and **bitten top/bottom limbs** |
+| Right (cool) | **SSDM-style** | POM shading + `gl_FragDepth` pull → **seam stays filled**, depth wins against the floor |
 
 ## Run
 
@@ -34,18 +34,19 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 | `W` / `S` | Pitch |
 | `[` / `]` | Relief scale |
 | `-` / `=` | Max ray-march layers |
-| `1` / `2` / `3` | Focus POM / SilPOM / SSDM corner |
+| `1` / `2` / `3` | Focus POM / SilPOM / SSDM cylinder |
 
 ## Implementation notes
 
 - Shared CPU references: `src/modules/graphics/ParallaxMap.h`
 - Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`, `ssdm.glsl`
 - Demo shader is self-contained (`shaders/compare.frag`)
-- Each corner face is its own UV chart `[0,1]^2` (crease is `u=0` on both) so SilPOM can clip there
-- SSDM path uses per-face TBN + POM for UVs (works on both +Z and +X walls) and FragDepth for occlusion — it does **not** discard on chart exits, which is the point of the crease comparison
-- Educational planar approximation of SSDM, not a full-scene post pass
+- Mesh: `gfx.newMeshCylinder(64, 1, false)` — no caps, so the comparison is the sidewall chart
+- POM/SSDM wrap `u` when sampling (continuous seam); SilPOM does **not**, so chart exits open the seam and bite the limbs
+- SSDM path never discards on chart exits; FragDepth handles occlusion vs the floor
+- Educational planar/TBN approximation of SSDM, not a full-scene post pass
 
 ## Floor contact
 
-Corners sit slightly above the floor; SSDM fades relief near the chart bottom and
+Cylinders sit slightly above the floor; SSDM fades relief near the chart bottom and
 never opens the bottom silhouette, so the floor cannot show through the contact line.

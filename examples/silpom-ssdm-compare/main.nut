@@ -1,9 +1,12 @@
-// SilPOM vs SSDM — three brick *corners* (two faces at 90°) under a grazing camera.
+// SilPOM vs SSDM — three brick *cylinders* under a grazing camera.
 //
-// A dihedral crease is where the techniques diverge most:
-//   Left  = classic POM   — flat geometric crease; relief stays inside each face
-//   Mid   = SilPOM        — POM + discard when UV leaves the chart → gaps along the crease
-//   Right = SSDM-style    — POM shading + FragDepth pull → crease stays filled
+// A cylinder UV chart wraps once around the barrel (seam at u=0/1) and is open
+// at the top/bottom (v=0/1). That is where the techniques diverge:
+//   Left  = classic POM   — geometric silhouette; UV wraps across the seam
+//   Mid   = SilPOM        — POM + discard when UV leaves the chart → seam gaps
+//                           and bitten top/bottom limbs
+//   Right = SSDM-style    — POM shading + FragDepth pull; no chart discard →
+//                           seam stays filled, depth wins against the floor
 //
 // Controls:
 //   O          toggle auto-orbit
@@ -11,7 +14,7 @@
 //   W / S      pitch
 //   [ / ]      relief scale
 //   - / =      max ray-march layers
-//   1 / 2 / 3  focus camera on POM / SilPOM / SSDM corner
+//   1 / 2 / 3  focus camera on POM / SilPOM / SSDM cylinder
 
 persist cmpCam = null
 persist cmpPom = null
@@ -20,15 +23,15 @@ persist cmpSsdm = null
 persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
-persist cmpYaw = 0.55
-persist cmpPitch = 0.22
+persist cmpYaw = 0.35
+persist cmpPitch = 0.16
 persist cmpOrbit = false
-persist cmpScale = 0.12
+persist cmpScale = 0.14
 persist cmpMinLayers = 12.0
 persist cmpMaxLayers = 40.0
 persist cmpFocus = 2
 persist cmpStatus = "orbit off"
-persist cmpCornerMesh = null
+persist cmpCylMesh = null
 
 function clampf(v, a, b) {
     if (v < a) return a;
@@ -37,8 +40,8 @@ function clampf(v, a, b) {
 }
 
 function brickColor(u, v) {
-    local bu = u * 6.0;
-    local bv = v * 3.0;
+    local bu = u * 8.0;
+    local bv = v * 4.0;
     local row = floor(bv);
     local odd = (row.tointeger() % 2) == 1;
     local ou = odd ? (bu + 0.5) : bu;
@@ -67,52 +70,8 @@ function buildTextures() {
     cmpHeight = gfx.newTexture(height, true, true);
 }
 
-// L-shaped dihedral: face +Z (xy) and face +X (zy), crease along +Y through the origin.
-// Each face is its own UV chart [0,1]^2 so SilPOM can clip at the crease (u=0 on both).
-function makeCornerMesh() {
-    local pos = [
-        // A: +Z  (x in [0,1], y in [-1,1], z = 0)
-        0.0, -1.0, 0.0,
-        1.0, -1.0, 0.0,
-        1.0,  1.0, 0.0,
-        0.0,  1.0, 0.0,
-        // B: +X  (z in [0,1], y in [-1,1], x = 0)
-        0.0, -1.0, 0.0,
-        0.0,  1.0, 0.0,
-        0.0,  1.0, 1.0,
-        0.0, -1.0, 1.0
-    ];
-    local nrm = [
-        0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0,
-        1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0
-    ];
-    local uv = [
-        // A: u=x, v=(y+1)/2
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        // B: u=z, v=(y+1)/2 — crease edge is u=0 on both charts
-        0.0, 0.0,
-        0.0, 1.0,
-        1.0, 1.0,
-        1.0, 0.0
-    ];
-    local idx = [
-        0, 1, 2, 0, 2, 3,
-        4, 5, 6, 4, 6, 7
-    ];
-    return gfx.newMeshFromArrays(pos, nrm, uv, 8, idx, 12);
-}
-
-function makeCorner(mode, x) {
-    // One shader instance per corner so push-constant `mode` stays distinct.
+function makeCylinder(mode, x) {
+    // One shader instance per cylinder so push-constant `mode` stays distinct.
     local shader = gfx.newMeshShader(fs.readText("shaders/compare.frag"));
     shader.declareFloat("mode");
     shader.declareFloat("scale");
@@ -125,19 +84,26 @@ function makeCorner(mode, x) {
     shader.sendFloat("maxLayers", cmpMaxLayers);
     shader.sendFloat("padding", 0.0);
 
-    if (cmpCornerMesh == null) cmpCornerMesh = makeCornerMesh();
+    if (cmpCylMesh == null) {
+        // Y-up barrel (radius 1, height 2). No caps — SilPOM vs SSDM is about the
+        // side-wall seam (u=0/1) and the open top/bottom chart edges (v=0/1).
+        cmpCylMesh = gfx.newMeshCylinder(64, 1, false);
+    }
 
     local ent = eve.Renderable3D();
-    ent.setMesh(cmpCornerMesh);
+    ent.setMesh(cmpCylMesh);
     ent.setShader(shader);
     ent.setTexture(cmpAlbedo);
     ent.setHeightTexture(cmpHeight);
     ent.setTint(1.0, 1.0, 1.0, 1.0);
     ent.setCastShadow(false);
     ent.setReceiveShadow(false);
-    // Yaw so the camera looks *into* the crook (both faces visible).
+    // Mesh y in [-1,1]; seat slightly above the floor.
     ent.setPosition(x, 1.08, 0.0);
-    ent.setYaw(-0.55);
+    ent.setScale(0.72, 1.0, 0.72);
+    // Face the UV seam (u=0 at local +X) toward the camera so SilPOM's chart
+    // discard opens a clear vertical gap; SSDM keeps that seam filled.
+    ent.setYaw(0.35);
     return { ent = ent, shader = shader, mode = mode.tofloat(), x = x };
 }
 
@@ -150,28 +116,28 @@ function syncPanel(panel) {
 }
 
 function updateCamera() {
-    local spacing = 3.0;
+    local spacing = 2.6;
     local focusX = (cmpFocus - 2).tofloat() * spacing;
-    local dist = 5.6;
+    local dist = 5.2;
     local cx = focusX + dist * cos(cmpPitch) * sin(cmpYaw);
     local cy = 1.05 + dist * sin(cmpPitch);
     local cz = dist * cos(cmpPitch) * cos(cmpYaw);
     cmpCam.setEye(cx, cy, cz);
-    cmpCam.setTarget(focusX, 1.05, 0.35);
+    cmpCam.setTarget(focusX, 1.05, 0.0);
 }
 
 eve_init = function() {
     gfx.setBackgroundColor(0.10, 0.12, 0.16, 1.0);
     if (cmpAlbedo == null) buildTextures();
-    if (cmpCornerMesh == null) cmpCornerMesh = makeCornerMesh();
-    if (cmpPom == null) cmpPom = makeCorner(0, -3.0);
-    if (cmpSil == null) cmpSil = makeCorner(1, 0.0);
-    if (cmpSsdm == null) cmpSsdm = makeCorner(2, 3.0);
+    if (cmpCylMesh == null) cmpCylMesh = gfx.newMeshCylinder(64, 1, false);
+    if (cmpPom == null) cmpPom = makeCylinder(0, -2.6);
+    if (cmpSil == null) cmpSil = makeCylinder(1, 0.0);
+    if (cmpSsdm == null) cmpSsdm = makeCylinder(2, 2.6);
     if (cmpGround == null) {
         cmpGround = eve.Renderable3D();
         cmpGround.setMesh(gfx.newMeshCube(1.0));
-        cmpGround.setPosition(0.0, -0.08, 0.2);
-        cmpGround.setScale(12.0, 0.16, 5.0);
+        cmpGround.setPosition(0.0, -0.08, 0.0);
+        cmpGround.setScale(14.0, 0.16, 6.0);
         cmpGround.setTint(0.16, 0.17, 0.20, 1.0);
         cmpGround.setRoughness(0.95);
         cmpGround.setCastShadow(false);
@@ -182,25 +148,28 @@ eve_init = function() {
         cmpCam.setAmbient(0.28, 0.30, 0.34);
         cmpCam.setActive(true);
     }
-    gfx.setDirectionalLight(-0.35, 0.45, 0.70, 1.45, 1.30, 1.15);
+    gfx.setDirectionalLight(-0.35, 0.55, 0.65, 1.45, 1.30, 1.15);
 
-    // Always re-apply mesh/layout so persist cannot freeze the old flat cards.
-    cmpPom.ent.setMesh(cmpCornerMesh);
-    cmpSil.ent.setMesh(cmpCornerMesh);
-    cmpSsdm.ent.setMesh(cmpCornerMesh);
-    cmpPom.ent.setPosition(-3.0, 1.08, 0.0);
+    // Always re-apply mesh/layout so persist cannot freeze older corner cards.
+    cmpPom.ent.setMesh(cmpCylMesh);
+    cmpSil.ent.setMesh(cmpCylMesh);
+    cmpSsdm.ent.setMesh(cmpCylMesh);
+    cmpPom.ent.setPosition(-2.6, 1.08, 0.0);
     cmpSil.ent.setPosition(0.0, 1.08, 0.0);
-    cmpSsdm.ent.setPosition(3.0, 1.08, 0.0);
-    cmpPom.ent.setYaw(-0.55);
-    cmpSil.ent.setYaw(-0.55);
-    cmpSsdm.ent.setYaw(-0.55);
-    cmpGround.setPosition(0.0, -0.08, 0.2);
-    cmpGround.setScale(12.0, 0.16, 5.0);
+    cmpSsdm.ent.setPosition(2.6, 1.08, 0.0);
+    cmpPom.ent.setScale(0.72, 1.0, 0.72);
+    cmpSil.ent.setScale(0.72, 1.0, 0.72);
+    cmpSsdm.ent.setScale(0.72, 1.0, 0.72);
+    cmpPom.ent.setYaw(0.35);
+    cmpSil.ent.setYaw(0.35);
+    cmpSsdm.ent.setYaw(0.35);
+    cmpGround.setPosition(0.0, -0.08, 0.0);
+    cmpGround.setScale(14.0, 0.16, 6.0);
 
     syncPanel(cmpPom); syncPanel(cmpSil); syncPanel(cmpSsdm);
     updateCamera();
-    print("SilPOM vs SSDM corners: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
-    print("Left=POM  Mid=SilPOM (crease gaps)  Right=SSDM (filled crease + depth)\n");
+    print("SilPOM vs SSDM cylinders: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
+    print("Left=POM  Mid=SilPOM (seam+limb gaps)  Right=SSDM (filled seam + depth)\n");
 };
 
 eve_asset_reload <- function(path) {
