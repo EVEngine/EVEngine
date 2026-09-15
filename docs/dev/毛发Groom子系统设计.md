@@ -260,8 +260,8 @@ public:
 
 ### Phase 4 — Binding / Guides
 
-- [ ] 发根到蒙皮三角投影；`GroomBinding`  
-- [ ] Guides → strands 权重插值（Rigid/Offset/Smooth）  
+- [x] 发根到蒙皮三角投影；`GroomBinding`  
+- [x] Guides → strands 权重插值（Rigid/Offset/Smooth）  
 
 ### Phase 5 — 仿真
 
@@ -369,4 +369,10 @@ public:
 
 下一步：与 HairCards（PR #400）合并后接线 `Representation::Cards`；再进入 §7 Phase 4 Binding/Guides。
 
+### 2026-09-15 — Phase 4 Binding / Guides
 
+- `Binding.h/.cpp`：`GroomBinding::build` 将发根投影到最近蒙皮三角（barycentric）；`deform` 支持 Rigid / Offset（法线旋转），输入为打包三角网格（不硬依赖 animation 模块）
+- `Guides.h/.cpp`：`extractGuides` 密度抽稀；`buildGuideWeights` kNN 反距离权重；`interpolateStrands` Rigid / Offset / Smooth
+- `GroomGroup::guides` 可选字段 + validate；Cards 接线仍等 PR #400
+
+下一步：与 HairCards 合并后接线 `Representation::Cards`；再进入 §7 Phase 5 仿真（guides XPBD / physics capability）。

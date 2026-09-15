@@ -32,6 +32,11 @@ struct GroomGroup {
     std::string name;
     uint32_t groupId = 0;
     StrandsDatas strands;
+    /**
+     * @brief Optional simulation / interpolation guides (may be empty).
+     * When empty, callers can derive guides via `extractGuides(strands, …)`.
+     */
+    StrandsDatas guides;
     std::vector<GroomLod> lods;
 };
 

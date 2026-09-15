@@ -5,9 +5,11 @@
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/Shader.h"
+#include "graphics/hair/Binding.h"
 #include "graphics/hair/ClusterGrid.h"
 #include "graphics/hair/GroomAsset.h"
 #include "graphics/hair/GroomInstance.h"
+#include "graphics/hair/Guides.h"
 #include "graphics/hair/Procedural.h"
 #include "graphics/hair/RibbonBuilder.h"
 #include "graphics/hair/StrandsDatas.h"
@@ -19,6 +21,15 @@
 
 using eve::graphics::Graphics;
 using eve::graphics::hair::ClusterGrid;
+using eve::graphics::hair::BindingDeformMode;
+using eve::graphics::hair::GroomBinding;
+using eve::graphics::hair::GuideInfluence;
+using eve::graphics::hair::InterpolationMode;
+using eve::graphics::hair::SkinTriMesh;
+using eve::graphics::hair::StrandGuideWeights;
+using eve::graphics::hair::buildGuideWeights;
+using eve::graphics::hair::extractGuides;
+using eve::graphics::hair::interpolateStrands;
 using eve::graphics::hair::GroomAsset;
 using eve::graphics::hair::GroomGroup;
 using eve::graphics::hair::GroomInstance;
@@ -362,4 +373,105 @@ TEST_CASE("graphics.hair.groomInstanceMultiGroupAndMarschner") {
     groom->draw(glm::mat4(1.f));
     gfx->present();
     win->close();
+}
+
+TEST_CASE("graphics.hair.groomBindingProjectsAndDeforms") {
+    // Two strands rooted above a flat quad (two triangles) on XZ.
+    StrandsDatas strands;
+    std::vector<StrandPoint> points;
+    std::vector<StrandCurve> curves;
+    auto add = [&](glm::vec3 root) {
+        StrandCurve c;
+        c.pointOffset = uint32_t(points.size());
+        c.pointCount = 3;
+        points.push_back({root, 0.002f, 0.f});
+        points.push_back({root + glm::vec3(0.f, 0.05f, 0.f), 0.0015f, 0.5f});
+        points.push_back({root + glm::vec3(0.f, 0.1f, 0.f), 0.001f, 1.f});
+        c.length = 0.1f;
+        curves.push_back(c);
+    };
+    add(glm::vec3(-0.2f, 0.f, 0.f));
+    add(glm::vec3(0.2f, 0.f, 0.f));
+    strands.setPoints(std::move(points));
+    strands.setCurves(std::move(curves));
+    REQUIRE(strands.validate().ok());
+
+    float restPos[] = {
+        -0.5f, 0.f, -0.5f, 0.5f, 0.f, -0.5f, 0.5f, 0.f, 0.5f, -0.5f, 0.f, 0.5f,
+    };
+    uint32_t idx[] = {0, 1, 2, 0, 2, 3};
+    SkinTriMesh rest{restPos, 4, idx, 6};
+
+    GroomBinding binding;
+    auto built = binding.build(strands, rest);
+    REQUIRE(built.ok());
+    CHECK_EQ(binding.rootCount(), 2u);
+    REQUIRE(binding.rootAt(0) != nullptr);
+    CHECK(binding.rootAt(0)->triangleIndex < 2u);
+
+    // Lift the scalp by +0.25 on Y; Rigid deform should lift strand roots.
+    float defPos[12];
+    for (int i = 0; i < 4; ++i) {
+        defPos[i * 3 + 0] = restPos[i * 3 + 0];
+        defPos[i * 3 + 1] = restPos[i * 3 + 1] + 0.25f;
+        defPos[i * 3 + 2] = restPos[i * 3 + 2];
+    }
+    SkinTriMesh deformed{defPos, 4, idx, 6};
+    auto moved = binding.deform(strands, deformed, BindingDeformMode::Rigid);
+    REQUIRE(moved.ok());
+    CHECK_EQ(moved.value().curveCount(), 2u);
+    const float y0 = moved.value().curvePoints(0)[0].position.y;
+    CHECK(y0 > 0.2f);
+    CHECK(y0 < 0.3f);
+    // Tip moves by the same delta under Rigid.
+    const float tipDelta =
+        moved.value().curvePoints(0)[2].position.y - strands.curvePoints(0)[2].position.y;
+    CHECK(tipDelta > 0.2f);
+
+    auto offset = binding.deform(strands, deformed, BindingDeformMode::Offset);
+    REQUIRE(offset.ok());
+    CHECK_EQ(offset.value().curveCount(), 2u);
+}
+
+TEST_CASE("graphics.hair.guideWeightsAndInterpolate") {
+    ProceduralParams params;
+    params.strandCount = 24;
+    params.pointsPerStrand = 5;
+    params.seed = 9;
+    auto strands = generateOnPlane(0.3f, 0.3f, params);
+    REQUIRE(strands.ok());
+
+    auto guides = extractGuides(strands.value(), 0.25f);
+    REQUIRE(guides.ok());
+    CHECK(guides.value().curveCount() >= 1u);
+    CHECK(guides.value().curveCount() < strands.value().curveCount());
+
+    auto weights = buildGuideWeights(strands.value(), guides.value(), 3, InterpolationMode::Offset);
+    REQUIRE(weights.ok());
+    CHECK_EQ(weights.value().size(), strands.value().curveCount());
+    float wSum = 0.f;
+    for (int i = 0; i < weights.value()[0].count; ++i) wSum += weights.value()[0].influencers[i].weight;
+    CHECK(wSum > 0.99f);
+    CHECK(wSum < 1.01f);
+
+    // Translate all guide points by +0.1 X and interpolate.
+    StrandsDatas guidesDef = guides.value();
+    std::vector<StrandPoint> gp(guidesDef.points().begin(), guidesDef.points().end());
+    for (auto &p : gp) p.position.x += 0.1f;
+    guidesDef.setPoints(std::move(gp));
+
+    auto rigid = interpolateStrands(strands.value(), guides.value(), guidesDef, weights.value(),
+                                    InterpolationMode::Rigid);
+    REQUIRE(rigid.ok());
+    const float dx =
+        rigid.value().curvePoints(0)[0].position.x - strands.value().curvePoints(0)[0].position.x;
+    CHECK(dx > 0.05f);
+
+    auto offset = interpolateStrands(strands.value(), guides.value(), guidesDef, weights.value(),
+                                     InterpolationMode::Offset);
+    REQUIRE(offset.ok());
+    auto smooth = interpolateStrands(strands.value(), guides.value(), guidesDef, weights.value(),
+                                     InterpolationMode::Smooth);
+    REQUIRE(smooth.ok());
+    CHECK_EQ(smooth.value().curveCount(), strands.value().curveCount());
 }

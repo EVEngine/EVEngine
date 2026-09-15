@@ -29,6 +29,10 @@ Result<void> GroomAsset::addGroup(GroomGroup group) {
     }
     auto strandsOk = group.strands.validate();
     if (!strandsOk.ok()) return Result<void>::failure(strandsOk.status());
+    if (group.guides.curveCount() > 0) {
+        auto guidesOk = group.guides.validate();
+        if (!guidesOk.ok()) return Result<void>::failure(guidesOk.status());
+    }
     groups_.push_back(std::move(group));
     return Result<void>::success();
 }
@@ -55,6 +59,10 @@ Result<void> GroomAsset::validate() const {
     for (size_t i = 0; i < groups_.size(); ++i) {
         auto ok = groups_[i].strands.validate();
         if (!ok.ok()) return Result<void>::failure(ok.status());
+        if (groups_[i].guides.curveCount() > 0) {
+            auto guidesOk = groups_[i].guides.validate();
+            if (!guidesOk.ok()) return Result<void>::failure(guidesOk.status());
+        }
         if (groups_[i].lods.empty()) {
             return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::InvariantViolation, "GroomAsset: group has empty LOD table",
