@@ -143,7 +143,7 @@ void FluidSimulation::computeLambdas() {
     const float rho0 = std::max(params_.restDensity, 1e-6f);
     for (int i = 0; i < count_; ++i) {
         const float rho     = densities_[size_t(i)];
-        const float C       = rho / rho0 - 1.f;
+        const float C       = std::max(0.f, rho / rho0 - 1.f);
         const float gradSq  = glm::dot(gradSums_[size_t(i)], gradSums_[size_t(i)]);
         lambdas_[size_t(i)] = -C / (gradSq + 1e-6f);
     }
@@ -180,12 +180,12 @@ void FluidSimulation::applyPositionCorrections() {
         // Clamp the PBF position correction (standard PBF stabilization):
         // overlapping particles would otherwise amplify the spiky gradient
         // unboundedly and fling the drop apart.
-        const float maxDelta = 0.05f * h;
+        const float     maxDelta   = 0.0005f * h;
         const glm::vec3 correction = delta / rho0;
         const float cl = glm::length(correction);
         if (cl > maxDelta && cl > 1e-9f) p = pi + correction * (maxDelta / cl);
         const float d = sdf_.sample(p);
-        if (d < radius) {
+        {
             glm::vec3   n  = sdf_.gradient(p);
             const float nl = glm::length(n);
             if (nl > 1e-6f)
@@ -211,6 +211,9 @@ void FluidSimulation::integrate(float dt) {
             glm::vec3        viscAcc(0.f);
             glm::vec3        cohesionAcc(0.f);
             float            shearAcc = 0.f;
+            float            neighborWeight = 0.f;
+            float            cohesionWeight = 0.f;
+            const float      particleVolume = std::pow(2.f * radius, 3.f);
             const glm::ivec3 c        = grid_.cellOf(p);
             for (int z = -1; z <= 1; ++z) {
                 for (int y = -1; y <= 1; ++y) {
@@ -225,13 +228,16 @@ void FluidSimulation::integrate(float dt) {
                             const glm::vec3 dx = p - particles_[size_t(j)].pos;
                             const float     r2 = glm::dot(dx, dx);
                             if (r2 < h2) {
-                                if (params_.viscosity > 0.f)
-                                    viscAcc += (particles_[size_t(j)].vel - v) * fluidPoly6(r2, h);
+                                const float weight = fluidPoly6(r2, h) * particleVolume;
+                                if (params_.viscosity > 0.f || params_.yieldStress > 0.f) {
+                                    viscAcc += (particles_[size_t(j)].vel - v) * weight;
+                                    neighborWeight += weight;
+                                }
                                 if (params_.yieldStress > 0.f)
-                                    shearAcc += glm::length(particles_[size_t(j)].vel - v) * fluidPoly6(r2, h);
+                                    shearAcc += glm::length(particles_[size_t(j)].vel - v) * weight;
                                 if (params_.cohesion > 0.f) {
-                                    const float r = std::sqrt(r2);
-                                    cohesionAcc += -params_.cohesion * fluidCohesionKernel(r, h) * (dx / r);
+                                    cohesionAcc -= dx * weight;
+                                    cohesionWeight += weight;
                                 }
                             }
                         }
@@ -242,12 +248,20 @@ void FluidSimulation::integrate(float dt) {
             // so low-shear mud "freezes" and piles up instead of spreading.
             float effectiveViscosity = params_.viscosity;
             if (params_.yieldStress > 0.f && shearAcc > 1e-6f) effectiveViscosity += params_.yieldStress / shearAcc;
-            v += viscAcc * (effectiveViscosity * dt);
-            v += cohesionAcc * dt;
+            if (neighborWeight > 1e-6f) v += (viscAcc / neighborWeight) * std::clamp(effectiveViscosity * dt, 0.f, 1.f);
+            glm::vec3 cohesionNormal = sdf_.gradient(p);
+            if (glm::length(cohesionNormal) > 1e-6f)
+                cohesionNormal = glm::normalize(cohesionNormal);
+            else
+                cohesionNormal = glm::vec3(0.f, 1.f, 0.f);
+            cohesionAcc -= cohesionNormal * glm::dot(cohesionAcc, cohesionNormal);
+            if (cohesionWeight > 1e-6f)
+                v += fluidClampSpeed((cohesionAcc / cohesionWeight) * (params_.cohesion * 100.f * dt), radius);
         }
 
         v += params_.gravity * dt;
         v *= std::max(0.f, 1.f - params_.damping * dt);
+        if (params_.adhesion > 0.f) v *= std::exp(-params_.adhesion * 300.f * dt);
         v = fluidClampSpeed(v, params_.maxVelocity);
         p += v * dt;
 
@@ -260,14 +274,14 @@ void FluidSimulation::integrate(float dt) {
             n /= nl;
         else
             n = glm::vec3(0.f, 1.f, 0.f);
-        if (d < radius) {
+        {
             p              = p - n * (d - radius);
             const float vn = glm::dot(v, n);
-            if (vn < 0.f) v -= n * vn;
+            v -= n * vn;
             d = radius;
         }
         // Adhesion: pull the film toward the solid while within range.
-        if (params_.adhesion > 0.f && d < h) v += -n * (params_.adhesion * fluidCohesionKernel(d, h) * dt);
+        if (params_.adhesion > 0.f && d < h) v += -n * (params_.adhesion * std::max(0.f, 1.f - d / h) * dt * 30.f);
 
         particles_[size_t(i)].pos = p;
         particles_[size_t(i)].vel = v;
