@@ -16,6 +16,12 @@
 
 namespace eve::fluids {
 
+/** @brief One trilinear SDF sample and its local-space analytic gradient. */
+struct MeshSdfSample {
+    float     distance = 0.f;
+    glm::vec3 gradient{0.f, 1.f, 0.f};
+};
+
 /** @brief Uniform signed-distance voxel field over a box. */
 class MeshSdf {
 public:
@@ -40,12 +46,20 @@ public:
     /**
      * @brief Trilinearly interpolated signed distance at p.
      * @param p world position.
-     * @return distance, clamped at the field boundary.
+     * @return distance, extended by Euclidean distance beyond the field boundary.
      */
     float sample(const glm::vec3& p) const;
 
     /**
-     * @brief Central-difference gradient (outward normal) at p.
+     * @brief Samples distance and analytic trilinear gradient from the same eight voxels.
+     * @param p world
+     * position.
+     * @return distance and outward gradient at p.
+     */
+    MeshSdfSample sampleWithGradient(const glm::vec3& p) const;
+
+    /**
+     * @brief Analytic trilinear gradient (outward normal) at p.
      * @param p world position.
      * @return gradient vector (not normalized).
      */
@@ -73,10 +87,11 @@ public:
      * @brief Voxelize a closed triangle mesh.
      *
      * Unsigned distance is swept triangle-by-triangle over each triangle's
-     * expanded AABB; the sign comes from an even-odd raycast along +X.
+     * expanded AABB, with exact evaluation for untouched cells; the sign comes
+     * from a deterministic
+     * skew-direction even-odd raycast.
      * @param positions triangle vertices, 3 floats each.
      * @param indices triangle indices, 3 ints per triangle.
-     * @param triangleCount number of triangles.
      * @param dims voxel resolution.
      * @return signed field over the mesh's bounding box (padded one voxel).
      */

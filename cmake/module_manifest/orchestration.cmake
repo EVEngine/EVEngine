@@ -61,7 +61,8 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
 # surfaces, droplet coalescence) with screen-space surface reconstruction. Its
 # accelerator provider has an independent lifetime from physics_cloth.
 eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
-                   DEPS gpgpu graphics physics physics_backend
+                   DEPS gpgpu graphics image physics physics_backend
+                   OPTIONAL_DEPS model3d
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction
@@ -150,7 +151,8 @@ eve_declare_module(NAME definitions_editor LAYER 7 DEPS definitions_editing edit
 eve_declare_module(NAME dialogue_editor LAYER 7 DEPS audio_editor dialogue_editing editor GROUP 3d web)
 eve_declare_module(NAME graphics_editor LAYER 7 SCRIPT GraphicsEditorModule SLOT graphicsEditor
                    DEPS editor graphics graphics_editing GROUP 3d web)
-eve_declare_module(NAME fluids_editor LAYER 7 DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
+eve_declare_module(NAME fluids_editor LAYER 7 SCRIPT FluidsEditorModule SLOT fluidsEditor
+                   DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
 eve_declare_module(NAME hd2d_editor LAYER 7 DEPS editor hd2d_editing GROUP 3d)
 eve_declare_module(NAME housegen_editor LAYER 7 DEPS domain_gizmo_editor editor housegen_editing GROUP 3d)
 eve_declare_module(NAME archspace_editor LAYER 7

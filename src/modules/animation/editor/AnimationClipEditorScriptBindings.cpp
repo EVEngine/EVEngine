@@ -2,8 +2,10 @@
 
 #include "animation/editor/AnimationClipEditor.h"
 #include "animation/editor/AnimationEditorModule.h"
+#if defined(EVE_ANIMATION_EDITOR_RUNTIME)
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#endif
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
@@ -70,6 +72,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
                                                      "workspace");
                            return project(vm, self->editor().configureWorkspace(*workspace));
                        });
+#if defined(EVE_ANIMATION_EDITOR_RUNTIME)
     clipEditor.addFunc("loadRuntimeClip", [vm](ScriptAnimationClipEditor* self, animation::AnimSkeleton* skeleton,
                                                 animation::AnimClip* clip) {
         if (!self || !skeleton || !clip)
@@ -84,6 +87,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
                                   "animation clip editor, clip and skeleton must not be null");
         return project(vm, self->editor().writeRuntimeClip(*clip, *skeleton));
     });
+#endif
     clipEditor.addFunc("setViewport",
                        [vm](ScriptAnimationClipEditor* self, float width, float rowHeight, float labelWidth) {
                            if (!self)

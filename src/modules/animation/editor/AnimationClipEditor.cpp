@@ -1,8 +1,10 @@
 #include "animation/editor/AnimationClipEditor.h"
 
+#if defined(EVE_ANIMATION_EDITOR_RUNTIME)
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#endif
 #include "editor/EditorProtocol.h"
 
 #include <algorithm>
@@ -46,6 +48,7 @@ AnimationClipEditor::AnimationClipEditor(std::string targetId)
         previewed.ignore("animation clip editor keeps an empty overlay when the seeded preview is rejected");
 }
 
+#if defined(EVE_ANIMATION_EDITOR_RUNTIME)
 animation_editing::EditorResult<void> AnimationClipEditor::loadRuntimeClip(const animation::AnimSkeleton& skeleton,
                                                                             const animation::AnimClip& clip) {
     if (skeleton.getBoneCount() <= 0 || clip.getDuration() <= 0.0f)
@@ -101,6 +104,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::writeRuntimeClip(
     clip.adopt(*candidate);
     return eve::editing::applied<void>();
 }
+#endif
 
 void AnimationClipEditor::seedPreviewClip() {
     animation_editing::EditorValue::Array tracks;

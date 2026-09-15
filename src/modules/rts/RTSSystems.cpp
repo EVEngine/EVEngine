@@ -4824,14 +4824,19 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 policy->guardSet = true;
             }
             const std::string ownFaction = factionKey(faction->link);
-            auto queried = sensing.circle(motion->x, motion->y, policy->acquisitionRange, "combat-target", "",
-                                          "", ownFaction, "", static_cast<int>(targets.size()));
+            eve::sensing::QuerySpec acquisition;
+            acquisition.shape           = eve::sensing::QueryCircle{motion->x, motion->y, policy->acquisitionRange};
+            acquisition.requiredTags    = {"combat-target"};
+            acquisition.excludeFactions = {ownFaction};
+            acquisition.maxRange        = policy->acquisitionRange;
+            acquisition.maxCount        = static_cast<std::uint32_t>(targets.size());
+            acquisition.countPolicy     = eve::sensing::CountPolicy::TruncateToMax;
+            acquisition.sortKey         = eve::sensing::SortKey::DistanceAscending;
+            auto queried = sensing.query(eve::sensing::QueryOrigin{motion->x, motion->y, std::nullopt}, acquisition);
             if (!queried) return failureFrom<std::size_t>(queried.status());
             float bestPriority = -1.0f;
-            for (int index = 0; index < queried.value(); ++index) {
-                auto candidate = sensing.resultAt(index);
-                if (!candidate) continue;
-                auto found = targets.find(candidate->get().id);
+            for (const auto& candidate : queried.value().ranked()) {
+                auto found = targets.find(candidate.id);
                 if (found == targets.end()) continue;
                 Target* accepted = validTarget(found->second.handle, true);
                 if (accepted != nullptr) {
@@ -5058,15 +5063,20 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         }
         if (target == nullptr && acquisitionRange > 0.0f) {
             const std::string ownFaction = factionKey(faction->link);
-            auto queried = sensing.circle(placement->worldX, placement->worldY, acquisitionRange,
-                                          "combat-target", "", "", ownFaction, "",
-                                          static_cast<int>(targets.size()));
+            eve::sensing::QuerySpec acquisition;
+            acquisition.shape           = eve::sensing::QueryCircle{placement->worldX, placement->worldY, acquisitionRange};
+            acquisition.requiredTags    = {"combat-target"};
+            acquisition.excludeFactions = {ownFaction};
+            acquisition.maxRange        = acquisitionRange;
+            acquisition.maxCount        = static_cast<std::uint32_t>(targets.size());
+            acquisition.countPolicy     = eve::sensing::CountPolicy::TruncateToMax;
+            acquisition.sortKey         = eve::sensing::SortKey::DistanceAscending;
+            auto queried = sensing.query(
+                eve::sensing::QueryOrigin{placement->worldX, placement->worldY, std::nullopt}, acquisition);
             if (!queried) return failureFrom<std::size_t>(queried.status());
             float bestPriority = -1.0f;
-            for (int index = 0; index < queried.value(); ++index) {
-                auto candidate = sensing.resultAt(index);
-                if (!candidate) continue;
-                auto found = targets.find(candidate->get().id);
+            for (const auto& candidate : queried.value().ranked()) {
+                auto found = targets.find(candidate.id);
                 if (found == targets.end()) continue;
                 Target* accepted = resolveTarget(found->second.handle);
                 if (accepted != nullptr) {

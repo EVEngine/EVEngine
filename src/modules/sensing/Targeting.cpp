@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iterator>
+#include <limits>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -181,6 +182,20 @@ Result<WorldArea> WorldArea::box3D(WorldPoint minimum, WorldPoint maximum) {
     return Result<WorldArea>::success(WorldArea(Shape::Box3D, minimum, maximum, 0.f));
 }
 
+Result<WorldArea> WorldArea::cone2D(WorldPoint apex, float dirX, float dirY, float halfAngleRadians, float range) {
+    if (!apex.isValid() || apex.space() != CoordinateSpace::World2D || !std::isfinite(dirX) || !std::isfinite(dirY) ||
+        !std::isfinite(halfAngleRadians) || !std::isfinite(range) || halfAngleRadians < 0.f ||
+        halfAngleRadians > 3.14159265f || range < 0.f || !(std::hypot(dirX, dirY) > 0.f)) {
+        return failure<WorldArea>(
+            DiagnosticCode::InvalidArgument,
+            "WorldArea.cone2D requires World2D apex, non-zero dir, halfAngle in [0,pi], non-negative range");
+    }
+    auto direction = WorldPoint::world2D(dirX, dirY);
+    if (!direction) return failure<WorldArea>(direction.status());
+    return Result<WorldArea>::success(
+        WorldArea(Shape::Cone2D, apex, direction.value(), range, halfAngleRadians));
+}
+
 bool WorldArea::contains(WorldPoint point) const noexcept {
     if (!valid_ || !point.isValid() || point.space() != space_) return false;
     if (shape_ == Shape::Circle2D || shape_ == Shape::Sphere3D) {
@@ -189,6 +204,22 @@ bool WorldArea::contains(WorldPoint point) const noexcept {
         const double dz       = static_cast<double>(point.z()) - first_.z();
         const double distance = dx * dx + dy * dy + dz * dz;
         return distance <= static_cast<double>(radius_) * radius_;
+    }
+    if (shape_ == Shape::Cone2D) {
+        const float dx     = point.x() - first_.x();
+        const float dy     = point.y() - first_.y();
+        const float distSq = dx * dx + dy * dy;
+        if (distSq > radius_ * radius_) return false;
+        if (distSq == 0.f) return true;
+        const float facingLen = std::hypot(second_.x(), second_.y());
+        if (!(facingLen > 0.f)) return false;
+        const float invDist = 1.f / std::sqrt(distSq);
+        const float nx      = dx * invDist;
+        const float ny      = dy * invDist;
+        const float fx      = second_.x() / facingLen;
+        const float fy      = second_.y() / facingLen;
+        const float dot     = std::clamp(nx * fx + ny * fy, -1.f, 1.f);
+        return std::acos(dot) <= halfAngle_;
     }
     return point.x() >= first_.x() && point.x() <= second_.x() && point.y() >= first_.y() && point.y() <= second_.y() &&
            (shape_ == Shape::Box2D || (point.z() >= first_.z() && point.z() <= second_.z()));
@@ -332,6 +363,91 @@ Result<std::vector<TargetCandidate>> SensingCandidateProvider::query(const Targe
     return Result<std::vector<TargetCandidate>>::success(std::move(result));
 }
 
+Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const TargetingQuery& query) const {
+    auto valid = query.validate();
+    if (!valid) return failure<std::vector<TargetCandidate>>(valid.status());
+    if (world_ == nullptr)
+        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider has no bound SensingWorld");
+    if (query.spec.space != CoordinateSpace::World2D)
+        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider supports World2D only");
+    if (query.spec.gridArea)
+        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider does not support grid areas");
+    if (query.spec.domain != TargetDomain::Any && !relation_)
+        return unsupported<std::vector<TargetCandidate>>(
+            "TargetDomain filters require an injected FactionRelationFn on SensingWorldCandidateProvider");
+
+    const auto* originPoint = std::get_if<WorldPoint>(&query.originLocation);
+    if (originPoint == nullptr || !originPoint->isValid() || originPoint->space() != CoordinateSpace::World2D)
+        return failure<std::vector<TargetCandidate>>(DiagnosticCode::InvalidArgument,
+                                                     "SensingWorldCandidateProvider origin must be a World2D point");
+
+    QuerySpec spec;
+    spec.minRange        = query.spec.minRange;
+    spec.maxRange        = query.spec.maxRange;
+    spec.requiredTags    = query.spec.requiredTags;
+    spec.excludedTags    = query.spec.excludedTags;
+    spec.minCount        = 0;
+    spec.maxCount        = std::numeric_limits<std::uint32_t>::max();
+    spec.countPolicy     = CountPolicy::TruncateToMax;
+    spec.sortKey         = SortKey::DistanceAscending;
+
+    auto queried = world_->query(QueryOrigin{originPoint->x(), originPoint->y(), query.origin.format()}, spec);
+    if (!queried) return failure<std::vector<TargetCandidate>>(queried.status());
+
+    std::string originFaction;
+    if (const auto found = world_->subjects().find(query.origin.format()); found != world_->subjects().end())
+        originFaction = found->second.faction;
+
+    std::vector<TargetCandidate> result;
+    result.reserve(queried.value().size());
+    for (const auto& ranked : queried.value().ranked()) {
+        auto persistent = PersistentId::parse(ranked.id);
+        if (!persistent)
+            return failure<std::vector<TargetCandidate>>(
+                DiagnosticCode::InvalidArgument,
+                "SensingWorld subject id must be a PersistentId UUID for Targeting adapters", "subject.id");
+        auto location = WorldPoint::world2D(ranked.x, ranked.y);
+        if (!location) return failure<std::vector<TargetCandidate>>(location.status());
+        if (query.spec.worldArea && !query.spec.worldArea->contains(location.value())) continue;
+
+        TargetDomain domain = TargetDomain::Neutral;
+        if (relation_) {
+            const auto subjectIt = world_->subjects().find(ranked.id);
+            const std::string_view candidateFaction =
+                subjectIt == world_->subjects().end() ? std::string_view{} : std::string_view{subjectIt->second.faction};
+            auto related = relation_(originFaction, candidateFaction);
+            if (!related) return failure<std::vector<TargetCandidate>>(related.status());
+            domain = std::move(related).takeValue();
+        }
+        if (query.spec.domain != TargetDomain::Any && domain != query.spec.domain) continue;
+
+        TargetCandidate candidate;
+        candidate.subject  = SubjectRef::fromPersistentId(*persistent);
+        candidate.location = std::move(location).takeValue();
+        candidate.domain   = domain;
+        const auto& subjectFacts = world_->subjects().at(ranked.id);
+        candidate.tags.assign(subjectFacts.tags.begin(), subjectFacts.tags.end());
+        candidate.zones.clear();
+        candidate.zones.reserve(subjectFacts.zones.size());
+        for (const auto& zoneText : subjectFacts.zones) {
+            auto logical = LogicalId::parse(zoneText);
+            if (!logical)
+                return failure<std::vector<TargetCandidate>>(
+                    DiagnosticCode::InvalidArgument,
+                    "SensingWorld subject zone must be a valid LogicalId", "subject.zones");
+            auto zone = ZoneRef::fromLogicalId(*logical);
+            if (!zone)
+                return failure<std::vector<TargetCandidate>>(
+                    DiagnosticCode::InvalidArgument,
+                    "SensingWorld subject zone must form a valid ZoneRef", "subject.zones");
+            candidate.zones.push_back(*zone);
+        }
+        if (query.spec.zone && !inZone(candidate, query.spec.zone)) continue;
+        result.push_back(std::move(candidate));
+    }
+    return Result<std::vector<TargetCandidate>>::success(std::move(result));
+}
+
 Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const {
     auto valid = query.validate();
     if (!valid) return failure<TargetSet>(valid.status());
@@ -349,7 +465,12 @@ Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const 
         if (!los) return unsupported<TargetSet>("Targeting line-of-sight was requested but no provider is registered");
     }
 
-    TargetSet result;
+    struct Ranked {
+        TargetCandidate candidate;
+        double          distance = 0.0;
+    };
+    std::vector<Ranked> accepted;
+    accepted.reserve(candidates.size());
     for (const auto& candidate : candidates) {
         if (!candidate.subject.isValid() ||
             !std::visit([](const auto& value) { return value.isValid(); }, candidate.location))
@@ -363,13 +484,30 @@ Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const 
             if (!visible) return failure<TargetSet>(visible.status());
             if (!std::move(visible).takeValue().visible) continue;
         }
-        auto added = result.addSubject(candidate.subject);
-        std::move(added).expect("TargetingResolver could not add a validated candidate");
+        accepted.push_back(Ranked{candidate, std::sqrt(distanceSquared(query.originLocation, candidate.location))});
     }
 
-    if (result.subjects().size() < query.spec.minCount || result.subjects().size() > query.spec.maxCount)
+    if (query.spec.countPolicy == CountPolicy::TruncateToMax) {
+        std::sort(accepted.begin(), accepted.end(), [](const Ranked& a, const Ranked& b) {
+            if (a.distance != b.distance) return a.distance < b.distance;
+            return a.candidate.subject.format() < b.candidate.subject.format();
+        });
+        if (accepted.size() > static_cast<std::size_t>(query.spec.maxCount))
+            accepted.resize(static_cast<std::size_t>(query.spec.maxCount));
+        if (accepted.size() < static_cast<std::size_t>(query.spec.minCount))
+            return failure<TargetSet>(DiagnosticCode::PreconditionViolation,
+                                      "target candidate count is below TargetingSpec.minCount after truncation");
+    } else if (accepted.size() < static_cast<std::size_t>(query.spec.minCount) ||
+               accepted.size() > static_cast<std::size_t>(query.spec.maxCount)) {
         return failure<TargetSet>(DiagnosticCode::PreconditionViolation,
                                   "target candidate count violates TargetingSpec");
+    }
+
+    TargetSet result;
+    for (const auto& entry : accepted) {
+        auto added = result.addSubject(entry.candidate.subject);
+        std::move(added).expect("TargetingResolver could not add a validated candidate");
+    }
     return Result<TargetSet>::success(std::move(result));
 }
 
