@@ -51,6 +51,9 @@ class Drawable;
 class GBuffer;
 class GlobalIllumination;
 class GrassField;
+namespace hair {
+class GroomInstance;
+}
 class Material;
 class Mesh;
 class PrimitiveScene;
@@ -1627,6 +1630,18 @@ public:
     Shader *newHairShader();
 
     /**
+     * @brief Procedural upright hair/fur card mesh (root at origin, height +Y, face +Z).
+     * @ownership Owned by Graphics.
+     */
+    Mesh *newHairCardMesh(float width = 0.12f, float height = 0.45f);
+
+    /**
+     * @brief Material preconfigured for hair cards (transparent, double-sided, hair shader).
+     * @ownership Caller owns the Material*; shader is owned by Graphics.
+     */
+    Material *newHairCardMaterial(Texture *albedo = nullptr);
+
+    /**
      * @brief Eagerly releases a shader created by this Graphics.
      *
      * Mirrors releaseTexture: the returned handle is borrowed, a successful
@@ -1656,6 +1671,16 @@ public:
      * its Mesh / Shader / Texture are owned by Graphics.
      */
     GrassField *newGrassField();
+
+    /**
+     * @brief High-quality groom/hair instance (UE GroomComponent analogue).
+     * See graphics/hair/ and docs/dev/毛发Groom子系统设计.md.
+     * @ownership Caller owns the returned GroomInstance*; its Mesh / Shader /
+     * Texture remain owned by Graphics.
+     * @lifetime Returned instance is valid until the caller deletes it; Graphics
+     * must outlive draws that use its GPU resources.
+     */
+    hair::GroomInstance *newGroomInstance();
 
     /**
      * @brief Flowing waterfall (falling water sheet) with sky reflection, downward

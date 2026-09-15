@@ -40,15 +40,26 @@ TEST_CASE("graphics.HairShader.bindDefaults") {
     eve::graphics::hair::bindDefaults(&sh);
     CHECK(sh.hasUniform("specExp"));
     CHECK(sh.hasUniform("strandDir"));
+    CHECK(sh.hasUniform("marschnerR"));
+    CHECK(sh.hasUniform("marschnerTT"));
+    CHECK(sh.hasUniform("marschnerTRT"));
+    CHECK(sh.hasUniform("selfShadowStrength"));
+    CHECK(sh.hasUniform("selfShadowBias"));
+    CHECK(sh.hasUniform("rootAoStrength"));
     CHECK_EQ(sh.getUniformIndex("specExp"), 0);
     CHECK_EQ(sh.getUniformIndex("strandDir"), 6);
-    CHECK_EQ(sh.usedFloats(), 9);
+    CHECK_EQ(sh.getUniformIndex("marschnerR"), 9);
+    CHECK_EQ(sh.usedFloats(), 15);
 }
 
 TEST_CASE("graphics.HairShader.paramNames") {
-    CHECK_EQ(eve::graphics::hair::paramCount(), 9);
+    CHECK_EQ(eve::graphics::hair::paramCount(), 15);
     CHECK_EQ(eve::graphics::hair::paramName(0), std::string("specExp"));
     CHECK_EQ(eve::graphics::hair::paramName(8), std::string("strandDirZ"));
+    CHECK_EQ(eve::graphics::hair::paramName(9), std::string("marschnerR"));
+    CHECK_EQ(eve::graphics::hair::paramName(11), std::string("marschnerTRT"));
+    CHECK_EQ(eve::graphics::hair::paramName(12), std::string("selfShadowStrength"));
+    CHECK_EQ(eve::graphics::hair::paramName(14), std::string("rootAoStrength"));
 }
 
 TEST_CASE("graphics.HairShader.spvMagic") {
@@ -67,8 +78,16 @@ TEST_CASE("graphics.HairShader.createGpuPipeline") {
     REQUIRE(shader->gpuHandle != nullptr);
     CHECK(shader->hasUniform("specExp"));
     CHECK(shader->hasUniform("strandDir"));
+    CHECK(shader->hasUniform("marschnerR"));
     shader->sendFloat("specStrength", 0.7f);
     shader->sendVec3("strandDir", 0.f, 1.f, 0.f);
+    shader->sendFloat("marschnerR", 1.2f);
+    shader->sendFloat("marschnerTT", 0.5f);
+    shader->sendFloat("marschnerTRT", 0.3f);
+    CHECK(shader->hasUniform("selfShadowStrength"));
+    shader->sendFloat("selfShadowStrength", 0.5f);
+    shader->sendFloat("selfShadowBias", 0.2f);
+    shader->sendFloat("rootAoStrength", 0.4f);
     win->close();
 }
 

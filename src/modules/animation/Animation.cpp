@@ -11,6 +11,7 @@
 #include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
 #include "animation/DynamicBoneSolver.h"
+#include "animation/HairDynamicBones.h"
 #include "animation/FootIKSolver.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
@@ -328,6 +329,29 @@ AnimConstraintStack *Animation::newConstraintStack(AnimSkeleton *skeleton) {
 }
 DynamicBoneSolver *Animation::newDynamicBoneSolver(AnimSkeleton *skeleton) {
     return new DynamicBoneSolver(skeleton);
+}
+
+int Animation::setupHairChain(DynamicBoneSolver *solver, const std::string &rootBone,
+                              const std::string &tipBone, float stiffness, float damping,
+                              float inertia, float endLength, bool selfCollision) {
+    if (!solver) return -1;
+    hair::ChainDesc desc;
+    desc.rootBone = rootBone;
+    desc.tipBone = tipBone;
+    desc.stiffness = stiffness;
+    desc.damping = damping;
+    desc.inertia = inertia;
+    desc.endLength = endLength;
+    desc.selfCollision = selfCollision;
+    auto result = hair::addChain(*solver, desc);
+    return result ? result.value() : -1;
+}
+
+int Animation::setupHairHeadCollider(DynamicBoneSolver *solver, const std::string &boneName,
+                                     float radius) {
+    if (!solver) return -1;
+    auto result = hair::addHeadCollider(*solver, boneName, radius);
+    return result ? result.value() : -1;
 }
 FootIKSolver *Animation::newFootIKSolver(AnimSkeleton *skeleton) { return new FootIKSolver(skeleton); }
 AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
@@ -882,6 +906,8 @@ void Animation::expose(ssq::Table &table) {
     graph.addFunc("setSpeed", &AnimGraph::setSpeed);
     graph.addFunc("trigger", &AnimGraph::trigger);
     graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
+    graph.addFunc("setAdditiveReference", &AnimGraph::setAdditiveReferenceCompat);
+    graph.addFunc("getAdditiveReference", &AnimGraph::getAdditiveReference);
     graph.addFunc("getPose", &AnimGraph::getPose);
     graph.addFunc("update", &AnimGraph::update);
 
@@ -902,13 +928,22 @@ void Animation::expose(ssq::Table &table) {
     auto mixer = table.addClass<AnimLayerMixer>(
         "AnimLayerMixer", std::function<AnimLayerMixer*()>([]() -> AnimLayerMixer* { return nullptr; }), true);
     mixer.addFunc("setBasePlayer", &AnimLayerMixer::setBasePlayer);
+    mixer.addFunc("setBaseGraph", &AnimLayerMixer::setBaseGraph);
+    mixer.addFunc("setBaseStateMachine", &AnimLayerMixer::setBaseStateMachine);
     mixer.addFunc("getBasePlayer", &AnimLayerMixer::getBasePlayer);
     mixer.addFunc("addLayer", &AnimLayerMixer::addLayer);
+    mixer.addFunc("addGraphLayer", &AnimLayerMixer::addGraphLayer);
+    mixer.addFunc("addStateMachineLayer", &AnimLayerMixer::addStateMachineLayer);
     mixer.addFunc("removeLayer", &AnimLayerMixer::removeLayer);
     mixer.addFunc("setLayerWeight", &AnimLayerMixer::setLayerWeight);
     mixer.addFunc("setLayerEnabled", &AnimLayerMixer::setLayerEnabled);
+    mixer.addFunc("setLayerAdditiveReference", &AnimLayerMixer::setLayerAdditiveReferenceCompat);
     mixer.addFunc("getLayerCount", &AnimLayerMixer::getLayerCount);
     mixer.addFunc("getLayerName", &AnimLayerMixer::getLayerName);
+    mixer.addFunc("getLayerWeight", &AnimLayerMixer::getLayerWeight);
+    mixer.addFunc("getLayerEnabled", &AnimLayerMixer::getLayerEnabled);
+    mixer.addFunc("getLayerMode", &AnimLayerMixer::getLayerMode);
+    mixer.addFunc("getLayerAdditiveReference", &AnimLayerMixer::getLayerAdditiveReference);
     mixer.addFunc("update", &AnimLayerMixer::update);
     mixer.addFunc("getPose", &AnimLayerMixer::getPose);
     mixer.addFunc("getEventCount", &AnimLayerMixer::getEventCount);
@@ -1369,6 +1404,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newBatch", &Animation::newBatch);
     cls.addFunc("newConstraintStack", &Animation::newConstraintStack);
     cls.addFunc("newDynamicBoneSolver", &Animation::newDynamicBoneSolver);
+    cls.addFunc("setupHairChain", &Animation::setupHairChain);
+    cls.addFunc("setupHairHeadCollider", &Animation::setupHairHeadCollider);
     cls.addFunc("newFootIKSolver", &Animation::newFootIKSolver);
     cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);

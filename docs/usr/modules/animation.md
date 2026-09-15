@@ -115,12 +115,11 @@ solver 活得更久。`update` 使用固定子步并限制单帧最大步数，�
 
 ```squirrel
 local dynamic = anim.newDynamicBoneSolver(skeleton);
-local hair = dynamic.addChainByName("hair_root", "hair_tip", 0.12, 0.18, 0.8);
-dynamic.setChainEndLength(hair, 0.08);
-dynamic.setChainSelfCollision(hair, true);
+// 发卡/马尾推荐：setupHairChain 带上 tip 延伸与自碰撞默认值
+local hair = anim.setupHairChain(dynamic, "hair_root", "hair_tip");
+anim.setupHairHeadCollider(dynamic, "head", 0.12);
 dynamic.setGlobalGravity(0, -9.81, 0);
 dynamic.setExternalForce(windX, windY, windZ);
-dynamic.addBoneColliderSphere("head", 0, 0.08, 0, 0.12, false);
 dynamic.update(pose, dt);
 
 local feet = anim.newFootIKSolver(skeleton);
@@ -294,7 +293,7 @@ local pose = graph.getPose();
 ```
 
 `addLayer(base, overlay, weight)` 默认 mask 全为 0，须显式设置参与骨骼；
-`addAdditive(base, delta, weight)` 默认作用于全身。Additive clip 应以 identity
+`addAdditive(base, delta, weight)` 默认作用于全身；默认参考是 identity（样本本身就是局部空间 delta），可用 `setAdditiveReference(node, "bind"|"identity")` 改为相对 bind pose，并用 `getAdditiveReference(node)` 读取当前参考。Additive clip 应以 identity
 姿态为参考：位移为差值、旋转为差值四元数、缩放以 1 为基准。
 one-shot 的 shot 输入当前应是 clip 节点，用该 clip 的时长决定结束和淡出。
 
@@ -522,16 +521,16 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`aimBone()`、`solveTwoBoneIK()`、`getWorld*()`、`getWorldMatrixElement()`
 - `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`updateMatrixPalette()`、`getMatrixPaletteElement()`、`bindGpuMesh()`、`updateGpuMesh()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`；每次更新跨过的事件由 `getEventCount()`、`getEventName()`、`getEventPayload()` 读取，`clearEvents()` 可提前清空。
-- `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
+- `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`setAdditiveReference()`、`getAdditiveReference()`、`getPose()`、`update()`
 - `AnimBoneMask`：由 `newBoneMask()` 创建；`setAll()`、`setBoneWeight()`、`setBoneWeightByName()`、`setBoneAndChildren()`、`getBoneWeight()`、`getBoneCount()` 定义逐骨权重。
-- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `getBasePlayer()` 设置基础动画，`addLayer(name, player, mask, mode)` 添加 `override` 或 `additive` 层，其中 Additive 以骨架 bind pose 为参考姿势。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
+- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `setBaseGraph()` / `setBaseStateMachine()` 设置基础姿态源，`getBasePlayer()` 读取当前基础 Player（若基础是 Graph/StateMachine 则为 `null`），`addLayer` / `addGraphLayer` / `addStateMachineLayer` 添加 `override` 或 `additive` 层。Additive 默认以骨架 bind pose 为参考，可用 `setLayerAdditiveReference(name, "bind"|"identity")` 切换。禁用层仍会推进时间。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`getLayerWeight()`、`getLayerEnabled()`、`getLayerMode()`、`getLayerAdditiveReference()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
-- 程序化骨骼工厂：`newDynamicBoneSolver()`、`newFootIKSolver()`。
+- 程序化骨骼工厂：`newDynamicBoneSolver()`、`newFootIKSolver()`；发卡便捷：`setupHairChain()`、`setupHairHeadCollider()`。
 - `DynamicBoneSolver`：`setSkeleton()`、`addChain()`、`addChainByName()`、`clearChains()`、`getChainCount()`、`setChainEnabled()`、`isChainEnabled()`、`isChainSleeping()`、`setChainParticleParameters()`、`setChainFreezeAxis()`、`setChainEndLength()`、`setChainEndOffset()`、`clearChainEnd()`、`setChainSelfCollision()`、`setGlobalGravity()`、`getGlobalGravityX()`、`getGlobalGravityY()`、`getGlobalGravityZ()`、`setExternalForce()`、`setWeight()`、`getWeight()`、`setPositionResponse()`、`setRotationResponse()`、`setObjectMoveResponse()`、`getObjectMoveResponse()`、`setTeleportThreshold()`、`getTeleportThreshold()`、`setDistanceReference()`、`setDistanceLimit()`、`addColliderSphere()`、`addColliderCapsule()`、`addBoneColliderSphere()`、`addBoneColliderCapsule()`、`removeCollider()`、`clearColliders()`、`getColliderCount()`、`setColliderEnabled()`、`setColliderRadius()`、`setColliderInside()`、`update()`。
 - `FootIKSolver`：`setSkeleton()`、`setPelvisBone()`、`configureLeftLeg()`、`configureRightLeg()`、`configureLeftToe()`、`configureRightToe()`、`setGroundQuery()`、`setLeftContact()`、`setRightContact()`、`setMinGroundNormalY()`、`setMaxPelvisOffset()`、`setFootLockEnabled()`、`setFootLockThresholds()`、`setContactGraceTime()`、`isLeftFootLocked()`、`isRightFootLocked()`、`apply()`。
 
