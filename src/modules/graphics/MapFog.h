@@ -124,27 +124,28 @@ private:
     Texture  *mask_       = nullptr;
 
     float time_            = 0.f;
-    float tileA_           = 0.55f;
-    float tileB_           = 0.95f;
+    float tileA_           = 0.48f;
+    float tileB_           = 0.82f;
     float speedA_          = 0.008f;
     float speedB_          = 0.015f;
-    float distort_         = 0.22f;
+    float distort_         = 0.26f;
     float fixX_            = 0.f;
     float fixY_            = 0.f;
-    float fogR_            = 0.92f;
-    float fogG_            = 0.94f;
-    float fogB_            = 0.98f;
-    float fogAlpha_        = 0.90f;
-    float edgeSoft_        = 0.14f;
+    float fogR_            = 0.96f;
+    float fogG_            = 0.97f;
+    float fogB_            = 1.00f;
+    float fogAlpha_        = 0.96f;
+    float edgeSoft_        = 0.16f;
     bool  shadowEnabled_   = true;
-    float shadowOffX_      = 0.034f;
-    float shadowOffY_      = 0.048f;
-    float shadowStrength_  = 0.78f;
+    float shadowOffX_      = 0.045f;
+    float shadowOffY_      = 0.058f;
+    float shadowStrength_  = 0.95f;
     float selectStrength_  = 0.85f;
     float dissolveScale_   = 1.8f;
-    float cloudMix_        = 0.35f;
-    float densityContrast_ = 0.42f;
-    float densityBias_     = 0.16f;
+    float cloudMix_        = 0.30f;
+    // Dense deep sheet; frontier raises the cover gate for rim islands.
+    float densityContrast_ = 0.28f;
+    float densityBias_     = 0.06f;
     float drawAspect_      = 1.f;
 };
 

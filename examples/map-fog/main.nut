@@ -29,7 +29,7 @@ persist mapW = 0.0
 persist mapH = 0.0
 persist cellW = 0.0
 persist cellH = 0.0
-persist fogAlpha = 0.90
+persist fogAlpha = 0.96
 persist prevLeft = false
 persist status = "LMB select · Space unlock · R reset"
 
@@ -62,21 +62,16 @@ function clearMask() {
 }
 
 function softWeight(dist, radius) {
-    // Hard core to ~60% radius, then smooth falloff — merges adjacent cells into one hole.
+    // Firm core (clearCore stays solid) + wide soft penumbra for gradual rim.
     if (dist >= radius) return 0.0;
-    local core = radius * 0.60;
+    local core = radius * 0.50;
     if (dist <= core) return 1.0;
     local t = (radius - dist) / (radius - core);
     return t * t * (3.0 - 2.0 * t);
 }
 
-function stampSoft(gx, gy, r, g, b, radiusScale) {
-    // Local brush only (fast). Hard-core soft disc in mask-pixel space.
-    local cellPx = maskW.tofloat() / gridW.tofloat();
-    local cellPy = maskH.tofloat() / gridH.tofloat();
-    local px = (gx.tofloat() + 0.5) * cellPx;
-    local py = (gy.tofloat() + 0.5) * cellPy;
-    local radius = radiusScale * cellPx;
+function stampSoftAt(px, py, r, g, b, radius) {
+    // Local brush in mask-pixel space (fast).
     if (radius < 2.0) radius = 2.0;
     local x0 = (px - radius).tointeger();
     local y0 = (py - radius).tointeger();
@@ -106,6 +101,52 @@ function stampSoft(gx, gy, r, g, b, radiusScale) {
     }
 }
 
+function stampSoft(gx, gy, r, g, b, radiusScale) {
+    local cellPx = maskW.tofloat() / gridW.tofloat();
+    local px = (gx.tofloat() + 0.5) * cellPx;
+    local py = (gy.tofloat() + 0.5) * (maskH.tofloat() / gridH.tofloat());
+    stampSoftAt(px, py, r, g, b, radiusScale * cellPx);
+}
+
+function hasFoggedNeighbor(gx, gy) {
+    for (local dy = -1; dy <= 1; ++dy) {
+        for (local dx = -1; dx <= 1; ++dx) {
+            if (dx == 0 && dy == 0) continue;
+            local nx = gx + dx;
+            local ny = gy + dy;
+            if (nx < 0 || ny < 0 || nx >= gridW || ny >= gridH) return true;
+            if (!unlocked[cellIndex(nx, ny)]) return true;
+        }
+    }
+    return false;
+}
+
+function stampRimPuffs(gx, gy, r, g, b) {
+    // Satellite discs along fog frontier → bubbly peninsulas / islands (reference rim).
+    if (!hasFoggedNeighbor(gx, gy)) return;
+    local cellPx = maskW.tofloat() / gridW.tofloat();
+    local cellPy = maskH.tofloat() / gridH.tofloat();
+    local cx = (gx.tofloat() + 0.5) * cellPx;
+    local cy = (gy.tofloat() + 0.5) * cellPy;
+    local h = ((gx * 13 + gy * 7) % 5).tofloat() / 5.0;
+    local offsets = [
+        [0.70, -0.45, 0.78],
+        [-0.55, 0.65, 0.68],
+        [0.45, 0.70, 0.58],
+        [-0.75, -0.30, 0.50],
+        [0.85, 0.25, 0.42],
+        [-0.25, -0.80, 0.46],
+        [0.15, 0.95, 0.38]
+    ];
+    for (local i = 0; i < offsets.len(); ++i) {
+        local o = offsets[i];
+        // Skip more satellites so the rim reads as sparse floating islands.
+        if (((gx * 3 + gy * 5 + i * 7) % 3) != 0) continue;
+        local s = (0.70 + 0.40 * h) * o[2];
+        stampSoftAt(cx + o[0] * cellPx, cy + o[1] * cellPy, r, g, b, s * cellPx);
+    }
+}
+
 function rebuildMask() {
     ensureGrid();
     clearMask();
@@ -115,11 +156,14 @@ function rebuildMask() {
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
                 // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.95);
+                stampSoft(x, y, 0.0, sel, dissolving[idx], 2.15);
+                stampRimPuffs(x, y, 0.0, sel, dissolving[idx]);
             } else if (unlocked[idx]) {
-                stampSoft(x, y, 1.0, sel, 0.0, 1.95);
+                // Soft unlock disc — solid core clears the hole; soft ring
+                // feeds the shader frontier (dense → clumps → islands).
+                stampSoft(x, y, 1.0, sel, 0.0, 2.15);
             } else if (sel > 0.0) {
-                stampSoft(x, y, 0.0, sel, 0.0, 0.95);
+                stampSoft(x, y, 0.0, sel, 0.0, 0.90);
             }
         }
     }
@@ -162,21 +206,24 @@ eve_init = function() {
     fog = gfx.newMapFog();
     fog.setCloudTexture(fog.makeCloudTexture(512));
     fog.setMaskTexture(maskTex);
-    // Distinct dual-layer tiling/speed (article): large soft billows, living scroll.
-    fog.setCloudTiling(0.55, 0.95);
-    fog.setCloudSpeed(0.008, 0.015);
-    fog.setCloudMix(0.35);
-    fog.setDistort(0.22);
-    fog.setDistortFix(-0.012, 0.008);
-    fog.setFogColor(0.92, 0.94, 0.98);
+    // Large cotton puffs + dual reverse scroll (reference FoW billows).
+    fog.setCloudTiling(0.42, 0.72);
+    fog.setCloudSpeed(0.006, 0.011);
+    fog.setCloudMix(0.30);
+    fog.setDistort(0.20);
+    fog.setDistortFix(-0.010, 0.008);
+    fog.setFogColor(0.98, 0.99, 1.00);
     fog.setFogAlpha(fogAlpha);
-    // Soft-stamped mask + UV warp => wispy cloudy unlock rim.
-    fog.setEdgeSoftness(0.14);
-    fog.setShadow(0.034, 0.048, 0.78);
+    // Soft approach for gradual rim sparseness; clearCore keeps hole clean.
+    fog.setEdgeSoftness(0.16);
+    fog.setShadowEnabled(true);
+    // Readable puff-silhouette cast shadow into the unlock hole (reference).
+    fog.setShadow(0.045, 0.058, 0.95);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
-    // Thickness from lit cloud luminance; mask still owns the hole.
-    fog.setCloudDensity(0.42, 0.16);
+    // Dense deep sheet; frontier raises cover gate → sparse islands at rim.
+    fog.setCloudDensity(0.28, 0.06);
+    // Wider soft frontier so density thins gradually into islands.
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };
