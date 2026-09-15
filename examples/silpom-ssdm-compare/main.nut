@@ -1,10 +1,9 @@
 // Full SilPOM vs full SSDM — planar extruded brick cards.
 //
 // Left  = classic POM   (parallax only; geometric silhouette)
-// Mid   = SilPOM        (solid geometric heightfield march + soft card-border
-//                        feather + height normals + self-shadow + FragDepth)
-// Right = SSDM          (same solid planar heightfield march; chart softCoverage
-//                        as the silhouette limb signal)
+// Mid   = SilPOM        (solid planar heightfield march + soft border feather +
+//                        height normals + self-shadow + FragDepth)
+// Right = SSDM          (same solid planar heightfield march; soft border limb)
 //
 // Cards are extruded slabs (local Z = height axis) so SilPOM/SSDM can change
 // the silhouette. Cylinders are the wrong domain for these algorithms.
@@ -25,9 +24,11 @@ persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
 persist cmpTexVer = 0
-const CMP_TEX_VER = 2
-persist cmpYaw = 0.55
-persist cmpPitch = 0.22
+const CMP_TEX_VER = 5
+persist cmpShaderVer = 0
+const CMP_SHADER_VER = 7
+persist cmpYaw = 0.35
+persist cmpPitch = 0.28
 persist cmpOrbit = false
 persist cmpScale = 0.08
 persist cmpMinLayers = 16.0
@@ -44,6 +45,11 @@ function clampf(v, a, b) {
     return v;
 }
 
+function asFloat(v) {
+    // Squirrel sendFloat rejects integers; `* 1.0` always yields a float.
+    return v * 1.0;
+}
+
 function brickColor(u, v) {
     local bu = u * 6.0;
     local bv = v * 4.0;
@@ -52,19 +58,20 @@ function brickColor(u, v) {
     local ou = odd ? (bu + 0.5) : bu;
     local fx = fabs(ou - floor(ou) - 0.5);
     local fy = fabs(bv - floor(bv) - 0.5);
-    // Wide soft mortar ramps: a heightfield has no real vertical brick walls.
-    // Hard cliffs let grazing rays slip past the edge → 镂空 "shell" bricks.
-    local mx = (fx - 0.28) / 0.22;
-    local my = (fy - 0.24) / 0.22;
+    // Very wide soft ramps: heightfields have no vertical walls. Steep cliffs
+    // make grazing rays slip past brick sides and read as 镂空 shells —
+    // especially on the center panel, which the default camera sees more edge-on.
+    local mx = (fx - 0.12) / 0.38;
+    local my = (fy - 0.10) / 0.38;
     if (mx < 0.0) mx = 0.0; if (mx > 1.0) mx = 1.0;
     if (my < 0.0) my = 0.0; if (my > 1.0) my = 1.0;
     mx = mx * mx * (3.0 - 2.0 * mx);
     my = my * my * (3.0 - 2.0 * my);
     local mortar = mx;
     if (my > mortar) mortar = my;
-    local hBrick = 0.50 + 0.32 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
-    local h = (1.0 - mortar) * hBrick + mortar * 0.12;
-    if (mortar > 0.70) return [0.52, 0.50, 0.46, h];
+    local hBrick = 0.42 + 0.22 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
+    local h = (1.0 - mortar) * hBrick + mortar * 0.18;
+    if (mortar > 0.65) return [0.52, 0.50, 0.46, h];
     return [0.70 + 0.12 * hBrick, 0.32 + 0.08 * hBrick, 0.24 + 0.05 * hBrick, h];
 }
 
@@ -148,12 +155,12 @@ function makeCard(mode, x) {
     shader.declareFloat("maxLayers");
     shader.declareFloat("feather");
     shader.declareFloat("horizon");
-    shader.sendFloat("mode", mode.tofloat());
-    shader.sendFloat("scale", cmpScale);
-    shader.sendFloat("minLayers", cmpMinLayers);
-    shader.sendFloat("maxLayers", cmpMaxLayers);
+    shader.sendFloat("mode", asFloat(mode));
+    shader.sendFloat("scale", asFloat(cmpScale));
+    shader.sendFloat("minLayers", asFloat(cmpMinLayers));
+    shader.sendFloat("maxLayers", asFloat(cmpMaxLayers));
     shader.sendFloat("feather", 0.02);
-    shader.sendFloat("horizon", mode == 1 ? 0.45 : 0.0);
+    shader.sendFloat("horizon", 0.0);
 
     local ent = eve.Renderable3D();
     ent.setMesh(mode == 0 ? cmpThinMesh : cmpSlabMesh);
@@ -167,19 +174,22 @@ function makeCard(mode, x) {
     ent.setPosition(x, 1.0, 0.0);
     ent.setScale(1.0, 1.0, thick);
     ent.setYaw(-0.15);
-    return { ent = ent, shader = shader, mode = mode.tofloat(), x = x };
+    return { ent = ent, shader = shader, mode = asFloat(mode), x = x };
 }
+
 
 function syncPanel(panel) {
     if (panel == null || panel.shader == null) return;
+    // sendFloat requires FLOAT; key presses / script assigns can leave integers.
+    panel.mode = asFloat(panel.mode);
     panel.shader.sendFloat("mode", panel.mode);
-    panel.shader.sendFloat("scale", cmpScale);
-    panel.shader.sendFloat("minLayers", cmpMinLayers);
-    panel.shader.sendFloat("maxLayers", cmpMaxLayers);
+    panel.shader.sendFloat("scale", asFloat(cmpScale));
+    panel.shader.sendFloat("minLayers", asFloat(cmpMinLayers));
+    panel.shader.sendFloat("maxLayers", asFloat(cmpMaxLayers));
     panel.shader.sendFloat("feather", 0.02);
-    panel.shader.sendFloat("horizon", panel.mode > 0.5 && panel.mode < 1.5 ? 0.45 : 0.0);
+    panel.shader.sendFloat("horizon", 0.0);
     if (panel.mode > 0.5) {
-        local thick = clampf(cmpScale * 1.25, 0.04, 0.20);
+        local thick = clampf(asFloat(cmpScale) * 1.25, 0.04, 0.20);
         panel.ent.setScale(1.0, 1.0, thick);
     }
 }
@@ -203,14 +213,25 @@ eve_init = function() {
         buildTextures();
         cmpTexVer = CMP_TEX_VER;
     }
-    if (cmpPom != null) { cmpPom.ent.setTexture(cmpAlbedo); cmpPom.ent.setHeightTexture(cmpHeight); }
-    if (cmpSil != null) { cmpSil.ent.setTexture(cmpAlbedo); cmpSil.ent.setHeightTexture(cmpHeight); }
-    if (cmpSsdm != null) { cmpSsdm.ent.setTexture(cmpAlbedo); cmpSsdm.ent.setHeightTexture(cmpHeight); }
+    // Persisted panels keep the previous shader program; bump forces a clean rebuild
+    // so SilPOM no longer runs the old horizon-trim discard path (镂空).
+    if (cmpShaderVer != CMP_SHADER_VER) {
+        cmpPom = null;
+        cmpSil = null;
+        cmpSsdm = null;
+        cmpShaderVer = CMP_SHADER_VER;
+    }
     if (cmpSlabMesh == null) cmpSlabMesh = makeSlabMesh();
     if (cmpThinMesh == null) cmpThinMesh = makeThinMesh();
     if (cmpPom == null) cmpPom = makeCard(0, -2.8);
     if (cmpSil == null) cmpSil = makeCard(1, 0.0);
     if (cmpSsdm == null) cmpSsdm = makeCard(2, 2.8);
+    cmpPom.ent.setTexture(cmpAlbedo);
+    cmpSil.ent.setTexture(cmpAlbedo);
+    cmpSsdm.ent.setTexture(cmpAlbedo);
+    cmpPom.ent.setHeightTexture(cmpHeight);
+    cmpSil.ent.setHeightTexture(cmpHeight);
+    cmpSsdm.ent.setHeightTexture(cmpHeight);
     if (cmpGround == null) {
         cmpGround = eve.Renderable3D();
         cmpGround.setMesh(gfx.newMeshCube(1.0));

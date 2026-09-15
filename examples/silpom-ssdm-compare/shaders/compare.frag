@@ -194,7 +194,7 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
     float layers = clamp(mix(max(maxLayers, 1.0), max(minLayers, 1.0),
                              clamp(abs(dirLocal.z), 0.0, 1.0)),
                          1.0, 64.0) * 1.5;
-    layers = clamp(layers, 8.0, 96.0);
+    layers = clamp(layers, 16.0, 96.0);
     float dtBase = (tExit - tEnter) / layers;
     float t = tEnter;
     float prevD = 1e5;
@@ -232,22 +232,20 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
     return vec4(0.0);
 }
 
-// When the heightfield march tunnels past a steep cliff, fill from the front
-// face instead of discard — otherwise mortar gaps read as 镂空 shells.
-bool frontFaceFill(vec3 Nw, float scale, float minLayers, float maxLayers,
-                   vec3 lightTS, inout vec2 uv, inout vec3 N, inout float coverage,
-                   inout float fragDepth, inout float shadow) {
-    mat3 nMat = transpose(inverse(mat3(ubo.model)));
-    vec3 nLocal = normalize(nMat * Nw);
-    if (nLocal.z < 0.35)
-        return false;
+// When the heightfield march tunnels past a steep cliff (or a side-face ray
+// never crosses the surface), shade the chart height at this fragment instead
+// of discard — otherwise mortar / cliff gaps read as 镂空 shells.
+void chartFill(vec3 Nw, float scale, float minLayers, float maxLayers,
+               vec3 lightTS, inout vec2 uv, inout vec3 N, inout float coverage,
+               inout float fragDepth, inout float shadow) {
+    // Accept any face: grazing views rasterize slab sides, and those rays are
+    // exactly where cliff tunnels show the background if we require +Z only.
     uv = clamp(vUV, 0.0, 1.0);
     float h = heightAt(uv);
     coverage = 1.0;
     fragDepth = fragDepthFromLocal(vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, h));
     N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
     shadow = selfShadow(uv, 1.0 - h, lightTS, scale, minLayers, maxLayers);
-    return true;
 }
 
 vec3 shadeLit(vec3 albedo, vec3 N, vec3 V, float shadow) {
@@ -294,45 +292,23 @@ void main() {
         local.z = mix(local.z, heightAt(uv), 0.85);
         fragDepth = fragDepthFromLocal(local);
         shadow = selfShadow(uv, hit.z, lightTS, scale, minLayers, maxLayers);
-    } else if (mode < 1.5) {
-        // SilPOM (planar extruded card): solid heightfield march. Soft feather
-        // only at the card border — never horizon-discard mortar (that was the
-        // original 镂空). Front-face miss fill seals cliff tunnels.
-        vec3 camL = localFromWorld(vCameraPos);
-        vec3 fragL = localFromWorld(vWorldPos);
-        vec3 dirL = normalize(fragL - camL);
-        vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
-        if (hit.z < 0.5) {
-            if (!frontFaceFill(Nw, scale, minLayers, maxLayers, lightTS,
-                               uv, N, coverage, fragDepth, shadow))
-                discard;
-        } else {
-            uv = clamp(hit.xy, 0.0, 1.0);
-            float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-            coverage = (edgeDist < 0.05) ? softCoverage(hit.xy, max(feather, 0.02)) : 1.0;
-            if (coverage < 0.02)
-                discard;
-            vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
-            fragDepth = fragDepthFromLocal(hitLocal);
-            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-            shadow = selfShadow(uv, 1.0 - hit.w, lightTS, scale, minLayers, maxLayers);
-        }
     } else {
-        // Full planar SSDM — same solid heightfield march; soft chart coverage
-        // as the silhouette limb signal (no interior discard).
+        // SilPOM (mode 1) and planar SSDM (mode 2) share one solid heightfield
+        // march. Soft coverage only dims the border; it must NEVER discard, or
+        // mortar / cliff tunnels read as 镂空. Misses always chart-fill.
         vec3 camL = localFromWorld(vCameraPos);
         vec3 fragL = localFromWorld(vWorldPos);
         vec3 dirL = normalize(fragL - camL);
         vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
         if (hit.z < 0.5) {
-            if (!frontFaceFill(Nw, scale, minLayers, maxLayers, lightTS,
-                               uv, N, coverage, fragDepth, shadow))
-                discard;
+            chartFill(Nw, scale, minLayers, maxLayers, lightTS,
+                      uv, N, coverage, fragDepth, shadow);
         } else {
             uv = clamp(hit.xy, 0.0, 1.0);
-            coverage = softCoverage(hit.xy, max(feather, 0.015));
-            if (coverage < 0.02)
-                discard;
+            // Border limb signal only — keep every interior sample opaque.
+            float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
+            float featherAmt = (mode < 1.5) ? max(feather, 0.02) : max(feather, 0.015);
+            coverage = (edgeDist < 0.04) ? max(softCoverage(uv, featherAmt), 0.35) : 1.0;
             vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
             fragDepth = fragDepthFromLocal(hitLocal);
             N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
@@ -344,12 +320,12 @@ void main() {
     gl_FragDepth = min(gl_FragCoord.z, fragDepth);
 
     vec3 albedo = texture(albedoSampler, clamp(uv, 0.0, 1.0)).rgb * vTint.rgb * ubo.tint.rgb;
+    
     if (mode < 0.5)
         albedo *= vec3(1.00, 0.94, 0.88);
     else if (mode < 1.5)
         albedo *= vec3(0.90, 1.00, 0.92);
     else
         albedo *= vec3(0.94, 0.96, 1.04);
-
     outColor = vec4(shadeLit(albedo, N, V, shadow) * max(coverage, 0.05), 1.0);
 }
