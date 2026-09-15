@@ -1,0 +1,270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/image/UvPaintRegion.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_19e83706931414807c883b23e86e1767.html">image</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UvPaintRegion.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UvPaintRegion_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="UvPaintRegion_8h.html">image/UvPaintRegion.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1image_1_1UvPaintRegion.html#a05339b13f3af5b4ae86cd8cf61237421">    9</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1image_1_1UvPaintRegion.html#a05339b13f3af5b4ae86cd8cf61237421">UvPaintRegion::prepareResult</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> centerU, <span class="keywordtype">float</span> centerV, <span class="keywordtype">float</span> brushRadiusU,</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>                                          <span class="keywordtype">float</span> brushRadiusV, <span class="keywordtype">float</span> red, <span class="keywordtype">float</span> green, <span class="keywordtype">float</span> blue, <span class="keywordtype">float</span> alpha,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                                          <span class="keywordtype">bool</span> flipV) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">auto</span> prepared = <a class="code hl_function" href="namespaceeve_1_1image.html#a9017c4785045afe5a80e72af54d2e3f0">prepareUvPaintRegionResult</a>(<a class="code hl_function" href="structeve_1_1image_1_1UvPaintRegion.html#a6171f5a29a61dca121cfaf30183bf420">width</a>, <a class="code hl_function" href="structeve_1_1image_1_1UvPaintRegion.html#a3bffcd536aa7d6e479297a1ed663a592">height</a>, centerU, centerV, brushRadiusU, brushRadiusV, red, green,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>                                               blue, alpha, flipV);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!prepared.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(prepared.status());</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    *<span class="keyword">this</span> = std::move(prepared).takeValue();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1image.html#a9017c4785045afe5a80e72af54d2e3f0">   19</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;UvPaintRegion&gt;</a> <a class="code hl_function" href="namespaceeve_1_1image.html#a9017c4785045afe5a80e72af54d2e3f0">prepareUvPaintRegionResult</a>(<span class="keywordtype">int</span> targetWidth, <span class="keywordtype">int</span> targetHeight, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">float</span> radiusU,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                                                 <span class="keywordtype">float</span> radiusV, <span class="keywordtype">float</span> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">bool</span> flipV) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keyword">auto</span> invalid = [](<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;UvPaintRegion&gt;::failure</a>(</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, {}, <span class="stringliteral">&quot;image.uvPaintRegion&quot;</span>));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    };</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (targetWidth &lt;= 0 || targetHeight &lt;= 0) <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;paint target dimensions must be positive&quot;</span>, <span class="stringliteral">&quot;targetSize&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>) || !std::isfinite(<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) || !std::isfinite(radiusU) || !std::isfinite(radiusV) || radiusU &lt; 0.f ||</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        radiusV &lt; 0.f)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;UV center and radii must be finite; radii must be non-negative&quot;</span>, <span class="stringliteral">&quot;brush&quot;</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>) || !std::isfinite(<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>) || !std::isfinite(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) || !std::isfinite(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) || r &lt; 0.f || r &gt; 1.f ||</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        g &lt; 0.f || g &gt; 1.f || b &lt; 0.f || b &gt; 1.f || a &lt; 0.f || a &gt; 1.f)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;paint color channels must be finite values in [0,1]&quot;</span>, <span class="stringliteral">&quot;color&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_struct" href="structeve_1_1image_1_1UvPaintRegion.html">UvPaintRegion</a> region;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#ae8a25099e4d63bd16799c379d85fcf17">targetWidth</a>  = targetWidth;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#aa7f37dc9c7a11f8a5e5f04fcb24ea507">targetHeight</a> = targetHeight;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a59c8bd49b70e6e8e90eac294ce843dcc">u</a>            = std::clamp(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a9468d66177c18d738fae181b9c1c3650">v</a>            = std::clamp(<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a03b74217fc55c4393b59daa8628c68f7">radiusU</a>      = radiusU;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a55366681c01e07bc5164efd90f198c19">radiusV</a>      = radiusV;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#ae4f80a05eb546077286b74bb01007b0b">r</a>            = <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a199a009dbb0478aae4077f975c75f392">g</a>            = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#aee7b595d79bcf7d314c46bc6195a00cd">b</a>            = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#abe3b32a1183438429a3b08d63456065a">a</a>            = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> pixelU  = region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a59c8bd49b70e6e8e90eac294ce843dcc">u</a> * float(targetWidth - 1);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> mappedV = flipV ? 1.f - region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a9468d66177c18d738fae181b9c1c3650">v</a> : region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a9468d66177c18d738fae181b9c1c3650">v</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> pixelV  = mappedV * float(targetHeight - 1);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a35e60c822d968d86c3f6517ed9d3b34f">centerX</a>      = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::lround(pixelU));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a47201b8b7d66ff38f787d5b72518fa9a">centerY</a>      = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::lround(pixelV));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#affe58abd55f0a745df75b9246d34dba2">minX</a>         = std::clamp(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(pixelU - radiusU * targetWidth)), 0, targetWidth - 1);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#adfcf59cb68f225385660c66f5c00a314">maxX</a>         = std::clamp(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(pixelU + radiusU * targetWidth)), 0, targetWidth - 1);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#ad80367c53bb58a3a53426e89bab7bea0">minY</a> = std::clamp(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(pixelV - radiusV * targetHeight)), 0, targetHeight - 1);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    region.<a class="code hl_variable" href="structeve_1_1image_1_1UvPaintRegion.html#a047b0f828caacec10888e4f7b3853530">maxY</a> = std::clamp(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(pixelV + radiusV * targetHeight)), 0, targetHeight - 1);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;UvPaintRegion&gt;::success</a>(region);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace eve::image</span></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a880a49112fedae68e714341a9a082fb6"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a></div><div class="ttdeci">double r</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00012">GtsMeshSimplifier.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aUvPaintRegion_8h_html"><div class="ttname"><a href="UvPaintRegion_8h.html">UvPaintRegion.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00023">AvatarInstance.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html_a9017c4785045afe5a80e72af54d2e3f0"><div class="ttname"><a href="namespaceeve_1_1image.html#a9017c4785045afe5a80e72af54d2e3f0">eve::image::prepareUvPaintRegionResult</a></div><div class="ttdeci">Result&lt; UvPaintRegion &gt; prepareUvPaintRegionResult(int targetWidth, int targetHeight, float u, float v, float radiusU, float radiusV, float r, float g, float b, float a, bool flipV)</div><div class="ttdoc">Validate and prepare the canonical clipped region for a UV brush.</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8cpp_source.html#l00019">UvPaintRegion.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html">eve::image::UvPaintRegion</a></div><div class="ttdoc">Reusable renderer-neutral bounds for one normalized UV paint operation.</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00008">UvPaintRegion.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a03b74217fc55c4393b59daa8628c68f7"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a03b74217fc55c4393b59daa8628c68f7">eve::image::UvPaintRegion::radiusU</a></div><div class="ttdeci">float radiusU</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00012">UvPaintRegion.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a047b0f828caacec10888e4f7b3853530"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a047b0f828caacec10888e4f7b3853530">eve::image::UvPaintRegion::maxY</a></div><div class="ttdeci">int maxY</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00011">UvPaintRegion.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a05339b13f3af5b4ae86cd8cf61237421"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a05339b13f3af5b4ae86cd8cf61237421">eve::image::UvPaintRegion::prepareResult</a></div><div class="ttdeci">Result&lt; void &gt; prepareResult(int width, int height, float centerU, float centerV, float brushRadiusU, float brushRadiusV, float red, float green, float blue, float alpha, bool flipV=true)</div><div class="ttdoc">Atomically replace this reusable scratch with a validated region.</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8cpp_source.html#l00009">UvPaintRegion.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a199a009dbb0478aae4077f975c75f392"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a199a009dbb0478aae4077f975c75f392">eve::image::UvPaintRegion::g</a></div><div class="ttdeci">float g</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00013">UvPaintRegion.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a35e60c822d968d86c3f6517ed9d3b34f"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a35e60c822d968d86c3f6517ed9d3b34f">eve::image::UvPaintRegion::centerX</a></div><div class="ttdeci">int centerX</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00010">UvPaintRegion.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a3bffcd536aa7d6e479297a1ed663a592"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a3bffcd536aa7d6e479297a1ed663a592">eve::image::UvPaintRegion::height</a></div><div class="ttdeci">int height() const noexcept</div><div class="ttdoc">Inclusive clipped height in pixels.</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00018">UvPaintRegion.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a47201b8b7d66ff38f787d5b72518fa9a"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a47201b8b7d66ff38f787d5b72518fa9a">eve::image::UvPaintRegion::centerY</a></div><div class="ttdeci">int centerY</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00010">UvPaintRegion.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a55366681c01e07bc5164efd90f198c19"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a55366681c01e07bc5164efd90f198c19">eve::image::UvPaintRegion::radiusV</a></div><div class="ttdeci">float radiusV</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00012">UvPaintRegion.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a59c8bd49b70e6e8e90eac294ce843dcc"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a59c8bd49b70e6e8e90eac294ce843dcc">eve::image::UvPaintRegion::u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00012">UvPaintRegion.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a6171f5a29a61dca121cfaf30183bf420"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a6171f5a29a61dca121cfaf30183bf420">eve::image::UvPaintRegion::width</a></div><div class="ttdeci">int width() const noexcept</div><div class="ttdoc">Inclusive clipped width in pixels.</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00016">UvPaintRegion.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_a9468d66177c18d738fae181b9c1c3650"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#a9468d66177c18d738fae181b9c1c3650">eve::image::UvPaintRegion::v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00012">UvPaintRegion.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_aa7f37dc9c7a11f8a5e5f04fcb24ea507"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#aa7f37dc9c7a11f8a5e5f04fcb24ea507">eve::image::UvPaintRegion::targetHeight</a></div><div class="ttdeci">int targetHeight</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00009">UvPaintRegion.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_abe3b32a1183438429a3b08d63456065a"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#abe3b32a1183438429a3b08d63456065a">eve::image::UvPaintRegion::a</a></div><div class="ttdeci">float a</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00013">UvPaintRegion.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_ad80367c53bb58a3a53426e89bab7bea0"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#ad80367c53bb58a3a53426e89bab7bea0">eve::image::UvPaintRegion::minY</a></div><div class="ttdeci">int minY</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00011">UvPaintRegion.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_adfcf59cb68f225385660c66f5c00a314"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#adfcf59cb68f225385660c66f5c00a314">eve::image::UvPaintRegion::maxX</a></div><div class="ttdeci">int maxX</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00011">UvPaintRegion.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_ae4f80a05eb546077286b74bb01007b0b"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#ae4f80a05eb546077286b74bb01007b0b">eve::image::UvPaintRegion::r</a></div><div class="ttdeci">float r</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00013">UvPaintRegion.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_ae8a25099e4d63bd16799c379d85fcf17"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#ae8a25099e4d63bd16799c379d85fcf17">eve::image::UvPaintRegion::targetWidth</a></div><div class="ttdeci">int targetWidth</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00009">UvPaintRegion.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_aee7b595d79bcf7d314c46bc6195a00cd"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#aee7b595d79bcf7d314c46bc6195a00cd">eve::image::UvPaintRegion::b</a></div><div class="ttdeci">float b</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00013">UvPaintRegion.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1image_1_1UvPaintRegion_html_affe58abd55f0a745df75b9246d34dba2"><div class="ttname"><a href="structeve_1_1image_1_1UvPaintRegion.html#affe58abd55f0a745df75b9246d34dba2">eve::image::UvPaintRegion::minX</a></div><div class="ttdeci">int minX</div><div class="ttdef"><b>Definition</b> <a href="UvPaintRegion_8h_source.html#l00011">UvPaintRegion.h:11</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::VolumeFluidSnapshot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html">VolumeFluidSnapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1fluids_1_1VolumeFluidSnapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::VolumeFluidSnapshot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Canonical version-20 owning state; older codecs migrate collider, attachment, stitch, filter, group, material, shape, topology, height-field, trigger and collision-material fields.  
+ <a href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8f3069bde81967654f7ffb5614341c23" id="r_a8f3069bde81967654f7ffb5614341c23"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a8f3069bde81967654f7ffb5614341c23">schema</a> = &quot;eve.volume-fluid&quot;</td></tr>
+<tr class="separator:a8f3069bde81967654f7ffb5614341c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d75e42cadc39e50cc3023e427afc0db" id="r_a5d75e42cadc39e50cc3023e427afc0db"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a5d75e42cadc39e50cc3023e427afc0db">version</a> = 20</td></tr>
+<tr class="separator:a5d75e42cadc39e50cc3023e427afc0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a582a766ee6d9ccf716ef4ba2cf60b738" id="r_a582a766ee6d9ccf716ef4ba2cf60b738"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSettings.html">VolumeFluidSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a582a766ee6d9ccf716ef4ba2cf60b738">settings</a></td></tr>
+<tr class="separator:a582a766ee6d9ccf716ef4ba2cf60b738"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98258d828dc255b149efaed12c14f3f" id="r_ac98258d828dc255b149efaed12c14f3f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticle.html">VolumeFluidParticle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#ac98258d828dc255b149efaed12c14f3f">particles</a></td></tr>
+<tr class="separator:ac98258d828dc255b149efaed12c14f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a410bdaa83ad2f646968ebc9327308272" id="r_a410bdaa83ad2f646968ebc9327308272"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a410bdaa83ad2f646968ebc9327308272">colliders</a></td></tr>
+<tr class="separator:a410bdaa83ad2f646968ebc9327308272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4200a8b90d0324cd7006927bafbb6108" id="r_a4200a8b90d0324cd7006927bafbb6108"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfCollider.html">VolumeFluidSdfCollider</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a4200a8b90d0324cd7006927bafbb6108">sdfColliders</a></td></tr>
+<tr class="separator:a4200a8b90d0324cd7006927bafbb6108"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae021883371c41babe1dfe02ec17a89b5" id="r_ae021883371c41babe1dfe02ec17a89b5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidHeightFieldCollider.html">VolumeFluidHeightFieldCollider</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#ae021883371c41babe1dfe02ec17a89b5">heightFieldColliders</a></td></tr>
+<tr class="separator:ae021883371c41babe1dfe02ec17a89b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b220ad67071ad53f6d51fd789418357" id="r_a4b220ad67071ad53f6d51fd789418357"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidAttachment.html">VolumeFluidAttachment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a4b220ad67071ad53f6d51fd789418357">attachments</a></td></tr>
+<tr class="separator:a4b220ad67071ad53f6d51fd789418357"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f74343d6d6b6959178dd845c3ecd839" id="r_a4f74343d6d6b6959178dd845c3ecd839"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidStitch.html">VolumeFluidStitch</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#a4f74343d6d6b6959178dd845c3ecd839">stitches</a></td></tr>
+<tr class="separator:a4f74343d6d6b6959178dd845c3ecd839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa22c5bdea2d3cfec2a5832c52620d8a6" id="r_aa22c5bdea2d3cfec2a5832c52620d8a6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSimplex.html">VolumeFluidSimplex</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#aa22c5bdea2d3cfec2a5832c52620d8a6">simplexes</a></td></tr>
+<tr class="memdesc:aa22c5bdea2d3cfec2a5832c52620d8a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit point/edge/triangle topology; empty means one implicit point simplex per particle.  <br /></td></tr>
+<tr class="separator:aa22c5bdea2d3cfec2a5832c52620d8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Canonical version-20 owning state; older codecs migrate collider, attachment, stitch, filter, group, material, shape, topology, height-field, trigger and collision-material fields. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00491">491</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a4b220ad67071ad53f6d51fd789418357" name="a4b220ad67071ad53f6d51fd789418357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b220ad67071ad53f6d51fd789418357">&#9670;&#160;</a></span>attachments</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidAttachment.html">VolumeFluidAttachment</a>&gt; eve::fluids::VolumeFluidSnapshot::attachments</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00499">499</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a410bdaa83ad2f646968ebc9327308272" name="a410bdaa83ad2f646968ebc9327308272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a410bdaa83ad2f646968ebc9327308272">&#9670;&#160;</a></span>colliders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a>&gt; eve::fluids::VolumeFluidSnapshot::colliders</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00496">496</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="ae021883371c41babe1dfe02ec17a89b5" name="ae021883371c41babe1dfe02ec17a89b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae021883371c41babe1dfe02ec17a89b5">&#9670;&#160;</a></span>heightFieldColliders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidHeightFieldCollider.html">VolumeFluidHeightFieldCollider</a>&gt; eve::fluids::VolumeFluidSnapshot::heightFieldColliders</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00498">498</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="ac98258d828dc255b149efaed12c14f3f" name="ac98258d828dc255b149efaed12c14f3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac98258d828dc255b149efaed12c14f3f">&#9670;&#160;</a></span>particles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticle.html">VolumeFluidParticle</a>&gt; eve::fluids::VolumeFluidSnapshot::particles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00495">495</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a8f3069bde81967654f7ffb5614341c23" name="a8f3069bde81967654f7ffb5614341c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f3069bde81967654f7ffb5614341c23">&#9670;&#160;</a></span>schema</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::fluids::VolumeFluidSnapshot::schema = &quot;eve.volume-fluid&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00492">492</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a4200a8b90d0324cd7006927bafbb6108" name="a4200a8b90d0324cd7006927bafbb6108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4200a8b90d0324cd7006927bafbb6108">&#9670;&#160;</a></span>sdfColliders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfCollider.html">VolumeFluidSdfCollider</a>&gt; eve::fluids::VolumeFluidSnapshot::sdfColliders</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00497">497</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a582a766ee6d9ccf716ef4ba2cf60b738" name="a582a766ee6d9ccf716ef4ba2cf60b738"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a582a766ee6d9ccf716ef4ba2cf60b738">&#9670;&#160;</a></span>settings</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSettings.html">VolumeFluidSettings</a> eve::fluids::VolumeFluidSnapshot::settings</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00494">494</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTarget_8cpp_source.html#l00278">eve::fluids_editing::VolumeFluidRuntimeApplier::apply()</a>, <a class="el" href="VolumeFluidStateCodec_8cpp_source.html#l00004">eve::fluids::decodeVolumeFluid()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00244">eve::fluids::encodeVolumeFluidEmitterBlueprintApplication3D()</a> , 以及 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="aa22c5bdea2d3cfec2a5832c52620d8a6" name="aa22c5bdea2d3cfec2a5832c52620d8a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa22c5bdea2d3cfec2a5832c52620d8a6">&#9670;&#160;</a></span>simplexes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidSimplex.html">VolumeFluidSimplex</a>&gt; eve::fluids::VolumeFluidSnapshot::simplexes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit point/edge/triangle topology; empty means one implicit point simplex per particle. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00502">502</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a4f74343d6d6b6959178dd845c3ecd839" name="a4f74343d6d6b6959178dd845c3ecd839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f74343d6d6b6959178dd845c3ecd839">&#9670;&#160;</a></span>stitches</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1fluids_1_1VolumeFluidStitch.html">VolumeFluidStitch</a>&gt; eve::fluids::VolumeFluidSnapshot::stitches</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00500">500</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a5d75e42cadc39e50cc3023e427afc0db" name="a5d75e42cadc39e50cc3023e427afc0db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d75e42cadc39e50cc3023e427afc0db">&#9670;&#160;</a></span>version</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::fluids::VolumeFluidSnapshot::version = 20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00493">493</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

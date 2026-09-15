@@ -1,0 +1,231 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimTransformInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimTransformInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimTransformInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimMath_8h.html">animation/AnimMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation_1_1detail.html">eve::animation::detail</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#a71bfd0ef46682a24df3f304d0b5530cb">    7</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a71bfd0ef46682a24df3f304d0b5530cb">mulTRS</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="comment">// world = parent * local (TRS, scale ignored in rotation path for FK positions)</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> out;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="comment">// Rotate local translation by parent rotation, then add parent translation * scales.</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a>, <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qy, <a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qz, <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qw;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> lx = <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.px * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.sx;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> ly = <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.py * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.sy;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> lz = <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.pz * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.sz;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="comment">// q * v</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> ix = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> * lx + <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a> * lz - <a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a> * ly;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> iy = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> * ly + <a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a> * lx - <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a> * lz;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> iz = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> * lz + <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a> * ly - <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a> * lx;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> iw = -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a> * lx - <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a> * ly - <a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a> * lz;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">px</a>         = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.px + (ix * <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> + iw * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a> + iy * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a> - iz * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">py</a>         = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.py + (iy * <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> + iw * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a> + iz * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a> - ix * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">pz</a>         = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.pz + (iz * <a class="code hl_variable" href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a> + iw * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a> + ix * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a> - iy * -<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="comment">// Quaternion multiply parent * local</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qw * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qw - <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qx * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qx - <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qy * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qy - <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qz * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qz;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qw * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qx + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qx * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qw + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qy * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qz - <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qz * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qy;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qw * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qy - <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qx * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qz + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qy * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qw + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qz * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qx;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qw * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qz + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qx * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qy - <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qy * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qx + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.qz * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.qw;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    out.<a class="code hl_function" href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">normalizeRotation</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.sx * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.sx;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.sy * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.sy;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.sz * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.sz;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}  <span class="comment">// namespace eve::animation::detail</span></div>
+<div class="ttc" id="aAnimMath_8h_html"><div class="ttname"><a href="AnimMath_8h.html">AnimMath.h</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a8a71cf98f1ad6795a6d5c2397672e40d"><div class="ttname"><a href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a></div><div class="ttdeci">std::string local</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00025">LanguageIndex.cpp:25</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_ae5a367e308f2a54eea84358fbc9bee47"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a></div><div class="ttdeci">std::int32_t parent</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00014">LegacyAnimationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a77559003eac11f329d36ea46935701ff"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a></div><div class="ttdeci">float qy</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00252">WorldSnapshot.cpp:252</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a98140a22cd03891977c8a250866529f8"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a></div><div class="ttdeci">float qx</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00252">WorldSnapshot.cpp:252</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_aa6a8fec8c4c87f4b62bd3d8ca1b76ec7"><div class="ttname"><a href="WorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a></div><div class="ttdeci">float qw</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00252">WorldSnapshot.cpp:252</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_acaf3a0afe6f4380cb5168e1fe888cfcd"><div class="ttname"><a href="WorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a></div><div class="ttdeci">float qz</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00252">WorldSnapshot.cpp:252</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html">eve::animation::detail</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationTime_8h_source.html#l00010">AnimationTime.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_a71bfd0ef46682a24df3f304d0b5530cb"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#a71bfd0ef46682a24df3f304d0b5530cb">eve::animation::detail::mulTRS</a></div><div class="ttdeci">TransformTRS mulTRS(const TransformTRS &amp;parent, const TransformTRS &amp;local)</div><div class="ttdef"><b>Definition</b> <a href="AnimTransformInternal_8h_source.html#l00007">AnimTransformInternal.h:7</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a03ea248de97b2702d86e047f2e32d970"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">eve::animation::TransformTRS::qx</a></div><div class="ttdeci">float qx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a07535af69d95029348497d1516a7b7a7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">eve::animation::TransformTRS::sy</a></div><div class="ttdeci">float sy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a08d6b60e2b0994d1c24e494aa9c8593b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">eve::animation::TransformTRS::qz</a></div><div class="ttdeci">float qz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a0e8d5035666cdb5c28b749bf3e2a4d74"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">eve::animation::TransformTRS::qy</a></div><div class="ttdeci">float qy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a14236e7d34b16f26e502889402b0c3c8"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">eve::animation::TransformTRS::pz</a></div><div class="ttdeci">float pz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7988b734d588744dc063c61f10a7a11b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">eve::animation::TransformTRS::px</a></div><div class="ttdeci">float px</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7a07df45fde09cb8d1ad4b58172eefb7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">eve::animation::TransformTRS::qw</a></div><div class="ttdeci">float qw</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a953b11111e2cf55c349926235c41e767"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">eve::animation::TransformTRS::sx</a></div><div class="ttdeci">float sx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_aadc2748cb1a7d93ef3991b89ff314d56"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">eve::animation::TransformTRS::py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_acdbd275a8f3dff3e944200b1a6010e46"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">eve::animation::TransformTRS::normalizeRotation</a></div><div class="ttdeci">void normalizeRotation()</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00016">AnimMath.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_afec8a11011d7b50d78f548575b9e0229"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">eve::animation::TransformTRS::sz</a></div><div class="ttdeci">float sz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

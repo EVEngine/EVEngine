@@ -1,0 +1,991 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sensing::SensingWorld类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sensing.html">sensing</a></li><li class="navelem"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1sensing_1_1SensingWorld-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::sensing::SensingWorld类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Gameplay-facing 2D candidate query service; it never values or selects targets.  
+ <a href="classeve_1_1sensing_1_1SensingWorld.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Sensing_8h_source.html">Sensing.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a64c83d7ebbcc70a5041ada8500b8598d" id="r_a64c83d7ebbcc70a5041ada8500b8598d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a64c83d7ebbcc70a5041ada8500b8598d">upsert</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, std::string_view faction, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">tagsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">visibleToCsv</a>)</td></tr>
+<tr class="memdesc:a64c83d7ebbcc70a5041ada8500b8598d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts or replaces mirrored facts. CSV fields contain comma-separated stable keys.  <br /></td></tr>
+<tr class="separator:a64c83d7ebbcc70a5041ada8500b8598d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab473250940e149b9b018393dfe78077e" id="r_ab473250940e149b9b018393dfe78077e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#ab473250940e149b9b018393dfe78077e">remove</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:ab473250940e149b9b018393dfe78077e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes mirrored facts, or returns NotFound when the id is absent.  <br /></td></tr>
+<tr class="separator:ab473250940e149b9b018393dfe78077e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cb6ddfd0ec17dc78a58047ac4453e36" id="r_a3cb6ddfd0ec17dc78a58047ac4453e36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a3cb6ddfd0ec17dc78a58047ac4453e36">setZones</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">zonesCsv</a>)</td></tr>
+<tr class="memdesc:a3cb6ddfd0ec17dc78a58047ac4453e36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces logical zone membership for an existing subject.  <br /></td></tr>
+<tr class="separator:a3cb6ddfd0ec17dc78a58047ac4453e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3159c0ae61e0e4af6c5fb1997d272fb0" id="r_a3159c0ae61e0e4af6c5fb1997d272fb0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a3159c0ae61e0e4af6c5fb1997d272fb0">setSpatialIndexEnabled</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">bool</a> <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> cellSize=64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a3159c0ae61e0e4af6c5fb1997d272fb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables an optional SpatialHash2D broadphase (off by default).  <br /></td></tr>
+<tr class="separator:a3159c0ae61e0e4af6c5fb1997d272fb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30fd7d5871296387f995506e96ce457" id="r_af30fd7d5871296387f995506e96ce457"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#af30fd7d5871296387f995506e96ce457">spatialIndexEnabled</a> () <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">noexcept</a></td></tr>
+<tr class="memdesc:af30fd7d5871296387f995506e96ce457"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports whether the optional spatial broadphase is active.  <br /></td></tr>
+<tr class="separator:af30fd7d5871296387f995506e96ce457"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0218da82a1a683e2b2ebd16c90031355" id="r_a0218da82a1a683e2b2ebd16c90031355"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1CandidateQueryResult.html">CandidateQueryResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">query</a> (const <a class="el" href="structeve_1_1sensing_1_1QueryOrigin.html">QueryOrigin</a> &amp;origin, const <a class="el" href="structeve_1_1sensing_1_1QuerySpec.html">QuerySpec</a> &amp;spec)</td></tr>
+<tr class="memdesc:a0218da82a1a683e2b2ebd16c90031355"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a configurable candidate query.  <br /></td></tr>
+<tr class="separator:a0218da82a1a683e2b2ebd16c90031355"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33e2f19982981a4df8af84bd679a8e3a" id="r_a33e2f19982981a4df8af84bd679a8e3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a33e2f19982981a4df8af84bd679a8e3a">circle</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">requireTagsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">excludeTagsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">includeFactionsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">excludeFactionsCsv</a>, std::string_view visibleTo, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> <a class="el" href="TreeMesh_8cpp.html#a093d9695bc7f56e2e457d8ccf15652c1">limit</a>)</td></tr>
+<tr class="memdesc:a33e2f19982981a4df8af84bd679a8e3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries a circle. Filters are CSV; empty fields disable that filter.  <br /></td></tr>
+<tr class="separator:a33e2f19982981a4df8af84bd679a8e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a669f0774c91bd91e834c373191f8ea48" id="r_a669f0774c91bd91e834c373191f8ea48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a669f0774c91bd91e834c373191f8ea48">box</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> minX, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> minY, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> maxX, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> maxY, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">requireTagsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">excludeTagsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">includeFactionsCsv</a>, std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">excludeFactionsCsv</a>, std::string_view visibleTo, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> <a class="el" href="TreeMesh_8cpp.html#a093d9695bc7f56e2e457d8ccf15652c1">limit</a>)</td></tr>
+<tr class="memdesc:a669f0774c91bd91e834c373191f8ea48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries an axis-aligned box with the same filters as <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a33e2f19982981a4df8af84bd679a8e3a" title="Queries a circle. Filters are CSV; empty fields disable that filter.">circle()</a>.  <br /></td></tr>
+<tr class="separator:a669f0774c91bd91e834c373191f8ea48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b8414c1b4a2dd3a80043ab885479ce" id="r_a42b8414c1b4a2dd3a80043ab885479ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a42b8414c1b4a2dd3a80043ab885479ce">executePreset</a> (std::string_view <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">presetId</a>, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> originX, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> originY, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> dirX, <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a> dirY)</td></tr>
+<tr class="memdesc:a42b8414c1b4a2dd3a80043ab885479ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a registered <a class="el" href="structeve_1_1sensing_1_1TargetingPreset.html" title="Named ordered list of targeting tasks.">TargetingPreset</a> against this world and refreshes <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#ae29adcab9f01961a91f7de74362faabc" title="Returns a candidate from the most recent query, or null for an invalid index.">resultAt()</a>.  <br /></td></tr>
+<tr class="separator:a42b8414c1b4a2dd3a80043ab885479ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae29adcab9f01961a91f7de74362faabc" id="r_ae29adcab9f01961a91f7de74362faabc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="structeve_1_1sensing_1_1Candidate.html">Candidate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#ae29adcab9f01961a91f7de74362faabc">resultAt</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a></td></tr>
+<tr class="memdesc:ae29adcab9f01961a91f7de74362faabc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a candidate from the most recent query, or null for an invalid index.  <br /></td></tr>
+<tr class="separator:ae29adcab9f01961a91f7de74362faabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5990f9697ec973d28e7cb1ca4efafcd0" id="r_a5990f9697ec973d28e7cb1ca4efafcd0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a5990f9697ec973d28e7cb1ca4efafcd0">debugLastQueryJson</a> () <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a></td></tr>
+<tr class="memdesc:a5990f9697ec973d28e7cb1ca4efafcd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic JSON dump of the last successful query for MCP/debug overlays.  <br /></td></tr>
+<tr class="separator:a5990f9697ec973d28e7cb1ca4efafcd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e07a06bab16d234a7e6b581906b1364" id="r_a3e07a06bab16d234a7e6b581906b1364"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a3e07a06bab16d234a7e6b581906b1364">snapshotJson</a> () <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a></td></tr>
+<tr class="memdesc:a3e07a06bab16d234a7e6b581906b1364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exports deterministic JSON.  <br /></td></tr>
+<tr class="separator:a3e07a06bab16d234a7e6b581906b1364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2726e0793ba55bd553e5f39774f1bbe5" id="r_a2726e0793ba55bd553e5f39774f1bbe5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a2726e0793ba55bd553e5f39774f1bbe5">restoreJson</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> std::string &amp;json)</td></tr>
+<tr class="memdesc:a2726e0793ba55bd553e5f39774f1bbe5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a snapshot transactionally.  <br /></td></tr>
+<tr class="separator:a2726e0793ba55bd553e5f39774f1bbe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f1a31a57b3994a35da3cda588a36ee" id="r_a30f1a31a57b3994a35da3cda588a36ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> std::map&lt; std::string, <a class="el" href="structeve_1_1sensing_1_1Subject.html">Subject</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a30f1a31a57b3994a35da3cda588a36ee">subjects</a> () <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">noexcept</a></td></tr>
+<tr class="memdesc:a30f1a31a57b3994a35da3cda588a36ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a borrowed view of stored subjects for adapters; valid until mutation.  <br /></td></tr>
+<tr class="separator:a30f1a31a57b3994a35da3cda588a36ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a3d8f88755bf0ba0dc7eb7e0c645f0d" id="r_a7a3d8f88755bf0ba0dc7eb7e0c645f0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a7a3d8f88755bf0ba0dc7eb7e0c645f0d">SensingWorld</a> ()=<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">default</a></td></tr>
+<tr class="separator:a7a3d8f88755bf0ba0dc7eb7e0c645f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1823b05c9b6c669350a4914217cbe5a6" id="r_a1823b05c9b6c669350a4914217cbe5a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a1823b05c9b6c669350a4914217cbe5a6">~SensingWorld</a> ()=<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">default</a></td></tr>
+<tr class="separator:a1823b05c9b6c669350a4914217cbe5a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52420d14c7259278dafd65d04230307c" id="r_a52420d14c7259278dafd65d04230307c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a52420d14c7259278dafd65d04230307c">SensingWorld</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;)=<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">delete</a></td></tr>
+<tr class="separator:a52420d14c7259278dafd65d04230307c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae83b05879c1c5089aef8d58c922cd1a2" id="r_ae83b05879c1c5089aef8d58c922cd1a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#ae83b05879c1c5089aef8d58c922cd1a2">operator=</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;)=<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">delete</a></td></tr>
+<tr class="separator:ae83b05879c1c5089aef8d58c922cd1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95dbec9848018706f65cd2d2c4814ac6" id="r_a95dbec9848018706f65cd2d2c4814ac6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a95dbec9848018706f65cd2d2c4814ac6">SensingWorld</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&amp;) <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">noexcept</a>=<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">default</a></td></tr>
+<tr class="separator:a95dbec9848018706f65cd2d2c4814ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef122f327965877ce6e8c73f3eed7b4" id="r_adef122f327965877ce6e8c73f3eed7b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#adef122f327965877ce6e8c73f3eed7b4">operator=</a> (<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&amp;) <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">noexcept</a>=<a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">default</a></td></tr>
+<tr class="separator:adef122f327965877ce6e8c73f3eed7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Gameplay-facing 2D candidate query service; it never values or selects targets. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00144">144</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7a3d8f88755bf0ba0dc7eb7e0c645f0d" name="a7a3d8f88755bf0ba0dc7eb7e0c645f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3d8f88755bf0ba0dc7eb7e0c645f0d">&#9670;&#160;</a></span>SensingWorld() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::SensingWorld::SensingWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1823b05c9b6c669350a4914217cbe5a6" name="a1823b05c9b6c669350a4914217cbe5a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1823b05c9b6c669350a4914217cbe5a6">&#9670;&#160;</a></span>~SensingWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::SensingWorld::~SensingWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a52420d14c7259278dafd65d04230307c" name="a52420d14c7259278dafd65d04230307c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52420d14c7259278dafd65d04230307c">&#9670;&#160;</a></span>SensingWorld() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::SensingWorld::SensingWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a95dbec9848018706f65cd2d2c4814ac6" name="a95dbec9848018706f65cd2d2c4814ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95dbec9848018706f65cd2d2c4814ac6">&#9670;&#160;</a></span>SensingWorld() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::SensingWorld::SensingWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a669f0774c91bd91e834c373191f8ea48" name="a669f0774c91bd91e834c373191f8ea48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a669f0774c91bd91e834c373191f8ea48">&#9670;&#160;</a></span>box()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> &gt; eve::sensing::SensingWorld::box </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>requireTagsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>excludeTagsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>includeFactionsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>excludeFactionsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>visibleTo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a>&#160;</td>
+          <td class="paramname"><em>limit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries an axis-aligned box with the same filters as <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a33e2f19982981a4df8af84bd679a8e3a" title="Queries a circle. Filters are CSV; empty fields disable that filter.">circle()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00127">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00137">limit</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a33e2f19982981a4df8af84bd679a8e3a" name="a33e2f19982981a4df8af84bd679a8e3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33e2f19982981a4df8af84bd679a8e3a">&#9670;&#160;</a></span>circle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> &gt; eve::sensing::SensingWorld::circle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>requireTagsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>excludeTagsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>includeFactionsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>excludeFactionsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>visibleTo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a>&#160;</td>
+          <td class="paramname"><em>limit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries a circle. Filters are CSV; empty fields disable that filter. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00479">479</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00137">limit</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00727">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00727">y</a>.</p>
+
+</div>
+</div>
+<a id="a5990f9697ec973d28e7cb1ca4efafcd0" name="a5990f9697ec973d28e7cb1ca4efafcd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5990f9697ec973d28e7cb1ca4efafcd0">&#9670;&#160;</a></span>debugLastQueryJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::sensing::SensingWorld::debugLastQueryJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deterministic JSON dump of the last successful query for MCP/debug overlays. </p>
+<dl class="section return"><dt>返回</dt><dd>Schema <code>eve.sensing.lastQuery</code> with origin, shape, spatial stats, and ranked scores. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Empty ranked list when no query has succeeded yet. Does not assign primary. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00519">519</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a> , 以及 <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a>.</p>
+
+</div>
+</div>
+<a id="a42b8414c1b4a2dd3a80043ab885479ce" name="a42b8414c1b4a2dd3a80043ab885479ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42b8414c1b4a2dd3a80043ab885479ce">&#9670;&#160;</a></span>executePreset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a> &gt; eve::sensing::SensingWorld::executePreset </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>presetId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>dirX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>dirY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs a registered <a class="el" href="structeve_1_1sensing_1_1TargetingPreset.html" title="Named ordered list of targeting tasks.">TargetingPreset</a> against this world and refreshes <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#ae29adcab9f01961a91f7de74362faabc" title="Returns a candidate from the most recent query, or null for an invalid index.">resultAt()</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">presetId</td><td>Stable preset id (e.g. "sensing.builtin.coneSelect"). </td></tr>
+    <tr><td class="paramname">originX</td><td>Origin X used as <a class="el" href="structeve_1_1sensing_1_1QueryOrigin.html" title="World2D origin used for range tests and distance sorting.">QueryOrigin</a> and cone apex. </td></tr>
+    <tr><td class="paramname">originY</td><td>Origin Y used as <a class="el" href="structeve_1_1sensing_1_1QueryOrigin.html" title="World2D origin used for range tests and distance sorting.">QueryOrigin</a> and cone apex. </td></tr>
+    <tr><td class="paramname">dirX</td><td>Forward X for cone filter tasks (normalized on use). </td></tr>
+    <tr><td class="paramname">dirY</td><td>Forward Y for cone filter tasks (normalized on use). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of ranked candidates, or a structured failure. @thread Call on the sensing world's owning simulation thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00499">499</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TargetingPipeline_8h_source.html#l00061">eve::sensing::TargetingSourceContext::dirX</a>, <a class="el" href="TargetingPipeline_8h_source.html#l00062">eve::sensing::TargetingSourceContext::dirY</a>, <a class="el" href="TargetingPipeline_8cpp_source.html#l00309">eve::sensing::TargetingPipeline::executePreset()</a>, <a class="el" href="TargetingPipeline_8h_source.html#l00060">eve::sensing::TargetingSourceContext::origin</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="TargetingPipeline_8cpp_source.html#l00237">eve::sensing::TargetingPipeline::sharedBuiltins()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TargetingPipeline_8h_source.html#l00059">eve::sensing::TargetingSourceContext::world</a>.</p>
+
+</div>
+</div>
+<a id="ae83b05879c1c5089aef8d58c922cd1a2" name="ae83b05879c1c5089aef8d58c922cd1a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae83b05879c1c5089aef8d58c922cd1a2">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">eve::sensing::SensingWorld::operator</a>= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adef122f327965877ce6e8c73f3eed7b4" name="adef122f327965877ce6e8c73f3eed7b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef122f327965877ce6e8c73f3eed7b4">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">eve::sensing::SensingWorld::operator</a>= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0218da82a1a683e2b2ebd16c90031355" name="a0218da82a1a683e2b2ebd16c90031355"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0218da82a1a683e2b2ebd16c90031355">&#9670;&#160;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1CandidateQueryResult.html">CandidateQueryResult</a> &gt; eve::sensing::SensingWorld::query </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sensing_1_1QueryOrigin.html">QueryOrigin</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sensing_1_1QuerySpec.html">QuerySpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>spec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs a configurable candidate query. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning ranked candidates, or a structured failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Also refreshes the <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#ae29adcab9f01961a91f7de74362faabc" title="Returns a candidate from the most recent query, or null for an invalid index.">resultAt()</a> cache to match ranked() order. @thread Call on the sensing world's owning simulation thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Sensing_8h_source.html#l00106">eve::sensing::QuerySpec::countPolicy</a>, <a class="el" href="Sensing_8h_source.html#l00125">eve::sensing::RankedCandidate::distance</a>, <a class="el" href="namespaceeve_1_1sensing.html#a0b0302ee5fbcd38e7636e4fb40149ffda3fef7b8f813c7c312e180218167b72a1">eve::sensing::DistanceAscending</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="Sensing_8h_source.html#l00122">eve::sensing::RankedCandidate::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Sensing_8h_source.html#l00105">eve::sensing::QuerySpec::maxCount</a>, <a class="el" href="Sensing_8h_source.html#l00098">eve::sensing::QuerySpec::maxRange</a>, <a class="el" href="Sensing_8h_source.html#l00104">eve::sensing::QuerySpec::minCount</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="Sensing_8h_source.html#l00126">eve::sensing::RankedCandidate::score</a>, <a class="el" href="Sensing_8h_source.html#l00127">eve::sensing::RankedCandidate::scoreReason</a>, <a class="el" href="Sensing_8h_source.html#l00096">eve::sensing::QuerySpec::shape</a>, <a class="el" href="Sensing_8h_source.html#l00107">eve::sensing::QuerySpec::sortKey</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Sensing_8h_source.html#l00117">eve::sensing::QueryOrigin::subjectId</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1sensing.html#ad09b53bf83c94321adb063c2181741bbaaa6edde1eb9ed76e3f6c94cdbb3945b9">eve::sensing::TruncateToMax</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>, <a class="el" href="Sensing_8cpp_source.html#l00170">eve::sensing::QuerySpec::validate()</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>, <a class="el" href="Sensing_8h_source.html#l00115">eve::sensing::QueryOrigin::x</a>, <a class="el" href="Sensing_8h_source.html#l00123">eve::sensing::RankedCandidate::x</a>, <a class="el" href="Sensing_8h_source.html#l00116">eve::sensing::QueryOrigin::y</a> , 以及 <a class="el" href="Sensing_8h_source.html#l00124">eve::sensing::RankedCandidate::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sensing_8cpp_source.html#l00488">box()</a>, <a class="el" href="Sensing_8cpp_source.html#l00479">circle()</a>, <a class="el" href="Sensing_8cpp_source.html#l00519">debugLastQueryJson()</a>, <a class="el" href="Sensing_8cpp_source.html#l00499">executePreset()</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="Targeting_8cpp_source.html#l00366">eve::sensing::SensingWorldCandidateProvider::query()</a>, <a class="el" href="Sensing_8cpp_source.html#l00251">remove()</a>, <a class="el" href="Sensing_8cpp_source.html#l00555">restoreJson()</a>, <a class="el" href="Sensing_8cpp_source.html#l00515">resultAt()</a>, <a class="el" href="Sensing_8cpp_source.html#l00278">setSpatialIndexEnabled()</a>, <a class="el" href="Sensing_8cpp_source.html#l00260">setZones()</a>, <a class="el" href="Sensing_8cpp_source.html#l00542">snapshotJson()</a> , 以及 <a class="el" href="Sensing_8cpp_source.html#l00239">upsert()</a>.</p>
+
+</div>
+</div>
+<a id="ab473250940e149b9b018393dfe78077e" name="ab473250940e149b9b018393dfe78077e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab473250940e149b9b018393dfe78077e">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt; eve::sensing::SensingWorld::remove </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes mirrored facts, or returns NotFound when the id is absent. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04428">eve::rts::CombatFireSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a2726e0793ba55bd553e5f39774f1bbe5" name="a2726e0793ba55bd553e5f39774f1bbe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2726e0793ba55bd553e5f39774f1bbe5">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt; eve::sensing::SensingWorld::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a snapshot transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00555">555</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="Sensing_8cpp_source.html#l00260">setZones()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Sensing_8cpp_source.html#l00239">upsert()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ae29adcab9f01961a91f7de74362faabc" name="ae29adcab9f01961a91f7de74362faabc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae29adcab9f01961a91f7de74362faabc">&#9670;&#160;</a></span>resultAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> <a class="el" href="structeve_1_1sensing_1_1Candidate.html">Candidate</a> &gt; eve::sensing::SensingWorld::resultAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">int</a>&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a candidate from the most recent query, or null for an invalid index. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable candidate owned by the query result cache. @ownership <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html" title="Gameplay-facing 2D candidate query service; it never values or selects targets.">SensingWorld</a> owns the candidate cache; callers must not delete or mutate it. @lifetime Valid until the next query/circle/box, restore, or world destruction; copy it for later use. @thread Call on the sensing world's owning simulation thread. @reentrancy Do not retain across a callback or another query. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>.</p>
+
+</div>
+</div>
+<a id="a3159c0ae61e0e4af6c5fb1997d272fb0" name="a3159c0ae61e0e4af6c5fb1997d272fb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3159c0ae61e0e4af6c5fb1997d272fb0">&#9670;&#160;</a></span>setSpatialIndexEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt; eve::sensing::SensingWorld::setSpatialIndexEnabled </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">bool</a>&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>cellSize</em> = <code>64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables an optional SpatialHash2D broadphase (off by default). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>When true, rebuilds the index from current subjects. </td></tr>
+    <tr><td class="paramname">cellSize</td><td>Uniform grid cell size; must be finite and &gt; 0 when enabling. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success, or InvalidArgument when cellSize is invalid. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Filtering/sorting remain QuerySpec-owned; the hash only culls candidates. @thread Call on the sensing world's owning simulation thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3cb6ddfd0ec17dc78a58047ac4453e36" name="a3cb6ddfd0ec17dc78a58047ac4453e36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cb6ddfd0ec17dc78a58047ac4453e36">&#9670;&#160;</a></span>setZones()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt; eve::sensing::SensingWorld::setZones </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>zonesCsv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces logical zone membership for an existing subject. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td><a class="el" href="structeve_1_1sensing_1_1Subject.html" title="Mirrored gameplay facts used by candidate queries.">Subject</a> id that must already be registered. </td></tr>
+    <tr><td class="paramname">zonesCsv</td><td>Comma-separated <a class="el" href="classeve_1_1LogicalId.html" title="Human-readable, scoped identifier in the form namespace:name.">LogicalId</a> texts (e.g. "arena:central"); empty clears membership. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success, NotFound when absent, or InvalidArgument for empty/invalid zone ids. @thread Call on the sensing world's owning simulation thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sensing_8cpp_source.html#l00555">restoreJson()</a>.</p>
+
+</div>
+</div>
+<a id="a3e07a06bab16d234a7e6b581906b1364" name="a3e07a06bab16d234a7e6b581906b1364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e07a06bab16d234a7e6b581906b1364">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::sensing::SensingWorld::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exports deterministic JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00542">542</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="af30fd7d5871296387f995506e96ce457" name="af30fd7d5871296387f995506e96ce457"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af30fd7d5871296387f995506e96ce457">&#9670;&#160;</a></span>spatialIndexEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">bool</a> eve::sensing::SensingWorld::spatialIndexEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reports whether the optional spatial broadphase is active. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30f1a31a57b3994a35da3cda588a36ee" name="a30f1a31a57b3994a35da3cda588a36ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30f1a31a57b3994a35da3cda588a36ee">&#9670;&#160;</a></span>subjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">const</a> std::map&lt; std::string, <a class="el" href="structeve_1_1sensing_1_1Subject.html">Subject</a> &gt; &amp; eve::sensing::SensingWorld::subjects </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a borrowed view of stored subjects for adapters; valid until mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Targeting_8cpp_source.html#l00366">eve::sensing::SensingWorldCandidateProvider::query()</a>.</p>
+
+</div>
+</div>
+<a id="a64c83d7ebbcc70a5041ada8500b8598d" name="a64c83d7ebbcc70a5041ada8500b8598d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64c83d7ebbcc70a5041ada8500b8598d">&#9670;&#160;</a></span>upsert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">void</a> &gt; eve::sensing::SensingWorld::upsert </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355">float</a>&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>faction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>tagsCsv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>visibleToCsv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts or replaces mirrored facts. CSV fields contain comma-separated stable keys. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a> 第 <a class="el" href="Sensing_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Sensing_8cpp_source.html#l00401">query()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00727">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00727">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sensing_8cpp_source.html#l00555">restoreJson()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l04428">eve::rts::CombatFireSystem::step()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/sensing/<a class="el" href="Sensing_8h_source.html">Sensing.h</a></li>
+<li>src/modules/sensing/<a class="el" href="Sensing_8cpp_source.html">Sensing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/PcgTerrainPhotoMode.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgTerrainPhotoMode.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgTerrainPhotoMode_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="PcgPhotoModeApply_8h.html">common/PcgPhotoModeApply.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainMesh_8h.html">procgen/heightmap/TerrainMesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html">    7</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html">PcgTerrainPhotoModeState</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a42422a629ae719c584f14acab66403a2">    8</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a42422a629ae719c584f14acab66403a2">drawInstanced</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#abf1e40cb78df67a1f3b335b14e180a69">    9</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#abf1e40cb78df67a1f3b335b14e180a69">detailDensity</a> = 0.5f;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a7c9eecb629d4c83a0c5432455687a696">   10</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a7c9eecb629d4c83a0c5432455687a696">detailDistance</a> = 150.f;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#aef926cef8e4735b796f7420546992aff">   11</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#aef926cef8e4735b796f7420546992aff">pixelError</a> = 5.f;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a31ee8185c8b151703943651305a5783d">   12</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a31ee8185c8b151703943651305a5783d">basemapDistance</a> = 1024.f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>};</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420">   15</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420">PcgTerrainTextureTier</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420a4042fcadbe61a3300451157e2c9fe651">Detailed</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420ab21f7508c7a86909f51f8b55d98336e7">Basemap</a> = 1 };</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html">PcgTerrainPhotoModeAuthority</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1IPhotoModeFieldSink.html">IPhotoModeFieldSink</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a0f173c5b88cec0d6a75cb4e09e194780">~PcgTerrainPhotoModeAuthority</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a08569b1ee132ae6840f4a0056103d5a0">setAuthority</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a51c17c5058bab7cf55805e32c8a1e927">   24</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html">PcgTerrainPhotoModeState</a>&amp; <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a51c17c5058bab7cf55805e32c8a1e927">state</a>() const noexcept { <span class="keywordflow">return</span> state_; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a3d4cd0d6c1d114914635beff8655e4b7">selectLod</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; heightmap, <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMeshSettings.html">TerrainMeshSettings</a> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, <span class="keywordtype">int</span> maxLod, <span class="keywordtype">float</span> distance,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                  <span class="keywordtype">float</span> viewportHeight, <span class="keywordtype">float</span> verticalFovDegrees) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420">PcgTerrainTextureTier</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#ab680a01bd107cacbd37936f276a540df">textureTier</a>(<span class="keywordtype">float</span> distance) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumeration" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a208a16848dd308e93e96ca7263b9318c">acceptsPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment) <span class="keyword">const</span> <span class="keyword">noexcept</span> <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#abfe3b63489a6e35268b32090384dda08">applyPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">bool</span> authority_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html">PcgTerrainPhotoModeState</a> state_{};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="ttc" id="aPcgPhotoModeApply_8h_html"><div class="ttname"><a href="PcgPhotoModeApply_8h.html">PcgPhotoModeApply.h</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aTerrainMesh_8h_html"><div class="ttname"><a href="TerrainMesh_8h.html">TerrainMesh.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html">eve::IPhotoModeFieldSink</a></div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00029">PcgPhotoModeApply.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00019">Heightmap.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html">eve::procgen::PcgTerrainPhotoModeAuthority</a></div><div class="ttdoc">Explicit photo-mode owner for runtime terrain quality selection.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00018">PcgTerrainPhotoMode.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_a08569b1ee132ae6840f4a0056103d5a0"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a08569b1ee132ae6840f4a0056103d5a0">eve::procgen::PcgTerrainPhotoModeAuthority::setAuthority</a></div><div class="ttdeci">void setAuthority(bool enabled)</div><div class="ttdoc">Register or revoke the unique terrain photo-mode authority.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8cpp_source.html#l00007">PcgTerrainPhotoMode.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_a0f173c5b88cec0d6a75cb4e09e194780"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a0f173c5b88cec0d6a75cb4e09e194780">eve::procgen::PcgTerrainPhotoModeAuthority::~PcgTerrainPhotoModeAuthority</a></div><div class="ttdeci">~PcgTerrainPhotoModeAuthority() override</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8cpp_source.html#l00006">PcgTerrainPhotoMode.cpp:6</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_a208a16848dd308e93e96ca7263b9318c"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a208a16848dd308e93e96ca7263b9318c">eve::procgen::PcgTerrainPhotoModeAuthority::acceptsPhotoModeField</a></div><div class="ttdeci">PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment &amp;assignment) const noexcept override</div><div class="ttdoc">Return true only for fields owned by this provider.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8cpp_source.html#l00008">PcgTerrainPhotoMode.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_a3d4cd0d6c1d114914635beff8655e4b7"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a3d4cd0d6c1d114914635beff8655e4b7">eve::procgen::PcgTerrainPhotoModeAuthority::selectLod</a></div><div class="ttdeci">int selectLod(const Heightmap &amp;heightmap, TerrainMeshSettings settings, int maxLod, float distance, float viewportHeight, float verticalFovDegrees) const</div><div class="ttdoc">Select terrain mesh LOD using the current Pcg pixel-error budget.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8cpp_source.html#l00022">PcgTerrainPhotoMode.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_a51c17c5058bab7cf55805e32c8a1e927"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#a51c17c5058bab7cf55805e32c8a1e927">eve::procgen::PcgTerrainPhotoModeAuthority::state</a></div><div class="ttdeci">const PcgTerrainPhotoModeState &amp; state() const noexcept</div><div class="ttdoc">Return the retained terrain quality state.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00024">PcgTerrainPhotoMode.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_ab680a01bd107cacbd37936f276a540df"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#ab680a01bd107cacbd37936f276a540df">eve::procgen::PcgTerrainPhotoModeAuthority::textureTier</a></div><div class="ttdeci">PcgTerrainTextureTier textureTier(float distance) const noexcept</div><div class="ttdoc">Return whether distance has crossed Pcg's basemap texture threshold.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8cpp_source.html#l00025">PcgTerrainPhotoMode.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainPhotoModeAuthority_html_abfe3b63489a6e35268b32090384dda08"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainPhotoModeAuthority.html#abfe3b63489a6e35268b32090384dda08">eve::procgen::PcgTerrainPhotoModeAuthority::applyPhotoModeField</a></div><div class="ttdeci">Result&lt; void &gt; applyPhotoModeField(const PhotoModeAssignment &amp;assignment) override</div><div class="ttdoc">Apply one accepted assignment atomically on the game thread.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8cpp_source.html#l00011">PcgTerrainPhotoMode.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a0414361f9c654104e86b6c58a91fa420"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420">eve::procgen::PcgTerrainTextureTier</a></div><div class="ttdeci">PcgTerrainTextureTier</div><div class="ttdoc">Terrain material tier selected from Pcg's basemap distance.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00015">PcgTerrainPhotoMode.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a0414361f9c654104e86b6c58a91fa420a4042fcadbe61a3300451157e2c9fe651"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420a4042fcadbe61a3300451157e2c9fe651">eve::procgen::PcgTerrainTextureTier::Detailed</a></div><div class="ttdeci">@ Detailed</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a0414361f9c654104e86b6c58a91fa420ab21f7508c7a86909f51f8b55d98336e7"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a0414361f9c654104e86b6c58a91fa420ab21f7508c7a86909f51f8b55d98336e7">eve::procgen::PcgTerrainTextureTier::Basemap</a></div><div class="ttdeci">@ Basemap</div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">eve::PhotoModeFieldAcceptance</a></div><div class="ttdeci">PhotoModeFieldAcceptance</div><div class="ttdoc">Capability implemented by the composition root that routes assignments to domain owners.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00028">PcgPhotoModeApply.h:28</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html">eve::PhotoModeAssignment</a></div><div class="ttdoc">One reversible field assignment in a photo-mode transaction.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainPhotoModeState_html"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html">eve::procgen::PcgTerrainPhotoModeState</a></div><div class="ttdoc">Pcg terrain quality state used by terrain mesh, material and detail render callers.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00007">PcgTerrainPhotoMode.h:7</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainPhotoModeState_html_a31ee8185c8b151703943651305a5783d"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a31ee8185c8b151703943651305a5783d">eve::procgen::PcgTerrainPhotoModeState::basemapDistance</a></div><div class="ttdeci">float basemapDistance</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00012">PcgTerrainPhotoMode.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainPhotoModeState_html_a42422a629ae719c584f14acab66403a2"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a42422a629ae719c584f14acab66403a2">eve::procgen::PcgTerrainPhotoModeState::drawInstanced</a></div><div class="ttdeci">bool drawInstanced</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00008">PcgTerrainPhotoMode.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainPhotoModeState_html_a7c9eecb629d4c83a0c5432455687a696"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#a7c9eecb629d4c83a0c5432455687a696">eve::procgen::PcgTerrainPhotoModeState::detailDistance</a></div><div class="ttdeci">float detailDistance</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00010">PcgTerrainPhotoMode.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainPhotoModeState_html_abf1e40cb78df67a1f3b335b14e180a69"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#abf1e40cb78df67a1f3b335b14e180a69">eve::procgen::PcgTerrainPhotoModeState::detailDensity</a></div><div class="ttdeci">float detailDensity</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00009">PcgTerrainPhotoMode.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainPhotoModeState_html_aef926cef8e4735b796f7420546992aff"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainPhotoModeState.html#aef926cef8e4735b796f7420546992aff">eve::procgen::PcgTerrainPhotoModeState::pixelError</a></div><div class="ttdeci">float pixelError</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainPhotoMode_8h_source.html#l00011">PcgTerrainPhotoMode.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html">eve::procgen::TerrainMeshSettings</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00011">TerrainMesh.h:11</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

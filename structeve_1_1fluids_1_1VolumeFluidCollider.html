@@ -1,0 +1,587 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::VolumeFluidCollider结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1fluids_1_1VolumeFluidCollider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::VolumeFluidCollider结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owned obstacle sample; the caller updates moving obstacles before stepping.  
+ <a href="structeve_1_1fluids_1_1VolumeFluidCollider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a7461f95ca006da220fcf1ec3fa6d6f2a" id="r_a7461f95ca006da220fcf1ec3fa6d6f2a"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a7461f95ca006da220fcf1ec3fa6d6f2a">label</a> = 0</td></tr>
+<tr class="memdesc:a7461f95ca006da220fcf1ec3fa6d6f2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application label echoed by contacts; not a runtime object handle.  <br /></td></tr>
+<tr class="separator:a7461f95ca006da220fcf1ec3fa6d6f2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45742829bd11a871fe5c6f9a30a4bfe3" id="r_a45742829bd11a871fe5c6f9a30a4bfe3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99a">VolumeFluidColliderShape</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a45742829bd11a871fe5c6f9a30a4bfe3">shape</a> = <a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99aab7095f057db3fefa7325ad93a04e14fd">VolumeFluidColliderShape::Sphere</a></td></tr>
+<tr class="memdesc:a45742829bd11a871fe5c6f9a30a4bfe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytic primitive.  <br /></td></tr>
+<tr class="separator:a45742829bd11a871fe5c6f9a30a4bfe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63402561a6b22146030354e1b0b0e4b2" id="r_a63402561a6b22146030354e1b0b0e4b2"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a63402561a6b22146030354e1b0b0e4b2">center</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="memdesc:a63402561a6b22146030354e1b0b0e4b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">World center and box half extents; capsule halfExtent.y is half its total height.  <br /></td></tr>
+<tr class="separator:a63402561a6b22146030354e1b0b0e4b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1d1a37bd8f0e6e402266b74172673e1" id="r_aa1d1a37bd8f0e6e402266b74172673e1"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#aa1d1a37bd8f0e6e402266b74172673e1">halfExtent</a> {0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aa1d1a37bd8f0e6e402266b74172673e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a9b4cf2f5573685cca46341749a9229" id="r_a8a9b4cf2f5573685cca46341749a9229"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a8a9b4cf2f5573685cca46341749a9229">radius</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8a9b4cf2f5573685cca46341749a9229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sphere or capsule radius.  <br /></td></tr>
+<tr class="separator:a8a9b4cf2f5573685cca46341749a9229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f000224ce52511207f9315ef51ee018" id="r_a3f000224ce52511207f9315ef51ee018"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a3f000224ce52511207f9315ef51ee018">velocity</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="memdesc:a3f000224ce52511207f9315ef51ee018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Surface velocity at the sampled center.  <br /></td></tr>
+<tr class="separator:a3f000224ce52511207f9315ef51ee018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfaf676e74d6f97664be1b167b7393eb" id="r_abfaf676e74d6f97664be1b167b7393eb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#abfaf676e74d6f97664be1b167b7393eb">friction</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:abfaf676e74d6f97664be1b167b7393eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coulomb friction in [0,1].  <br /></td></tr>
+<tr class="separator:abfaf676e74d6f97664be1b167b7393eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19dbdc5da3ee9b02d1146fabeb9920cb" id="r_a19dbdc5da3ee9b02d1146fabeb9920cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a19dbdc5da3ee9b02d1146fabeb9920cb">staticFriction</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a19dbdc5da3ee9b02d1146fabeb9920cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static Coulomb friction in [0,1]; friction is the dynamic coefficient.  <br /></td></tr>
+<tr class="separator:a19dbdc5da3ee9b02d1146fabeb9920cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af414552a14d6e82d7326f66c8653309c" id="r_af414552a14d6e82d7326f66c8653309c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#af414552a14d6e82d7326f66c8653309c">rollingFriction</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:af414552a14d6e82d7326f66c8653309c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rolling-friction coefficient in [0,1].  <br /></td></tr>
+<tr class="separator:af414552a14d6e82d7326f66c8653309c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb5345e8454e3a05daa50e2fb7f15016" id="r_adb5345e8454e3a05daa50e2fb7f15016"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#adb5345e8454e3a05daa50e2fb7f15016">stickiness</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:adb5345e8454e3a05daa50e2fb7f15016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adhesion strength in [0,1000].  <br /></td></tr>
+<tr class="separator:adb5345e8454e3a05daa50e2fb7f15016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05facea17278bbdb41b081d6559ef6c0" id="r_a05facea17278bbdb41b081d6559ef6c0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a05facea17278bbdb41b081d6559ef6c0">stickDistance</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a05facea17278bbdb41b081d6559ef6c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum adhesive surface separation in meters, in [0,10].  <br /></td></tr>
+<tr class="separator:a05facea17278bbdb41b081d6559ef6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af311ed0dae8eca45b08d0573e690fee1" id="r_af311ed0dae8eca45b08d0573e690fee1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92">VolumeFluidMaterialCombineMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#af311ed0dae8eca45b08d0573e690fee1">frictionCombine</a> = <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92ab1897515d548a960afe49ecf66a29021">VolumeFluidMaterialCombineMode::Average</a></td></tr>
+<tr class="memdesc:af311ed0dae8eca45b08d0573e690fee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fluid3D-compatible priority combine mode for all friction coefficients.  <br /></td></tr>
+<tr class="separator:af311ed0dae8eca45b08d0573e690fee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d537365a7d7d9d13f7b2a9e00299927" id="r_a7d537365a7d7d9d13f7b2a9e00299927"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92">VolumeFluidMaterialCombineMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a7d537365a7d7d9d13f7b2a9e00299927">stickinessCombine</a> = <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92ab1897515d548a960afe49ecf66a29021">VolumeFluidMaterialCombineMode::Average</a></td></tr>
+<tr class="memdesc:a7d537365a7d7d9d13f7b2a9e00299927"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fluid3D-compatible priority combine mode for stickiness.  <br /></td></tr>
+<tr class="separator:a7d537365a7d7d9d13f7b2a9e00299927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e13619a2bc1cad6aca57a543782aaf6" id="r_a1e13619a2bc1cad6aca57a543782aaf6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a1e13619a2bc1cad6aca57a543782aaf6">rollingContacts</a> = false</td></tr>
+<tr class="memdesc:a1e13619a2bc1cad6aca57a543782aaf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables oriented rolling contact when either side requests it.  <br /></td></tr>
+<tr class="separator:a1e13619a2bc1cad6aca57a543782aaf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4c2564c200b15d9e5bc99083a014b5f" id="r_ae4c2564c200b15d9e5bc99083a014b5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#ae4c2564c200b15d9e5bc99083a014b5f">solidify</a> = false</td></tr>
+<tr class="memdesc:ae4c2564c200b15d9e5bc99083a014b5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Freezes contacts and enables one neighbor-contact wave per step from its attached solids.  <br /></td></tr>
+<tr class="separator:ae4c2564c200b15d9e5bc99083a014b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39ecb182a94e918dd73ebd81693ad165" id="r_a39ecb182a94e918dd73ebd81693ad165"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a39ecb182a94e918dd73ebd81693ad165">rotation</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="memdesc:a39ecb182a94e918dd73ebd81693ad165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit quaternion XYZW; box extents and the capsule's Y axis use this local frame.  <br /></td></tr>
+<tr class="separator:a39ecb182a94e918dd73ebd81693ad165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dfa303ce2afda98554693e7fd4ed200" id="r_a7dfa303ce2afda98554693e7fd4ed200"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a7dfa303ce2afda98554693e7fd4ed200">angularVelocity</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="memdesc:a7dfa303ce2afda98554693e7fd4ed200"><td class="mdescLeft">&#160;</td><td class="mdescRight">World angular velocity in radians/second, sampled at the collider center.  <br /></td></tr>
+<tr class="separator:a7dfa303ce2afda98554693e7fd4ed200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2def09f8d3fc090bec62a3ca49b4fdf" id="r_ad2def09f8d3fc090bec62a3ca49b4fdf"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#ad2def09f8d3fc090bec62a3ca49b4fdf">collisionFilter</a> = 0xffff0001u</td></tr>
+<tr class="memdesc:ad2def09f8d3fc090bec62a3ca49b4fdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collision filter: low 16 bits category, high 16 bits mask.  <br /></td></tr>
+<tr class="separator:ad2def09f8d3fc090bec62a3ca49b4fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aacab2ded2db0039f8bf4f560e192ae" id="r_a4aacab2ded2db0039f8bf4f560e192ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html#a4aacab2ded2db0039f8bf4f560e192ae">isTrigger</a> = false</td></tr>
+<tr class="memdesc:a4aacab2ded2db0039f8bf4f560e192ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates contacts without applying projection, friction or material transfer.  <br /></td></tr>
+<tr class="separator:a4aacab2ded2db0039f8bf4f560e192ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owned obstacle sample; the caller updates moving obstacles before stepping. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00137">137</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a7dfa303ce2afda98554693e7fd4ed200" name="a7dfa303ce2afda98554693e7fd4ed200"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dfa303ce2afda98554693e7fd4ed200">&#9670;&#160;</a></span>angularVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::VolumeFluidCollider::angularVelocity {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World angular velocity in radians/second, sampled at the collider center. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63402561a6b22146030354e1b0b0e4b2" name="a63402561a6b22146030354e1b0b0e4b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63402561a6b22146030354e1b0b0e4b2">&#9670;&#160;</a></span>center</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::VolumeFluidCollider::center {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World center and box half extents; capsule halfExtent.y is half its total height. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2def09f8d3fc090bec62a3ca49b4fdf" name="ad2def09f8d3fc090bec62a3ca49b4fdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2def09f8d3fc090bec62a3ca49b4fdf">&#9670;&#160;</a></span>collisionFilter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::fluids::VolumeFluidCollider::collisionFilter = 0xffff0001u</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collision filter: low 16 bits category, high 16 bits mask. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abfaf676e74d6f97664be1b167b7393eb" name="abfaf676e74d6f97664be1b167b7393eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfaf676e74d6f97664be1b167b7393eb">&#9670;&#160;</a></span>friction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::VolumeFluidCollider::friction = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Coulomb friction in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af311ed0dae8eca45b08d0573e690fee1" name="af311ed0dae8eca45b08d0573e690fee1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af311ed0dae8eca45b08d0573e690fee1">&#9670;&#160;</a></span>frictionCombine</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92">VolumeFluidMaterialCombineMode</a> eve::fluids::VolumeFluidCollider::frictionCombine = <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92ab1897515d548a960afe49ecf66a29021">VolumeFluidMaterialCombineMode::Average</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fluid3D-compatible priority combine mode for all friction coefficients. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1d1a37bd8f0e6e402266b74172673e1" name="aa1d1a37bd8f0e6e402266b74172673e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1d1a37bd8f0e6e402266b74172673e1">&#9670;&#160;</a></span>halfExtent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::VolumeFluidCollider::halfExtent {0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4aacab2ded2db0039f8bf4f560e192ae" name="a4aacab2ded2db0039f8bf4f560e192ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aacab2ded2db0039f8bf4f560e192ae">&#9670;&#160;</a></span>isTrigger</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::VolumeFluidCollider::isTrigger = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generates contacts without applying projection, friction or material transfer. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7461f95ca006da220fcf1ec3fa6d6f2a" name="a7461f95ca006da220fcf1ec3fa6d6f2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7461f95ca006da220fcf1ec3fa6d6f2a">&#9670;&#160;</a></span>label</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::fluids::VolumeFluidCollider::label = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Application label echoed by contacts; not a runtime object handle. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00139">139</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a9b4cf2f5573685cca46341749a9229" name="a8a9b4cf2f5573685cca46341749a9229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a9b4cf2f5573685cca46341749a9229">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::VolumeFluidCollider::radius = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sphere or capsule radius. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e13619a2bc1cad6aca57a543782aaf6" name="a1e13619a2bc1cad6aca57a543782aaf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e13619a2bc1cad6aca57a543782aaf6">&#9670;&#160;</a></span>rollingContacts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::VolumeFluidCollider::rollingContacts = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables oriented rolling contact when either side requests it. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af414552a14d6e82d7326f66c8653309c" name="af414552a14d6e82d7326f66c8653309c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af414552a14d6e82d7326f66c8653309c">&#9670;&#160;</a></span>rollingFriction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::VolumeFluidCollider::rollingFriction = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rolling-friction coefficient in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00153">153</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a39ecb182a94e918dd73ebd81693ad165" name="a39ecb182a94e918dd73ebd81693ad165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39ecb182a94e918dd73ebd81693ad165">&#9670;&#160;</a></span>rotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::fluids::VolumeFluidCollider::rotation {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unit quaternion XYZW; box extents and the capsule's Y axis use this local frame. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45742829bd11a871fe5c6f9a30a4bfe3" name="a45742829bd11a871fe5c6f9a30a4bfe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45742829bd11a871fe5c6f9a30a4bfe3">&#9670;&#160;</a></span>shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99a">VolumeFluidColliderShape</a> eve::fluids::VolumeFluidCollider::shape = <a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99aab7095f057db3fefa7325ad93a04e14fd">VolumeFluidColliderShape::Sphere</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Analytic primitive. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4c2564c200b15d9e5bc99083a014b5f" name="ae4c2564c200b15d9e5bc99083a014b5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4c2564c200b15d9e5bc99083a014b5f">&#9670;&#160;</a></span>solidify</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::VolumeFluidCollider::solidify = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Freezes contacts and enables one neighbor-contact wave per step from its attached solids. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19dbdc5da3ee9b02d1146fabeb9920cb" name="a19dbdc5da3ee9b02d1146fabeb9920cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19dbdc5da3ee9b02d1146fabeb9920cb">&#9670;&#160;</a></span>staticFriction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::VolumeFluidCollider::staticFriction = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Static Coulomb friction in [0,1]; friction is the dynamic coefficient. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00151">151</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05facea17278bbdb41b081d6559ef6c0" name="a05facea17278bbdb41b081d6559ef6c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05facea17278bbdb41b081d6559ef6c0">&#9670;&#160;</a></span>stickDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::VolumeFluidCollider::stickDistance = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum adhesive surface separation in meters, in [0,10]. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb5345e8454e3a05daa50e2fb7f15016" name="adb5345e8454e3a05daa50e2fb7f15016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb5345e8454e3a05daa50e2fb7f15016">&#9670;&#160;</a></span>stickiness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::VolumeFluidCollider::stickiness = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adhesion strength in [0,1000]. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d537365a7d7d9d13f7b2a9e00299927" name="a7d537365a7d7d9d13f7b2a9e00299927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d537365a7d7d9d13f7b2a9e00299927">&#9670;&#160;</a></span>stickinessCombine</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92">VolumeFluidMaterialCombineMode</a> eve::fluids::VolumeFluidCollider::stickinessCombine = <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92ab1897515d548a960afe49ecf66a29021">VolumeFluidMaterialCombineMode::Average</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fluid3D-compatible priority combine mode for stickiness. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f000224ce52511207f9315ef51ee018" name="a3f000224ce52511207f9315ef51ee018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f000224ce52511207f9315ef51ee018">&#9670;&#160;</a></span>velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::VolumeFluidCollider::velocity {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Surface velocity at the sampled center. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a> 第 <a class="el" href="VolumeFluid_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="VolumeFluid_8h_source.html">VolumeFluid.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

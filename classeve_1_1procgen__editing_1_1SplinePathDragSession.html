@@ -1,0 +1,506 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen_editing::SplinePathDragSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editing.html">procgen_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html">SplinePathDragSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen__editing_1_1SplinePathDragSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen_editing::SplinePathDragSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral ray picking and transient drag state for a spline document. @ownership Borrows the document; the caller must finish or cancel before destroying it. @thread Viewport/editor thread only; no callbacks are retained or invoked.  
+ <a href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SplinePathGizmo_8h_source.html">SplinePathGizmo.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a490c42ea77ce762ce20fc32938df2378" id="r_a490c42ea77ce762ce20fc32938df2378"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#a490c42ea77ce762ce20fc32938df2378">SplinePathDragSession</a> (<a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html">SplinePathDocument</a> *document, int sampleCount=64)</td></tr>
+<tr class="memdesc:a490c42ea77ce762ce20fc32938df2378"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an idle session borrowing an authoritative spline document.  <br /></td></tr>
+<tr class="separator:a490c42ea77ce762ce20fc32938df2378"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaca07241e842de67ff3696ea3bc042d0" id="r_aaca07241e842de67ff3696ea3bc042d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathDragPreview.html">SplinePathDragPreview</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#aaca07241e842de67ff3696ea3bc042d0">beginDrag</a> (double rayOriginX, double rayOriginY, double rayOriginZ, double rayDirectionX, double rayDirectionY, double rayDirectionZ)</td></tr>
+<tr class="memdesc:aaca07241e842de67ff3696ea3bc042d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick the nearest anchor or Bezier handle sphere intersected by a world ray.  <br /></td></tr>
+<tr class="separator:aaca07241e842de67ff3696ea3bc042d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756c85762e86f621ee045816803b0c4e" id="r_a756c85762e86f621ee045816803b0c4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathDragPreview.html">SplinePathDragPreview</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#a756c85762e86f621ee045816803b0c4e">updateDrag</a> (double rayOriginX, double rayOriginY, double rayOriginZ, double rayDirectionX, double rayDirectionY, double rayDirectionZ)</td></tr>
+<tr class="memdesc:a756c85762e86f621ee045816803b0c4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project a pointer ray onto the original camera-facing drag plane and update only the draft.  <br /></td></tr>
+<tr class="separator:a756c85762e86f621ee045816803b0c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab32a7869c21e22673351e2eb02011f" id="r_a5ab32a7869c21e22673351e2eb02011f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#a5ab32a7869c21e22673351e2eb02011f">finishDrag</a> ()</td></tr>
+<tr class="memdesc:a5ab32a7869c21e22673351e2eb02011f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce one reversible point replacement operation without applying it.  <br /></td></tr>
+<tr class="separator:a5ab32a7869c21e22673351e2eb02011f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cdb2ebfb023a0b6d10dbf62ed402e0" id="r_a21cdb2ebfb023a0b6d10dbf62ed402e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#a21cdb2ebfb023a0b6d10dbf62ed402e0">cancelDrag</a> ()</td></tr>
+<tr class="memdesc:a21cdb2ebfb023a0b6d10dbf62ed402e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard transient state without changing the document.  <br /></td></tr>
+<tr class="separator:a21cdb2ebfb023a0b6d10dbf62ed402e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bce34f90d9bdfae00899ed928cf3c1f" id="r_a6bce34f90d9bdfae00899ed928cf3c1f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#a6bce34f90d9bdfae00899ed928cf3c1f">isDragging</a> () const noexcept</td></tr>
+<tr class="memdesc:a6bce34f90d9bdfae00899ed928cf3c1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether a drag owns transient state.  <br /></td></tr>
+<tr class="separator:a6bce34f90d9bdfae00899ed928cf3c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21b7c80624297e6e3f8cf826210f6218" id="r_a21b7c80624297e6e3f8cf826210f6218"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#a21b7c80624297e6e3f8cf826210f6218">activePoint</a> () const</td></tr>
+<tr class="memdesc:a21b7c80624297e6e3f8cf826210f6218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the active stable point id, or empty when idle.  <br /></td></tr>
+<tr class="separator:a21b7c80624297e6e3f8cf826210f6218"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf50a8f8e0509ea7ba357ff3969244c" id="r_aebf50a8f8e0509ea7ba357ff3969244c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDragSession.html#aebf50a8f8e0509ea7ba357ff3969244c">activeHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:aebf50a8f8e0509ea7ba357ff3969244c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return anchor, in, or out for the active handle.  <br /></td></tr>
+<tr class="separator:aebf50a8f8e0509ea7ba357ff3969244c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral ray picking and transient drag state for a spline document. @ownership Borrows the document; the caller must finish or cancel before destroying it. @thread Viewport/editor thread only; no callbacks are retained or invoked. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8h_source.html">SplinePathGizmo.h</a> 第 <a class="el" href="SplinePathGizmo_8h_source.html#l00042">42</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a490c42ea77ce762ce20fc32938df2378" name="a490c42ea77ce762ce20fc32938df2378"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a490c42ea77ce762ce20fc32938df2378">&#9670;&#160;</a></span>SplinePathDragSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen_editing::SplinePathDragSession::SplinePathDragSession </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html">SplinePathDocument</a> *&#160;</td>
+          <td class="paramname"><em>document</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sampleCount</em> = <code>64</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an idle session borrowing an authoritative spline document. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8cpp_source.html">SplinePathGizmo.cpp</a> 第 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aebf50a8f8e0509ea7ba357ff3969244c" name="aebf50a8f8e0509ea7ba357ff3969244c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebf50a8f8e0509ea7ba357ff3969244c">&#9670;&#160;</a></span>activeHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::procgen_editing::SplinePathDragSession::activeHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return anchor, in, or out for the active handle. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8h_source.html">SplinePathGizmo.h</a> 第 <a class="el" href="SplinePathGizmo_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21b7c80624297e6e3f8cf826210f6218" name="a21b7c80624297e6e3f8cf826210f6218"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21b7c80624297e6e3f8cf826210f6218">&#9670;&#160;</a></span>activePoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> eve::procgen_editing::SplinePathDragSession::activePoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the active stable point id, or empty when idle. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8h_source.html">SplinePathGizmo.h</a> 第 <a class="el" href="SplinePathGizmo_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaca07241e842de67ff3696ea3bc042d0" name="aaca07241e842de67ff3696ea3bc042d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaca07241e842de67ff3696ea3bc042d0">&#9670;&#160;</a></span>beginDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathDragPreview.html">SplinePathDragPreview</a> &gt; eve::procgen_editing::SplinePathDragSession::beginDrag </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayOriginX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayOriginY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayOriginZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayDirectionX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayDirectionY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayDirectionZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pick the nearest anchor or Bezier handle sphere intersected by a world ray. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8cpp_source.html">SplinePathGizmo.cpp</a> 第 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="SplinePathGizmo_8cpp_source.html#l00045">eve::procgen_editing::SplinePathGizmoBuilder::build()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00127">c</a>, <a class="el" href="SplinePathGizmo_8cpp_source.html#l00250">cancelDrag()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="SplinePathDocument_8cpp_source.html#l00507">eve::procgen_editing::SplinePathDocument::points()</a> , 以及 <a class="el" href="SplinePathDocument_8h_source.html#l00094">eve::procgen_editing::SplinePathDocument::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a21cdb2ebfb023a0b6d10dbf62ed402e0" name="a21cdb2ebfb023a0b6d10dbf62ed402e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21cdb2ebfb023a0b6d10dbf62ed402e0">&#9670;&#160;</a></span>cancelDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen_editing::SplinePathDragSession::cancelDrag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discard transient state without changing the document. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8cpp_source.html">SplinePathGizmo.cpp</a> 第 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00136">beginDrag()</a>, <a class="el" href="SplinePathGizmo_8cpp_source.html#l00236">finishDrag()</a> , 以及 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00190">updateDrag()</a>.</p>
+
+</div>
+</div>
+<a id="a5ab32a7869c21e22673351e2eb02011f" name="a5ab32a7869c21e22673351e2eb02011f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ab32a7869c21e22673351e2eb02011f">&#9670;&#160;</a></span>finishDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::SplinePathDragSession::finishDrag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Produce one reversible point replacement operation without applying it. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8cpp_source.html">SplinePathGizmo.cpp</a> 第 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00250">cancelDrag()</a>, <a class="el" href="SplinePathDocument_8cpp_source.html#l00473">eve::procgen_editing::SplinePathDocument::makeSetPoint()</a> , 以及 <a class="el" href="SplinePathDocument_8h_source.html#l00094">eve::procgen_editing::SplinePathDocument::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a6bce34f90d9bdfae00899ed928cf3c1f" name="a6bce34f90d9bdfae00899ed928cf3c1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bce34f90d9bdfae00899ed928cf3c1f">&#9670;&#160;</a></span>isDragging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen_editing::SplinePathDragSession::isDragging </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Report whether a drag owns transient state. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8h_source.html">SplinePathGizmo.h</a> 第 <a class="el" href="SplinePathGizmo_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a756c85762e86f621ee045816803b0c4e" name="a756c85762e86f621ee045816803b0c4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756c85762e86f621ee045816803b0c4e">&#9670;&#160;</a></span>updateDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathDragPreview.html">SplinePathDragPreview</a> &gt; eve::procgen_editing::SplinePathDragSession::updateDrag </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayOriginX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayOriginY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayOriginZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayDirectionX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayDirectionY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rayDirectionZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project a pointer ray onto the original camera-facing drag plane and update only the draft. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathGizmo_8cpp_source.html">SplinePathGizmo.cpp</a> 第 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SplinePathGizmo_8cpp_source.html#l00250">cancelDrag()</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00029">eve::procgen_editing::SplinePathControlPoint::inX</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00029">eve::procgen_editing::SplinePathControlPoint::inY</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00029">eve::procgen_editing::SplinePathControlPoint::inZ</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00030">eve::procgen_editing::SplinePathControlPoint::outX</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00030">eve::procgen_editing::SplinePathControlPoint::outY</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00030">eve::procgen_editing::SplinePathControlPoint::outZ</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00094">eve::procgen_editing::SplinePathDocument::revision()</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00028">eve::procgen_editing::SplinePathControlPoint::x</a>, <a class="el" href="SplinePathDocument_8h_source.html#l00028">eve::procgen_editing::SplinePathControlPoint::y</a> , 以及 <a class="el" href="SplinePathDocument_8h_source.html#l00028">eve::procgen_editing::SplinePathControlPoint::z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/editing/<a class="el" href="SplinePathGizmo_8h_source.html">SplinePathGizmo.h</a></li>
+<li>src/modules/procgen/editing/<a class="el" href="SplinePathGizmo_8cpp_source.html">SplinePathGizmo.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

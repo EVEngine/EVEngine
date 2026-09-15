@@ -1,0 +1,290 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionFeatureInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionFeatureInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionFeatureInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="AnimMath_8h.html">animation/AnimMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation_1_1detail.html">eve::animation::detail</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#af81b228b130144404e4e197c7d4f649a">    8</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span>                  <a class="code hl_variable" href="namespaceeve_1_1animation_1_1detail.html#af81b228b130144404e4e197c7d4f649a">locomotionPoseOffset</a>   = 19;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#a786aecadc89d5185716d7bdafda31739">    9</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span>                  <a class="code hl_variable" href="namespaceeve_1_1animation_1_1detail.html#a786aecadc89d5185716d7bdafda31739">locomotionFeatureCount</a> = 30;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#a3b29455837ca26b167a056f27ecf44bc">   10</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> std::array&lt;float, 5&gt; <a class="code hl_variable" href="namespaceeve_1_1animation_1_1detail.html#a3b29455837ca26b167a056f27ecf44bc">locomotionHorizons</a>{-0.05f, 0.f, 0.35f, 0.7f, 1.f};</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#ad56226a6342cef3a7a06ed6deb5bba1e">   12</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#ad56226a6342cef3a7a06ed6deb5bba1e">featureYaw</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> std::atan2(2.f * (<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qw * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qy + <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qx * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qz), 1.f - 2.f * (<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qx * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qx + <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qy * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.qy));</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">   15</a></span><span class="keyword">inline</span> std::array&lt;float, 3&gt; <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> yaw) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> cs = std::cos(yaw), sn = std::sin(yaw);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">return</span> {<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> * cs - <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> * sn, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> * sn + <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> * cs};</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">   19</a></span><span class="keyword">inline</span> std::array&lt;float, 3&gt; <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">featurePosition</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&amp; <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>.px - <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.px, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>.py - <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.py, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>.pz - <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.pz, <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#ad56226a6342cef3a7a06ed6deb5bba1e">featureYaw</a>(<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// Shared by database indexing and live pose-history queries. Each sample removes</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">// its own root transform before differencing: capsule travel is not foot swing.</span></div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#abbb7e9e9f42a5b3520fbcadadcfb0187">   24</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#abbb7e9e9f42a5b3520fbcadadcfb0187">encodeLocomotionPose</a>(std::span&lt;float&gt; out, <span class="keyword">const</span> std::array&lt;TransformTRS, 4&gt;&amp; now,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                                 <span class="keyword">const</span> std::array&lt;TransformTRS, 4&gt;&amp; past, <span class="keywordtype">float</span> interval) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a> = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">featurePosition</a>(now[1], now[0]), <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a> = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">featurePosition</a>(now[2], now[0]);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) out[19 + axis] = <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>[axis] - <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>[axis];</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> foot = 1; foot &lt;= 2; ++foot) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">const</span> <span class="keyword">auto</span> current = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">featurePosition</a>(now[foot], now[0]), <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">featurePosition</a>(past[foot], past[0]);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            out[22 + (foot - 1) * 3 + axis] = (current[axis] - <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>[axis]) / interval;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// UE&#39;s GLTFExporter maps local UE Y to glTF Z. Keep the projected vector&#39;s</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="comment">// length (a tilted pelvis must not be renormalized after stripping vertical).</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>       = now[3];</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <span class="keyword">auto</span>  <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a> = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a>(2.f * (<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qx * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qz + <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qw * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qy), 0.f, 1.f - 2.f * (<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qx * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qx + <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qy * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.qy),</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                       <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#ad56226a6342cef3a7a06ed6deb5bba1e">featureYaw</a>(now[0]));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    out[28]             = <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>[0];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    out[29]             = <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>[2];</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Sample&gt;</div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#afebbdbcb83a4482fb545a2b596d66604">   42</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#afebbdbcb83a4482fb545a2b596d66604">encodeLocomotionTrajectory</a>(std::span&lt;float&gt; out, <span class="keyword">const</span> std::array&lt;Sample, 5&gt;&amp; samples, <span class="keywordtype">float</span> yaw) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a> = [&amp;](<span class="keywordtype">int</span> sample, <span class="keywordtype">int</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>    = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a>(samples[sample].<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, samples[sample].<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, samples[sample].<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, yaw);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        out[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>]     = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[0];</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        out[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + 1] = <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[2];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">auto</span> velocity = [&amp;](<span class="keywordtype">int</span> sample, <span class="keywordtype">int</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>    = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a>(samples[sample].<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a>, samples[sample].<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a56ab444d63dfde57a24271cbe3097fdb">vy</a>, samples[sample].<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a>, yaw);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        out[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>]     = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[0];</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        out[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + 1] = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[2];</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a> = [&amp;](<span class="keywordtype">int</span> sample, <span class="keywordtype">int</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_function" href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">yawToForward</a>(samples[sample].yaw - yaw, out[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>], out[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + 1]);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    };</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    velocity(1, 0);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>(0, 2);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>(1, 4);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>(2, 6);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>(2, 8);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>(3, 10);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    velocity(3, 12);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>(3, 14);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a>(samples[4].<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a>, samples[4].<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a56ab444d63dfde57a24271cbe3097fdb">vy</a>, samples[4].<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a>, yaw);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// Reference bNormalize clamps at 1 cm/s; these assets and queries use metres.</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> divisor = std::max(0.01f, std::sqrt(<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[0] * <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[0] + <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[1] * <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[1] + <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[2] * <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[2]));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> axis = 0; axis &lt; 3; ++axis) out[16 + axis] = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>[axis] / divisor;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation_1_1detail.html#a0da3ae4c6b18d1bbd551e5225a8f29a0">   69</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1animation_1_1detail.html#a0da3ae4c6b18d1bbd551e5225a8f29a0">locomotionWeight</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> == 2 || <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> == 3 || (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 22 &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; 28)) <span class="keywordflow">return</span> 0.3f;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 16 &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; 19) <span class="keywordflow">return</span> 1.5f;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 28) <span class="keywordflow">return</span> 0.1f;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> 1.f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}  <span class="comment">// namespace eve::animation::detail</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00727">AnimClip.cpp:727</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00727">AnimClip.cpp:727</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00727">AnimClip.cpp:727</a></div></div>
+<div class="ttc" id="aAnimMath_8h_html"><div class="ttname"><a href="AnimMath_8h.html">AnimMath.h</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a3b62f50202abd219e165f5a333d5c156"><div class="ttname"><a href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a></div><div class="ttdeci">int root</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00119">AnimSmr.cpp:119</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a0f8c585c1198bd8e07eba4b29cb3f745"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a></div><div class="ttdeci">std::array&lt; double, 10 &gt; q</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00014">GtsMeshSimplifier.cpp:14</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_aa998c8d51ac188304eb2c6ae8549c6d2"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a></div><div class="ttdeci">std::uint32_t bone</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00024">LegacyAnimationImporter.cpp:24</a></div></div>
+<div class="ttc" id="aOffscreenPreview_8cpp_html_ae3297973ca89615d6bee8dc8f02b05b1"><div class="ttname"><a href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a></div><div class="ttdeci">graphics::Canvas * previous</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00017">OffscreenPreview.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a959b42a817333546414a646493f19c16"><div class="ttname"><a href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a></div><div class="ttdeci">V3 heading</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00265">TreeMesh.cpp:265</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a6202f38a97a1c9eb0142baeb338cf1f1"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a></div><div class="ttdeci">float right</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00016">WorldAnchorProjection.cpp:16</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a7d10b0c779bad3aabf067d52035f7052"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a></div><div class="ttdeci">float left</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00014">WorldAnchorProjection.cpp:14</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a2dc1a0fcac235a430dd8c493502e09e1"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a></div><div class="ttdeci">float vz</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00253">WorldSnapshot.cpp:253</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a56ab444d63dfde57a24271cbe3097fdb"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a56ab444d63dfde57a24271cbe3097fdb">vy</a></div><div class="ttdeci">float vy</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00243">WorldSnapshot.cpp:243</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a81574a53ca33ab2f60f6481c61e3da21"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a></div><div class="ttdeci">float vx</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00243">WorldSnapshot.cpp:243</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html">eve::animation::detail</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationTime_8h_source.html#l00010">AnimationTime.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_a0da3ae4c6b18d1bbd551e5225a8f29a0"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#a0da3ae4c6b18d1bbd551e5225a8f29a0">eve::animation::detail::locomotionWeight</a></div><div class="ttdeci">float locomotionWeight(int index)</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00069">MotionFeatureInternal.h:69</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_a3b29455837ca26b167a056f27ecf44bc"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#a3b29455837ca26b167a056f27ecf44bc">eve::animation::detail::locomotionHorizons</a></div><div class="ttdeci">constexpr std::array&lt; float, 5 &gt; locomotionHorizons</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00010">MotionFeatureInternal.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_a48e3d5c052cc545cba2cca98e334d6e3"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">eve::animation::detail::featurePosition</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; featurePosition(const TransformTRS &amp;bone, const TransformTRS &amp;root)</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00019">MotionFeatureInternal.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_a786aecadc89d5185716d7bdafda31739"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#a786aecadc89d5185716d7bdafda31739">eve::animation::detail::locomotionFeatureCount</a></div><div class="ttdeci">constexpr int locomotionFeatureCount</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00009">MotionFeatureInternal.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_abbb7e9e9f42a5b3520fbcadadcfb0187"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#abbb7e9e9f42a5b3520fbcadadcfb0187">eve::animation::detail::encodeLocomotionPose</a></div><div class="ttdeci">void encodeLocomotionPose(std::span&lt; float &gt; out, const std::array&lt; TransformTRS, 4 &gt; &amp;now, const std::array&lt; TransformTRS, 4 &gt; &amp;past, float interval)</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00024">MotionFeatureInternal.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_ad56226a6342cef3a7a06ed6deb5bba1e"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#ad56226a6342cef3a7a06ed6deb5bba1e">eve::animation::detail::featureYaw</a></div><div class="ttdeci">float featureYaw(const TransformTRS &amp;t)</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00012">MotionFeatureInternal.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_af57f84951b182ae4556b87f196b79a28"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">eve::animation::detail::featureLocal</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; featureLocal(float x, float y, float z, float yaw)</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00015">MotionFeatureInternal.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_af81b228b130144404e4e197c7d4f649a"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#af81b228b130144404e4e197c7d4f649a">eve::animation::detail::locomotionPoseOffset</a></div><div class="ttdeci">constexpr int locomotionPoseOffset</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00008">MotionFeatureInternal.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_1_1detail_html_afebbdbcb83a4482fb545a2b596d66604"><div class="ttname"><a href="namespaceeve_1_1animation_1_1detail.html#afebbdbcb83a4482fb545a2b596d66604">eve::animation::detail::encodeLocomotionTrajectory</a></div><div class="ttdeci">void encodeLocomotionTrajectory(std::span&lt; float &gt; out, const std::array&lt; Sample, 5 &gt; &amp;samples, float yaw)</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureInternal_8h_source.html#l00042">MotionFeatureInternal.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a65583bf1428722a0a4746f78a30a80cb"><div class="ttname"><a href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">eve::animation::yawToForward</a></div><div class="ttdeci">void yawToForward(float yaw, float &amp;fx, float &amp;fz)</div><div class="ttdoc">Rotate unit +Z by yaw (radians) around Y — used for planar facing.</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00129">AnimMath.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/archspace/ArchSpaceDocument.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5f37a5bfda9404d9e8ca1fb80ac23983.html">archspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArchSpaceDocument.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ArchSpaceDocument_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ArchSpaceTypes_8h.html">archspace/ArchSpaceTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1archspace.html">eve::archspace</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1Document.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1archspace_1_1Document.html">Document</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1Document.html#a6395af7e1947fcab5c884d37ed334b3c">   22</a></span>    <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a6395af7e1947fcab5c884d37ed334b3c">Document</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1Document.html#ae186523284aad88974362fc05361d379">   24</a></span>    [[nodiscard]] <span class="keyword">const</span> std::string&amp;                           <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#ae186523284aad88974362fc05361d379">rootId</a>() const noexcept { <span class="keywordflow">return</span> rootId_; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">   25</a></span>    [[nodiscard]] <span class="keyword">const</span> std::unordered_map&lt;std::string, Node&gt;&amp; <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a>() const noexcept { <span class="keywordflow">return</span> nodes_; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1Document.html#aee70d0e9442c68ac9996b654d4d802bb">   26</a></span>    [[nodiscard]] std::size_t                                  <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#aee70d0e9442c68ac9996b654d4d802bb">nodeCount</a>() const noexcept { <span class="keywordflow">return</span> nodes_.size(); }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a>* <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">find</a>(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a>* <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a524691f66cac776ab7b9247f7555f21b">findMutable</a>(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#ad7327e7e520439484d42eff4b6c8486d">insert</a>(<a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a> node);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a81db86018323835e9f541cfcdaadd953">replace</a>(<a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a> node);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a4b4f72cd5c203b6a3cad066a41af5a84">eraseCascade</a>(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a6b38fbc45f2b6c64b951987f956214ba">clear</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a5923e34961a7ca46ae149de1105afd19">bootstrap</a>(<span class="keyword">const</span> std::string&amp; siteId, <span class="keyword">const</span> std::string&amp; buildingId,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                              <span class="keyword">const</span> std::string&amp; levelId, <span class="keywordtype">double</span> levelHeight = 3.0);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#aecc0830343c8888a4dbf7975dd2e07e6">createRoom</a>(<span class="keyword">const</span> std::string&amp; levelId, <span class="keyword">const</span> std::string&amp; roomId,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                               std::string roomName, std::vector&lt;Vec2&gt; polygon, <span class="keywordtype">double</span> wallHeight,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                               <span class="keywordtype">double</span> wallThickness, <span class="keywordtype">double</span> slabThickness);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a37eacab296ff628e52d07f5a7eb9e2be">createWall</a>(<span class="keyword">const</span> std::string&amp; levelId, <span class="keyword">const</span> std::string&amp; wallId,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                               std::string wallName, <a class="code hl_struct" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="code hl_struct" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                               <span class="keywordtype">double</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#aec7d2d68282e2aa3c65012fb4905304a">createOpening</a>(<span class="keyword">const</span> std::string&amp; wallId, <span class="keyword">const</span> std::string&amp; openingId,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                  std::string openingName, <a class="code hl_enumeration" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                                  <span class="keywordtype">double</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">double</span> sill = 0.0);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a58b7c50c3193dff9ca206c20f4367236">placeItem</a>(<span class="keyword">const</span> std::string&amp; levelId, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                              std::string itemName, std::string catalogId, <a class="code hl_struct" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                                              <span class="keywordtype">double</span> yawDegrees = 0.0);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    [[nodiscard]] std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a773eb2ff8096922f7e36e9dcd002ab4f">diagnostics</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#ae2dda8ed091613bf69ba02ad587de3df">bakeMesh</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1Document.html#ace1be652a707302981528a258a5cbae6">  108</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1archspace_1_1MeshArrays.html">MeshArrays</a> <a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#ace1be652a707302981528a258a5cbae6">bakeMeshArrays</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1archspace.html#a1fed320c021115952a0811d60c9664ef">toMeshArrays</a>(<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#ae2dda8ed091613bf69ba02ad587de3df">bakeMesh</a>()); }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    [[nodiscard]] <span class="keywordtype">bool</span> canParent(<a class="code hl_enumeration" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">NodeKind</a> child, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a93ab3208ae9cc07c59eb4e4c5d4ab2e4">parentId</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    [[nodiscard]] <span class="keywordtype">bool</span> validateNode(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a>&amp; node) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span>               unlinkFromParent(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span>               collectDescendants(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>, std::vector&lt;std::string&gt;&amp; out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::string                           rootId_;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    std::unordered_map&lt;std::string, Node&gt; nodes_;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>};</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}  <span class="comment">// namespace eve::archspace</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00022">ActionTimelineWidget.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00020">ActionTimelineWidget.cpp:20</a></div></div>
+<div class="ttc" id="aArchSpaceTypes_8h_html"><div class="ttname"><a href="ArchSpaceTypes_8h.html">ArchSpaceTypes.h</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a9bddad7a0f5d61aefe107acf47f09549"><div class="ttname"><a href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a></div><div class="ttdeci">float thickness</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00083">CaveMesh.cpp:83</a></div></div>
+<div class="ttc" id="aEvpackSceneTemplateLoader_8cpp_html_a93ab3208ae9cc07c59eb4e4c5d4ab2e4"><div class="ttname"><a href="EvpackSceneTemplateLoader_8cpp.html#a93ab3208ae9cc07c59eb4e4c5d4ab2e4">parentId</a></div><div class="ttdeci">std::uint64_t parentId</div><div class="ttdef"><b>Definition</b> <a href="EvpackSceneTemplateLoader_8cpp_source.html#l00049">EvpackSceneTemplateLoader.cpp:49</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html">eve::archspace::Document</a></div><div class="ttdoc">Authoritative architectural space document (Pascal-like node graph).</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00020">ArchSpaceDocument.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a37eacab296ff628e52d07f5a7eb9e2be"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a37eacab296ff628e52d07f5a7eb9e2be">eve::archspace::Document::createWall</a></div><div class="ttdeci">eve::Result&lt; void &gt; createWall(const std::string &amp;levelId, const std::string &amp;wallId, std::string wallName, Vec2 start, Vec2 end, double height, double thickness)</div><div class="ttdoc">Insert a single wall under an existing level.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00296">ArchSpaceDocument.cpp:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a4b4f72cd5c203b6a3cad066a41af5a84"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a4b4f72cd5c203b6a3cad066a41af5a84">eve::archspace::Document::eraseCascade</a></div><div class="ttdeci">eve::Result&lt; void &gt; eraseCascade(const std::string &amp;id)</div><div class="ttdoc">Delete a node and every descendant. Root deletion clears the document.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00198">ArchSpaceDocument.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a524691f66cac776ab7b9247f7555f21b"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a524691f66cac776ab7b9247f7555f21b">eve::archspace::Document::findMutable</a></div><div class="ttdeci">Node * findMutable(const std::string &amp;id)</div><div class="ttdoc">Borrow a mutable node by id. @ownership Non-owning pointer into this document's node map; do not free...</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00102">ArchSpaceDocument.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a58b7c50c3193dff9ca206c20f4367236"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a58b7c50c3193dff9ca206c20f4367236">eve::archspace::Document::placeItem</a></div><div class="ttdeci">eve::Result&lt; void &gt; placeItem(const std::string &amp;levelId, const std::string &amp;itemId, std::string itemName, std::string catalogId, Vec3 position, double yawDegrees=0.0)</div><div class="ttdoc">Place a catalog item on an existing level.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00332">ArchSpaceDocument.cpp:332</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a5923e34961a7ca46ae149de1105afd19"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a5923e34961a7ca46ae149de1105afd19">eve::archspace::Document::bootstrap</a></div><div class="ttdeci">eve::Result&lt; void &gt; bootstrap(const std::string &amp;siteId, const std::string &amp;buildingId, const std::string &amp;levelId, double levelHeight=3.0)</div><div class="ttdoc">Create site → building → level skeleton when the document is empty.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00217">ArchSpaceDocument.cpp:217</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a6395af7e1947fcab5c884d37ed334b3c"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a6395af7e1947fcab5c884d37ed334b3c">eve::archspace::Document::Document</a></div><div class="ttdeci">Document()=default</div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a672c80e8769fd47248fa907afd278cb3"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">eve::archspace::Document::find</a></div><div class="ttdeci">const Node * find(const std::string &amp;id) const</div><div class="ttdoc">Borrow a node by id. @ownership Non-owning pointer into this document's node map; do not free....</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00097">ArchSpaceDocument.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a6b38fbc45f2b6c64b951987f956214ba"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a6b38fbc45f2b6c64b951987f956214ba">eve::archspace::Document::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Remove every node.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00212">ArchSpaceDocument.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a773eb2ff8096922f7e36e9dcd002ab4f"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a773eb2ff8096922f7e36e9dcd002ab4f">eve::archspace::Document::diagnostics</a></div><div class="ttdeci">std::vector&lt; std::string &gt; diagnostics() const</div><div class="ttdoc">Collect structural and geometric diagnostics as human-readable lines.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00348">ArchSpaceDocument.cpp:348</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a81db86018323835e9f541cfcdaadd953"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a81db86018323835e9f541cfcdaadd953">eve::archspace::Document::replace</a></div><div class="ttdeci">eve::Result&lt; void &gt; replace(Node node)</div><div class="ttdoc">Replace authored fields while preserving id, kind, parent and children.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00186">ArchSpaceDocument.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a97bcec287a7687133101207f15f1e96f"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">eve::archspace::Document::nodes</a></div><div class="ttdeci">const std::unordered_map&lt; std::string, Node &gt; &amp; nodes() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00025">ArchSpaceDocument.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_ace1be652a707302981528a258a5cbae6"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#ace1be652a707302981528a258a5cbae6">eve::archspace::Document::bakeMeshArrays</a></div><div class="ttdeci">MeshArrays bakeMeshArrays() const</div><div class="ttdoc">Bake and pack into GPU-upload float arrays with per-triangle normals.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00108">ArchSpaceDocument.h:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_ad7327e7e520439484d42eff4b6c8486d"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#ad7327e7e520439484d42eff4b6c8486d">eve::archspace::Document::insert</a></div><div class="ttdeci">eve::Result&lt; void &gt; insert(Node node)</div><div class="ttdoc">Insert a validated node and link it into the parent child list.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00168">ArchSpaceDocument.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_ae186523284aad88974362fc05361d379"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#ae186523284aad88974362fc05361d379">eve::archspace::Document::rootId</a></div><div class="ttdeci">const std::string &amp; rootId() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00024">ArchSpaceDocument.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_ae2dda8ed091613bf69ba02ad587de3df"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#ae2dda8ed091613bf69ba02ad587de3df">eve::archspace::Document::bakeMesh</a></div><div class="ttdeci">MeshBake bakeMesh() const</div><div class="ttdoc">Build wall boxes (with opening cutouts), slabs and item markers for viewport upload.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00378">ArchSpaceDocument.cpp:378</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_aec7d2d68282e2aa3c65012fb4905304a"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#aec7d2d68282e2aa3c65012fb4905304a">eve::archspace::Document::createOpening</a></div><div class="ttdeci">eve::Result&lt; void &gt; createOpening(const std::string &amp;wallId, const std::string &amp;openingId, std::string openingName, OpeningKind kind, double t, double width, double height, double sill=0.0)</div><div class="ttdoc">Insert a door/window opening on an existing wall.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00313">ArchSpaceDocument.cpp:313</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_aecc0830343c8888a4dbf7975dd2e07e6"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#aecc0830343c8888a4dbf7975dd2e07e6">eve::archspace::Document::createRoom</a></div><div class="ttdeci">eve::Result&lt; void &gt; createRoom(const std::string &amp;levelId, const std::string &amp;roomId, std::string roomName, std::vector&lt; Vec2 &gt; polygon, double wallHeight, double wallThickness, double slabThickness)</div><div class="ttdoc">Create a closed room: perimeter walls + slab + zone under an existing level.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00250">ArchSpaceDocument.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_aee70d0e9442c68ac9996b654d4d802bb"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#aee70d0e9442c68ac9996b654d4d802bb">eve::archspace::Document::nodeCount</a></div><div class="ttdeci">std::size_t nodeCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00026">ArchSpaceDocument.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html"><div class="ttname"><a href="namespaceeve_1_1archspace.html">eve::archspace</a></div><div class="ttdef"><b>Definition</b> <a href="ArchSpace_8cpp_source.html#l00013">ArchSpace.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a1fed320c021115952a0811d60c9664ef"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a1fed320c021115952a0811d60c9664ef">eve::archspace::toMeshArrays</a></div><div class="ttdeci">MeshArrays toMeshArrays(const MeshBake &amp;bake)</div><div class="ttdoc">Convert a MeshBake into flat arrays with per-triangle normals.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00091">ArchSpaceTypes.h:91</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a756ed6e7cbb2d0a3940dd1eee4c1ac8b"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">eve::archspace::OpeningKind</a></div><div class="ttdeci">OpeningKind</div><div class="ttdoc">Opening semantic used by doors and windows hosted on walls.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00016">ArchSpaceTypes.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_acdc28c3bf777ecb60d9be6a3c834161a"><div class="ttname"><a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">eve::archspace::NodeKind</a></div><div class="ttdeci">NodeKind</div><div class="ttdoc">Stable node kind discriminator for the architectural document.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00013">ArchSpaceTypes.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1MeshArrays_html"><div class="ttname"><a href="structeve_1_1archspace_1_1MeshArrays.html">eve::archspace::MeshArrays</a></div><div class="ttdoc">Interleaved GPU-upload arrays derived from MeshBake.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00077">ArchSpaceTypes.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1MeshBake_html"><div class="ttname"><a href="structeve_1_1archspace_1_1MeshBake.html">eve::archspace::MeshBake</a></div><div class="ttdoc">Renderer-neutral triangle mesh rebuilt from the document.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00066">ArchSpaceTypes.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Node_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Node.html">eve::archspace::Node</a></div><div class="ttdoc">One authored architectural node. Only fields for the active kind are meaningful.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00032">ArchSpaceTypes.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Vec2_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Vec2.html">eve::archspace::Vec2</a></div><div class="ttdoc">Metres on the level XZ plane.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00019">ArchSpaceTypes.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Vec3_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Vec3.html">eve::archspace::Vec3</a></div><div class="ttdoc">Metres in world/level space.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00025">ArchSpaceTypes.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

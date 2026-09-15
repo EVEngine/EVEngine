@@ -1,0 +1,553 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::GtsMeshSplitResult类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html">GtsMeshSplitResult</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1procgen_1_1GtsMeshSplitResult-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::GtsMeshSplitResult类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owned row-major result of a GTS X/Z plane split.  
+ <a href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GtsMeshSplitter_8h_source.html">GtsMeshSplitter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a830826b01daf126bb64b2f5b4112c6fe" id="r_a830826b01daf126bb64b2f5b4112c6fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#a830826b01daf126bb64b2f5b4112c6fe">getColumnCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a830826b01daf126bb64b2f5b4112c6fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of output columns.  <br /></td></tr>
+<tr class="separator:a830826b01daf126bb64b2f5b4112c6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4eaf5aeaf123ea6f967bfc39d621845" id="r_aa4eaf5aeaf123ea6f967bfc39d621845"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#aa4eaf5aeaf123ea6f967bfc39d621845">getRowCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aa4eaf5aeaf123ea6f967bfc39d621845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of output rows.  <br /></td></tr>
+<tr class="separator:aa4eaf5aeaf123ea6f967bfc39d621845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd85662298b8f1f33ec347e52726726d" id="r_abd85662298b8f1f33ec347e52726726d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#abd85662298b8f1f33ec347e52726726d">getTileCount</a> () const noexcept</td></tr>
+<tr class="memdesc:abd85662298b8f1f33ec347e52726726d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of retained row-major cells.  <br /></td></tr>
+<tr class="separator:abd85662298b8f1f33ec347e52726726d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac40fbcbd38e883d18539a7ba5ea63b98" id="r_ac40fbcbd38e883d18539a7ba5ea63b98"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1GtsMeshSplitTile.html">GtsMeshSplitTile</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#ac40fbcbd38e883d18539a7ba5ea63b98">tileAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:ac40fbcbd38e883d18539a7ba5ea63b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow one indexed tile. @ownership This result retains ownership; the caller must not delete the pointer. @lifetime Valid until this result is destroyed or replaced by another split.  <br /></td></tr>
+<tr class="separator:ac40fbcbd38e883d18539a7ba5ea63b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab72d95d24dee15ca0a2fb8e2ae84bbf6" id="r_ab72d95d24dee15ca0a2fb8e2ae84bbf6"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#ab72d95d24dee15ca0a2fb8e2ae84bbf6">copyTileMesh</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab72d95d24dee15ca0a2fb8e2ae84bbf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one tile mesh for independent ownership, or null for an invalid index.  <br /></td></tr>
+<tr class="separator:ab72d95d24dee15ca0a2fb8e2ae84bbf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9003249b34c84b3d9d22a74535bb6a8" id="r_ab9003249b34c84b3d9d22a74535bb6a8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#ab9003249b34c84b3d9d22a74535bb6a8">getTileOffsetX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:ab9003249b34c84b3d9d22a74535bb6a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the X offset that restores one translated tile to world space.  <br /></td></tr>
+<tr class="separator:ab9003249b34c84b3d9d22a74535bb6a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c3b5855571f29b6827a5d93fa47446a" id="r_a3c3b5855571f29b6827a5d93fa47446a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#a3c3b5855571f29b6827a5d93fa47446a">getTileOffsetZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a3c3b5855571f29b6827a5d93fa47446a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the Z offset that restores one translated tile to world space.  <br /></td></tr>
+<tr class="separator:a3c3b5855571f29b6827a5d93fa47446a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a20908243537b9e168242497b3c9863c5" id="r_a20908243537b9e168242497b3c9863c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html">GtsMeshSplitResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#a20908243537b9e168242497b3c9863c5">splitGtsMesh</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;, int, int, <a class="el" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a>)</td></tr>
+<tr class="memdesc:a20908243537b9e168242497b3c9863c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split every source triangle against a regular X/Z grid like GTSMeshSplitter.  <br /></td></tr>
+<tr class="separator:a20908243537b9e168242497b3c9863c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab22b88912287b98de8c33a04f4d7c235" id="r_ab22b88912287b98de8c33a04f4d7c235"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html#ab22b88912287b98de8c33a04f4d7c235">splitGtsMeshInto</a> (<a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html">GtsMeshSplitResult</a> &amp;, const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;, int, int, <a class="el" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a>)</td></tr>
+<tr class="memdesc:ab22b88912287b98de8c33a04f4d7c235"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace an owned result with a GTS mesh split.  <br /></td></tr>
+<tr class="separator:ab22b88912287b98de8c33a04f4d7c235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owned row-major result of a GTS X/Z plane split. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8h_source.html">GtsMeshSplitter.h</a> 第 <a class="el" href="GtsMeshSplitter_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ab72d95d24dee15ca0a2fb8e2ae84bbf6" name="ab72d95d24dee15ca0a2fb8e2ae84bbf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab72d95d24dee15ca0a2fb8e2ae84bbf6">&#9670;&#160;</a></span>copyTileMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; eve::procgen::GtsMeshSplitResult::copyTileMesh </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one tile mesh for independent ownership, or null for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a> 第 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00061">tileAt()</a>.</p>
+
+</div>
+</div>
+<a id="a830826b01daf126bb64b2f5b4112c6fe" name="a830826b01daf126bb64b2f5b4112c6fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a830826b01daf126bb64b2f5b4112c6fe">&#9670;&#160;</a></span>getColumnCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::GtsMeshSplitResult::getColumnCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of output columns. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8h_source.html">GtsMeshSplitter.h</a> 第 <a class="el" href="GtsMeshSplitter_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4eaf5aeaf123ea6f967bfc39d621845" name="aa4eaf5aeaf123ea6f967bfc39d621845"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4eaf5aeaf123ea6f967bfc39d621845">&#9670;&#160;</a></span>getRowCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::GtsMeshSplitResult::getRowCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of output rows. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8h_source.html">GtsMeshSplitter.h</a> 第 <a class="el" href="GtsMeshSplitter_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abd85662298b8f1f33ec347e52726726d" name="abd85662298b8f1f33ec347e52726726d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd85662298b8f1f33ec347e52726726d">&#9670;&#160;</a></span>getTileCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::GtsMeshSplitResult::getTileCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of retained row-major cells. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8h_source.html">GtsMeshSplitter.h</a> 第 <a class="el" href="GtsMeshSplitter_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9003249b34c84b3d9d22a74535bb6a8" name="ab9003249b34c84b3d9d22a74535bb6a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9003249b34c84b3d9d22a74535bb6a8">&#9670;&#160;</a></span>getTileOffsetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::GtsMeshSplitResult::getTileOffsetX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the X offset that restores one translated tile to world space. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a> 第 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3c3b5855571f29b6827a5d93fa47446a" name="a3c3b5855571f29b6827a5d93fa47446a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c3b5855571f29b6827a5d93fa47446a">&#9670;&#160;</a></span>getTileOffsetZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::GtsMeshSplitResult::getTileOffsetZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the Z offset that restores one translated tile to world space. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a> 第 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac40fbcbd38e883d18539a7ba5ea63b98" name="ac40fbcbd38e883d18539a7ba5ea63b98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac40fbcbd38e883d18539a7ba5ea63b98">&#9670;&#160;</a></span>tileAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1GtsMeshSplitTile.html">GtsMeshSplitTile</a> * eve::procgen::GtsMeshSplitResult::tileAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow one indexed tile. @ownership This result retains ownership; the caller must not delete the pointer. @lifetime Valid until this result is destroyed or replaced by another split. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a> 第 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00064">copyTileMesh()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a20908243537b9e168242497b3c9863c5" name="a20908243537b9e168242497b3c9863c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20908243537b9e168242497b3c9863c5">&#9670;&#160;</a></span>splitGtsMesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html">GtsMeshSplitResult</a> &gt; splitGtsMesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Split every source triangle against a regular X/Z grid like GTSMeshSplitter. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Immutable triangle mesh with aligned position, normal and UV streams. </td></tr>
+    <tr><td class="paramname">xSplits</td><td>Number of vertical split planes; output columns equal xSplits plus one. </td></tr>
+    <tr><td class="paramname">zSplits</td><td>Number of horizontal split planes; output rows equal zSplits plus one. </td></tr>
+    <tr><td class="paramname">pivot</td><td>Optional per-cell vertex translation with a matching restoration offset. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned row-major cells; empty cells are retained. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a> 第 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab22b88912287b98de8c33a04f4d7c235" name="ab22b88912287b98de8c33a04f4d7c235"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab22b88912287b98de8c33a04f4d7c235">&#9670;&#160;</a></span>splitGtsMeshInto</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; splitGtsMeshInto </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1GtsMeshSplitResult.html">GtsMeshSplitResult</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically replace an owned result with a GTS mesh split. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a> 第 <a class="el" href="GtsMeshSplitter_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="GtsMeshSplitter_8h_source.html">GtsMeshSplitter.h</a></li>
+<li>src/modules/procgen/<a class="el" href="GtsMeshSplitter_8cpp_source.html">GtsMeshSplitter.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

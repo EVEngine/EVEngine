@@ -1,0 +1,315 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionMatcherSelection.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionMatcherSelection.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionMatcherSelection_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="MotionDatabase_8h.html">animation/MotionDatabase.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="MotionMatcher_8h.html">animation/MotionMatcher.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a5a22ef876d349a8af90e19061242eb83">    9</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a5a22ef876d349a8af90e19061242eb83">MotionMatcher::setCandidateRanges</a>(std::span&lt;const MotionSearchRange&gt; ranges) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">auto</span> fail = [](<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;int&gt;::failure</a>(</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;candidateRanges&quot;</span>, {}, <span class="stringliteral">&quot;animation&quot;</span>));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    };</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a6f25390f7ea3290d45c4470b2321aa40">isBaked</a>() || ranges.empty() || ranges.size() &gt; 100000)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;candidate selection requires a baked database and bounded nonempty ranges&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    std::vector&lt;std::vector&lt;MotionSearchRange&gt;&gt; perClip(database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a>());</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    std::size_t intervalCount = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a> : ranges) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.clipIndex &lt; 0 || <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.clipIndex &gt;= database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a>() || !std::isfinite(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.start) ||</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            !std::isfinite(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.end) || !std::isfinite(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.costBias) || <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.start &lt; 0.f || <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.end &lt; <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.start ||</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.end &gt; database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a8a48b6237a196d92665917555314946a">getClip</a>(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.clipIndex)-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a00f00a220520e6b150d46485affa8bbf">getDuration</a>() + 0.001f)</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;invalid candidate clip, time interval, or cost bias&quot;</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        intervalCount += <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.transitionBlocks.size() + <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.costOverrides.size() + <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.continuingCostOverrides.size();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span> (intervalCount &gt; 100000) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;too many candidate metadata intervals&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; block : <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.transitionBlocks)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordflow">if</span> (!std::isfinite(block.start) || !std::isfinite(block.end) || block.start &lt; 0.f ||</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                block.end &lt;= block.start)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;invalid transition block interval&quot;</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.continuingCostBias)) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;invalid continuing cost bias&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* overrides : {&amp;<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.costOverrides, &amp;<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.continuingCostOverrides})</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> : *overrides)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.start) || !std::isfinite(<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.end) || !std::isfinite(<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.costBias) ||</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                    <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.start &lt; 0.f || <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.end &lt;= <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.start)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                    <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;invalid cost override interval&quot;</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        perClip[<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.clipIndex].push_back(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>                  count = database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ad4b7b1edd6147867fa84bcb63befa312">getFrameCount</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::vector&lt;int&gt;           selected;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::vector&lt;float&gt;         bias(count, 0.f);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::vector&lt;float&gt;         continuingBias(count, 0.f);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::vector&lt;unsigned char&gt; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>(count, 0), noReselect(database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a>(), 0);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::vector&lt;unsigned char&gt; blocked(count, 0);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> clipIndex = 0; clipIndex &lt; database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a>(); ++clipIndex) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; clipRanges = perClip[clipIndex];</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (clipRanges.empty()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a> = database_-&gt;clipFrameOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(clipIndex)];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> = database_-&gt;clipFrameOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(clipIndex + 1)];</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>; i &lt; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>; ++i) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; frame = database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">frameAt</a>(i);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordtype">float</span>       best  = std::numeric_limits&lt;float&gt;::infinity();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a> : clipRanges) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; block : <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.transitionBlocks)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                    <span class="keywordflow">if</span> (frame.time &gt;= block.start &amp;&amp; frame.time &lt; block.end) blocked[i] = 1;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordflow">if</span> (frame.time + 1e-5f &lt; <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.start || frame.time - 1e-5f &gt; <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.end) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <span class="keywordtype">float</span> rangeBias = <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.costBias;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> : <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.costOverrides)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                    <span class="keywordflow">if</span> (frame.time &gt;= <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.start &amp;&amp; frame.time &lt; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.end) rangeBias = <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.costBias;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <span class="keywordtype">float</span> rangeContinuingBias = <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.continuingCostBias;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> : <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.continuingCostOverrides)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                    <span class="keywordflow">if</span> (frame.time &gt;= <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.start &amp;&amp; frame.time &lt; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.end) rangeContinuingBias = <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.costBias;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <span class="keywordflow">if</span> (rangeBias &lt; best) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                    best = rangeBias;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    continuingBias[i] = rangeContinuingBias;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>.disableReselection) noReselect[frame.clipIndex] = 1;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">if</span> (!std::isfinite(best)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            selected.push_back(i);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>[i] = 1;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            bias[i] = best;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (selected.empty()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;candidate selection contains no sampled frames&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    candidateFrames_.swap(selected);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    candidateBias_.swap(bias);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    candidateContinuingBias_.swap(continuingBias);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    candidateMask_.swap(<a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    transitionBlocked_.swap(blocked);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    disableReselection_.swap(noReselect);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    filtered_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;int&gt;::success</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(candidateFrames_.size()),</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                     <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a5101ec09ce8be0eed2bac54a5fe6c4c2">   85</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a5101ec09ce8be0eed2bac54a5fe6c4c2">MotionMatcher::setQueryPose</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>&amp; pose) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ac8aa7e16a481e23cacf965abf06e71f2">hasLocomotionFeatures</a>() || database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a5d3099f439078e45e47a31c3239beb00">hasFeatureLayout</a>() || pose.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">getBoneCount</a>() != pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">getBoneCount</a>())</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                                 <span class="stringliteral">&quot;basic query pose requires the basic layout and matching bone count&quot;</span>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                                                 <span class="stringliteral">&quot;queryPose&quot;</span>, {}, <span class="stringliteral">&quot;animation&quot;</span>));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    queryPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">copyFrom</a>(&amp;pose);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    hasQueryPose_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#aa75f1d70bc9b065e206dee4921ef9ba7">   95</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#aa75f1d70bc9b065e206dee4921ef9ba7">MotionMatcher::setTrajectory</a>(std::span&lt;const MotionTrajectorySample&gt; samples) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ac8aa7e16a481e23cacf965abf06e71f2">hasLocomotionFeatures</a>() || database_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a5d3099f439078e45e47a31c3239beb00">hasFeatureLayout</a>() || samples.size() != 3 || std::any_of(samples.begin(), samples.end(), [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            return !std::isfinite(s.x) || !std::isfinite(s.z) || !std::isfinite(s.yaw);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }))</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                                                                 <span class="stringliteral">&quot;trajectory requires three finite samples&quot;</span>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                                                                 <span class="stringliteral">&quot;trajectory&quot;</span>, {}, <span class="stringliteral">&quot;animation&quot;</span>));</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::copy(samples.begin(), samples.end(), trajectory_.begin());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    hasTrajectory_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a880a49112fedae68e714341a9a082fb6"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a></div><div class="ttdeci">double r</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00012">GtsMeshSimplifier.cpp:12</a></div></div>
+<div class="ttc" id="aMotionDatabase_8h_html"><div class="ttname"><a href="MotionDatabase_8h.html">MotionDatabase.h</a></div></div>
+<div class="ttc" id="aMotionMatcher_8h_html"><div class="ttname"><a href="MotionMatcher_8h.html">MotionMatcher.h</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a00f00a220520e6b150d46485affa8bbf"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a00f00a220520e6b150d46485affa8bbf">eve::animation::AnimClip::getDuration</a></div><div class="ttdeci">float getDuration() const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00154">AnimClip.h:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a42f24b4aa49f85b29b69157dfcb06f9d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">eve::animation::AnimPose::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00027">AnimPose.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_acc150d76b9d3ea4d86972aeaca80a220"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">eve::animation::AnimPose::copyFrom</a></div><div class="ttdeci">void copyFrom(const AnimPose *other)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00091">AnimPose.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a5d3099f439078e45e47a31c3239beb00"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a5d3099f439078e45e47a31c3239beb00">eve::animation::MotionDatabase::hasFeatureLayout</a></div><div class="ttdeci">bool hasFeatureLayout() const</div><div class="ttdoc">Whether this database uses an explicitly configured variable layout.</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabaseSchema_8cpp_source.html#l00014">MotionDatabaseSchema.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a6f25390f7ea3290d45c4470b2321aa40"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a6f25390f7ea3290d45c4470b2321aa40">eve::animation::MotionDatabase::isBaked</a></div><div class="ttdeci">bool isBaked() const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00125">MotionDatabase.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a8a48b6237a196d92665917555314946a"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a8a48b6237a196d92665917555314946a">eve::animation::MotionDatabase::getClip</a></div><div class="ttdeci">AnimClip * getClip(int clipIndex) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00060">MotionDatabase.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a9d577c76c8379326265e6e8bc3bc9b88"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">eve::animation::MotionDatabase::frameAt</a></div><div class="ttdeci">const Frame &amp; frameAt(int index) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00275">MotionDatabase.cpp:275</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_ac8aa7e16a481e23cacf965abf06e71f2"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#ac8aa7e16a481e23cacf965abf06e71f2">eve::animation::MotionDatabase::hasLocomotionFeatures</a></div><div class="ttdeci">bool hasLocomotionFeatures() const</div><div class="ttdoc">Whether this database uses the 30-dimensional locomotion layout.</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00066">MotionDatabase.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_ad4b7b1edd6147867fa84bcb63befa312"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#ad4b7b1edd6147867fa84bcb63befa312">eve::animation::MotionDatabase::getFrameCount</a></div><div class="ttdeci">int getFrameCount() const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00127">MotionDatabase.h:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_aff47233d6ab752bd14a1ebfff13840f9"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">eve::animation::MotionDatabase::getClipCount</a></div><div class="ttdeci">int getClipCount() const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00114">MotionDatabase.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a5101ec09ce8be0eed2bac54a5fe6c4c2"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a5101ec09ce8be0eed2bac54a5fe6c4c2">eve::animation::MotionMatcher::setQueryPose</a></div><div class="ttdeci">eve::Result&lt; void &gt; setQueryPose(const AnimPose &amp;pose)</div><div class="ttdoc">Copy the character's current local pose for the next search, including action handoffs.</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcherSelection_8cpp_source.html#l00085">MotionMatcherSelection.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a5a22ef876d349a8af90e19061242eb83"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a5a22ef876d349a8af90e19061242eb83">eve::animation::MotionMatcher::setCandidateRanges</a></div><div class="ttdeci">eve::Result&lt; int &gt; setCandidateRanges(std::span&lt; const MotionSearchRange &gt; ranges)</div><div class="ttdoc">Atomically replace searchable intervals, retaining original database frame IDs.</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcherSelection_8cpp_source.html#l00009">MotionMatcherSelection.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_aa75f1d70bc9b065e206dee4921ef9ba7"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#aa75f1d70bc9b065e206dee4921ef9ba7">eve::animation::MotionMatcher::setTrajectory</a></div><div class="ttdeci">eve::Result&lt; void &gt; setTrajectory(std::span&lt; const MotionTrajectorySample &gt; samples)</div><div class="ttdoc">Set predictions at 0.33, 0.66, and 1.0 seconds instead of constant-velocity prediction.</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcherSelection_8cpp_source.html#l00095">MotionMatcherSelection.cpp:95</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00057">Animation.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

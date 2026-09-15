@@ -1,0 +1,1252 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::MontagePlayer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1MontagePlayer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::MontagePlayer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Presentation-only montage player over an ActionTimeline.  
+ <a href="classeve_1_1animation_1_1MontagePlayer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2d97eadc9df905b34d8b8646be87d2df" id="r_a2d97eadc9df905b34d8b8646be87d2df"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a2d97eadc9df905b34d8b8646be87d2df">MontagePlayer</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;skeleton)</td></tr>
+<tr class="memdesc:a2d97eadc9df905b34d8b8646be87d2df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a skeleton that must outlive this player.  <br /></td></tr>
+<tr class="separator:a2d97eadc9df905b34d8b8646be87d2df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3733702f77dca882a71735e0c0df62ac" id="r_a3733702f77dca882a71735e0c0df62ac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a3733702f77dca882a71735e0c0df62ac">~MontagePlayer</a> ()</td></tr>
+<tr class="separator:a3733702f77dca882a71735e0c0df62ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab121e4c5fe52f899293966c7328bb742" id="r_ab121e4c5fe52f899293966c7328bb742"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#ab121e4c5fe52f899293966c7328bb742">MontagePlayer</a> (const <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &amp;)=delete</td></tr>
+<tr class="separator:ab121e4c5fe52f899293966c7328bb742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cec07ef8760d574b42d8c35a308b489" id="r_a2cec07ef8760d574b42d8c35a308b489"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a2cec07ef8760d574b42d8c35a308b489">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &amp;)=delete</td></tr>
+<tr class="separator:a2cec07ef8760d574b42d8c35a308b489"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa63ebee0958dc886476293c8af824c5b" id="r_aa63ebee0958dc886476293c8af824c5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#aa63ebee0958dc886476293c8af824c5b">prepare</a> (<a class="el" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a> timeline, std::vector&lt; <a class="el" href="structeve_1_1animation_1_1MontageClipAsset.html">MontageClipAsset</a> &gt; &amp;&amp;clips)</td></tr>
+<tr class="memdesc:aa63ebee0958dc886476293c8af824c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically replace the complete montage presentation.  <br /></td></tr>
+<tr class="separator:aa63ebee0958dc886476293c8af824c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8ae3b62deee448d303f258411c80b4" id="r_a0b8ae3b62deee448d303f258411c80b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a0b8ae3b62deee448d303f258411c80b4">prepare</a> (<a class="el" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a> timeline, <a class="el" href="classeve_1_1animation_1_1IMontageClipProvider.html">IMontageClipProvider</a> &amp;provider)</td></tr>
+<tr class="memdesc:a0b8ae3b62deee448d303f258411c80b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve every distinct section URI and atomically prepare the montage.  <br /></td></tr>
+<tr class="separator:a0b8ae3b62deee448d303f258411c80b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a261d0784fda54ae5f1e899a82f8bdd3e" id="r_a261d0784fda54ae5f1e899a82f8bdd3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a261d0784fda54ae5f1e899a82f8bdd3e">reloadClips</a> (<a class="el" href="classeve_1_1animation_1_1IMontageClipProvider.html">IMontageClipProvider</a> &amp;provider)</td></tr>
+<tr class="memdesc:a261d0784fda54ae5f1e899a82f8bdd3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally reload every referenced clip while preserving playback state.  <br /></td></tr>
+<tr class="separator:a261d0784fda54ae5f1e899a82f8bdd3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d6fcdf6434d142dc0b153224decea05" id="r_a0d6fcdf6434d142dc0b153224decea05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a0d6fcdf6434d142dc0b153224decea05">replaceClip</a> (std::string_view uri, std::unique_ptr&lt; <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> &gt; <a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="memdesc:a0d6fcdf6434d142dc0b153224decea05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally replace one URI-backed clip and preserve the current cursor and slot weight.  <br /></td></tr>
+<tr class="separator:a0d6fcdf6434d142dc0b153224decea05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7f73a7a5556963cc43bed3841351e1f" id="r_aa7f73a7a5556963cc43bed3841351e1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#aa7f73a7a5556963cc43bed3841351e1f">play</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> executionId)</td></tr>
+<tr class="memdesc:aa7f73a7a5556963cc43bed3841351e1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind presentation playback to one authoritative ActionRuntime execution.  <br /></td></tr>
+<tr class="separator:aa7f73a7a5556963cc43bed3841351e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee1b8bdd59aa28c43e051376b9db3e00" id="r_aee1b8bdd59aa28c43e051376b9db3e00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#aee1b8bdd59aa28c43e051376b9db3e00">rebindExecution</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> executionId)</td></tr>
+<tr class="memdesc:aee1b8bdd59aa28c43e051376b9db3e00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebind an already playing presentation after its external gameplay authority is recreated.  <br /></td></tr>
+<tr class="separator:aee1b8bdd59aa28c43e051376b9db3e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac64689d995cfe253ffddb2995fb252b1" id="r_ac64689d995cfe253ffddb2995fb252b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#ac64689d995cfe253ffddb2995fb252b1">present</a> (const <a class="el" href="structeve_1_1action_1_1ActionAdvance.html">action::ActionAdvance</a> &amp;advance, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:ac64689d995cfe253ffddb2995fb252b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Present one ActionRuntime-owned advance without advancing gameplay time locally.  <br /></td></tr>
+<tr class="separator:ac64689d995cfe253ffddb2995fb252b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5acc060840bffd8ec9da8b85c8825d7f" id="r_a5acc060840bffd8ec9da8b85c8825d7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a5acc060840bffd8ec9da8b85c8825d7f">jumpToTime</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> executionId, <a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a5acc060840bffd8ec9da8b85c8825d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically realign presentation and active state blocks to an externally authoritative timestamp.  <br /></td></tr>
+<tr class="separator:a5acc060840bffd8ec9da8b85c8825d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a721dfb95d88f172d5e5becb1eeac360b" id="r_a721dfb95d88f172d5e5becb1eeac360b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a721dfb95d88f172d5e5becb1eeac360b">jumpToSection</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> executionId, std::size_t sectionIndex, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a721dfb95d88f172d5e5becb1eeac360b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Jump presentation to the start of one objective physical section.  <br /></td></tr>
+<tr class="separator:a721dfb95d88f172d5e5becb1eeac360b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86cf83fa5119dd2bd44d7b8b64f5249d" id="r_a86cf83fa5119dd2bd44d7b8b64f5249d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a86cf83fa5119dd2bd44d7b8b64f5249d">evaluateSectionProgress</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> executionId, std::size_t sectionIndex, double progress, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a86cf83fa5119dd2bd44d7b8b64f5249d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a normalized physical-section progress and atomically realign presentation.  <br /></td></tr>
+<tr class="separator:a86cf83fa5119dd2bd44d7b8b64f5249d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad254bd886d15c631cffc52f0fdefb2a7" id="r_ad254bd886d15c631cffc52f0fdefb2a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#ad254bd886d15c631cffc52f0fdefb2a7">physicalSectionIndex</a> () const</td></tr>
+<tr class="memdesc:ad254bd886d15c631cffc52f0fdefb2a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve the objective physical section containing the current cursor.  <br /></td></tr>
+<tr class="separator:ad254bd886d15c631cffc52f0fdefb2a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11cadaa78606edbcf463d802565bd826" id="r_a11cadaa78606edbcf463d802565bd826"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a11cadaa78606edbcf463d802565bd826">physicalSectionProgress</a> (std::size_t sectionIndex) const</td></tr>
+<tr class="memdesc:a11cadaa78606edbcf463d802565bd826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current normalized progress within an objective physical section.  <br /></td></tr>
+<tr class="separator:a11cadaa78606edbcf463d802565bd826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a928f59b56af4d567edaa3f78a6f8067b" id="r_a928f59b56af4d567edaa3f78a6f8067b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a928f59b56af4d567edaa3f78a6f8067b">interrupt</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a928f59b56af4d567edaa3f78a6f8067b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupt playback and emit paired exits for every active state block.  <br /></td></tr>
+<tr class="separator:a928f59b56af4d567edaa3f78a6f8067b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9d9523613f065530b85d97358953980" id="r_aa9d9523613f065530b85d97358953980"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#aa9d9523613f065530b85d97358953980">beginBlendOut</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:aa9d9523613f065530b85d97358953980"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enter continuous blend-out and emit exits for every active state block.  <br /></td></tr>
+<tr class="separator:aa9d9523613f065530b85d97358953980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c24f86c49efa8b6b5290ba2452eb5b" id="r_a45c24f86c49efa8b6b5290ba2452eb5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a45c24f86c49efa8b6b5290ba2452eb5b">advanceBlendOut</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> delta, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a45c24f86c49efa8b6b5290ba2452eb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance an active blend-out without advancing gameplay or montage time.  <br /></td></tr>
+<tr class="separator:a45c24f86c49efa8b6b5290ba2452eb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4aac11573dd6089c48a019589958e1e" id="r_ad4aac11573dd6089c48a019589958e1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#ad4aac11573dd6089c48a019589958e1e">stop</a> () noexcept</td></tr>
+<tr class="memdesc:ad4aac11573dd6089c48a019589958e1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop playback and reset the derived cursor.  <br /></td></tr>
+<tr class="separator:ad4aac11573dd6089c48a019589958e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a542ef0d44e969dc8bf640e71fc6b916b" id="r_a542ef0d44e969dc8bf640e71fc6b916b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a542ef0d44e969dc8bf640e71fc6b916b">setRootMotionReceiver</a> (<a class="el" href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html">IMontageRootMotionReceiver</a> &amp;receiver) noexcept</td></tr>
+<tr class="memdesc:a542ef0d44e969dc8bf640e71fc6b916b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a borrowed root-motion receiver.  <br /></td></tr>
+<tr class="separator:a542ef0d44e969dc8bf640e71fc6b916b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f941d288d6e30f0800ecd23efdc22a3" id="r_a3f941d288d6e30f0800ecd23efdc22a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a3f941d288d6e30f0800ecd23efdc22a3">clearRootMotionReceiver</a> () noexcept</td></tr>
+<tr class="memdesc:a3f941d288d6e30f0800ecd23efdc22a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the borrowed root-motion receiver before its owner is destroyed.  <br /></td></tr>
+<tr class="separator:a3f941d288d6e30f0800ecd23efdc22a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b6d7e83959911a1d7f259dd9d46f2d" id="r_ad1b6d7e83959911a1d7f259dd9d46f2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#ad1b6d7e83959911a1d7f259dd9d46f2d">setRootMotionMask</a> (<a class="el" href="structeve_1_1animation_1_1MontageRootMotionMask.html">MontageRootMotionMask</a> <a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>) noexcept</td></tr>
+<tr class="memdesc:ad1b6d7e83959911a1d7f259dd9d46f2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure root-motion filtering.  <br /></td></tr>
+<tr class="separator:ad1b6d7e83959911a1d7f259dd9d46f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a947a969f339388651afdfdc497cbfeaf" id="r_a947a969f339388651afdfdc497cbfeaf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a947a969f339388651afdfdc497cbfeaf">setGapPolicy</a> (<a class="el" href="namespaceeve_1_1animation.html#a261e4f8063f5b6ac00afd008a59c8d5a">MontageGapPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) noexcept</td></tr>
+<tr class="memdesc:a947a969f339388651afdfdc497cbfeaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the explicit pose policy used in gaps between animation sections.  <br /></td></tr>
+<tr class="separator:a947a969f339388651afdfdc497cbfeaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad06517a9b3c96a1a3b61a22d014f0759" id="r_ad06517a9b3c96a1a3b61a22d014f0759"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#ad06517a9b3c96a1a3b61a22d014f0759">pose</a> ()</td></tr>
+<tr class="memdesc:ad06517a9b3c96a1a3b61a22d014f0759"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the current evaluated pose.  <br /></td></tr>
+<tr class="separator:ad06517a9b3c96a1a3b61a22d014f0759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b4b6703b112f118fdeaf9ab56942752" id="r_a2b4b6703b112f118fdeaf9ab56942752"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a2b4b6703b112f118fdeaf9ab56942752">time</a> () const noexcept</td></tr>
+<tr class="memdesc:a2b4b6703b112f118fdeaf9ab56942752"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current derived montage presentation time.  <br /></td></tr>
+<tr class="separator:a2b4b6703b112f118fdeaf9ab56942752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20b1ea9c0928aeffb04caf83bfc91bcb" id="r_a20b1ea9c0928aeffb04caf83bfc91bcb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a20b1ea9c0928aeffb04caf83bfc91bcb">isPlaying</a> () const noexcept</td></tr>
+<tr class="memdesc:a20b1ea9c0928aeffb04caf83bfc91bcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the prepared montage is actively playing.  <br /></td></tr>
+<tr class="separator:a20b1ea9c0928aeffb04caf83bfc91bcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa663fa6f77f87113cf5626f28a1a8f71" id="r_aa663fa6f77f87113cf5626f28a1a8f71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#aa663fa6f77f87113cf5626f28a1a8f71">isBlendingOut</a> () const noexcept</td></tr>
+<tr class="memdesc:aa663fa6f77f87113cf5626f28a1a8f71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether playback is in externally requested blend-out.  <br /></td></tr>
+<tr class="separator:aa663fa6f77f87113cf5626f28a1a8f71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a822f172c32dd8653365279219ffbba00" id="r_a822f172c32dd8653365279219ffbba00"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a822f172c32dd8653365279219ffbba00">weight</a> () const noexcept</td></tr>
+<tr class="memdesc:a822f172c32dd8653365279219ffbba00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current continuous montage slot weight.  <br /></td></tr>
+<tr class="separator:a822f172c32dd8653365279219ffbba00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a234264ec33bc0952e56a14d5c963bac1" id="r_a234264ec33bc0952e56a14d5c963bac1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a234264ec33bc0952e56a14d5c963bac1">animationLayer</a> () const noexcept</td></tr>
+<tr class="memdesc:a234264ec33bc0952e56a14d5c963bac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authored output layer requested by the prepared montage, or zero before preparation.  <br /></td></tr>
+<tr class="separator:a234264ec33bc0952e56a14d5c963bac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1571ce171b5ff59fc9d6e6a03d1dee16" id="r_a1571ce171b5ff59fc9d6e6a03d1dee16"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a1571ce171b5ff59fc9d6e6a03d1dee16">footIkEnabled</a> () const noexcept</td></tr>
+<tr class="memdesc:a1571ce171b5ff59fc9d6e6a03d1dee16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the host should run its terrain-specific foot-IK provider after this pose.  <br /></td></tr>
+<tr class="separator:a1571ce171b5ff59fc9d6e6a03d1dee16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Presentation-only montage player over an ActionTimeline. </p>
+<p>ActionRuntime remains the sole gameplay lifecycle authority. This object owns all resolved clips and only keeps a derived presentation cursor. It is owner-thread-only, reads no wall clock, and invokes the optional receiver without holding a lock. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00104">104</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2d97eadc9df905b34d8b8646be87d2df" name="a2d97eadc9df905b34d8b8646be87d2df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d97eadc9df905b34d8b8646be87d2df">&#9670;&#160;</a></span>MontagePlayer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MontagePlayer::MontagePlayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow a skeleton that must outlive this player. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3733702f77dca882a71735e0c0df62ac" name="a3733702f77dca882a71735e0c0df62ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3733702f77dca882a71735e0c0df62ac">&#9670;&#160;</a></span>~MontagePlayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MontagePlayer::~MontagePlayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab121e4c5fe52f899293966c7328bb742" name="ab121e4c5fe52f899293966c7328bb742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab121e4c5fe52f899293966c7328bb742">&#9670;&#160;</a></span>MontagePlayer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MontagePlayer::MontagePlayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a45c24f86c49efa8b6b5290ba2452eb5b" name="a45c24f86c49efa8b6b5290ba2452eb5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45c24f86c49efa8b6b5290ba2452eb5b">&#9670;&#160;</a></span>advanceBlendOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::advanceBlendOut </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>delta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance an active blend-out without advancing gameplay or montage time. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="MontagePlayer_8h_source.html#l00093">eve::animation::MontageAdvance::completed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="MontagePlayer_8h_source.html#l00087">eve::animation::MontageAdvance::current</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::Pending</a>, <a class="el" href="MontagePlayer_8h_source.html#l00086">eve::animation::MontageAdvance::previous</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="Time_8cpp_source.html#l00030">eve::Duration::tryAdd()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00092">eve::animation::MontageAdvance::weight</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a234264ec33bc0952e56a14d5c963bac1" name="a234264ec33bc0952e56a14d5c963bac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a234264ec33bc0952e56a14d5c963bac1">&#9670;&#160;</a></span>animationLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::animation::MontagePlayer::animationLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Authored output layer requested by the prepared montage, or zero before preparation. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9d9523613f065530b85d97358953980" name="aa9d9523613f065530b85d97358953980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d9523613f065530b85d97358953980">&#9670;&#160;</a></span>beginBlendOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::beginBlendOut </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enter continuous blend-out and emit exits for every active state block. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="MontagePlayer_8h_source.html#l00087">eve::animation::MontageAdvance::current</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00089">eve::animation::MontageAdvance::events</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00413">interrupt()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::Pending</a>, <a class="el" href="MontagePlayer_8h_source.html#l00086">eve::animation::MontageAdvance::previous</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aa73b5bf268d7c4f3760e1bea353f7dd36">eve::action::StateExit</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="MontagePlayer_8h_source.html#l00092">eve::animation::MontageAdvance::weight</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a3f941d288d6e30f0800ecd23efdc22a3" name="a3f941d288d6e30f0800ecd23efdc22a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f941d288d6e30f0800ecd23efdc22a3">&#9670;&#160;</a></span>clearRootMotionReceiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MontagePlayer::clearRootMotionReceiver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear the borrowed root-motion receiver before its owner is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86cf83fa5119dd2bd44d7b8b64f5249d" name="a86cf83fa5119dd2bd44d7b8b64f5249d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86cf83fa5119dd2bd44d7b8b64f5249d">&#9670;&#160;</a></span>evaluateSectionProgress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::evaluateSectionProgress </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>sectionIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>progress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate a normalized physical-section progress and atomically realign presentation. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00346">jumpToTime()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a1571ce171b5ff59fc9d6e6a03d1dee16" name="a1571ce171b5ff59fc9d6e6a03d1dee16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1571ce171b5ff59fc9d6e6a03d1dee16">&#9670;&#160;</a></span>footIkEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::MontagePlayer::footIkEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the host should run its terrain-specific foot-IK provider after this pose. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00194">194</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a928f59b56af4d567edaa3f78a6f8067b" name="a928f59b56af4d567edaa3f78a6f8067b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a928f59b56af4d567edaa3f78a6f8067b">&#9670;&#160;</a></span>interrupt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::interrupt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interrupt playback and emit paired exits for every active state block. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="MontagePlayer_8h_source.html#l00093">eve::animation::MontageAdvance::completed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="MontagePlayer_8h_source.html#l00087">eve::animation::MontageAdvance::current</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00089">eve::animation::MontageAdvance::events</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="MontagePlayer_8h_source.html#l00086">eve::animation::MontageAdvance::previous</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aa73b5bf268d7c4f3760e1bea353f7dd36">eve::action::StateExit</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="MontagePlayer_8h_source.html#l00092">eve::animation::MontageAdvance::weight</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontagePlayer_8cpp_source.html#l00442">beginBlendOut()</a>.</p>
+
+</div>
+</div>
+<a id="aa663fa6f77f87113cf5626f28a1a8f71" name="aa663fa6f77f87113cf5626f28a1a8f71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa663fa6f77f87113cf5626f28a1a8f71">&#9670;&#160;</a></span>isBlendingOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::MontagePlayer::isBlendingOut </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether playback is in externally requested blend-out. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20b1ea9c0928aeffb04caf83bfc91bcb" name="a20b1ea9c0928aeffb04caf83bfc91bcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20b1ea9c0928aeffb04caf83bfc91bcb">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::MontagePlayer::isPlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the prepared montage is actively playing. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a721dfb95d88f172d5e5becb1eeac360b" name="a721dfb95d88f172d5e5becb1eeac360b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a721dfb95d88f172d5e5becb1eeac360b">&#9670;&#160;</a></span>jumpToSection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::jumpToSection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>sectionIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Jump presentation to the start of one objective physical section. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00346">jumpToTime()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a5acc060840bffd8ec9da8b85c8825d7f" name="a5acc060840bffd8ec9da8b85c8825d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5acc060840bffd8ec9da8b85c8825d7f">&#9670;&#160;</a></span>jumpToTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::jumpToTime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically realign presentation and active state blocks to an externally authoritative timestamp. </p>
+<dl class="section remark"><dt>备注</dt><dd>This does not advance ActionRuntime; the caller must align its gameplay authority separately. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MontagePlayer_8h_source.html#l00090">eve::animation::MontageAdvance::activeBlocks</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="MontagePlayer_8h_source.html#l00087">eve::animation::MontageAdvance::current</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00089">eve::animation::MontageAdvance::events</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00086">eve::animation::MontageAdvance::previous</a>, <a class="el" href="MontagePlayer_8h_source.html#l00088">eve::animation::MontageAdvance::sectionId</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontagePlayer_8cpp_source.html#l00383">evaluateSectionProgress()</a> , 以及 <a class="el" href="MontagePlayer_8cpp_source.html#l00375">jumpToSection()</a>.</p>
+
+</div>
+</div>
+<a id="a2cec07ef8760d574b42d8c35a308b489" name="a2cec07ef8760d574b42d8c35a308b489"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cec07ef8760d574b42d8c35a308b489">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &amp; eve::animation::MontagePlayer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad254bd886d15c631cffc52f0fdefb2a7" name="ad254bd886d15c631cffc52f0fdefb2a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad254bd886d15c631cffc52f0fdefb2a7">&#9670;&#160;</a></span>physicalSectionIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt; eve::animation::MontagePlayer::physicalSectionIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve the objective physical section containing the current cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a11cadaa78606edbcf463d802565bd826" name="a11cadaa78606edbcf463d802565bd826"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11cadaa78606edbcf463d802565bd826">&#9670;&#160;</a></span>physicalSectionProgress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt; eve::animation::MontagePlayer::physicalSectionProgress </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>sectionIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return current normalized progress within an objective physical section. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aa7f73a7a5556963cc43bed3841351e1f" name="aa7f73a7a5556963cc43bed3841351e1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7f73a7a5556963cc43bed3841351e1f">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontagePlayer::play </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind presentation playback to one authoritative ActionRuntime execution. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="ad06517a9b3c96a1a3b61a22d014f0759" name="ad06517a9b3c96a1a3b61a22d014f0759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad06517a9b3c96a1a3b61a22d014f0759">&#9670;&#160;</a></span>pose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &amp; eve::animation::MontagePlayer::pose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow the current evaluated pose. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00497">497</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b8ae3b62deee448d303f258411c80b4" name="a0b8ae3b62deee448d303f258411c80b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b8ae3b62deee448d303f258411c80b4">&#9670;&#160;</a></span>prepare() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontagePlayer::prepare </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a>&#160;</td>
+          <td class="paramname"><em>timeline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IMontageClipProvider.html">IMontageClipProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>provider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve every distinct section URI and atomically prepare the montage. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">provider</td><td>Borrowed only for this synchronous call and never retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8h_source.html#l00160">eve::action::ActionTimeline::animationSections</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="classeve_1_1animation_1_1IMontageClipProvider.html#a132ed0b6ce87b80a12bd8b66a1f85972">eve::animation::IMontageClipProvider::load()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00064">prepare()</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00196">eve::action::ActionTimeline::validate()</a>.</p>
+
+</div>
+</div>
+<a id="aa63ebee0958dc886476293c8af824c5b" name="aa63ebee0958dc886476293c8af824c5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa63ebee0958dc886476293c8af824c5b">&#9670;&#160;</a></span>prepare() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontagePlayer::prepare </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a>&#160;</td>
+          <td class="paramname"><em>timeline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1animation_1_1MontageClipAsset.html">MontageClipAsset</a> &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>clips</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically replace the complete montage presentation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timeline</td><td>Canonical owning timeline copied into the player. </td></tr>
+    <tr><td class="paramname">clips</td><td>Clip ownership transferred only on success. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8h_source.html#l00160">eve::action::ActionTimeline::animationSections</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="MontagePlayer_8h_source.html#l00050">eve::animation::MontageRootMotionMask::rotation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00047">eve::animation::MontageRootMotionMask::translationX</a>, <a class="el" href="MontagePlayer_8h_source.html#l00048">eve::animation::MontageRootMotionMask::translationY</a>, <a class="el" href="MontagePlayer_8h_source.html#l00049">eve::animation::MontageRootMotionMask::translationZ</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00196">eve::action::ActionTimeline::validate()</a>, <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontagePlayer_8cpp_source.html#l00050">prepare()</a> , 以及 <a class="el" href="MontagePlayer_8cpp_source.html#l00112">reloadClips()</a>.</p>
+
+</div>
+</div>
+<a id="ac64689d995cfe253ffddb2995fb252b1" name="ac64689d995cfe253ffddb2995fb252b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64689d995cfe253ffddb2995fb252b1">&#9670;&#160;</a></span>present()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontagePlayer::present </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionAdvance.html">action::ActionAdvance</a> &amp;&#160;</td>
+          <td class="paramname"><em>advance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Present one ActionRuntime-owned advance without advancing gameplay time locally. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">advance</td><td>Owning observation returned by ActionRuntime::advance. </td></tr>
+    <tr><td class="paramname">tick</td><td>Strictly increasing simulation tick associated with the observation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MontagePlayer_8h_source.html#l00090">eve::animation::MontageAdvance::activeBlocks</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html#a0a9ee91de96545805df046063430438d">eve::animation::IMontageRootMotionReceiver::applyMontageRootMotion()</a>, <a class="el" href="namespaceeve_1_1animation.html#a261e4f8063f5b6ac00afd008a59c8d5aa1a210a3bd524c2451d9786ed043599e3">eve::animation::BindPose</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f">eve::action::Completed</a>, <a class="el" href="MontagePlayer_8h_source.html#l00093">eve::animation::MontageAdvance::completed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="MontagePlayer_8h_source.html#l00087">eve::animation::MontageAdvance::current</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="ActionTimeline_8h_source.html#l00059">eve::action::ActionAnimationSection::end</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00089">eve::animation::MontageAdvance::events</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="Action_8h_source.html#l00175">eve::action::ActionAdvance::id</a>, <a class="el" href="ActionTimeline_8h_source.html#l00056">eve::action::ActionAnimationSection::id</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::Pending</a>, <a class="el" href="Action_8h_source.html#l00177">eve::action::ActionAdvance::phase</a>, <a class="el" href="MontagePlayer_8h_source.html#l00086">eve::animation::MontageAdvance::previous</a>, <a class="el" href="MontagePlayer_8h_source.html#l00091">eve::animation::MontageAdvance::rootMotion</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="MontagePlayer_8h_source.html#l00088">eve::animation::MontageAdvance::sectionId</a>, <a class="el" href="ActionTimeline_8h_source.html#l00058">eve::action::ActionAnimationSection::start</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="Action_8h_source.html#l00185">eve::action::ActionAdvance::timelineEvents</a>, <a class="el" href="Action_8h_source.html#l00183">eve::action::ActionAdvance::totalElapsed</a>, <a class="el" href="MontagePlayer_8h_source.html#l00092">eve::animation::MontageAdvance::weight</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="aee1b8bdd59aa28c43e051376b9db3e00" name="aee1b8bdd59aa28c43e051376b9db3e00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee1b8bdd59aa28c43e051376b9db3e00">&#9670;&#160;</a></span>rebindExecution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontagePlayer::rebindExecution </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebind an already playing presentation after its external gameplay authority is recreated. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a261d0784fda54ae5f1e899a82f8bdd3e" name="a261d0784fda54ae5f1e899a82f8bdd3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a261d0784fda54ae5f1e899a82f8bdd3e">&#9670;&#160;</a></span>reloadClips()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontagePlayer::reloadClips </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IMontageClipProvider.html">IMontageClipProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>provider</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally reload every referenced clip while preserving playback state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">provider</td><td>Borrowed synchronous provider; no replacement is committed unless all clips validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="classeve_1_1animation_1_1IMontageClipProvider.html#a132ed0b6ce87b80a12bd8b66a1f85972">eve::animation::IMontageClipProvider::load()</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00064">prepare()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0d6fcdf6434d142dc0b153224decea05" name="a0d6fcdf6434d142dc0b153224decea05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d6fcdf6434d142dc0b153224decea05">&#9670;&#160;</a></span>replaceClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontagePlayer::replaceClip </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> &gt;&#160;</td>
+          <td class="paramname"><em>clip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally replace one URI-backed clip and preserve the current cursor and slot weight. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8h_source.html#l00057">eve::action::ActionAnimationSection::animationUri</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="a947a969f339388651afdfdc497cbfeaf" name="a947a969f339388651afdfdc497cbfeaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a947a969f339388651afdfdc497cbfeaf">&#9670;&#160;</a></span>setGapPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MontagePlayer::setGapPolicy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#a261e4f8063f5b6ac00afd008a59c8d5a">MontageGapPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Select the explicit pose policy used in gaps between animation sections. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>.</p>
+
+</div>
+</div>
+<a id="ad1b6d7e83959911a1d7f259dd9d46f2d" name="ad1b6d7e83959911a1d7f259dd9d46f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1b6d7e83959911a1d7f259dd9d46f2d">&#9670;&#160;</a></span>setRootMotionMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MontagePlayer::setRootMotionMask </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1animation_1_1MontageRootMotionMask.html">MontageRootMotionMask</a>&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Configure root-motion filtering. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>.</p>
+
+</div>
+</div>
+<a id="a542ef0d44e969dc8bf640e71fc6b916b" name="a542ef0d44e969dc8bf640e71fc6b916b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a542ef0d44e969dc8bf640e71fc6b916b">&#9670;&#160;</a></span>setRootMotionReceiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MontagePlayer::setRootMotionReceiver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html">IMontageRootMotionReceiver</a> &amp;&#160;</td>
+          <td class="paramname"><em>receiver</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Install a borrowed root-motion receiver. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">receiver</td><td>Receiver that must outlive this player or be cleared before destruction. @lifetime The player retains a non-owning observer until <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html#a3f941d288d6e30f0800ecd23efdc22a3" title="Clear the borrowed root-motion receiver before its owner is destroyed.">clearRootMotionReceiver()</a> is called. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4aac11573dd6089c48a019589958e1e" name="ad4aac11573dd6089c48a019589958e1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4aac11573dd6089c48a019589958e1e">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MontagePlayer::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stop playback and reset the derived cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a> 第 <a class="el" href="MontagePlayer_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a2b4b6703b112f118fdeaf9ab56942752" name="a2b4b6703b112f118fdeaf9ab56942752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b4b6703b112f118fdeaf9ab56942752">&#9670;&#160;</a></span>time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::animation::MontagePlayer::time </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current derived montage presentation time. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a822f172c32dd8653365279219ffbba00" name="a822f172c32dd8653365279219ffbba00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a822f172c32dd8653365279219ffbba00">&#9670;&#160;</a></span>weight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation::MontagePlayer::weight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current continuous montage slot weight. </p>
+
+<p class="definition">在文件 <a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a> 第 <a class="el" href="MontagePlayer_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="MontagePlayer_8h_source.html">MontagePlayer.h</a></li>
+<li>src/modules/animation/<a class="el" href="MontagePlayer_8cpp_source.html">MontagePlayer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::PcgTerrainStreamingAuthority类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html">PcgTerrainStreamingAuthority</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::PcgTerrainStreamingAuthority类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Explicit PhotoMode owner for a borrowed terrain streaming cache. @lifetime The target cache must outlive this authority or be detached with setTarget(nullptr, scale). @thread Game thread only; callbacks and scripts are not invoked.  
+ <a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgTerrainStreaming_8h_source.html">PcgTerrainStreaming.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::procgen::PcgTerrainStreamingAuthority 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.png" usemap="#eve::procgen::PcgTerrainStreamingAuthority_map" alt=""/>
+  <map id="eve::procgen::PcgTerrainStreamingAuthority_map" name="eve::procgen::PcgTerrainStreamingAuthority_map">
+<area href="classeve_1_1IPhotoModeFieldSink.html" alt="eve::IPhotoModeFieldSink" shape="rect" coords="0,0,262,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a883d352b7f94caa453990414c5981e96" id="r_a883d352b7f94caa453990414c5981e96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a883d352b7f94caa453990414c5981e96">~PcgTerrainStreamingAuthority</a> () override</td></tr>
+<tr class="separator:a883d352b7f94caa453990414c5981e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74470df2ec0e6bff9ac3c44829129c01" id="r_a74470df2ec0e6bff9ac3c44829129c01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a74470df2ec0e6bff9ac3c44829129c01">setTarget</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html">TerrainStreamingCache</a> *cache, float worldUnitsPerSample)</td></tr>
+<tr class="memdesc:a74470df2ec0e6bff9ac3c44829129c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a borrowed cache and define the world size of one terrain sample.  <br /></td></tr>
+<tr class="separator:a74470df2ec0e6bff9ac3c44829129c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32239d14d3c4c609aa836e5c6c528f11" id="r_a32239d14d3c4c609aa836e5c6c528f11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a32239d14d3c4c609aa836e5c6c528f11">setAuthority</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a32239d14d3c4c609aa836e5c6c528f11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or revoke the unique Streaming-domain PhotoMode authority.  <br /></td></tr>
+<tr class="separator:a32239d14d3c4c609aa836e5c6c528f11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92878df1d8b283ef7511521160be6428" id="r_a92878df1d8b283ef7511521160be6428"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html">PcgTerrainStreamingState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a92878df1d8b283ef7511521160be6428">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a92878df1d8b283ef7511521160be6428"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return retained world-space range state.  <br /></td></tr>
+<tr class="separator:a92878df1d8b283ef7511521160be6428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ed7ab323879520633969a8f63f9a81d" id="r_a3ed7ab323879520633969a8f63f9a81d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a3ed7ab323879520633969a8f63f9a81d">regularRadiusChunks</a> () const noexcept</td></tr>
+<tr class="memdesc:a3ed7ab323879520633969a8f63f9a81d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the regular residency radius after conversion to chunks.  <br /></td></tr>
+<tr class="separator:a3ed7ab323879520633969a8f63f9a81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b51a26feda35b6a2a80000b70382250" id="r_a6b51a26feda35b6a2a80000b70382250"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a6b51a26feda35b6a2a80000b70382250">impostorRadiusChunks</a> () const noexcept</td></tr>
+<tr class="memdesc:a6b51a26feda35b6a2a80000b70382250"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the impostor visibility radius after conversion to chunks.  <br /></td></tr>
+<tr class="separator:a6b51a26feda35b6a2a80000b70382250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4a73421ab6589752154fdf7645427eb" id="r_ad4a73421ab6589752154fdf7645427eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainStreamStats.html">TerrainStreamStats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ad4a73421ab6589752154fdf7645427eb">streamAround</a> (int worldSampleX, int worldSampleY, int maxLoads=0)</td></tr>
+<tr class="memdesc:ad4a73421ab6589752154fdf7645427eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stream full terrain chunks around a world-space sample coordinate.  <br /></td></tr>
+<tr class="separator:ad4a73421ab6589752154fdf7645427eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c4355432cf5a7c24dfe80d8a1dd3896" id="r_a0c4355432cf5a7c24dfe80d8a1dd3896"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694">PcgTerrainStreamingTier</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a0c4355432cf5a7c24dfe80d8a1dd3896">tierForDistance</a> (float worldDistance) const noexcept</td></tr>
+<tr class="memdesc:a0c4355432cf5a7c24dfe80d8a1dd3896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the runtime representation for a world-space distance.  <br /></td></tr>
+<tr class="separator:a0c4355432cf5a7c24dfe80d8a1dd3896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8710e9f3d695ca8296d8931d7e88868" id="r_ac8710e9f3d695ca8296d8931d7e88868"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ac8710e9f3d695ca8296d8931d7e88868">acceptsPhotoModeField</a> (const <a class="el" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a> &amp;assignment) const noexcept override</td></tr>
+<tr class="memdesc:ac8710e9f3d695ca8296d8931d7e88868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true only for fields owned by this provider.  <br /></td></tr>
+<tr class="separator:ac8710e9f3d695ca8296d8931d7e88868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcaa6299ceaa00fdaa51695abc60ba93" id="r_abcaa6299ceaa00fdaa51695abc60ba93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#abcaa6299ceaa00fdaa51695abc60ba93">applyPhotoModeField</a> (const <a class="el" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a> &amp;assignment) override</td></tr>
+<tr class="memdesc:abcaa6299ceaa00fdaa51695abc60ba93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one accepted assignment atomically on the game thread.  <br /></td></tr>
+<tr class="separator:abcaa6299ceaa00fdaa51695abc60ba93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IPhotoModeFieldSink"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IPhotoModeFieldSink')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IPhotoModeFieldSink.html">eve::IPhotoModeFieldSink</a></td></tr>
+<tr class="memitem:aeb72f803c31977d90c3a33201a1c9452 inherit pub_methods_classeve_1_1IPhotoModeFieldSink" id="r_aeb72f803c31977d90c3a33201a1c9452"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IPhotoModeFieldSink.html#aeb72f803c31977d90c3a33201a1c9452">~IPhotoModeFieldSink</a> ()=default</td></tr>
+<tr class="separator:aeb72f803c31977d90c3a33201a1c9452 inherit pub_methods_classeve_1_1IPhotoModeFieldSink"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IPhotoModeFieldSink"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IPhotoModeFieldSink')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IPhotoModeFieldSink.html">eve::IPhotoModeFieldSink</a></td></tr>
+<tr class="memitem:a641b67687f7b5311e4e96360b6a5eaae inherit pub_static_attribs_classeve_1_1IPhotoModeFieldSink" id="r_a641b67687f7b5311e4e96360b6a5eaae"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IPhotoModeFieldSink.html#a641b67687f7b5311e4e96360b6a5eaae">capabilityName</a> =&quot;eve.photo-mode.field&quot;</td></tr>
+<tr class="separator:a641b67687f7b5311e4e96360b6a5eaae inherit pub_static_attribs_classeve_1_1IPhotoModeFieldSink"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Explicit PhotoMode owner for a borrowed terrain streaming cache. @lifetime The target cache must outlive this authority or be detached with setTarget(nullptr, scale). @thread Game thread only; callbacks and scripts are not invoked. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8h_source.html">PcgTerrainStreaming.h</a> 第 <a class="el" href="PcgTerrainStreaming_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a883d352b7f94caa453990414c5981e96" name="a883d352b7f94caa453990414c5981e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a883d352b7f94caa453990414c5981e96">&#9670;&#160;</a></span>~PcgTerrainStreamingAuthority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::PcgTerrainStreamingAuthority::~PcgTerrainStreamingAuthority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac8710e9f3d695ca8296d8931d7e88868" name="ac8710e9f3d695ca8296d8931d7e88868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8710e9f3d695ca8296d8931d7e88868">&#9670;&#160;</a></span>acceptsPhotoModeField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a> eve::procgen::PcgTerrainStreamingAuthority::acceptsPhotoModeField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a> &amp;&#160;</td>
+          <td class="paramname"><em>assignment</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return true only for fields owned by this provider. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IPhotoModeFieldSink.html#a821dfb15fbdfeae2ae8cd32837c16cc0">eve::IPhotoModeFieldSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678">eve::Accepted</a>, <a class="el" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699">eve::Rejected</a> , 以及 <a class="el" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d">eve::Streaming</a>.</p>
+
+</div>
+</div>
+<a id="abcaa6299ceaa00fdaa51695abc60ba93" name="abcaa6299ceaa00fdaa51695abc60ba93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcaa6299ceaa00fdaa51695abc60ba93">&#9670;&#160;</a></span>applyPhotoModeField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PcgTerrainStreamingAuthority::applyPhotoModeField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a> &amp;&#160;</td>
+          <td class="paramname"><em>assignment</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one accepted assignment atomically on the game thread. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IPhotoModeFieldSink.html#a0a185ab4b7ca250dd65d1e3c159fb246">eve::IPhotoModeFieldSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PcgPhotoModeApply_8h_source.html#l00015">eve::PhotoModeAssignment::field</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PcgTerrainStreaming_8h_source.html#l00013">eve::procgen::PcgTerrainStreamingState::regularRange</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PcgPhotoModeApply_8h_source.html#l00015">eve::PhotoModeAssignment::value</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="a6b51a26feda35b6a2a80000b70382250" name="a6b51a26feda35b6a2a80000b70382250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b51a26feda35b6a2a80000b70382250">&#9670;&#160;</a></span>impostorRadiusChunks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PcgTerrainStreamingAuthority::impostorRadiusChunks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the impostor visibility radius after conversion to chunks. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgTerrainStreaming_8h_source.html#l00014">eve::procgen::PcgTerrainStreamingState::impostorRange</a>.</p>
+
+</div>
+</div>
+<a id="a3ed7ab323879520633969a8f63f9a81d" name="a3ed7ab323879520633969a8f63f9a81d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ed7ab323879520633969a8f63f9a81d">&#9670;&#160;</a></span>regularRadiusChunks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PcgTerrainStreamingAuthority::regularRadiusChunks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the regular residency radius after conversion to chunks. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgTerrainStreaming_8h_source.html#l00013">eve::procgen::PcgTerrainStreamingState::regularRange</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00069">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a32239d14d3c4c609aa836e5c6c528f11" name="a32239d14d3c4c609aa836e5c6c528f11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32239d14d3c4c609aa836e5c6c528f11">&#9670;&#160;</a></span>setAuthority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PcgTerrainStreamingAuthority::setAuthority </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register or revoke the unique Streaming-domain PhotoMode authority. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+</div>
+</div>
+<a id="a74470df2ec0e6bff9ac3c44829129c01" name="a74470df2ec0e6bff9ac3c44829129c01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74470df2ec0e6bff9ac3c44829129c01">&#9670;&#160;</a></span>setTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PcgTerrainStreamingAuthority::setTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainStreamingCache.html">TerrainStreamingCache</a> *&#160;</td>
+          <td class="paramname"><em>cache</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldUnitsPerSample</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a borrowed cache and define the world size of one terrain sample. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PcgTerrainStreaming_8h_source.html#l00015">eve::procgen::PcgTerrainStreamingState::worldUnitsPerSample</a>.</p>
+
+</div>
+</div>
+<a id="a92878df1d8b283ef7511521160be6428" name="a92878df1d8b283ef7511521160be6428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92878df1d8b283ef7511521160be6428">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html">PcgTerrainStreamingState</a> &amp; eve::procgen::PcgTerrainStreamingAuthority::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return retained world-space range state. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8h_source.html">PcgTerrainStreaming.h</a> 第 <a class="el" href="PcgTerrainStreaming_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4a73421ab6589752154fdf7645427eb" name="ad4a73421ab6589752154fdf7645427eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4a73421ab6589752154fdf7645427eb">&#9670;&#160;</a></span>streamAround()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainStreamStats.html">TerrainStreamStats</a> &gt; eve::procgen::PcgTerrainStreamingAuthority::streamAround </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldSampleX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldSampleY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxLoads</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stream full terrain chunks around a world-space sample coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00061">regularRadiusChunks()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00034">eve::procgen::TerrainStreamingCache::streamAround()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a0c4355432cf5a7c24dfe80d8a1dd3896" name="a0c4355432cf5a7c24dfe80d8a1dd3896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c4355432cf5a7c24dfe80d8a1dd3896">&#9670;&#160;</a></span>tierForDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694">PcgTerrainStreamingTier</a> eve::procgen::PcgTerrainStreamingAuthority::tierForDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldDistance</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Select the runtime representation for a world-space distance. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a> 第 <a class="el" href="PcgTerrainStreaming_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aed0b2800891993e5157930d89d6c4dd8">eve::procgen::Impostor</a>, <a class="el" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694ad2203cb1237cb6460cbad94564e39345">eve::procgen::Regular</a> , 以及 <a class="el" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aa5ae20aa7fda5bd38bf0dce98e65bd2d">eve::procgen::Unloaded</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="PcgTerrainStreaming_8h_source.html">PcgTerrainStreaming.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="PcgTerrainStreaming_8cpp_source.html">PcgTerrainStreaming.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

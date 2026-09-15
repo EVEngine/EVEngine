@@ -1,0 +1,292 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/GtsTerrainExportSettings.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">GtsTerrainExportSettings.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="GtsTerrainLod_8h_source.html">procgen/GtsTerrainLod.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="GtsTerrainExportSettings_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportWorkflow.html">eve::procgen::GtsTerrainExportWorkflow</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validated execution plan compiled from top-level Pcg terrain export controls.  <a href="structeve_1_1procgen_1_1GtsTerrainExportWorkflow.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html">eve::procgen::GtsTerrainExportLodSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete native counterpart of one <code>GTSExportTerrainLODSettings</code> record.  <a href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GtsTerrainExportSettings.html">eve::procgen::GtsTerrainExportSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schema-versioned source/impostor terrain export profile.  <a href="classeve_1_1procgen_1_1GtsTerrainExportSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1image" id="r_namespaceeve_1_1image"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1image.html">eve::image</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:aa29fc9dd6525351ed603accc9fb8c458" id="r_aa29fc9dd6525351ed603accc9fb8c458"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458">eve::procgen::GtsTerrainLodMode</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458aed0b2800891993e5157930d89d6c4dd8">eve::procgen::Impostor</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458af1217bf44e7c2883cb0c7414197c5522">eve::procgen::LowPoly</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458a90589c47f06eb971d548591f23c285af">eve::procgen::Custom</a> = 2
+ }</td></tr>
+<tr class="memdesc:aa29fc9dd6525351ed603accc9fb8c458"><td class="mdescLeft">&#160;</td><td class="mdescRight">Purpose assigned to one exported terrain LOD.  <a href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458">更多...</a><br /></td></tr>
+<tr class="separator:aa29fc9dd6525351ed603accc9fb8c458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22033a0a968e6fd190841d67bc9e70a" id="r_af22033a0a968e6fd190841d67bc9e70a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70a">eve::procgen::GtsTerrainNormalEdgeMode</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70aae510cdf33cd497134b47b9316314d4b4">eve::procgen::Smooth</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70aa60c17eb98355db0fe5ce016db6c6f444">eve::procgen::Sharp</a> = 1
+ }</td></tr>
+<tr class="memdesc:af22033a0a968e6fd190841d67bc9e70a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edge-normal treatment requested for an exported terrain mesh.  <a href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70a">更多...</a><br /></td></tr>
+<tr class="separator:af22033a0a968e6fd190841d67bc9e70a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9de1188ee5b694896bd3f83a0c5e9456" id="r_a9de1188ee5b694896bd3f83a0c5e9456"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456">eve::procgen::GtsTerrainTextureExportMethod</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456a152ed4e930cbc30964e7fc00c9c50f2b">eve::procgen::OrthographicBake</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456a1d78944a21070c841aad47ab5e808952">eve::procgen::BaseMapExport</a> = 1
+ }</td></tr>
+<tr class="memdesc:a9de1188ee5b694896bd3f83a0c5e9456"><td class="mdescLeft">&#160;</td><td class="mdescRight">Texture source used by a terrain export level.  <a href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456">更多...</a><br /></td></tr>
+<tr class="separator:a9de1188ee5b694896bd3f83a0c5e9456"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a669e19faf7c7d2f3265248daa85b1b0d" id="r_a669e19faf7c7d2f3265248daa85b1b0d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0d">eve::procgen::GtsTerrainBakeLighting</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0da778c095cefbe096da0bb005e8023be9d">eve::procgen::NeutralLighting</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0daa1c303186b8fa4fa81c42b8bd3075c73">eve::procgen::CurrentSceneLighting</a> = 1
+ }</td></tr>
+<tr class="memdesc:a669e19faf7c7d2f3265248daa85b1b0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lighting state used while baking exported textures.  <a href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0d">更多...</a><br /></td></tr>
+<tr class="separator:a669e19faf7c7d2f3265248daa85b1b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27a47fb130d8e2706d6aa6d6fa1003c9" id="r_a27a47fb130d8e2706d6aa6d6fa1003c9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9">eve::procgen::GtsTerrainAlphaChannel</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9a6adf97f83acf6453d4a6a4b1070f3754">eve::procgen::None</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9a6836366b1ef05ae4b5032f5bd2c6bf67">eve::procgen::Heightmap</a> = 1
+ }</td></tr>
+<tr class="memdesc:a27a47fb130d8e2706d6aa6d6fa1003c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional channel placed in the exported texture alpha channel.  <a href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9">更多...</a><br /></td></tr>
+<tr class="separator:a27a47fb130d8e2706d6aa6d6fa1003c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39b45e060ed9897853779eddfebbc308" id="r_a39b45e060ed9897853779eddfebbc308"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308">eve::procgen::GtsTerrainExportShader</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308aeb6d8ae6f20283755b339c0dc273988b">eve::procgen::Standard</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308ac25b8613f8d34348272fc9f803018a36">eve::procgen::VertexColor</a> = 1
+ }</td></tr>
+<tr class="memdesc:a39b45e060ed9897853779eddfebbc308"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native material family created for an exported terrain level.  <a href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308">更多...</a><br /></td></tr>
+<tr class="separator:a39b45e060ed9897853779eddfebbc308"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44b88c908204452207349d90ee065ec2" id="r_a44b88c908204452207349d90ee065ec2"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a44b88c908204452207349d90ee065ec2">eve::procgen::GtsTerrainConversionAction</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a44b88c908204452207349d90ee065ec2a8262f8b6d1f0a01b493745893c9c64d2">eve::procgen::MeshTerrain</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a44b88c908204452207349d90ee065ec2a4073e0c7ba2662287d5183f1738503d2">eve::procgen::ColliderOnly</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a44b88c908204452207349d90ee065ec2a6777d551299cf4deda1fa25aa885683b">eve::procgen::ObjFileExport</a> = 2
+ }</td></tr>
+<tr class="memdesc:a44b88c908204452207349d90ee065ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operation performed for the selected source terrain.  <a href="namespaceeve_1_1procgen.html#a44b88c908204452207349d90ee065ec2">更多...</a><br /></td></tr>
+<tr class="separator:a44b88c908204452207349d90ee065ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99300cae96847e527b9788cfa664f0d6" id="r_a99300cae96847e527b9788cfa664f0d6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a99300cae96847e527b9788cfa664f0d6">eve::procgen::GtsSourceTerrainTreatment</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a99300cae96847e527b9788cfa664f0d6af80a4ad87fee7c9fdc19b7769495fdb5">eve::procgen::Nothing</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a99300cae96847e527b9788cfa664f0d6a109fec06829bd79d222cfc8af52aaaf1">eve::procgen::Deactivate</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a99300cae96847e527b9788cfa664f0d6a8b591820777d0c9105f045a4219758f7">eve::procgen::StoreInBackup</a> = 2
+, <a class="el" href="namespaceeve_1_1procgen.html#a99300cae96847e527b9788cfa664f0d6af2a6c498fb90ee345d997f888fce3b18">eve::procgen::Delete</a> = 3
+ }</td></tr>
+<tr class="memdesc:a99300cae96847e527b9788cfa664f0d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Treatment applied to a source terrain after a successful conversion commit.  <a href="namespaceeve_1_1procgen.html#a99300cae96847e527b9788cfa664f0d6">更多...</a><br /></td></tr>
+<tr class="separator:a99300cae96847e527b9788cfa664f0d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89947775624e7224fb0948b9412b0142" id="r_a89947775624e7224fb0948b9412b0142"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a89947775624e7224fb0948b9412b0142">eve::procgen::GtsTerrainExportSelection</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a89947775624e7224fb0948b9412b0142a2292b466f5e70986c475e34c4136fae3">eve::procgen::AllTerrains</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a89947775624e7224fb0948b9412b0142ac1de55a17b86b6f0a0e5c1e24ce188a5">eve::procgen::SingleTerrain</a> = 1
+ }</td></tr>
+<tr class="memdesc:a89947775624e7224fb0948b9412b0142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source selection scope used by a terrain export.  <a href="namespaceeve_1_1procgen.html#a89947775624e7224fb0948b9412b0142">更多...</a><br /></td></tr>
+<tr class="separator:a89947775624e7224fb0948b9412b0142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6033aacfe087b4aab16ecd928eb84cc5" id="r_a6033aacfe087b4aab16ecd928eb84cc5"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6033aacfe087b4aab16ecd928eb84cc5">eve::procgen::GtsTerrainColliderType</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#a6033aacfe087b4aab16ecd928eb84cc5a710fdb6adb881b408116ef95335e1961">eve::procgen::Mesh</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a6033aacfe087b4aab16ecd928eb84cc5aca50cda7d9cabd11781b626e5fdddee8">eve::procgen::Heightfield</a> = 1
+ }</td></tr>
+<tr class="memdesc:a6033aacfe087b4aab16ecd928eb84cc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collider representation requested by the export workflow.  <a href="namespaceeve_1_1procgen.html#a6033aacfe087b4aab16ecd928eb84cc5">更多...</a><br /></td></tr>
+<tr class="separator:a6033aacfe087b4aab16ecd928eb84cc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb6271e7abc5d77460fc85f7808a8fae" id="r_afb6271e7abc5d77460fc85f7808a8fae"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#afb6271e7abc5d77460fc85f7808a8fae">eve::procgen::GtsTerrainObjFaceMode</a> : int { <a class="el" href="namespaceeve_1_1procgen.html#afb6271e7abc5d77460fc85f7808a8faea7ca66fdfaad3eb33fc65d7490178f856">eve::procgen::Triangles</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#afb6271e7abc5d77460fc85f7808a8faea456de28f607f812b42743dfdd8d89314">eve::procgen::Quads</a> = 1
+ }</td></tr>
+<tr class="memdesc:afb6271e7abc5d77460fc85f7808a8fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polygon representation written by the Pcg terrain OBJ exporter.  <a href="namespaceeve_1_1procgen.html#afb6271e7abc5d77460fc85f7808a8fae">更多...</a><br /></td></tr>
+<tr class="separator:afb6271e7abc5d77460fc85f7808a8fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a880fdafdd63455a8cc32bfdb22fd0c55" id="r_a880fdafdd63455a8cc32bfdb22fd0c55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html">GtsTerrainExportLodSettings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a880fdafdd63455a8cc32bfdb22fd0c55">eve::procgen::makeGtsTerrainImpostorLod</a> (int level)</td></tr>
+<tr class="memdesc:a880fdafdd63455a8cc32bfdb22fd0c55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the exact GTS impostor preset for a zero-based LOD index.  <br /></td></tr>
+<tr class="separator:a880fdafdd63455a8cc32bfdb22fd0c55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8c5f0063d71346ce127888a41484a1" id="r_a6c8c5f0063d71346ce127888a41484a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html">GtsTerrainExportLodSettings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6c8c5f0063d71346ce127888a41484a1">eve::procgen::makeGtsTerrainLowPolyLod</a> (int level)</td></tr>
+<tr class="memdesc:a6c8c5f0063d71346ce127888a41484a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the exact GTS low-poly preset for a zero-based LOD index.  <br /></td></tr>
+<tr class="separator:a6c8c5f0063d71346ce127888a41484a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45e223c07f8b597fe8f2d684ee42c36f" id="r_a45e223c07f8b597fe8f2d684ee42c36f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a45e223c07f8b597fe8f2d684ee42c36f">eve::procgen::buildGtsTerrainExportLodsFromHeightmapInto</a> (<a class="el" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">GtsTerrainLodSet</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, const <a class="el" href="classeve_1_1procgen_1_1GtsTerrainExportSettings.html">GtsTerrainExportSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, float sizeX, float sizeY, float sizeZ, int subTiles, <a class="el" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a> pivot=<a class="el" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688a6adf97f83acf6453d4a6a4b1070f3754">GtsMeshPivot::None</a>)</td></tr>
+<tr class="memdesc:a45e223c07f8b597fe8f2d684ee42c36f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build source-terrain LODs using the first export record's SaveResolution and the complete sequential list.  <br /></td></tr>
+<tr class="separator:a45e223c07f8b597fe8f2d684ee42c36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9002fa58714472285700a67d7862fcad" id="r_a9002fa58714472285700a67d7862fcad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9002fa58714472285700a67d7862fcad">eve::procgen::buildGtsTerrainColliderMeshFromHeightmapInto</a> (<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, const <a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportWorkflow.html">GtsTerrainExportWorkflow</a> &amp;workflow, float sizeX, float sizeY, float sizeZ)</td></tr>
+<tr class="memdesc:a9002fa58714472285700a67d7862fcad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the independently sampled and simplified MeshCollider geometry requested by a workflow.  <br /></td></tr>
+<tr class="separator:a9002fa58714472285700a67d7862fcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f51a34edec2e599933bd3b741e15c0" id="r_a59f51a34edec2e599933bd3b741e15c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a59f51a34edec2e599933bd3b741e15c0">eve::procgen::encodeGtsTerrainObj</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, <a class="el" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> resolution, float sizeX, float sizeY, float sizeZ, <a class="el" href="namespaceeve_1_1procgen.html#afb6271e7abc5d77460fc85f7808a8fae">GtsTerrainObjFaceMode</a> faceMode)</td></tr>
+<tr class="memdesc:a59f51a34edec2e599933bd3b741e15c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the original Pcg unmasked terrain OBJ coordinate, UV and face convention.  <br /></td></tr>
+<tr class="separator:a59f51a34edec2e599933bd3b741e15c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7670c776de18272a82c9ee0adabbe44f" id="r_a7670c776de18272a82c9ee0adabbe44f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a7670c776de18272a82c9ee0adabbe44f">eve::procgen::encodeGtsMaskedTerrainObj</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;maskmap, <a class="el" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> resolution, float sizeX, float sizeY, float sizeZ, <a class="el" href="namespaceeve_1_1procgen.html#afb6271e7abc5d77460fc85f7808a8fae">GtsTerrainObjFaceMode</a> faceMode, float threshold=0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, bool invert=false)</td></tr>
+<tr class="memdesc:a7670c776de18272a82c9ee0adabbe44f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode Pcg's cell-classified masked terrain OBJ convention.  <br /></td></tr>
+<tr class="separator:a7670c776de18272a82c9ee0adabbe44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab16821a049bb30216f1677a73284e038" id="r_ab16821a049bb30216f1677a73284e038"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ab16821a049bb30216f1677a73284e038">eve::procgen::bakeGtsTerrainVertexColorsInto</a> (<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;bakedTexture, <a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70a">GtsTerrainNormalEdgeMode</a> edgeMode, int smoothingIterations, float terrainSizeX, float terrainSizeZ, bool linearize=false)</td></tr>
+<tr class="memdesc:ab16821a049bb30216f1677a73284e038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg low-poly edge processing and baked texture vertex colors atomically.  <br /></td></tr>
+<tr class="separator:ab16821a049bb30216f1677a73284e038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

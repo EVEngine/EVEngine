@@ -1,0 +1,730 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainMultiDetailWorkspace类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainMultiDetailWorkspace类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning script-safe multi-terrain detail transaction workspace. Input layers are copied on insertion. Operations, reports and all-layer undo snapshots publish by one owner-thread swap; no borrowed raster or callback survives a call. The explicit seed creates one deterministic stream per apply.  
+ <a href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainMultiTile_8h_source.html">TerrainMultiTile.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainMultiDetailWorkspace_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af3f699f58d2cc77b81ba2f149a9ee600" id="r_af3f699f58d2cc77b81ba2f149a9ee600"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#af3f699f58d2cc77b81ba2f149a9ee600">TerrainMultiDetailWorkspace</a> ()</td></tr>
+<tr class="separator:af3f699f58d2cc77b81ba2f149a9ee600"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a826c0e8834c1adbefd3fb74ca8a10012" id="r_a826c0e8834c1adbefd3fb74ca8a10012"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a826c0e8834c1adbefd3fb74ca8a10012">~TerrainMultiDetailWorkspace</a> ()</td></tr>
+<tr class="separator:a826c0e8834c1adbefd3fb74ca8a10012"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae49107fbfc87dad7ac7001f15b5d7974" id="r_ae49107fbfc87dad7ac7001f15b5d7974"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#ae49107fbfc87dad7ac7001f15b5d7974">TerrainMultiDetailWorkspace</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:ae49107fbfc87dad7ac7001f15b5d7974"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cfcdf946008947e5e37452367cc153d" id="r_a7cfcdf946008947e5e37452367cc153d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a7cfcdf946008947e5e37452367cc153d">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a7cfcdf946008947e5e37452367cc153d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224fd1797142797b1fcc27774cd5fe14" id="r_a224fd1797142797b1fcc27774cd5fe14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a224fd1797142797b1fcc27774cd5fe14">TerrainMultiDetailWorkspace</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;)=delete</td></tr>
+<tr class="separator:a224fd1797142797b1fcc27774cd5fe14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae189139bfbf71d8e5030ed1e9e81ba86" id="r_ae189139bfbf71d8e5030ed1e9e81ba86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#ae189139bfbf71d8e5030ed1e9e81ba86">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;)=delete</td></tr>
+<tr class="separator:ae189139bfbf71d8e5030ed1e9e81ba86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c8027f3738e41c3a0ba826d56c580c" id="r_a57c8027f3738e41c3a0ba826d56c580c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a57c8027f3738e41c3a0ba826d56c580c">addTile</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const <a class="el" href="classeve_1_1procgen_1_1TerrainDetailLayer.html">TerrainDetailLayer</a> &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, double originX, double originZ, double <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, double <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, bool worldMap=false)</td></tr>
+<tr class="memdesc:a57c8027f3738e41c3a0ba826d56c580c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a uniquely named initialized detail tile into the workspace atomically.  <br /></td></tr>
+<tr class="separator:a57c8027f3738e41c3a0ba826d56c580c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7809ea186daef11bfdbd4a73f12b2ba1" id="r_a7809ea186daef11bfdbd4a73f12b2ba1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a7809ea186daef11bfdbd4a73f12b2ba1">apply</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;operationFitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainDetailSettings.html">TerrainDetailSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;operationSettings, std::int32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, bool worldMapOperation=false)</td></tr>
+<tr class="memdesc:a7809ea186daef11bfdbd4a73f12b2ba1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one shared operation raster to all selected detail tiles atomically.  <br /></td></tr>
+<tr class="separator:a7809ea186daef11bfdbd4a73f12b2ba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e94cd5c3972eb96b86d07700106c19f" id="r_a8e94cd5c3972eb96b86d07700106c19f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a8e94cd5c3972eb96b86d07700106c19f">copyTile</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1procgen_1_1TerrainDetailLayer.html">TerrainDetailLayer</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:a8e94cd5c3972eb96b86d07700106c19f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one named current layer into caller-owned output.  <br /></td></tr>
+<tr class="separator:a8e94cd5c3972eb96b86d07700106c19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d12678a4e33572ff2b713afee225cc" id="r_a76d12678a4e33572ff2b713afee225cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a76d12678a4e33572ff2b713afee225cc">undo</a> ()</td></tr>
+<tr class="memdesc:a76d12678a4e33572ff2b713afee225cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the prior all-layer snapshot.  <br /></td></tr>
+<tr class="separator:a76d12678a4e33572ff2b713afee225cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31b7ee6e296a5b99dac2549500e6bd98" id="r_a31b7ee6e296a5b99dac2549500e6bd98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a31b7ee6e296a5b99dac2549500e6bd98">redo</a> ()</td></tr>
+<tr class="memdesc:a31b7ee6e296a5b99dac2549500e6bd98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the next all-layer snapshot.  <br /></td></tr>
+<tr class="separator:a31b7ee6e296a5b99dac2549500e6bd98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad039013a5fa34de9e405162d5fb053ef" id="r_ad039013a5fa34de9e405162d5fb053ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#ad039013a5fa34de9e405162d5fb053ef">getTileCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ad039013a5fa34de9e405162d5fb053ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of owned detail tiles.  <br /></td></tr>
+<tr class="separator:ad039013a5fa34de9e405162d5fb053ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4051608a420f91aa58c104367185077f" id="r_a4051608a420f91aa58c104367185077f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a4051608a420f91aa58c104367185077f">getLastChangedSamples</a> () const noexcept</td></tr>
+<tr class="memdesc:a4051608a420f91aa58c104367185077f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changed cells from the last applied snapshot.  <br /></td></tr>
+<tr class="separator:a4051608a420f91aa58c104367185077f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e8cd93ff0b5422ef9e728e46486cec0" id="r_a3e8cd93ff0b5422ef9e728e46486cec0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a3e8cd93ff0b5422ef9e728e46486cec0">getLastAffectedTiles</a> () const noexcept</td></tr>
+<tr class="memdesc:a3e8cd93ff0b5422ef9e728e46486cec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Affected tiles from the last applied snapshot.  <br /></td></tr>
+<tr class="separator:a3e8cd93ff0b5422ef9e728e46486cec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab490ee595f33759048d2d217b3113455" id="r_ab490ee595f33759048d2d217b3113455"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#ab490ee595f33759048d2d217b3113455">getOperationCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ab490ee595f33759048d2d217b3113455"><td class="mdescLeft">&#160;</td><td class="mdescRight">Successful apply count including redo suffix.  <br /></td></tr>
+<tr class="separator:ab490ee595f33759048d2d217b3113455"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f523de16c307c2f146a7b1b47fea790" id="r_a2f523de16c307c2f146a7b1b47fea790"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html#a2f523de16c307c2f146a7b1b47fea790">getAppliedCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a2f523de16c307c2f146a7b1b47fea790"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applied operation count at the current history cursor.  <br /></td></tr>
+<tr class="separator:a2f523de16c307c2f146a7b1b47fea790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning script-safe multi-terrain detail transaction workspace. Input layers are copied on insertion. Operations, reports and all-layer undo snapshots publish by one owner-thread swap; no borrowed raster or callback survives a call. The explicit seed creates one deterministic stream per apply. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8h_source.html">TerrainMultiTile.h</a> 第 <a class="el" href="TerrainMultiTile_8h_source.html#l00175">175</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af3f699f58d2cc77b81ba2f149a9ee600" name="af3f699f58d2cc77b81ba2f149a9ee600"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3f699f58d2cc77b81ba2f149a9ee600">&#9670;&#160;</a></span>TerrainMultiDetailWorkspace() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiDetailWorkspace::TerrainMultiDetailWorkspace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a826c0e8834c1adbefd3fb74ca8a10012" name="a826c0e8834c1adbefd3fb74ca8a10012"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a826c0e8834c1adbefd3fb74ca8a10012">&#9670;&#160;</a></span>~TerrainMultiDetailWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiDetailWorkspace::~TerrainMultiDetailWorkspace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae49107fbfc87dad7ac7001f15b5d7974" name="ae49107fbfc87dad7ac7001f15b5d7974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae49107fbfc87dad7ac7001f15b5d7974">&#9670;&#160;</a></span>TerrainMultiDetailWorkspace() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiDetailWorkspace::TerrainMultiDetailWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a224fd1797142797b1fcc27774cd5fe14" name="a224fd1797142797b1fcc27774cd5fe14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a224fd1797142797b1fcc27774cd5fe14">&#9670;&#160;</a></span>TerrainMultiDetailWorkspace() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiDetailWorkspace::TerrainMultiDetailWorkspace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a57c8027f3738e41c3a0ba826d56c580c" name="a57c8027f3738e41c3a0ba826d56c580c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c8027f3738e41c3a0ba826d56c580c">&#9670;&#160;</a></span>addTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiDetailWorkspace::addTile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainDetailLayer.html">TerrainDetailLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>worldMap</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a uniquely named initialized detail tile into the workspace atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00013">owned</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a7809ea186daef11bfdbd4a73f12b2ba1" name="a7809ea186daef11bfdbd4a73f12b2ba1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7809ea186daef11bfdbd4a73f12b2ba1">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiDetailWorkspace::apply </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>operationFitness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainDetailSettings.html">TerrainDetailSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operationSettings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>worldMapOperation</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one shared operation raster to all selected detail tiles atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>.</p>
+
+</div>
+</div>
+<a id="a8e94cd5c3972eb96b86d07700106c19f" name="a8e94cd5c3972eb96b86d07700106c19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e94cd5c3972eb96b86d07700106c19f">&#9670;&#160;</a></span>copyTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiDetailWorkspace::copyTile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainDetailLayer.html">TerrainDetailLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one named current layer into caller-owned output. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2f523de16c307c2f146a7b1b47fea790" name="a2f523de16c307c2f146a7b1b47fea790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f523de16c307c2f146a7b1b47fea790">&#9670;&#160;</a></span>getAppliedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiDetailWorkspace::getAppliedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applied operation count at the current history cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e8cd93ff0b5422ef9e728e46486cec0" name="a3e8cd93ff0b5422ef9e728e46486cec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e8cd93ff0b5422ef9e728e46486cec0">&#9670;&#160;</a></span>getLastAffectedTiles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiDetailWorkspace::getLastAffectedTiles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Affected tiles from the last applied snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4051608a420f91aa58c104367185077f" name="a4051608a420f91aa58c104367185077f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4051608a420f91aa58c104367185077f">&#9670;&#160;</a></span>getLastChangedSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiDetailWorkspace::getLastChangedSamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Changed cells from the last applied snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab490ee595f33759048d2d217b3113455" name="ab490ee595f33759048d2d217b3113455"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab490ee595f33759048d2d217b3113455">&#9670;&#160;</a></span>getOperationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiDetailWorkspace::getOperationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Successful apply count including redo suffix. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad039013a5fa34de9e405162d5fb053ef" name="ad039013a5fa34de9e405162d5fb053ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad039013a5fa34de9e405162d5fb053ef">&#9670;&#160;</a></span>getTileCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiDetailWorkspace::getTileCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of owned detail tiles. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae189139bfbf71d8e5030ed1e9e81ba86" name="ae189139bfbf71d8e5030ed1e9e81ba86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae189139bfbf71d8e5030ed1e9e81ba86">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp; eve::procgen::TerrainMultiDetailWorkspace::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7cfcdf946008947e5e37452367cc153d" name="a7cfcdf946008947e5e37452367cc153d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cfcdf946008947e5e37452367cc153d">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp; eve::procgen::TerrainMultiDetailWorkspace::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiDetailWorkspace.html">TerrainMultiDetailWorkspace</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a31b7ee6e296a5b99dac2549500e6bd98" name="a31b7ee6e296a5b99dac2549500e6bd98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31b7ee6e296a5b99dac2549500e6bd98">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiDetailWorkspace::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the next all-layer snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00359">359</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a76d12678a4e33572ff2b713afee225cc" name="a76d12678a4e33572ff2b713afee225cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76d12678a4e33572ff2b713afee225cc">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiDetailWorkspace::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the prior all-layer snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a> 第 <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainMultiTile_8h_source.html">TerrainMultiTile.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainDetailLayer_8cpp_source.html">TerrainDetailLayer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

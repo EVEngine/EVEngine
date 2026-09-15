@@ -1,0 +1,1427 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainGenerationSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainGenerationSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainGenerationSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owned in-memory terrain operation session; records native stamps, scalar effects and erosion. Owns baseline, current terrain, sediment, water and immutable copies of operation inputs. No borrowed raster, scene object, script callback or GPU resource survives a call. Replays use the same CPU kernels and inputs in order; determinism is same-build floating arithmetic. All access is serialized by the caller on its owning thread. History mutations and terrain, sediment and all water channels publish together after successful evaluation; allocation failure preserves all state. Snapshots are copies, never a second writable view of the authoritative terrain. Versioned snapshots retain the baseline, every owned command, enabled flags, cursor and access policy. Asynchronous worker tickets and a generic gameplay object model are not introduced.  
+ <a href="classeve_1_1procgen_1_1TerrainGenerationSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainGenerationSession_8h_source.html">TerrainGenerationSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainGenerationSession_1_1Command.html">Command</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainGenerationSession_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab9be5ddc0fc79d64a4d4986aaa59b277" id="r_ab9be5ddc0fc79d64a4d4986aaa59b277"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ab9be5ddc0fc79d64a4d4986aaa59b277">TerrainGenerationSession</a> ()</td></tr>
+<tr class="memdesc:ab9be5ddc0fc79d64a4d4986aaa59b277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty editable session.  <br /></td></tr>
+<tr class="separator:ab9be5ddc0fc79d64a4d4986aaa59b277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff68734495754bb7458c9a31fbdccbe9" id="r_aff68734495754bb7458c9a31fbdccbe9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aff68734495754bb7458c9a31fbdccbe9">~TerrainGenerationSession</a> ()</td></tr>
+<tr class="memdesc:aff68734495754bb7458c9a31fbdccbe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy owned terrain and command snapshots.  <br /></td></tr>
+<tr class="separator:aff68734495754bb7458c9a31fbdccbe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59bea6b0ac8b653685ff904916d1eefc" id="r_a59bea6b0ac8b653685ff904916d1eefc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a59bea6b0ac8b653685ff904916d1eefc">TerrainGenerationSession</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:a59bea6b0ac8b653685ff904916d1eefc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer state; moved-from session is empty and resettable.  <br /></td></tr>
+<tr class="separator:a59bea6b0ac8b653685ff904916d1eefc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a686767491c22bc43ff6caaf99d44b157" id="r_a686767491c22bc43ff6caaf99d44b157"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a686767491c22bc43ff6caaf99d44b157">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:a686767491c22bc43ff6caaf99d44b157"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer state and release previously owned snapshots.  <br /></td></tr>
+<tr class="separator:a686767491c22bc43ff6caaf99d44b157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55c140bb9155ee724fea0cf905c27beb" id="r_a55c140bb9155ee724fea0cf905c27beb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a55c140bb9155ee724fea0cf905c27beb">TerrainGenerationSession</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a55c140bb9155ee724fea0cf905c27beb"><td class="mdescLeft">&#160;</td><td class="mdescRight">One mutable owner; implicit copies are prohibited.  <br /></td></tr>
+<tr class="separator:a55c140bb9155ee724fea0cf905c27beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed9377c54c983b2a490cfd611dafb66a" id="r_aed9377c54c983b2a490cfd611dafb66a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aed9377c54c983b2a490cfd611dafb66a">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;)=delete</td></tr>
+<tr class="memdesc:aed9377c54c983b2a490cfd611dafb66a"><td class="mdescLeft">&#160;</td><td class="mdescRight">One mutable owner; implicit copies are prohibited.  <br /></td></tr>
+<tr class="separator:aed9377c54c983b2a490cfd611dafb66a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2de2e9f1995606c0f6d142ef53f08aa" id="r_ad2de2e9f1995606c0f6d142ef53f08aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ad2de2e9f1995606c0f6d142ef53f08aa">reset</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;baseline)</td></tr>
+<tr class="memdesc:ad2de2e9f1995606c0f6d142ef53f08aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a finite baseline, zero sediment/water and clear history atomically; locked sessions reject reset.  <br /></td></tr>
+<tr class="separator:ad2de2e9f1995606c0f6d142ef53f08aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf570e734681f1f6d9a57a60de7ecffe" id="r_abf570e734681f1f6d9a57a60de7ecffe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#abf570e734681f1f6d9a57a60de7ecffe">stamp</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;stamp, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;localMask, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;globalMask)</td></tr>
+<tr class="memdesc:abf570e734681f1f6d9a57a60de7ecffe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned stamp command, truncating redo only on success; locked sessions reject it.  <br /></td></tr>
+<tr class="separator:abf570e734681f1f6d9a57a60de7ecffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ec61532e405dac0014b2e33b9682d8b" id="r_a5ec61532e405dac0014b2e33b9682d8b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a5ec61532e405dac0014b2e33b9682d8b">contrast</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, float <a class="el" href="TerrainGenerationSession_8cpp.html#ada74a2ad46bf78a90752295c71bd31ef">featureSize</a>)</td></tr>
+<tr class="memdesc:a5ec61532e405dac0014b2e33b9682d8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record nine-tap contrast; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a5ec61532e405dac0014b2e33b9682d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d266a3fcaf32e49168d9983c61117a8" id="r_a9d266a3fcaf32e49168d9983c61117a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a9d266a3fcaf32e49168d9983c61117a8">smooth</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html">TerrainSmoothSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:a9d266a3fcaf32e49168d9983c61117a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record two-pass smoothing; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a9d266a3fcaf32e49168d9983c61117a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a758698fcd9fd7a9fe39b3701278e87f9" id="r_a758698fcd9fd7a9fe39b3701278e87f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a758698fcd9fd7a9fe39b3701278e87f9">ridges</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html">TerrainRidgeSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:a758698fcd9fd7a9fe39b3701278e87f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record ridge iteration; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a758698fcd9fd7a9fe39b3701278e87f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44f0af98c35d9f6914a5be44a277dfbf" id="r_a44f0af98c35d9f6914a5be44a277dfbf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a44f0af98c35d9f6914a5be44a277dfbf">terrace</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html">TerrainTerraceSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:a44f0af98c35d9f6914a5be44a277dfbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record terracing; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a44f0af98c35d9f6914a5be44a277dfbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b37a6e336af1bdbb1c7e7e59a6f6610" id="r_a2b37a6e336af1bdbb1c7e7e59a6f6610"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a2b37a6e336af1bdbb1c7e7e59a6f6610">power</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, float power)</td></tr>
+<tr class="memdesc:a2b37a6e336af1bdbb1c7e7e59a6f6610"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record power transform; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a2b37a6e336af1bdbb1c7e7e59a6f6610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a688aceb74766fd925c4bafce4b98366e" id="r_a688aceb74766fd925c4bafce4b98366e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a688aceb74766fd925c4bafce4b98366e">heightCurve</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, float <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, float <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>)</td></tr>
+<tr class="memdesc:a688aceb74766fd925c4bafce4b98366e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record height-curve transform; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a688aceb74766fd925c4bafce4b98366e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d84fd8e274337b5c2b8ad73a1731860" id="r_a9d84fd8e274337b5c2b8ad73a1731860"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a9d84fd8e274337b5c2b8ad73a1731860">heightMix</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#ac97c7885e9e0d6f6b3c7de60763dcc01">global</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html">TerrainHeightMixSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:a9d84fd8e274337b5c2b8ad73a1731860"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record height mixing; copies all borrowed inputs and values.  <br /></td></tr>
+<tr class="separator:a9d84fd8e274337b5c2b8ad73a1731860"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a019e61a1056b1dcb546776ed898e03d9" id="r_a019e61a1056b1dcb546776ed898e03d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a019e61a1056b1dcb546776ed898e03d9">resetSimulation</a> (float <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>=0)</td></tr>
+<tr class="memdesc:a019e61a1056b1dcb546776ed898e03d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record a simulation reset: zero sediment, flux and velocity; set uniform nonnegative water depth. Terrain is unchanged. Use before hydraulic to start a fresh erosion operation; otherwise erosion continues the preceding simulation state. Reset is undoable and rejects nonfinite/negative depth atomically.  <br /></td></tr>
+<tr class="separator:a019e61a1056b1dcb546776ed898e03d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecfccbf3248f601219f1f9680c0734db" id="r_aecfccbf3248f601219f1f9680c0734db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aecfccbf3248f601219f1f9680c0734db">thermal</a> (const <a class="el" href="structeve_1_1procgen_1_1TerrainThermalSettings.html">TerrainThermalSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:aecfccbf3248f601219f1f9680c0734db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record thermal erosion using accumulated sediment; water is preserved. Settings are copied.  <br /></td></tr>
+<tr class="separator:aecfccbf3248f601219f1f9680c0734db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b90d91108633e53c3e130e8b37e42e8" id="r_a6b90d91108633e53c3e130e8b37e42e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a6b90d91108633e53c3e130e8b37e42e8">hydraulic</a> (const <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSettings.html">TerrainWaterSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainSedimentSettings.html">TerrainSedimentSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainThermalSettings.html">TerrainThermalSettings</a> &amp;<a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aecfccbf3248f601219f1f9680c0734db">thermal</a>, int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="memdesc:a6b90d91108633e53c3e130e8b37e42e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record complete water/sediment/thermal iterations using preceding simulation state. Settings and explicit iteration count are copied; no implicit reset, clock or UI unit conversion.  <br /></td></tr>
+<tr class="separator:a6b90d91108633e53c3e130e8b37e42e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31f87a1f7951eba18114111044464326" id="r_a31f87a1f7951eba18114111044464326"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a31f87a1f7951eba18114111044464326">copySediment</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:a31f87a1f7951eba18114111044464326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy signed current sediment into a matching finite output, including while locked.  <br /></td></tr>
+<tr class="separator:a31f87a1f7951eba18114111044464326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3694e8878ff89ffea798649786880846" id="r_a3694e8878ff89ffea798649786880846"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a3694e8878ff89ffea798649786880846">exportWater</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcb">TerrainWaterChannel</a> channel) const</td></tr>
+<tr class="memdesc:a3694e8878ff89ffea798649786880846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a raw water channel into a matching finite output, including while locked.  <br /></td></tr>
+<tr class="separator:a3694e8878ff89ffea798649786880846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae39588252514d8d68183b7a6aaaf8c1d" id="r_ae39588252514d8d68183b7a6aaaf8c1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ae39588252514d8d68183b7a6aaaf8c1d">replay</a> ()</td></tr>
+<tr class="memdesc:ae39588252514d8d68183b7a6aaaf8c1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-evaluate the applied history prefix from baseline atomically; locked sessions reject it.  <br /></td></tr>
+<tr class="separator:ae39588252514d8d68183b7a6aaaf8c1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051ed3b31b40e66a00917d6a5a8b0ae6" id="r_a051ed3b31b40e66a00917d6a5a8b0ae6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a051ed3b31b40e66a00917d6a5a8b0ae6">beginReplay</a> ()</td></tr>
+<tr class="memdesc:a051ed3b31b40e66a00917d6a5a8b0ae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start replaying the applied history into a private candidate without changing current terrain.  <br /></td></tr>
+<tr class="separator:a051ed3b31b40e66a00917d6a5a8b0ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136adcf8b293310f79caa8c165adeb5e" id="r_a136adcf8b293310f79caa8c165adeb5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a136adcf8b293310f79caa8c165adeb5e">stepReplay</a> (int maxOperations)</td></tr>
+<tr class="memdesc:a136adcf8b293310f79caa8c165adeb5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute at most maxOperations commands and publish once when the candidate completes.  <br /></td></tr>
+<tr class="separator:a136adcf8b293310f79caa8c165adeb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf8162bd1a4091348dee4cbc6602695" id="r_acdf8162bd1a4091348dee4cbc6602695"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#acdf8162bd1a4091348dee4cbc6602695">cancelReplay</a> ()</td></tr>
+<tr class="memdesc:acdf8162bd1a4091348dee4cbc6602695"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel a pending replay and discard its private candidate without changing current terrain.  <br /></td></tr>
+<tr class="separator:acdf8162bd1a4091348dee4cbc6602695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2928a136ad75816f081e7285c3b15e0" id="r_af2928a136ad75816f081e7285c3b15e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#af2928a136ad75816f081e7285c3b15e0">getReplayStatus</a> () const noexcept</td></tr>
+<tr class="memdesc:af2928a136ad75816f081e7285c3b15e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the staged replay lifecycle status.  <br /></td></tr>
+<tr class="separator:af2928a136ad75816f081e7285c3b15e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69edb5715ad16a453622a2420c8edfbe" id="r_a69edb5715ad16a453622a2420c8edfbe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a69edb5715ad16a453622a2420c8edfbe">getReplayCompletedOperations</a> () const noexcept</td></tr>
+<tr class="memdesc:a69edb5715ad16a453622a2420c8edfbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return commands visited by the current or most recent staged replay.  <br /></td></tr>
+<tr class="separator:a69edb5715ad16a453622a2420c8edfbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad828050341864c0299c27c19f73119c7" id="r_ad828050341864c0299c27c19f73119c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ad828050341864c0299c27c19f73119c7">undo</a> ()</td></tr>
+<tr class="memdesc:ad828050341864c0299c27c19f73119c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the applied prefix back one command and replay; no history returns InvalidArgument.  <br /></td></tr>
+<tr class="separator:ad828050341864c0299c27c19f73119c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1296ed6284d9f3f2f9d2018557b4725" id="r_aa1296ed6284d9f3f2f9d2018557b4725"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aa1296ed6284d9f3f2f9d2018557b4725">redo</a> ()</td></tr>
+<tr class="memdesc:aa1296ed6284d9f3f2f9d2018557b4725"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the applied prefix forward one command and replay; no redo returns InvalidArgument.  <br /></td></tr>
+<tr class="separator:aa1296ed6284d9f3f2f9d2018557b4725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a817785bb08fb21c86382e2faa4dffc91" id="r_a817785bb08fb21c86382e2faa4dffc91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a817785bb08fb21c86382e2faa4dffc91">setOperationEnabled</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a817785bb08fb21c86382e2faa4dffc91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggle a command and replay the applied prefix atomically; index is history-local, not a stable ID.  <br /></td></tr>
+<tr class="separator:a817785bb08fb21c86382e2faa4dffc91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33dd9c3077a9d27c974d1584a19900c9" id="r_a33dd9c3077a9d27c974d1584a19900c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a33dd9c3077a9d27c974d1584a19900c9">operationEnabled</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a33dd9c3077a9d27c974d1584a19900c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a command's enabled flag, or InvalidArgument for an out-of-range history index.  <br /></td></tr>
+<tr class="separator:a33dd9c3077a9d27c974d1584a19900c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70054d2d13a16e5e2b8ae8770e8ef4c2" id="r_a70054d2d13a16e5e2b8ae8770e8ef4c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a70054d2d13a16e5e2b8ae8770e8ef4c2">copyTerrain</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:a70054d2d13a16e5e2b8ae8770e8ef4c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy current terrain into an existing matching finite output; allowed while locked.  <br /></td></tr>
+<tr class="separator:a70054d2d13a16e5e2b8ae8770e8ef4c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a903e1283dd0186601160d4c31da20d55" id="r_a903e1283dd0186601160d4c31da20d55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a903e1283dd0186601160d4c31da20d55">setAccess</a> (<a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736">TerrainSessionAccess</a> access)</td></tr>
+<tr class="memdesc:a903e1283dd0186601160d4c31da20d55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change only the edit policy; unlocking is always permitted, invalid enum values are rejected.  <br /></td></tr>
+<tr class="separator:a903e1283dd0186601160d4c31da20d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab7c2fae4ab695bb0a6065c5d26456a2" id="r_aab7c2fae4ab695bb0a6065c5d26456a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736">TerrainSessionAccess</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aab7c2fae4ab695bb0a6065c5d26456a2">getAccess</a> () const noexcept</td></tr>
+<tr class="memdesc:aab7c2fae4ab695bb0a6065c5d26456a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read current edit policy; moved-from sessions are editable.  <br /></td></tr>
+<tr class="separator:aab7c2fae4ab695bb0a6065c5d26456a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7c3e5f04562e1c09c997d751c1b134d" id="r_ab7c3e5f04562e1c09c997d751c1b134d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ab7c3e5f04562e1c09c997d751c1b134d">getOperationCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ab7c3e5f04562e1c09c997d751c1b134d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count all recorded commands, including the redo suffix.  <br /></td></tr>
+<tr class="separator:ab7c3e5f04562e1c09c997d751c1b134d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9426258873f875cd7227524c8a2180a" id="r_af9426258873f875cd7227524c8a2180a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#af9426258873f875cd7227524c8a2180a">getAppliedCount</a> () const noexcept</td></tr>
+<tr class="memdesc:af9426258873f875cd7227524c8a2180a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count commands in the applied prefix, including disabled commands.  <br /></td></tr>
+<tr class="separator:af9426258873f875cd7227524c8a2180a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d5574d7de31dfaa8635c96ea4fe066b" id="r_a0d5574d7de31dfaa8635c96ea4fe066b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a0d5574d7de31dfaa8635c96ea4fe066b">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a0d5574d7de31dfaa8635c96ea4fe066b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize schema version 1 with the complete replayable operation history.  <br /></td></tr>
+<tr class="separator:a0d5574d7de31dfaa8635c96ea4fe066b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad03e60e226863be64feaa93cdff1aed" id="r_aad03e60e226863be64feaa93cdff1aed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aad03e60e226863be64feaa93cdff1aed">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:aad03e60e226863be64feaa93cdff1aed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restore schema version 1 and rebuild the applied prefix before publication.  <br /></td></tr>
+<tr class="separator:aad03e60e226863be64feaa93cdff1aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owned in-memory terrain operation session; records native stamps, scalar effects and erosion. Owns baseline, current terrain, sediment, water and immutable copies of operation inputs. No borrowed raster, scene object, script callback or GPU resource survives a call. Replays use the same CPU kernels and inputs in order; determinism is same-build floating arithmetic. All access is serialized by the caller on its owning thread. History mutations and terrain, sediment and all water channels publish together after successful evaluation; allocation failure preserves all state. Snapshots are copies, never a second writable view of the authoritative terrain. Versioned snapshots retain the baseline, every owned command, enabled flags, cursor and access policy. Asynchronous worker tickets and a generic gameplay object model are not introduced. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8h_source.html">TerrainGenerationSession.h</a> 第 <a class="el" href="TerrainGenerationSession_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab9be5ddc0fc79d64a4d4986aaa59b277" name="ab9be5ddc0fc79d64a4d4986aaa59b277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9be5ddc0fc79d64a4d4986aaa59b277">&#9670;&#160;</a></span>TerrainGenerationSession() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainGenerationSession::TerrainGenerationSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty editable session. </p>
+
+</div>
+</div>
+<a id="aff68734495754bb7458c9a31fbdccbe9" name="aff68734495754bb7458c9a31fbdccbe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff68734495754bb7458c9a31fbdccbe9">&#9670;&#160;</a></span>~TerrainGenerationSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainGenerationSession::~TerrainGenerationSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroy owned terrain and command snapshots. </p>
+
+</div>
+</div>
+<a id="a59bea6b0ac8b653685ff904916d1eefc" name="a59bea6b0ac8b653685ff904916d1eefc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59bea6b0ac8b653685ff904916d1eefc">&#9670;&#160;</a></span>TerrainGenerationSession() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainGenerationSession::TerrainGenerationSession </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer state; moved-from session is empty and resettable. </p>
+
+</div>
+</div>
+<a id="a55c140bb9155ee724fea0cf905c27beb" name="a55c140bb9155ee724fea0cf905c27beb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c140bb9155ee724fea0cf905c27beb">&#9670;&#160;</a></span>TerrainGenerationSession() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainGenerationSession::TerrainGenerationSession </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>One mutable owner; implicit copies are prohibited. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a051ed3b31b40e66a00917d6a5a8b0ae6" name="a051ed3b31b40e66a00917d6a5a8b0ae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a051ed3b31b40e66a00917d6a5a8b0ae6">&#9670;&#160;</a></span>beginReplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> &gt; eve::procgen::TerrainGenerationSession::beginReplay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start replaying the applied history into a private candidate without changing current terrain. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::procgen::Pending</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="acdf8162bd1a4091348dee4cbc6602695" name="acdf8162bd1a4091348dee4cbc6602695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdf8162bd1a4091348dee4cbc6602695">&#9670;&#160;</a></span>cancelReplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> &gt; eve::procgen::TerrainGenerationSession::cancelReplay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancel a pending replay and discard its private candidate without changing current terrain. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00408">408</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6faa149e85a44aeec9140e92733d9ed694e">eve::procgen::Cancelled</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::procgen::Pending</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a5ec61532e405dac0014b2e33b9682d8b" name="a5ec61532e405dac0014b2e33b9682d8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ec61532e405dac0014b2e33b9682d8b">&#9670;&#160;</a></span>contrast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::contrast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>featureSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record nine-tap contrast; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">featureSize</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">strength</a>.</p>
+
+</div>
+</div>
+<a id="a31f87a1f7951eba18114111044464326" name="a31f87a1f7951eba18114111044464326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31f87a1f7951eba18114111044464326">&#9670;&#160;</a></span>copySediment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::copySediment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy signed current sediment into a matching finite output, including while locked. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed output sample count or InvalidArgument; failure preserves output. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">eve::procgen::raster_detail::publish()</a> , 以及 <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>.</p>
+
+</div>
+</div>
+<a id="a70054d2d13a16e5e2b8ae8770e8ef4c2" name="a70054d2d13a16e5e2b8ae8770e8ef4c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70054d2d13a16e5e2b8ae8770e8ef4c2">&#9670;&#160;</a></span>copyTerrain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::copyTerrain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy current terrain into an existing matching finite output; allowed while locked. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed output sample count or InvalidArgument; failure leaves output unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">eve::procgen::raster_detail::publish()</a> , 以及 <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>.</p>
+
+</div>
+</div>
+<a id="a3694e8878ff89ffea798649786880846" name="a3694e8878ff89ffea798649786880846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3694e8878ff89ffea798649786880846">&#9670;&#160;</a></span>exportWater()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::exportWater </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcb">TerrainWaterChannel</a>&#160;</td>
+          <td class="paramname"><em>channel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a raw water channel into a matching finite output, including while locked. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed output sample count or InvalidArgument; no mutable simulation view is exposed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>.</p>
+
+</div>
+</div>
+<a id="aab7c2fae4ab695bb0a6065c5d26456a2" name="aab7c2fae4ab695bb0a6065c5d26456a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab7c2fae4ab695bb0a6065c5d26456a2">&#9670;&#160;</a></span>getAccess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736">TerrainSessionAccess</a> eve::procgen::TerrainGenerationSession::getAccess </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read current edit policy; moved-from sessions are editable. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736a2c09e798bf8c5a82d211331c82893a0f">eve::procgen::Editable</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00276">reset()</a>.</p>
+
+</div>
+</div>
+<a id="af9426258873f875cd7227524c8a2180a" name="af9426258873f875cd7227524c8a2180a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9426258873f875cd7227524c8a2180a">&#9670;&#160;</a></span>getAppliedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainGenerationSession::getAppliedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Count commands in the applied prefix, including disabled commands. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7c3e5f04562e1c09c997d751c1b134d" name="ab7c3e5f04562e1c09c997d751c1b134d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7c3e5f04562e1c09c997d751c1b134d">&#9670;&#160;</a></span>getOperationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainGenerationSession::getOperationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Count all recorded commands, including the redo suffix. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69edb5715ad16a453622a2420c8edfbe" name="a69edb5715ad16a453622a2420c8edfbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69edb5715ad16a453622a2420c8edfbe">&#9670;&#160;</a></span>getReplayCompletedOperations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainGenerationSession::getReplayCompletedOperations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return commands visited by the current or most recent staged replay. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2928a136ad75816f081e7285c3b15e0" name="af2928a136ad75816f081e7285c3b15e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2928a136ad75816f081e7285c3b15e0">&#9670;&#160;</a></span>getReplayStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> eve::procgen::TerrainGenerationSession::getReplayStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the staged replay lifecycle status. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fae599161956d626eda4cb0a5ffb85271c">eve::procgen::Idle</a>.</p>
+
+</div>
+</div>
+<a id="a688aceb74766fd925c4bafce4b98366e" name="a688aceb74766fd925c4bafce4b98366e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a688aceb74766fd925c4bafce4b98366e">&#9670;&#160;</a></span>heightCurve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::heightCurve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>curve</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maximum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record height-curve transform; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">maximum</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00025">minimum</a>.</p>
+
+</div>
+</div>
+<a id="a9d84fd8e274337b5c2b8ad73a1731860" name="a9d84fd8e274337b5c2b8ad73a1731860"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d84fd8e274337b5c2b8ad73a1731860">&#9670;&#160;</a></span>heightMix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::heightMix </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>local</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>global</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html">TerrainHeightMixSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record height mixing; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00116">global</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>.</p>
+
+</div>
+</div>
+<a id="a6b90d91108633e53c3e130e8b37e42e8" name="a6b90d91108633e53c3e130e8b37e42e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b90d91108633e53c3e130e8b37e42e8">&#9670;&#160;</a></span>hydraulic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::hydraulic </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSettings.html">TerrainWaterSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>water</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainSedimentSettings.html">TerrainSedimentSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>sediment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainThermalSettings.html">TerrainThermalSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>thermal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record complete water/sediment/thermal iterations using preceding simulation state. Settings and explicit iteration count are copied; no implicit reset, clock or UI unit conversion. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count or InvalidArgument; failure preserves every channel and history. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00284">iterations</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00088">sediment</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00100">thermal</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00089">water</a>.</p>
+
+</div>
+</div>
+<a id="a33dd9c3077a9d27c974d1584a19900c9" name="a33dd9c3077a9d27c974d1584a19900c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33dd9c3077a9d27c974d1584a19900c9">&#9670;&#160;</a></span>operationEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt; eve::procgen::TerrainGenerationSession::operationEnabled </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a command's enabled flag, or InvalidArgument for an out-of-range history index. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aed9377c54c983b2a490cfd611dafb66a" name="aed9377c54c983b2a490cfd611dafb66a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed9377c54c983b2a490cfd611dafb66a">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp; eve::procgen::TerrainGenerationSession::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>One mutable owner; implicit copies are prohibited. </p>
+
+</div>
+</div>
+<a id="a686767491c22bc43ff6caaf99d44b157" name="a686767491c22bc43ff6caaf99d44b157"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a686767491c22bc43ff6caaf99d44b157">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp; eve::procgen::TerrainGenerationSession::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer state and release previously owned snapshots. </p>
+
+</div>
+</div>
+<a id="a2b37a6e336af1bdbb1c7e7e59a6f6610" name="a2b37a6e336af1bdbb1c7e7e59a6f6610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b37a6e336af1bdbb1c7e7e59a6f6610">&#9670;&#160;</a></span>power()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::power </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>power</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record power transform; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00023">power</a>.</p>
+
+</div>
+</div>
+<a id="aa1296ed6284d9f3f2f9d2018557b4725" name="aa1296ed6284d9f3f2f9d2018557b4725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1296ed6284d9f3f2f9d2018557b4725">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move the applied prefix forward one command and replay; no redo returns InvalidArgument. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count, atomically; locked sessions reject it. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00417">417</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae39588252514d8d68183b7a6aaaf8c1d" name="ae39588252514d8d68183b7a6aaaf8c1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae39588252514d8d68183b7a6aaaf8c1d">&#9670;&#160;</a></span>replay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::replay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-evaluate the applied history prefix from baseline atomically; locked sessions reject it. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count or InvalidArgument. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2de2e9f1995606c0f6d142ef53f08aa" name="ad2de2e9f1995606c0f6d142ef53f08aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2de2e9f1995606c0f6d142ef53f08aa">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::reset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>baseline</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a finite baseline, zero sediment/water and clear history atomically; locked sessions reject reset. </p>
+<dl class="section return"><dt>返回</dt><dd>Baseline sample count or InvalidArgument. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Heightmap_8h_source.html#l00037">eve::procgen::Heightmap::data()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00254">getAccess()</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736ad0f2e5376298c880665077b565ffd7dd">eve::procgen::Locked</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>.</p>
+
+</div>
+</div>
+<a id="a019e61a1056b1dcb546776ed898e03d9" name="a019e61a1056b1dcb546776ed898e03d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a019e61a1056b1dcb546776ed898e03d9">&#9670;&#160;</a></span>resetSimulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::resetSimulation </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record a simulation reset: zero sediment, flux and velocity; set uniform nonnegative water depth. Terrain is unchanged. Use before hydraulic to start a fresh erosion operation; otherwise erosion continues the preceding simulation state. Reset is undoable and rejects nonfinite/negative depth atomically. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count (zero), or InvalidArgument; locked sessions reject it. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>.</p>
+
+</div>
+</div>
+<a id="aad03e60e226863be64feaa93cdff1aed" name="aad03e60e226863be64feaa93cdff1aed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad03e60e226863be64feaa93cdff1aed">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::TerrainGenerationSession::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically restore schema version 1 and rebuild the applied prefix before publication. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00495">495</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736a2c09e798bf8c5a82d211331c82893a0f">eve::procgen::Editable</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00172">eve::procgen::TerrainGenerationSession::Command::enabled</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736ad0f2e5376298c880665077b565ffd7dd">eve::procgen::Locked</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00171">eve::procgen::TerrainGenerationSession::Command::operation</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::procgen::Pending</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="a758698fcd9fd7a9fe39b3701278e87f9" name="a758698fcd9fd7a9fe39b3701278e87f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a758698fcd9fd7a9fe39b3701278e87f9">&#9670;&#160;</a></span>ridges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::ridges </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html">TerrainRidgeSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record ridge iteration; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>.</p>
+
+</div>
+</div>
+<a id="a903e1283dd0186601160d4c31da20d55" name="a903e1283dd0186601160d4c31da20d55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a903e1283dd0186601160d4c31da20d55">&#9670;&#160;</a></span>setAccess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::TerrainGenerationSession::setAccess </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736">TerrainSessionAccess</a>&#160;</td>
+          <td class="paramname"><em>access</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Change only the edit policy; unlocking is always permitted, invalid enum values are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736a2c09e798bf8c5a82d211331c82893a0f">eve::procgen::Editable</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9633eaf8465a9ba3a3e1312978ed6736ad0f2e5376298c880665077b565ffd7dd">eve::procgen::Locked</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::procgen::Pending</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a817785bb08fb21c86382e2faa4dffc91" name="a817785bb08fb21c86382e2faa4dffc91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a817785bb08fb21c86382e2faa4dffc91">&#9670;&#160;</a></span>setOperationEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::setOperationEnabled </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Toggle a command and replay the applied prefix atomically; index is history-local, not a stable ID. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count or InvalidArgument; locked sessions reject it. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fae599161956d626eda4cb0a5ffb85271c">eve::procgen::Idle</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>.</p>
+
+</div>
+</div>
+<a id="a9d266a3fcaf32e49168d9983c61117a8" name="a9d266a3fcaf32e49168d9983c61117a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d266a3fcaf32e49168d9983c61117a8">&#9670;&#160;</a></span>smooth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::smooth </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html">TerrainSmoothSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record two-pass smoothing; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>.</p>
+
+</div>
+</div>
+<a id="a0d5574d7de31dfaa8635c96ea4fe066b" name="a0d5574d7de31dfaa8635c96ea4fe066b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d5574d7de31dfaa8635c96ea4fe066b">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::procgen::TerrainGenerationSession::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize schema version 1 with the complete replayable operation history. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::procgen::Pending</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a> , 以及 <a class="el" href="namespaceeve_1_1procgen.html#a80c8903e74574705223482b015b06981a689202409e48743b914713f96d93947c">eve::procgen::Value</a>.</p>
+
+</div>
+</div>
+<a id="abf570e734681f1f6d9a57a60de7ecffe" name="abf570e734681f1f6d9a57a60de7ecffe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf570e734681f1f6d9a57a60de7ecffe">&#9670;&#160;</a></span>stamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::stamp </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>stamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>localMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>globalMask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned stamp command, truncating redo only on success; locked sessions reject it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stamp</td><td>Borrowed stamp raster, copied into history. </td></tr>
+    <tr><td class="paramname">settings</td><td><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> settings captured for replay. </td></tr>
+    <tr><td class="paramname">localMask</td><td>Borrowed local mask, copied into history. </td></tr>
+    <tr><td class="paramname">globalMask</td><td>Borrowed global mask, copied into history. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count or InvalidArgument; failed commands are never recorded. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00116">global</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00116">stamp</a>.</p>
+
+</div>
+</div>
+<a id="a136adcf8b293310f79caa8c165adeb5e" name="a136adcf8b293310f79caa8c165adeb5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a136adcf8b293310f79caa8c165adeb5e">&#9670;&#160;</a></span>stepReplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6f">TerrainSessionRunStatus</a> &gt; eve::procgen::TerrainGenerationSession::stepReplay </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxOperations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute at most maxOperations commands and publish once when the candidate completes. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa07ca5050e697392c9ed47e6453f1453f">eve::procgen::Completed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fad7c8c85bf79bbe1b7188497c32c3b0ca">eve::procgen::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1procgen.html#a5cecc4c29c1699468366bccc5bf65c6fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::procgen::Pending</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a44f0af98c35d9f6914a5be44a277dfbf" name="a44f0af98c35d9f6914a5be44a277dfbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44f0af98c35d9f6914a5be44a277dfbf">&#9670;&#160;</a></span>terrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::terrace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html">TerrainTerraceSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record terracing; copies all borrowed inputs and values. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count; invalid inputs/locked session leave terrain and history unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>.</p>
+
+</div>
+</div>
+<a id="aecfccbf3248f601219f1f9680c0734db" name="aecfccbf3248f601219f1f9680c0734db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfccbf3248f601219f1f9680c0734db">&#9670;&#160;</a></span>thermal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::thermal </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainThermalSettings.html">TerrainThermalSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record thermal erosion using accumulated sediment; water is preserved. Settings are copied. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count or InvalidArgument; all generated state and history publish atomically. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>.</p>
+
+</div>
+</div>
+<a id="ad828050341864c0299c27c19f73119c7" name="ad828050341864c0299c27c19f73119c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad828050341864c0299c27c19f73119c7">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainGenerationSession::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move the applied prefix back one command and replay; no history returns InvalidArgument. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed terrain sample count, atomically; locked sessions reject it. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a> 第 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00416">416</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainGenerationSession_8h_source.html">TerrainGenerationSession.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainGenerationSession_8cpp_source.html">TerrainGenerationSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/editing/VolumeFluidTarget.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li><li class="navelem"><a class="el" href="dir_9a97dba7b0f2a2826be957dc3065b17e.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VolumeFluidTarget.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VolumeFluidTarget_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="FluidTarget_8h.html">fluids/editing/FluidTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>VolumeFluid;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids__editing.html">eve::fluids_editing</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html">VolumeFluidAuthoringSettings</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#af467c21ad1c7b8820a5970a7a22cb75e">   17</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#af467c21ad1c7b8820a5970a7a22cb75e">capacity</a>         = 8192;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a7cc4d8d14b54114269438bbd91812643">   18</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a7cc4d8d14b54114269438bbd91812643">previewParticles</a> = 640;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#aba319b26491af2e3a6672628d1f37656">   19</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#aba319b26491af2e3a6672628d1f37656">spacing</a>          = 0.1;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a26ad27591f34201c31df78ed6bfafe37">   20</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a26ad27591f34201c31df78ed6bfafe37">gravityX</a> = 0.0, <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a1741b4852b8ad3d5650140ae6fcb0643">gravityY</a> = -9.81, <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a2546b67dddffc4c1d407a882e749cdc5">gravityZ</a> = 0.0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a479646d6cb157e676cba15fbeb37c515">   21</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a479646d6cb157e676cba15fbeb37c515">minimumX</a> = -2.0, <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a767f320894afa7f9c8a267d1a203dbf7">minimumY</a> = 0.0, <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a5452ef6da16ce3bc161e16974179a098">minimumZ</a> = -1.0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a32e8b6b4cee23e3669f460462e9221bd">   22</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a32e8b6b4cee23e3669f460462e9221bd">maximumX</a> = 2.0, <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#ab5ad8c9b22e8355bba9098f89a293cea">maximumY</a> = 3.0, <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#aa609bbf921a9c0caea43d238d49ecdbb">maximumZ</a> = 1.0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a43ffcbad0e29557f190a05fb3c7b2775">   23</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a43ffcbad0e29557f190a05fb3c7b2775">iterations</a> = 5;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html">VolumeFluidAuthoringPreview</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#ae037875a7b9427aa84279e279824893b">   28</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>                  <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#ae037875a7b9427aa84279e279824893b">status</a>                    = EditorStatus::Failed;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a4102a7499c0fa5ca5c2dcc1726624e23">   29</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1fluids__editing.html#aab910e9b5110ea2d613de7a0f8dc9c28">Revision</a>                      <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a4102a7499c0fa5ca5c2dcc1726624e23">documentRevision</a>          = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a88a10ad9da54b59d7932c81fce89723a">   30</a></span>    std::uint64_t                 <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a88a10ad9da54b59d7932c81fce89723a">estimatedBytes</a>            = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a70baa5394487c1a1509dfdc3c5521ec6">   31</a></span>    std::uint64_t                 <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a70baa5394487c1a1509dfdc3c5521ec6">estimatedConstraintVisits</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a46ec42ef5e2fef32e9aa9608caf00f69">   32</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a46ec42ef5e2fef32e9aa9608caf00f69">diagnostics</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html">VolumeFluidTarget</a> final : <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">IPropertyProvider</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html">VolumeFluidTarget</a>(std::string <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a4051f238f45ce92b9ec58cfb7c8295bf">   46</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>         <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a4051f238f45ce92b9ec58cfb7c8295bf">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1fluids__editing.html#a0fc6274f427b9ad51f98580313c2dee9">TargetId</a>(id_); }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ad8091336f58a6af6fe8e1e916d49e9a9">   47</a></span>    std::uint64_t    <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ad8091336f58a6af6fe8e1e916d49e9a9">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ab5f1cd604930455594acff800293b017">   48</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>       <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ab5f1cd604930455594acff800293b017">dirtyRegion</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a07492b42d7e0ca221937a4ab3bef6f34">   49</a></span>    <span class="keywordtype">void</span>             <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a07492b42d7e0ca221937a4ab3bef6f34">clearDirtyRegion</a>()<span class="keyword"> override </span>{ dirty_.<a class="code hl_function" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a>(); }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a9ec4ff613756b3d008fe2015e96690a5">describe</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">void</span>*                         <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#af03b971c16fceebc13a288af107d0cf4">queryCapability</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>&amp; <a class="code hl_function" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a>            <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ab7462cd698aaa653133d0f110c70db76">applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; operation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Revision&gt;</a>    <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#add71fba055a09af41ae15dcea2744220">currentRevision</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>                schema(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a>            <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a71806b5fa8ead29fdacce36ad7867935">read</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aaaf014210aa2e31a3d6f0636429b2556">makeSet</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                          <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>, <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#afb61573ceae36e2157b2a2e726acd63e">makeReset</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp;      <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aa440445e7dc08af0c4413ce8e3fe735a">   63</a></span>    <a class="code hl_struct" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html">VolumeFluidAuthoringSettings</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aa440445e7dc08af0c4413ce8e3fe735a">settings</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> settings_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#adf86e8a586c418e301d15049cca9aad6">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_struct" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html">VolumeFluidAuthoringPreview</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a3bc99e797f7975bf58dc27f7f88dbbb5">previewBudget</a>(std::uint64_t <a class="code hl_function" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">byteBudget</a>  = 256ULL * 1024ULL * 1024ULL,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                              std::uint64_t <a class="code hl_function" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">visitBudget</a> = 100000000ULL) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a2131bd09199ff50967fa2a377291cf52">snapshotValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aa9767b5d706c09de7b6d53ca8132a5eb">loadSnapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; snapshot);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">bool</span>                         matches(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::string                  id_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_typedef" href="namespaceeve_1_1fluids__editing.html#aab910e9b5110ea2d613de7a0f8dc9c28">Revision</a>                     revision_ = 1;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>                   dirty_;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_struct" href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html">VolumeFluidAuthoringSettings</a> settings_;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>};</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="};">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier.html">   83</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier.html">VolumeFluidRuntimeApplier</a> {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier.html#a293246758619415180d1ba0eec48d5b9">apply</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html">VolumeFluidTarget</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a>* simulation) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>};</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}  <span class="comment">// namespace eve::fluids_editing</span></div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a17956fe0129d3d4c94ebc06cfef2ad82"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a></div><div class="ttdeci">float value</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00015">AnimCurveLibrary.cpp:15</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aFluidTarget_8h_html"><div class="ttname"><a href="FluidTarget_8h.html">FluidTarget.h</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html_a1e541660312c789b59e0a247f6e614ac"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">eve::editing::IEditableTarget::capability</a></div><div class="ttdeci">eve::OptionalRef&lt; C &gt; capability()</div><div class="ttdoc">Query a capability through its interface-owned stable identity.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00068">EditableTarget.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html_ab0f1bd1f6a96f49d37c185f6a3579d6c"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">eve::editing::IEditableTarget::query</a></div><div class="ttdeci">C * query()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00086">EditableTarget.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IPropertyProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></div><div class="ttdoc">UI-independent property access for an immutable selection snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00117">EditingProperty.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluid_html"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></div><div class="ttdoc">CPU position-based free-volume fluid with a bounded spatial grid. @ownership Owns all particle state;...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluid_8h_source.html#l00515">VolumeFluid.h:515</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier_html"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier.html">eve::fluids_editing::VolumeFluidRuntimeApplier</a></div><div class="ttdoc">Atomic bridge from a validated authoring document to a live solver.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00083">VolumeFluidTarget.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier_html_a293246758619415180d1ba0eec48d5b9"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidRuntimeApplier.html#a293246758619415180d1ba0eec48d5b9">eve::fluids_editing::VolumeFluidRuntimeApplier::apply</a></div><div class="ttdeci">EditorResult&lt; void &gt; apply(const VolumeFluidTarget &amp;target, fluids::VolumeFluid *simulation) const</div><div class="ttdoc">Apply solver settings through the canonical snapshot restore transaction.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00278">VolumeFluidTarget.cpp:278</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html">eve::fluids_editing::VolumeFluidTarget</a></div><div class="ttdoc">Reversible schema-driven document for native volume-fluid solver settings. @ownership Owns only autho...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00041">VolumeFluidTarget.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_a07492b42d7e0ca221937a4ab3bef6f34"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a07492b42d7e0ca221937a4ab3bef6f34">eve::fluids_editing::VolumeFluidTarget::clearDirtyRegion</a></div><div class="ttdeci">void clearDirtyRegion() override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00049">VolumeFluidTarget.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_a2131bd09199ff50967fa2a377291cf52"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a2131bd09199ff50967fa2a377291cf52">eve::fluids_editing::VolumeFluidTarget::snapshotValue</a></div><div class="ttdeci">EditorValue snapshotValue() const</div><div class="ttdoc">Capture schema eve.volume-fluid-authoring version one.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00254">VolumeFluidTarget.cpp:254</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_a3bc99e797f7975bf58dc27f7f88dbbb5"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a3bc99e797f7975bf58dc27f7f88dbbb5">eve::fluids_editing::VolumeFluidTarget::previewBudget</a></div><div class="ttdeci">VolumeFluidAuthoringPreview previewBudget(std::uint64_t byteBudget=256ULL *1024ULL *1024ULL, std::uint64_t visitBudget=100000000ULL) const</div><div class="ttdoc">Estimate preview memory and constraint visits without allocation.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00233">VolumeFluidTarget.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_a4051f238f45ce92b9ec58cfb7c8295bf"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a4051f238f45ce92b9ec58cfb7c8295bf">eve::fluids_editing::VolumeFluidTarget::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00046">VolumeFluidTarget.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_a71806b5fa8ead29fdacce36ad7867935"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a71806b5fa8ead29fdacce36ad7867935">eve::fluids_editing::VolumeFluidTarget::read</a></div><div class="ttdeci">PropertyReadResult read(const SelectionSnapshot &amp;selection, const PropertyPath &amp;path) const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00173">VolumeFluidTarget.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_a9ec4ff613756b3d008fe2015e96690a5"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#a9ec4ff613756b3d008fe2015e96690a5">eve::fluids_editing::VolumeFluidTarget::describe</a></div><div class="ttdeci">TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00139">VolumeFluidTarget.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_aa440445e7dc08af0c4413ce8e3fe735a"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aa440445e7dc08af0c4413ce8e3fe735a">eve::fluids_editing::VolumeFluidTarget::settings</a></div><div class="ttdeci">VolumeFluidAuthoringSettings settings() const</div><div class="ttdoc">Return an immutable copy of current authoring settings.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00063">VolumeFluidTarget.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_aa9767b5d706c09de7b6d53ca8132a5eb"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aa9767b5d706c09de7b6d53ca8132a5eb">eve::fluids_editing::VolumeFluidTarget::loadSnapshot</a></div><div class="ttdeci">EditorResult&lt; void &gt; loadSnapshot(const EditorValue &amp;snapshot)</div><div class="ttdoc">Atomically load a strict version-one authoring document.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00258">VolumeFluidTarget.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_aaaf014210aa2e31a3d6f0636429b2556"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#aaaf014210aa2e31a3d6f0636429b2556">eve::fluids_editing::VolumeFluidTarget::makeSet</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSet(const SelectionSnapshot &amp;selection, const PropertyPath &amp;path, const EditorValue &amp;value, PropertySetMode mode) const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00179">VolumeFluidTarget.cpp:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_ab5f1cd604930455594acff800293b017"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ab5f1cd604930455594acff800293b017">eve::fluids_editing::VolumeFluidTarget::dirtyRegion</a></div><div class="ttdeci">EditRegion dirtyRegion() const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00048">VolumeFluidTarget.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_ab7462cd698aaa653133d0f110c70db76"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ab7462cd698aaa653133d0f110c70db76">eve::fluids_editing::VolumeFluidTarget::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00218">VolumeFluidTarget.cpp:218</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_ad8091336f58a6af6fe8e1e916d49e9a9"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#ad8091336f58a6af6fe8e1e916d49e9a9">eve::fluids_editing::VolumeFluidTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00047">VolumeFluidTarget.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_add71fba055a09af41ae15dcea2744220"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#add71fba055a09af41ae15dcea2744220">eve::fluids_editing::VolumeFluidTarget::currentRevision</a></div><div class="ttdeci">eve::Result&lt; eve::Revision &gt; currentRevision(const SelectionSnapshot &amp;selection) const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00151">VolumeFluidTarget.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_adf86e8a586c418e301d15049cca9aad6"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#adf86e8a586c418e301d15049cca9aad6">eve::fluids_editing::VolumeFluidTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Validate numeric ranges and container clearance.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00232">VolumeFluidTarget.cpp:232</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_af03b971c16fceebc13a288af107d0cf4"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#af03b971c16fceebc13a288af107d0cf4">eve::fluids_editing::VolumeFluidTarget::queryCapability</a></div><div class="ttdeci">void * queryCapability(const CapabilityId &amp;capability) override</div><div class="ttdoc">Query the property capability.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00143">VolumeFluidTarget.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1VolumeFluidTarget_html_afb61573ceae36e2157b2a2e726acd63e"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1VolumeFluidTarget.html#afb61573ceae36e2157b2a2e726acd63e">eve::fluids_editing::VolumeFluidTarget::makeReset</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeReset(const SelectionSnapshot &amp;selection, const PropertyPath &amp;path) const override</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8cpp_source.html#l00210">VolumeFluidTarget.cpp:210</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a642f65bf61b271dc4b599f4069b93060"><div class="ttname"><a href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::editing::PropertySetMode</a></div><div class="ttdeci">PropertySetMode</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00114">EditingProperty.h:114</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids__editing_html"><div class="ttname"><a href="namespaceeve_1_1fluids__editing.html">eve::fluids_editing</a></div><div class="ttdef"><b>Definition</b> <a href="FluidRuntime_8cpp_source.html#l00005">FluidRuntime.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids__editing_html_a0fc6274f427b9ad51f98580313c2dee9"><div class="ttname"><a href="namespaceeve_1_1fluids__editing.html#a0fc6274f427b9ad51f98580313c2dee9">eve::fluids_editing::TargetId</a></div><div class="ttdeci">editing::TargetId TargetId</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00041">FluidTarget.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids__editing_html_aab910e9b5110ea2d613de7a0f8dc9c28"><div class="ttname"><a href="namespaceeve_1_1fluids__editing.html#aab910e9b5110ea2d613de7a0f8dc9c28">eve::fluids_editing::Revision</a></div><div class="ttdeci">editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00037">FluidTarget.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00010">FluidTarget.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html">eve::editing::EditRegion</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00008">EditableTarget.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html_acc33c22f9fc876d717944a1fe94a932c"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">eve::editing::EditRegion::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00011">EditableTarget.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyReadResult_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyReadResult.html">eve::editing::PropertyReadResult</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00108">EditingProperty.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html">eve::editing::PropertySchema</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00099">EditingProperty.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00016">EditingSelection.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00032">EditableTarget.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview_html"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html">eve::fluids_editing::VolumeFluidAuthoringPreview</a></div><div class="ttdoc">Bounded preview allocation/work estimate before constructing a solver.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00027">VolumeFluidTarget.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview_html_a4102a7499c0fa5ca5c2dcc1726624e23"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a4102a7499c0fa5ca5c2dcc1726624e23">eve::fluids_editing::VolumeFluidAuthoringPreview::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00029">VolumeFluidTarget.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview_html_a46ec42ef5e2fef32e9aa9608caf00f69"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a46ec42ef5e2fef32e9aa9608caf00f69">eve::fluids_editing::VolumeFluidAuthoringPreview::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00032">VolumeFluidTarget.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview_html_a70baa5394487c1a1509dfdc3c5521ec6"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a70baa5394487c1a1509dfdc3c5521ec6">eve::fluids_editing::VolumeFluidAuthoringPreview::estimatedConstraintVisits</a></div><div class="ttdeci">std::uint64_t estimatedConstraintVisits</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00031">VolumeFluidTarget.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview_html_a88a10ad9da54b59d7932c81fce89723a"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#a88a10ad9da54b59d7932c81fce89723a">eve::fluids_editing::VolumeFluidAuthoringPreview::estimatedBytes</a></div><div class="ttdeci">std::uint64_t estimatedBytes</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00030">VolumeFluidTarget.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview_html_ae037875a7b9427aa84279e279824893b"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringPreview.html#ae037875a7b9427aa84279e279824893b">eve::fluids_editing::VolumeFluidAuthoringPreview::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00028">VolumeFluidTarget.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html">eve::fluids_editing::VolumeFluidAuthoringSettings</a></div><div class="ttdoc">Serializable authoring parameters for the bounded volume-fluid solver.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00016">VolumeFluidTarget.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a1741b4852b8ad3d5650140ae6fcb0643"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a1741b4852b8ad3d5650140ae6fcb0643">eve::fluids_editing::VolumeFluidAuthoringSettings::gravityY</a></div><div class="ttdeci">double gravityY</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00020">VolumeFluidTarget.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a2546b67dddffc4c1d407a882e749cdc5"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a2546b67dddffc4c1d407a882e749cdc5">eve::fluids_editing::VolumeFluidAuthoringSettings::gravityZ</a></div><div class="ttdeci">double gravityZ</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00020">VolumeFluidTarget.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a26ad27591f34201c31df78ed6bfafe37"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a26ad27591f34201c31df78ed6bfafe37">eve::fluids_editing::VolumeFluidAuthoringSettings::gravityX</a></div><div class="ttdeci">double gravityX</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00020">VolumeFluidTarget.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a32e8b6b4cee23e3669f460462e9221bd"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a32e8b6b4cee23e3669f460462e9221bd">eve::fluids_editing::VolumeFluidAuthoringSettings::maximumX</a></div><div class="ttdeci">double maximumX</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00022">VolumeFluidTarget.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a43ffcbad0e29557f190a05fb3c7b2775"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a43ffcbad0e29557f190a05fb3c7b2775">eve::fluids_editing::VolumeFluidAuthoringSettings::iterations</a></div><div class="ttdeci">std::uint32_t iterations</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00023">VolumeFluidTarget.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a479646d6cb157e676cba15fbeb37c515"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a479646d6cb157e676cba15fbeb37c515">eve::fluids_editing::VolumeFluidAuthoringSettings::minimumX</a></div><div class="ttdeci">double minimumX</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00021">VolumeFluidTarget.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a5452ef6da16ce3bc161e16974179a098"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a5452ef6da16ce3bc161e16974179a098">eve::fluids_editing::VolumeFluidAuthoringSettings::minimumZ</a></div><div class="ttdeci">double minimumZ</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00021">VolumeFluidTarget.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a767f320894afa7f9c8a267d1a203dbf7"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a767f320894afa7f9c8a267d1a203dbf7">eve::fluids_editing::VolumeFluidAuthoringSettings::minimumY</a></div><div class="ttdeci">double minimumY</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00021">VolumeFluidTarget.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_a7cc4d8d14b54114269438bbd91812643"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#a7cc4d8d14b54114269438bbd91812643">eve::fluids_editing::VolumeFluidAuthoringSettings::previewParticles</a></div><div class="ttdeci">std::uint32_t previewParticles</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00018">VolumeFluidTarget.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_aa609bbf921a9c0caea43d238d49ecdbb"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#aa609bbf921a9c0caea43d238d49ecdbb">eve::fluids_editing::VolumeFluidAuthoringSettings::maximumZ</a></div><div class="ttdeci">double maximumZ</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00022">VolumeFluidTarget.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_ab5ad8c9b22e8355bba9098f89a293cea"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#ab5ad8c9b22e8355bba9098f89a293cea">eve::fluids_editing::VolumeFluidAuthoringSettings::maximumY</a></div><div class="ttdeci">double maximumY</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00022">VolumeFluidTarget.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_aba319b26491af2e3a6672628d1f37656"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#aba319b26491af2e3a6672628d1f37656">eve::fluids_editing::VolumeFluidAuthoringSettings::spacing</a></div><div class="ttdeci">double spacing</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00019">VolumeFluidTarget.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings_html_af467c21ad1c7b8820a5970a7a22cb75e"><div class="ttname"><a href="structeve_1_1fluids__editing_1_1VolumeFluidAuthoringSettings.html#af467c21ad1c7b8820a5970a7a22cb75e">eve::fluids_editing::VolumeFluidAuthoringSettings::capacity</a></div><div class="ttdeci">std::uint32_t capacity</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidTarget_8h_source.html#l00017">VolumeFluidTarget.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

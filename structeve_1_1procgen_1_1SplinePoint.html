@@ -1,0 +1,461 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::SplinePoint结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html">SplinePoint</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1SplinePoint-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::SplinePoint结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One spline anchor with incoming and outgoing handle offsets.  
+ <a href="structeve_1_1procgen_1_1SplinePoint.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SplinePath_8h_source.html">SplinePath.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a3ba729252bee1a39e3f3d31505b7767b" id="r_a3ba729252bee1a39e3f3d31505b7767b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a3ba729252bee1a39e3f3d31505b7767b">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3ba729252bee1a39e3f3d31505b7767b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae157bb85941823b0b17e8c4b7c26cf1e" id="r_ae157bb85941823b0b17e8c4b7c26cf1e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ae157bb85941823b0b17e8c4b7c26cf1e">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae157bb85941823b0b17e8c4b7c26cf1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9444d949cadb12b3dee9296bd9823326" id="r_a9444d949cadb12b3dee9296bd9823326"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a9444d949cadb12b3dee9296bd9823326">z</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9444d949cadb12b3dee9296bd9823326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a852d09b150fb662ff376556fba68f10d" id="r_a852d09b150fb662ff376556fba68f10d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a852d09b150fb662ff376556fba68f10d">inX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a852d09b150fb662ff376556fba68f10d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764fd24da76318d752e4b458b2f5d5d5" id="r_a764fd24da76318d752e4b458b2f5d5d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a764fd24da76318d752e4b458b2f5d5d5">inY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a764fd24da76318d752e4b458b2f5d5d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab22d9cab7c6060243a461bc2ce56dc7" id="r_aab22d9cab7c6060243a461bc2ce56dc7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#aab22d9cab7c6060243a461bc2ce56dc7">inZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aab22d9cab7c6060243a461bc2ce56dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43addc8b1235bac1ba7a8cdef72eb9f2" id="r_a43addc8b1235bac1ba7a8cdef72eb9f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a43addc8b1235bac1ba7a8cdef72eb9f2">outX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a43addc8b1235bac1ba7a8cdef72eb9f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bbc435f77772ceb6f9409aa85f53808" id="r_a3bbc435f77772ceb6f9409aa85f53808"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a3bbc435f77772ceb6f9409aa85f53808">outY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3bbc435f77772ceb6f9409aa85f53808"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac587e729dfbca3d583c91ba19fa9447d" id="r_ac587e729dfbca3d583c91ba19fa9447d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ac587e729dfbca3d583c91ba19fa9447d">outZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac587e729dfbca3d583c91ba19fa9447d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7e9e9163318158d7b764246fcf59ca" id="r_a8b7e9e9163318158d7b764246fcf59ca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a8b7e9e9163318158d7b764246fcf59ca">rollDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8b7e9e9163318158d7b764246fcf59ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8b94663cd36c8f9073fee37835e2572" id="r_ab8b94663cd36c8f9073fee37835e2572"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ab8b94663cd36c8f9073fee37835e2572">scaleX</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab8b94663cd36c8f9073fee37835e2572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34778a8674982a8f86391479a06eaefd" id="r_a34778a8674982a8f86391479a06eaefd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a34778a8674982a8f86391479a06eaefd">scaleY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a34778a8674982a8f86391479a06eaefd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a849a3af450efb510ef30c9b3063c411b" id="r_a849a3af450efb510ef30c9b3063c411b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a849a3af450efb510ef30c9b3063c411b">breakBefore</a> = false</td></tr>
+<tr class="separator:a849a3af450efb510ef30c9b3063c411b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc8cc8edfbb23a7e9324aed7312b6c7d" id="r_abc8cc8edfbb23a7e9324aed7312b6c7d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#abc8cc8edfbb23a7e9324aed7312b6c7d">pitchDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abc8cc8edfbb23a7e9324aed7312b6c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a5fb3d05095b7470125092da8a9a3c" id="r_a41a5fb3d05095b7470125092da8a9a3c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a41a5fb3d05095b7470125092da8a9a3c">yawDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a41a5fb3d05095b7470125092da8a9a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One spline anchor with incoming and outgoing handle offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00013">13</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a849a3af450efb510ef30c9b3063c411b" name="a849a3af450efb510ef30c9b3063c411b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a849a3af450efb510ef30c9b3063c411b">&#9670;&#160;</a></span>breakBefore</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SplinePoint::breakBefore = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a852d09b150fb662ff376556fba68f10d" name="a852d09b150fb662ff376556fba68f10d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a852d09b150fb662ff376556fba68f10d">&#9670;&#160;</a></span>inX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::inX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a764fd24da76318d752e4b458b2f5d5d5" name="a764fd24da76318d752e4b458b2f5d5d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764fd24da76318d752e4b458b2f5d5d5">&#9670;&#160;</a></span>inY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::inY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab22d9cab7c6060243a461bc2ce56dc7" name="aab22d9cab7c6060243a461bc2ce56dc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab22d9cab7c6060243a461bc2ce56dc7">&#9670;&#160;</a></span>inZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::inZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43addc8b1235bac1ba7a8cdef72eb9f2" name="a43addc8b1235bac1ba7a8cdef72eb9f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43addc8b1235bac1ba7a8cdef72eb9f2">&#9670;&#160;</a></span>outX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::outX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3bbc435f77772ceb6f9409aa85f53808" name="a3bbc435f77772ceb6f9409aa85f53808"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bbc435f77772ceb6f9409aa85f53808">&#9670;&#160;</a></span>outY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::outY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac587e729dfbca3d583c91ba19fa9447d" name="ac587e729dfbca3d583c91ba19fa9447d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac587e729dfbca3d583c91ba19fa9447d">&#9670;&#160;</a></span>outZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::outZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc8cc8edfbb23a7e9324aed7312b6c7d" name="abc8cc8edfbb23a7e9324aed7312b6c7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc8cc8edfbb23a7e9324aed7312b6c7d">&#9670;&#160;</a></span>pitchDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::pitchDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b7e9e9163318158d7b764246fcf59ca" name="a8b7e9e9163318158d7b764246fcf59ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7e9e9163318158d7b764246fcf59ca">&#9670;&#160;</a></span>rollDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::rollDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8b94663cd36c8f9073fee37835e2572" name="ab8b94663cd36c8f9073fee37835e2572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8b94663cd36c8f9073fee37835e2572">&#9670;&#160;</a></span>scaleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::scaleX = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34778a8674982a8f86391479a06eaefd" name="a34778a8674982a8f86391479a06eaefd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34778a8674982a8f86391479a06eaefd">&#9670;&#160;</a></span>scaleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::scaleY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ba729252bee1a39e3f3d31505b7767b" name="a3ba729252bee1a39e3f3d31505b7767b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba729252bee1a39e3f3d31505b7767b">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae157bb85941823b0b17e8c4b7c26cf1e" name="ae157bb85941823b0b17e8c4b7c26cf1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae157bb85941823b0b17e8c4b7c26cf1e">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a41a5fb3d05095b7470125092da8a9a3c" name="a41a5fb3d05095b7470125092da8a9a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41a5fb3d05095b7470125092da8a9a3c">&#9670;&#160;</a></span>yawDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::yawDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9444d949cadb12b3dee9296bd9823326" name="a9444d949cadb12b3dee9296bd9823326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9444d949cadb12b3dee9296bd9823326">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/spline/<a class="el" href="SplinePath_8h_source.html">SplinePath.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

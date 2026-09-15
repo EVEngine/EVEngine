@@ -1,0 +1,239 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/PcgWaterPhotoMode.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgWaterPhotoMode.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgWaterPhotoMode_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="PcgPhotoModeApply_8h.html">common/PcgPhotoModeApply.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="WaterPlanarReflection_8h.html">graphics/WaterPlanarReflection.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="WaterUnderwaterEffects_8h.html">graphics/WaterUnderwaterEffects.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacessq.html">ssq</a> { <span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">Table</a>; }</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html">    8</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html">PcgWaterPhotoModeAuthority</a> final:<span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1IPhotoModeFieldSink.html">IPhotoModeFieldSink</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a09f4205fe8aeb13010a0c0b82823ad0a">   10</a></span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a09f4205fe8aeb13010a0c0b82823ad0a">PcgWaterPhotoModeAuthority</a>()=<span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a4a1835d7f6114a7239716793554f762c">~PcgWaterPhotoModeAuthority</a>()<span class="keyword">override</span>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a7d36f0c5c09e1479a36bb3680a506909">setAuthority</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+ <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a0b22f0bcf4c62bbc1d57db27a5527b85">getAuthority</a>()const noexcept{<span class="keywordflow">return</span> authority_;}<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> <a class="code hl_enumeration" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a08647aadb605e6d5f626cdba6bfe7160">acceptsPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment)<span class="keyword">const</span> <span class="keyword">noexcept</span> <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#af28000881dd4a4607ad0c611706fd7c0">applyPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment)<span class="keyword">override</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#ae0f603c55463e14338b7c6c6abf723e3">applyToPlanarSettings</a>(<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterPlanarReflectionSettings.html">WaterPlanarReflectionSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a332a8d123d84b566756f8ee03070fd66">applyToUnderwaterSettings</a>(<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html">WaterUnderwaterSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#ae5e59bbb91bed1c67687feddcecd3c80">   23</a></span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#ae5e59bbb91bed1c67687feddcecd3c80">getReflectionEnabled</a>()const noexcept{<span class="keywordflow">return</span> reflectionEnabled_;}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a023019deb5497f2d4a5ec9e32382d414">   24</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a023019deb5497f2d4a5ec9e32382d414">getReflectionDistance</a>()const noexcept{<span class="keywordflow">return</span> reflectionDistance_;}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a91054188d4d7ec8b9029f68f3c3eac22">   25</a></span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a91054188d4d7ec8b9029f68f3c3eac22">getReflectionResolution</a>()const noexcept{<span class="keywordflow">return</span> reflectionResolution_;}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#af1d48036febff17e17f34d9c6ff7a786">   26</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#af1d48036febff17e17f34d9c6ff7a786">getReflectionLodBias</a>()const noexcept{<span class="keywordflow">return</span> reflectionLodBias_;}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#aeb5a46ec82c14588b90913e5529f4dd0">   27</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#aeb5a46ec82c14588b90913e5529f4dd0">getFogDensity</a>()const noexcept{<span class="keywordflow">return</span> fogDensity_;}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a0ed759efe6e550d7b48d2587e92a22be">   28</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a0ed759efe6e550d7b48d2587e92a22be">getFogDistance</a>()const noexcept{<span class="keywordflow">return</span> fogDistance_;}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a3317ae82c6e6be2d59ee372e82c5fe61">   29</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a3317ae82c6e6be2d59ee372e82c5fe61">getFogRed</a>()const noexcept{<span class="keywordflow">return</span> fogColor_.<a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#aac3343a8f0b81f2665a129e0a5966029">r</a>;}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a10a26d11e0d7a7a7ebd61c1b1b08b0ef">   30</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a10a26d11e0d7a7a7ebd61c1b1b08b0ef">getFogGreen</a>()const noexcept{<span class="keywordflow">return</span> fogColor_.<a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#ad10f3b12ef5bbf1a9ed343fbab46f8c5">g</a>;}</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a4acc8c8fc3e87a592ef484210effb1ea">   31</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a4acc8c8fc3e87a592ef484210effb1ea">getFogBlue</a>()const noexcept{<span class="keywordflow">return</span> fogColor_.<a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#a83976ba39983ebff2405621aabd0fc74">b</a>;}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> <span class="keywordtype">bool</span> authority_=<span class="keyword">false</span>,reflectionEnabled_=<span class="keyword">true</span>;<span class="keywordtype">float</span> reflectionDistance_=0,reflectionLodBias_=1;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> <span class="keywordtype">int</span> reflectionResolution_=2;<a class="code hl_struct" href="structeve_1_1PhotoModeColor.html">PhotoModeColor</a> fogColor_{0,0,0,1};<span class="keywordtype">float</span> fogDensity_=0.045f,fogDistance_=45;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+ <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#adcd75c6bf1822cb4549dab5dd9bd0984">exposePcgWaterPhotoModeBindings</a>(ssq::Table&amp; table);<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="ttc" id="aPcgPhotoModeApply_8h_html"><div class="ttname"><a href="PcgPhotoModeApply_8h.html">PcgPhotoModeApply.h</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aWaterPlanarReflection_8h_html"><div class="ttname"><a href="WaterPlanarReflection_8h.html">WaterPlanarReflection.h</a></div></div>
+<div class="ttc" id="aWaterUnderwaterEffects_8h_html"><div class="ttname"><a href="WaterUnderwaterEffects_8h.html">WaterUnderwaterEffects.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html">eve::IPhotoModeFieldSink</a></div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00029">PcgPhotoModeApply.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html">eve::graphics::PcgWaterPhotoModeAuthority</a></div><div class="ttdoc">Explicit, caller-owned authority for Pcg photo-mode water reflection and underwater fog values.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00008">PcgWaterPhotoMode.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a023019deb5497f2d4a5ec9e32382d414"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a023019deb5497f2d4a5ec9e32382d414">eve::graphics::PcgWaterPhotoModeAuthority::getReflectionDistance</a></div><div class="ttdeci">float getReflectionDistance() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00024">PcgWaterPhotoMode.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a08647aadb605e6d5f626cdba6bfe7160"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a08647aadb605e6d5f626cdba6bfe7160">eve::graphics::PcgWaterPhotoModeAuthority::acceptsPhotoModeField</a></div><div class="ttdeci">PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment &amp;assignment) const noexcept override</div><div class="ttdoc">Return whether this provider owns the assignment.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00011">PcgWaterPhotoMode.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a09f4205fe8aeb13010a0c0b82823ad0a"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a09f4205fe8aeb13010a0c0b82823ad0a">eve::graphics::PcgWaterPhotoModeAuthority::PcgWaterPhotoModeAuthority</a></div><div class="ttdeci">PcgWaterPhotoModeAuthority()=default</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a0b22f0bcf4c62bbc1d57db27a5527b85"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a0b22f0bcf4c62bbc1d57db27a5527b85">eve::graphics::PcgWaterPhotoModeAuthority::getAuthority</a></div><div class="ttdeci">bool getAuthority() const noexcept</div><div class="ttdoc">Return whether the authority lease is active.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00014">PcgWaterPhotoMode.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a0ed759efe6e550d7b48d2587e92a22be"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a0ed759efe6e550d7b48d2587e92a22be">eve::graphics::PcgWaterPhotoModeAuthority::getFogDistance</a></div><div class="ttdeci">float getFogDistance() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00028">PcgWaterPhotoMode.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a10a26d11e0d7a7a7ebd61c1b1b08b0ef"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a10a26d11e0d7a7a7ebd61c1b1b08b0ef">eve::graphics::PcgWaterPhotoModeAuthority::getFogGreen</a></div><div class="ttdeci">float getFogGreen() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00030">PcgWaterPhotoMode.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a3317ae82c6e6be2d59ee372e82c5fe61"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a3317ae82c6e6be2d59ee372e82c5fe61">eve::graphics::PcgWaterPhotoModeAuthority::getFogRed</a></div><div class="ttdeci">float getFogRed() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00029">PcgWaterPhotoMode.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a332a8d123d84b566756f8ee03070fd66"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a332a8d123d84b566756f8ee03070fd66">eve::graphics::PcgWaterPhotoModeAuthority::applyToUnderwaterSettings</a></div><div class="ttdeci">Result&lt; void &gt; applyToUnderwaterSettings(WaterUnderwaterSettings &amp;settings) const</div><div class="ttdoc">Copy fog values into the real underwater-effects settings.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00030">PcgWaterPhotoMode.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a4a1835d7f6114a7239716793554f762c"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a4a1835d7f6114a7239716793554f762c">eve::graphics::PcgWaterPhotoModeAuthority::~PcgWaterPhotoModeAuthority</a></div><div class="ttdeci">~PcgWaterPhotoModeAuthority() override</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00009">PcgWaterPhotoMode.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a4acc8c8fc3e87a592ef484210effb1ea"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a4acc8c8fc3e87a592ef484210effb1ea">eve::graphics::PcgWaterPhotoModeAuthority::getFogBlue</a></div><div class="ttdeci">float getFogBlue() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00031">PcgWaterPhotoMode.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a7d36f0c5c09e1479a36bb3680a506909"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a7d36f0c5c09e1479a36bb3680a506909">eve::graphics::PcgWaterPhotoModeAuthority::setAuthority</a></div><div class="ttdeci">void setAuthority(bool enabled)</div><div class="ttdoc">Register or revoke this object as the unique water-field provider.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00010">PcgWaterPhotoMode.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_a91054188d4d7ec8b9029f68f3c3eac22"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#a91054188d4d7ec8b9029f68f3c3eac22">eve::graphics::PcgWaterPhotoModeAuthority::getReflectionResolution</a></div><div class="ttdeci">int getReflectionResolution() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00025">PcgWaterPhotoMode.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_ae0f603c55463e14338b7c6c6abf723e3"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#ae0f603c55463e14338b7c6c6abf723e3">eve::graphics::PcgWaterPhotoModeAuthority::applyToPlanarSettings</a></div><div class="ttdeci">Result&lt; void &gt; applyToPlanarSettings(WaterPlanarReflectionSettings &amp;settings) const</div><div class="ttdoc">Copy reflection values into the real planar-reflection planner settings.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00024">PcgWaterPhotoMode.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_ae5e59bbb91bed1c67687feddcecd3c80"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#ae5e59bbb91bed1c67687feddcecd3c80">eve::graphics::PcgWaterPhotoModeAuthority::getReflectionEnabled</a></div><div class="ttdeci">bool getReflectionEnabled() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00023">PcgWaterPhotoMode.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_aeb5a46ec82c14588b90913e5529f4dd0"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#aeb5a46ec82c14588b90913e5529f4dd0">eve::graphics::PcgWaterPhotoModeAuthority::getFogDensity</a></div><div class="ttdeci">float getFogDensity() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00027">PcgWaterPhotoMode.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_af1d48036febff17e17f34d9c6ff7a786"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#af1d48036febff17e17f34d9c6ff7a786">eve::graphics::PcgWaterPhotoModeAuthority::getReflectionLodBias</a></div><div class="ttdeci">float getReflectionLodBias() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8h_source.html#l00026">PcgWaterPhotoMode.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1PcgWaterPhotoModeAuthority_html_af28000881dd4a4607ad0c611706fd7c0"><div class="ttname"><a href="classeve_1_1graphics_1_1PcgWaterPhotoModeAuthority.html#af28000881dd4a4607ad0c611706fd7c0">eve::graphics::PcgWaterPhotoModeAuthority::applyPhotoModeField</a></div><div class="ttdeci">Result&lt; void &gt; applyPhotoModeField(const PhotoModeAssignment &amp;assignment) override</div><div class="ttdoc">Apply one Water-domain assignment atomically.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00012">PcgWaterPhotoMode.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00020">Animation.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_adcd75c6bf1822cb4549dab5dd9bd0984"><div class="ttname"><a href="namespaceeve_1_1graphics.html#adcd75c6bf1822cb4549dab5dd9bd0984">eve::graphics::exposePcgWaterPhotoModeBindings</a></div><div class="ttdeci">void exposePcgWaterPhotoModeBindings(ssq::Table &amp;t)</div><div class="ttdoc">Register Pcg water photo-mode authority bindings.</div><div class="ttdef"><b>Definition</b> <a href="PcgWaterPhotoMode_8cpp_source.html#l00034">PcgWaterPhotoMode.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">eve::ReflectedValueKind::Table</a></div><div class="ttdeci">@ Table</div><div class="ttdoc">OT_TABLE (not yet editable).</div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">eve::PhotoModeFieldAcceptance</a></div><div class="ttdeci">PhotoModeFieldAcceptance</div><div class="ttdoc">Capability implemented by the composition root that routes assignments to domain owners.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00028">PcgPhotoModeApply.h:28</a></div></div>
+<div class="ttc" id="anamespacessq_html"><div class="ttname"><a href="namespacessq.html">ssq</a></div><div class="ttdoc">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp https://github.com/sunxfancy/ECS.hpp</div><div class="ttdef"><b>Definition</b> <a href="ECS_8h_source.html#l00012">ECS.h:12</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html">eve::PhotoModeAssignment</a></div><div class="ttdoc">One reversible field assignment in a photo-mode transaction.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html">eve::PhotoModeColor</a></div><div class="ttdoc">RGBA payload used by the cross-module photo-mode application contract.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_a83976ba39983ebff2405621aabd0fc74"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#a83976ba39983ebff2405621aabd0fc74">eve::PhotoModeColor::b</a></div><div class="ttdeci">float b</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_aac3343a8f0b81f2665a129e0a5966029"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#aac3343a8f0b81f2665a129e0a5966029">eve::PhotoModeColor::r</a></div><div class="ttdeci">float r</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_ad10f3b12ef5bbf1a9ed343fbab46f8c5"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#ad10f3b12ef5bbf1a9ed343fbab46f8c5">eve::PhotoModeColor::g</a></div><div class="ttdeci">float g</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterPlanarReflectionSettings_html"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterPlanarReflectionSettings.html">eve::graphics::WaterPlanarReflectionSettings</a></div><div class="ttdoc">Authored planar-reflection policy with no camera or texture ownership.</div><div class="ttdef"><b>Definition</b> <a href="WaterPlanarReflection_8h_source.html#l00018">WaterPlanarReflection.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterUnderwaterSettings_html"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html">eve::graphics::WaterUnderwaterSettings</a></div><div class="ttdoc">Authored Pcg underwater-effects policy; owns no renderer, audio source or scene object.</div><div class="ttdef"><b>Definition</b> <a href="WaterUnderwaterEffects_8h_source.html#l00048">WaterUnderwaterEffects.h:48</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

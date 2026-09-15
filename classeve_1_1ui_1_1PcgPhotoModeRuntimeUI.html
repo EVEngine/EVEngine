@@ -1,0 +1,1035 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::PcgPhotoModeRuntimeUI类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html">PcgPhotoModeRuntimeUI</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::PcgPhotoModeRuntimeUI类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Backend-neutral state of one Pcg PhotoModeUIHelper prefab instance.  
+ <a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad415e935240b701766c5c2dc0ee5db70" id="r_ad415e935240b701766c5c2dc0ee5db70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ad415e935240b701766c5c2dc0ee5db70">configure</a> (int <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>, float sliderValue, float <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, float <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, bool bannerImageFound=true)</td></tr>
+<tr class="memdesc:ad415e935240b701766c5c2dc0ee5db70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure one widget family and publish its initial callback revision.  <br /></td></tr>
+<tr class="separator:ad415e935240b701766c5c2dc0ee5db70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a615c8506b8d87a8d3714dbea8b35b86d" id="r_a615c8506b8d87a8d3714dbea8b35b86d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a615c8506b8d87a8d3714dbea8b35b86d">markSliderUsed</a> (bool <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>=true) noexcept</td></tr>
+<tr class="memdesc:a615c8506b8d87a8d3714dbea8b35b86d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark that the next slider update also refreshes its input text.  <br /></td></tr>
+<tr class="separator:a615c8506b8d87a8d3714dbea8b35b86d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a007ab3a537f09f5c50cb189eabf0ba6a" id="r_a007ab3a537f09f5c50cb189eabf0ba6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a007ab3a537f09f5c50cb189eabf0ba6a">setSliderValue</a> (float <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a007ab3a537f09f5c50cb189eabf0ba6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a slider value and consume the input synchronization flag.  <br /></td></tr>
+<tr class="separator:a007ab3a537f09f5c50cb189eabf0ba6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa79e8217f420f3179ac43edfdc57651d" id="r_aa79e8217f420f3179ac43edfdc57651d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934da">PcgPhotoModeInputStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#aa79e8217f420f3179ac43edfdc57651d">applyFloatInput</a> (const std::string &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>) noexcept</td></tr>
+<tr class="memdesc:aa79e8217f420f3179ac43edfdc57651d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse, clamp, and apply text using Pcg GetAndSetFloatValue semantics.  <br /></td></tr>
+<tr class="separator:aa79e8217f420f3179ac43edfdc57651d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2386c7ab6d5b176807205011522b51f7" id="r_a2386c7ab6d5b176807205011522b51f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2386c7ab6d5b176807205011522b51f7">getKind</a> () const noexcept</td></tr>
+<tr class="separator:a2386c7ab6d5b176807205011522b51f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa2debdf8bf657e13114d5a3e0ec827" id="r_a2aa2debdf8bf657e13114d5a3e0ec827"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2aa2debdf8bf657e13114d5a3e0ec827">getName</a> () const noexcept</td></tr>
+<tr class="separator:a2aa2debdf8bf657e13114d5a3e0ec827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78deddd3b9830407c6c60832c2ea841b" id="r_a78deddd3b9830407c6c60832c2ea841b"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a78deddd3b9830407c6c60832c2ea841b">getValueText</a> () const noexcept</td></tr>
+<tr class="separator:a78deddd3b9830407c6c60832c2ea841b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bcd876b04b5c3e63f0960e3a7203554" id="r_a7bcd876b04b5c3e63f0960e3a7203554"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a7bcd876b04b5c3e63f0960e3a7203554">getValue</a> () const noexcept</td></tr>
+<tr class="separator:a7bcd876b04b5c3e63f0960e3a7203554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4dfccc230b6117b7d307b85a1ec212f" id="r_ae4dfccc230b6117b7d307b85a1ec212f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae4dfccc230b6117b7d307b85a1ec212f">getMinimum</a> () const noexcept</td></tr>
+<tr class="separator:ae4dfccc230b6117b7d307b85a1ec212f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3d6f75895ad3c039da99b40471aa33" id="r_a1a3d6f75895ad3c039da99b40471aa33"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1a3d6f75895ad3c039da99b40471aa33">getMaximum</a> () const noexcept</td></tr>
+<tr class="separator:a1a3d6f75895ad3c039da99b40471aa33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a104442531c4fd0a5a93dbdc8ab166b32" id="r_a104442531c4fd0a5a93dbdc8ab166b32"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a104442531c4fd0a5a93dbdc8ab166b32">getWholeNumbers</a> () const noexcept</td></tr>
+<tr class="separator:a104442531c4fd0a5a93dbdc8ab166b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178c50ce4886869432185f48438eac4c" id="r_a178c50ce4886869432185f48438eac4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a178c50ce4886869432185f48438eac4c">getUsingSlider</a> () const noexcept</td></tr>
+<tr class="separator:a178c50ce4886869432185f48438eac4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc6184cb61ad370c3e82a58c83317622" id="r_adc6184cb61ad370c3e82a58c83317622"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#adc6184cb61ad370c3e82a58c83317622">getInputRefresh</a> () const noexcept</td></tr>
+<tr class="separator:adc6184cb61ad370c3e82a58c83317622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66db7501e92bceb914acb73905058937" id="r_a66db7501e92bceb914acb73905058937"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a66db7501e92bceb914acb73905058937">getLabelVisible</a> () const noexcept</td></tr>
+<tr class="separator:a66db7501e92bceb914acb73905058937"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0e0d4b0ad8930736a9f3049a6855eae" id="r_ae0e0d4b0ad8930736a9f3049a6855eae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae0e0d4b0ad8930736a9f3049a6855eae">getSecondLabelVisible</a> () const noexcept</td></tr>
+<tr class="separator:ae0e0d4b0ad8930736a9f3049a6855eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70440fdb456feddaba7edbe968df2d4f" id="r_a70440fdb456feddaba7edbe968df2d4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a70440fdb456feddaba7edbe968df2d4f">getSliderVisible</a> () const noexcept</td></tr>
+<tr class="separator:a70440fdb456feddaba7edbe968df2d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf7f3ea75d1490d1ca38c228d90f6290" id="r_acf7f3ea75d1490d1ca38c228d90f6290"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#acf7f3ea75d1490d1ca38c228d90f6290">getInputVisible</a> () const noexcept</td></tr>
+<tr class="separator:acf7f3ea75d1490d1ca38c228d90f6290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5df09f335e076ae599a77d15c500139e" id="r_a5df09f335e076ae599a77d15c500139e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5df09f335e076ae599a77d15c500139e">getToggleVisible</a> () const noexcept</td></tr>
+<tr class="separator:a5df09f335e076ae599a77d15c500139e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6177e271adfb496f1a4ebb45cfca7465" id="r_a6177e271adfb496f1a4ebb45cfca7465"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a6177e271adfb496f1a4ebb45cfca7465">getButtonVisible</a> () const noexcept</td></tr>
+<tr class="separator:a6177e271adfb496f1a4ebb45cfca7465"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4e4b3fbb271a3d117909b94e204b4b" id="r_a8b4e4b3fbb271a3d117909b94e204b4b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a8b4e4b3fbb271a3d117909b94e204b4b">getDropdownVisible</a> () const noexcept</td></tr>
+<tr class="separator:a8b4e4b3fbb271a3d117909b94e204b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bda0680db80798ac5586a085581817c" id="r_a2bda0680db80798ac5586a085581817c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2bda0680db80798ac5586a085581817c">getImageVisible</a> () const noexcept</td></tr>
+<tr class="separator:a2bda0680db80798ac5586a085581817c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d3f9eb1c16902f88e27fe8e79176a4" id="r_a51d3f9eb1c16902f88e27fe8e79176a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a51d3f9eb1c16902f88e27fe8e79176a4">getHeaderVisible</a> () const noexcept</td></tr>
+<tr class="separator:a51d3f9eb1c16902f88e27fe8e79176a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f711f8e2313ed6c03d99b0869dcb6e7" id="r_a5f711f8e2313ed6c03d99b0869dcb6e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5f711f8e2313ed6c03d99b0869dcb6e7">getColorVisible</a> () const noexcept</td></tr>
+<tr class="separator:a5f711f8e2313ed6c03d99b0869dcb6e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a003db9dc5748a4b877057a3bea347473" id="r_a003db9dc5748a4b877057a3bea347473"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a003db9dc5748a4b877057a3bea347473">getVector2Visible</a> () const noexcept</td></tr>
+<tr class="separator:a003db9dc5748a4b877057a3bea347473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad82197c73a21fde6991cda3c4781ecab" id="r_ad82197c73a21fde6991cda3c4781ecab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ad82197c73a21fde6991cda3c4781ecab">getVector3Visible</a> () const noexcept</td></tr>
+<tr class="separator:ad82197c73a21fde6991cda3c4781ecab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1808fbed9f579396f3ff3ad4f64001f9" id="r_a1808fbed9f579396f3ff3ad4f64001f9"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1808fbed9f579396f3ff3ad4f64001f9">getInitialCallbackRevision</a> () const noexcept</td></tr>
+<tr class="separator:a1808fbed9f579396f3ff3ad4f64001f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:abc293c7e6403f1e445c439fd859eaa9a" id="r_abc293c7e6403f1e445c439fd859eaa9a"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#abc293c7e6403f1e445c439fd859eaa9a">updateWrap</a> (const std::string &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:abc293c7e6403f1e445c439fd859eaa9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap metrics text with Pcg's exact 68-column algorithm.  <br /></td></tr>
+<tr class="separator:abc293c7e6403f1e445c439fd859eaa9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Backend-neutral state of one Pcg PhotoModeUIHelper prefab instance. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aa79e8217f420f3179ac43edfdc57651d" name="aa79e8217f420f3179ac43edfdc57651d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa79e8217f420f3179ac43edfdc57651d">&#9670;&#160;</a></span>applyFloatInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934da">PcgPhotoModeInputStatus</a> eve::ui::PcgPhotoModeRuntimeUI::applyFloatInput </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse, clamp, and apply text using Pcg GetAndSetFloatValue semantics. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html">PcgPhotoModeRuntimeUI.cpp</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934daa733d43480c8589b1368e5def6b480415">eve::ui::Applied</a>, <a class="el" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934daad96143ba1b15645919cea00ec9d1be62">eve::ui::Ignored</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="ad415e935240b701766c5c2dc0ee5db70" name="ad415e935240b701766c5c2dc0ee5db70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad415e935240b701766c5c2dc0ee5db70">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeRuntimeUI::configure </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sliderValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maximum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bannerImageFound</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure one widget family and publish its initial callback revision. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html">PcgPhotoModeRuntimeUI.cpp</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377af0ae59ba5022f621aa4d11362005a688">eve::ui::BannerImage</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a87b7760f14fbff78d8819291f36ab9a0">eve::ui::Button</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377acb5feb1b7314637725a2e73bdc9f7295">eve::ui::Color</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a4cbe0c0aa0a41be395f513aec69194c7">eve::ui::DisplayIntSlider</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a9f12e52509fc3a42526900a8354670a3">eve::ui::DisplaySlider</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a7498c445a737312f3678aa1494e01a38">eve::ui::Dropdown</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a6f16a5f8ff5d75ab84c018adacdfcbb7">eve::ui::Field</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377abf50d5e661106d0abe925af3c2e6f7e7">eve::ui::Header</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a0bd9c14da38ee05d0fa5f3cfe260f884">eve::ui::IntSlider</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377ab021df6aac4654c454f46c77646e745f">eve::ui::Label</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00025">minimum</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a2d9b9a764fb0be4be10e1b2fce63f561">eve::ui::Slider</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377aa8875bbe4272c0bdd786cfaaedf77921">eve::ui::Toggle</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>, <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a1bebc5ae2822f8e361fb0ce57b5e09e2">eve::ui::Vector2</a> , 以及 <a class="el" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a02b4dab58bbc49e0851fb3fd8df520cc">eve::ui::Vector3</a>.</p>
+
+</div>
+</div>
+<a id="a6177e271adfb496f1a4ebb45cfca7465" name="a6177e271adfb496f1a4ebb45cfca7465"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6177e271adfb496f1a4ebb45cfca7465">&#9670;&#160;</a></span>getButtonVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getButtonVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f711f8e2313ed6c03d99b0869dcb6e7" name="a5f711f8e2313ed6c03d99b0869dcb6e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f711f8e2313ed6c03d99b0869dcb6e7">&#9670;&#160;</a></span>getColorVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getColorVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b4e4b3fbb271a3d117909b94e204b4b" name="a8b4e4b3fbb271a3d117909b94e204b4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b4e4b3fbb271a3d117909b94e204b4b">&#9670;&#160;</a></span>getDropdownVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getDropdownVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51d3f9eb1c16902f88e27fe8e79176a4" name="a51d3f9eb1c16902f88e27fe8e79176a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d3f9eb1c16902f88e27fe8e79176a4">&#9670;&#160;</a></span>getHeaderVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getHeaderVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2bda0680db80798ac5586a085581817c" name="a2bda0680db80798ac5586a085581817c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bda0680db80798ac5586a085581817c">&#9670;&#160;</a></span>getImageVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getImageVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1808fbed9f579396f3ff3ad4f64001f9" name="a1808fbed9f579396f3ff3ad4f64001f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1808fbed9f579396f3ff3ad4f64001f9">&#9670;&#160;</a></span>getInitialCallbackRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::PcgPhotoModeRuntimeUI::getInitialCallbackRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc6184cb61ad370c3e82a58c83317622" name="adc6184cb61ad370c3e82a58c83317622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc6184cb61ad370c3e82a58c83317622">&#9670;&#160;</a></span>getInputRefresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getInputRefresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf7f3ea75d1490d1ca38c228d90f6290" name="acf7f3ea75d1490d1ca38c228d90f6290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf7f3ea75d1490d1ca38c228d90f6290">&#9670;&#160;</a></span>getInputVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getInputVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2386c7ab6d5b176807205011522b51f7" name="a2386c7ab6d5b176807205011522b51f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2386c7ab6d5b176807205011522b51f7">&#9670;&#160;</a></span>getKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui::PcgPhotoModeRuntimeUI::getKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66db7501e92bceb914acb73905058937" name="a66db7501e92bceb914acb73905058937"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66db7501e92bceb914acb73905058937">&#9670;&#160;</a></span>getLabelVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getLabelVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a3d6f75895ad3c039da99b40471aa33" name="a1a3d6f75895ad3c039da99b40471aa33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3d6f75895ad3c039da99b40471aa33">&#9670;&#160;</a></span>getMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeRuntimeUI::getMaximum </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4dfccc230b6117b7d307b85a1ec212f" name="ae4dfccc230b6117b7d307b85a1ec212f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4dfccc230b6117b7d307b85a1ec212f">&#9670;&#160;</a></span>getMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeRuntimeUI::getMinimum </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2aa2debdf8bf657e13114d5a3e0ec827" name="a2aa2debdf8bf657e13114d5a3e0ec827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aa2debdf8bf657e13114d5a3e0ec827">&#9670;&#160;</a></span>getName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::PcgPhotoModeRuntimeUI::getName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0e0d4b0ad8930736a9f3049a6855eae" name="ae0e0d4b0ad8930736a9f3049a6855eae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0e0d4b0ad8930736a9f3049a6855eae">&#9670;&#160;</a></span>getSecondLabelVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getSecondLabelVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70440fdb456feddaba7edbe968df2d4f" name="a70440fdb456feddaba7edbe968df2d4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70440fdb456feddaba7edbe968df2d4f">&#9670;&#160;</a></span>getSliderVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getSliderVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5df09f335e076ae599a77d15c500139e" name="a5df09f335e076ae599a77d15c500139e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5df09f335e076ae599a77d15c500139e">&#9670;&#160;</a></span>getToggleVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getToggleVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a178c50ce4886869432185f48438eac4c" name="a178c50ce4886869432185f48438eac4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a178c50ce4886869432185f48438eac4c">&#9670;&#160;</a></span>getUsingSlider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getUsingSlider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bcd876b04b5c3e63f0960e3a7203554" name="a7bcd876b04b5c3e63f0960e3a7203554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bcd876b04b5c3e63f0960e3a7203554">&#9670;&#160;</a></span>getValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeRuntimeUI::getValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78deddd3b9830407c6c60832c2ea841b" name="a78deddd3b9830407c6c60832c2ea841b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78deddd3b9830407c6c60832c2ea841b">&#9670;&#160;</a></span>getValueText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::PcgPhotoModeRuntimeUI::getValueText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a003db9dc5748a4b877057a3bea347473" name="a003db9dc5748a4b877057a3bea347473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a003db9dc5748a4b877057a3bea347473">&#9670;&#160;</a></span>getVector2Visible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getVector2Visible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad82197c73a21fde6991cda3c4781ecab" name="ad82197c73a21fde6991cda3c4781ecab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad82197c73a21fde6991cda3c4781ecab">&#9670;&#160;</a></span>getVector3Visible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getVector3Visible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a104442531c4fd0a5a93dbdc8ab166b32" name="a104442531c4fd0a5a93dbdc8ab166b32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a104442531c4fd0a5a93dbdc8ab166b32">&#9670;&#160;</a></span>getWholeNumbers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeRuntimeUI::getWholeNumbers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a615c8506b8d87a8d3714dbea8b35b86d" name="a615c8506b8d87a8d3714dbea8b35b86d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615c8506b8d87a8d3714dbea8b35b86d">&#9670;&#160;</a></span>markSliderUsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::PcgPhotoModeRuntimeUI::markSliderUsed </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark that the next slider update also refreshes its input text. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="a007ab3a537f09f5c50cb189eabf0ba6a" name="a007ab3a537f09f5c50cb189eabf0ba6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a007ab3a537f09f5c50cb189eabf0ba6a">&#9670;&#160;</a></span>setSliderValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeRuntimeUI::setSliderValue </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a slider value and consume the input synchronization flag. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html">PcgPhotoModeRuntimeUI.cpp</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="abc293c7e6403f1e445c439fd859eaa9a" name="abc293c7e6403f1e445c439fd859eaa9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc293c7e6403f1e445c439fd859eaa9a">&#9670;&#160;</a></span>updateWrap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::PcgPhotoModeRuntimeUI::updateWrap </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wrap metrics text with Pcg's exact 68-column algorithm. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html">PcgPhotoModeRuntimeUI.cpp</a> 第 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html#l00070">eve::ui::exposePcgPhotoModeRuntimeUIBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeRuntimeUI_8h_source.html">PcgPhotoModeRuntimeUI.h</a></li>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeRuntimeUI_8cpp_source.html">PcgPhotoModeRuntimeUI.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

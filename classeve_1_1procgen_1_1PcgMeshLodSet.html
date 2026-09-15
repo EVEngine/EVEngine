@@ -1,0 +1,657 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::PcgMeshLodSet类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html">PcgMeshLodSet</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1procgen_1_1PcgMeshLodSet-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::PcgMeshLodSet类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owned generic mesh LOD output generated with Pcg's independent-per-level policy.  
+ <a href="classeve_1_1procgen_1_1PcgMeshLodSet.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af9060ed15123c3af8c373b1f9eb3d7a3" id="r_af9060ed15123c3af8c373b1f9eb3d7a3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#af9060ed15123c3af8c373b1f9eb3d7a3">getLevelCount</a> () const noexcept</td></tr>
+<tr class="memdesc:af9060ed15123c3af8c373b1f9eb3d7a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of complete generated levels.  <br /></td></tr>
+<tr class="separator:af9060ed15123c3af8c373b1f9eb3d7a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7811e75f57ee6dd52302dbb40b3968a1" id="r_a7811e75f57ee6dd52302dbb40b3968a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a7811e75f57ee6dd52302dbb40b3968a1">getTransitionHeight</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a7811e75f57ee6dd52302dbb40b3968a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one level's transition height, or -1 for an invalid index.  <br /></td></tr>
+<tr class="separator:a7811e75f57ee6dd52302dbb40b3968a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc3fae40a7627df048bebb88269fc894" id="r_acc3fae40a7627df048bebb88269fc894"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#acc3fae40a7627df048bebb88269fc894">getFadeWidth</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:acc3fae40a7627df048bebb88269fc894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one level's fade width, or -1 for an invalid index.  <br /></td></tr>
+<tr class="separator:acc3fae40a7627df048bebb88269fc894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f8c55f8ff34e44633cb79f193223af7" id="r_a0f8c55f8ff34e44633cb79f193223af7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a0f8c55f8ff34e44633cb79f193223af7">getQuality</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a0f8c55f8ff34e44633cb79f193223af7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one level's quality, or -1 for an invalid index.  <br /></td></tr>
+<tr class="separator:a0f8c55f8ff34e44633cb79f193223af7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6665ca4058f969e52c8abf3e8ed46b2a" id="r_a6665ca4058f969e52c8abf3e8ed46b2a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a6665ca4058f969e52c8abf3e8ed46b2a">selectLevel</a> (float relativeHeight) const noexcept</td></tr>
+<tr class="memdesc:a6665ca4058f969e52c8abf3e8ed46b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a level from projected relative height; -1 means culled and -2 invalid input.  <br /></td></tr>
+<tr class="separator:a6665ca4058f969e52c8abf3e8ed46b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa929db14cba5fe232088c6bc7356b735" id="r_aa929db14cba5fe232088c6bc7356b735"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#aa929db14cba5fe232088c6bc7356b735">getSwitchDistance</a> (int level, float worldDiameter, float verticalFovDegrees) const noexcept</td></tr>
+<tr class="memdesc:aa929db14cba5fe232088c6bc7356b735"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert one level threshold to camera distance, or -1 for invalid input.  <br /></td></tr>
+<tr class="separator:aa929db14cba5fe232088c6bc7356b735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d74f2dd20417ec263ea5c9ad62f22fd" id="r_a7d74f2dd20417ec263ea5c9ad62f22fd"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a7d74f2dd20417ec263ea5c9ad62f22fd">meshAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a7d74f2dd20417ec263ea5c9ad62f22fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a generated mesh, or null for an invalid index. @ownership The set retains ownership. @lifetime Valid until replacement, move or destruction of this set.  <br /></td></tr>
+<tr class="separator:a7d74f2dd20417ec263ea5c9ad62f22fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72568780a2c7d1e5f48220d0f2e74ad8" id="r_a72568780a2c7d1e5f48220d0f2e74ad8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1PcgMeshLodRendererState.html">PcgMeshLodRendererState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a72568780a2c7d1e5f48220d0f2e74ad8">rendererStateAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a72568780a2c7d1e5f48220d0f2e74ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow one generated level's immutable renderer state, or null.  <br /></td></tr>
+<tr class="separator:a72568780a2c7d1e5f48220d0f2e74ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bbdc61f5b32003e9ef89cb2c499359d" id="r_a8bbdc61f5b32003e9ef89cb2c499359d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a8bbdc61f5b32003e9ef89cb2c499359d">getFadeMode</a> () const noexcept</td></tr>
+<tr class="memdesc:a8bbdc61f5b32003e9ef89cb2c499359d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return Unity LODFadeMode copied from the build profile.  <br /></td></tr>
+<tr class="separator:a8bbdc61f5b32003e9ef89cb2c499359d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26dcedc233f9f221ba4d222db17ec8a6" id="r_a26dcedc233f9f221ba4d222db17ec8a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a26dcedc233f9f221ba4d222db17ec8a6">getAnimateCrossFading</a> () const noexcept</td></tr>
+<tr class="memdesc:a26dcedc233f9f221ba4d222db17ec8a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether transitions use injected time.  <br /></td></tr>
+<tr class="separator:a26dcedc233f9f221ba4d222db17ec8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6721ebdc5a4c35d7bad48cde2e8a4be" id="r_af6721ebdc5a4c35d7bad48cde2e8a4be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#af6721ebdc5a4c35d7bad48cde2e8a4be">getCrossFadeAnimationDuration</a> () const noexcept</td></tr>
+<tr class="memdesc:af6721ebdc5a4c35d7bad48cde2e8a4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return injected-time transition duration.  <br /></td></tr>
+<tr class="separator:af6721ebdc5a4c35d7bad48cde2e8a4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a7e45eeccf21e486f517f252abe31b42a" id="r_a7e45eeccf21e486f517f252abe31b42a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html#a7e45eeccf21e486f517f252abe31b42a">buildPcgMeshLodsInto</a> (<a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html">PcgMeshLodSet</a> &amp;, const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;, const <a class="el" href="classeve_1_1procgen_1_1PcgMeshLodProfile.html">PcgMeshLodProfile</a> &amp;)</td></tr>
+<tr class="memdesc:a7e45eeccf21e486f517f252abe31b42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a complete generic Pcg LOD chain and publish it atomically.  <br /></td></tr>
+<tr class="separator:a7e45eeccf21e486f517f252abe31b42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owned generic mesh LOD output generated with Pcg's independent-per-level policy. </p>
+<p>Every generated level is simplified from the same immutable source mesh, matching <code>LODGenerator.CreateLevelRenderer</code>; levels are not simplified sequentially. The set owns all CPU meshes and values and is safe to move. Callers serialize access. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a> 第 <a class="el" href="PcgMeshLod_8h_source.html#l00136">136</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a26dcedc233f9f221ba4d222db17ec8a6" name="a26dcedc233f9f221ba4d222db17ec8a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26dcedc233f9f221ba4d222db17ec8a6">&#9670;&#160;</a></span>getAnimateCrossFading()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PcgMeshLodSet::getAnimateCrossFading </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether transitions use injected time. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a> 第 <a class="el" href="PcgMeshLod_8h_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="af6721ebdc5a4c35d7bad48cde2e8a4be" name="af6721ebdc5a4c35d7bad48cde2e8a4be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6721ebdc5a4c35d7bad48cde2e8a4be">&#9670;&#160;</a></span>getCrossFadeAnimationDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PcgMeshLodSet::getCrossFadeAnimationDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return injected-time transition duration. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a> 第 <a class="el" href="PcgMeshLod_8h_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="a8bbdc61f5b32003e9ef89cb2c499359d" name="a8bbdc61f5b32003e9ef89cb2c499359d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bbdc61f5b32003e9ef89cb2c499359d">&#9670;&#160;</a></span>getFadeMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PcgMeshLodSet::getFadeMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return Unity LODFadeMode copied from the build profile. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a> 第 <a class="el" href="PcgMeshLod_8h_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="acc3fae40a7627df048bebb88269fc894" name="acc3fae40a7627df048bebb88269fc894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc3fae40a7627df048bebb88269fc894">&#9670;&#160;</a></span>getFadeWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PcgMeshLodSet::getFadeWidth </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one level's fade width, or -1 for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="af9060ed15123c3af8c373b1f9eb3d7a3" name="af9060ed15123c3af8c373b1f9eb3d7a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9060ed15123c3af8c373b1f9eb3d7a3">&#9670;&#160;</a></span>getLevelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PcgMeshLodSet::getLevelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of complete generated levels. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a> 第 <a class="el" href="PcgMeshLod_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="a0f8c55f8ff34e44633cb79f193223af7" name="a0f8c55f8ff34e44633cb79f193223af7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f8c55f8ff34e44633cb79f193223af7">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PcgMeshLodSet::getQuality </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one level's quality, or -1 for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa929db14cba5fe232088c6bc7356b735" name="aa929db14cba5fe232088c6bc7356b735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa929db14cba5fe232088c6bc7356b735">&#9670;&#160;</a></span>getSwitchDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PcgMeshLodSet::getSwitchDistance </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldDiameter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>verticalFovDegrees</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert one level threshold to camera distance, or -1 for invalid input. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="a7811e75f57ee6dd52302dbb40b3968a1" name="a7811e75f57ee6dd52302dbb40b3968a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7811e75f57ee6dd52302dbb40b3968a1">&#9670;&#160;</a></span>getTransitionHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PcgMeshLodSet::getTransitionHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one level's transition height, or -1 for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7d74f2dd20417ec263ea5c9ad62f22fd" name="a7d74f2dd20417ec263ea5c9ad62f22fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d74f2dd20417ec263ea5c9ad62f22fd">&#9670;&#160;</a></span>meshAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> * eve::procgen::PcgMeshLodSet::meshAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow a generated mesh, or null for an invalid index. @ownership The set retains ownership. @lifetime Valid until replacement, move or destruction of this set. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="a72568780a2c7d1e5f48220d0f2e74ad8" name="a72568780a2c7d1e5f48220d0f2e74ad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72568780a2c7d1e5f48220d0f2e74ad8">&#9670;&#160;</a></span>rendererStateAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1PcgMeshLodRendererState.html">PcgMeshLodRendererState</a> * eve::procgen::PcgMeshLodSet::rendererStateAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow one generated level's immutable renderer state, or null. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02273">eve::procgen::Procgen::configurePcgMeshLods()</a>.</p>
+
+</div>
+</div>
+<a id="a6665ca4058f969e52c8abf3e8ed46b2a" name="a6665ca4058f969e52c8abf3e8ed46b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6665ca4058f969e52c8abf3e8ed46b2a">&#9670;&#160;</a></span>selectLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PcgMeshLodSet::selectLevel </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>relativeHeight</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Select a level from projected relative height; -1 means culled and -2 invalid input. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a7e45eeccf21e486f517f252abe31b42a" name="a7e45eeccf21e486f517f252abe31b42a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e45eeccf21e486f517f252abe31b42a">&#9670;&#160;</a></span>buildPcgMeshLodsInto</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; buildPcgMeshLodsInto </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PcgMeshLodSet.html">PcgMeshLodSet</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PcgMeshLodProfile.html">PcgMeshLodProfile</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate a complete generic Pcg LOD chain and publish it atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">output</td><td>Replaced only after every level has simplified successfully. </td></tr>
+    <tr><td class="paramname">source</td><td>Immutable source mesh; it may be a mesh borrowed from another owner. </td></tr>
+    <tr><td class="paramname">profile</td><td>Immutable owned settings with one through four descending levels. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success or a structured diagnostic without changing output. @thread Synchronous CPU operation; no callbacks or borrowed references are retained. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a> 第 <a class="el" href="PcgMeshLod_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="PcgMeshLod_8h_source.html">PcgMeshLod.h</a></li>
+<li>src/modules/procgen/<a class="el" href="PcgMeshLod_8cpp_source.html">PcgMeshLod.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

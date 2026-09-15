@@ -1,0 +1,795 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen_editing::ISplinePathDocumentEditTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editing.html">procgen_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html">ISplinePathDocumentEditTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen_editing::ISplinePathDocumentEditTarget类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral reversible spline editing capability.  
+ <a href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SplinePathDocument_8h_source.html">SplinePathDocument.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::procgen_editing::ISplinePathDocumentEditTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.png" usemap="#eve::procgen_5Fediting::ISplinePathDocumentEditTarget_map" alt=""/>
+  <map id="eve::procgen_5Fediting::ISplinePathDocumentEditTarget_map" name="eve::procgen_5Fediting::ISplinePathDocumentEditTarget_map">
+<area href="classeve_1_1procgen__editing_1_1SplinePathDocument.html" title="Owning spline authoring document with transactional operations and schema-versioned snapshots." alt="eve::procgen_editing::SplinePathDocument" shape="rect" coords="0,56,312,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab7e50379dcdae0647f74fe5ba1e91f21" id="r_ab7e50379dcdae0647f74fe5ba1e91f21"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#ab7e50379dcdae0647f74fe5ba1e91f21">~ISplinePathDocumentEditTarget</a> ()=default</td></tr>
+<tr class="separator:ab7e50379dcdae0647f74fe5ba1e91f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b85e1aecda01cac1ff90f9204f16bb6" id="r_a8b85e1aecda01cac1ff90f9204f16bb6"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a8b85e1aecda01cac1ff90f9204f16bb6">makeSetPoint</a> (const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathControlPoint.html">SplinePathControlPoint</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) const =0</td></tr>
+<tr class="memdesc:a8b85e1aecda01cac1ff90f9204f16bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or atomic replacement of one control point.  <br /></td></tr>
+<tr class="separator:a8b85e1aecda01cac1ff90f9204f16bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca6eb80e5d3b8cc595bfccd76a0fd6bf" id="r_aca6eb80e5d3b8cc595bfccd76a0fd6bf"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#aca6eb80e5d3b8cc595bfccd76a0fd6bf">makeDeletePoint</a> (const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) const =0</td></tr>
+<tr class="memdesc:aca6eb80e5d3b8cc595bfccd76a0fd6bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan removal of one stable control point.  <br /></td></tr>
+<tr class="separator:aca6eb80e5d3b8cc595bfccd76a0fd6bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13d6d9ca50cfe3dc57783085d3e33de1" id="r_a13d6d9ca50cfe3dc57783085d3e33de1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a13d6d9ca50cfe3dc57783085d3e33de1">makeSetSettings</a> (const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathSettings.html">SplinePathSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>) const =0</td></tr>
+<tr class="memdesc:a13d6d9ca50cfe3dc57783085d3e33de1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan interpolation and closure settings replacement.  <br /></td></tr>
+<tr class="separator:a13d6d9ca50cfe3dc57783085d3e33de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a816369911b9e47feb7c827fd983ac67d" id="r_a816369911b9e47feb7c827fd983ac67d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a816369911b9e47feb7c827fd983ac67d">makeInsertPointAt</a> (int segment, double <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) const =0</td></tr>
+<tr class="memdesc:a816369911b9e47feb7c827fd983ac67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan shape-preserving insertion into one curve segment.  <br /></td></tr>
+<tr class="separator:a816369911b9e47feb7c827fd983ac67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd625d2622cfefbc4502d600697a00d" id="r_afbd625d2622cfefbc4502d600697a00d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#afbd625d2622cfefbc4502d600697a00d">makeSnapPoint</a> (const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, double gridSize) const =0</td></tr>
+<tr class="memdesc:afbd625d2622cfefbc4502d600697a00d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan anchor snapping to a positive world-space grid size.  <br /></td></tr>
+<tr class="separator:afbd625d2622cfefbc4502d600697a00d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaa56a4fc7c85c244478f5ecd9df5864" id="r_acaa56a4fc7c85c244478f5ecd9df5864"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#acaa56a4fc7c85c244478f5ecd9df5864">makeSnapAll</a> (double gridSize) const =0</td></tr>
+<tr class="memdesc:acaa56a4fc7c85c244478f5ecd9df5864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan snapping every anchor to a positive world-space grid in one reversible operation.  <br /></td></tr>
+<tr class="separator:acaa56a4fc7c85c244478f5ecd9df5864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50fa2e7e8b2b0b4c460fe1443aadd9ca" id="r_a50fa2e7e8b2b0b4c460fe1443aadd9ca"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a50fa2e7e8b2b0b4c460fe1443aadd9ca">makeFlipDirection</a> () const =0</td></tr>
+<tr class="memdesc:a50fa2e7e8b2b0b4c460fe1443aadd9ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversal of traversal direction while preserving Bezier geometry.  <br /></td></tr>
+<tr class="separator:a50fa2e7e8b2b0b4c460fe1443aadd9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae58a87878fc1c1f7185098e308f9bf82" id="r_ae58a87878fc1c1f7185098e308f9bf82"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#ae58a87878fc1c1f7185098e308f9bf82">makeSetChunkBreak</a> (const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, bool disconnected) const =0</td></tr>
+<tr class="memdesc:ae58a87878fc1c1f7185098e308f9bf82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan splitting or reconnecting the chunk boundary before one point.  <br /></td></tr>
+<tr class="separator:ae58a87878fc1c1f7185098e308f9bf82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdd7af62718fce38b24e661c596ce9c6" id="r_acdd7af62718fce38b24e661c596ce9c6"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#acdd7af62718fce38b24e661c596ce9c6">makeAppendChunk</a> (const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathControlPoint.html">SplinePathControlPoint</a> &amp;<a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathControlPoint.html">SplinePathControlPoint</a> &amp;second) const =0</td></tr>
+<tr class="memdesc:acdd7af62718fce38b24e661c596ce9c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan appending one disconnected two-point chunk in one reversible operation.  <br /></td></tr>
+<tr class="separator:acdd7af62718fce38b24e661c596ce9c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11dc8ffa9b9f4bd5a08acead4f75750c" id="r_a11dc8ffa9b9f4bd5a08acead4f75750c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a11dc8ffa9b9f4bd5a08acead4f75750c">makeDeleteChunk</a> (int chunk) const =0</td></tr>
+<tr class="memdesc:a11dc8ffa9b9f4bd5a08acead4f75750c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan removing one zero-based disconnected chunk in one reversible operation.  <br /></td></tr>
+<tr class="separator:a11dc8ffa9b9f4bd5a08acead4f75750c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0af0ffe305ab6a6c19509d4226741a1f" id="r_a0af0ffe305ab6a6c19509d4226741a1f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a0af0ffe305ab6a6c19509d4226741a1f">makeSetPointRotation</a> (const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, double pitchDegrees, double yawDegrees, double rollDegrees) const =0</td></tr>
+<tr class="memdesc:a0af0ffe305ab6a6c19509d4226741a1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan absolute point-local pitch, yaw, and roll replacement.  <br /></td></tr>
+<tr class="separator:a0af0ffe305ab6a6c19509d4226741a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adab6372d08628c8d66a468f01e21b6fe" id="r_adab6372d08628c8d66a468f01e21b6fe"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#adab6372d08628c8d66a468f01e21b6fe">makeResetPointRotation</a> (const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) const =0</td></tr>
+<tr class="memdesc:adab6372d08628c8d66a468f01e21b6fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan resetting one point-local orientation to identity.  <br /></td></tr>
+<tr class="separator:adab6372d08628c8d66a468f01e21b6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b4fa8538b83aa8c6722ea350d569ba9" id="r_a1b4fa8538b83aa8c6722ea350d569ba9"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a1b4fa8538b83aa8c6722ea350d569ba9">makeCenterPoint</a> (const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) const =0</td></tr>
+<tr class="memdesc:a1b4fa8538b83aa8c6722ea350d569ba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan moving an interior control point to the midpoint of its connected neighbours.  <br /></td></tr>
+<tr class="separator:a1b4fa8538b83aa8c6722ea350d569ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac83404b0700d88e308b7bb234648e3ce" id="r_ac83404b0700d88e308b7bb234648e3ce"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#ac83404b0700d88e308b7bb234648e3ce">makeMirrorAxis</a> (std::string_view axis) const =0</td></tr>
+<tr class="memdesc:ac83404b0700d88e308b7bb234648e3ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan mirroring the complete path and handles across x, y, or z.  <br /></td></tr>
+<tr class="separator:ac83404b0700d88e308b7bb234648e3ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a0cbc2782db8898c811f13652b197d182" id="r_a0cbc2782db8898c811f13652b197d182"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1ISplinePathDocumentEditTarget.html#a0cbc2782db8898c811f13652b197d182">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a0cbc2782db8898c811f13652b197d182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable capability id.  <br /></td></tr>
+<tr class="separator:a0cbc2782db8898c811f13652b197d182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral reversible spline editing capability. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathDocument_8h_source.html">SplinePathDocument.h</a> 第 <a class="el" href="SplinePathDocument_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab7e50379dcdae0647f74fe5ba1e91f21" name="ab7e50379dcdae0647f74fe5ba1e91f21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7e50379dcdae0647f74fe5ba1e91f21">&#9670;&#160;</a></span>~ISplinePathDocumentEditTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::procgen_editing::ISplinePathDocumentEditTarget::~ISplinePathDocumentEditTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0cbc2782db8898c811f13652b197d182" name="a0cbc2782db8898c811f13652b197d182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cbc2782db8898c811f13652b197d182">&#9670;&#160;</a></span>editingCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> eve::procgen_editing::ISplinePathDocumentEditTarget::editingCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable capability id. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePathDocument_8h_source.html">SplinePathDocument.h</a> 第 <a class="el" href="SplinePathDocument_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SplinePathDocument_8cpp_source.html#l00130">eve::procgen_editing::SplinePathDocument::describe()</a> , 以及 <a class="el" href="SplinePathDocument_8cpp_source.html#l00138">eve::procgen_editing::SplinePathDocument::queryCapability()</a>.</p>
+
+</div>
+</div>
+<a id="acdd7af62718fce38b24e661c596ce9c6" name="acdd7af62718fce38b24e661c596ce9c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd7af62718fce38b24e661c596ce9c6">&#9670;&#160;</a></span>makeAppendChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeAppendChunk </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathControlPoint.html">SplinePathControlPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathControlPoint.html">SplinePathControlPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>second</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan appending one disconnected two-point chunk in one reversible operation. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a17459190b80530b6960b6436d2e406ed">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a1b4fa8538b83aa8c6722ea350d569ba9" name="a1b4fa8538b83aa8c6722ea350d569ba9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b4fa8538b83aa8c6722ea350d569ba9">&#9670;&#160;</a></span>makeCenterPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeCenterPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan moving an interior control point to the midpoint of its connected neighbours. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#aaa7aa76366d8cf598621c75410f5ea04">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a11dc8ffa9b9f4bd5a08acead4f75750c" name="a11dc8ffa9b9f4bd5a08acead4f75750c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11dc8ffa9b9f4bd5a08acead4f75750c">&#9670;&#160;</a></span>makeDeleteChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeDeleteChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunk</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan removing one zero-based disconnected chunk in one reversible operation. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a681f4f7f68f70db877fe9a29766a304e">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aca6eb80e5d3b8cc595bfccd76a0fd6bf" name="aca6eb80e5d3b8cc595bfccd76a0fd6bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca6eb80e5d3b8cc595bfccd76a0fd6bf">&#9670;&#160;</a></span>makeDeletePoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeDeletePoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan removal of one stable control point. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a40de5da04b98a7d25a59ce407be8eaa7">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a50fa2e7e8b2b0b4c460fe1443aadd9ca" name="a50fa2e7e8b2b0b4c460fe1443aadd9ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50fa2e7e8b2b0b4c460fe1443aadd9ca">&#9670;&#160;</a></span>makeFlipDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeFlipDirection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversal of traversal direction while preserving Bezier geometry. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a137474855836563fce8bfbda782bce77">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a816369911b9e47feb7c827fd983ac67d" name="a816369911b9e47feb7c827fd983ac67d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a816369911b9e47feb7c827fd983ac67d">&#9670;&#160;</a></span>makeInsertPointAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeInsertPointAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan shape-preserving insertion into one curve segment. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a3de066e21c1865bd2d0cb46675ac669e">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac83404b0700d88e308b7bb234648e3ce" name="ac83404b0700d88e308b7bb234648e3ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac83404b0700d88e308b7bb234648e3ce">&#9670;&#160;</a></span>makeMirrorAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeMirrorAxis </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>axis</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan mirroring the complete path and handles across x, y, or z. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a934c917200f881bf4ffa273b1d941307">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="adab6372d08628c8d66a468f01e21b6fe" name="adab6372d08628c8d66a468f01e21b6fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adab6372d08628c8d66a468f01e21b6fe">&#9670;&#160;</a></span>makeResetPointRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeResetPointRotation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan resetting one point-local orientation to identity. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#aac98cbf11ab0ea02f50fbf6d546bc2fb">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae58a87878fc1c1f7185098e308f9bf82" name="ae58a87878fc1c1f7185098e308f9bf82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae58a87878fc1c1f7185098e308f9bf82">&#9670;&#160;</a></span>makeSetChunkBreak()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeSetChunkBreak </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>disconnected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan splitting or reconnecting the chunk boundary before one point. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a2bcf066f3fa6c9acaae0790007301ee2">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8b85e1aecda01cac1ff90f9204f16bb6" name="a8b85e1aecda01cac1ff90f9204f16bb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b85e1aecda01cac1ff90f9204f16bb6">&#9670;&#160;</a></span>makeSetPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeSetPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathControlPoint.html">SplinePathControlPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or atomic replacement of one control point. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a1a389e806230b663b82f8409e65f2fb8">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0af0ffe305ab6a6c19509d4226741a1f" name="a0af0ffe305ab6a6c19509d4226741a1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0af0ffe305ab6a6c19509d4226741a1f">&#9670;&#160;</a></span>makeSetPointRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeSetPointRotation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>pitchDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yawDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rollDegrees</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan absolute point-local pitch, yaw, and roll replacement. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a25ecd8b5f88ebeeb69a08f6619c6cf53">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a13d6d9ca50cfe3dc57783085d3e33de1" name="a13d6d9ca50cfe3dc57783085d3e33de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13d6d9ca50cfe3dc57783085d3e33de1">&#9670;&#160;</a></span>makeSetSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeSetSettings </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen__editing_1_1SplinePathSettings.html">SplinePathSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan interpolation and closure settings replacement. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a3ad07f5560b2e0aa960d5276b34144e2">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="acaa56a4fc7c85c244478f5ecd9df5864" name="acaa56a4fc7c85c244478f5ecd9df5864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaa56a4fc7c85c244478f5ecd9df5864">&#9670;&#160;</a></span>makeSnapAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeSnapAll </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>gridSize</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan snapping every anchor to a positive world-space grid in one reversible operation. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#a09f00c676bef75edde303915b903c97a">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afbd625d2622cfefbc4502d600697a00d" name="afbd625d2622cfefbc4502d600697a00d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbd625d2622cfefbc4502d600697a00d">&#9670;&#160;</a></span>makeSnapPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::procgen_editing::ISplinePathDocumentEditTarget::makeSnapPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>gridSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan anchor snapping to a positive world-space grid size. </p>
+
+<p>在 <a class="el" href="classeve_1_1procgen__editing_1_1SplinePathDocument.html#af8c171946e32a297e61bdd59574d8881">eve::procgen_editing::SplinePathDocument</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/editing/<a class="el" href="SplinePathDocument_8h_source.html">SplinePathDocument.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

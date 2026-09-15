@@ -1,0 +1,403 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 动画模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">动画模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>动画模块</h1>
+<p><b>脚本入口：</b> <code>eve.Animation()</code></p>
+<p>支持九类能力：</p>
+<ol type="1">
+<li>**Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）——兼容保留</li>
+<li>**Motion（LitMotion 风格）**：typed float/Vec2/Vec3 补间，Builder + Push Bind + Handle</li>
+<li>**2D 帧动画**：<code>SpriteSheet</code> + <code>SpriteClip</code> + <code>SpriteAnim</code>（sprite sheet / 图集格子）</li>
+<li>**Spine（region 子集）**：<code>.atlas</code> + skeleton JSON → <code>SpineAnim.collectDrawItems</code> 进 2D 队列</li>
+<li>**3D 骨骼动画播放与动画图**：<code>AnimSkeleton</code> + <code>AnimClip</code>，可用 <code>AnimPlayer</code>、<code>AnimGraph</code>、状态机 <code>AnimStateMachine</code>、或 Motion Matching（<code>MotionDatabase</code> + <code>MotionMatcher</code>）驱动</li>
+<li>**CPU 蒙皮**：<code>AnimSkin</code> 从 <code>ModelData</code> 读取骨骼权重与 inverse-bind，按 <code>AnimPose</code> 世界矩阵做线性混合蒙皮</li>
+<li>**控制论程序动画**：<code>ControlAnim</code>（命名标量通道）与 <code>ControlPose</code>（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD</li>
+<li>**拖尾轨迹**：<code>AnimTrail</code> 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）</li>
+<li>**程序化骨骼**：<code>DynamicBoneSolver</code> 提供弹簧骨、碰撞、风场和距离休眠；<code>FootIKSolver</code> 提供地面探测、脚掌对齐、锁足和骨盆补偿</li>
+</ol>
+<h2>Motion（LitMotion 风格 Push 补间）</h2>
+<p>C++ 入口（Phase 1）：<code>Animation::motion</code> / <code>motionVec2</code> / <code>motionVec3</code> 返回 Builder； <code>bind(sink)</code> 时入库播放。Sink 由调用方提供（<code>FloatPointerSink</code> / 自定义 <code>IMotionFloatSink</code>），跨模块写回不要让 <code>animation</code> 直接 include 上层。</p>
+<div class="fragment"><div class="line"><span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0.f;</div>
+<div class="line">FloatPointerSink sink(&amp;<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>);</div>
+<div class="line"><span class="keyword">auto</span> <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a> = anim-&gt;motion(0.f, 200.f, 0.6f)</div>
+<div class="line">                  .ease(<span class="stringliteral">&quot;outQuad&quot;</span>)</div>
+<div class="line">                  .delay(0.1f)</div>
+<div class="line">                  .loops(2, MotionLoopMode::Yoyo)</div>
+<div class="line">                  .bind(sink)</div>
+<div class="line">                  .expect(<span class="stringliteral">&quot;spawn&quot;</span>);</div>
+<div class="line">anim-&gt;advance(<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);          <span class="comment">// 与 Tween 共用 SimulationStep 泵</span></div>
+<div class="line">anim-&gt;motions().complete(<a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>); <span class="comment">// 跳到终点并触发 onComplete</span></div>
+<div class="line">anim-&gt;motions().cancel(<a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);   <span class="comment">// 取消并触发 onCancel</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00727">AnimClip.cpp:727</a></div></div>
+<div class="ttc" id="aPrimitiveScriptBindings_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveScriptBindings_8cpp_source.html#l00021">PrimitiveScriptBindings.cpp:21</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00287">TreeMesh.cpp:287</a></div></div>
+</div><!-- fragment --><p>无 sink 时可 <code><a class="el" href="OnnxGpgpu_8cpp.html#a44260daa4d99c43fcd192f493566a5a3">run()</a></code>，再用 <code>motions().floatValue(handle)</code> 拉取当前值。</p>
+<h3>Sequence（Phase 2）</h3>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> seq = anim-&gt;sequence();</div>
+<div class="line">seq.append(std::move(anim-&gt;motion(0.f, 1.f, 0.3f).ease(<span class="stringliteral">&quot;outQuad&quot;</span>).to(sinkX))).expect(<span class="stringliteral">&quot;append&quot;</span>);</div>
+<div class="line">seq.appendInterval(0.1f).expect(<span class="stringliteral">&quot;gap&quot;</span>);</div>
+<div class="line">seq.join(std::move(anim-&gt;motion(0.f, 1.f, 0.3f).ease(<span class="stringliteral">&quot;linear&quot;</span>).to(sinkY))).expect(<span class="stringliteral">&quot;join&quot;</span>);</div>
+<div class="line">seq.insert(0.05f, std::move(anim-&gt;motion(1.f, 0.f, 0.2f).to(sinkZ))).expect(<span class="stringliteral">&quot;insert&quot;</span>);</div>
+<div class="line"><span class="keyword">auto</span> playback = seq.run().expect(<span class="stringliteral">&quot;run&quot;</span>);</div>
+<div class="line">anim-&gt;advance(<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line">playback.complete().expect(<span class="stringliteral">&quot;complete&quot;</span>);</div>
+</div><!-- fragment --><p>脚本：</p>
+<div class="fragment"><div class="line">local b = anim.newMotion(0, 100, 0.5);</div>
+<div class="line">b.ease(&quot;outQuad&quot;);</div>
+<div class="line">b.loops(2, &quot;yoyo&quot;);</div>
+<div class="line">b.cancelOnError(true);</div>
+<div class="line">local h = b.run();</div>
+<div class="line">print(h.value());</div>
+<div class="line">h.complete();</div>
+<div class="line">print(anim.getMotionCount());</div>
+<div class="line"> </div>
+<div class="line">local seq = anim.newMotionSequence();</div>
+<div class="line">seq.append(anim.newMotion(0, 1, 0.3));</div>
+<div class="line">seq.appendInterval(0.1);</div>
+<div class="line">seq.join(anim.newMotion(0, 1, 0.3));</div>
+<div class="line">print(seq.cursor());</div>
+<div class="line">print(seq.itemCount());</div>
+<div class="line">local sh = seq.run();</div>
+<div class="line">print(sh.childCount());</div>
+</div><!-- fragment --><p>Ease 扩展：<code>in/out/inOut</code> + <code>Back</code> / <code>Elastic</code> / <code>Bounce</code>。</p>
+<p>Punch / Shake（有限时长阻尼正弦；<code>to</code>/<code>strength</code> 为振幅）与 Color/Quat：</p>
+<div class="fragment"><div class="line">anim-&gt;punch(0.f, 12.f, 0.4f).frequency(18).dampingRatio(0.f).bind(sinkX);</div>
+<div class="line">anim-&gt;shake(0.f, 0.2f, 0.5f).frequency(20).seed(7).bind(sinkX);</div>
+<div class="line">anim-&gt;motionColor(MotionColor{0,0,0,1}, MotionColor{1,0,0,1}, 0.3f).bind(colorSink);</div>
+<div class="line">anim-&gt;motionQuat(MotionQuat{0,0,0,1}, MotionQuat{0,1,0,0}, 0.3f).bind(quatSink);</div>
+</div><!-- fragment --><p>脚本：</p>
+<div class="fragment"><div class="line">local p = anim.newMotionPunch(0, 12, 0.4);</div>
+<div class="line">p.frequency(18);</div>
+<div class="line">p.dampingRatio(0.0);</div>
+<div class="line">local h = p.run();</div>
+<div class="line">local s = anim.newMotionShake(0, 0.2, 0.5);</div>
+<div class="line">s.frequency(20);</div>
+<div class="line">s.seed(7);</div>
+<div class="line">s.run();</div>
+</div><!-- fragment --><h2>基本用法（Tween）</h2>
+<div class="fragment"><div class="line">local anim = eve.Animation();</div>
+<div class="line">local move = anim.newTween(0.6);</div>
+<div class="line">move.setFrom(&quot;x&quot;, 0);</div>
+<div class="line">move.setTo(&quot;x&quot;, 200);</div>
+<div class="line">move.setEase(&quot;outQuad&quot;);</div>
+<div class="line">move.start();</div>
+<div class="line">anim.update(dt);</div>
+</div><!-- fragment --><h2>程序化骨骼与 Foot IK</h2>
+<p>Dynamic Bone 在基础动画采样后修改 Pose，适合头发、裙摆、尾巴和挂件。链、碰撞体及 Skeleton 均为 solver 内部状态；传入的 Skeleton 和地面查询对象为 borrowed，必须比 solver 活得更久。<code>update</code> 使用固定子步并限制单帧最大步数，非有限时间步会被忽略。</p>
+<div class="fragment"><div class="line">local dynamic = anim.newDynamicBoneSolver(skeleton);</div>
+<div class="line">// 发卡/马尾推荐：setupHairChain 带上 tip 延伸与自碰撞默认值</div>
+<div class="line">local hair = anim.setupHairChain(dynamic, &quot;hair_root&quot;, &quot;hair_tip&quot;);</div>
+<div class="line">anim.setupHairHeadCollider(dynamic, &quot;head&quot;, 0.12);</div>
+<div class="line">dynamic.setGlobalGravity(0, -9.81, 0);</div>
+<div class="line">dynamic.setExternalForce(windX, windY, windZ);</div>
+<div class="line">dynamic.update(pose, dt);</div>
+<div class="line"> </div>
+<div class="line">local feet = anim.newFootIKSolver(skeleton);</div>
+<div class="line">feet.setPelvisBone(skeleton.findBone(&quot;hips&quot;));</div>
+<div class="line">feet.configureLeftLeg(upperLeft, lowerLeft, footLeft, 0.03);</div>
+<div class="line">feet.configureRightLeg(upperRight, lowerRight, footRight, 0.03);</div>
+<div class="line">feet.configureLeftToe(toeLeft, 0.5);</div>
+<div class="line">feet.configureRightToe(toeRight, 0.5);</div>
+<div class="line">feet.setFootLockEnabled(true);</div>
+<div class="line">feet.setGroundQuery(groundQuery);</div>
+<div class="line">feet.apply(pose, dt);</div>
+</div><!-- fragment --><p><code>setGroundQuery</code> 接收实现地面探测契约的运行时对象；没有 provider 或 provider 返回 Unavailable 时，solver 保留脚本通过 <code>setLeftContact</code> / <code>setRightContact</code> 提供的手动 接触点。调用顺序应为动画采样、Foot IK、Dynamic Bone，最后计算世界 Pose 与蒙皮。</p>
+<h2>基本用法（Tween）</h2>
+<div class="fragment"><div class="line">local anim = eve.Animation();</div>
+<div class="line">local move = anim.newTween(0.6);</div>
+<div class="line">move.setFrom(&quot;x&quot;, 0);</div>
+<div class="line">move.setTo(&quot;x&quot;, 200);</div>
+<div class="line">move.setEase(&quot;outQuad&quot;);</div>
+<div class="line">move.start();</div>
+<div class="line">anim.update(dt);</div>
+</div><!-- fragment --><h2>基本用法（2D 帧动画）</h2>
+<div class="fragment"><div class="line">local anim = eve.Animation();</div>
+<div class="line">local gfx = eve.Graphics();</div>
+<div class="line">local sheet = anim.newSpriteSheet();</div>
+<div class="line">sheet.setGrid(4, 2, 32, 48, 0, 0, 0, 0); // cols, rows, frameW, frameH, margin, spacing, ox, oy</div>
+<div class="line"> </div>
+<div class="line">local walk = anim.newSpriteClip(&quot;walk&quot;);</div>
+<div class="line">walk.setLoop(true);</div>
+<div class="line">walk.addFrame(0, 0.1);</div>
+<div class="line">walk.addFrame(1, 0.1);</div>
+<div class="line">walk.addFrame(2, 0.1);</div>
+<div class="line">walk.addFrame(3, 0.1);</div>
+<div class="line"> </div>
+<div class="line">local quad = gfx.newQuad(0, 0, 32, 48);</div>
+<div class="line">local player = anim.newSpriteAnim();</div>
+<div class="line">player.setSheet(sheet);</div>
+<div class="line">player.bindQuad(quad); // 每帧自动 setViewport</div>
+<div class="line">player.play(walk);</div>
+<div class="line">// eve_update:</div>
+<div class="line">anim.update(dt);</div>
+<div class="line">// 把 quad 挂到 Renderable2D.sprite.quad 即可换帧</div>
+</div><!-- fragment --><p>独立 PNG 序列可在运行时自动合并为共享图集，不需要先用外部工具合图； 每帧会自动扩展 1 像素边缘，避免线性过滤、缩放和旋转时采样到相邻帧：</p>
+<div class="fragment"><div class="line">local sheet = anim.newSpriteSheetFromSequence(</div>
+<div class="line">    gfx, &quot;assets/frame_{n}.png&quot;, 1, 64, 8);</div>
+<div class="line">local burst = anim.newSpriteClip(&quot;burst&quot;);</div>
+<div class="line">burst.addRange(0, 63, 24.0); // inclusive range, 24 FPS</div>
+<div class="line"> </div>
+<div class="line">local quad = gfx.newQuad(0, 0, 128, 128);</div>
+<div class="line">local player = anim.newSpriteAnim();</div>
+<div class="line">player.setSheet(sheet);</div>
+<div class="line">player.bindQuad(quad);</div>
+<div class="line">player.play(burst);          // player.playReverse(burst) 可倒放</div>
+<div class="line">player.setSpeed(0.5);        // 支持负数；0 冻结时间</div>
+</div><!-- fragment --><p><code>consumeLooped()</code> / <code>consumeCompleted()</code> 用于每帧消费一次性事件， <code>getLoopCount()</code> 返回本次播放以来累计跨过的循环边界数。</p>
+<p>播放速度还可以由关键点曲线控制。曲线值与 <code>setSpeed()</code> 的基础倍率相乘， 曲线时间独立推进，因此首个关键点为 0 也不会把播放永久卡住：</p>
+<div class="fragment"><div class="line">player.setSpeed(1.0);</div>
+<div class="line">player.addSpeedCurveKey(0.0, 0.2);</div>
+<div class="line">player.addSpeedCurveKey(1.2, 2.4);</div>
+<div class="line">player.addSpeedCurveKey(2.6, 0.35);</div>
+<div class="line">player.addSpeedCurveKey(4.0, 0.2);</div>
+<div class="line">player.setSpeedCurveLoop(true);</div>
+<div class="line">// clearSpeedCurve / resetSpeedCurve / getSpeedCurveValue</div>
+</div><!-- fragment --><p>关键点之间采用线性插值；如需平滑 S 曲线，可用更多采样关键点逼近。 也可调用 <code>setSpeedCurveInterpolation("linear"|"smooth"|"cubic")</code> 选择插值。</p>
+<p>序列加载器会按 alpha 自动裁掉透明边缘，保留每帧原始尺寸和偏移； <code>player.bindSprite(sprite)</code> 会同步这些布局信息，避免裁边动画抖动。相同加载参数会复用缓存图集， 可用 <code>getSpriteSequenceCacheCount/Bytes</code> 查看数量与估算显存。</p>
+<p>Aseprite 与 TexturePacker 的 JSON Hash 格式可通过 <code>newSpriteSheetFromAtlasJson(gfx, texturePath, jsonPath)</code> 导入；当前明确拒绝 rotated frame。</p>
+<h2>基本用法（Spine region）</h2>
+<p>内置解析器支持 Spine <code>.atlas</code> + skeleton JSON 的 **region 附件**子集（骨骼 TRS、slot 附件切换）。Mesh / IK / path / deform 需自行接入官方 <code>spine-cpp</code> 插件。</p>
+<div class="fragment"><div class="line">local anim = eve.Animation();</div>
+<div class="line">local atlas = anim.newSpineAtlasFromFile(&quot;hero.atlas&quot;);</div>
+<div class="line">local data = anim.newSpineSkeletonDataFromFile(&quot;hero.json&quot;);</div>
+<div class="line">local sk = anim.newSpineSkeleton(data);</div>
+<div class="line">local spine = anim.newSpineAnim(sk);</div>
+<div class="line">spine.setAtlas(atlas);</div>
+<div class="line">spine.setPageTextureByName(&quot;hero.png&quot;, tex); // Graphics 纹理</div>
+<div class="line">spine.setPosition(400, 300);</div>
+<div class="line">spine.setFlipY(true); // 默认 true：Spine Y-up → 屏幕 Y-down</div>
+<div class="line">spine.play(&quot;idle&quot;);</div>
+<div class="line">// eve_update:</div>
+<div class="line">anim.update(dt);</div>
+<div class="line">// C++ / 自定义系统：spine.collectDrawItems(queue)</div>
+<div class="line">// 脚本可读：spine.getDrawSlotCount / getDrawSlotX/Y/Width/Height</div>
+</div><!-- fragment --><h2>基本用法（3D 状态机）</h2>
+<div class="fragment"><div class="line">local anim = eve.Animation();</div>
+<div class="line">local sk = anim.newSkeleton();</div>
+<div class="line">local root = sk.addBone(&quot;root&quot;, -1);</div>
+<div class="line">local hip = sk.addBone(&quot;hip&quot;, root);</div>
+<div class="line">sk.setBindPosition(hip, 0, 1, 0);</div>
+<div class="line"> </div>
+<div class="line">local idle = anim.newClip(&quot;idle&quot;);</div>
+<div class="line">// idle.addPositionKey / addRotationKey ...</div>
+<div class="line">local walk = anim.newClip(&quot;walk&quot;);</div>
+<div class="line"> </div>
+<div class="line">local sm = anim.newStateMachine(sk);</div>
+<div class="line">sm.addState(&quot;Idle&quot;, idle);</div>
+<div class="line">sm.addState(&quot;Walk&quot;, walk);</div>
+<div class="line">sm.setEntry(&quot;Idle&quot;);</div>
+<div class="line">local t = sm.addTransition(&quot;Idle&quot;, &quot;Walk&quot;, 0.15);</div>
+<div class="line">sm.addFloatCondition(t, &quot;speed&quot;, &quot;&gt;&quot;, 0.5);</div>
+<div class="line">sm.setFloat(&quot;speed&quot;, 1.0);</div>
+<div class="line">sm.update(dt);</div>
+<div class="line">local pose = sm.getPose();</div>
+</div><!-- fragment --><h2>可组合 3D Animation Graph</h2>
+<p><code>AnimGraph</code> 用稳定整数句柄连接节点，支持共享子图单帧缓存、普通混合、 additive、逐骨骼 mask 分层、one-shot，以及 1D/2D blend space。现有 <code>AnimPlayer</code> 和 <code>AnimStateMachine</code> 保持兼容，适合简单控制器；复杂角色建议使用图。</p>
+<div class="fragment"><div class="line">local graph = anim.newGraph(sk);</div>
+<div class="line">local idleNode = graph.addClip(idle);</div>
+<div class="line">local walkNode = graph.addClip(walk);</div>
+<div class="line">local runNode = graph.addClip(run);</div>
+<div class="line"> </div>
+<div class="line">local locomotion = graph.addBlendSpace1D();</div>
+<div class="line">graph.addBlendSpace1DPoint(locomotion, 0.0, idleNode);</div>
+<div class="line">graph.addBlendSpace1DPoint(locomotion, 2.0, walkNode);</div>
+<div class="line">graph.addBlendSpace1DPoint(locomotion, 6.0, runNode);</div>
+<div class="line">graph.setPosition1D(locomotion, speed);</div>
+<div class="line"> </div>
+<div class="line">local fireNode = graph.addClip(fire);</div>
+<div class="line">local fireLayer = graph.addOneShot(locomotion, fireNode, 0.08, 0.12);</div>
+<div class="line">graph.clearBoneMask(fireLayer);</div>
+<div class="line">graph.setBoneMask(fireLayer, sk.findBone(&quot;Spine&quot;), 1.0, true);</div>
+<div class="line">graph.setRoot(fireLayer);</div>
+<div class="line">graph.trigger(fireLayer);</div>
+<div class="line"> </div>
+<div class="line">// eve_update:</div>
+<div class="line">graph.update(dt);</div>
+<div class="line">local pose = graph.getPose();</div>
+</div><!-- fragment --><p><code>addLayer(base, overlay, weight)</code> 默认 mask 全为 0，须显式设置参与骨骼； <code>addAdditive(base, delta, weight)</code> 默认作用于全身；默认参考是 identity（样本本身就是局部空间 delta），可用 <code>setAdditiveReference(node, "bind"|"identity")</code> 改为相对 bind pose，并用 <code>getAdditiveReference(node)</code> 读取当前参考。Additive clip 应以 identity 姿态为参考：位移为差值、旋转为差值四元数、缩放以 1 为基准。 one-shot 的 shot 输入当前应是 clip 节点，用该 clip 的时长决定结束和淡出。</p>
+<h2>基本用法（Motion Matching）</h2>
+<div class="fragment"><div class="line">local db = anim.newMotionDatabase(sk);</div>
+<div class="line">db.setRootBoneByName(&quot;mixamorig:Hips&quot;); // Mixamo 等角色常用髋骨做轨迹根</div>
+<div class="line">db.addFeatureBoneByName(&quot;mixamorig:LeftFoot&quot;);</div>
+<div class="line">db.addFeatureBoneByName(&quot;mixamorig:RightFoot&quot;);</div>
+<div class="line">db.addClip(walk);</div>
+<div class="line">db.addClip(run);</div>
+<div class="line">db.bake();</div>
+<div class="line"> </div>
+<div class="line">local mm = anim.newMotionMatcher(sk, db);</div>
+<div class="line">mm.setDesiredVelocity(0, 3);</div>
+<div class="line">mm.setDesiredYaw(0);</div>
+<div class="line">mm.setSearchInterval(0.1);</div>
+<div class="line">mm.update(dt);</div>
+<div class="line">local pose = mm.getPose();</div>
+</div><!-- fragment --><p>原地动画必须在 <code>bake()</code> 前用 <code>clip.applyPlanarRootMotion(rootBone, vx, vz)</code> 补入标定的移动速度；恒定的单关键帧 root 轨道也会补齐终点。数据库对循环的平面 位移累计整周期行程，避免把回到起点误当作反向速度。<code>setDesiredVelocity</code> 输入 世界 XZ 速度，<code>setDesiredYaw</code> 为绕 Y 轴的弧度，正向是 <code>(sin(yaw), cos(yaw))</code>。</p>
+<p>匹配器以当前播放时刻为连续候选；新候选须改善至少 10% 的代价才切换，避免反复 重启交叉淡入。<code>setIgnoreRadius</code> 保留当前时刻邻域内的连续播放，也覆盖循环接缝。 <code>setPlayRateRange(minimum, maximum)</code> 返回 <code>{ok,message}</code>，配置 Motion Matching 播放速率的闭区间。可变特征布局会按 UE Pose Search 的规则，累加查询与选中姿势中 所有未归一化轨迹速度通道的长度，以二者比值作为播放速率并夹到该区间；搜索节流仍按 模拟时间推进。<code>getPlayRateMinimum()</code> / <code>getPlayRateMaximum()</code> 返回当前速率区间， <code>getPlayRate()</code> 返回当前实际速率，默认区间为 <code>[1,1]</code>。参数必须满足 有限的 <code>0 &lt; minimum &lt;= maximum &lt;= 10</code>；失败时保留原区间和当前速率。</p>
+<p><code>setPoseReselectHistory(seconds)</code> 复制 UE PoseSearch 的短期姿势历史：正时间步会记录 当前最接近的烘焙姿势，在指定时间内禁止把它重新选为跳转目标，但不会阻止当前姿势继续播放。 <code>getPoseReselectHistory()</code> 返回当前期限。零会清空并关闭历史；脚本返回的 <code>{ok,message}</code> 必须检查。候选只需严格优于继续播放成本即可切换， 不会再额外施加非源自 UE 的百分比改善门槛。 若物理由角色控制器负责，先复制 <code>getPose()</code>，再从渲染副本移除平面 root 位移； 不要修改匹配器持有的姿态。参考 <code>examples/climbing-motion-matching</code>。</p>
+<h2>基本用法（控制论程序动画）</h2>
+<p>二阶动力学把目标当成输入 <code>x</code>，输出 <code>y</code> 满足：</p>
+<p>[ \ddot y + k_1 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

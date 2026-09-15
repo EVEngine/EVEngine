@@ -1,0 +1,805 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainMultiTileWorkspace类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainMultiTileWorkspace类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning script-safe collection of height tiles with atomic multi-tile operations. Tiles are copied on insertion and never retain caller rasters. The workspace is one mutable owner, move-only, and caller-thread affine. It invokes no callbacks and exposes only copied outputs.  
+ <a href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainMultiTile_8h_source.html">TerrainMultiTile.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainMultiTileWorkspace_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac8fb4253de6159ae52080d19e4f76629" id="r_ac8fb4253de6159ae52080d19e4f76629"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#ac8fb4253de6159ae52080d19e4f76629">TerrainMultiTileWorkspace</a> ()</td></tr>
+<tr class="separator:ac8fb4253de6159ae52080d19e4f76629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a416443bedc48abaf05bc47bdba0bfd" id="r_a0a416443bedc48abaf05bc47bdba0bfd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a0a416443bedc48abaf05bc47bdba0bfd">~TerrainMultiTileWorkspace</a> ()</td></tr>
+<tr class="separator:a0a416443bedc48abaf05bc47bdba0bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa749b19f88a4f96972001fa2a2e70506" id="r_aa749b19f88a4f96972001fa2a2e70506"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#aa749b19f88a4f96972001fa2a2e70506">TerrainMultiTileWorkspace</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:aa749b19f88a4f96972001fa2a2e70506"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5641c6a48f1ea2766e7c911acc219dac" id="r_a5641c6a48f1ea2766e7c911acc219dac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a5641c6a48f1ea2766e7c911acc219dac">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a5641c6a48f1ea2766e7c911acc219dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68e50b7869f46bdb6ae8b2caad256b4" id="r_ac68e50b7869f46bdb6ae8b2caad256b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#ac68e50b7869f46bdb6ae8b2caad256b4">TerrainMultiTileWorkspace</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;)=delete</td></tr>
+<tr class="separator:ac68e50b7869f46bdb6ae8b2caad256b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac84abb795455bc6717efdd1f880c89ce" id="r_ac84abb795455bc6717efdd1f880c89ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#ac84abb795455bc6717efdd1f880c89ce">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;)=delete</td></tr>
+<tr class="separator:ac84abb795455bc6717efdd1f880c89ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b85557c7f79eeff5b7db518b51690c1" id="r_a9b85557c7f79eeff5b7db518b51690c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a9b85557c7f79eeff5b7db518b51690c1">addTile</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, double originX, double originZ, double <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, double <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, bool worldMap=false)</td></tr>
+<tr class="memdesc:a9b85557c7f79eeff5b7db518b51690c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a uniquely named tile into the workspace atomically.  <br /></td></tr>
+<tr class="separator:a9b85557c7f79eeff5b7db518b51690c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a977c6685910957971d1d735376a7057f" id="r_a977c6685910957971d1d735376a7057f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a977c6685910957971d1d735376a7057f">stamp</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;stamp, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;localMask, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;globalMask, bool worldMapOperation=false)</td></tr>
+<tr class="memdesc:a977c6685910957971d1d735376a7057f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a stamp transaction to owned tiles; failure preserves tiles and the prior report.  <br /></td></tr>
+<tr class="separator:a977c6685910957971d1d735376a7057f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c00b58add14aff999e041a88267d96c" id="r_a5c00b58add14aff999e041a88267d96c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a5c00b58add14aff999e041a88267d96c">stitch</a> (const std::string &amp;terrainA, const std::string &amp;terrainB, const <a class="el" href="structeve_1_1procgen_1_1TerrainHeightStitchSettings.html">TerrainHeightStitchSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>={})</td></tr>
+<tr class="memdesc:a5c00b58add14aff999e041a88267d96c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stitch two named owned tiles and append one undoable all-tile snapshot.  <br /></td></tr>
+<tr class="separator:a5c00b58add14aff999e041a88267d96c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57355ad53b265963f330bcfa6264dd9e" id="r_a57355ad53b265963f330bcfa6264dd9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a57355ad53b265963f330bcfa6264dd9e">copyTile</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:a57355ad53b265963f330bcfa6264dd9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a named current tile into a matching caller-owned output.  <br /></td></tr>
+<tr class="separator:a57355ad53b265963f330bcfa6264dd9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30dff3dbebf6ba92e0041c787bb7b2d" id="r_af30dff3dbebf6ba92e0041c787bb7b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#af30dff3dbebf6ba92e0041c787bb7b2d">undo</a> ()</td></tr>
+<tr class="memdesc:af30dff3dbebf6ba92e0041c787bb7b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the previous all-tile snapshot atomically.  <br /></td></tr>
+<tr class="separator:af30dff3dbebf6ba92e0041c787bb7b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e0e54799ef909b1ce8f642f38aa0eeb" id="r_a5e0e54799ef909b1ce8f642f38aa0eeb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a5e0e54799ef909b1ce8f642f38aa0eeb">redo</a> ()</td></tr>
+<tr class="memdesc:a5e0e54799ef909b1ce8f642f38aa0eeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the next all-tile snapshot atomically.  <br /></td></tr>
+<tr class="separator:a5e0e54799ef909b1ce8f642f38aa0eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a256ab9b737cfda0da93ae2d9a26bd07c" id="r_a256ab9b737cfda0da93ae2d9a26bd07c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a256ab9b737cfda0da93ae2d9a26bd07c">getTileCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a256ab9b737cfda0da93ae2d9a26bd07c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of owned tiles.  <br /></td></tr>
+<tr class="separator:a256ab9b737cfda0da93ae2d9a26bd07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cc6e5b301a624ea584e293107e49b13" id="r_a6cc6e5b301a624ea584e293107e49b13"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a6cc6e5b301a624ea584e293107e49b13">getLastAffectedTiles</a> () const noexcept</td></tr>
+<tr class="memdesc:a6cc6e5b301a624ea584e293107e49b13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Affected tile count from the last successful operation, or zero before one.  <br /></td></tr>
+<tr class="separator:a6cc6e5b301a624ea584e293107e49b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33d7ec75abf72d7c7ceb057d3dda31ac" id="r_a33d7ec75abf72d7c7ceb057d3dda31ac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a33d7ec75abf72d7c7ceb057d3dda31ac">getLastChangedSamples</a> () const noexcept</td></tr>
+<tr class="memdesc:a33d7ec75abf72d7c7ceb057d3dda31ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changed sample count from the last successful operation, or zero before one.  <br /></td></tr>
+<tr class="separator:a33d7ec75abf72d7c7ceb057d3dda31ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeae94d4f2e1154197ed1e03f45b8e03a" id="r_aeae94d4f2e1154197ed1e03f45b8e03a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#aeae94d4f2e1154197ed1e03f45b8e03a">getLastMappingCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aeae94d4f2e1154197ed1e03f45b8e03a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of affected-pixel mappings from the last successful operation.  <br /></td></tr>
+<tr class="separator:aeae94d4f2e1154197ed1e03f45b8e03a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed955c9595f28d4df71d6f80b150fdc" id="r_a5ed955c9595f28d4df71d6f80b150fdc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a5ed955c9595f28d4df71d6f80b150fdc">getOperationCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a5ed955c9595f28d4df71d6f80b150fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Successful stamp count including any redo suffix.  <br /></td></tr>
+<tr class="separator:a5ed955c9595f28d4df71d6f80b150fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6515426cd7c0270e8b414f4822974467" id="r_a6515426cd7c0270e8b414f4822974467"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html#a6515426cd7c0270e8b414f4822974467">getAppliedCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a6515426cd7c0270e8b414f4822974467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applied successful stamp count at the current history cursor.  <br /></td></tr>
+<tr class="separator:a6515426cd7c0270e8b414f4822974467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning script-safe collection of height tiles with atomic multi-tile operations. Tiles are copied on insertion and never retain caller rasters. The workspace is one mutable owner, move-only, and caller-thread affine. It invokes no callbacks and exposes only copied outputs. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8h_source.html">TerrainMultiTile.h</a> 第 <a class="el" href="TerrainMultiTile_8h_source.html#l00129">129</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac8fb4253de6159ae52080d19e4f76629" name="ac8fb4253de6159ae52080d19e4f76629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8fb4253de6159ae52080d19e4f76629">&#9670;&#160;</a></span>TerrainMultiTileWorkspace() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiTileWorkspace::TerrainMultiTileWorkspace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a416443bedc48abaf05bc47bdba0bfd" name="a0a416443bedc48abaf05bc47bdba0bfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a416443bedc48abaf05bc47bdba0bfd">&#9670;&#160;</a></span>~TerrainMultiTileWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiTileWorkspace::~TerrainMultiTileWorkspace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa749b19f88a4f96972001fa2a2e70506" name="aa749b19f88a4f96972001fa2a2e70506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa749b19f88a4f96972001fa2a2e70506">&#9670;&#160;</a></span>TerrainMultiTileWorkspace() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiTileWorkspace::TerrainMultiTileWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac68e50b7869f46bdb6ae8b2caad256b4" name="ac68e50b7869f46bdb6ae8b2caad256b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68e50b7869f46bdb6ae8b2caad256b4">&#9670;&#160;</a></span>TerrainMultiTileWorkspace() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainMultiTileWorkspace::TerrainMultiTileWorkspace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9b85557c7f79eeff5b7db518b51690c1" name="a9b85557c7f79eeff5b7db518b51690c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b85557c7f79eeff5b7db518b51690c1">&#9670;&#160;</a></span>addTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiTileWorkspace::addTile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>worldMap</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a uniquely named tile into the workspace atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a57355ad53b265963f330bcfa6264dd9e" name="a57355ad53b265963f330bcfa6264dd9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57355ad53b265963f330bcfa6264dd9e">&#9670;&#160;</a></span>copyTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiTileWorkspace::copyTile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a named current tile into a matching caller-owned output. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00447">447</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">eve::procgen::raster_detail::publish()</a> , 以及 <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>.</p>
+
+</div>
+</div>
+<a id="a6515426cd7c0270e8b414f4822974467" name="a6515426cd7c0270e8b414f4822974467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6515426cd7c0270e8b414f4822974467">&#9670;&#160;</a></span>getAppliedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiTileWorkspace::getAppliedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applied successful stamp count at the current history cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6cc6e5b301a624ea584e293107e49b13" name="a6cc6e5b301a624ea584e293107e49b13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cc6e5b301a624ea584e293107e49b13">&#9670;&#160;</a></span>getLastAffectedTiles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiTileWorkspace::getLastAffectedTiles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Affected tile count from the last successful operation, or zero before one. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33d7ec75abf72d7c7ceb057d3dda31ac" name="a33d7ec75abf72d7c7ceb057d3dda31ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33d7ec75abf72d7c7ceb057d3dda31ac">&#9670;&#160;</a></span>getLastChangedSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiTileWorkspace::getLastChangedSamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Changed sample count from the last successful operation, or zero before one. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00487">487</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeae94d4f2e1154197ed1e03f45b8e03a" name="aeae94d4f2e1154197ed1e03f45b8e03a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeae94d4f2e1154197ed1e03f45b8e03a">&#9670;&#160;</a></span>getLastMappingCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiTileWorkspace::getLastMappingCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of affected-pixel mappings from the last successful operation. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ed955c9595f28d4df71d6f80b150fdc" name="a5ed955c9595f28d4df71d6f80b150fdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ed955c9595f28d4df71d6f80b150fdc">&#9670;&#160;</a></span>getOperationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiTileWorkspace::getOperationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Successful stamp count including any redo suffix. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a256ab9b737cfda0da93ae2d9a26bd07c" name="a256ab9b737cfda0da93ae2d9a26bd07c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256ab9b737cfda0da93ae2d9a26bd07c">&#9670;&#160;</a></span>getTileCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMultiTileWorkspace::getTileCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of owned tiles. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00485">485</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac84abb795455bc6717efdd1f880c89ce" name="ac84abb795455bc6717efdd1f880c89ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac84abb795455bc6717efdd1f880c89ce">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp; eve::procgen::TerrainMultiTileWorkspace::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5641c6a48f1ea2766e7c911acc219dac" name="a5641c6a48f1ea2766e7c911acc219dac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5641c6a48f1ea2766e7c911acc219dac">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp; eve::procgen::TerrainMultiTileWorkspace::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiTileWorkspace.html">TerrainMultiTileWorkspace</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e0e54799ef909b1ce8f642f38aa0eeb" name="a5e0e54799ef909b1ce8f642f38aa0eeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e0e54799ef909b1ce8f642f38aa0eeb">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiTileWorkspace::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the next all-tile snapshot atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00506">506</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a977c6685910957971d1d735376a7057f" name="a977c6685910957971d1d735376a7057f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a977c6685910957971d1d735376a7057f">&#9670;&#160;</a></span>stamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiTileWorkspace::stamp </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>stamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>localMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>globalMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>worldMapOperation</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a stamp transaction to owned tiles; failure preserves tiles and the prior report. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00423">423</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>.</p>
+
+</div>
+</div>
+<a id="a5c00b58add14aff999e041a88267d96c" name="a5c00b58add14aff999e041a88267d96c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c00b58add14aff999e041a88267d96c">&#9670;&#160;</a></span>stitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiTileWorkspace::stitch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>terrainA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>terrainB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainHeightStitchSettings.html">TerrainHeightStitchSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stitch two named owned tiles and append one undoable all-tile snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00458">458</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TerrainMultiTile_8h_source.html#l00023">eve::procgen::TerrainHeightTile::name</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00258">eve::procgen::stitchTerrainHeightmaps()</a>.</p>
+
+</div>
+</div>
+<a id="af30dff3dbebf6ba92e0041c787bb7b2d" name="af30dff3dbebf6ba92e0041c787bb7b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af30dff3dbebf6ba92e0041c787bb7b2d">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainMultiTileWorkspace::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the previous all-tile snapshot atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a> 第 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00491">491</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainMultiTile_8h_source.html">TerrainMultiTile.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainMultiTile_8cpp_source.html">TerrainMultiTile.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

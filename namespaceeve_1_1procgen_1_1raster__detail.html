@@ -1,0 +1,468 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::raster_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html">raster_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::raster_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a878d586b5dd783ddf1a124a7a7429da8" id="r_a878d586b5dd783ddf1a124a7a7429da8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#a878d586b5dd783ddf1a124a7a7429da8">validRaster</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;map)</td></tr>
+<tr class="separator:a878d586b5dd783ddf1a124a7a7429da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac70ee5cf2b438340799cdb35f5fd4165" id="r_ac70ee5cf2b438340799cdb35f5fd4165"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">invalid</a> (std::string <a class="el" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>)</td></tr>
+<tr class="separator:ac70ee5cf2b438340799cdb35f5fd4165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad50f779fc92a526a89c15c93db78a0de" id="r_ad50f779fc92a526a89c15c93db78a0de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#ad50f779fc92a526a89c15c93db78a0de">isRepresentable</a> (double <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="separator:ad50f779fc92a526a89c15c93db78a0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fe0bd87c84c8eb21fae3f4f0f200722" id="r_a2fe0bd87c84c8eb21fae3f4f0f200722"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#a2fe0bd87c84c8eb21fae3f4f0f200722">textureSample</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;map, double <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, double <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a2fe0bd87c84c8eb21fae3f4f0f200722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41f6005867e523f5cdc2549335420b4b" id="r_a41f6005867e523f5cdc2549335420b4b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;map, double <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, double <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a41f6005867e523f5cdc2549335420b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b19b25bd92b98f1848e9e51c4cdc5b6" id="r_a7b19b25bd92b98f1848e9e51c4cdc5b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#a7b19b25bd92b98f1848e9e51c4cdc5b6">publish</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, std::vector&lt; float &gt; candidate)</td></tr>
+<tr class="separator:a7b19b25bd92b98f1848e9e51c4cdc5b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412aeb80b80cddc17dff26483ca1a32a" id="r_a412aeb80b80cddc17dff26483ca1a32a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#a412aeb80b80cddc17dff26483ca1a32a">curveSample</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, double <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="separator:a412aeb80b80cddc17dff26483ca1a32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a412aeb80b80cddc17dff26483ca1a32a" name="a412aeb80b80cddc17dff26483ca1a32a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412aeb80b80cddc17dff26483ca1a32a">&#9670;&#160;</a></span>curveSample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::raster_detail::curveSample </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>curve</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00047">eve::procgen::TerrainCollisionMaskStack::apply()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00160">eve::procgen::applyTerrainHeightCurve()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00239">eve::procgen::applyTerrainStrength()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00147">eve::procgen::generateTerrainCurvatureMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00351">eve::procgen::generateTerrainDistanceMask()</a>, <a class="el" href="TerrainImageMask_8cpp_source.html#l00020">eve::procgen::generateTerrainImageMask()</a>, <a class="el" href="TerrainNoiseMask_8cpp_source.html#l00051">eve::procgen::generateTerrainNoiseMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00313">eve::procgen::generateTerrainRangeMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00203">eve::procgen::growShrinkTerrainMask()</a> , 以及 <a class="el" href="TerrainMask_8cpp_source.html#l00305">eve::procgen::transformTerrainMask()</a>.</p>
+
+</div>
+</div>
+<a id="ac70ee5cf2b438340799cdb35f5fd4165" name="ac70ee5cf2b438340799cdb35f5fd4165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac70ee5cf2b438340799cdb35f5fd4165">&#9670;&#160;</a></span>invalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::raster_detail::invalid </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00132">eve::procgen::TerrainSplatPalette::addColor()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00086">eve::procgen::TerrainObjectPlacementSettings::addInstance()</a>, <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00028">eve::procgen::TerrainCollisionMaskStack::addLayer()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00143">eve::procgen::GtsPackedLayerSet::addLayer()</a>, <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00026">eve::procgen::TerrainPolygonMask::addNode()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00443">eve::procgen::TerrainMultiObjectWorkspace::addTile()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00202">eve::procgen::TerrainWaterField::advance()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00283">eve::procgen::TerrainWaterField::advanceHydraulic()</a>, <a class="el" href="TerrainTerraceRemover_8cpp_source.html#l00022">eve::procgen::analyzeTerrainTerraces()</a>, <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00117">eve::procgen::TerrainDetailLayer::apply()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00457">eve::procgen::TerrainMultiObjectWorkspace::apply()</a>, <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00047">eve::procgen::TerrainCollisionMaskStack::apply()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00026">eve::procgen::applyTerrainContrast()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00160">eve::procgen::applyTerrainHeightCurve()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00312">eve::procgen::applyTerrainHeightmapRasterArithmetic()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00293">eve::procgen::applyTerrainHeightmapScalarArithmetic()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00179">eve::procgen::applyTerrainHeightMix()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyDistributedErosion()</a>, <a class="el" href="TerrainLegacyHydraulic_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyHydraulic()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00064">eve::procgen::applyTerrainLegacySteepestErosion()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00142">eve::procgen::applyTerrainPower()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00089">eve::procgen::applyTerrainRidges()</a>, <a class="el" href="TerrainSediment_8cpp_source.html#l00007">eve::procgen::applyTerrainSediment()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00049">eve::procgen::applyTerrainSmooth()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00041">eve::procgen::applyTerrainStamp()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00239">eve::procgen::applyTerrainStrength()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00125">eve::procgen::applyTerrainTerrace()</a>, <a class="el" href="TerrainErosion_8cpp_source.html#l00007">eve::procgen::applyTerrainThermal()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00331">eve::procgen::bakeGtsColorMapAlbedo()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00457">eve::procgen::bakeGtsDetailSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00393">eve::procgen::bakeGtsGeologicalSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00363">eve::procgen::bakeGtsMacroVariationAlbedo()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00519">eve::procgen::bakeGtsWeatherAlbedo()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00575">eve::procgen::bakeGtsWeatherPbr()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00265">eve::procgen::blendTerrainBrush()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00015">eve::procgen::blendTerrainMask()</a>, <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00104">eve::procgen::TerrainDetailLayer::clearResource()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00744">eve::procgen::combinePcgMaskMapChannels()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00211">eve::procgen::convolveTerrainHeightmap()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00083">eve::procgen::TerrainBakedMaskCache::copyMask()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00340">eve::procgen::TerrainGenerationSession::copySediment()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00437">eve::procgen::TerrainGenerationSession::copyTerrain()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00383">eve::procgen::copyTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00402">eve::procgen::copyTerrainHeightmapClamped()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00469">eve::procgen::TerrainMultiObjectWorkspace::copyTile()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00327">eve::procgen::deriveTerrainSlope()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00065">eve::procgen::TerrainBakedMaskCache::erase()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00182">eve::procgen::TerrainWaterField::exportChannel()</a>, <a class="el" href="TerrainDetailPlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainDetailPoints()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00092">eve::procgen::exportTerrainObjectPoints()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainProbePoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00061">eve::procgen::exportTerrainTreePoints()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00346">eve::procgen::TerrainGenerationSession::exportWater()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00538">eve::procgen::fillTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00123">eve::procgen::filterTerrainHeightmapNeighborhood()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00416">eve::procgen::flipTerrainHeightmap()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00304">eve::procgen::generateGtsGlobalBlendDistance()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00073">eve::procgen::generateTerrainConcavityMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00147">eve::procgen::generateTerrainCurvatureMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00351">eve::procgen::generateTerrainDistanceMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00094">eve::procgen::generateTerrainHeightmapAspect()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00055">eve::procgen::generateTerrainHeightmapCurvature()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00237">eve::procgen::generateTerrainHeightmapSlope()</a>, <a class="el" href="TerrainImageMask_8cpp_source.html#l00020">eve::procgen::generateTerrainImageMask()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00716">eve::procgen::generateTerrainImageMaskFromImage()</a>, <a class="el" href="TerrainNoiseMask_8cpp_source.html#l00051">eve::procgen::generateTerrainNoiseMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00313">eve::procgen::generateTerrainRangeMask()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00077">eve::procgen::generateTerrainVelocityFlowMap()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00008">eve::procgen::generateTerrainWaterFlowMap()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00203">eve::procgen::growShrinkTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00336">eve::procgen::lerpTerrainHeightmap()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00054">eve::procgen::TerrainBakedMaskCache::markDirty()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00773">eve::procgen::placePcgMaskMapTileInto()</a>, <a class="el" href="GtsTerrainLod_8cpp_source.html#l00175">eve::procgen::planGtsTerrainLodAssets()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00262">eve::procgen::quantizeTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00461">eve::procgen::quantizeTerrainHeightmapTerraces()</a>, <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00044">eve::procgen::TerrainPolygonMask::rasterize()</a>, <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00058">eve::procgen::TerrainDetailLayer::Impl::rebuildTotals()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00476">eve::procgen::TerrainMultiObjectWorkspace::redo()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00216">eve::procgen::removeTerrainObjectPoints()</a>, <a class="el" href="TerrainTerraceRemover_8cpp_source.html#l00057">eve::procgen::removeTerrainTerraces()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00174">eve::procgen::removeTerrainTreePoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00206">eve::procgen::rescaleTerrainTreePoints()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00276">eve::procgen::TerrainGenerationSession::reset()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00160">eve::procgen::TerrainWaterField::reset()</a>, <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00084">eve::procgen::TerrainDetailLayer::reset()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00075">eve::procgen::MeshBuild::restoreGroupData()</a>, <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00094">eve::procgen::TerrainDetailLayer::sample()</a>, <a class="el" href="TerrainDetailLayer_8cpp_source.html#l00098">eve::procgen::TerrainDetailLayer::sampleResource()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00418">eve::procgen::TerrainGenerationSession::setOperationEnabled()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00574">eve::procgen::setTerrainHeightmapColumn()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00564">eve::procgen::setTerrainHeightmapRow()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00546">eve::procgen::setTerrainHeightmapSafe()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00161">eve::procgen::smoothTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00181">eve::procgen::smoothTerrainHeightmapRadius()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00012">eve::procgen::smoothTerrainMask()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00036">eve::procgen::TerrainBakedMaskCache::store()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00355">eve::procgen::transformTerrainHeightmap()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00305">eve::procgen::transformTerrainMask()</a> , 以及 <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00475">eve::procgen::TerrainMultiObjectWorkspace::undo()</a>.</p>
+
+</div>
+</div>
+<a id="ad50f779fc92a526a89c15c93db78a0de" name="ad50f779fc92a526a89c15c93db78a0de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad50f779fc92a526a89c15c93db78a0de">&#9670;&#160;</a></span>isRepresentable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::raster_detail::isRepresentable </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainWaterField_8cpp_source.html#l00202">eve::procgen::TerrainWaterField::advance()</a>, <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00047">eve::procgen::TerrainCollisionMaskStack::apply()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00026">eve::procgen::applyTerrainContrast()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00160">eve::procgen::applyTerrainHeightCurve()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00312">eve::procgen::applyTerrainHeightmapRasterArithmetic()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00293">eve::procgen::applyTerrainHeightmapScalarArithmetic()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyDistributedErosion()</a>, <a class="el" href="TerrainLegacyHydraulic_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyHydraulic()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00064">eve::procgen::applyTerrainLegacySteepestErosion()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00235">eve::procgen::applyTerrainObjectsMultiTile()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00142">eve::procgen::applyTerrainPower()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00102">eve::procgen::applyTerrainProbesMultiTile()</a>, <a class="el" href="TerrainSediment_8cpp_source.html#l00007">eve::procgen::applyTerrainSediment()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00049">eve::procgen::applyTerrainSmooth()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00041">eve::procgen::applyTerrainStamp()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00239">eve::procgen::applyTerrainStrength()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00125">eve::procgen::applyTerrainTerrace()</a>, <a class="el" href="TerrainErosion_8cpp_source.html#l00007">eve::procgen::applyTerrainThermal()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00250">eve::procgen::applyTerrainTreesMultiTile()</a>, <a class="el" href="TerrainCurveTexture_8cpp_source.html#l00012">eve::procgen::bakeTerrainCurveTexture()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00265">eve::procgen::blendTerrainBrush()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00015">eve::procgen::blendTerrainMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00211">eve::procgen::convolveTerrainHeightmap()</a>, <a class="el" href="TerrainDetailPlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainDetailPoints()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00092">eve::procgen::exportTerrainObjectPoints()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainProbePoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00061">eve::procgen::exportTerrainTreePoints()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00073">eve::procgen::generateTerrainConcavityMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00147">eve::procgen::generateTerrainCurvatureMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00094">eve::procgen::generateTerrainHeightmapAspect()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00237">eve::procgen::generateTerrainHeightmapSlope()</a>, <a class="el" href="TerrainImageMask_8cpp_source.html#l00020">eve::procgen::generateTerrainImageMask()</a>, <a class="el" href="TerrainNoiseMask_8cpp_source.html#l00051">eve::procgen::generateTerrainNoiseMask()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00077">eve::procgen::generateTerrainVelocityFlowMap()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00008">eve::procgen::generateTerrainWaterFlowMap()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00203">eve::procgen::growShrinkTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00336">eve::procgen::lerpTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00262">eve::procgen::quantizeTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00461">eve::procgen::quantizeTerrainHeightmapTerraces()</a>, <a class="el" href="TerrainTerraceRemover_8cpp_source.html#l00057">eve::procgen::removeTerrainTerraces()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00206">eve::procgen::rescaleTerrainTreePoints()</a> , 以及 <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00355">eve::procgen::transformTerrainHeightmap()</a>.</p>
+
+</div>
+</div>
+<a id="a7b19b25bd92b98f1848e9e51c4cdc5b6" name="a7b19b25bd92b98f1848e9e51c4cdc5b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b19b25bd92b98f1848e9e51c4cdc5b6">&#9670;&#160;</a></span>publish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::raster_detail::publish </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainTerraceRemover_8cpp_source.html#l00022">eve::procgen::analyzeTerrainTerraces()</a>, <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00047">eve::procgen::TerrainCollisionMaskStack::apply()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00026">eve::procgen::applyTerrainContrast()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00160">eve::procgen::applyTerrainHeightCurve()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00312">eve::procgen::applyTerrainHeightmapRasterArithmetic()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00293">eve::procgen::applyTerrainHeightmapScalarArithmetic()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00179">eve::procgen::applyTerrainHeightMix()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyDistributedErosion()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00064">eve::procgen::applyTerrainLegacySteepestErosion()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00142">eve::procgen::applyTerrainPower()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00089">eve::procgen::applyTerrainRidges()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00049">eve::procgen::applyTerrainSmooth()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00041">eve::procgen::applyTerrainStamp()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00239">eve::procgen::applyTerrainStrength()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00125">eve::procgen::applyTerrainTerrace()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00265">eve::procgen::blendTerrainBrush()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00015">eve::procgen::blendTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00211">eve::procgen::convolveTerrainHeightmap()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00083">eve::procgen::TerrainBakedMaskCache::copyMask()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00340">eve::procgen::TerrainGenerationSession::copySediment()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00437">eve::procgen::TerrainGenerationSession::copyTerrain()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00383">eve::procgen::copyTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00402">eve::procgen::copyTerrainHeightmapClamped()</a>, <a class="el" href="TerrainMultiTile_8cpp_source.html#l00447">eve::procgen::TerrainMultiTileWorkspace::copyTile()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00327">eve::procgen::deriveTerrainSlope()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00182">eve::procgen::TerrainWaterField::exportChannel()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00538">eve::procgen::fillTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00123">eve::procgen::filterTerrainHeightmapNeighborhood()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00073">eve::procgen::generateTerrainConcavityMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00147">eve::procgen::generateTerrainCurvatureMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00351">eve::procgen::generateTerrainDistanceMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00192">eve::procgen::generateTerrainErosionMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00094">eve::procgen::generateTerrainHeightmapAspect()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00055">eve::procgen::generateTerrainHeightmapCurvature()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00237">eve::procgen::generateTerrainHeightmapSlope()</a>, <a class="el" href="TerrainImageMask_8cpp_source.html#l00020">eve::procgen::generateTerrainImageMask()</a>, <a class="el" href="TerrainNoiseMask_8cpp_source.html#l00051">eve::procgen::generateTerrainNoiseMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00313">eve::procgen::generateTerrainRangeMask()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00077">eve::procgen::generateTerrainVelocityFlowMap()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00008">eve::procgen::generateTerrainWaterFlowMap()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00203">eve::procgen::growShrinkTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00336">eve::procgen::lerpTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00262">eve::procgen::quantizeTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00461">eve::procgen::quantizeTerrainHeightmapTerraces()</a>, <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00044">eve::procgen::TerrainPolygonMask::rasterize()</a>, <a class="el" href="TerrainTerraceRemover_8cpp_source.html#l00057">eve::procgen::removeTerrainTerraces()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00574">eve::procgen::setTerrainHeightmapColumn()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00564">eve::procgen::setTerrainHeightmapRow()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00546">eve::procgen::setTerrainHeightmapSafe()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00161">eve::procgen::smoothTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00181">eve::procgen::smoothTerrainHeightmapRadius()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00012">eve::procgen::smoothTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00355">eve::procgen::transformTerrainHeightmap()</a> , 以及 <a class="el" href="TerrainMask_8cpp_source.html#l00305">eve::procgen::transformTerrainMask()</a>.</p>
+
+</div>
+</div>
+<a id="a41f6005867e523f5cdc2549335420b4b" name="a41f6005867e523f5cdc2549335420b4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41f6005867e523f5cdc2549335420b4b">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::raster_detail::sample </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="Heightmap_8cpp_source.html#l00017">eve::procgen::Heightmap::getHeight()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00028">eve::procgen::Heightmap::height()</a>, <a class="el" href="AgentBindings_8cpp_source.html#l00016">top</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00727">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00727">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00235">eve::procgen::applyTerrainObjectsMultiTile()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00041">eve::procgen::applyTerrainStamp()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00250">eve::procgen::applyTerrainTreesMultiTile()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00627">eve::procgen::bakeGtsTerrainVertexColorsInto()</a>, <a class="el" href="TerrainCurveTexture_8cpp_source.html#l00012">eve::procgen::bakeTerrainCurveTexture()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00139">eve::procgen::TerrainStreamingCache::buildWindow()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00355">eve::procgen::SplinePath::closestPointResult()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00320">eve::procgen::SplinePath::evaluateDistanceResult()</a>, <a class="el" href="TerrainDetailPlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainDetailPoints()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00092">eve::procgen::exportTerrainObjectPoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00061">eve::procgen::exportTerrainTreePoints()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00073">eve::procgen::generateTerrainConcavityMask()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00148">eve::procgen::heightToNormalImage()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00773">eve::procgen::placePcgMaskMapTileInto()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00594">eve::procgen::SplinePath::polylineResult()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00380">eve::procgen::SplinePath::sampleFramesResult()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00491">eve::procgen::SplineDistribution::sampleResult()</a> , 以及 <a class="el" href="SplinePath_8cpp_source.html#l00556">eve::procgen::SplinePath::travelFrameResult()</a>.</p>
+
+</div>
+</div>
+<a id="a2fe0bd87c84c8eb21fae3f4f0f200722" name="a2fe0bd87c84c8eb21fae3f4f0f200722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fe0bd87c84c8eb21fae3f4f0f200722">&#9670;&#160;</a></span>textureSample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::raster_detail::textureSample </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Heightmap_8cpp_source.html#l00017">eve::procgen::Heightmap::getHeight()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00028">eve::procgen::Heightmap::height()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00727">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00727">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00047">eve::procgen::TerrainCollisionMaskStack::apply()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00102">eve::procgen::applyTerrainProbesMultiTile()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00265">eve::procgen::blendTerrainBrush()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00083">eve::procgen::TerrainBakedMaskCache::copyMask()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00092">eve::procgen::exportTerrainObjectPoints()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainProbePoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00061">eve::procgen::exportTerrainTreePoints()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00147">eve::procgen::generateTerrainCurvatureMask()</a>, <a class="el" href="TerrainImageMask_8cpp_source.html#l00020">eve::procgen::generateTerrainImageMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00203">eve::procgen::growShrinkTerrainMask()</a>, <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00044">eve::procgen::TerrainPolygonMask::rasterize()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00216">eve::procgen::removeTerrainObjectPoints()</a> , 以及 <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00174">eve::procgen::removeTerrainTreePoints()</a>.</p>
+
+</div>
+</div>
+<a id="a878d586b5dd783ddf1a124a7a7429da8" name="a878d586b5dd783ddf1a124a7a7429da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a878d586b5dd783ddf1a124a7a7429da8">&#9670;&#160;</a></span>validRaster()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::raster_detail::validRaster </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainRasterInternal_8h_source.html">TerrainRasterInternal.h</a> 第 <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Heightmap_8h_source.html#l00037">eve::procgen::Heightmap::data()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00017">eve::procgen::Heightmap::getHeight()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00052">eve::procgen::GtsHeightBlendSet::addLayer()</a>, <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00028">eve::procgen::TerrainCollisionMaskStack::addLayer()</a>, <a class="el" href="TerrainMultiTile_8cpp_source.html#l00394">eve::procgen::TerrainMultiTileWorkspace::addTile()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00443">eve::procgen::TerrainMultiObjectWorkspace::addTile()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00464">eve::procgen::TerrainMultiTreeWorkspace::addTile()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00202">eve::procgen::TerrainWaterField::advance()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00283">eve::procgen::TerrainWaterField::advanceHydraulic()</a>, <a class="el" href="TerrainCollisionMask_8cpp_source.html#l00047">eve::procgen::TerrainCollisionMaskStack::apply()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00160">eve::procgen::applyTerrainHeightCurve()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00312">eve::procgen::applyTerrainHeightmapRasterArithmetic()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00293">eve::procgen::applyTerrainHeightmapScalarArithmetic()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00179">eve::procgen::applyTerrainHeightMix()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyDistributedErosion()</a>, <a class="el" href="TerrainLegacyHydraulic_8cpp_source.html#l00007">eve::procgen::applyTerrainLegacyHydraulic()</a>, <a class="el" href="TerrainLegacyThermal_8cpp_source.html#l00064">eve::procgen::applyTerrainLegacySteepestErosion()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00235">eve::procgen::applyTerrainObjectsMultiTile()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00102">eve::procgen::applyTerrainProbesMultiTile()</a>, <a class="el" href="TerrainSediment_8cpp_source.html#l00007">eve::procgen::applyTerrainSediment()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00041">eve::procgen::applyTerrainStamp()</a>, <a class="el" href="TerrainMultiTile_8cpp_source.html#l00170">eve::procgen::applyTerrainStampMultiTile()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00239">eve::procgen::applyTerrainStrength()</a>, <a class="el" href="TerrainErosion_8cpp_source.html#l00007">eve::procgen::applyTerrainThermal()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00250">eve::procgen::applyTerrainTreesMultiTile()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00331">eve::procgen::bakeGtsColorMapAlbedo()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00457">eve::procgen::bakeGtsDetailSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00393">eve::procgen::bakeGtsGeologicalSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00519">eve::procgen::bakeGtsWeatherAlbedo()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00575">eve::procgen::bakeGtsWeatherPbr()</a>, <a class="el" href="TerrainCurveTexture_8cpp_source.html#l00012">eve::procgen::bakeTerrainCurveTexture()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00265">eve::procgen::blendTerrainBrush()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00015">eve::procgen::blendTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00211">eve::procgen::convolveTerrainHeightmap()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00083">eve::procgen::TerrainBakedMaskCache::copyMask()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00340">eve::procgen::TerrainGenerationSession::copySediment()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00437">eve::procgen::TerrainGenerationSession::copyTerrain()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00383">eve::procgen::copyTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00402">eve::procgen::copyTerrainHeightmapClamped()</a>, <a class="el" href="TerrainMultiTile_8cpp_source.html#l00447">eve::procgen::TerrainMultiTileWorkspace::copyTile()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00227">eve::procgen::TerrainGenerationSession::Impl::editable()</a>, <a class="el" href="PcgRuntimeStamper_8cpp_source.html#l00055">eve::procgen::PcgRuntimeStamper::execute()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00182">eve::procgen::TerrainWaterField::exportChannel()</a>, <a class="el" href="TerrainDetailPlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainDetailPoints()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00092">eve::procgen::exportTerrainObjectPoints()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainProbePoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00061">eve::procgen::exportTerrainTreePoints()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00538">eve::procgen::fillTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00123">eve::procgen::filterTerrainHeightmapNeighborhood()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00416">eve::procgen::flipTerrainHeightmap()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00304">eve::procgen::generateGtsGlobalBlendDistance()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00073">eve::procgen::generateTerrainConcavityMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00147">eve::procgen::generateTerrainCurvatureMask()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00351">eve::procgen::generateTerrainDistanceMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00237">eve::procgen::generateTerrainHeightmapSlope()</a>, <a class="el" href="TerrainImageMask_8cpp_source.html#l00020">eve::procgen::generateTerrainImageMask()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00716">eve::procgen::generateTerrainImageMaskFromImage()</a>, <a class="el" href="TerrainNoiseMask_8cpp_source.html#l00051">eve::procgen::generateTerrainNoiseMask()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00077">eve::procgen::generateTerrainVelocityFlowMap()</a>, <a class="el" href="TerrainWaterField_8cpp_source.html#l00008">eve::procgen::generateTerrainWaterFlowMap()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00203">eve::procgen::growShrinkTerrainMask()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00336">eve::procgen::lerpTerrainHeightmap()</a>, <a class="el" href="PcgRuntimeStamper_8cpp_source.html#l00033">eve::procgen::PcgRuntimeStamper::loadStamp()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00434">eve::procgen::measureTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00501">eve::procgen::measureTerrainHeightmapSlope()</a>, <a class="el" href="TerrainSplatmap_8cpp_source.html#l00286">eve::procgen::paintTerrainSplatLayerMultiTile()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00262">eve::procgen::quantizeTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00461">eve::procgen::quantizeTerrainHeightmapTerraces()</a>, <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00044">eve::procgen::TerrainPolygonMask::rasterize()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00216">eve::procgen::removeTerrainObjectPoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00174">eve::procgen::removeTerrainTreePoints()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00276">eve::procgen::TerrainGenerationSession::reset()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00015">eve::procgen::sampleTerrainHeightmapNormalized()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00007">eve::procgen::sampleTerrainHeightmapSafe()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00574">eve::procgen::setTerrainHeightmapColumn()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00564">eve::procgen::setTerrainHeightmapRow()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00546">eve::procgen::setTerrainHeightmapSafe()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00161">eve::procgen::smoothTerrainHeightmap()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00181">eve::procgen::smoothTerrainHeightmapRadius()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00012">eve::procgen::smoothTerrainMask()</a>, <a class="el" href="TerrainMultiTile_8cpp_source.html#l00258">eve::procgen::stitchTerrainHeightmaps()</a>, <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00036">eve::procgen::TerrainBakedMaskCache::store()</a> , 以及 <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00355">eve::procgen::transformTerrainHeightmap()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

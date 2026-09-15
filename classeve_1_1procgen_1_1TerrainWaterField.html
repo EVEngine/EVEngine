@@ -1,0 +1,725 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainWaterField类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainWaterField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainWaterField类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owned water/flux/velocity state for deterministic execution of the Pcg water stage. No terrain pointer is retained. Each advance reads an immutable terrain and previous field, computes all fluxes, then computes velocities and depth, publishing once. This deliberately retains the source's final rain/evaporation overwrite of transported depth and its velocity signs. It is not a conservative shallow-water solver. Undefined source behavior is resolved explicitly: current flux is fully computed before neighbor reads, and zero average depth produces zero velocity instead of division by zero. Thread affinity is caller-owned: exclusive reset/advance, immutable sampling when idle; no callbacks, borrowed output pointers, ECS handles, implicit clock or RNG.  
+ <a href="classeve_1_1procgen_1_1TerrainWaterField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainWaterField_8h_source.html">TerrainWaterField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainWaterField_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa375bc58675d053a13c373d28c967060" id="r_aa375bc58675d053a13c373d28c967060"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#aa375bc58675d053a13c373d28c967060">TerrainWaterField</a> ()</td></tr>
+<tr class="memdesc:aa375bc58675d053a13c373d28c967060"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty field; reset must succeed before advance or sample.  <br /></td></tr>
+<tr class="separator:aa375bc58675d053a13c373d28c967060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a347588dbfac8ff8c7160c87281ea5ec7" id="r_a347588dbfac8ff8c7160c87281ea5ec7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a347588dbfac8ff8c7160c87281ea5ec7">~TerrainWaterField</a> ()</td></tr>
+<tr class="memdesc:a347588dbfac8ff8c7160c87281ea5ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy all owned simulation buffers; no external registrations are retained.  <br /></td></tr>
+<tr class="separator:a347588dbfac8ff8c7160c87281ea5ec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f9b93133b6988053608c0941969126" id="r_ad4f9b93133b6988053608c0941969126"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#ad4f9b93133b6988053608c0941969126">TerrainWaterField</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:ad4f9b93133b6988053608c0941969126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer owned buffers; a moved-from field is empty and can be reset.  <br /></td></tr>
+<tr class="separator:ad4f9b93133b6988053608c0941969126"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec10a8d72b7d1694eff0104da76f97a" id="r_a9ec10a8d72b7d1694eff0104da76f97a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a9ec10a8d72b7d1694eff0104da76f97a">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:a9ec10a8d72b7d1694eff0104da76f97a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer owned buffers, releasing this field's previous buffers.  <br /></td></tr>
+<tr class="separator:a9ec10a8d72b7d1694eff0104da76f97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2525480f666e0070291908fe4360f120" id="r_a2525480f666e0070291908fe4360f120"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a2525480f666e0070291908fe4360f120">TerrainWaterField</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a2525480f666e0070291908fe4360f120"><td class="mdescLeft">&#160;</td><td class="mdescRight">State has one mutable owner; implicit copying is prohibited.  <br /></td></tr>
+<tr class="separator:a2525480f666e0070291908fe4360f120"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e264d328bb9d2b93fc95be6df8c55d" id="r_a32e264d328bb9d2b93fc95be6df8c55d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a32e264d328bb9d2b93fc95be6df8c55d">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a32e264d328bb9d2b93fc95be6df8c55d"><td class="mdescLeft">&#160;</td><td class="mdescRight">State has one mutable owner; implicit copy assignment is prohibited.  <br /></td></tr>
+<tr class="separator:a32e264d328bb9d2b93fc95be6df8c55d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4d5f5db20d3b7f0df382d70beb618c0" id="r_ac4d5f5db20d3b7f0df382d70beb618c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#ac4d5f5db20d3b7f0df382d70beb618c0">reset</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>=0)</td></tr>
+<tr class="memdesc:ac4d5f5db20d3b7f0df382d70beb618c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset dimensions, uniform depth and zero flux/velocity atomically.  <br /></td></tr>
+<tr class="separator:ac4d5f5db20d3b7f0df382d70beb618c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade19636828f86c577f110282c07b47fa" id="r_ade19636828f86c577f110282c07b47fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#ade19636828f86c577f110282c07b47fa">advance</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSettings.html">TerrainWaterSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:ade19636828f86c577f110282c07b47fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance one injected time step, with clamped neighbor indices.  <br /></td></tr>
+<tr class="separator:ade19636828f86c577f110282c07b47fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0433acfc7496460737475c3b79d54f91" id="r_a0433acfc7496460737475c3b79d54f91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a0433acfc7496460737475c3b79d54f91">advanceHydraulic</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heights, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSettings.html">TerrainWaterSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainSedimentSettings.html">TerrainSedimentSettings</a> &amp;reaction, const <a class="el" href="structeve_1_1procgen_1_1TerrainThermalSettings.html">TerrainThermalSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#ac122ff54e730a3b95041ee352ec4c9f3">thermal</a>, int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="memdesc:a0433acfc7496460737475c3b79d54f91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance water, source sediment and thermal stages as one transaction.  <br /></td></tr>
+<tr class="separator:a0433acfc7496460737475c3b79d54f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e6a8bc2a5115e687a4c2760b8c63d0" id="r_a46e6a8bc2a5115e687a4c2760b8c63d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSample.html">TerrainWaterSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a46e6a8bc2a5115e687a4c2760b8c63d0">sample</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:a46e6a8bc2a5115e687a4c2760b8c63d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read an owned value snapshot; invalid coordinates or empty state return InvalidArgument.  <br /></td></tr>
+<tr class="separator:a46e6a8bc2a5115e687a4c2760b8c63d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fe93ada35e3ab177bf5c9d3cc116fe2" id="r_a8fe93ada35e3ab177bf5c9d3cc116fe2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a8fe93ada35e3ab177bf5c9d3cc116fe2">exportChannel</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcb">TerrainWaterChannel</a> channel) const</td></tr>
+<tr class="memdesc:a8fe93ada35e3ab177bf5c9d3cc116fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one stored channel into an existing matching raster for mask processing.  <br /></td></tr>
+<tr class="separator:a8fe93ada35e3ab177bf5c9d3cc116fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38d5574865794d92509ee11036d36f5d" id="r_a38d5574865794d92509ee11036d36f5d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a38d5574865794d92509ee11036d36f5d">getWidth</a> () const noexcept</td></tr>
+<tr class="memdesc:a38d5574865794d92509ee11036d36f5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return X sample count, or zero for an empty/moved-from field.  <br /></td></tr>
+<tr class="separator:a38d5574865794d92509ee11036d36f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ba8802ab8329bcea33e7fd291fbb473" id="r_a3ba8802ab8329bcea33e7fd291fbb473"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html#a3ba8802ab8329bcea33e7fd291fbb473">getHeight</a> () const noexcept</td></tr>
+<tr class="memdesc:a3ba8802ab8329bcea33e7fd291fbb473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return Z sample count, or zero for an empty/moved-from field.  <br /></td></tr>
+<tr class="separator:a3ba8802ab8329bcea33e7fd291fbb473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owned water/flux/velocity state for deterministic execution of the Pcg water stage. No terrain pointer is retained. Each advance reads an immutable terrain and previous field, computes all fluxes, then computes velocities and depth, publishing once. This deliberately retains the source's final rain/evaporation overwrite of transported depth and its velocity signs. It is not a conservative shallow-water solver. Undefined source behavior is resolved explicitly: current flux is fully computed before neighbor reads, and zero average depth produces zero velocity instead of division by zero. Thread affinity is caller-owned: exclusive reset/advance, immutable sampling when idle; no callbacks, borrowed output pointers, ECS handles, implicit clock or RNG. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8h_source.html">TerrainWaterField.h</a> 第 <a class="el" href="TerrainWaterField_8h_source.html#l00070">70</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa375bc58675d053a13c373d28c967060" name="aa375bc58675d053a13c373d28c967060"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa375bc58675d053a13c373d28c967060">&#9670;&#160;</a></span>TerrainWaterField() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainWaterField::TerrainWaterField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty field; reset must succeed before advance or sample. </p>
+
+</div>
+</div>
+<a id="a347588dbfac8ff8c7160c87281ea5ec7" name="a347588dbfac8ff8c7160c87281ea5ec7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a347588dbfac8ff8c7160c87281ea5ec7">&#9670;&#160;</a></span>~TerrainWaterField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainWaterField::~TerrainWaterField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroy all owned simulation buffers; no external registrations are retained. </p>
+
+</div>
+</div>
+<a id="ad4f9b93133b6988053608c0941969126" name="ad4f9b93133b6988053608c0941969126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4f9b93133b6988053608c0941969126">&#9670;&#160;</a></span>TerrainWaterField() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainWaterField::TerrainWaterField </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer owned buffers; a moved-from field is empty and can be reset. </p>
+
+</div>
+</div>
+<a id="a2525480f666e0070291908fe4360f120" name="a2525480f666e0070291908fe4360f120"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2525480f666e0070291908fe4360f120">&#9670;&#160;</a></span>TerrainWaterField() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainWaterField::TerrainWaterField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>State has one mutable owner; implicit copying is prohibited. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ade19636828f86c577f110282c07b47fa" name="ade19636828f86c577f110282c07b47fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade19636828f86c577f110282c07b47fa">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainWaterField::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSettings.html">TerrainWaterSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance one injected time step, with clamped neighbor indices. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">terrain</td><td>Borrowed matching finite height raster; never modified or retained. </td></tr>
+    <tr><td class="paramname">settings</td><td>Finite positive spacing/scales, nonnegative dt/precipitation/evaporation; flowAcceleration is signed. dt=0 is identity. No hidden UI scaling is applied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of cells with any changed output, or InvalidArgument. All state is unchanged on invalid input, overflow or allocation failure. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>Old state remains intact. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00062">area</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00026">eve::procgen::raster_detail::isRepresentable()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">terrain</a>, <a class="el" href="AgentBindings_8cpp_source.html#l00016">top</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00243">vx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00253">vz</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00727">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00727">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainWaterField_8cpp_source.html#l00283">advanceHydraulic()</a>.</p>
+
+</div>
+</div>
+<a id="a0433acfc7496460737475c3b79d54f91" name="a0433acfc7496460737475c3b79d54f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0433acfc7496460737475c3b79d54f91">&#9670;&#160;</a></span>advanceHydraulic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainWaterField::advanceHydraulic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>heights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>sediment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSettings.html">TerrainWaterSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>water</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainSedimentSettings.html">TerrainSedimentSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>reaction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainThermalSettings.html">TerrainThermalSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>thermal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance water, source sediment and thermal stages as one transaction. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">heights</td><td>Exclusively borrowed matching nonnegative scalar heights, never retained. </td></tr>
+    <tr><td class="paramname">sediment</td><td>Exclusively borrowed matching signed sediment, distinct from heights. </td></tr>
+    <tr><td class="paramname">water</td><td>Water step constants; dt and spacing also drive sediment transport. </td></tr>
+    <tr><td class="paramname">reaction</td><td>Effective source sediment coefficients. </td></tr>
+    <tr><td class="paramname">thermal</td><td>Thermal constants with already-computed substep dt; zero thermal iterations disables it. </td></tr>
+    <tr><td class="paramname">iterations</td><td>Nonnegative number of complete iterations. Zero validates raster ownership/shape and leaves state unchanged. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Cells changed in water, height or sediment, or InvalidArgument. All three owners remain unchanged on any stage failure, including after earlier successful iterations. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>All caller-observable state remains unchanged. Each iteration uses the latest completed height state and publishes the last iteration, rather than the source wrapper's fixed buffer-1 output and reset thermal buffer index. Caller must hold exclusive access to this field and both rasters; no callbacks or retained borrows. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainWaterField_8cpp_source.html#l00202">advance()</a>, <a class="el" href="TerrainSediment_8cpp_source.html#l00007">eve::procgen::applyTerrainSediment()</a>, <a class="el" href="TerrainErosion_8cpp_source.html#l00007">eve::procgen::applyTerrainThermal()</a>, <a class="el" href="Heightmap_8h_source.html#l00037">eve::procgen::Heightmap::data()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00017">eve::procgen::Heightmap::getHeight()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00284">iterations</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00088">sediment</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00100">thermal</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00243">vx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00253">vz</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00089">water</a>.</p>
+
+</div>
+</div>
+<a id="a8fe93ada35e3ab177bf5c9d3cc116fe2" name="a8fe93ada35e3ab177bf5c9d3cc116fe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe93ada35e3ab177bf5c9d3cc116fe2">&#9670;&#160;</a></span>exportChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainWaterField::exportChannel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcb">TerrainWaterChannel</a>&#160;</td>
+          <td class="paramname"><em>channel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one stored channel into an existing matching raster for mask processing. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Exclusively borrowed finite matching raster; no resize or retained reference. </td></tr>
+    <tr><td class="paramname">channel</td><td>Explicit scalar channel, without normalization, absolute value or clamping. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Changed sample count or InvalidArgument; failure leaves target and field unchanged. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>Target remains unchanged. @thread Synchronous immutable field access and exclusive target access; no callbacks. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcba675056ad1441b6375b2c5abd48c27ef1">eve::procgen::Depth</a>, <a class="el" href="TerrainWaterField_8h_source.html#l00022">eve::procgen::TerrainWaterSample::depth</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcba0ce16f56e10c797f6e541690336b4e7e">eve::procgen::FluxBottom</a>, <a class="el" href="TerrainWaterField_8h_source.html#l00023">eve::procgen::TerrainWaterSample::fluxBottom</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcba8689979f426ed6d9541cf1cd3440fe33">eve::procgen::FluxLeft</a>, <a class="el" href="TerrainWaterField_8h_source.html#l00023">eve::procgen::TerrainWaterSample::fluxLeft</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcbaf4050901fa813ec69d8ae3c04be6c894">eve::procgen::FluxRight</a>, <a class="el" href="TerrainWaterField_8h_source.html#l00023">eve::procgen::TerrainWaterSample::fluxRight</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcba3c123b0b03e4d82dad30aace5f13ef33">eve::procgen::FluxTop</a>, <a class="el" href="TerrainWaterField_8h_source.html#l00023">eve::procgen::TerrainWaterSample::fluxTop</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="UiThemeTokens_8cpp_source.html#l00022">member</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">eve::procgen::raster_detail::publish()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcba3d2463ee3cb533b341cfe50fe6300628">eve::procgen::VelocityX</a>, <a class="el" href="TerrainWaterField_8h_source.html#l00022">eve::procgen::TerrainWaterSample::velocityX</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9b13d943c00e69179270c08e03ee1fcbae6c9d0235a9f82d6b7386b938292d91c">eve::procgen::VelocityZ</a> , 以及 <a class="el" href="TerrainWaterField_8h_source.html#l00022">eve::procgen::TerrainWaterSample::velocityZ</a>.</p>
+
+</div>
+</div>
+<a id="a3ba8802ab8329bcea33e7fd291fbb473" name="a3ba8802ab8329bcea33e7fd291fbb473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba8802ab8329bcea33e7fd291fbb473">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainWaterField::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return Z sample count, or zero for an empty/moved-from field. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38d5574865794d92509ee11036d36f5d" name="a38d5574865794d92509ee11036d36f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38d5574865794d92509ee11036d36f5d">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainWaterField::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return X sample count, or zero for an empty/moved-from field. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32e264d328bb9d2b93fc95be6df8c55d" name="a32e264d328bb9d2b93fc95be6df8c55d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e264d328bb9d2b93fc95be6df8c55d">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp; eve::procgen::TerrainWaterField::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>State has one mutable owner; implicit copy assignment is prohibited. </p>
+
+</div>
+</div>
+<a id="a9ec10a8d72b7d1694eff0104da76f97a" name="a9ec10a8d72b7d1694eff0104da76f97a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec10a8d72b7d1694eff0104da76f97a">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp; eve::procgen::TerrainWaterField::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainWaterField.html">TerrainWaterField</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer owned buffers, releasing this field's previous buffers. </p>
+
+</div>
+</div>
+<a id="ac4d5f5db20d3b7f0df382d70beb618c0" name="ac4d5f5db20d3b7f0df382d70beb618c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4d5f5db20d3b7f0df382d70beb618c0">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainWaterField::reset </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset dimensions, uniform depth and zero flux/velocity atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>Positive X sample count. </td></tr>
+    <tr><td class="paramname">height</td><td>Positive Z sample count; product must fit int. </td></tr>
+    <tr><td class="paramname">depth</td><td>Finite nonnegative initial stored water depth. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Initialized cell count or InvalidArgument; failure leaves old state intact. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>Old state remains intact. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a46e6a8bc2a5115e687a4c2760b8c63d0" name="a46e6a8bc2a5115e687a4c2760b8c63d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46e6a8bc2a5115e687a4c2760b8c63d0">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainWaterSample.html">TerrainWaterSample</a> &gt; eve::procgen::TerrainWaterField::sample </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read an owned value snapshot; invalid coordinates or empty state return InvalidArgument. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a> 第 <a class="el" href="TerrainWaterField_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00727">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00727">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainWaterField_8h_source.html">TerrainWaterField.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainWaterField_8cpp_source.html">TerrainWaterField.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

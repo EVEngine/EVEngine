@@ -1,0 +1,340 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/VolumeFluidCodec.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">VolumeFluidCodec.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;fluids/VolumeFluidCodecInternal.inc&quot;</code><br />
+</div>
+<p><a href="VolumeFluidCodec_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1fluids" id="r_namespaceeve_1_1fluids"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html">eve::fluids</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1fluids"><td class="mdescLeft">&#160;</td><td class="mdescRight">GLSL compute kernels for the GPU surface-flow solver. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ae6c2bc57a871077a225bf3f6816a9d61" id="r_ae6c2bc57a871077a225bf3f6816a9d61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ae6c2bc57a871077a225bf3f6816a9d61">eve::fluids::encodeFluidRendererSettings</a> (const <a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:ae6c2bc57a871077a225bf3f6816a9d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one complete Fluid3D-renderer settings value.  <br /></td></tr>
+<tr class="separator:ae6c2bc57a871077a225bf3f6816a9d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9b89c11c00ae55036853d5f7f52de8d" id="r_ae9b89c11c00ae55036853d5f7f52de8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ae9b89c11c00ae55036853d5f7f52de8d">eve::fluids::decodeFluidRendererSettings</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:ae9b89c11c00ae55036853d5f7f52de8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly decodes one complete owning Fluid3D-renderer settings value.  <br /></td></tr>
+<tr class="separator:ae9b89c11c00ae55036853d5f7f52de8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2e994fad2538472bc8b42a75d4e0359" id="r_ab2e994fad2538472bc8b42a75d4e0359"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ab2e994fad2538472bc8b42a75d4e0359">eve::fluids::encodeVolumeFluid</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html">VolumeFluidSnapshot</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:ab2e994fad2538472bc8b42a75d4e0359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical schema-17 value projection, shared by JSON, scripts and authoring.  <br /></td></tr>
+<tr class="separator:ab2e994fad2538472bc8b42a75d4e0359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ef57ed876e33ba42181ce8c7efcbc2" id="r_a19ef57ed876e33ba42181ce8c7efcbc2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a19ef57ed876e33ba42181ce8c7efcbc2">eve::fluids::encodeVolumeFluidFoam</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">VolumeFluidFoamSnapshot</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a19ef57ed876e33ba42181ce8c7efcbc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning schema-1 foam settings, credit text and RNG state.  <br /></td></tr>
+<tr class="separator:a19ef57ed876e33ba42181ce8c7efcbc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a712fd8769a6c57963b78b6526f5d2a3c" id="r_a712fd8769a6c57963b78b6526f5d2a3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">VolumeFluidFoamSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a712fd8769a6c57963b78b6526f5d2a3c">eve::fluids::decodeVolumeFluidFoam</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a712fd8769a6c57963b78b6526f5d2a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict decode with atomic-controller validation; rejects unknown fields and versions.  <br /></td></tr>
+<tr class="separator:a712fd8769a6c57963b78b6526f5d2a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9df167be44cde435621751c5b18c05e" id="r_ad9df167be44cde435621751c5b18c05e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ad9df167be44cde435621751c5b18c05e">eve::fluids::encodeVolumeFluidDiffuse</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDiffuseSnapshot.html">VolumeFluidDiffuseSnapshot</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:ad9df167be44cde435621751c5b18c05e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects the owning version-1 secondary particle pool state.  <br /></td></tr>
+<tr class="separator:ad9df167be44cde435621751c5b18c05e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7a736c030fdcefc56b604c95aaa43b" id="r_a2d7a736c030fdcefc56b604c95aaa43b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDiffuseSnapshot.html">VolumeFluidDiffuseSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a2d7a736c030fdcefc56b604c95aaa43b">eve::fluids::decodeVolumeFluidDiffuse</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a2d7a736c030fdcefc56b604c95aaa43b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict bounded decode; validates the entire pool before returning owning state.  <br /></td></tr>
+<tr class="separator:a2d7a736c030fdcefc56b604c95aaa43b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb113ff519e8edc88b0dc84b2aea755b" id="r_adb113ff519e8edc88b0dc84b2aea755b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDiffuseParticle.html">VolumeFluidDiffuseParticle</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#adb113ff519e8edc88b0dc84b2aea755b">eve::fluids::decodeVolumeFluidDiffuseParticles</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:adb113ff519e8edc88b0dc84b2aea755b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict transient batch decode of at most 65536 particles; emit validates domains.  <br /></td></tr>
+<tr class="separator:adb113ff519e8edc88b0dc84b2aea755b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cafeda9c0a3d164e469731b00c5cd0e" id="r_a2cafeda9c0a3d164e469731b00c5cd0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a2cafeda9c0a3d164e469731b00c5cd0e">eve::fluids::encodeVolumeFluidFieldSamples</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidFieldSample.html">VolumeFluidFieldSample</a> &gt; &amp;samples)</td></tr>
+<tr class="memdesc:a2cafeda9c0a3d164e469731b00c5cd0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning field samples, preserving query order.  <br /></td></tr>
+<tr class="separator:a2cafeda9c0a3d164e469731b00c5cd0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad86da5640487a1b28c834d6af4ba2e92" id="r_ad86da5640487a1b28c834d6af4ba2e92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ad86da5640487a1b28c834d6af4ba2e92">eve::fluids::encodeVolumeFluidRayHits</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidRayHit.html">VolumeFluidRayHit</a> &gt; &amp;hits)</td></tr>
+<tr class="memdesc:ad86da5640487a1b28c834d6af4ba2e92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning ray hits including captured particle values.  <br /></td></tr>
+<tr class="separator:ad86da5640487a1b28c834d6af4ba2e92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac66e0efe8bafa29298fee5e0882d69d0" id="r_ac66e0efe8bafa29298fee5e0882d69d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ac66e0efe8bafa29298fee5e0882d69d0">eve::fluids::encodeVolumeFluidDistanceHits</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistanceHit.html">VolumeFluidDistanceHit</a> &gt; &amp;hits)</td></tr>
+<tr class="memdesc:ac66e0efe8bafa29298fee5e0882d69d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning signed-distance hits including captured particle values.  <br /></td></tr>
+<tr class="separator:ac66e0efe8bafa29298fee5e0882d69d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7505dcc97f04d31fe218127d440e174e" id="r_a7505dcc97f04d31fe218127d440e174e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a7505dcc97f04d31fe218127d440e174e">eve::fluids::encodeVolumeFluidQueryHits</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidQueryHit.html">VolumeFluidQueryHit</a> &gt; &amp;hits)</td></tr>
+<tr class="memdesc:a7505dcc97f04d31fe218127d440e174e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning mixed-query hits with their source query indices.  <br /></td></tr>
+<tr class="separator:a7505dcc97f04d31fe218127d440e174e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30040b245c9b2c7fdd79a079bc920baf" id="r_a30040b245c9b2c7fdd79a079bc920baf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a30040b245c9b2c7fdd79a079bc920baf">eve::fluids::encodeVolumeFluidSimplexHits</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSimplexHit.html">VolumeFluidSimplexHit</a> &gt; &amp;hits)</td></tr>
+<tr class="memdesc:a30040b245c9b2c7fdd79a079bc920baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning Fluid3D-compatible simplex query results.  <br /></td></tr>
+<tr class="separator:a30040b245c9b2c7fdd79a079bc920baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e307220d0baeb204dc7f4f340fde50" id="r_a38e307220d0baeb204dc7f4f340fde50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSimplex.html">VolumeFluidSimplex</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a38e307220d0baeb204dc7f4f340fde50">eve::fluids::decodeVolumeFluidSimplexes</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a38e307220d0baeb204dc7f4f340fde50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 65536 point, edge or triangle topology entries.  <br /></td></tr>
+<tr class="separator:a38e307220d0baeb204dc7f4f340fde50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a500fcf5262da5912f7438ddc541f7405" id="r_a500fcf5262da5912f7438ddc541f7405"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidStitch.html">VolumeFluidStitch</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a500fcf5262da5912f7438ddc541f7405">eve::fluids::decodeVolumeFluidStitches</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a500fcf5262da5912f7438ddc541f7405"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 65536 Fluid3DStitcher particle pairs.  <br /></td></tr>
+<tr class="separator:a500fcf5262da5912f7438ddc541f7405"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3275055e2759bdbce57c2df28a93cb3e" id="r_a3275055e2759bdbce57c2df28a93cb3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidQueryShape.html">VolumeFluidQueryShape</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a3275055e2759bdbce57c2df28a93cb3e">eve::fluids::decodeVolumeFluidQueries</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a3275055e2759bdbce57c2df28a93cb3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 256 transient mixed query descriptions.  <br /></td></tr>
+<tr class="separator:a3275055e2759bdbce57c2df28a93cb3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeb35f8cbdea46aa30fcea248b523504" id="r_aaeb35f8cbdea46aa30fcea248b523504"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; glm::vec4 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aaeb35f8cbdea46aa30fcea248b523504">eve::fluids::decodeVolumeFluidColors</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:aaeb35f8cbdea46aa30fcea248b523504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 256 transient linear RGBA colors.  <br /></td></tr>
+<tr class="separator:aaeb35f8cbdea46aa30fcea248b523504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f0092cb04a64eee9d4da8ace708195" id="r_a75f0092cb04a64eee9d4da8ace708195"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; glm::vec3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a75f0092cb04a64eee9d4da8ace708195">eve::fluids::decodeVolumeFluidFieldPositions</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a75f0092cb04a64eee9d4da8ace708195"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of up to 65536 transient world-space field query positions.  <br /></td></tr>
+<tr class="separator:a75f0092cb04a64eee9d4da8ace708195"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92c287a254f79e3742d5f443d8af9f6" id="r_ac92c287a254f79e3742d5f443d8af9f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidWindZone.html">VolumeFluidWindZone</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ac92c287a254f79e3742d5f443d8af9f6">eve::fluids::decodeVolumeFluidWindZones</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:ac92c287a254f79e3742d5f443d8af9f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 64 transient Fluid3D-style wind zones.  <br /></td></tr>
+<tr class="separator:ac92c287a254f79e3742d5f443d8af9f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d84c3b01421370d82fa4c2d63cc59b0" id="r_a3d84c3b01421370d82fa4c2d63cc59b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a3d84c3b01421370d82fa4c2d63cc59b0">eve::fluids::encodeVolumeFluidCollider</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a> &amp;collider)</td></tr>
+<tr class="memdesc:a3d84c3b01421370d82fa4c2d63cc59b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects an owning collider description for script construction.  <br /></td></tr>
+<tr class="separator:a3d84c3b01421370d82fa4c2d63cc59b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a449e5d3d8cb206e3bb85884b3c0560a3" id="r_a449e5d3d8cb206e3bb85884b3c0560a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a449e5d3d8cb206e3bb85884b3c0560a3">eve::fluids::encodeVolumeFluidSdfCollider</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfCollider.html">VolumeFluidSdfCollider</a> &amp;collider)</td></tr>
+<tr class="memdesc:a449e5d3d8cb206e3bb85884b3c0560a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one complete owning SDF collider.  <br /></td></tr>
+<tr class="separator:a449e5d3d8cb206e3bb85884b3c0560a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4265a6ee04821252e5ff4715252b28f2" id="r_a4265a6ee04821252e5ff4715252b28f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a4265a6ee04821252e5ff4715252b28f2">eve::fluids::encodeVolumeFluidHeightFieldCollider</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidHeightFieldCollider.html">VolumeFluidHeightFieldCollider</a> &amp;collider)</td></tr>
+<tr class="memdesc:a4265a6ee04821252e5ff4715252b28f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one complete owning regular height field.  <br /></td></tr>
+<tr class="separator:a4265a6ee04821252e5ff4715252b28f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ea15608978c729073fa4c514e3bcb6" id="r_a73ea15608978c729073fa4c514e3bcb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a73ea15608978c729073fa4c514e3bcb6">eve::fluids::encodeVolumeFluidSdfPose</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfPose.html">VolumeFluidSdfPose</a> &amp;pose)</td></tr>
+<tr class="memdesc:a73ea15608978c729073fa4c514e3bcb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one transform-only SDF update for script construction.  <br /></td></tr>
+<tr class="separator:a73ea15608978c729073fa4c514e3bcb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad840e86a3dc68d61e3aa623fb4ba341f" id="r_ad840e86a3dc68d61e3aa623fb4ba341f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfPose.html">VolumeFluidSdfPose</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ad840e86a3dc68d61e3aa623fb4ba341f">eve::fluids::decodeVolumeFluidSdfPoses</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:ad840e86a3dc68d61e3aa623fb4ba341f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict transient decode of at most 16 SDF transform-only updates.  <br /></td></tr>
+<tr class="separator:ad840e86a3dc68d61e3aa623fb4ba341f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0fc13e4d765d7a757ff34d5e079e6d2" id="r_aa0fc13e4d765d7a757ff34d5e079e6d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfCollider.html">VolumeFluidSdfCollider</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aa0fc13e4d765d7a757ff34d5e079e6d2">eve::fluids::decodeVolumeFluidSdfColliders</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:aa0fc13e4d765d7a757ff34d5e079e6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 16 sampled SDF colliders.  <br /></td></tr>
+<tr class="separator:aa0fc13e4d765d7a757ff34d5e079e6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6520b26d60cd82df4daedeac61e29439" id="r_a6520b26d60cd82df4daedeac61e29439"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidHeightFieldCollider.html">VolumeFluidHeightFieldCollider</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a6520b26d60cd82df4daedeac61e29439">eve::fluids::decodeVolumeFluidHeightFieldColliders</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a6520b26d60cd82df4daedeac61e29439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 16 regular sampled height fields.  <br /></td></tr>
+<tr class="separator:a6520b26d60cd82df4daedeac61e29439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07d9a0179f479e7da7d6b196ded45f9c" id="r_a07d9a0179f479e7da7d6b196ded45f9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a07d9a0179f479e7da7d6b196ded45f9c">eve::fluids::encodeVolumeFluidWindZone</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidWindZone.html">VolumeFluidWindZone</a> &amp;zone)</td></tr>
+<tr class="memdesc:a07d9a0179f479e7da7d6b196ded45f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one complete wind-zone description for script construction.  <br /></td></tr>
+<tr class="separator:a07d9a0179f479e7da7d6b196ded45f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c2d711b5e0a06e3680d1ff6e00370ba" id="r_a1c2d711b5e0a06e3680d1ff6e00370ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a1c2d711b5e0a06e3680d1ff6e00370ba">eve::fluids::encodeVolumeFluidContacts</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidContact.html">VolumeFluidContact</a> &gt; &amp;contacts)</td></tr>
+<tr class="memdesc:a1c2d711b5e0a06e3680d1ff6e00370ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects last-step contacts, including world-space point and opposite impulse.  <br /></td></tr>
+<tr class="separator:a1c2d711b5e0a06e3680d1ff6e00370ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411d8909b2bd8679373bd761dc7b0afe" id="r_a411d8909b2bd8679373bd761dc7b0afe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a411d8909b2bd8679373bd761dc7b0afe">eve::fluids::encodeVolumeFluidContactEvents</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidContactEvent.html">VolumeFluidContactEvent</a> &gt; &amp;<a class="el" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>)</td></tr>
+<tr class="memdesc:a411d8909b2bd8679373bd761dc7b0afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects owning Enter/Stay/Exit contact lifecycle events.  <br /></td></tr>
+<tr class="separator:a411d8909b2bd8679373bd761dc7b0afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8452fb3880e05ea257c53b24bdc28e9e" id="r_a8452fb3880e05ea257c53b24bdc28e9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a8452fb3880e05ea257c53b24bdc28e9e">eve::fluids::encodeVolumeFluidThermalRule</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidThermalRule.html">VolumeFluidThermalRule</a> &amp;rule)</td></tr>
+<tr class="memdesc:a8452fb3880e05ea257c53b24bdc28e9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning default-rule projection for script construction.  <br /></td></tr>
+<tr class="separator:a8452fb3880e05ea257c53b24bdc28e9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01328e624d4e7b7ff084fdf1f8bc85a3" id="r_a01328e624d4e7b7ff084fdf1f8bc85a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidViscosityColorKey.html">VolumeFluidViscosityColorKey</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a01328e624d4e7b7ff084fdf1f8bc85a3">eve::fluids::decodeVolumeFluidViscosityColors</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a01328e624d4e7b7ff084fdf1f8bc85a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 32 transient viscosity color keys; application validates domains.  <br /></td></tr>
+<tr class="separator:a01328e624d4e7b7ff084fdf1f8bc85a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88249c9651188a1e465a1e83043d254e" id="r_a88249c9651188a1e465a1e83043d254e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidColorKey.html">VolumeFluidColorKey</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a88249c9651188a1e465a1e83043d254e">eve::fluids::decodeVolumeFluidColorGradient</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a88249c9651188a1e465a1e83043d254e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of a 2..32-key normalized linear RGBA gradient.  <br /></td></tr>
+<tr class="separator:a88249c9651188a1e465a1e83043d254e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae1459e161a345fc352b0aa07477220f" id="r_aae1459e161a345fc352b0aa07477220f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidThermalRule.html">VolumeFluidThermalRule</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aae1459e161a345fc352b0aa07477220f">eve::fluids::decodeVolumeFluidThermalRules</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:aae1459e161a345fc352b0aa07477220f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict owning decode of at most 1024 transient thermal rules; step validates domains.  <br /></td></tr>
+<tr class="separator:aae1459e161a345fc352b0aa07477220f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a558417a721d122dae7fd932cb47bfb9f" id="r_a558417a721d122dae7fd932cb47bfb9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a558417a721d122dae7fd932cb47bfb9f">eve::fluids::encodeVolumeFluidParticles</a> (const std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticle.html">VolumeFluidParticle</a> &gt; &amp;particles)</td></tr>
+<tr class="memdesc:a558417a721d122dae7fd932cb47bfb9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects an owning particle batch without copying the live solver.  <br /></td></tr>
+<tr class="separator:a558417a721d122dae7fd932cb47bfb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7be0a00c6d13d396d015eaf4f41aa6e" id="r_ab7be0a00c6d13d396d015eaf4f41aa6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ab7be0a00c6d13d396d015eaf4f41aa6e">eve::fluids::encodeVolumeFluidParticleEvents</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticleEventBatch.html">VolumeFluidParticleEventBatch</a> &amp;batch)</td></tr>
+<tr class="memdesc:ab7be0a00c6d13d396d015eaf4f41aa6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one owning bounded particle lifecycle-event drain.  <br /></td></tr>
+<tr class="separator:ab7be0a00c6d13d396d015eaf4f41aa6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264e2f9e17c05522cf0bb78659b125d0" id="r_a264e2f9e17c05522cf0bb78659b125d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidMaterial.html">VolumeFluidMaterial</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a264e2f9e17c05522cf0bb78659b125d0">eve::fluids::decodeVolumeFluidMaterial</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a264e2f9e17c05522cf0bb78659b125d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict transient material decode; paint validates numeric domains before mutation.  <br /></td></tr>
+<tr class="separator:a264e2f9e17c05522cf0bb78659b125d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27ea9e02452a225b09b0bc291ab8e7fe" id="r_a27ea9e02452a225b09b0bc291ab8e7fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a27ea9e02452a225b09b0bc291ab8e7fe">eve::fluids::encodeVolumeFluidEmitterBlueprint3D</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprint3D.html">VolumeFluidEmitterBlueprint3D</a> &amp;blueprint)</td></tr>
+<tr class="memdesc:a27ea9e02452a225b09b0bc291ab8e7fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects default or caller-prepared Fluid3D-emitter blueprint values.  <br /></td></tr>
+<tr class="separator:a27ea9e02452a225b09b0bc291ab8e7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2880ad43476b9621266e726594e3f5bf" id="r_a2880ad43476b9621266e726594e3f5bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprint3D.html">VolumeFluidEmitterBlueprint3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a2880ad43476b9621266e726594e3f5bf">eve::fluids::decodeVolumeFluidEmitterBlueprint3D</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a2880ad43476b9621266e726594e3f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly decodes one owning Fluid3D-emitter blueprint value.  <br /></td></tr>
+<tr class="separator:a2880ad43476b9621266e726594e3f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8857aa6df69015033a7f5504bd6d77ea" id="r_a8857aa6df69015033a7f5504bd6d77ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a8857aa6df69015033a7f5504bd6d77ea">eve::fluids::encodeVolumeGranularEmitterBlueprint3D</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeGranularEmitterBlueprint3D.html">VolumeGranularEmitterBlueprint3D</a> &amp;blueprint)</td></tr>
+<tr class="memdesc:a8857aa6df69015033a7f5504bd6d77ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects default or caller-prepared Fluid3D granular-emitter blueprint values.  <br /></td></tr>
+<tr class="separator:a8857aa6df69015033a7f5504bd6d77ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76f9b6bbed27c2b355feddb39bae0ff1" id="r_a76f9b6bbed27c2b355feddb39bae0ff1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeGranularEmitterBlueprint3D.html">VolumeGranularEmitterBlueprint3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a76f9b6bbed27c2b355feddb39bae0ff1">eve::fluids::decodeVolumeGranularEmitterBlueprint3D</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a76f9b6bbed27c2b355feddb39bae0ff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly decodes one owning Fluid3D granular-emitter blueprint value.  <br /></td></tr>
+<tr class="separator:a76f9b6bbed27c2b355feddb39bae0ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa77e9227e71518364972b95b7d73e61a" id="r_aa77e9227e71518364972b95b7d73e61a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aa77e9227e71518364972b95b7d73e61a">eve::fluids::encodeVolumeFluidEmitterBlueprintApplication3D</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprintApplication3D.html">VolumeFluidEmitterBlueprintApplication3D</a> &amp;application)</td></tr>
+<tr class="memdesc:aa77e9227e71518364972b95b7d73e61a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects the complete native solver/emission setup produced from a blueprint.  <br /></td></tr>
+<tr class="separator:aa77e9227e71518364972b95b7d73e61a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad379ff8ae27c12daa90ad7a682e91939" id="r_ad379ff8ae27c12daa90ad7a682e91939"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ad379ff8ae27c12daa90ad7a682e91939">eve::fluids::decodeVolumeFluidColliders</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:ad379ff8ae27c12daa90ad7a682e91939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict transient collider batch decode; setColliders validates geometry atomically.  <br /></td></tr>
+<tr class="separator:ad379ff8ae27c12daa90ad7a682e91939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36f44b3b017d11e3af3de62cffd8c928" id="r_a36f44b3b017d11e3af3de62cffd8c928"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidNozzlePose.html">VolumeFluidNozzlePose</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a36f44b3b017d11e3af3de62cffd8c928">eve::fluids::decodeVolumeFluidNozzlePose</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a36f44b3b017d11e3af3de62cffd8c928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict transient pose-argument decode; advanceMoving validates the unit quaternion.  <br /></td></tr>
+<tr class="separator:a36f44b3b017d11e3af3de62cffd8c928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a009c83d99c511f16be447bc75c29c1e0" id="r_a009c83d99c511f16be447bc75c29c1e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a009c83d99c511f16be447bc75c29c1e0">eve::fluids::encodeVolumeFluidEmitterState</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterSnapshot.html">VolumeFluidEmitterSnapshot</a> &amp;state)</td></tr>
+<tr class="memdesc:a009c83d99c511f16be447bc75c29c1e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes controller state without converting phase text to VM floating point.  <br /></td></tr>
+<tr class="separator:a009c83d99c511f16be447bc75c29c1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a862692bf21da4e09911777c3c3c923fd" id="r_a862692bf21da4e09911777c3c3c923fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterSnapshot.html">VolumeFluidEmitterSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a862692bf21da4e09911777c3c3c923fd">eve::fluids::decodeVolumeFluidEmitterState</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a862692bf21da4e09911777c3c3c923fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict version-1 controller-state decode; unsupported fields, kinds and phase values fail.  <br /></td></tr>
+<tr class="separator:a862692bf21da4e09911777c3c3c923fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a123420b7438d3657f73b9fa25b457afb" id="r_a123420b7438d3657f73b9fa25b457afb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticle.html">VolumeFluidParticle</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a123420b7438d3657f73b9fa25b457afb">eve::fluids::decodeVolumeFluidParticles</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a123420b7438d3657f73b9fa25b457afb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodes an owning emission batch without serializing the live solver; admission validates domains.  <br /></td></tr>
+<tr class="separator:a123420b7438d3657f73b9fa25b457afb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae96776bb972962c0d0d2273a44a17d3c" id="r_ae96776bb972962c0d0d2273a44a17d3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ae96776bb972962c0d0d2273a44a17d3c">eve::fluids::encodeVolumeFluidEmitterCheckpoint</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterCheckpoint.html">VolumeFluidEmitterCheckpoint</a> &amp;checkpoint)</td></tr>
+<tr class="memdesc:ae96776bb972962c0d0d2273a44a17d3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes one version-1 solver/emission/controller checkpoint.  <br /></td></tr>
+<tr class="separator:ae96776bb972962c0d0d2273a44a17d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20befb2649a6b1bc5516847355780861" id="r_a20befb2649a6b1bc5516847355780861"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterCheckpoint.html">VolumeFluidEmitterCheckpoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a20befb2649a6b1bc5516847355780861">eve::fluids::decodeVolumeFluidEmitterCheckpoint</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a20befb2649a6b1bc5516847355780861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly decodes and validates all owning checkpoint members without publishing state.  <br /></td></tr>
+<tr class="separator:a20befb2649a6b1bc5516847355780861"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1b3d3ef782f8a4c5bbd660ab84a1c07" id="r_ab1b3d3ef782f8a4c5bbd660ab84a1c07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ab1b3d3ef782f8a4c5bbd660ab84a1c07">eve::fluids::encodeVolumeFluidEmission</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission)</td></tr>
+<tr class="memdesc:ab1b3d3ef782f8a4c5bbd660ab84a1c07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes a version-9 emission description including precomputed points and particle state.  <br /></td></tr>
+<tr class="separator:ab1b3d3ef782f8a4c5bbd660ab84a1c07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9d361dd22e30b9cf3db8db2b124a41" id="r_a7e9d361dd22e30b9cf3db8db2b124a41"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a7e9d361dd22e30b9cf3db8db2b124a41">eve::fluids::decodeVolumeFluidEmission</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a7e9d361dd22e30b9cf3db8db2b124a41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict structural decode; nozzle/material domain validation occurs atomically at emission.  <br /></td></tr>
+<tr class="separator:a7e9d361dd22e30b9cf3db8db2b124a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

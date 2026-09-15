@@ -1,0 +1,247 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/PcgPhotoModeValues.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgPhotoModeValues.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgPhotoModeValues_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacessq.html">ssq</a> { <span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">Table</a>; }</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a0123e2a23467fa4b8ffe727c08c91bd6">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1PcgPhotoModeColor.html">PcgPhotoModeColor</a> { <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#abd1a1c03d7b952d4ac71d51f8ec26b72">r</a>=0,<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a58bd3db86c6110a8d960e93192015eca">g</a>=0,<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a96ed9cfb9972d7cbb0b3ce332ee9c8c9">b</a>=0,<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a0123e2a23467fa4b8ffe727c08c91bd6">a</a>=1; <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#adabf6180fa46469547f3cab68b1a4b20">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1PcgPhotoModeColor.html">PcgPhotoModeColor</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>; };</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5f">   11</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5f">PcgPhotoModeValueType</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034">Bool</a>=0, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52">Int</a>=1, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b">Float</a>=2, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98">String</a>=3, <a class="code hl_typedef" href="namespaceeve.html#aa24f76aa08bfbd65db55962a5177d8ef">Color</a>=4 };</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#a6c7fcde531ffd68d71257d0c33a1609d">   12</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1ui.html#a6c7fcde531ffd68d71257d0c33a1609d">PcgPhotoModeValue</a>=std::variant&lt;bool,int64_t,float,std::string,PcgPhotoModeColor&gt;;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1PcgPhotoModeField.html#aa7a7ef42c4f44dc44b4c425660909885">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1PcgPhotoModeField.html">PcgPhotoModeField</a> { std::string <a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeField.html#a8bd1f3d7c2238007ef7c43f31d879c41">name</a>; <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5f">PcgPhotoModeValueType</a> <a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeField.html#aa7797170b85f80018f77ca9580243427">type</a>; <a class="code hl_typedef" href="namespaceeve_1_1ui.html#a6c7fcde531ffd68d71257d0c33a1609d">PcgPhotoModeValue</a> <a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeField.html#aa7a7ef42c4f44dc44b4c425660909885">defaultValue</a>; };</div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">   15</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">PcgPhotoModeValues</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#abbe6c896630e9aa2dca4c82c145eebf0">PcgPhotoModeValues</a>();</div>
+ <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aed492bbfbe397ba606843c1c422331e4">resetDefaults</a>(); uint64_t <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a31860a9c843b2d31ae863362055190ea">getFieldCount</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#acf7508f1db5f3ec2693a7ebfa5d3c5d1">getFieldName</a>(uint64_t <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a155670a159f2217c369a3b0edc5997a3">getFieldType</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a2361c3294a06b27cf45529891ba20b9f">setBool</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,<span class="keywordtype">bool</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ac6d771adf36cd770a5f398a838c7db05">setInt</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,int64_t <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ac5be7ddd6fa660f5225ac38756dd070d">setFloat</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a8ad6eaebc2279267f96dc66326217c68">setString</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aae945673c1926649015c6142338012f6">setColor</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,<span class="keywordtype">float</span> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>,<span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>,<span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>,<span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;bool&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a16776d3c9f3d3495c8124dc73edcff88">getBool</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int64_t&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a6cf97b6a9c71d7a3e534f90bd98feda8">getInt</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;float&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a57372fbbde4c9a321dd16d66e2b75435">getFloat</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ae6de9d43f3dd8c6b5c38cfd1aa469d33">getString</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PcgPhotoModeValue&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a81c89235c466229f4fef40394669c28e">getValue</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aa90c3a1fd1ba28fe023720e4a79bd336">selectColor</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a3659b199e196081460dd32df59707d2f">snapshotJson</a>() <span class="keyword">const</span>; [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a25701336d57159d76017ba57a12f8774">restoreJson</a>(<span class="keyword">const</span> std::string&amp;json);<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#af2df42daa941e0aa8d9f7d31765ef34a">   35</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a290d0e972a0b99274a0de6504772dbad">getColorR</a>()const noexcept{<span class="keywordflow">return</span> selectedColor_.<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#abd1a1c03d7b952d4ac71d51f8ec26b72">r</a>;} <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#af2df42daa941e0aa8d9f7d31765ef34a">getColorG</a>()const noexcept{<span class="keywordflow">return</span> selectedColor_.<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a58bd3db86c6110a8d960e93192015eca">g</a>;}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aef776c9ad247d4453847941b174b04dd">   36</a></span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aafc12ae7e6dd1bdf38cc80c2411a777c">getColorB</a>()const noexcept{<span class="keywordflow">return</span> selectedColor_.<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a96ed9cfb9972d7cbb0b3ce332ee9c8c9">b</a>;} <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aef776c9ad247d4453847941b174b04dd">getColorA</a>()const noexcept{<span class="keywordflow">return</span> selectedColor_.<a class="code hl_variable" href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a0123e2a23467fa4b8ffe727c08c91bd6">a</a>;}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">private</span>: std::unordered_map&lt;std::string,PcgPhotoModeValue&gt; values_; PcgPhotoModeColor selectedColor_{};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+ <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a3d5f7807c43091c8ae7b53731abdcbed">exposePcgPhotoModeValuesBindings</a>(ssq::Table&amp;table);<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a17956fe0129d3d4c94ebc06cfef2ad82"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a></div><div class="ttdeci">float value</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00015">AnimCurveLibrary.cpp:15</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a880a49112fedae68e714341a9a082fb6"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a></div><div class="ttdeci">double r</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00012">GtsMeshSimplifier.cpp:12</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html">eve::ui::PcgPhotoModeValues</a></div><div class="ttdoc">Complete typed value set from Pcg PhotoModeProfile with exact defaults.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00015">PcgPhotoModeValues.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a155670a159f2217c369a3b0edc5997a3"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a155670a159f2217c369a3b0edc5997a3">eve::ui::PcgPhotoModeValues::getFieldType</a></div><div class="ttdeci">Result&lt; int &gt; getFieldType(const std::string &amp;name) const</div><div class="ttdoc">Return field type: bool=0, int=1, float=2, string=3, color=4.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00121">PcgPhotoModeValues.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a16776d3c9f3d3495c8124dc73edcff88"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a16776d3c9f3d3495c8124dc73edcff88">eve::ui::PcgPhotoModeValues::getBool</a></div><div class="ttdeci">Result&lt; bool &gt; getBool(const std::string &amp;name) const</div><div class="ttdoc">Read a typed boolean field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00127">PcgPhotoModeValues.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a2361c3294a06b27cf45529891ba20b9f"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a2361c3294a06b27cf45529891ba20b9f">eve::ui::PcgPhotoModeValues::setBool</a></div><div class="ttdeci">Result&lt; void &gt; setBool(const std::string &amp;name, bool value)</div><div class="ttdoc">Set a typed boolean field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00122">PcgPhotoModeValues.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a25701336d57159d76017ba57a12f8774"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a25701336d57159d76017ba57a12f8774">eve::ui::PcgPhotoModeValues::restoreJson</a></div><div class="ttdeci">Result&lt; void &gt; restoreJson(const std::string &amp;json)</div><div class="ttdoc">Atomically restore schema 1 JSON; unknown or missing fields are rejected.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00143">PcgPhotoModeValues.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a290d0e972a0b99274a0de6504772dbad"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a290d0e972a0b99274a0de6504772dbad">eve::ui::PcgPhotoModeValues::getColorR</a></div><div class="ttdeci">float getColorR() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00035">PcgPhotoModeValues.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a31860a9c843b2d31ae863362055190ea"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a31860a9c843b2d31ae863362055190ea">eve::ui::PcgPhotoModeValues::getFieldCount</a></div><div class="ttdeci">uint64_t getFieldCount() const noexcept</div><div class="ttdoc">Return stable schema field count.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00119">PcgPhotoModeValues.cpp:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a3659b199e196081460dd32df59707d2f"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a3659b199e196081460dd32df59707d2f">eve::ui::PcgPhotoModeValues::snapshotJson</a></div><div class="ttdeci">Result&lt; std::string &gt; snapshotJson() const</div><div class="ttdoc">Encode schema 1 JSON containing every field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00133">PcgPhotoModeValues.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a57372fbbde4c9a321dd16d66e2b75435"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a57372fbbde4c9a321dd16d66e2b75435">eve::ui::PcgPhotoModeValues::getFloat</a></div><div class="ttdeci">Result&lt; float &gt; getFloat(const std::string &amp;name) const</div><div class="ttdoc">Read a typed float field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00129">PcgPhotoModeValues.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a6cf97b6a9c71d7a3e534f90bd98feda8"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a6cf97b6a9c71d7a3e534f90bd98feda8">eve::ui::PcgPhotoModeValues::getInt</a></div><div class="ttdeci">Result&lt; int64_t &gt; getInt(const std::string &amp;name) const</div><div class="ttdoc">Read a typed integer field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00128">PcgPhotoModeValues.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a81c89235c466229f4fef40394669c28e"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a81c89235c466229f4fef40394669c28e">eve::ui::PcgPhotoModeValues::getValue</a></div><div class="ttdeci">Result&lt; PcgPhotoModeValue &gt; getValue(const std::string &amp;name) const</div><div class="ttdoc">Read a field as its schema-declared native variant.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00131">PcgPhotoModeValues.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_a8ad6eaebc2279267f96dc66326217c68"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a8ad6eaebc2279267f96dc66326217c68">eve::ui::PcgPhotoModeValues::setString</a></div><div class="ttdeci">Result&lt; void &gt; setString(const std::string &amp;name, const std::string &amp;value)</div><div class="ttdoc">Set a typed string field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00125">PcgPhotoModeValues.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_aa90c3a1fd1ba28fe023720e4a79bd336"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aa90c3a1fd1ba28fe023720e4a79bd336">eve::ui::PcgPhotoModeValues::selectColor</a></div><div class="ttdeci">Result&lt; void &gt; selectColor(const std::string &amp;name)</div><div class="ttdoc">Select a color field for component reads.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00132">PcgPhotoModeValues.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_aae945673c1926649015c6142338012f6"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aae945673c1926649015c6142338012f6">eve::ui::PcgPhotoModeValues::setColor</a></div><div class="ttdeci">Result&lt; void &gt; setColor(const std::string &amp;name, float r, float g, float b, float a)</div><div class="ttdoc">Set a finite typed RGBA field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00126">PcgPhotoModeValues.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_aafc12ae7e6dd1bdf38cc80c2411a777c"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aafc12ae7e6dd1bdf38cc80c2411a777c">eve::ui::PcgPhotoModeValues::getColorB</a></div><div class="ttdeci">float getColorB() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00036">PcgPhotoModeValues.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_abbe6c896630e9aa2dca4c82c145eebf0"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#abbe6c896630e9aa2dca4c82c145eebf0">eve::ui::PcgPhotoModeValues::PcgPhotoModeValues</a></div><div class="ttdeci">PcgPhotoModeValues()</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00117">PcgPhotoModeValues.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_ac5be7ddd6fa660f5225ac38756dd070d"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ac5be7ddd6fa660f5225ac38756dd070d">eve::ui::PcgPhotoModeValues::setFloat</a></div><div class="ttdeci">Result&lt; void &gt; setFloat(const std::string &amp;name, float value)</div><div class="ttdoc">Set a finite typed float field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00124">PcgPhotoModeValues.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_ac6d771adf36cd770a5f398a838c7db05"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ac6d771adf36cd770a5f398a838c7db05">eve::ui::PcgPhotoModeValues::setInt</a></div><div class="ttdeci">Result&lt; void &gt; setInt(const std::string &amp;name, int64_t value)</div><div class="ttdoc">Set a typed integer or enum field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00123">PcgPhotoModeValues.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_acf7508f1db5f3ec2693a7ebfa5d3c5d1"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#acf7508f1db5f3ec2693a7ebfa5d3c5d1">eve::ui::PcgPhotoModeValues::getFieldName</a></div><div class="ttdeci">Result&lt; std::string &gt; getFieldName(uint64_t index) const</div><div class="ttdoc">Return schema field name by declaration order.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00120">PcgPhotoModeValues.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_ae6de9d43f3dd8c6b5c38cfd1aa469d33"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ae6de9d43f3dd8c6b5c38cfd1aa469d33">eve::ui::PcgPhotoModeValues::getString</a></div><div class="ttdeci">Result&lt; std::string &gt; getString(const std::string &amp;name) const</div><div class="ttdoc">Read a typed string field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00130">PcgPhotoModeValues.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_aed492bbfbe397ba606843c1c422331e4"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aed492bbfbe397ba606843c1c422331e4">eve::ui::PcgPhotoModeValues::resetDefaults</a></div><div class="ttdeci">void resetDefaults()</div><div class="ttdoc">Restore all 102 Pcg defaults atomically.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00118">PcgPhotoModeValues.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_aef776c9ad247d4453847941b174b04dd"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aef776c9ad247d4453847941b174b04dd">eve::ui::PcgPhotoModeValues::getColorA</a></div><div class="ttdeci">float getColorA() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00036">PcgPhotoModeValues.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeValues_html_af2df42daa941e0aa8d9f7d31765ef34a"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#af2df42daa941e0aa8d9f7d31765ef34a">eve::ui::PcgPhotoModeValues::getColorG</a></div><div class="ttdeci">float getColorG() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00035">PcgPhotoModeValues.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a3d5f7807c43091c8ae7b53731abdcbed"><div class="ttname"><a href="namespaceeve_1_1ui.html#a3d5f7807c43091c8ae7b53731abdcbed">eve::ui::exposePcgPhotoModeValuesBindings</a></div><div class="ttdeci">void exposePcgPhotoModeValuesBindings(ssq::Table &amp;t)</div><div class="ttdoc">Register complete Pcg photo-mode value bindings.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8cpp_source.html#l00157">PcgPhotoModeValues.cpp:157</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6c7fcde531ffd68d71257d0c33a1609d"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6c7fcde531ffd68d71257d0c33a1609d">eve::ui::PcgPhotoModeValue</a></div><div class="ttdeci">std::variant&lt; bool, int64_t, float, std::string, PcgPhotoModeColor &gt; PcgPhotoModeValue</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00012">PcgPhotoModeValues.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abfa9ccc5fcd4e8d412531542da9d2e5f"><div class="ttname"><a href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5f">eve::ui::PcgPhotoModeValueType</a></div><div class="ttdeci">PcgPhotoModeValueType</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00011">PcgPhotoModeValues.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52"><div class="ttname"><a href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52">eve::ui::PcgPhotoModeValueType::Int</a></div><div class="ttdeci">@ Int</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b">eve::ui::PcgPhotoModeValueType::Float</a></div><div class="ttdeci">@ Float</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98">eve::ui::PcgPhotoModeValueType::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034"><div class="ttname"><a href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034">eve::ui::PcgPhotoModeValueType::Bool</a></div><div class="ttdeci">@ Bool</div></div>
+<div class="ttc" id="anamespaceeve_html_aa24f76aa08bfbd65db55962a5177d8ef"><div class="ttname"><a href="namespaceeve.html#aa24f76aa08bfbd65db55962a5177d8ef">eve::Color</a></div><div class="ttdeci">glm::vec4 Color</div><div class="ttdoc">Render-neutral RGBA color shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00008">RenderTypes.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">eve::ReflectedValueKind::Table</a></div><div class="ttdeci">@ Table</div><div class="ttdoc">OT_TABLE (not yet editable).</div></div>
+<div class="ttc" id="anamespacessq_html"><div class="ttname"><a href="namespacessq.html">ssq</a></div><div class="ttdoc">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp https://github.com/sunxfancy/ECS.hpp</div><div class="ttdef"><b>Definition</b> <a href="ECS_8h_source.html#l00012">ECS.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeColor_html"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeColor.html">eve::ui::PcgPhotoModeColor</a></div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00010">PcgPhotoModeValues.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeColor_html_a0123e2a23467fa4b8ffe727c08c91bd6"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a0123e2a23467fa4b8ffe727c08c91bd6">eve::ui::PcgPhotoModeColor::a</a></div><div class="ttdeci">float a</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00010">PcgPhotoModeValues.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeColor_html_a58bd3db86c6110a8d960e93192015eca"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a58bd3db86c6110a8d960e93192015eca">eve::ui::PcgPhotoModeColor::g</a></div><div class="ttdeci">float g</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00010">PcgPhotoModeValues.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeColor_html_a96ed9cfb9972d7cbb0b3ce332ee9c8c9"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeColor.html#a96ed9cfb9972d7cbb0b3ce332ee9c8c9">eve::ui::PcgPhotoModeColor::b</a></div><div class="ttdeci">float b</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00010">PcgPhotoModeValues.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeColor_html_abd1a1c03d7b952d4ac71d51f8ec26b72"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeColor.html#abd1a1c03d7b952d4ac71d51f8ec26b72">eve::ui::PcgPhotoModeColor::r</a></div><div class="ttdeci">float r</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00010">PcgPhotoModeValues.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeColor_html_adabf6180fa46469547f3cab68b1a4b20"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeColor.html#adabf6180fa46469547f3cab68b1a4b20">eve::ui::PcgPhotoModeColor::operator==</a></div><div class="ttdeci">bool operator==(const PcgPhotoModeColor &amp;) const =default</div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeField_html"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeField.html">eve::ui::PcgPhotoModeField</a></div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00013">PcgPhotoModeValues.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeField_html_a8bd1f3d7c2238007ef7c43f31d879c41"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeField.html#a8bd1f3d7c2238007ef7c43f31d879c41">eve::ui::PcgPhotoModeField::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00013">PcgPhotoModeValues.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeField_html_aa7797170b85f80018f77ca9580243427"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeField.html#aa7797170b85f80018f77ca9580243427">eve::ui::PcgPhotoModeField::type</a></div><div class="ttdeci">PcgPhotoModeValueType type</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00013">PcgPhotoModeValues.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgPhotoModeField_html_aa7a7ef42c4f44dc44b4c425660909885"><div class="ttname"><a href="structeve_1_1ui_1_1PcgPhotoModeField.html#aa7a7ef42c4f44dc44b4c425660909885">eve::ui::PcgPhotoModeField::defaultValue</a></div><div class="ttdeci">PcgPhotoModeValue defaultValue</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeValues_8h_source.html#l00013">PcgPhotoModeValues.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

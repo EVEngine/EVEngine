@@ -1,0 +1,506 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::PcgPhotoModeApplyPlan类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html">PcgPhotoModeApplyPlan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::PcgPhotoModeApplyPlan类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Stable, reversible difference between two complete Pcg photo-mode snapshots.  
+ <a href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4c386d6e33d34c4e9f57d3828d425488" id="r_a4c386d6e33d34c4e9f57d3828d425488"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a4c386d6e33d34c4e9f57d3828d425488">compile</a> (const <a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">PcgPhotoModeValues</a> &amp;before, const <a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">PcgPhotoModeValues</a> &amp;after)</td></tr>
+<tr class="memdesc:a4c386d6e33d34c4e9f57d3828d425488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile all changed fields in source declaration order.  <br /></td></tr>
+<tr class="separator:a4c386d6e33d34c4e9f57d3828d425488"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbd2ecff2a4fd1f51c7e87e49c9caac5" id="r_adbd2ecff2a4fd1f51c7e87e49c9caac5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#adbd2ecff2a4fd1f51c7e87e49c9caac5">compileJson</a> (const std::string &amp;beforeJson, const std::string &amp;afterJson)</td></tr>
+<tr class="memdesc:adbd2ecff2a4fd1f51c7e87e49c9caac5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile two schema-1 JSON snapshots atomically.  <br /></td></tr>
+<tr class="separator:adbd2ecff2a4fd1f51c7e87e49c9caac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8985c17a4f1f2e33a3f9928ed4ce46b8" id="r_a8985c17a4f1f2e33a3f9928ed4ce46b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a8985c17a4f1f2e33a3f9928ed4ce46b8">execute</a> (<a class="el" href="classeve_1_1IPhotoModeApplySink.html">IPhotoModeApplySink</a> &amp;sink)</td></tr>
+<tr class="memdesc:a8985c17a4f1f2e33a3f9928ed4ce46b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute through an explicit sink and roll back prior writes after a failure.  <br /></td></tr>
+<tr class="separator:a8985c17a4f1f2e33a3f9928ed4ce46b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c645fa614e01bf0b2987d9b0d0fde4" id="r_a73c645fa614e01bf0b2987d9b0d0fde4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a73c645fa614e01bf0b2987d9b0d0fde4">executeRegistered</a> ()</td></tr>
+<tr class="memdesc:a73c645fa614e01bf0b2987d9b0d0fde4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute through the registered capability; absence is an observable failure.  <br /></td></tr>
+<tr class="separator:a73c645fa614e01bf0b2987d9b0d0fde4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ded1e63377f6bfc7b6ae1571f6c7348" id="r_a5ded1e63377f6bfc7b6ae1571f6c7348"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a5ded1e63377f6bfc7b6ae1571f6c7348">getCommandCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a5ded1e63377f6bfc7b6ae1571f6c7348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of changed assignments.  <br /></td></tr>
+<tr class="separator:a5ded1e63377f6bfc7b6ae1571f6c7348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0a3d2c75cf129c9686c4d17b254b3d" id="r_a4e0a3d2c75cf129c9686c4d17b254b3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a4e0a3d2c75cf129c9686c4d17b254b3d">getCommandField</a> (uint64_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a4e0a3d2c75cf129c9686c4d17b254b3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a command field name.  <br /></td></tr>
+<tr class="separator:a4e0a3d2c75cf129c9686c4d17b254b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68e57a1e6c3e8e921f10e7f29ea28e7" id="r_ac68e57a1e6c3e8e921f10e7f29ea28e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#ac68e57a1e6c3e8e921f10e7f29ea28e7">getCommandDomain</a> (uint64_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac68e57a1e6c3e8e921f10e7f29ea28e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a command domain.  <br /></td></tr>
+<tr class="separator:ac68e57a1e6c3e8e921f10e7f29ea28e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a910bd83e80c1107d56fb6456b8758112" id="r_a910bd83e80c1107d56fb6456b8758112"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a910bd83e80c1107d56fb6456b8758112">getAppliedCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a910bd83e80c1107d56fb6456b8758112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return how many forward assignments completed in the last successful execution.  <br /></td></tr>
+<tr class="separator:a910bd83e80c1107d56fb6456b8758112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84c172fbc4670524432abdd8ebe617f" id="r_af84c172fbc4670524432abdd8ebe617f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#af84c172fbc4670524432abdd8ebe617f">getRollbackComplete</a> () const noexcept</td></tr>
+<tr class="memdesc:af84c172fbc4670524432abdd8ebe617f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the last failed execution restored every prior assignment.  <br /></td></tr>
+<tr class="separator:af84c172fbc4670524432abdd8ebe617f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e7ee1fb3d142baa1e5fdaceca127c7c" id="r_a4e7ee1fb3d142baa1e5fdaceca127c7c"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeApplyPlan.html#a4e7ee1fb3d142baa1e5fdaceca127c7c">getRevision</a> () const noexcept</td></tr>
+<tr class="memdesc:a4e7ee1fb3d142baa1e5fdaceca127c7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return plan revision, incremented only by successful compilation or execution.  <br /></td></tr>
+<tr class="separator:a4e7ee1fb3d142baa1e5fdaceca127c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Stable, reversible difference between two complete Pcg photo-mode snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html#l00008">8</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4c386d6e33d34c4e9f57d3828d425488" name="a4c386d6e33d34c4e9f57d3828d425488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c386d6e33d34c4e9f57d3828d425488">&#9670;&#160;</a></span>compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeApplyPlan::compile </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">PcgPhotoModeValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>before</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">PcgPhotoModeValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>after</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile all changed fields in source declaration order. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00119">eve::ui::PcgPhotoModeValues::getFieldCount()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00120">eve::ui::PcgPhotoModeValues::getFieldName()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00131">eve::ui::PcgPhotoModeValues::getValue()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00083">compileJson()</a>.</p>
+
+</div>
+</div>
+<a id="adbd2ecff2a4fd1f51c7e87e49c9caac5" name="adbd2ecff2a4fd1f51c7e87e49c9caac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbd2ecff2a4fd1f51c7e87e49c9caac5">&#9670;&#160;</a></span>compileJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeApplyPlan::compileJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>beforeJson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>afterJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile two schema-1 JSON snapshots atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00072">compile()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00143">eve::ui::PcgPhotoModeValues::restoreJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8985c17a4f1f2e33a3f9928ed4ce46b8" name="a8985c17a4f1f2e33a3f9928ed4ce46b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8985c17a4f1f2e33a3f9928ed4ce46b8">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeApplyPlan::execute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1IPhotoModeApplySink.html">IPhotoModeApplySink</a> &amp;&#160;</td>
+          <td class="paramname"><em>sink</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute through an explicit sink and roll back prior writes after a failure. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1IPhotoModeApplySink.html#acfafd86df7f463753ed23409e880beb4">eve::IPhotoModeApplySink::applyPhotoModeAssignment()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00107">executeRegistered()</a>.</p>
+
+</div>
+</div>
+<a id="a73c645fa614e01bf0b2987d9b0d0fde4" name="a73c645fa614e01bf0b2987d9b0d0fde4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c645fa614e01bf0b2987d9b0d0fde4">&#9670;&#160;</a></span>executeRegistered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeApplyPlan::executeRegistered </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute through the registered capability; absence is an observable failure. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00089">execute()</a> , 以及 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+</div>
+</div>
+<a id="a910bd83e80c1107d56fb6456b8758112" name="a910bd83e80c1107d56fb6456b8758112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a910bd83e80c1107d56fb6456b8758112">&#9670;&#160;</a></span>getAppliedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::PcgPhotoModeApplyPlan::getAppliedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return how many forward assignments completed in the last successful execution. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ded1e63377f6bfc7b6ae1571f6c7348" name="a5ded1e63377f6bfc7b6ae1571f6c7348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ded1e63377f6bfc7b6ae1571f6c7348">&#9670;&#160;</a></span>getCommandCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::PcgPhotoModeApplyPlan::getCommandCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of changed assignments. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac68e57a1e6c3e8e921f10e7f29ea28e7" name="ac68e57a1e6c3e8e921f10e7f29ea28e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68e57a1e6c3e8e921f10e7f29ea28e7">&#9670;&#160;</a></span>getCommandDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::ui::PcgPhotoModeApplyPlan::getCommandDomain </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a command domain. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a4e0a3d2c75cf129c9686c4d17b254b3d" name="a4e0a3d2c75cf129c9686c4d17b254b3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e0a3d2c75cf129c9686c4d17b254b3d">&#9670;&#160;</a></span>getCommandField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::ui::PcgPhotoModeApplyPlan::getCommandField </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a command field name. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a4e7ee1fb3d142baa1e5fdaceca127c7c" name="a4e7ee1fb3d142baa1e5fdaceca127c7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e7ee1fb3d142baa1e5fdaceca127c7c">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::PcgPhotoModeApplyPlan::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return plan revision, incremented only by successful compilation or execution. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af84c172fbc4670524432abdd8ebe617f" name="af84c172fbc4670524432abdd8ebe617f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84c172fbc4670524432abdd8ebe617f">&#9670;&#160;</a></span>getRollbackComplete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeApplyPlan::getRollbackComplete </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the last failed execution restored every prior assignment. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a> 第 <a class="el" href="PcgPhotoModeApplyPlan_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeApplyPlan_8h_source.html">PcgPhotoModeApplyPlan.h</a></li>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html">PcgPhotoModeApplyPlan.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weather/ThunderStrike.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5174e1a75009182dde50ef8e54ca3631.html">weather</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ThunderStrike.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ThunderStrike_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ThunderStrike_8h.html">weather/ThunderStrike.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weather.html">eve::weather</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>std::uint32_t next(std::uint32_t&amp; state) { <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> * 1664525u + 1013904223u; <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>; }</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keywordtype">float</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>(std::uint32_t&amp; state) { <span class="keywordflow">return</span> float(next(state) &gt;&gt; 8u) * (1.f / 16777216.f); }</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keywordtype">float</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>(std::uint32_t&amp; state, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) * <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>(state); }</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; Result&lt;T&gt; fail(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;weather.thunderStrike&quot;</span>));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather.html#a7891f8a6b4c65177e90a87e153c18e29">   16</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ThunderStrikeReceipt&gt;</a> <a class="code hl_function" href="namespaceeve_1_1weather.html#a7891f8a6b4c65177e90a87e153c18e29">triggerThunderStrike</a>(<a class="code hl_struct" href="structeve_1_1weather_1_1ThunderStrikeState.html">ThunderStrikeState</a>&amp; state,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weather_1_1ThunderStrikeSettings.html">ThunderStrikeSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a>, std::uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.playing) <span class="keywordflow">return</span> fail&lt;ThunderStrikeReceipt&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;thunder strike is already playing&quot;</span>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>) || !std::isfinite(<a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a>) || !std::isfinite(<a class="code hl_variable" href="CaveWetness_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a>) ||</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        !std::isfinite(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.intensity) || !std::isfinite(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.radius) ||</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        !std::isfinite(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.volume) || <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.intensity &lt; 0.f || <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.radius &lt; 0.f ||</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.volume &lt; 0.f || <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.audioClipCount &lt; 0)</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">return</span> fail&lt;ThunderStrikeReceipt&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;thunder strike inputs must be finite and non-negative&quot;</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    std::uint32_t rng = <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> positive = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>(rng) &gt; 0.5f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_struct" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html">ThunderStrikeReceipt</a> receipt;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a36d2452c1be7e8839fb4bca2807aa95d">x</a> = <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>(rng, <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> + (positive ? 700.f : -700.f));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a60a759ee629c998685e37a168a44795c">y</a> = <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>(rng, <a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a> + 50.f, <a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a> + 250.f);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a2e41a9f8248191110de9923f51bf26f2">z</a> = <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>(rng, <a class="code hl_variable" href="CaveWetness_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a> + (positive ? 700.f : -700.f));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a475b93945a806307195c0760a53b7a56">intensity</a> = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.intensity; receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a6b8adf3b7e2a031478f0fa8b54ef63db">radius</a> = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.radius; receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#ade98406414eaf60236eb901450c47d27">volume</a> = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.volume;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.audioClipCount &gt; 1)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        receipt.<a class="code hl_variable" href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a7732da8340b61f102c2a8b4e1615afc8">audioClipIndex</a> = 1 + int(next(rng) % std::uint32_t(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.audioClipCount - 1));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.playing = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.intensity = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.intensity;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;ThunderStrikeReceipt&gt;::success</a>(receipt);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1weather.html#a4a64764b87061e6b90a8f8e800219b02">   38</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1weather.html#a4a64764b87061e6b90a8f8e800219b02">advanceThunderStrike</a>(<a class="code hl_struct" href="structeve_1_1weather_1_1ThunderStrikeState.html">ThunderStrikeState</a>&amp; state, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (!std::isfinite(dt) || dt &lt; 0.f)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> fail&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;thunder strike dt must be finite and non-negative&quot;</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.playing) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.intensity += (0.f - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.intensity) * std::clamp(dt * 2.f, 0.f, 1.f);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.intensity &lt; 0.15f) { <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.intensity = 0.f; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.playing = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}  <span class="comment">// namespace eve::weather</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a709aad4619f93afb87fab238013812b2"><div class="ttname"><a href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00015">CaveWetness.cpp:15</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_ad14cf8d20cbd0a50cdc6cd204096aa46"><div class="ttname"><a href="CaveWetness_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a></div><div class="ttdeci">float pz</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00015">CaveWetness.cpp:15</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00691">ImageData.cpp:691</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_ad73a08b362d03aef0cbf46e78c9c0631"><div class="ttname"><a href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a></div><div class="ttdeci">Range range</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00020">LanguageIndex.cpp:20</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00762">PointSet.cpp:762</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00113">TacticsPersistence.cpp:113</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aThunderStrike_8h_html"><div class="ttname"><a href="ThunderStrike_8h.html">ThunderStrike.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_html"><div class="ttname"><a href="namespaceeve_1_1weather.html">eve::weather</a></div><div class="ttdef"><b>Definition</b> <a href="LightingTarget_8h_source.html#l00017">LightingTarget.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_html_a4a64764b87061e6b90a8f8e800219b02"><div class="ttname"><a href="namespaceeve_1_1weather.html#a4a64764b87061e6b90a8f8e800219b02">eve::weather::advanceThunderStrike</a></div><div class="ttdeci">Result&lt; void &gt; advanceThunderStrike(ThunderStrikeState &amp;state, float dt)</div><div class="ttdoc">Apply Pcg's clamped Lerp(intensity,0,dt*2) decay and 0.15 stop threshold.</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8cpp_source.html#l00038">ThunderStrike.cpp:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weather_html_a7891f8a6b4c65177e90a87e153c18e29"><div class="ttname"><a href="namespaceeve_1_1weather.html#a7891f8a6b4c65177e90a87e153c18e29">eve::weather::triggerThunderStrike</a></div><div class="ttdeci">Result&lt; ThunderStrikeReceipt &gt; triggerThunderStrike(ThunderStrikeState &amp;state, const ThunderStrikeSettings &amp;settings, float px, float py, float pz, std::uint32_t seed)</div><div class="ttdoc">Start a Pcg-style strike around the supplied player position.</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8cpp_source.html#l00016">ThunderStrike.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html">eve::weather::ThunderStrikeReceipt</a></div><div class="ttdoc">Deterministic strike command consumed by scene, light and audio providers.</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00024">ThunderStrike.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_a2e41a9f8248191110de9923f51bf26f2"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a2e41a9f8248191110de9923f51bf26f2">eve::weather::ThunderStrikeReceipt::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00025">ThunderStrike.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_a36d2452c1be7e8839fb4bca2807aa95d"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a36d2452c1be7e8839fb4bca2807aa95d">eve::weather::ThunderStrikeReceipt::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00025">ThunderStrike.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_a475b93945a806307195c0760a53b7a56"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a475b93945a806307195c0760a53b7a56">eve::weather::ThunderStrikeReceipt::intensity</a></div><div class="ttdeci">float intensity</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00026">ThunderStrike.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_a60a759ee629c998685e37a168a44795c"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a60a759ee629c998685e37a168a44795c">eve::weather::ThunderStrikeReceipt::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00025">ThunderStrike.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_a6b8adf3b7e2a031478f0fa8b54ef63db"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a6b8adf3b7e2a031478f0fa8b54ef63db">eve::weather::ThunderStrikeReceipt::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00026">ThunderStrike.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_a7732da8340b61f102c2a8b4e1615afc8"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#a7732da8340b61f102c2a8b4e1615afc8">eve::weather::ThunderStrikeReceipt::audioClipIndex</a></div><div class="ttdeci">int audioClipIndex</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00027">ThunderStrike.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeReceipt_html_ade98406414eaf60236eb901450c47d27"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeReceipt.html#ade98406414eaf60236eb901450c47d27">eve::weather::ThunderStrikeReceipt::volume</a></div><div class="ttdeci">float volume</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00026">ThunderStrike.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeSettings_html"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeSettings.html">eve::weather::ThunderStrikeSettings</a></div><div class="ttdoc">Pcg ThunderStrike parameters independent of renderer and audio providers.</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00010">ThunderStrike.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1weather_1_1ThunderStrikeState_html"><div class="ttname"><a href="structeve_1_1weather_1_1ThunderStrikeState.html">eve::weather::ThunderStrikeState</a></div><div class="ttdoc">Caller-owned thunder flash state.</div><div class="ttdef"><b>Definition</b> <a href="ThunderStrike_8h_source.html#l00018">ThunderStrike.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

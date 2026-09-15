@@ -1,0 +1,241 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainObjectPlacement.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">TerrainObjectPlacement.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+</div>
+<p><a href="TerrainObjectPlacement_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html">eve::procgen::TerrainObjectInstanceSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One resource entry emitted around each accepted Pcg game-object prototype location.  <a href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html">eve::procgen::TerrainObjectPlacementSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic Pcg SetTerrainGameObjects scan, collision and resource configuration.  <a href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectTile.html">eve::procgen::TerrainObjectTile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One exclusively borrowed terrain object owner and its immutable height source.  <a href="structeve_1_1procgen_1_1TerrainObjectTile.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMultiObjectWorkspace.html">eve::procgen::TerrainMultiObjectWorkspace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning transactional multi-terrain object workspace with undo and redo snapshots.  <a href="classeve_1_1procgen_1_1TerrainMultiObjectWorkspace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a9eb4fb941322e7f1ac5943dd89fa16fa" id="r_a9eb4fb941322e7f1ac5943dd89fa16fa"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16fa">eve::procgen::TerrainObjectScaleMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16faa4457d440870ad6d42bab9082d9bf9b61">eve::procgen::Fixed</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16faa64663f4646781c9c0110838b905daa23">eve::procgen::Random</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16faa5fdc392497df040d7becce28583ce58f">eve::procgen::Fitness</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16faa7a6b8b164d91f7c87ed69463b01599ea">eve::procgen::FitnessRandomized</a>
+ }</td></tr>
+<tr class="memdesc:a9eb4fb941322e7f1ac5943dd89fa16fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg-compatible scale policy for one terrain object instance resource.  <a href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16fa">更多...</a><br /></td></tr>
+<tr class="separator:a9eb4fb941322e7f1ac5943dd89fa16fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf115f4b4d2b0c444ad08da8b4da0d6f" id="r_adf115f4b4d2b0c444ad08da8b4da0d6f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6f">eve::procgen::TerrainObjectYOffsetMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6fa0092da6c4a0692edae76d475ffb497a8">eve::procgen::TerrainHeight</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6fac35b4501155445656ec3b4ae8439f574">eve::procgen::SeaLevel</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6fa90589c47f06eb971d548591f23c285af">eve::procgen::Custom</a>
+ }</td></tr>
+<tr class="memdesc:adf115f4b4d2b0c444ad08da8b4da0d6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height reference used by one terrain object instance resource.  <a href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6f">更多...</a><br /></td></tr>
+<tr class="separator:adf115f4b4d2b0c444ad08da8b4da0d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8db37dbc9c3a6ea3fe4bd786da8056f" id="r_af8db37dbc9c3a6ea3fe4bd786da8056f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056f">eve::procgen::TerrainObjectOperationMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056faec211f7c20af43e742bf2570c3cb84f9">eve::procgen::Add</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056fa0ebe6df8a3ac338e0512acc741823fdb">eve::procgen::Replace</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056fa1063e38cb53d94d386f21227fcd84717">eve::procgen::Remove</a>
+ }</td></tr>
+<tr class="memdesc:af8db37dbc9c3a6ea3fe4bd786da8056f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutation performed by a multi-terrain game-object operation.  <a href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056f">更多...</a><br /></td></tr>
+<tr class="separator:af8db37dbc9c3a6ea3fe4bd786da8056f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a96810ace63155bbe974e574cc95ca29f" id="r_a96810ace63155bbe974e574cc95ca29f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a96810ace63155bbe974e574cc95ca29f">eve::procgen::exportTerrainObjectPoints</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;fitness, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heights, const <a class="el" href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html">TerrainObjectPlacementSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:a96810ace63155bbe974e574cc95ca29f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export Pcg-style terrain game-object resources into an attributed <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> atomically.  <br /></td></tr>
+<tr class="separator:a96810ace63155bbe974e574cc95ca29f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dd4ac016becca2504f6e28055ba3184" id="r_a3dd4ac016becca2504f6e28055ba3184"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3dd4ac016becca2504f6e28055ba3184">eve::procgen::removeTerrainObjectPoints</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;fitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html">TerrainObjectPlacementSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, float removalStrength)</td></tr>
+<tr class="memdesc:a3dd4ac016becca2504f6e28055ba3184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove matching prototype points wherever fitness is strictly above removalStrength.  <br /></td></tr>
+<tr class="separator:a3dd4ac016becca2504f6e28055ba3184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1025d4f837ecf50e91fde43fac4f93fe" id="r_a1025d4f837ecf50e91fde43fac4f93fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">TerrainMultiTileReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a1025d4f837ecf50e91fde43fac4f93fe">eve::procgen::applyTerrainObjectsMultiTile</a> (const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainObjectTile.html">TerrainObjectTile</a> &gt; &amp;<a class="el" href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;operationFitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html">TerrainObjectPlacementSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;operationSettings, <a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056f">TerrainObjectOperationMode</a> mode, bool worldMapOperation, const std::vector&lt; std::string &gt; &amp;validTerrainNames={})</td></tr>
+<tr class="memdesc:a1025d4f837ecf50e91fde43fac4f93fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one Pcg-style game-object rule over mapped terrain tiles atomically.  <br /></td></tr>
+<tr class="separator:a1025d4f837ecf50e91fde43fac4f93fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

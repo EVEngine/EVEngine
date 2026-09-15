@@ -1,0 +1,313 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainLegacyHydraulic.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainLegacyHydraulic.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainLegacyHydraulic_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainErosion_8h.html">procgen/heightmap/TerrainErosion.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainRasterInternal_8h.html">procgen/heightmap/TerrainRasterInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a18f013dc497456166f9b8441a37c1208">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a18f013dc497456166f9b8441a37c1208">applyTerrainLegacyHydraulic</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; heights, <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; hardness,</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>                                        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; rain, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainLegacyHydraulicSettings.html">TerrainLegacyHydraulicSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">using namespace </span>raster_detail;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">const</span> <span class="keyword">auto</span> sameShape = [&amp;](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; map) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a878d586b5dd783ddf1a124a7a7429da8">validRaster</a>(map) &amp;&amp; map.getWidth() == heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#aefd7ef06b9f8ebf2c63b8548741dfe27">getWidth</a>() &amp;&amp; map.getHeight() == heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a14a4d05fb5bc0e9f5791ec98449c7856">getHeight</a>();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    };</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a> = [](<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a> &lt;= 1; };</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (&amp;heights == &amp;<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a> || !<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a878d586b5dd783ddf1a124a7a7429da8">validRaster</a>(heights) || !sameShape(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>) || !sameShape(hardness) ||</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        !sameShape(rain) || <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainThermalSettings.html#a07c6707ba8780196f14a9384ba0c4f27">iterations</a> &lt; 0 || <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.rainFrequency &lt;= 0 ||</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        !std::isfinite(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.sedimentDissolveRate) || !<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.sedimentDissolveRate) ||</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        !std::all_of(heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().begin(), heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().end(), <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>) ||</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        !std::all_of(hardness.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().begin(), hardness.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().end(), <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>) ||</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        std::any_of(rain.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().begin(), rain.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().end(), [](<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>) { return value &lt; 0; }))</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">invalid</a>(<span class="stringliteral">&quot;terrain.legacyHydraulic: distinct matching rasters, normalized heights/hardness, &quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                       <span class="stringliteral">&quot;nonnegative rain/iterations, positive rain frequency and dissolve rate in [0,1] required&quot;</span>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainThermalSettings.html#a07c6707ba8780196f14a9384ba0c4f27">iterations</a> == 0) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;int&gt;::success</a>(0);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a> = 0.2;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#aefd7ef06b9f8ebf2c63b8548741dfe27">getWidth</a>(), <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> = heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a14a4d05fb5bc0e9f5791ec98449c7856">getHeight</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> count = heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().size();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a> = heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>(), sedimentResult = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keyword">auto</span> hardnessInput = hardness.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>(), rainInput = rain.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    std::vector&lt;double&gt; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>(count, 0), sedimentDiff(count, 0);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::vector&lt;std::array&lt;double, 4&gt;&gt; outflow(count);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = [<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>](<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) { <span class="keywordflow">return</span> size_t(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) * size_t(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>) + size_t(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>); };</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iteration = 0; iteration &lt; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainThermalSettings.html#a07c6707ba8780196f14a9384ba0c4f27">iterations</a>; ++iteration) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">if</span> (iteration % <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.rainFrequency == 0)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; count; ++i) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] += rainInput[i];</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i])) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">invalid</a>(<span class="stringliteral">&quot;terrain.legacyHydraulic: water exceeds finite range&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &lt; <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> i = <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                <span class="keyword">const</span> std::array&lt;size_t, 4&gt; neighbor = {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(std::max(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - 1, 0), <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>), <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(std::min(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> - 1), <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>),</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                    <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, std::max(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - 1, 0)), <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, std::min(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> - 1))};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                <span class="keywordtype">double</span> sum = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> direction = 0; direction &lt; 4; ++direction) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                    <span class="keyword">const</span> <span class="keywordtype">double</span> difference = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] + <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[i] - <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[neighbor[direction]] - <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[neighbor[direction]];</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                    outflow[i][direction] = std::max(0.0, outflow[i][direction] + difference);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                    sum += outflow[i][direction];</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">if</span> (sum &gt; 0) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a> = std::clamp(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] / (sum * <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>), 0.0, 1.0);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">double</span>&amp; flow : outflow[i]) flow *= <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                    outflow[i].fill(0);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">auto</span> nextWater = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &lt; <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> i = <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                <span class="keyword">const</span> <span class="keywordtype">double</span> flowOut = outflow[i][0] + outflow[i][1] + outflow[i][2] + outflow[i][3];</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordtype">double</span> flowIn = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &gt; 0) flowIn += outflow[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)][1];</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1 &lt; <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>) flowIn += outflow[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)][0];</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &gt; 0) flowIn += outflow[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - 1)][3];</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1 &lt; <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>) flowIn += outflow[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1)][2];</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                nextWater[i] = std::max(0.0, <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] + (flowIn - flowOut) * <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keywordflow">if</span> (!std::isfinite(nextWater[i])) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">invalid</a>(<span class="stringliteral">&quot;terrain.legacyHydraulic: water exceeds finite range&quot;</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>.swap(nextWater);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &lt; <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> i = <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordtype">double</span> totalDrop = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a> = std::max(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - 1, 0); <a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a> &lt;= std::min(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> - 1); ++<a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a> = std::max(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - 1, 0); <a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a> &lt;= std::min(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> - 1); ++<a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                        totalDrop += std::max(0.0, <span class="keywordtype">double</span>(<a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[i]) - <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>)]);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">if</span> (totalDrop == 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <span class="keyword">const</span> <span class="keywordtype">double</span> moved = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] * totalDrop * <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.sedimentDissolveRate * (1.0 - hardnessInput[i]);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                sedimentDiff[i] -= moved;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a> = std::max(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - 1, 0); <a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a> &lt;= std::min(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + 1, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> - 1); ++<a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>)</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a> = std::max(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - 1, 0); <a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a> &lt;= std::min(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 1, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> - 1); ++<a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                        <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>(<a class="code hl_variable" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                        <span class="keyword">const</span> <span class="keywordtype">double</span> drop = double(<a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[i]) - <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>];</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                        <span class="keywordflow">if</span> (drop &gt; 0) sedimentDiff[<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>] += moved * drop / totalDrop;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                    }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; count; ++i) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> nextSediment = double(sedimentResult[i]) + sedimentDiff[i];</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#ad50f779fc92a526a89c15c93db78a0de">isRepresentable</a>(nextSediment)) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">invalid</a>(<span class="stringliteral">&quot;terrain.legacyHydraulic: sediment exceeds finite float range&quot;</span>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            sedimentResult[i] = float(nextSediment);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[i] = float(std::clamp(<span class="keywordtype">double</span>(<a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[i]) + sedimentDiff[i], 0.0, 1.0));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] = std::clamp(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a>[i] - 1.0 / <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.rainFrequency, 0.0, 1.0);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            sedimentDiff[i] = 0;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">int</span> changed = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; count; ++i)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        changed += <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>[i] != heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>()[i] || sedimentResult[i] != <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>()[i];</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    heights.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().swap(<a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a>.<a class="code hl_function" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a>().swap(sedimentResult);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;int&gt;::success</a>(changed);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00727">AnimClip.cpp:727</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00727">AnimClip.cpp:727</a></div></div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a17956fe0129d3d4c94ebc06cfef2ad82"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a></div><div class="ttdeci">float value</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00015">AnimCurveLibrary.cpp:15</a></div></div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a8b8dfe2335a5bf90695960dc6a1c5d3b"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00015">AnimCurveLibrary.cpp:15</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ab2a3d0d88ca0598e78bd62e7d03ca6a1"><div class="ttname"><a href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a></div><div class="ttdeci">std::string terrain</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a74d17801d3876700834f1b5eca4605f7"><div class="ttname"><a href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a></div><div class="ttdeci">float nx</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00016">CaveWetness.cpp:16</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a8c50d0e8d34556fe8e48394c315c12fd"><div class="ttname"><a href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a></div><div class="ttdeci">float nz</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00016">CaveWetness.cpp:16</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00113">TacticsPersistence.cpp:113</a></div></div>
+<div class="ttc" id="aTerrainErosion_8h_html"><div class="ttname"><a href="TerrainErosion_8h.html">TerrainErosion.h</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a1972015c6f5c8aeefbe46fb68b01a024"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a1972015c6f5c8aeefbe46fb68b01a024">water</a></div><div class="ttdeci">TerrainWaterField water</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00089">TerrainGenerationSession.cpp:89</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_af9e7f534ea5badd816197740ff5e739a"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#af9e7f534ea5badd816197740ff5e739a">sediment</a></div><div class="ttdeci">Heightmap sediment</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00088">TerrainGenerationSession.cpp:88</a></div></div>
+<div class="ttc" id="aTerrainRasterInternal_8h_html"><div class="ttname"><a href="TerrainRasterInternal_8h.html">TerrainRasterInternal.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00019">Heightmap.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html_a14a4d05fb5bc0e9f5791ec98449c7856"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html#a14a4d05fb5bc0e9f5791ec98449c7856">eve::procgen::Heightmap::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8cpp_source.html#l00017">Heightmap.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html_a471826694bbbe6ff5975f5d0a03efc79"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">eve::procgen::Heightmap::data</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; data() const</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00037">Heightmap.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html_aefd7ef06b9f8ebf2c63b8548741dfe27"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html#aefd7ef06b9f8ebf2c63b8548741dfe27">eve::procgen::Heightmap::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8cpp_source.html#l00016">Heightmap.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1raster__detail_html_a878d586b5dd783ddf1a124a7a7429da8"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1raster__detail.html#a878d586b5dd783ddf1a124a7a7429da8">eve::procgen::raster_detail::validRaster</a></div><div class="ttdeci">bool validRaster(const Heightmap &amp;map)</div><div class="ttdef"><b>Definition</b> <a href="TerrainRasterInternal_8h_source.html#l00014">TerrainRasterInternal.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1raster__detail_html_ac70ee5cf2b438340799cdb35f5fd4165"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">eve::procgen::raster_detail::invalid</a></div><div class="ttdeci">Result&lt; int &gt; invalid(std::string message)</div><div class="ttdef"><b>Definition</b> <a href="TerrainRasterInternal_8h_source.html#l00022">TerrainRasterInternal.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1raster__detail_html_ad50f779fc92a526a89c15c93db78a0de"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1raster__detail.html#ad50f779fc92a526a89c15c93db78a0de">eve::procgen::raster_detail::isRepresentable</a></div><div class="ttdeci">bool isRepresentable(double value)</div><div class="ttdef"><b>Definition</b> <a href="TerrainRasterInternal_8h_source.html#l00026">TerrainRasterInternal.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a18f013dc497456166f9b8441a37c1208"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a18f013dc497456166f9b8441a37c1208">eve::procgen::applyTerrainLegacyHydraulic</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainLegacyHydraulic(Heightmap &amp;heights, Heightmap &amp;sediment, const Heightmap &amp;hardness, const Heightmap &amp;rain, const TerrainLegacyHydraulicSettings &amp;settings)</div><div class="ttdoc">Apply Pcg HeightMap.ErodeHydraulic's rain, four-way water and sediment loop atomically.</div><div class="ttdef"><b>Definition</b> <a href="TerrainLegacyHydraulic_8cpp_source.html#l00007">TerrainLegacyHydraulic.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLegacyHydraulicSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLegacyHydraulicSettings.html">eve::procgen::TerrainLegacyHydraulicSettings</a></div><div class="ttdoc">Controls Pcg HeightMap.ErodeHydraulic's legacy CPU erosion loop.</div><div class="ttdef"><b>Definition</b> <a href="TerrainErosion_8h_source.html#l00020">TerrainErosion.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainThermalSettings_html_a07c6707ba8780196f14a9384ba0c4f27"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainThermalSettings.html#a07c6707ba8780196f14a9384ba0c4f27">eve::procgen::TerrainThermalSettings::iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdef"><b>Definition</b> <a href="TerrainErosion_8h_source.html#l00115">TerrainErosion.h:115</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

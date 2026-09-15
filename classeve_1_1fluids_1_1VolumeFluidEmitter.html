@@ -1,0 +1,460 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::VolumeFluidEmitter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html">VolumeFluidEmitter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1fluids_1_1VolumeFluidEmitter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::VolumeFluidEmitter类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Bounded runtime stream controller with explicit snapshot/restore.  
+ <a href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VolumeFluidEmitter_8h_source.html">VolumeFluidEmitter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4c98d7d3f106eb6731a6f30f9cb3fb06" id="r_a4c98d7d3f106eb6731a6f30f9cb3fb06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#a4c98d7d3f106eb6731a6f30f9cb3fb06">emitParticle</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission, float <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>, float dt)</td></tr>
+<tr class="memdesc:a4c98d7d3f106eb6731a6f30f9cb3fb06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one particle with Fluid3DEmitter's normalized intra-step position offset.  <br /></td></tr>
+<tr class="separator:a4c98d7d3f106eb6731a6f30f9cb3fb06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9954d9e2dbfe17d1b4b3cdcc99c7ed8" id="r_aa9954d9e2dbfe17d1b4b3cdcc99c7ed8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#aa9954d9e2dbfe17d1b4b3cdcc99c7ed8">advance</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission, float dt, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>, unsigned maxPerStep=256, float minimumPoolFraction=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aa9954d9e2dbfe17d1b4b3cdcc99c7ed8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances emission with at most maxPerStep particles; excess whole-particle credit is discarded.  <br /></td></tr>
+<tr class="separator:aa9954d9e2dbfe17d1b4b3cdcc99c7ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e6620a11f80974a31cb4346c69b3e3d" id="r_a9e6620a11f80974a31cb4346c69b3e3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#a9e6620a11f80974a31cb4346c69b3e3d">advanceBurst</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission, unsigned count, float minimumPoolFraction=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a9e6620a11f80974a31cb4346c69b3e3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances Fluid3D's BURST emission lifecycle for one actor group.  <br /></td></tr>
+<tr class="separator:a9e6620a11f80974a31cb4346c69b3e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8ef0cb788e88644db58caa09501a2c9" id="r_af8ef0cb788e88644db58caa09501a2c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#af8ef0cb788e88644db58caa09501a2c9">isEmitting</a> () const noexcept</td></tr>
+<tr class="memdesc:af8ef0cb788e88644db58caa09501a2c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current Fluid3DEmitter isEmitting state in O(1), without snapshot allocation.  <br /></td></tr>
+<tr class="separator:af8ef0cb788e88644db58caa09501a2c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a488ac17ffe463e9da574f57ccd5ba94e" id="r_a488ac17ffe463e9da574f57ccd5ba94e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterSnapshot.html">VolumeFluidEmitterSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#a488ac17ffe463e9da574f57ccd5ba94e">snapshot</a> () const</td></tr>
+<tr class="memdesc:a488ac17ffe463e9da574f57ccd5ba94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies controller state; caller checkpoints solver/configuration at the same step boundary.  <br /></td></tr>
+<tr class="separator:a488ac17ffe463e9da574f57ccd5ba94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab16835372cbf944795e02386f33d6a9f" id="r_ab16835372cbf944795e02386f33d6a9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html#ab16835372cbf944795e02386f33d6a9f">restore</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterSnapshot.html">VolumeFluidEmitterSnapshot</a> &amp;state)</td></tr>
+<tr class="memdesc:ab16835372cbf944795e02386f33d6a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates schema, kind and phase before atomic replacement; invokes no callbacks.  <br /></td></tr>
+<tr class="separator:ab16835372cbf944795e02386f33d6a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Bounded runtime stream controller with explicit snapshot/restore. </p>
+<p>Owns its fractional credit and RNG sequence. Caller injects dt and nozzle samples. No external reference is retained. Simulation-thread affine; no callbacks or reentrancy. Reconstructing this object resets the stream; replay supplies identical calls from construction. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8h_source.html">VolumeFluidEmitter.h</a> 第 <a class="el" href="VolumeFluidEmitter_8h_source.html#l00208">208</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aa9954d9e2dbfe17d1b4b3cdcc99c7ed8" name="aa9954d9e2dbfe17d1b4b3cdcc99c7ed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9954d9e2dbfe17d1b4b3cdcc99c7ed8">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt; eve::fluids::VolumeFluidEmitter::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;&#160;</td>
+          <td class="paramname"><em>emission</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>maxPerStep</em> = <code>256</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minimumPoolFraction</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances emission with at most maxPerStep particles; excess whole-particle credit is discarded. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">minimumPoolFraction</td><td>A stopped stream restarts only above this actor pool's free-capacity fraction.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>dt is in [0,1/30], rate in [0,1000000], maxPerStep in [1,4096]. An emission speed of zero is an explicit disabled controller state and clears fractional credit. Failures preserve solver and controller state. Capacity exhaustion is successful zero emission. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8cpp_source.html">VolumeFluidEmitter.cpp</a> 第 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00021">active</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00120">eve::fluids::VolumeFluidEmission::actorCapacity</a>, <a class="el" href="VolumeFluid_8h_source.html#l00112">eve::fluids::VolumeFluidParticle::actorGroup</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00853">eve::fluids::VolumeFluid::actorParticleCount()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00641">eve::fluids::VolumeFluid::availableCapacity()</a>, <a class="el" href="namespaceeve_1_1fluids.html#a67779c72fda968f8db005244b7fb4b75af0bac093bb884df2891d32385d053788">eve::fluids::Distribution</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00128">eve::fluids::VolumeFluidEmission::distribution</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00124">eve::fluids::VolumeFluidEmission::prototype</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00108">eve::fluids::VolumeFluidEmission::shape</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00114">eve::fluids::VolumeFluidEmission::speed</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="a9e6620a11f80974a31cb4346c69b3e3d" name="a9e6620a11f80974a31cb4346c69b3e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e6620a11f80974a31cb4346c69b3e3d">&#9670;&#160;</a></span>advanceBurst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt; eve::fluids::VolumeFluidEmitter::advanceBurst </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;&#160;</td>
+          <td class="paramname"><em>emission</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minimumPoolFraction</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances Fluid3D's BURST emission lifecycle for one actor group. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">count</td><td>Complete burst size in [1,4096]. </td></tr>
+    <tr><td class="paramname">minimumPoolFraction</td><td>Emission waits until the actor pool's free capacity is above this fraction.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The prototype actorGroup identifies the emitter actor. A burst is emitted atomically only when that group has no live particles; it becomes eligible again after all particles in the group expire or are killed. Insufficient capacity is a successful zero result. Linear actor scan plus the bounded existing burst generator; no retained solver reference, callbacks, or GPU work. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8cpp_source.html">VolumeFluidEmitter.cpp</a> 第 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00021">active</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00120">eve::fluids::VolumeFluidEmission::actorCapacity</a>, <a class="el" href="VolumeFluid_8h_source.html#l00112">eve::fluids::VolumeFluidParticle::actorGroup</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00853">eve::fluids::VolumeFluid::actorParticleCount()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00641">eve::fluids::VolumeFluid::availableCapacity()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00124">eve::fluids::VolumeFluidEmission::prototype</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="a4c98d7d3f106eb6731a6f30f9cb3fb06" name="a4c98d7d3f106eb6731a6f30f9cb3fb06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c98d7d3f106eb6731a6f30f9cb3fb06">&#9670;&#160;</a></span>emitParticle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt; eve::fluids::VolumeFluidEmitter::emitParticle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;&#160;</td>
+          <td class="paramname"><em>emission</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Emits one particle with Fluid3DEmitter's normalized intra-step position offset. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">offset</td><td>Fraction of the current step's prescribed emission travel, in [0,1]. </td></tr>
+    <tr><td class="paramname">dt</td><td>Current simulation-step duration in [0,1/30].</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Returns one when admitted and zero when the actor/shared pool is full. The actor scan and capacity checks precede bounded one-particle construction. Failures preserve controller/solver. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8cpp_source.html">VolumeFluidEmitter.cpp</a> 第 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00021">active</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00120">eve::fluids::VolumeFluidEmission::actorCapacity</a>, <a class="el" href="VolumeFluid_8h_source.html#l00112">eve::fluids::VolumeFluidParticle::actorGroup</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00853">eve::fluids::VolumeFluid::actorParticleCount()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00641">eve::fluids::VolumeFluid::availableCapacity()</a>, <a class="el" href="namespaceeve_1_1fluids.html#a67779c72fda968f8db005244b7fb4b75af0bac093bb884df2891d32385d053788">eve::fluids::Distribution</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00128">eve::fluids::VolumeFluidEmission::distribution</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00124">eve::fluids::VolumeFluidEmission::prototype</a>, <a class="el" href="VolumeFluidEmitter_8h_source.html#l00108">eve::fluids::VolumeFluidEmission::shape</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="af8ef0cb788e88644db58caa09501a2c9" name="af8ef0cb788e88644db58caa09501a2c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8ef0cb788e88644db58caa09501a2c9">&#9670;&#160;</a></span>isEmitting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::VolumeFluidEmitter::isEmitting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the current Fluid3DEmitter isEmitting state in O(1), without snapshot allocation. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8h_source.html">VolumeFluidEmitter.h</a> 第 <a class="el" href="VolumeFluidEmitter_8h_source.html#l00238">238</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab16835372cbf944795e02386f33d6a9f" name="ab16835372cbf944795e02386f33d6a9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab16835372cbf944795e02386f33d6a9f">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::VolumeFluidEmitter::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterSnapshot.html">VolumeFluidEmitterSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates schema, kind and phase before atomic replacement; invokes no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8cpp_source.html">VolumeFluidEmitter.cpp</a> 第 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00737">737</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a488ac17ffe463e9da574f57ccd5ba94e" name="a488ac17ffe463e9da574f57ccd5ba94e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a488ac17ffe463e9da574f57ccd5ba94e">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterSnapshot.html">VolumeFluidEmitterSnapshot</a> eve::fluids::VolumeFluidEmitter::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies controller state; caller checkpoints solver/configuration at the same step boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidEmitter_8cpp_source.html">VolumeFluidEmitter.cpp</a> 第 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00734">734</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00684">eve::fluids::captureVolumeFluidEmitterCheckpoint()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidEmitter_8h_source.html">VolumeFluidEmitter.h</a></li>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidEmitter_8cpp_source.html">VolumeFluidEmitter.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

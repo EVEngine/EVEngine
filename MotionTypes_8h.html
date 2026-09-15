@@ -1,0 +1,281 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionTypes.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">MotionTypes.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>LitMotion-style typed motion handles, values, and sink interfaces.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+</div>
+<p><a href="MotionTypes_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionHandle.html">eve::animation::MotionHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-checked slot identity for a live motion.  <a href="structeve_1_1animation_1_1MotionHandle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionVec2.html">eve::animation::MotionVec2</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact float2 used by motion adapters (avoids graphics math deps).  <a href="structeve_1_1animation_1_1MotionVec2.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionVec3.html">eve::animation::MotionVec3</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact float3 used by motion adapters.  <a href="structeve_1_1animation_1_1MotionVec3.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionColor.html">eve::animation::MotionColor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact RGBA color used by motion adapters.  <a href="structeve_1_1animation_1_1MotionColor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionQuat.html">eve::animation::MotionQuat</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact quaternion used by motion adapters (xyzw).  <a href="structeve_1_1animation_1_1MotionQuat.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IMotionFloatSink.html">eve::animation::IMotionFloatSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push target for a float motion. Lifetime is borrowed by <a class="el" href="classeve_1_1animation_1_1MotionRuntime.html" title="Owns typed motion slots and applies SimulationStep updates.">MotionRuntime</a>.  <a href="classeve_1_1animation_1_1IMotionFloatSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IMotionVec2Sink.html">eve::animation::IMotionVec2Sink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push target for a <a class="el" href="structeve_1_1animation_1_1MotionVec2.html" title="Compact float2 used by motion adapters (avoids graphics math deps).">MotionVec2</a> motion.  <a href="classeve_1_1animation_1_1IMotionVec2Sink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IMotionVec3Sink.html">eve::animation::IMotionVec3Sink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push target for a <a class="el" href="structeve_1_1animation_1_1MotionVec3.html" title="Compact float3 used by motion adapters.">MotionVec3</a> motion.  <a href="classeve_1_1animation_1_1IMotionVec3Sink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IMotionColorSink.html">eve::animation::IMotionColorSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push target for a <a class="el" href="structeve_1_1animation_1_1MotionColor.html" title="Compact RGBA color used by motion adapters.">MotionColor</a> motion.  <a href="classeve_1_1animation_1_1IMotionColorSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IMotionQuatSink.html">eve::animation::IMotionQuatSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push target for a <a class="el" href="structeve_1_1animation_1_1MotionQuat.html" title="Compact quaternion used by motion adapters (xyzw).">MotionQuat</a> motion.  <a href="classeve_1_1animation_1_1IMotionQuatSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FloatPointerSink.html">eve::animation::FloatPointerSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sink that writes into a borrowed float*. @ownership Does not own <code>target</code>; caller must keep it alive while bound.  <a href="classeve_1_1animation_1_1FloatPointerSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FloatBufferSink.html">eve::animation::FloatBufferSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sink that writes into <code>buffer[index]</code> (batch-friendly contiguous target). @ownership Does not own <code>buffer</code>; caller must keep the span alive while bound.  <a href="classeve_1_1animation_1_1FloatBufferSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Vec2PointerSink.html">eve::animation::Vec2PointerSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sink that writes into borrowed float x/y pointers. @ownership Does not own the pointers; caller must keep them alive while bound.  <a href="classeve_1_1animation_1_1Vec2PointerSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Vec3PointerSink.html">eve::animation::Vec3PointerSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sink that writes into borrowed float x/y/z pointers. @ownership Does not own the pointers; caller must keep them alive while bound.  <a href="classeve_1_1animation_1_1Vec3PointerSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ColorPointerSink.html">eve::animation::ColorPointerSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sink that writes into borrowed RGBA float pointers. @ownership Does not own the pointers; caller must keep them alive while bound.  <a href="classeve_1_1animation_1_1ColorPointerSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1QuatPointerSink.html">eve::animation::QuatPointerSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sink that writes into borrowed quaternion xyzw float pointers. @ownership Does not own the pointers; caller must keep them alive while bound.  <a href="classeve_1_1animation_1_1QuatPointerSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1animation" id="r_namespaceeve_1_1animation"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html">eve::animation</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a6fd515fc95cd748eb3f654b678938c38" id="r_a6fd515fc95cd748eb3f654b678938c38"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38">eve::animation::MotionLoopMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38a51cfbcff36da74a9fc47f3a5140f99f2">eve::animation::Restart</a> = 0
+, <a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38a7eebb65ba3f2d0b0d5ca4135a1291800">eve::animation::Yoyo</a> = 1
+ }</td></tr>
+<tr class="memdesc:a6fd515fc95cd748eb3f654b678938c38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loop behaviour after a cycle completes.  <a href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38">更多...</a><br /></td></tr>
+<tr class="separator:a6fd515fc95cd748eb3f654b678938c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8dca5ce2938ac5e251deac21bdae4cd" id="r_ad8dca5ce2938ac5e251deac21bdae4cd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#ad8dca5ce2938ac5e251deac21bdae4cd">eve::animation::MotionStyle</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1animation.html#ad8dca5ce2938ac5e251deac21bdae4cda5dcd61684b46b0d77abec3ae9b7f937e">eve::animation::Tween</a> = 0
+, <a class="el" href="namespaceeve_1_1animation.html#ad8dca5ce2938ac5e251deac21bdae4cda140685b8f5c6b18ddb68c087c31ea975">eve::animation::Punch</a> = 1
+, <a class="el" href="namespaceeve_1_1animation.html#ad8dca5ce2938ac5e251deac21bdae4cda968818e489bac02c58d8b0e5a348a229">eve::animation::Shake</a> = 2
+ }</td></tr>
+<tr class="memdesc:ad8dca5ce2938ac5e251deac21bdae4cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluation style for a motion slot.  <a href="namespaceeve_1_1animation.html#ad8dca5ce2938ac5e251deac21bdae4cd">更多...</a><br /></td></tr>
+<tr class="separator:ad8dca5ce2938ac5e251deac21bdae4cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a5f3d75e93b4b04c6e1778ea189871126" id="r_a5f3d75e93b4b04c6e1778ea189871126"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#a5f3d75e93b4b04c6e1778ea189871126">eve::animation::evaluateMotionEase</a> (float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const char *<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:a5f3d75e93b4b04c6e1778ea189871126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an ease curve; kinds match Math.ease / <a class="el" href="classeve_1_1animation_1_1Tween.html" title="Property tween — interpolates named float properties from → to over time.">Tween</a>.  <br /></td></tr>
+<tr class="separator:a5f3d75e93b4b04c6e1778ea189871126"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e2ce2543baf6fe3e9384d7ec2a5b77f" id="r_a4e2ce2543baf6fe3e9384d7ec2a5b77f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#a4e2ce2543baf6fe3e9384d7ec2a5b77f">eve::animation::evaluateMotionOscillation</a> (float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, int frequency, float dampingRatio)</td></tr>
+<tr class="memdesc:a4e2ce2543baf6fe3e9384d7ec2a5b77f"><td class="mdescLeft">&#160;</td><td class="mdescRight">LitMotion-style damped sine envelope in [0,1] progress.  <br /></td></tr>
+<tr class="separator:a4e2ce2543baf6fe3e9384d7ec2a5b77f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a495c3c73bf4222edf64c13433f620eb6" id="r_a495c3c73bf4222edf64c13433f620eb6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#a495c3c73bf4222edf64c13433f620eb6">eve::animation::evaluateMotionShakeSign</a> (std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, int frequency, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, int axis)</td></tr>
+<tr class="memdesc:a495c3c73bf4222edf64c13433f620eb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic shake sign in [-1,1] for axis (0..n).  <br /></td></tr>
+<tr class="separator:a495c3c73bf4222edf64c13433f620eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51215bf698913a2149816e67a4211388" id="r_a51215bf698913a2149816e67a4211388"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#a51215bf698913a2149816e67a4211388">eve::animation::lerpMotionColor</a> (<a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>)</td></tr>
+<tr class="memdesc:a51215bf698913a2149816e67a4211388"><td class="mdescLeft">&#160;</td><td class="mdescRight">Component-wise lerp for <a class="el" href="structeve_1_1animation_1_1MotionColor.html" title="Compact RGBA color used by motion adapters.">MotionColor</a>.  <br /></td></tr>
+<tr class="separator:a51215bf698913a2149816e67a4211388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3aaa499d0754e1c5a552763fc3ec8075" id="r_a3aaa499d0754e1c5a552763fc3ec8075"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1MotionQuat.html">MotionQuat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html#a3aaa499d0754e1c5a552763fc3ec8075">eve::animation::slerpMotionQuat</a> (<a class="el" href="structeve_1_1animation_1_1MotionQuat.html">MotionQuat</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1animation_1_1MotionQuat.html">MotionQuat</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>)</td></tr>
+<tr class="memdesc:a3aaa499d0754e1c5a552763fc3ec8075"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spherical linear interpolation for <a class="el" href="structeve_1_1animation_1_1MotionQuat.html" title="Compact quaternion used by motion adapters (xyzw).">MotionQuat</a> (shortest path).  <br /></td></tr>
+<tr class="separator:a3aaa499d0754e1c5a552763fc3ec8075"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>LitMotion-style typed motion handles, values, and sink interfaces. </p>
+<p>Cross-module write-back goes through sink interfaces (not upward includes). Upper modules implement sinks and pass them into MotionBuilder::bind*. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionTypes_8h_source.html">MotionTypes.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

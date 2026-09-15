@@ -1,0 +1,1214 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::MeshModifierGraph类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html">MeshModifierGraph</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1MeshModifierGraph-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::MeshModifierGraph类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic CPU data-flow graph for procedural mesh deformation and composition.  
+ <a href="classeve_1_1procgen_1_1MeshModifierGraph.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9d97550bf759170f929e7044a7c06447" id="r_a9d97550bf759170f929e7044a7c06447"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a9d97550bf759170f929e7044a7c06447">addNode</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string operation)</td></tr>
+<tr class="memdesc:a9d97550bf759170f929e7044a7c06447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a node from the reflected operation catalogue.  <br /></td></tr>
+<tr class="separator:a9d97550bf759170f929e7044a7c06447"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d00c21c83f714f335ef27266dbabab0" id="r_a5d00c21c83f714f335ef27266dbabab0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a5d00c21c83f714f335ef27266dbabab0">removeNode</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a5d00c21c83f714f335ef27266dbabab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a node and all incoming edges that reference it.  <br /></td></tr>
+<tr class="separator:a5d00c21c83f714f335ef27266dbabab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80a80377f8b6a217789dcc37e13a6472" id="r_a80a80377f8b6a217789dcc37e13a6472"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a80a80377f8b6a217789dcc37e13a6472">connect</a> (std::string_view fromId, std::string_view toId, int inputIndex=0)</td></tr>
+<tr class="memdesc:a80a80377f8b6a217789dcc37e13a6472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect one node output to a numbered mesh input.  <br /></td></tr>
+<tr class="separator:a80a80377f8b6a217789dcc37e13a6472"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5eda0305e334c843ba88d3cede70d702" id="r_a5eda0305e334c843ba88d3cede70d702"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a5eda0305e334c843ba88d3cede70d702">disconnect</a> (std::string_view toId, int inputIndex=0)</td></tr>
+<tr class="memdesc:a5eda0305e334c843ba88d3cede70d702"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnect a numbered mesh input.  <br /></td></tr>
+<tr class="separator:a5eda0305e334c843ba88d3cede70d702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af913468d2d742eccb8f2fb491a319155" id="r_af913468d2d742eccb8f2fb491a319155"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#af913468d2d742eccb8f2fb491a319155">setNodeMesh</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</td></tr>
+<tr class="memdesc:af913468d2d742eccb8f2fb491a319155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy an owning mesh snapshot into an input node.  <br /></td></tr>
+<tr class="separator:af913468d2d742eccb8f2fb491a319155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2387b0d62977899abb5d7314fea15abd" id="r_a2387b0d62977899abb5d7314fea15abd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a2387b0d62977899abb5d7314fea15abd">setNodeSplinePath</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="classeve_1_1procgen_1_1SplinePath.html">SplinePath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a2387b0d62977899abb5d7314fea15abd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy an owning path snapshot into a spline deformation or generation node.  <br /></td></tr>
+<tr class="separator:a2387b0d62977899abb5d7314fea15abd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a359be6d00637d82437732e97d7b9414a" id="r_a359be6d00637d82437732e97d7b9414a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a359be6d00637d82437732e97d7b9414a">setNodeSplineProfile</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="structeve_1_1procgen_1_1SplineProfile.html">SplineProfile</a> &amp;profile)</td></tr>
+<tr class="memdesc:a359be6d00637d82437732e97d7b9414a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy an owning cross-section snapshot into a spline extrusion node.  <br /></td></tr>
+<tr class="separator:a359be6d00637d82437732e97d7b9414a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeb279cf280ee348e6c2786e3e393e3a" id="r_abeb279cf280ee348e6c2786e3e393e3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#abeb279cf280ee348e6c2786e3e393e3a">setNodeFloat</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, float <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:abeb279cf280ee348e6c2786e3e393e3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a finite floating-point node parameter.  <br /></td></tr>
+<tr class="separator:abeb279cf280ee348e6c2786e3e393e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f7d593143e3cb15117efbf68402ca5" id="r_a24f7d593143e3cb15117efbf68402ca5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a24f7d593143e3cb15117efbf68402ca5">setNodeInt</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, int <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:a24f7d593143e3cb15117efbf68402ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an integer node parameter.  <br /></td></tr>
+<tr class="separator:a24f7d593143e3cb15117efbf68402ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b35ba281c03838a6e7a33ef3ed6cad" id="r_aa5b35ba281c03838a6e7a33ef3ed6cad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#aa5b35ba281c03838a6e7a33ef3ed6cad">setNodeString</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="el" href="AnimCurveLibrary_8cpp.html#a17956fe0129d3d4c94ebc06cfef2ad82">value</a>)</td></tr>
+<tr class="memdesc:aa5b35ba281c03838a6e7a33ef3ed6cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a string node parameter.  <br /></td></tr>
+<tr class="separator:aa5b35ba281c03838a6e7a33ef3ed6cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f6af00e8c5658e01131fe04adad0a6" id="r_a59f6af00e8c5658e01131fe04adad0a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a59f6af00e8c5658e01131fe04adad0a6">validateResult</a> () const</td></tr>
+<tr class="memdesc:a59f6af00e8c5658e01131fe04adad0a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate topology, inputs, parameters, and mesh stream invariants.  <br /></td></tr>
+<tr class="separator:a59f6af00e8c5658e01131fe04adad0a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf71417c1312261aa614c031cfdf2b5c" id="r_adf71417c1312261aa614c031cfdf2b5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#adf71417c1312261aa614c031cfdf2b5c">executeResult</a> (std::string_view outputId)</td></tr>
+<tr class="memdesc:adf71417c1312261aa614c031cfdf2b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute one output and return an independent owning mesh snapshot.  <br /></td></tr>
+<tr class="separator:adf71417c1312261aa614c031cfdf2b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c09bf341a3c70ad64fed03f42bb2d25" id="r_a7c09bf341a3c70ad64fed03f42bb2d25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a7c09bf341a3c70ad64fed03f42bb2d25">clearCache</a> ()</td></tr>
+<tr class="memdesc:a7c09bf341a3c70ad64fed03f42bb2d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all derived outputs without changing graph topology or inputs.  <br /></td></tr>
+<tr class="separator:a7c09bf341a3c70ad64fed03f42bb2d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5f475502cd4ee8dad73398915ad0ec3" id="r_af5f475502cd4ee8dad73398915ad0ec3"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#af5f475502cd4ee8dad73398915ad0ec3">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:af5f475502cd4ee8dad73398915ad0ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the monotonic graph mutation revision.  <br /></td></tr>
+<tr class="separator:af5f475502cd4ee8dad73398915ad0ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61ce09ab87597c2f93512a039155c05d" id="r_a61ce09ab87597c2f93512a039155c05d"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a61ce09ab87597c2f93512a039155c05d">executionPlanBuildCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a61ce09ab87597c2f93512a039155c05d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return how many execution plans have been compiled.  <br /></td></tr>
+<tr class="separator:a61ce09ab87597c2f93512a039155c05d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedf8a2890f9c5f130995141ee17dd097" id="r_aedf8a2890f9c5f130995141ee17dd097"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#aedf8a2890f9c5f130995141ee17dd097">compiledSegmentCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aedf8a2890f9c5f130995141ee17dd097"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return segment count in the latest successful execution plan.  <br /></td></tr>
+<tr class="separator:aedf8a2890f9c5f130995141ee17dd097"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf32dd7ad8bc61bdc5d864ce50bc8daa" id="r_acf32dd7ad8bc61bdc5d864ce50bc8daa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#acf32dd7ad8bc61bdc5d864ce50bc8daa">fusedOperationCount</a> () const noexcept</td></tr>
+<tr class="memdesc:acf32dd7ad8bc61bdc5d864ce50bc8daa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return logical operations evaluated by fused vertex traversals in the latest run.  <br /></td></tr>
+<tr class="separator:acf32dd7ad8bc61bdc5d864ce50bc8daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf0334f16d2b89a96fb547a5b4803cfc" id="r_acf0334f16d2b89a96fb547a5b4803cfc"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1MeshModifierNodeMetric.html">MeshModifierNodeMetric</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#acf0334f16d2b89a96fb547a5b4803cfc">metrics</a> () const noexcept</td></tr>
+<tr class="memdesc:acf0334f16d2b89a96fb547a5b4803cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return metrics from the latest successful execution.  <br /></td></tr>
+<tr class="separator:acf0334f16d2b89a96fb547a5b4803cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2400491e692f63104247ebe629faa0a2" id="r_a2400491e692f63104247ebe629faa0a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a2400491e692f63104247ebe629faa0a2">hasNode</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:a2400491e692f63104247ebe629faa0a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether a node exists.  <br /></td></tr>
+<tr class="separator:a2400491e692f63104247ebe629faa0a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81885b8cac44aa910e68c061d00a4022" id="r_a81885b8cac44aa910e68c061d00a4022"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a81885b8cac44aa910e68c061d00a4022">nodeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a81885b8cac44aa910e68c061d00a4022"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return stable insertion-order node count.  <br /></td></tr>
+<tr class="separator:a81885b8cac44aa910e68c061d00a4022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dd4c11cd0e7c7e72e061af76d092344" id="r_a2dd4c11cd0e7c7e72e061af76d092344"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a2dd4c11cd0e7c7e72e061af76d092344">nodeId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a2dd4c11cd0e7c7e72e061af76d092344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a node id by insertion order, or an empty string when out of range.  <br /></td></tr>
+<tr class="separator:a2dd4c11cd0e7c7e72e061af76d092344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5ca1d8037b0ff3fd52aa9a18fd3813" id="r_a0b5ca1d8037b0ff3fd52aa9a18fd3813"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a0b5ca1d8037b0ff3fd52aa9a18fd3813">nodeOperation</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:a0b5ca1d8037b0ff3fd52aa9a18fd3813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a node operation, or an empty string when missing.  <br /></td></tr>
+<tr class="separator:a0b5ca1d8037b0ff3fd52aa9a18fd3813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa6526ed5a44ef20896edc156c8fa6b89" id="r_aa6526ed5a44ef20896edc156c8fa6b89"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#aa6526ed5a44ef20896edc156c8fa6b89">operationCount</a> ()</td></tr>
+<tr class="memdesc:aa6526ed5a44ef20896edc156c8fa6b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reflected operation count.  <br /></td></tr>
+<tr class="separator:aa6526ed5a44ef20896edc156c8fa6b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1fa9b9e95d78aa060a019166459fc8e" id="r_ac1fa9b9e95d78aa060a019166459fc8e"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#ac1fa9b9e95d78aa060a019166459fc8e">operationId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:ac1fa9b9e95d78aa060a019166459fc8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reflected operation id, or an empty string for an invalid index.  <br /></td></tr>
+<tr class="separator:ac1fa9b9e95d78aa060a019166459fc8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e2a329b388fe42cfa93aeff595e50cd" id="r_a9e2a329b388fe42cfa93aeff595e50cd"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a9e2a329b388fe42cfa93aeff595e50cd">operationInputCount</a> (std::string_view operation)</td></tr>
+<tr class="memdesc:a9e2a329b388fe42cfa93aeff595e50cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return required mesh input count, or -1 for an unknown operation.  <br /></td></tr>
+<tr class="separator:a9e2a329b388fe42cfa93aeff595e50cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d778ec7b55ca2a2f55598e4747340d" id="r_a48d778ec7b55ca2a2f55598e4747340d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a48d778ec7b55ca2a2f55598e4747340d">operationParamCount</a> (std::string_view operation)</td></tr>
+<tr class="memdesc:a48d778ec7b55ca2a2f55598e4747340d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reflected parameter count.  <br /></td></tr>
+<tr class="separator:a48d778ec7b55ca2a2f55598e4747340d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f6469b9abe4f0a8db8ba6afbbaeb6f8" id="r_a8f6469b9abe4f0a8db8ba6afbbaeb6f8"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a8f6469b9abe4f0a8db8ba6afbbaeb6f8">operationParamKey</a> (std::string_view operation, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a8f6469b9abe4f0a8db8ba6afbbaeb6f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reflected parameter key.  <br /></td></tr>
+<tr class="separator:a8f6469b9abe4f0a8db8ba6afbbaeb6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a557f012b42c278430fe307438d6e33dc" id="r_a557f012b42c278430fe307438d6e33dc"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a557f012b42c278430fe307438d6e33dc">operationParamKind</a> (std::string_view operation, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a557f012b42c278430fe307438d6e33dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reflected parameter kind: float, int, or string.  <br /></td></tr>
+<tr class="separator:a557f012b42c278430fe307438d6e33dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e558c7c5866e63292ae0d98ba14de0b" id="r_a3e558c7c5866e63292ae0d98ba14de0b"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html#a3e558c7c5866e63292ae0d98ba14de0b">operationParamDefault</a> (std::string_view operation, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a3e558c7c5866e63292ae0d98ba14de0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return encoded reflected parameter default.  <br /></td></tr>
+<tr class="separator:a3e558c7c5866e63292ae0d98ba14de0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic CPU data-flow graph for procedural mesh deformation and composition. </p>
+<p>The graph owns immutable copies of input meshes and publishes owning output snapshots. Mutations invalidate derived caches. Execution is graph-owning-thread only and is not reentrant. Consecutive topology-preserving per-vertex nodes are evaluated in one vertex traversal; topology-changing nodes form explicit fusion barriers. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a9d97550bf759170f929e7044a7c06447" name="a9d97550bf759170f929e7044a7c06447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d97550bf759170f929e7044a7c06447">&#9670;&#160;</a></span>addNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::addNode </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a node from the reflected operation catalogue. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01389">1389</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7c09bf341a3c70ad64fed03f42bb2d25" name="a7c09bf341a3c70ad64fed03f42bb2d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c09bf341a3c70ad64fed03f42bb2d25">&#9670;&#160;</a></span>clearCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshModifierGraph::clearCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all derived outputs without changing graph topology or inputs. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01901">1901</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aedf8a2890f9c5f130995141ee17dd097" name="aedf8a2890f9c5f130995141ee17dd097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedf8a2890f9c5f130995141ee17dd097">&#9670;&#160;</a></span>compiledSegmentCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshModifierGraph::compiledSegmentCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return segment count in the latest successful execution plan. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80a80377f8b6a217789dcc37e13a6472" name="a80a80377f8b6a217789dcc37e13a6472"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80a80377f8b6a217789dcc37e13a6472">&#9670;&#160;</a></span>connect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::connect </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>fromId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>toId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Connect one node output to a numbered mesh input. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01427">1427</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00077">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>.</p>
+
+</div>
+</div>
+<a id="a5eda0305e334c843ba88d3cede70d702" name="a5eda0305e334c843ba88d3cede70d702"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eda0305e334c843ba88d3cede70d702">&#9670;&#160;</a></span>disconnect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::disconnect </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>toId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disconnect a numbered mesh input. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01441">1441</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00163">target</a>.</p>
+
+</div>
+</div>
+<a id="adf71417c1312261aa614c031cfdf2b5c" name="adf71417c1312261aa614c031cfdf2b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf71417c1312261aa614c031cfdf2b5c">&#9670;&#160;</a></span>executeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; eve::procgen::MeshModifierGraph::executeResult </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>outputId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute one output and return an independent owning mesh snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outputId</td><td>Requested output node. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Mesh output or a structured diagnostic. Failure preserves prior node caches. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01847">1847</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00178">started</a>, <a class="el" href="Result_8h_source.html#l00240">eve::Result&lt; T &gt;::status()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="a61ce09ab87597c2f93512a039155c05d" name="a61ce09ab87597c2f93512a039155c05d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61ce09ab87597c2f93512a039155c05d">&#9670;&#160;</a></span>executionPlanBuildCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::MeshModifierGraph::executionPlanBuildCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return how many execution plans have been compiled. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf32dd7ad8bc61bdc5d864ce50bc8daa" name="acf32dd7ad8bc61bdc5d864ce50bc8daa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf32dd7ad8bc61bdc5d864ce50bc8daa">&#9670;&#160;</a></span>fusedOperationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshModifierGraph::fusedOperationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return logical operations evaluated by fused vertex traversals in the latest run. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2400491e692f63104247ebe629faa0a2" name="a2400491e692f63104247ebe629faa0a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2400491e692f63104247ebe629faa0a2">&#9670;&#160;</a></span>hasNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshModifierGraph::hasNode </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Report whether a node exists. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01916">1916</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf0334f16d2b89a96fb547a5b4803cfc" name="acf0334f16d2b89a96fb547a5b4803cfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf0334f16d2b89a96fb547a5b4803cfc">&#9670;&#160;</a></span>metrics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1MeshModifierNodeMetric.html">MeshModifierNodeMetric</a> &gt; &amp; eve::procgen::MeshModifierGraph::metrics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return metrics from the latest successful execution. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81885b8cac44aa910e68c061d00a4022" name="a81885b8cac44aa910e68c061d00a4022"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81885b8cac44aa910e68c061d00a4022">&#9670;&#160;</a></span>nodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshModifierGraph::nodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return stable insertion-order node count. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2dd4c11cd0e7c7e72e061af76d092344" name="a2dd4c11cd0e7c7e72e061af76d092344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dd4c11cd0e7c7e72e061af76d092344">&#9670;&#160;</a></span>nodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshModifierGraph::nodeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a node id by insertion order, or an empty string when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01918">1918</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a0b5ca1d8037b0ff3fd52aa9a18fd3813" name="a0b5ca1d8037b0ff3fd52aa9a18fd3813"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5ca1d8037b0ff3fd52aa9a18fd3813">&#9670;&#160;</a></span>nodeOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshModifierGraph::nodeOperation </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a node operation, or an empty string when missing. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01923">1923</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6526ed5a44ef20896edc156c8fa6b89" name="aa6526ed5a44ef20896edc156c8fa6b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6526ed5a44ef20896edc156c8fa6b89">&#9670;&#160;</a></span>operationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshModifierGraph::operationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return reflected operation count. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01928">1928</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1fa9b9e95d78aa060a019166459fc8e" name="ac1fa9b9e95d78aa060a019166459fc8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1fa9b9e95d78aa060a019166459fc8e">&#9670;&#160;</a></span>operationId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshModifierGraph::operationId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return reflected operation id, or an empty string for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01929">1929</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a9e2a329b388fe42cfa93aeff595e50cd" name="a9e2a329b388fe42cfa93aeff595e50cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e2a329b388fe42cfa93aeff595e50cd">&#9670;&#160;</a></span>operationInputCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshModifierGraph::operationInputCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return required mesh input count, or -1 for an unknown operation. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01933">1933</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="editing_2MeshModifierGraph_8cpp_source.html#l00244">eve::procgen_editing::MeshModifierGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a48d778ec7b55ca2a2f55598e4747340d" name="a48d778ec7b55ca2a2f55598e4747340d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d778ec7b55ca2a2f55598e4747340d">&#9670;&#160;</a></span>operationParamCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshModifierGraph::operationParamCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return reflected parameter count. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01937">1937</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="editing_2MeshModifierGraph_8cpp_source.html#l00244">eve::procgen_editing::MeshModifierGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a3e558c7c5866e63292ae0d98ba14de0b" name="a3e558c7c5866e63292ae0d98ba14de0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e558c7c5866e63292ae0d98ba14de0b">&#9670;&#160;</a></span>operationParamDefault()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshModifierGraph::operationParamDefault </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return encoded reflected parameter default. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01953">1953</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00021">defaultValue</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="editing_2MeshModifierGraph_8cpp_source.html#l00244">eve::procgen_editing::MeshModifierGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a8f6469b9abe4f0a8db8ba6afbbaeb6f8" name="a8f6469b9abe4f0a8db8ba6afbbaeb6f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6469b9abe4f0a8db8ba6afbbaeb6f8">&#9670;&#160;</a></span>operationParamKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshModifierGraph::operationParamKey </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return reflected parameter key. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01941">1941</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="editing_2MeshModifierGraph_8cpp_source.html#l00244">eve::procgen_editing::MeshModifierGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a557f012b42c278430fe307438d6e33dc" name="a557f012b42c278430fe307438d6e33dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a557f012b42c278430fe307438d6e33dc">&#9670;&#160;</a></span>operationParamKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshModifierGraph::operationParamKind </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return reflected parameter kind: float, int, or string. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01947">1947</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="editing_2MeshModifierGraph_8cpp_source.html#l00244">eve::procgen_editing::MeshModifierGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a5d00c21c83f714f335ef27266dbabab0" name="a5d00c21c83f714f335ef27266dbabab0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d00c21c83f714f335ef27266dbabab0">&#9670;&#160;</a></span>removeNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::removeNode </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a node and all incoming edges that reference it. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01415">1415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af5f475502cd4ee8dad73398915ad0ec3" name="af5f475502cd4ee8dad73398915ad0ec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5f475502cd4ee8dad73398915ad0ec3">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::MeshModifierGraph::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the monotonic graph mutation revision. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abeb279cf280ee348e6c2786e3e393e3a" name="abeb279cf280ee348e6c2786e3e393e3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeb279cf280ee348e6c2786e3e393e3a">&#9670;&#160;</a></span>setNodeFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::setNodeFloat </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a finite floating-point node parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01513">1513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="a24f7d593143e3cb15117efbf68402ca5" name="a24f7d593143e3cb15117efbf68402ca5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24f7d593143e3cb15117efbf68402ca5">&#9670;&#160;</a></span>setNodeInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::setNodeInt </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set an integer node parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01527">1527</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="af913468d2d742eccb8f2fb491a319155" name="af913468d2d742eccb8f2fb491a319155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af913468d2d742eccb8f2fb491a319155">&#9670;&#160;</a></span>setNodeMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::setNodeMesh </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy an owning mesh snapshot into an input node. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01452">1452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00599">mesh</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<a id="a2387b0d62977899abb5d7314fea15abd" name="a2387b0d62977899abb5d7314fea15abd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2387b0d62977899abb5d7314fea15abd">&#9670;&#160;</a></span>setNodeSplinePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::setNodeSplinePath </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1SplinePath.html">SplinePath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy an owning path snapshot into a spline deformation or generation node. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01466">1466</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a>.</p>
+
+</div>
+</div>
+<a id="a359be6d00637d82437732e97d7b9414a" name="a359be6d00637d82437732e97d7b9414a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a359be6d00637d82437732e97d7b9414a">&#9670;&#160;</a></span>setNodeSplineProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::setNodeSplineProfile </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1SplineProfile.html">SplineProfile</a> &amp;&#160;</td>
+          <td class="paramname"><em>profile</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy an owning cross-section snapshot into a spline extrusion node. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01482">1482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00034">eve::procgen::SplineProfile::closed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00025">minimum</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>, <a class="el" href="mesh_2MeshModifierGraph_8h_source.html#l00033">eve::procgen::SplineProfile::points</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Builder_8cpp_source.html#l00026">triangles</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a>.</p>
+
+</div>
+</div>
+<a id="aa5b35ba281c03838a6e7a33ef3ed6cad" name="aa5b35ba281c03838a6e7a33ef3ed6cad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5b35ba281c03838a6e7a33ef3ed6cad">&#9670;&#160;</a></span>setNodeString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::setNodeString </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a string node parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01539">1539</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a> , 以及 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00015">value</a>.</p>
+
+</div>
+</div>
+<a id="a59f6af00e8c5658e01131fe04adad0a6" name="a59f6af00e8c5658e01131fe04adad0a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59f6af00e8c5658e01131fe04adad0a6">&#9670;&#160;</a></span>validateResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshModifierGraph::validateResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate topology, inputs, parameters, and mesh stream invariants. </p>
+<dl class="section return"><dt>返回</dt><dd>Success only when every node can be executed without publishing partial state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a> 第 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l01685">1685</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/mesh/<a class="el" href="mesh_2MeshModifierGraph_8h_source.html">MeshModifierGraph.h</a></li>
+<li>src/modules/procgen/mesh/<a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html">MeshModifierGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
