@@ -112,9 +112,16 @@ Result<void> GroomInstance::setAsset(const GroomAsset &asset) {
     auto ok = asset.validate();
     if (!ok.ok()) return Result<void>::failure(ok.status());
     asset_ = asset;
+    const bool keepSim = guideSimEnabled_;
+    clearGuideSimulation();
     auto grid = rebuildClusterGrids();
     if (!grid.ok()) return Result<void>::failure(grid.status());
-    return rebuild();
+    auto rebuilt = rebuild();
+    if (!rebuilt.ok()) return Result<void>::failure(rebuilt.status());
+    if (keepSim) {
+        return enableGuideSimulation(guideSimParams_, guideFraction_, guideInterpMode_);
+    }
+    return Result<void>::success();
 }
 
 Result<void> GroomInstance::bakeProceduralPlane(float sizeX, float sizeZ,
@@ -177,6 +184,98 @@ float GroomInstance::getSelfShadowStrength() const { return selfShadowStrength_;
 float GroomInstance::getSelfShadowBias() const { return selfShadowBias_; }
 
 float GroomInstance::getRootAoStrength() const { return rootAoStrength_; }
+
+void GroomInstance::clearGuideSimulation() {
+    groupSim_.clear();
+    guideSimEnabled_ = false;
+}
+
+Result<void> GroomInstance::setupGuideSimulation(float guideFraction, InterpolationMode mode) {
+    groupSim_.assign(asset_.groupCount(), GroupSimState{});
+    for (size_t gi = 0; gi < asset_.groupCount(); ++gi) {
+        const GroomGroup *group = asset_.groupAt(gi);
+        if (!group) continue;
+        GroupSimState &state = groupSim_[gi];
+        state.restStrands = group->strands;
+
+        if (group->guides.curveCount() > 0) {
+            state.restGuides = group->guides;
+        } else {
+            auto guides = extractGuides(group->strands, guideFraction);
+            if (!guides.ok()) return Result<void>::failure(guides.status());
+            state.restGuides = std::move(guides).value();
+        }
+
+        auto weights = buildGuideWeights(state.restStrands, state.restGuides, 3, mode);
+        if (!weights.ok()) return Result<void>::failure(weights.status());
+        state.weights = std::move(weights).value();
+
+        auto reset = state.simulator.reset(state.restGuides, guideSimParams_);
+        if (!reset.ok()) return Result<void>::failure(reset.status());
+
+        state.deformedStrands = state.restStrands;
+        state.active = true;
+    }
+    guideFraction_ = std::clamp(guideFraction, 0.01f, 1.f);
+    guideInterpMode_ = mode;
+    guideSimEnabled_ = true;
+    return Result<void>::success();
+}
+
+Result<void> GroomInstance::enableGuideSimulation(const GuideSimParams &params, float guideFraction,
+                                                  InterpolationMode mode) {
+    if (asset_.groupCount() == 0) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GroomInstance::enableGuideSimulation: no groups",
+            "hair.groom.sim"));
+    }
+    guideSimParams_ = params;
+    auto setup = setupGuideSimulation(guideFraction, mode);
+    if (!setup.ok()) {
+        clearGuideSimulation();
+        return Result<void>::failure(setup.status());
+    }
+    return rebuild();
+}
+
+Result<void> GroomInstance::disableGuideSimulation() {
+    clearGuideSimulation();
+    if (asset_.groupCount() == 0) return Result<void>::success();
+    return rebuild();
+}
+
+bool GroomInstance::isGuideSimulationEnabled() const { return guideSimEnabled_; }
+
+void GroomInstance::setGuideSimParams(const GuideSimParams &params) {
+    guideSimParams_ = params;
+    for (GroupSimState &state : groupSim_) {
+        if (state.active) state.simulator.setParams(guideSimParams_);
+    }
+}
+
+const GuideSimParams &GroomInstance::getGuideSimParams() const { return guideSimParams_; }
+
+Result<void> GroomInstance::update(float dt) {
+    if (!guideSimEnabled_) return Result<void>::success();
+    if (groupSim_.size() != asset_.groupCount()) {
+        auto setup = setupGuideSimulation(guideFraction_, guideInterpMode_);
+        if (!setup.ok()) return Result<void>::failure(setup.status());
+    }
+
+    for (size_t gi = 0; gi < groupSim_.size(); ++gi) {
+        GroupSimState &state = groupSim_[gi];
+        if (!state.active) continue;
+        auto stepped = state.simulator.step(dt);
+        if (!stepped.ok()) return Result<void>::failure(stepped.status());
+        auto deformedGuides = state.simulator.snapshot();
+        if (!deformedGuides.ok()) return Result<void>::failure(deformedGuides.status());
+        auto strands = interpolateStrands(state.restStrands, state.restGuides,
+                                          deformedGuides.value(), state.weights, guideInterpMode_);
+        if (!strands.ok()) return Result<void>::failure(strands.status());
+        state.deformedStrands = std::move(strands).value();
+    }
+    return rebuild();
+}
 
 Mesh *GroomInstance::getMesh() const { return mesh_; }
 
@@ -306,9 +405,12 @@ Result<void> GroomInstance::rebuild() {
         }
 
         StrandsDatas source = group->strands;
+        if (guideSimEnabled_ && gi < groupSim_.size() && groupSim_[gi].active) {
+            source = groupSim_[gi].deformedStrands;
+        }
         if (clusterCulling_ && gi < groupCull_.size() && groupCull_[gi].hasVisibility) {
             if (groupCull_[gi].visibleCurves.empty()) continue;
-            auto filtered = filterStrandsByCurves(group->strands, groupCull_[gi].visibleCurves);
+            auto filtered = filterStrandsByCurves(source, groupCull_[gi].visibleCurves);
             if (!filtered.ok()) return Result<void>::failure(filtered.status());
             source = std::move(filtered).value();
         }

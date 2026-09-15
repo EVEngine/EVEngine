@@ -3,7 +3,9 @@
 #include "common/Result.h"
 #include "graphics/hair/ClusterGrid.h"
 #include "graphics/hair/GroomAsset.h"
+#include "graphics/hair/Guides.h"
 #include "graphics/hair/Procedural.h"
+#include "graphics/hair/Simulation.h"
 
 #include <cstdint>
 #include <vector>
@@ -26,7 +28,8 @@ namespace hair {
  * Rebuilds all groups into one combined ribbon mesh (per-group LOD + optional
  * cluster cull). Geometric Cards LOD remains owned by `graphics/HairCards`
  * (separate PR). Phase 3 exposes Marschner R/TT/TRT lobe weights and a cheap
- * analytical self-shadow / root AO on the hair shader push constants.
+ * analytical self-shadow / root AO on the hair shader push constants. Phase 5
+ * adds optional guide XPBD/Verlet via `update(dt)` (no physics-module include).
  *
  * Caller owns the instance; Graphics owns Mesh / Shader / Texture.
  *
@@ -107,6 +110,31 @@ public:
     /** @brief Rebuild GPU ribbon mesh from all groups (LOD + optional visibility). */
     [[nodiscard]] Result<void> rebuild();
 
+    /**
+     * @brief Enable lightweight guide XPBD/Verlet for every group.
+     *
+     * Uses each group's `guides` when non-empty; otherwise extracts a guide
+     * subset from strands (`guideFraction`, default 0.15). Rest strands/guides
+     * and kNN weights are captured at enable time. Does not include the
+     * physics module — SoftBody3D can bridge later via capability.
+     */
+    [[nodiscard]] Result<void> enableGuideSimulation(const GuideSimParams &params = {},
+                                                     float guideFraction = 0.15f,
+                                                     InterpolationMode mode = InterpolationMode::Offset);
+
+    /** @brief Disable guide simulation and restore rest strands on next rebuild. */
+    [[nodiscard]] Result<void> disableGuideSimulation();
+
+    [[nodiscard]] bool isGuideSimulationEnabled() const;
+    void setGuideSimParams(const GuideSimParams &params);
+    [[nodiscard]] const GuideSimParams &getGuideSimParams() const;
+
+    /**
+     * @brief Advance guide simulation by `dt` and rebuild the ribbon mesh.
+     * No-op success when simulation is disabled.
+     */
+    [[nodiscard]] Result<void> update(float dt);
+
     void draw(const glm::mat4 &model);
     void draw();
 
@@ -128,17 +156,29 @@ private:
         bool hasVisibility = false;
     };
 
+    struct GroupSimState {
+        GuideSimulator simulator;
+        StrandsDatas restStrands;
+        StrandsDatas restGuides;
+        std::vector<StrandGuideWeights> weights;
+        StrandsDatas deformedStrands;
+        bool active = false;
+    };
+
     [[nodiscard]] Result<void> bakeFromStrands(StrandsDatas strands, const char *debugName);
     [[nodiscard]] const GroomGroup *primaryGroup() const;
     [[nodiscard]] size_t resolveLodIndex(const GroomGroup &group) const;
     [[nodiscard]] StrandsDatas decimatedStrands(const StrandsDatas &src, float curveFraction) const;
     [[nodiscard]] Result<void> rebuildClusterGrids();
     [[nodiscard]] Result<void> ensureDrawResources();
+    [[nodiscard]] Result<void> setupGuideSimulation(float guideFraction, InterpolationMode mode);
+    void clearGuideSimulation();
     void applyShadingParams();
 
     Graphics *gfx_ = nullptr;
     GroomAsset asset_;
     std::vector<GroupCullState> groupCull_;
+    std::vector<GroupSimState> groupSim_;
     Mesh *mesh_ = nullptr;
     Shader *shader_ = nullptr;
     Texture *texture_ = nullptr;
@@ -154,7 +194,11 @@ private:
     float selfShadowStrength_ = 0.35f;
     float selfShadowBias_ = 0.25f;
     float rootAoStrength_ = 0.3f;
+    float guideFraction_ = 0.15f;
+    GuideSimParams guideSimParams_{};
+    InterpolationMode guideInterpMode_ = InterpolationMode::Offset;
     bool clusterCulling_ = false;
+    bool guideSimEnabled_ = false;
     glm::vec3 sideHint_{1.f, 0.f, 0.f};
     glm::mat4 lastModel_{1.f};
 };

@@ -12,6 +12,7 @@
 #include "graphics/hair/Guides.h"
 #include "graphics/hair/Procedural.h"
 #include "graphics/hair/RibbonBuilder.h"
+#include "graphics/hair/Simulation.h"
 #include "graphics/hair/StrandsDatas.h"
 #include "window/Window.h"
 
@@ -27,6 +28,8 @@ using eve::graphics::hair::GuideInfluence;
 using eve::graphics::hair::InterpolationMode;
 using eve::graphics::hair::SkinTriMesh;
 using eve::graphics::hair::StrandGuideWeights;
+using eve::graphics::hair::GuideSimParams;
+using eve::graphics::hair::GuideSimulator;
 using eve::graphics::hair::buildGuideWeights;
 using eve::graphics::hair::extractGuides;
 using eve::graphics::hair::interpolateStrands;
@@ -474,4 +477,99 @@ TEST_CASE("graphics.hair.guideWeightsAndInterpolate") {
                                      InterpolationMode::Smooth);
     REQUIRE(smooth.ok());
     CHECK_EQ(smooth.value().curveCount(), strands.value().curveCount());
+}
+
+
+TEST_CASE("graphics.hair.guideSimulatorPinsRootsAndFalls") {
+    StrandsDatas guides;
+    std::vector<StrandPoint> points;
+    std::vector<StrandCurve> curves;
+    auto add = [&](glm::vec3 root) {
+        StrandCurve c;
+        c.pointOffset = uint32_t(points.size());
+        c.pointCount = 4;
+        for (int i = 0; i < 4; ++i) {
+            const float u = float(i) / 3.f;
+            points.push_back({root + glm::vec3(0.f, 0.04f * float(i), 0.f), 0.001f, u});
+        }
+        c.length = 0.12f;
+        curves.push_back(c);
+    };
+    add(glm::vec3(-0.1f, 0.5f, 0.f));
+    add(glm::vec3(0.1f, 0.5f, 0.f));
+    guides.setPoints(std::move(points));
+    guides.setCurves(std::move(curves));
+    REQUIRE(guides.validate().ok());
+
+    GuideSimParams params;
+    params.gravity = glm::vec3(0.f, -20.f, 0.f);
+    params.damping = 0.98f;
+    params.iterations = 6;
+    params.compliance = 0.f;
+    params.collisionY = 0.f;
+
+    GuideSimulator sim;
+    auto reset = sim.reset(guides, params);
+    REQUIRE(reset.ok());
+    CHECK(sim.isReady());
+    CHECK_EQ(sim.curveCount(), 2u);
+    CHECK_EQ(sim.particleCount(), 8u);
+
+    const float rootY0 = guides.curvePoints(0)[0].position.y;
+    for (int i = 0; i < 30; ++i) {
+        auto stepped = sim.step(1.f / 60.f);
+        REQUIRE(stepped.ok());
+    }
+    auto snap = sim.snapshot();
+    REQUIRE(snap.ok());
+    CHECK_EQ(snap.value().curvePoints(0)[0].position.y, rootY0);
+    CHECK_EQ(snap.value().curvePoints(1)[0].position.y, rootY0);
+    const float tipY = snap.value().curvePoints(0)[3].position.y;
+    CHECK(tipY < rootY0 - 0.02f);
+    CHECK(tipY >= -0.001f);
+
+    CHECK(!sim.step(0.f).ok());
+    CHECK(!sim.step(-0.1f).ok());
+}
+
+TEST_CASE("graphics.hair.groomInstanceGuideSimUpdate") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 96, 64);
+
+    GroomInstance *groom = gfx->newGroomInstance();
+    REQUIRE(groom != nullptr);
+    ProceduralParams params;
+    params.strandCount = 32;
+    params.pointsPerStrand = 6;
+    params.seed = 11;
+    auto baked = groom->bakeProceduralPlane(0.25f, 0.25f, params);
+    REQUIRE(baked.ok());
+    CHECK(!groom->isGuideSimulationEnabled());
+
+    GuideSimParams simParams;
+    simParams.gravity = glm::vec3(0.f, -15.f, 0.f);
+    simParams.damping = 0.97f;
+    simParams.iterations = 4;
+    auto enabled = groom->enableGuideSimulation(simParams, 0.2f, InterpolationMode::Offset);
+    REQUIRE(enabled.ok());
+    CHECK(groom->isGuideSimulationEnabled());
+    REQUIRE(groom->getMesh() != nullptr);
+
+    for (int i = 0; i < 12; ++i) {
+        auto upd = groom->update(1.f / 60.f);
+        REQUIRE(upd.ok());
+    }
+    CHECK(groom->getMesh() != nullptr);
+    CHECK_EQ(groom->getCurveCount(), 32);
+
+    auto disabled = groom->disableGuideSimulation();
+    REQUIRE(disabled.ok());
+    CHECK(!groom->isGuideSimulationEnabled());
+    CHECK(groom->update(1.f / 60.f).ok());
+
+    gfx->begin3DFrame();
+    groom->draw(glm::mat4(1.f));
+    gfx->present();
+    win->close();
 }

@@ -735,6 +735,7 @@ void Graphics::expose(ssq::Table& table) {
     groomInstance.addFunc("getSelfShadowStrength", &hair::GroomInstance::getSelfShadowStrength);
     groomInstance.addFunc("getSelfShadowBias", &hair::GroomInstance::getSelfShadowBias);
     groomInstance.addFunc("getRootAoStrength", &hair::GroomInstance::getRootAoStrength);
+    groomInstance.addFunc("isGuideSimulationEnabled", &hair::GroomInstance::isGuideSimulationEnabled);
 
     auto waterfall = table.addClass<Waterfall>(
         "Waterfall", std::function<Waterfall*()>([]() -> Waterfall* { return nullptr; }), true);

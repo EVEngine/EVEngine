@@ -265,7 +265,7 @@ public:
 
 ### Phase 5 — 仿真
 
-- [ ] 轻量 XPBD/Verlet 仅 guides；或桥接 physics 模块（capability，禁向上硬 include）  
+- [x] 轻量 XPBD/Verlet 仅 guides；或桥接 physics 模块（capability，禁向上硬 include）  
 
 ### Phase 6 — Alembic 导入
 
@@ -376,3 +376,12 @@ public:
 - `GroomGroup::guides` 可选字段 + validate；Cards 接线仍等 PR #400
 
 下一步：与 HairCards 合并后接线 `Representation::Cards`；再进入 §7 Phase 5 仿真（guides XPBD / physics capability）。
+
+### 2026-09-15 — Phase 5 Guide XPBD / Verlet
+
+- `Simulation.h/.cpp`：`GuideSimulator` — Verlet + XPBD 距离约束，根钉死，可选 `collisionY` 地面；**不** `#include` physics
+- `GroomInstance::enableGuideSimulation` / `update(dt)` / `disableGuideSimulation`：每 group 抽/用 guides → step → `interpolateStrands` → ribbon rebuild
+- SoftBody3D 桥接留作后续 capability（禁向上硬依赖）
+- Cards 接线仍等 PR #400
+
+下一步：与 HairCards（PR #400）合并后接线 `Representation::Cards`；再 Phase 6 Alembic。
