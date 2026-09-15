@@ -383,7 +383,7 @@ Result<void> TerrainSpawnPlan::restoreJson(const std::string& json) {
         TerrainSpawnRule rule;
         if (!readRule(reader, static_cast<int>(*version), rule))
             return malformed<void>("terrain.spawnPlan.restore: invalid rule payload");
-        const auto& id = std::visit([](const auto& value) -> const std::string& { return value.ruleId; }, rule);
+        const auto id = std::visit([](const auto& value) { return value.ruleId; }, rule);
         if (candidate.contains(id)) return malformed<void>("terrain.spawnPlan.restore: duplicate rule ID");
         candidate.rules_.push_back(std::move(rule));
     }
