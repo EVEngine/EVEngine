@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "animation/AnimPoseSource.h"
 #include "common/Time.h"
 
 #include <string>
@@ -20,10 +21,10 @@ class AnimSkeleton;
  * or clips; those must outlive the graph. Call advance(step) once per frame and read
  * getPose(). Graph evaluation is memoized so shared subgraphs sample only once.
  */
-class AnimGraph {
+class AnimGraph : public IAnimPoseSource {
 public:
     explicit AnimGraph(AnimSkeleton* skeleton);
-    ~AnimGraph() = default;
+    ~AnimGraph() override = default;
 
     AnimGraph(const AnimGraph&)            = delete;
     AnimGraph& operator=(const AnimGraph&) = delete;
@@ -51,11 +52,33 @@ public:
     void trigger(int node);
     bool isOneShotActive(int node) const;
 
+    /**
+     * @brief Set additive reference for an Additive node: "bind" or "identity".
+     * Defaults to identity (sample is already a local-space delta).
+     */
+    [[nodiscard]] eve::Result<void> setAdditiveReference(int node, const std::string& reference);
+    /** @brief Compatibility facade over setAdditiveReference. */
+    bool setAdditiveReferenceCompat(int node, const std::string& reference);
+    /** @brief Return "bind" / "identity", or empty for non-additive / invalid nodes. */
+    std::string getAdditiveReference(int node) const;
+
     /** @brief Evaluate the graph using one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step) override;
     /** @brief Legacy seconds facade; explicitly forwards to advance(). */
-    void      update(float dt);
-    AnimPose* getPose() { return &output_; }
+    void update(float dt);
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimPose* getPose() override { return &output_; }
+    /**
+     * @brief Return the graph skeleton.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimSkeleton*                     getSkeleton() const override { return skeleton_; }
+    [[nodiscard]] bool                hasCurrentTick() const noexcept override { return hasLastTick_; }
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept override { return lastTick_; }
 
 private:
     enum class Kind { Clip, Blend, Additive, Layer, OneShot, BlendSpace1D, BlendSpace2D };
@@ -64,20 +87,21 @@ private:
         int   child = -1;
     };
     struct Node {
-        Kind               kind = Kind::Clip;
-        AnimClip*          clip = nullptr;
-        int                a = -1, b = -1;
-        float              weight = 1.f;
-        float              time   = 0.f;
-        float              speed  = 1.f;
-        float              x = 0.f, y = 0.f;
-        float              fadeIn = 0.1f, fadeOut = 0.1f;
-        bool               active = false;
-        std::vector<Point> points;
-        std::vector<float> mask;
-        AnimPose           cache;
-        AnimPose           scratch;
-        unsigned           cacheGeneration = 0;
+        Kind                  kind = Kind::Clip;
+        AnimClip*             clip = nullptr;
+        int                   a = -1, b = -1;
+        float                 weight = 1.f;
+        float                 time   = 0.f;
+        float                 speed  = 1.f;
+        float                 x = 0.f, y = 0.f;
+        float                 fadeIn = 0.1f, fadeOut = 0.1f;
+        bool                  active            = false;
+        AnimAdditiveReference additiveReference = AnimAdditiveReference::Identity;
+        std::vector<Point>    points;
+        std::vector<float>    mask;
+        AnimPose              cache;
+        AnimPose              scratch;
+        unsigned              cacheGeneration = 0;
     };
 
     int             addNode(Kind kind);
@@ -89,7 +113,7 @@ private:
     void            blendMasked(AnimPose& out, const AnimPose& base, const AnimPose& overlay, float weight,
                                 const std::vector<float>* mask) const;
     void            applyAdditive(AnimPose& out, const AnimPose& base, const AnimPose& delta, float weight,
-                                  const std::vector<float>* mask) const;
+                                  const std::vector<float>* mask, AnimAdditiveReference reference) const;
 
     AnimSkeleton*     skeleton_ = nullptr;
     std::vector<Node> nodes_;
