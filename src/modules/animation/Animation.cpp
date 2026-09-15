@@ -882,6 +882,8 @@ void Animation::expose(ssq::Table &table) {
     graph.addFunc("setSpeed", &AnimGraph::setSpeed);
     graph.addFunc("trigger", &AnimGraph::trigger);
     graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
+    graph.addFunc("setAdditiveReference", &AnimGraph::setAdditiveReferenceCompat);
+    graph.addFunc("getAdditiveReference", &AnimGraph::getAdditiveReference);
     graph.addFunc("getPose", &AnimGraph::getPose);
     graph.addFunc("update", &AnimGraph::update);
 
@@ -902,13 +904,22 @@ void Animation::expose(ssq::Table &table) {
     auto mixer = table.addClass<AnimLayerMixer>(
         "AnimLayerMixer", std::function<AnimLayerMixer*()>([]() -> AnimLayerMixer* { return nullptr; }), true);
     mixer.addFunc("setBasePlayer", &AnimLayerMixer::setBasePlayer);
+    mixer.addFunc("setBaseGraph", &AnimLayerMixer::setBaseGraph);
+    mixer.addFunc("setBaseStateMachine", &AnimLayerMixer::setBaseStateMachine);
     mixer.addFunc("getBasePlayer", &AnimLayerMixer::getBasePlayer);
     mixer.addFunc("addLayer", &AnimLayerMixer::addLayer);
+    mixer.addFunc("addGraphLayer", &AnimLayerMixer::addGraphLayer);
+    mixer.addFunc("addStateMachineLayer", &AnimLayerMixer::addStateMachineLayer);
     mixer.addFunc("removeLayer", &AnimLayerMixer::removeLayer);
     mixer.addFunc("setLayerWeight", &AnimLayerMixer::setLayerWeight);
     mixer.addFunc("setLayerEnabled", &AnimLayerMixer::setLayerEnabled);
+    mixer.addFunc("setLayerAdditiveReference", &AnimLayerMixer::setLayerAdditiveReferenceCompat);
     mixer.addFunc("getLayerCount", &AnimLayerMixer::getLayerCount);
     mixer.addFunc("getLayerName", &AnimLayerMixer::getLayerName);
+    mixer.addFunc("getLayerWeight", &AnimLayerMixer::getLayerWeight);
+    mixer.addFunc("getLayerEnabled", &AnimLayerMixer::getLayerEnabled);
+    mixer.addFunc("getLayerMode", &AnimLayerMixer::getLayerMode);
+    mixer.addFunc("getLayerAdditiveReference", &AnimLayerMixer::getLayerAdditiveReference);
     mixer.addFunc("update", &AnimLayerMixer::update);
     mixer.addFunc("getPose", &AnimLayerMixer::getPose);
     mixer.addFunc("getEventCount", &AnimLayerMixer::getEventCount);

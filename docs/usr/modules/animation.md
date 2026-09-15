@@ -294,7 +294,7 @@ local pose = graph.getPose();
 ```
 
 `addLayer(base, overlay, weight)` 默认 mask 全为 0，须显式设置参与骨骼；
-`addAdditive(base, delta, weight)` 默认作用于全身。Additive clip 应以 identity
+`addAdditive(base, delta, weight)` 默认作用于全身；默认参考是 identity（样本本身就是局部空间 delta），可用 `setAdditiveReference(node, "bind"|"identity")` 改为相对 bind pose。Additive clip 应以 identity
 姿态为参考：位移为差值、旋转为差值四元数、缩放以 1 为基准。
 one-shot 的 shot 输入当前应是 clip 节点，用该 clip 的时长决定结束和淡出。
 
@@ -524,7 +524,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`；每次更新跨过的事件由 `getEventCount()`、`getEventName()`、`getEventPayload()` 读取，`clearEvents()` 可提前清空。
 - `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
 - `AnimBoneMask`：由 `newBoneMask()` 创建；`setAll()`、`setBoneWeight()`、`setBoneWeightByName()`、`setBoneAndChildren()`、`getBoneWeight()`、`getBoneCount()` 定义逐骨权重。
-- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `getBasePlayer()` 设置基础动画，`addLayer(name, player, mask, mode)` 添加 `override` 或 `additive` 层，其中 Additive 以骨架 bind pose 为参考姿势。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
+- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `setBaseGraph()` / `setBaseStateMachine()` 设置基础姿态源，`addLayer` / `addGraphLayer` / `addStateMachineLayer` 添加 `override` 或 `additive` 层。Additive 默认以骨架 bind pose 为参考，可用 `setLayerAdditiveReference(name, "bind"|"identity")` 切换。禁用层仍会推进时间。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`getLayerWeight()`、`getLayerEnabled()`、`getLayerMode()`、`getLayerAdditiveReference()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
