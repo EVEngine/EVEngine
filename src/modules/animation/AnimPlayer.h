@@ -46,6 +46,11 @@ public:
     bool isPlaying() const { return playing_ && clip_ != nullptr; }
     bool isPaused() const { return paused_; }
 
+    /** @brief Borrow the selected clip, or null if none is selected.
+     * The caller owns the clip and must keep it alive during playback and this borrow.
+     * Playback changes can replace the selected clip; no ownership is transferred.
+     * @thread Owner thread only, outside advance; no callbacks or reentrancy.
+     */
     AnimClip* getClip() const { return clip_; }
     AnimPose* getPose();
     /** @brief Select the bone whose per-frame motion is extracted (default 0). */
