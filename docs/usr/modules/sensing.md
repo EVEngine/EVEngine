@@ -85,7 +85,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 ## API 快查
 
 - 模块：`newWorld()` / `resolve` / `release` / `isStale`
-- World：`upsert` / `remove` / `query` / `circle` / `box` / `executePreset` / `resultAt` / `snapshotJson` / `restoreJson`
+- World：`upsert` / `remove` / `query` / `circle` / `box` / `executePreset` / `resultAt` / `setSpatialIndexEnabled` / `spatialIndexEnabled` / `debugLastQueryJson` / `snapshotJson` / `restoreJson`
 - 管线：`TargetingPipeline::withBuiltins` / `registerTask` / `registerPreset` / `execute` / `executePreset`
 
 **源码：** [`src/modules/sensing/`](../../../src/modules/sensing/)  
@@ -97,3 +97,9 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 - RTS `CombatFireSystem` 自动索敌已改为组装 `QuerySpec`（`QueryCircle` + tags/factions + `TruncateToMax`）；目标 priority / stance 仍在 RTS。
 - `perceptionFactsFrom(CandidateQueryResult)` 把有序候选投影为中立 `PerceptionFact`，供 npc_ai 等写入各自 PerceptionMemory；sensing 不依赖 npc_ai。
 - Weapon soft-lock / lock-on 获取路径尚未在 weapon 模块落地；落地时应走同一 QuerySpec/preset，aim assist 留游戏侧。
+
+## 性能与调试（Phase 4）
+
+- `setSpatialIndexEnabled(true, cellSize)` 打开可选 `SpatialHash2D` 广相（默认关）。过滤/排序仍由 `QuerySpec` 负责；索引只做候选裁剪。
+- `debugLastQueryJson()` 返回上次成功查询的确定性 JSON（`eve.sensing.lastQuery`）：origin、shape、spatial.enabled/used/scanned/accepted、ranked scores。可供 MCP/debug overlay 消费；sensing 不依赖 editor。
+- 当前查询路径保持同步；异步 request 未引入。

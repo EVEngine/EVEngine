@@ -218,3 +218,59 @@ TEST_CASE("sensing.perceptionFactsFromProjectsRankedCandidates") {
     CHECK_EQ(facts[1].subjectId, std::string("b"));
     CHECK(facts[0].score > facts[1].score);
 }
+
+TEST_CASE("sensing.spatialIndexMatchesLinearScan") {
+    SensingWorld linear;
+    SensingWorld spatial;
+    REQUIRE(spatial.setSpatialIndexEnabled(true, 8.f).ok());
+    CHECK(spatial.spatialIndexEnabled());
+    CHECK(!linear.spatialIndexEnabled());
+
+    // Cluster near origin plus far distractors outside the circle broadphase.
+    REQUIRE(linear.upsert("near", 1.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(linear.upsert("mid", 4.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(linear.upsert("far", 50.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(linear.upsert("noise", 80.f, 80.f, "blue", "prop", "").ok());
+    REQUIRE(spatial.upsert("near", 1.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(spatial.upsert("mid", 4.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(spatial.upsert("far", 50.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(spatial.upsert("noise", 80.f, 80.f, "blue", "prop", "").ok());
+
+    QuerySpec spec;
+    spec.shape         = QueryCircle{0.f, 0.f, 10.f};
+    spec.requiredTags  = {"unit"};
+    spec.maxRange      = 10.f;
+    spec.maxCount      = 8;
+    spec.countPolicy   = CountPolicy::TruncateToMax;
+    spec.sortKey       = SortKey::DistanceAscending;
+
+    auto a = linear.query(QueryOrigin{0.f, 0.f, std::nullopt}, spec);
+    auto b = spatial.query(QueryOrigin{0.f, 0.f, std::nullopt}, spec);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    REQUIRE(a.value().size() == b.value().size());
+    REQUIRE(a.value().size() == 2u);
+    CHECK_EQ(a.value().ranked()[0].id, b.value().ranked()[0].id);
+    CHECK_EQ(a.value().ranked()[1].id, b.value().ranked()[1].id);
+
+    const std::string debug = spatial.debugLastQueryJson();
+    CHECK(debug.find("\"schema\":\"eve.sensing.lastQuery\"") != std::string::npos);
+    CHECK(debug.find("\"used\":true") != std::string::npos);
+    CHECK(debug.find("\"enabled\":true") != std::string::npos);
+    CHECK(debug.find("\"id\":\"near\"") != std::string::npos);
+    // Broadphase should not visit the distant distractors.
+    const bool scannedTight = debug.find("\"scanned\":2") != std::string::npos ||
+                              debug.find("\"scanned\":3") != std::string::npos;
+    CHECK(scannedTight);
+}
+
+TEST_CASE("sensing.spatialIndexRejectsInvalidCellSize") {
+    SensingWorld w;
+    auto bad = w.setSpatialIndexEnabled(true, 0.f);
+    CHECK(!bad.ok());
+    CHECK(!w.spatialIndexEnabled());
+    REQUIRE(w.setSpatialIndexEnabled(true, 16.f).ok());
+    CHECK(w.spatialIndexEnabled());
+    REQUIRE(w.setSpatialIndexEnabled(false).ok());
+    CHECK(!w.spatialIndexEnabled());
+}

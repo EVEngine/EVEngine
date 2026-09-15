@@ -4,6 +4,7 @@
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/SquirrelOwnership.h"
+#include "spatial/SpatialHash2D.h"
 
 #include <cstdint>
 #include <limits>
@@ -14,6 +15,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -147,6 +149,18 @@ public:
     [[nodiscard]] eve::Result<void> remove(std::string_view id);
 
     /**
+     * @brief Enables or disables an optional SpatialHash2D broadphase (off by default).
+     * @param enabled When true, rebuilds the index from current subjects.
+     * @param cellSize Uniform grid cell size; must be finite and > 0 when enabling.
+     * @return Applied on success, or InvalidArgument when cellSize is invalid.
+     * @remarks Filtering/sorting remain QuerySpec-owned; the hash only culls candidates.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<void> setSpatialIndexEnabled(bool enabled, float cellSize = 64.f);
+    /** @brief Reports whether the optional spatial broadphase is active. */
+    [[nodiscard]] bool spatialIndexEnabled() const noexcept;
+
+    /**
      * @brief Runs a configurable candidate query.
      * @return Owning ranked candidates, or a structured failure.
      * @remarks Also refreshes the resultAt() cache to match ranked() order.
@@ -183,6 +197,12 @@ public:
      * @reentrancy Do not retain across a callback or another query.
      */
     [[nodiscard]] eve::OptionalRef<const Candidate> resultAt(int index) const;
+    /**
+     * @brief Deterministic JSON dump of the last successful query for MCP/debug overlays.
+     * @return Schema `eve.sensing.lastQuery` with origin, shape, spatial stats, and ranked scores.
+     * @remarks Empty ranked list when no query has succeeded yet. Does not assign primary.
+     */
+    [[nodiscard]] std::string debugLastQueryJson() const;
     /** @brief Exports deterministic JSON. */
     std::string snapshotJson() const;
     /** @brief Restores a snapshot transactionally. */
@@ -191,12 +211,42 @@ public:
     /** @brief Returns a borrowed view of stored subjects for adapters; valid until mutation. */
     [[nodiscard]] const std::map<std::string, Subject>& subjects() const noexcept { return subjects_; }
 
+    SensingWorld() = default;
+    ~SensingWorld() = default;
+    SensingWorld(const SensingWorld&) = delete;
+    SensingWorld& operator=(const SensingWorld&) = delete;
+    SensingWorld(SensingWorld&&) noexcept = default;
+    SensingWorld& operator=(SensingWorld&&) noexcept = default;
+
 private:
     [[nodiscard]] bool accepts(const Subject& subject, const QuerySpec& spec) const;
     void               publishResults(std::vector<RankedCandidate> ranked);
+    void               clearSpatialIndex();
+    void               rebuildSpatialIndex();
+    void               indexSubject(const Subject& subject);
+    void               unindexSubject(const std::string& id);
+    /** @brief Returns true when the spatial hash produced a broadphase candidate set. */
+    [[nodiscard]] bool trySpatialBroadphase(const QueryOrigin& origin, const QuerySpec& spec,
+                                            std::vector<const Subject*>& out) const;
 
     std::map<std::string, Subject> subjects_;
     std::vector<Candidate>         results_;
+
+    std::unique_ptr<eve::spatial::SpatialHash2D> spatialIndex_;
+    std::unordered_map<std::string, int>         subjectSpatialIds_;
+    std::unordered_map<int, std::string>         spatialIdSubjects_;
+    int                                          nextSpatialId_ = 1;
+
+    struct LastQueryDebug {
+        bool                         usedSpatial = false;
+        std::uint32_t                scanned     = 0;
+        std::uint32_t                accepted    = 0;
+        float                        originX     = 0.f;
+        float                        originY     = 0.f;
+        std::string                  shapeKind   = "none";
+        std::vector<RankedCandidate> ranked;
+    };
+    LastQueryDebug lastQuery_;
 };
 
 /** @brief Handle domain for module-owned sensing worlds. */
