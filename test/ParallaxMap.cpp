@@ -9,6 +9,8 @@ using eve::graphics::ParallaxParams;
 using eve::graphics::clampParallaxParams;
 using eve::graphics::parallaxOffsetUV;
 using eve::graphics::silPomCoverage;
+using eve::graphics::silPomCoverageSoft;
+using eve::graphics::silPomHorizonTrim;
 using eve::graphics::ssdmCoverage;
 using eve::graphics::ssdmScreenOffset;
 
@@ -56,6 +58,18 @@ TEST_CASE("ParallaxMap.silPomCoverageClipsOutsideChart") {
     CHECK(silPomCoverage(0.5f, 1.01f, 0.f) == 0.f);
     // Padding expands the keep region.
     CHECK(silPomCoverage(-0.01f, 0.5f, 0.02f) == 1.f);
+}
+
+TEST_CASE("ParallaxMap.silPomSoftCoverageAndHorizon") {
+    CHECK(silPomCoverageSoft(0.5f, 0.5f, 0.05f) == 1.f);
+    CHECK(silPomCoverageSoft(-0.01f, 0.5f, 0.05f) == 0.f);
+    const float edge = silPomCoverageSoft(0.02f, 0.5f, 0.05f);
+    CHECK(edge > 0.f);
+    CHECK(edge < 1.f);
+    // Face-on: keep low height. Grazing: clip low height, keep high height.
+    CHECK(silPomHorizonTrim(0.1f, 1.0f, 0.45f) == 1.f);
+    CHECK(silPomHorizonTrim(0.1f, 0.05f, 0.45f) == 0.f);
+    CHECK(silPomHorizonTrim(0.95f, 0.05f, 0.45f) == 1.f);
 }
 
 TEST_CASE("ParallaxMap.ssdmOffsetScalesWithHeight") {

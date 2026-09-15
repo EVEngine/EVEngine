@@ -44,12 +44,47 @@ inline void parallaxOffsetUV(float u, float v, float height01, float viewTSx, fl
  * @param padding Soft border in UV units (0 = hard clip at 0/1).
  */
 inline float silPomCoverage(float displacedU, float displacedV, float padding = 0.f) {
+    // padding expands the keep region to [-pad, 1+pad].
     const float pad = std::max(0.f, padding);
-    const float minU = displacedU - pad;
-    const float minV = displacedV - pad;
-    const float maxU = (1.f + pad) - displacedU;
-    const float maxV = (1.f + pad) - displacedV;
-    return (minU >= 0.f && minV >= 0.f && maxU >= 0.f && maxV >= 0.f) ? 1.f : 0.f;
+    return (displacedU >= -pad && displacedV >= -pad && displacedU <= 1.f + pad &&
+            displacedV <= 1.f + pad)
+               ? 1.f
+               : 0.f;
+}
+
+/**
+ * @brief Soft chart coverage in [0,1] — feathers near the UV border (full SilPOM).
+ *
+ * @param displacedU Displaced U after POM.
+ * @param displacedV Displaced V after POM.
+ * @param feather Soft edge width in UV units (clamped to a tiny epsilon).
+ */
+inline float silPomCoverageSoft(float displacedU, float displacedV, float feather) {
+    const float f = std::max(feather, 1e-4f);
+    auto edge = [f](float t) {
+        if (t <= 0.f) return 0.f;
+        if (t >= f) return 1.f;
+        const float x = t / f;
+        return x * x * (3.f - 2.f * x); // smoothstep
+    };
+    const float cx = std::min(edge(displacedU), edge(1.f - displacedU));
+    const float cy = std::min(edge(displacedV), edge(1.f - displacedV));
+    return cx * cy;
+}
+
+/**
+ * @brief View-dependent horizon trim (SPOM-style) for grazing SilPOM limbs.
+ *
+ * Near-grazing fragments whose height is below a view-dependent threshold are
+ * clipped so low relief does not smear past the geometric silhouette.
+ *
+ * @return 1 keep, 0 clip.
+ */
+inline float silPomHorizonTrim(float height01, float ndotv, float strength,
+                               float bias = 0.02f) {
+    const float t = std::clamp(1.f - std::fabs(ndotv) / 0.35f, 0.f, 1.f);
+    const float threshold = std::clamp(std::pow(t, 1.5f) * strength, 0.f, 1.f);
+    return (height01 - bias >= threshold) ? 1.f : 0.f;
 }
 
 /**

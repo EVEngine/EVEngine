@@ -1,13 +1,17 @@
-# SilPOM vs SSDM comparison (cylinders)
+# SilPOM vs SSDM — full planar algorithms
 
-Three brick **cylinders** under a grazing camera. A cylinder UV chart wraps once
-around the barrel (`u` seam at 0/1) and is open at the top/bottom (`v` limbs):
+Side-by-side comparison of **classic POM**, **full SilPOM**, and **full planar
+SSDM** on extruded brick cards.
 
-| Cylinder | Technique | What you should notice |
+| Card | Technique | What you should notice |
 | --- | --- | --- |
-| Left (warm) | Classic **POM** | Depth on the barrel; **geometric** silhouette; seam can wrap |
-| Mid (green) | **SilPOM** | POM + discard when displaced UV leaves the chart → **seam gaps** and **bitten top/bottom limbs** |
-| Right (cool) | **SSDM-style** | POM shading + `gl_FragDepth` pull → **seam stays filled**, depth wins against the floor |
+| Left (warm) | Classic **POM** | Internal brick depth; **straight geometric** silhouette |
+| Mid (green) | **Full SilPOM** | Steep POM + soft chart clip + horizon trim + height normals + self-shadow + `FragDepth` → **jagged brick silhouette** |
+| Right (cool) | **Full planar SSDM** | Model-space heightfield raymarch through the slab + `FragDepth` from the geometric hit → **continuous extruded outline** |
+
+Cards are **extruded slabs** (local Z = height axis). That is the correct domain
+for silhouette-changing relief. Cylinders are not — a wrapped UV chart cannot
+grow the outline, and a constant depth bias is not SSDM.
 
 ## Run
 
@@ -34,19 +38,28 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 | `W` / `S` | Pitch |
 | `[` / `]` | Relief scale |
 | `-` / `=` | Max ray-march layers |
-| `1` / `2` / `3` | Focus POM / SilPOM / SSDM cylinder |
+| `1` / `2` / `3` | Focus POM / SilPOM / SSDM |
 
 ## Implementation notes
 
 - Shared CPU references: `src/modules/graphics/ParallaxMap.h`
-- Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`, `ssdm.glsl`
-- Demo shader is self-contained (`shaders/compare.frag`)
-- Mesh: `gfx.newMeshCylinder(64, 1, false)` — no caps, so the comparison is the sidewall chart
-- POM/SSDM wrap `u` when sampling (continuous seam); SilPOM does **not**, so chart exits open the seam and bite the limbs
-- SSDM path never discards on chart exits; FragDepth handles occlusion vs the floor
-- Educational planar/TBN approximation of SSDM, not a full-scene post pass
+  (offset POM, hard/soft SilPOM coverage, horizon trim, SSDM screen offset)
+- Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`,
+  `ssdm.glsl` (steep POM, soft coverage, horizon trim, height normals,
+  self-shadow, planar heightfield march, screen-warp helpers)
+- Demo shader is self-contained (`shaders/compare.frag`) with the full paths:
+  - **SilPOM**: steep POM + soft chart coverage + horizon trim + height
+    normals + self-shadow + `gl_FragDepth` from the hit
+  - **SSDM**: model-space heightfield march through the extruded slab +
+    `gl_FragDepth` from the geometric hit (planar-correct form of SSDM;
+    not a full-scene Gallagher-style pyramid post)
+- Meshes: thin front card for classic POM; extruded slab for SilPOM/SSDM
+- `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO) so relief never
+  punches holes in the floor
 
-## Floor contact
+## Honesty bound
 
-Cylinders sit slightly above the floor; SSDM fades relief near the chart bottom and
-never opens the bottom silhouette, so the floor cannot show through the contact line.
+True screen-space SSDM as a deferred/post pass (pyramid mip + screen warp over
+an already-rendered buffer) is **not** shipped as an engine post here. The demo
+implements the **geometrically correct planar** form: raymarch the heightfield
+inside the extruded volume and write depth from the hit.
