@@ -299,6 +299,8 @@ public:
 
 private:
     friend class AnimPlayer;
+    friend class MotionDatabase;
+    friend class AnimClipBinaryAccess;
     struct Vec3Key {
         float t = 0.f, x = 0.f, y = 0.f, z = 0.f;
     };

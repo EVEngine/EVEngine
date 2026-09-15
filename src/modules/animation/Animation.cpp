@@ -853,36 +853,7 @@ void Animation::expose(ssq::Table &table) {
     lattice.addFunc("getDeformedPositions", &AnimLattice::getDeformedPositions);
     lattice.addFunc("getDeformedNormals", &AnimLattice::getDeformedNormals);
 
-    auto player = table.addClass<AnimPlayer>(
-        "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),
-        true);
-    player.addFunc("play", &AnimPlayer::play);
-    player.addFunc("crossFade", &AnimPlayer::crossFade);
-    player.addFunc("stop", &AnimPlayer::stop);
-    player.addFunc("pause", &AnimPlayer::pause);
-    player.addFunc("resume", &AnimPlayer::resume);
-    player.addFunc("setSpeed", &AnimPlayer::setSpeed);
-    player.addFunc("getSpeed", &AnimPlayer::getSpeed);
-    player.addFunc("setTime", &AnimPlayer::setTime);
-    player.addFunc("getTime", &AnimPlayer::getTime);
-    player.addFunc("setLoop", &AnimPlayer::setLoop);
-    player.addFunc("getLoop", &AnimPlayer::getLoop);
-    player.addFunc("isPlaying", &AnimPlayer::isPlaying);
-    player.addFunc("isPaused", &AnimPlayer::isPaused);
-    player.addFunc("getPose", &AnimPlayer::getPose);
-    player.addFunc("setRootMotionBone", &AnimPlayer::setRootMotionBone);
-    player.addFunc("getRootMotionBone", &AnimPlayer::getRootMotionBone);
-    player.addFunc("getRootMotionX", &AnimPlayer::getRootMotionX);
-    player.addFunc("getRootMotionY", &AnimPlayer::getRootMotionY);
-    player.addFunc("getRootMotionZ", &AnimPlayer::getRootMotionZ);
-    player.addFunc("getRootMotionRotationX", &AnimPlayer::getRootMotionRotationX);
-    player.addFunc("getRootMotionRotationY", &AnimPlayer::getRootMotionRotationY);
-    player.addFunc("getRootMotionRotationZ", &AnimPlayer::getRootMotionRotationZ);
-    player.addFunc("getRootMotionRotationW", &AnimPlayer::getRootMotionRotationW);
-    player.addFunc("consumeEvent", &AnimPlayer::consumeEvent);
-    player.addFunc("setUpdateRate", &AnimPlayer::setUpdateRate);
-    player.addFunc("getUpdateRate", &AnimPlayer::getUpdateRate);
-    player.addFunc("update", &AnimPlayer::update);
+    exposeAnimPlayerBindings(table);
 
     auto graph = table.addClass<AnimGraph>(
         "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
@@ -910,11 +881,6 @@ void Animation::expose(ssq::Table &table) {
     graph.addFunc("getAdditiveReference", &AnimGraph::getAdditiveReference);
     graph.addFunc("getPose", &AnimGraph::getPose);
     graph.addFunc("update", &AnimGraph::update);
-
-    player.addFunc("getEventCount", &AnimPlayer::getEventCount);
-    player.addFunc("getEventName", &AnimPlayer::getEventName);
-    player.addFunc("getEventPayload", &AnimPlayer::getEventPayload);
-    player.addFunc("clearEvents", &AnimPlayer::clearEvents);
 
     auto mask = table.addClass<AnimBoneMask>(
         "AnimBoneMask", std::function<AnimBoneMask*()>([]() -> AnimBoneMask* { return nullptr; }), true);
@@ -977,52 +943,7 @@ void Animation::expose(ssq::Table &table) {
     sm.addFunc("isBlending", &AnimStateMachine::isBlending);
     sm.addFunc("update", &AnimStateMachine::update);
 
-    auto db = table.addClass<MotionDatabase>(
-        "MotionDatabase",
-        std::function<MotionDatabase *()>([]() -> MotionDatabase * { return nullptr; }), true);
-    db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
-    db.addFunc("addFeatureBoneByName", &MotionDatabase::addFeatureBoneByName);
-    db.addFunc("setRootBone", &MotionDatabase::setRootBone);
-    db.addFunc("getRootBone", &MotionDatabase::getRootBone);
-    db.addFunc("setRootBoneByName", &MotionDatabase::setRootBoneByName);
-    db.addFunc("addClip", &MotionDatabase::addClip);
-    db.addFunc("getClipCount", &MotionDatabase::getClipCount);
-    db.addFunc("bake", &MotionDatabase::bake);
-    db.addFunc("isBaked", &MotionDatabase::isBaked);
-    db.addFunc("getFrameCount", &MotionDatabase::getFrameCount);
-    db.addFunc("getFeatureSize", &MotionDatabase::getFeatureSize);
-    db.addFunc("getFrameTime", &MotionDatabase::getFrameTime);
-    db.addFunc("getFrameClipIndex", &MotionDatabase::getFrameClipIndex);
-    db.addFunc("getFeatureBoneCount", &MotionDatabase::getFeatureBoneCount);
-    db.addFunc("getFeatureBone", &MotionDatabase::getFeatureBone);
-
-    auto mm = table.addClass<MotionMatcher>(
-        "MotionMatcher",
-        std::function<MotionMatcher *()>([]() -> MotionMatcher * { return nullptr; }), true);
-    mm.addFunc("setDesiredVelocity", &MotionMatcher::setDesiredVelocity);
-    mm.addFunc("getDesiredVelocityX", &MotionMatcher::getDesiredVelocityX);
-    mm.addFunc("getDesiredVelocityZ", &MotionMatcher::getDesiredVelocityZ);
-    mm.addFunc("setDesiredYaw", &MotionMatcher::setDesiredYaw);
-    mm.addFunc("getDesiredYaw", &MotionMatcher::getDesiredYaw);
-    mm.addFunc("setSearchInterval", &MotionMatcher::setSearchInterval);
-    mm.addFunc("getSearchInterval", &MotionMatcher::getSearchInterval);
-    mm.addFunc("setBlendTime", &MotionMatcher::setBlendTime);
-    mm.addFunc("getBlendTime", &MotionMatcher::getBlendTime);
-    mm.addFunc("setTrajectoryWeight", &MotionMatcher::setTrajectoryWeight);
-    mm.addFunc("getTrajectoryWeight", &MotionMatcher::getTrajectoryWeight);
-    mm.addFunc("setPoseWeight", &MotionMatcher::setPoseWeight);
-    mm.addFunc("getPoseWeight", &MotionMatcher::getPoseWeight);
-    mm.addFunc("setVelocityWeight", &MotionMatcher::setVelocityWeight);
-    mm.addFunc("getVelocityWeight", &MotionMatcher::getVelocityWeight);
-    mm.addFunc("setIgnoreRadius", &MotionMatcher::setIgnoreRadius);
-    mm.addFunc("getIgnoreRadius", &MotionMatcher::getIgnoreRadius);
-    mm.addFunc("getMatchedFrame", &MotionMatcher::getMatchedFrame);
-    mm.addFunc("getMatchedClipIndex", &MotionMatcher::getMatchedClipIndex);
-    mm.addFunc("getMatchedTime", &MotionMatcher::getMatchedTime);
-    mm.addFunc("getLastSearchCost", &MotionMatcher::getLastSearchCost);
-    mm.addFunc("getPose", &MotionMatcher::getPose);
-    mm.addFunc("search", &MotionMatcher::search);
-    mm.addFunc("update", &MotionMatcher::update);
+    exposeMotionMatcherBindings(table);
 
     auto ca = table.addClass<ControlAnim>(
         "ControlAnim", std::function<ControlAnim *()>([]() -> ControlAnim * { return nullptr; }),
