@@ -26,6 +26,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import utf8_stdio
 
 STAGE_EXT = {".vert": "vertex", ".frag": "fragment", ".glsl": "fragment"}
 
@@ -138,4 +139,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

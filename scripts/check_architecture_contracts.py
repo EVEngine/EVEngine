@@ -40,6 +40,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Iterable, Mapping
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_METADATA = ROOT / "scripts" / "architecture_contracts.json"
@@ -284,6 +285,10 @@ def _git(args: list[str]) -> str:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            # git writes UTF-8; the locale default (cp936 on a Chinese Windows)
+            # would mangle or reject a non-ASCII path instead.
+            encoding="utf-8",
+            errors="replace",
         )
     except (OSError, subprocess.CalledProcessError):
         return ""
@@ -673,4 +678,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

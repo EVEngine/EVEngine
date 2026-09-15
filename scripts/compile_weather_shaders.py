@@ -5,6 +5,7 @@ import shutil
 import struct
 import subprocess
 import tempfile
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADERS = ROOT / "src/modules/weather/shaders"
@@ -33,4 +34,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     main()
