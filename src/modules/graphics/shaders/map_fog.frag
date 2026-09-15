@@ -61,9 +61,9 @@ void main() {
     float noise = luma(cloud);
     // Soft-max of lobe alphas so overlapping scrolls merge like cotton clumps,
     // while empty space between metaballs stays clear (terrain peeks through).
-    float coverA = sampleA.a;
-    float coverB = sampleB.a;
-    float cover = max(coverA, coverB) + coverA * coverB * 0.35;
+    // Soft-max coverage for a denser deep-fog sheet; valleys still open a bit
+    // so the frontier gate can carve sparse islands near unlock.
+    float cover = max(sampleA.a, sampleB.a) + sampleA.a * sampleB.a * 0.28;
     cover = clamp(cover, 0.0, 1.0);
 
     // Low-frequency warp (article: desaturate cloud color map as mask UV noise).
@@ -83,7 +83,7 @@ void main() {
     float selected = maskSample.g;
     float dissolve = maskSample.b;
 
-    float softRadius = max(edgeSoft * 0.40, 0.008);
+    float softRadius = max(edgeSoft * 0.55, 0.020);
     float unlockedSoft =
         (unlocked +
          texture(MaskTex, maskUv + vec2(softRadius, 0.0)).r +
@@ -95,27 +95,36 @@ void main() {
          texture(MaskTex, maskUv + vec2(softRadius, -softRadius) * 0.707).r +
          texture(MaskTex, maskUv + vec2(-softRadius, -softRadius) * 0.707).r) *
         (1.0 / 9.0);
-    float fogKeep = 1.0 - softenEdge(unlockedSoft, edgeSoft);
+    // Soft unlock field across a WIDE band (edgeSoft). Split into:
+    //   hardClear — only deep inside unlock fully removes fog
+    //   frontier  — approach band where fog breaks into sparse cotton islands
+    // so deep fog stays a dense sheet while the rim gradually sparsifies.
+    float unlockedAmt = softenEdge(unlockedSoft, edgeSoft);
+    float hardClear = smoothstep(0.58, 0.92, unlockedAmt);
+    float fogAmt = 1.0 - hardClear;
+    float frontier = smoothstep(0.04, 0.72, unlockedAmt);
+    frontier = frontier * frontier * (3.0 - 2.0 * frontier);
 
-    // Bubbly rim: carve unlock edge in the valleys BETWEEN cotton puffs
-    // (reference FoW has discrete circular lobes + pinholes at the frontier).
-    float edgeBand = 4.0 * fogKeep * (1.0 - fogKeep);
-    float valley = 1.0 - smoothstep(0.18, 0.55, noise);
-    fogKeep *= 1.0 - edgeBand * valley * 1.15;
-    // Extra pinholes near the rim where puff coverage is thin.
-    fogKeep *= 1.0 - edgeBand * (1.0 - smoothstep(0.35, 0.70, noise)) * 0.35;
+    // Bubbly rim carve through valleys between puffs.
+    float edgeBand = 4.0 * fogAmt * unlockedAmt;
+    float valley = 1.0 - smoothstep(0.15, 0.52, mix(noise, cover, 0.60));
+    fogAmt *= 1.0 - edgeBand * valley * 1.20;
+    fogAmt *= 1.0 - edgeBand * (1.0 - smoothstep(0.30, 0.70, cover)) * 0.45;
+
+    // Gradual sparseness: keep sheet in deep fog; toward unlock keep only peaks.
+    float sparsePow = mix(1.0, 4.2, frontier);
+    float fogKeep = fogAmt * mix(1.0, pow(max(cover, 1e-3), sparsePow), frontier);
+    fogKeep *= 1.0 - frontier * (1.0 - smoothstep(0.25, 0.62, cover)) * 0.95;
 
     float dissolveNoise = luma(texture(MainTex,
         cloudUv * dissolveScale + vec2(time * 0.015, -time * 0.02)).rgb);
     fogKeep *= 1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve);
 
-    // Coverage comes from puff height-alpha (gaps between blobs), shaped by
-    // density bias/contrast. Peaks stay fully opaque + bright ("透亮"); only
-    // inter-puff valleys go clear — not a global fogAlpha wash.
-    // Cover + luma density: solid lit cores, soft valleys partially clear.
-    float density = smoothstep(densityBias, clamp(densityBias + densityContrast, 0.0, 1.0),
-                               mix(noise, cover, 0.65));
+    float gate = densityBias + frontier * 0.55;
+    float density = smoothstep(gate, clamp(gate + densityContrast * mix(1.0, 0.48, frontier), 0.0, 1.0),
+                               mix(noise, cover, 0.82));
     float body = mix(0.20, 1.0, density);
+    body *= mix(1.0, density * density, frontier);
 
     if (passMode < 0.5) {
         // Cast shadow onto the unlocked terrain: hole ∩ offset-fog, shaped by

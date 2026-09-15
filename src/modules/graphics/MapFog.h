@@ -135,7 +135,7 @@ private:
     float fogG_            = 0.97f;
     float fogB_            = 1.00f;
     float fogAlpha_        = 0.94f;
-    float edgeSoft_        = 0.11f;
+    float edgeSoft_        = 0.28f;
     bool  shadowEnabled_   = true;
     float shadowOffX_      = 0.042f;
     float shadowOffY_      = 0.058f;
@@ -144,8 +144,8 @@ private:
     float dissolveScale_   = 1.8f;
     float cloudMix_        = 0.28f;
     // Peak-biased: dense cotton stays opaque/bright; only low cover goes clear.
-    float densityContrast_ = 0.55f;
-    float densityBias_     = 0.18f;
+    float densityContrast_ = 0.50f;
+    float densityBias_     = 0.22f;
     float drawAspect_      = 1.f;
 };
 

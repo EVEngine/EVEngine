@@ -62,9 +62,9 @@ function clearMask() {
 }
 
 function softWeight(dist, radius) {
-    // Chunky cotton disc: large hard core, short falloff (reference FoW lobes).
+    // Soft unlock penumbra: smaller hard core so the frontier thins gradually.
     if (dist >= radius) return 0.0;
-    local core = radius * 0.72;
+    local core = radius * 0.22;
     if (dist <= core) return 1.0;
     local t = (radius - dist) / (radius - core);
     return t * t * (3.0 - 2.0 * t);
@@ -130,16 +130,19 @@ function stampRimPuffs(gx, gy, r, g, b) {
     local cy = (gy.tofloat() + 0.5) * cellPy;
     local h = ((gx * 13 + gy * 7) % 5).tofloat() / 5.0;
     local offsets = [
-        [0.55, -0.35, 0.70],
-        [-0.40, 0.50, 0.62],
-        [0.30, 0.55, 0.55],
-        [-0.55, -0.25, 0.48]
+        [0.70, -0.45, 0.78],
+        [-0.55, 0.65, 0.68],
+        [0.45, 0.70, 0.58],
+        [-0.75, -0.30, 0.50],
+        [0.85, 0.25, 0.42],
+        [-0.25, -0.80, 0.46],
+        [0.15, 0.95, 0.38]
     ];
     for (local i = 0; i < offsets.len(); ++i) {
         local o = offsets[i];
-        // Skip some satellites for irregularity.
-        if (((gx * 3 + gy * 5 + i * 7) % 4) == 0) continue;
-        local s = (0.85 + 0.30 * h) * o[2];
+        // Skip more satellites so the rim reads as sparse floating islands.
+        if (((gx * 3 + gy * 5 + i * 7) % 3) != 0) continue;
+        local s = (0.70 + 0.40 * h) * o[2];
         stampSoftAt(cx + o[0] * cellPx, cy + o[1] * cellPy, r, g, b, s * cellPx);
     }
 }
@@ -153,10 +156,10 @@ function rebuildMask() {
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
                 // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.75);
+                stampSoft(x, y, 0.0, sel, dissolving[idx], 2.60);
                 stampRimPuffs(x, y, 0.0, sel, dissolving[idx]);
             } else if (unlocked[idx]) {
-                stampSoft(x, y, 1.0, sel, 0.0, 1.75);
+                stampSoft(x, y, 1.0, sel, 0.0, 2.60);
                 stampRimPuffs(x, y, 1.0, sel, 0.0);
             } else if (sel > 0.0) {
                 stampSoft(x, y, 0.0, sel, 0.0, 0.90);
@@ -211,12 +214,13 @@ eve_init = function() {
     fog.setFogColor(0.96, 0.97, 1.00);
     fog.setFogAlpha(fogAlpha);
     // Bubbly mask stamps + puff UV warp => lobed unlock rim + hole shadow.
-    fog.setEdgeSoftness(0.11);
+    fog.setEdgeSoftness(0.28);
     fog.setShadow(0.042, 0.058, 0.88);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
     // Peak cotton opaque/bright; valleys between blobs clear (not fogAlpha wash).
-    fog.setCloudDensity(0.55, 0.18);
+    fog.setCloudDensity(0.48, 0.18);
+    // Wider soft frontier so density thins gradually into islands.
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };
