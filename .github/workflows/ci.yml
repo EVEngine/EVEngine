@@ -459,9 +459,9 @@ jobs:
       - name: Build native Dawn parity lane
         # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
         # 95% only when the former 40-minute guard fired on windows-latest. The
-        # full test link reached 2,401/2,403 at 60 minutes as the module matrix
-        # grew, so retain a bounded 15-minute link/cache variance margin.
-        timeout-minutes: 75
+        # growing module matrix crossed the later 75-minute guard in the v0.5.1
+        # release gate, so retain a bounded 30-minute link/cache variance margin.
+        timeout-minutes: 105
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -566,7 +566,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 60
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -726,7 +726,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 60
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
@@ -912,7 +912,7 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx release
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1315,7 +1315,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux release
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1507,7 +1507,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug (coverage)
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1520,7 +1520,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: |
