@@ -51,6 +51,9 @@ class Drawable;
 class GBuffer;
 class GlobalIllumination;
 class GrassField;
+namespace hair {
+class GroomInstance;
+}
 class Material;
 class Mesh;
 class PrimitiveScene;
@@ -551,6 +554,36 @@ public:
      */
     virtual bool updateTexture(Texture *texture, int width, int height,
                                const uint8_t *rgba) = 0;
+
+    /**
+     * @brief Copy a same-device resident RGBA8 buffer into an existing texture.
+     * @param texture Borrowed
+     * single-mip texture owned by this Graphics backend.
+     * @param source Borrowed tightly packed RGBA8 buffer
+     * slice; its producer must be complete.
+     * @param width Source width, which must match the texture.
+     *
+     * @param height Source height, which must match the texture.
+     * @return Success after the copy is visible to
+     * subsequent draws, or Unsupported when the backend cannot import it.
+     * @ownership Neither the texture nor
+     * native buffer handle is retained.
+     * @lifetime The source buffer must remain alive through this synchronous
+     * render-thread call.
+     * @thread Render-thread affine; the caller must complete writes to source before
+     * calling.
+     */
+    [[nodiscard]] virtual eve::Result<void> updateTextureFromResidentRgba8(Texture*                     texture,
+                                                                           const GpuResidentBufferView& source,
+                                                                           int width, int height) {
+        (void)texture;
+        (void)source;
+        (void)width;
+        (void)height;
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                                                 "Resident texture upload is unavailable",
+                                                                 "graphics.updateTextureFromResidentRgba8"));
+    }
 
     /**
      * @brief Upload one tightly packed or row-strided RGBA8 rectangle into mip level zero.
@@ -1169,11 +1202,15 @@ public:
      * (lifetime fade in/out); `normalStrength` / `roughnessStrength` /
      * `metalStrength` / `emissiveStrength` gate the per-channel blend in
      * mesh3d.frag.
+     * @param blendMode 0 = premultiplied over, 1 = additive (emissive).
+     * @param projectionMode 0 = planar (local.xy), 1 = triplanar (YZ/XZ/XY blend).
+     * @param blendSharpness Triplanar normal-weight exponent (ignored when planar).
      */
     virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                            Texture *params, const float uvRect[4], float fade,
                            float normalStrength, float roughnessStrength, float metalStrength,
-                           float emissiveStrength, int blendMode = 0) = 0;
+                           float emissiveStrength, int blendMode = 0, int projectionMode = 0,
+                           float blendSharpness = 4.f) = 0;
     virtual void endDecalPass() = 0;
 
     /**
@@ -1623,6 +1660,18 @@ public:
     Shader *newHairShader();
 
     /**
+     * @brief Procedural upright hair/fur card mesh (root at origin, height +Y, face +Z).
+     * @ownership Owned by Graphics.
+     */
+    Mesh *newHairCardMesh(float width = 0.12f, float height = 0.45f);
+
+    /**
+     * @brief Material preconfigured for hair cards (transparent, double-sided, hair shader).
+     * @ownership Caller owns the Material*; shader is owned by Graphics.
+     */
+    Material *newHairCardMaterial(Texture *albedo = nullptr);
+
+    /**
      * @brief Eagerly releases a shader created by this Graphics.
      *
      * Mirrors releaseTexture: the returned handle is borrowed, a successful
@@ -1652,6 +1701,16 @@ public:
      * its Mesh / Shader / Texture are owned by Graphics.
      */
     GrassField *newGrassField();
+
+    /**
+     * @brief High-quality groom/hair instance (UE GroomComponent analogue).
+     * See graphics/hair/ and docs/dev/毛发Groom子系统设计.md.
+     * @ownership Caller owns the returned GroomInstance*; its Mesh / Shader /
+     * Texture remain owned by Graphics.
+     * @lifetime Returned instance is valid until the caller deletes it; Graphics
+     * must outlive draws that use its GPU resources.
+     */
+    hair::GroomInstance *newGroomInstance();
 
     /**
      * @brief Flowing waterfall (falling water sheet) with sky reflection, downward

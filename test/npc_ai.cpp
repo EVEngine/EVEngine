@@ -1,4 +1,6 @@
 #include "npc_ai/NpcAi.h"
+#include "npc_ai/SensingPerception.h"
+#include "sensing/Sensing.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -337,3 +339,40 @@ TEST_CASE("npc_ai.startupRollbackUsesEachTaskStateContext") {
     REQUIRE_EQ(observed->stopStates.size(), 1u);
     CHECK_EQ(observed->stopStates.front(), std::string("root"));
 }
+
+TEST_CASE("npc_ai.sensingPerceptionFactsProjectIntoMemory") {
+    eve::sensing::SensingWorld sensing;
+    REQUIRE(sensing.upsert("00000000-0000-7000-8000-000000000031", 1.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(sensing.upsert("00000000-0000-7000-8000-000000000032", 4.f, 0.f, "red", "unit", "").ok());
+    eve::sensing::QuerySpec spec;
+    spec.requiredTags = {"unit"};
+    spec.maxRange     = 10.f;
+    spec.maxCount     = 8;
+    spec.countPolicy  = eve::sensing::CountPolicy::TruncateToMax;
+    spec.sortKey      = eve::sensing::SortKey::DistanceAscending;
+    auto ranked       = sensing.query(eve::sensing::QueryOrigin{0.f, 0.f, std::nullopt}, spec);
+    REQUIRE(ranked.ok());
+    const auto facts = eve::sensing::perceptionFactsFrom(ranked.value());
+    REQUIRE_EQ(facts.size(), 2u);
+
+    NpcAiWorld         world({32, 8});
+    BehaviorDefinition behavior;
+    behavior.id           = "sensing-bridge";
+    behavior.initialState = "idle";
+    behavior.states.push_back({"idle"});
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    auto created = world.createAgent("sensing-bridge");
+    REQUIRE(created.ok());
+
+    const auto memories = perceptionMemoriesFrom(facts, /*observedTick=*/10, /*forgetAfterTicks=*/20);
+    REQUIRE_EQ(memories.size(), 2u);
+    CHECK_EQ(memories[0].subject, facts[0].subjectId);
+    CHECK_EQ(memories[0].sense, std::string("sensing.query"));
+    CHECK(memories[0].confidence > memories[1].confidence);
+    REQUIRE(world.remember(created.value(), memories[0]).ok());
+    REQUIRE(world.remember(created.value(), memories[1]).ok());
+    auto snap = world.snapshot(created.value());
+    REQUIRE(snap.ok());
+    CHECK_EQ(snap.value().perception.size(), 2u);
+}
+

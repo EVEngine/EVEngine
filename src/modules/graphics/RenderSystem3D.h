@@ -460,16 +460,37 @@ public:
 
     /**
      * @brief Register a callback that casts shadows for geometry outside the
-     * Renderable3D ECS (e.g. sprite-stack slices). Invoked inside each CSM
-     * cascade pass with that cascade's light-view-projection; call
+     * Renderable3D ECS (e.g.
+     * sprite-stack slices). Invoked inside each CSM
+     * cascade pass with that cascade's light-view-projection;
+     * call
      * gfx.drawMeshShadowAlpha(...) / drawMeshShadow(...) there. When no Light3D
-     * casts shadows but drawers are registered, the legacy directional light is
+     * casts shadows but
+     * drawers are registered, the legacy directional light is
      * used as the shadow source.
+     * @param drawer
+     * Render-thread callback retained until its token is removed.
+     * @return Non-zero owner token, or zero when
+     * drawer is empty.
+     * @details Render-thread affine. The callback must not add/remove shadow drawers
+     * or
+     * reenter RenderSystem3D. Keep the token and remove it before destroying any
+     * state captured by the callback.
+     * Registration performs no per-frame allocation.
      */
     using ShadowExtraDrawer =
         std::function<void(Graphics &gfx, const glm::mat4 &lightVP,
                            const Camera3D::Data &cam)>;
-    static void addShadowExtraDrawer(ShadowExtraDrawer drawer);
+    [[nodiscard]] static uint64_t addShadowExtraDrawer(ShadowExtraDrawer drawer);
+
+    /**
+     * @brief Remove one shadow callback before destroying its captured state.
+     * @param token Token
+     * returned by addShadowExtraDrawer; zero/missing tokens are ignored.
+     * @details Render-thread affine and must
+     * not be called from a shadow callback.
+     */
+    static void removeShadowExtraDrawer(uint64_t token);
 
     /** @brief Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);

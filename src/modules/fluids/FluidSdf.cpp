@@ -51,18 +51,22 @@ float triangleDistance(const glm::vec3& p, const glm::vec3& a, const glm::vec3& 
     return glm::length(p - (a + ab * v + ac * w));
 }
 
-/** @brief Even-odd raycast along +X; returns true when p is inside the mesh. */
+/** @brief Even-odd raycast along a skew direction; returns true when p is inside the mesh. */
 bool pointInsideMesh(const glm::vec3& p, const std::vector<glm::vec3>& pos, const std::vector<uint32_t>& idx,
                      int triCount) {
+    // Axis rays frequently pass through shared vertices/edges in symmetric meshes,
+    // double-counting one crossing. A fixed irrational-looking direction preserves
+    // deterministic baking while avoiding those systematic degeneracies.
+    const glm::vec3 direction = glm::normalize(glm::vec3(1.f, .37139067f, .127831f));
     int hits = 0;
     for (int tri = 0; tri < triCount; ++tri) {
         const glm::vec3 a = pos[idx[uint32_t(tri) * 3 + 0]];
         const glm::vec3 b = pos[idx[uint32_t(tri) * 3 + 1]];
         const glm::vec3 c = pos[idx[uint32_t(tri) * 3 + 2]];
-        // Moller-Trumbore ray from p along +X.
+        // Moller-Trumbore ray from p along the fixed skew direction.
         const glm::vec3 e1  = b - a;
         const glm::vec3 e2  = c - a;
-        const glm::vec3 h   = glm::cross(glm::vec3(1.f, 0.f, 0.f), e2);
+        const glm::vec3 h   = glm::cross(direction, e2);
         const float     det = glm::dot(e1, h);
         if (std::fabs(det) < 1e-12f) continue;
         const float     invDet = 1.f / det;
@@ -70,7 +74,7 @@ bool pointInsideMesh(const glm::vec3& p, const std::vector<glm::vec3>& pos, cons
         const float     u      = invDet * glm::dot(s, h);
         if (u < 0.f || u > 1.f) continue;
         const glm::vec3 q = glm::cross(s, e1);
-        const float     v = invDet * glm::dot(glm::vec3(1.f, 0.f, 0.f), q);
+        const float     v = invDet * glm::dot(direction, q);
         if (v < 0.f || u + v > 1.f) continue;
         const float t = invDet * glm::dot(e2, q);
         if (t > 1e-8f) ++hits;
@@ -88,38 +92,40 @@ bool MeshSdf::inBounds(const glm::ivec3& c) const {
     return c.x >= 0 && c.y >= 0 && c.z >= 0 && c.x < dims.x && c.y < dims.y && c.z < dims.z;
 }
 
-float MeshSdf::sample(const glm::vec3& p) const {
-    if (voxelCount() <= 0) return FLT_MAX;
-    const glm::vec3  f  = (p - origin) / cellSize;
-    const glm::ivec3 i0 = glm::clamp(glm::ivec3(glm::floor(f)), glm::ivec3(0), dims - glm::ivec3(1));
-    const glm::ivec3 i1 = glm::min(i0 + glm::ivec3(1), dims - glm::ivec3(1));
-    const glm::vec3  t  = glm::fract(f);
+float MeshSdf::sample(const glm::vec3& p) const { return sampleWithGradient(p).distance; }
 
-    const float v000 = distances[index(i0.x, i0.y, i0.z)];
-    const float v100 = distances[index(i1.x, i0.y, i0.z)];
-    const float v010 = distances[index(i0.x, i1.y, i0.z)];
-    const float v110 = distances[index(i1.x, i1.y, i0.z)];
-    const float v001 = distances[index(i0.x, i0.y, i1.z)];
-    const float v101 = distances[index(i1.x, i0.y, i1.z)];
-    const float v011 = distances[index(i0.x, i1.y, i1.z)];
-    const float v111 = distances[index(i1.x, i1.y, i1.z)];
-
-    const float c00 = v000 + (v100 - v000) * t.x;
-    const float c10 = v010 + (v110 - v010) * t.x;
-    const float c01 = v001 + (v101 - v001) * t.x;
-    const float c11 = v011 + (v111 - v011) * t.x;
-    const float c0  = c00 + (c10 - c00) * t.y;
-    const float c1  = c01 + (c11 - c01) * t.y;
-    return c0 + (c1 - c0) * t.z;
+MeshSdfSample MeshSdf::sampleWithGradient(const glm::vec3& p) const {
+    if (dims.x < 2 || dims.y < 2 || dims.z < 2 || !(cellSize > 0.f) || distances.size() != size_t(voxelCount()))
+        return {FLT_MAX, glm::vec3(0.f, 1.f, 0.f)};
+    const glm::vec3  maximum      = origin + glm::vec3(dims - glm::ivec3(1)) * cellSize;
+    const glm::vec3  clampedPoint = glm::clamp(p, origin, maximum);
+    const glm::vec3  outside      = p - clampedPoint;
+    const glm::vec3  f            = (clampedPoint - origin) / cellSize;
+    const glm::ivec3 i0           = glm::min(glm::ivec3(glm::floor(f)), dims - glm::ivec3(2));
+    const glm::ivec3 i1           = i0 + glm::ivec3(1);
+    const glm::vec3  t            = glm::clamp(f - glm::vec3(i0), glm::vec3(0.f), glm::vec3(1.f));
+    const float      v000         = distances[size_t(index(i0.x, i0.y, i0.z))];
+    const float      v100         = distances[size_t(index(i1.x, i0.y, i0.z))];
+    const float      v010         = distances[size_t(index(i0.x, i1.y, i0.z))];
+    const float      v110         = distances[size_t(index(i1.x, i1.y, i0.z))];
+    const float      v001         = distances[size_t(index(i0.x, i0.y, i1.z))];
+    const float      v101         = distances[size_t(index(i1.x, i0.y, i1.z))];
+    const float      v011         = distances[size_t(index(i0.x, i1.y, i1.z))];
+    const float      v111         = distances[size_t(index(i1.x, i1.y, i1.z))];
+    const auto       mix          = [](float a, float b, float u) { return a + (b - a) * u; };
+    const float      x00 = mix(v000, v100, t.x), x10 = mix(v010, v110, t.x);
+    const float      x01 = mix(v001, v101, t.x), x11 = mix(v011, v111, t.x);
+    const float      y0 = mix(x00, x10, t.y), y1 = mix(x01, x11, t.y);
+    const float      distance = mix(y0, y1, t.z);
+    const float      dx = mix(mix(v100 - v000, v110 - v010, t.y), mix(v101 - v001, v111 - v011, t.y), t.z) / cellSize;
+    const float      dy = mix(mix(v010 - v000, v110 - v100, t.x), mix(v011 - v001, v111 - v101, t.x), t.z) / cellSize;
+    const float      dz = mix(mix(v001 - v000, v101 - v100, t.x), mix(v011 - v010, v111 - v110, t.x), t.y) / cellSize;
+    const float      outsideDistance = glm::length(outside);
+    return outsideDistance > 1e-7f ? MeshSdfSample{distance + outsideDistance, outside / outsideDistance}
+                                   : MeshSdfSample{distance, {dx, dy, dz}};
 }
 
-glm::vec3 MeshSdf::gradient(const glm::vec3& p) const {
-    const float e = cellSize;
-    return glm::vec3(sample(p + glm::vec3(e, 0.f, 0.f)) - sample(p - glm::vec3(e, 0.f, 0.f)),
-                     sample(p + glm::vec3(0.f, e, 0.f)) - sample(p - glm::vec3(0.f, e, 0.f)),
-                     sample(p + glm::vec3(0.f, 0.f, e)) - sample(p - glm::vec3(0.f, 0.f, e))) /
-           (2.f * e);
-}
+glm::vec3 MeshSdf::gradient(const glm::vec3& p) const { return sampleWithGradient(p).gradient; }
 
 MeshSdf MeshSdf::makeSphere(const glm::vec3& center, float radius, const glm::ivec3& dims) {
     MeshSdf sdf;
@@ -207,9 +213,20 @@ MeshSdf MeshSdf::makeFromTriangles(const std::vector<glm::vec3>& positions, cons
                 const glm::vec3 p = sdf.origin + glm::vec3(float(x), float(y), float(z)) * cell;
                 const size_t    i = size_t(sdf.index(x, y, z));
                 if (sdf.distances[i] >= FLT_MAX) {
-                    // No triangle in range: sign still matters far outside.
-                    sdf.distances[i] = pointInsideMesh(p, positions, indices, triCount) ? -cell : cell;
-                } else if (pointInsideMesh(p, positions, indices, triCount)) {
+                    // The narrow triangle sweep leaves deep interior and far exterior
+                    // cells untouched. Resolve those cells exactly once during baking;
+                    // substituting one cell width destroys the SDF magnitude and makes
+                    // collision projection depend on grid resolution.
+                    float distance = FLT_MAX;
+                    for (int tri = 0; tri < triCount; ++tri) {
+                        const glm::vec3 a = positions[indices[uint32_t(tri) * 3 + 0]];
+                        const glm::vec3 b = positions[indices[uint32_t(tri) * 3 + 1]];
+                        const glm::vec3 c = positions[indices[uint32_t(tri) * 3 + 2]];
+                        distance          = std::min(distance, triangleDistance(p, a, b, c));
+                    }
+                    sdf.distances[i] = distance;
+                }
+                if (pointInsideMesh(p, positions, indices, triCount)) {
                     sdf.distances[i] = -sdf.distances[i];
                 }
             }

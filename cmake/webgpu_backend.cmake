@@ -15,6 +15,12 @@ function(load_webgpu_backend)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
+    # Protobuf/LPM is only required for Dawn/Tint fuzzers. Keep it off so the
+    # native Dawn parity lane does not depend on a complete libprotobuf-mutator
+    # checkout from chromium.googlesource (shallow fetches there flake on Windows).
+    set(DAWN_BUILD_PROTOBUF OFF CACHE BOOL "" FORCE)
+    set(TINT_BUILD_FUZZERS OFF CACHE BOOL "" FORCE)
+    set(TINT_BUILD_IR_BINARY OFF CACHE BOOL "" FORCE)
     set(DAWN_FETCH_DEPENDENCIES ON CACHE BOOL "" FORCE)
     set(TINT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(TINT_BUILD_CMD_TOOLS OFF CACHE BOOL "" FORCE)

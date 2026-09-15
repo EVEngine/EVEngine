@@ -1,4 +1,5 @@
 #include "climbing/Climbing.h"
+#include "climbing/ClimbingBindingInternal.h"
 
 #include "animation/AnimClip.h"
 #include "common/SquirrelBinding.h"
@@ -41,6 +42,7 @@ eve::Value candidateValue(ClimbingCandidate candidate) {
         {"bodyLocalTop", vecValue(candidate.bodyLocalTop)},
         {"bodyLocalLanding", vecValue(candidate.bodyLocalLanding)},
         {"obstacleHeight", candidate.obstacleHeight},
+        {"obstacleDepth", candidate.obstacleDepth},
         {"score", candidate.score},
         {"kind", static_cast<std::int64_t>(candidate.kind)},
         {"support", static_cast<std::int64_t>(candidate.support)},
@@ -396,13 +398,6 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     return result;
 }
 
-struct ScriptClimbingRuntime {
-    explicit ScriptClimbingRuntime(ClimbingRuntimeHandleRef value) : reference(value) {}
-    ~ScriptClimbingRuntime() noexcept {
-        Climbing::release(reference).ignore("script climbing runtime proxy destruction");
-    }
-    ClimbingRuntimeHandleRef reference;
-};
 
 struct ScriptClimbingAnchorGraph {
     explicit ScriptClimbingAnchorGraph(ClimbingAnchorGraphHandleRef value) : reference(value) {}
@@ -413,6 +408,8 @@ struct ScriptClimbingAnchorGraph {
 };
 
 }  // namespace
+
+eve::Value projectClimbingAdvance(ClimbingAdvance value) { return advanceValue(std::move(value)); }
 
 Module_IMPL(Climbing, new Climbing());
 
@@ -640,6 +637,34 @@ void Climbing::expose(ssq::Table& table) {
                     : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
                                            "runtime"));
     });
+    runtime.addFunc("probeMode", [vm](ScriptClimbingRuntime* value, physics::World3D* world, float x, float y, float z,
+                                      float forwardX, float forwardZ, float speed, float verticalSpeed, bool grounded) {
+        if (!value || !world)
+            return eve::script::projectResult(
+                vm,
+                bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::InvalidArgument,
+                                                  "runtime and world are required", "probeMode"),
+                candidateValue);
+        auto resolved = Climbing::resolve(value->reference);
+        if (!resolved.isBound())
+            return eve::script::projectResult(
+                vm,
+                bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                                  "runtime"),
+                candidateValue);
+        auto candidates =
+            resolved->probe(*world, {{x, y, z}, {forwardX, 0.f, forwardZ}, speed, -1, verticalSpeed, grounded});
+        if (!candidates.ok())
+            return eve::script::projectResult(vm, eve::Result<ClimbingCandidate>::failure(candidates.status()),
+                                              candidateValue);
+        if (candidates.value().empty())
+            return eve::script::projectResult(vm,
+                                              bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::NotFound,
+                                                                                "no traversable obstacle", "probeMode"),
+                                              candidateValue);
+        return eve::script::projectResult(vm, eve::Result<ClimbingCandidate>::success(candidates.value()[0]),
+                                          candidateValue);
+    });
     runtime.addFunc("tryBegin", [vm](ScriptClimbingRuntime* value, physics::World3D* world, float x, float y, float z,
                                      float forwardX, float forwardZ, float speed, int ignoredBodyId,
                                      std::int64_t tick) {
@@ -756,27 +781,7 @@ void Climbing::expose(ssq::Table& table) {
                                                         "climbing runtime handle is stale", "runtime"),
             anchorNodeValue);
     });
-    runtime.addFunc(
-        "advance", [vm](ScriptClimbingRuntime* value, physics::World3D* world, std::int64_t tick, float deltaSeconds) {
-            if (!value || !world || tick < 0)
-                return eve::script::projectResult(
-                    vm, bindingFailure<ClimbingAdvance>(eve::DiagnosticCode::InvalidArgument,
-                                                        "runtime, world, and non-negative tick are required", "advance"),
-                    advanceValue);
-            auto resolved = Climbing::resolve(value->reference);
-            if (!resolved.isBound())
-                return eve::script::projectResult(
-                    vm, bindingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle,
-                                                        "climbing runtime handle is stale", "runtime"),
-                    advanceValue);
-            auto duration = eve::Duration::fromSeconds(deltaSeconds);
-            if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
-            return eve::script::projectResult(
-                vm,
-                resolved->advance(
-                    *world, {eve::SimulationTick(static_cast<std::uint64_t>(tick)), std::move(duration).takeValue()}),
-                advanceValue);
-        });
+    exposeClimbingMotionBindings(runtime, vm);
     runtime.addFunc("cancel", [vm](ScriptClimbingRuntime* value, const std::string& reason, std::int64_t tick) {
         if (!value || tick < 0)
             return eve::script::projectResult(

@@ -456,6 +456,8 @@ public:
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    eve::Result<void> updateTextureFromResidentRgba8(Texture* texture, const GpuResidentBufferView& source, int width,
+                                                     int height) override;
     eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
                                           int height, std::span<const std::uint8_t> rgba,
                                           std::size_t bytesPerRow = 0) override;
@@ -646,7 +648,8 @@ public:
     void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
-                   float metalStrength, float emissiveStrength, int blendMode = 0) override;
+                   float metalStrength, float emissiveStrength, int blendMode = 0,
+                   int projectionMode = 0, float blendSharpness = 4.f) override;
     void endDecalPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -1370,7 +1373,7 @@ private:
         glm::mat4 model{1.f};
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};   // fade, normalStrength, roughStrength, metalStrength
-        glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissiveStrength, blendMode, pad, pad
+        glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissive, blendMode, projectionMode, sharpness
     };
     static_assert(sizeof(DecalInstanceData) == 112, "DecalInstanceData must be 112 bytes");
     struct DecalCameraUBO {
@@ -1391,7 +1394,9 @@ private:
         float roughnessStrength = 0.f;
         float metalStrength = 0.f;
         float emissiveStrength = 0.f;
-        int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
+        int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
+        int projectionMode = 0;  // 0 = planar, 1 = triplanar
+        float blendSharpness = 4.f;
     };
     struct DecalSetKey {
         GpuTexture *albedo = nullptr;
