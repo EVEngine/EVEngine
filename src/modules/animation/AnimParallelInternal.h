@@ -28,12 +28,16 @@ int parallelAnimationItems(std::size_t count, int requested, Body&& body) {
             }
         }
     };
-    {
-        std::vector<std::jthread> threads;
-        threads.reserve(workers - 1);
+    std::vector<std::thread> threads;
+    threads.reserve(workers - 1);
+    try {
         for (std::size_t i = 1; i < workers; ++i) threads.emplace_back(run);
-        run();
+    } catch (...) {
+        for (auto& thread : threads) thread.join();
+        throw;
     }
+    run();
+    for (auto& thread : threads) thread.join();
     // Report the first failing input, independent of completion order.
     for (const auto& error : errors)
         if (error) std::rethrow_exception(error);

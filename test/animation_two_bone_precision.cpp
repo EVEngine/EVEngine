@@ -38,8 +38,8 @@ TEST_CASE("animation.pose.twoBoneIkReachesTargetsWithoutIteration") {
         REQUIRE(pose.solveTwoBoneIK(&skeleton, 0, 1, 2, target[0], target[1], target[2], 1));
         float       error = 0;
         const auto& p     = pose.world(2);
-        error =
-            std::sqrt(std::pow(p.px - target[0], 2) + std::pow(p.py - target[1], 2) + std::pow(p.pz - target[2], 2));
+        error = std::sqrt(std::pow(p.px - target[0], 2.f) + std::pow(p.py - target[1], 2.f) +
+                          std::pow(p.pz - target[2], 2.f));
         CHECK(error < .0003f);
         const auto before = pose.world(1);
         REQUIRE(pose.solveTwoBoneIK(&skeleton, 0, 1, 2, target[0], target[1], target[2], 1));
