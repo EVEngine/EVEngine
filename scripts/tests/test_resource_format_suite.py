@@ -7,6 +7,11 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+ROOT = Path(__file__).parents[2]
+# Loading a script by path bypasses the normal sys.path entry for its directory,
+# so its own sibling imports (utf8_stdio) only resolve if the test puts that
+# directory on sys.path itself.
+sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location("suite", Path(__file__).parents[1] / "resource_format_suite.py")
 suite = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(suite)
@@ -18,7 +23,7 @@ class ResourceSuiteTests(unittest.TestCase):
             report = Path(directory) / "report.json"
             with patch.object(sys, "argv", ["suite", "--family", "font", "--report", str(report)] + extra):
                 code = suite.main()
-            return code, json.loads(report.read_text())
+            return code, json.loads(report.read_text(encoding="utf-8"))
 
     def test_inventory_is_not_execution(self):
         code, report = self.invoke([])
@@ -51,9 +56,10 @@ class ResourceSuiteTests(unittest.TestCase):
     def real_ctest(self, script, properties=""):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "case.py").write_text(script)
+            (root / "case.py").write_text(script, encoding="utf-8")
             (root / "CTestTestfile.cmake").write_text(
-                f'add_test(example "{Path(sys.executable).as_posix()}" "{(root / "case.py").as_posix()}")\n' + properties)
+                f'add_test(example "{Path(sys.executable).as_posix()}" "{(root / "case.py").as_posix()}")\n' + properties,
+                encoding="utf-8")
             return suite.run_cases(root, ["example"])
 
     def test_real_ctest_success_has_per_case_evidence(self):
@@ -88,7 +94,7 @@ class ResourceSuiteTests(unittest.TestCase):
             fixtures.mkdir(parents=True)
             (fixtures / "manifest.json").write_text(json.dumps({
                 "schema": "evengine.resource-format-fixtures", "version": 1,
-                "sha256": {"pattern.png": "0" * 64}}))
+                "sha256": {"pattern.png": "0" * 64}}), encoding="utf-8")
             (fixtures / "pattern.png").write_bytes(b"modified bytes")
             self.assertEqual(suite.fixture_errors(root), ["pattern.png"])
 

@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 FAMILIES = {
@@ -39,14 +40,15 @@ def inventory(root=ROOT):
         extensions = []
         loader = {"image": "image/ImageLoader.cpp", "sound": "sound/SoundLoader.cpp", "model": "model3d/ModelLoader.cpp"}.get(family)
         if loader:
-            extensions = sorted(set(re.findall(r'ext == "(\.[^"]+)"', (root / "src/modules" / loader).read_text())))
+            source = (root / "src/modules" / loader).read_text(encoding="utf-8")
+            extensions = sorted(set(re.findall(r'ext == "(\.[^"]+)"', source)))
         result[family] = {"advertised_resource_extensions": extensions, "tests": cases}
     return result
 
 
 def fixture_errors(root=ROOT):
     directory = root / "test/fixtures/resource_formats"
-    manifest = json.loads((directory / "manifest.json").read_text())
+    manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
     if manifest.get("schema") != "evengine.resource-format-fixtures" or manifest.get("version") != 1:
         raise ValueError("unsupported fixture manifest schema/version")
     errors = []
@@ -60,7 +62,8 @@ def fixture_errors(root=ROOT):
 
 
 def format_coverage(groups, results, root=ROOT):
-    contract = json.loads((root / "scripts/resource_format_contracts.json").read_text())
+    contracts_path = root / "scripts/resource_format_contracts.json"
+    contract = json.loads(contracts_path.read_text(encoding="utf-8"))
     if (set(contract) != {"schema", "version", "unknownFields", "formats"}
             or contract["schema"] != "evengine.resource-format-contracts"
             or contract["version"] != 1 or contract["unknownFields"] != "reject"):
@@ -179,7 +182,9 @@ def main():
         report.update(status="failed", error=str(error))
         code = 1
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    args.report.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"{report['status']}: {sum(len(g['tests']) for g in groups.values())} source tests; {args.report}")
     if report.get("error"):
         print(report["error"], file=sys.stderr)
@@ -189,4 +194,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import utf8_stdio
 
 
 def build_identity_onnx(path: Path, joints: int = 8, sensors: int = 16, pairs: int = 8, frames: int = 4) -> None:
@@ -71,4 +72,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     main()

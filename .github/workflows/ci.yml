@@ -151,6 +151,14 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/check_test_manifest.py
 
+      - name: Check examples layout and overview registration
+        # Every examples/<name>/ is either a runnable example (main.nut +
+        # config.nut) or explicitly exempted with a reason, owns a README.md and
+        # is listed in examples/README.md.  A new example therefore cannot dodge
+        # the runtime smoke test in the Linux lane by simply not being runnable.
+        timeout-minutes: 5
+        run: python3 scripts/check_examples.py
+
       - name: Check critical return-value diagnostics
         timeout-minutes: 5
         run: python3 scripts/check_nodiscard.py
@@ -174,7 +182,10 @@ jobs:
 
       - name: Test CI and repository scripts
         timeout-minutes: 10
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        # -X utf8 so the runner's own output never follows the host ANSI code
+        # page; on Linux CI this is already the default. Test modules are
+        # imported by the runner, so they cannot guard their own stdio.
+        run: python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
@@ -1228,10 +1239,14 @@ jobs:
           ctest --test-dir build/linux-debug --output-on-failure -j 2 \
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
-      - name: Smoke all examples (headless)
+      - name: Smoke all examples (headless, >=2s alive each)
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
+          # Contract for examples/README.md "示例规范": every runnable example
+          # must still be running MIN_RUN_SECONDS after launch, with no error
+          # markers in its log; dying early or exiting non-zero fails the job.
+          MIN_RUN_SECONDS: "2"
         run: |
           xvfb-run -a -s "-screen 0 1280x800x24" bash scripts/smoke_examples.sh
 

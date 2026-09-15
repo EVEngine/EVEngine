@@ -16,6 +16,7 @@ import http.server
 import os
 import sys
 from pathlib import Path
+import utf8_stdio
 
 
 class PlaygroundHandler(http.server.SimpleHTTPRequestHandler):
@@ -72,4 +73,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())
