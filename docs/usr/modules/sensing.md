@@ -91,3 +91,9 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 **源码：** [`src/modules/sensing/`](../../../src/modules/sensing/)  
 **设计文档：** [`docs/dev/感知与目标选择系统设计.md`](../../dev/感知与目标选择系统设计.md)  
 **相关测试：** [`test/sensing.cpp`](../../../test/sensing.cpp)、[`test/targeting.cpp`](../../../test/targeting.cpp)
+
+## 消费者迁移（Phase 3）
+
+- RTS `CombatFireSystem` 自动索敌已改为组装 `QuerySpec`（`QueryCircle` + tags/factions + `TruncateToMax`）；目标 priority / stance 仍在 RTS。
+- `perceptionFactsFrom(CandidateQueryResult)` 把有序候选投影为中立 `PerceptionFact`，供 npc_ai 等写入各自 PerceptionMemory；sensing 不依赖 npc_ai。
+- Weapon soft-lock / lock-on 获取路径尚未在 weapon 模块落地；落地时应走同一 QuerySpec/preset，aim assist 留游戏侧。

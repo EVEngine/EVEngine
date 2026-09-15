@@ -227,4 +227,41 @@ public:
 private:
     eve::script::RuntimeObjectRegistry<SensingWorld, SensingWorldHandleTag> worlds_;
 };
+
+/**
+ * @brief Neutral perception fact projected from a ranked sensing candidate.
+ *
+ * npc_ai / gameplay adapters copy these into their own memory types. Sensing
+ * does not depend on npc_ai and never assigns threat or primary target semantics.
+ */
+struct PerceptionFact {
+    std::string subjectId;
+    float       x            = 0.f;
+    float       y            = 0.f;
+    float       distance     = 0.f;
+    float       score        = 0.f;
+    std::string scoreReason;
+};
+
+/**
+ * @brief Projects ranked query results into adapter-neutral perception facts.
+ * @param result Borrowed ranked candidates from SensingWorld::query / executePreset.
+ * @return Owning facts in the same order as `result.ranked()`.
+ */
+[[nodiscard]] inline std::vector<PerceptionFact> perceptionFactsFrom(const CandidateQueryResult& result) {
+    std::vector<PerceptionFact> facts;
+    facts.reserve(result.size());
+    for (const auto& candidate : result.ranked()) {
+        PerceptionFact fact;
+        fact.subjectId   = candidate.id;
+        fact.x           = candidate.x;
+        fact.y           = candidate.y;
+        fact.distance    = candidate.distance;
+        fact.score       = candidate.score;
+        fact.scoreReason = candidate.scoreReason;
+        facts.push_back(std::move(fact));
+    }
+    return facts;
+}
+
 }  // namespace eve::sensing

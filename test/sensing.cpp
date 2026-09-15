@@ -199,3 +199,22 @@ TEST_CASE("sensing.worldHandleAndScriptResultContract") {
     )"));
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
+
+TEST_CASE("sensing.perceptionFactsFromProjectsRankedCandidates") {
+    SensingWorld w;
+    REQUIRE(w.upsert("a", 1.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(w.upsert("b", 3.f, 0.f, "red", "unit", "").ok());
+    QuerySpec spec;
+    spec.requiredTags = {"unit"};
+    spec.maxRange     = 10.f;
+    spec.maxCount     = 8;
+    spec.countPolicy  = CountPolicy::TruncateToMax;
+    spec.sortKey      = SortKey::DistanceAscending;
+    auto ranked = w.query(QueryOrigin{0.f, 0.f, std::nullopt}, spec);
+    REQUIRE(ranked.ok());
+    const auto facts = perceptionFactsFrom(ranked.value());
+    REQUIRE(facts.size() == 2u);
+    CHECK_EQ(facts[0].subjectId, std::string("a"));
+    CHECK_EQ(facts[1].subjectId, std::string("b"));
+    CHECK(facts[0].score > facts[1].score);
+}
