@@ -47,6 +47,8 @@ public:
     void stop(Source *s);
     /** @brief Stops every live source registered with this module. */
     void stopAll();
+    /** @brief Return the current number of caller- or handler-owned live sources. */
+    [[nodiscard]] int getSourceCount();
     /** @brief Pauses a source (no-op when s is null). */
     void pause(Source *s);
 

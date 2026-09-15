@@ -41,6 +41,7 @@
 
 #include "common/ECS.h"
 #include "common/Capability.h"
+#include "common/EntitySpatialResolver.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
 
@@ -240,6 +241,24 @@ TEST_CASE("Scene.identity.mountFindAndOwnershipContracts") {
     auto object = SceneObject::createObject("checked", "child");
     REQUIRE(object.ok());
     CHECK(object.value() != nullptr);
+}
+
+TEST_CASE("Scene.entitySpatialProviderResolvesWorldPoseAndRejectsUnknownBone") {
+    Scene* mod = Scene::create();
+    auto mounted = mod->mountAs("spatial-provider",
+                                node("root", {node("child").withPosition(2.f, 3.f, 4.f)})
+                                    .withPosition(10.f, 20.f, 30.f));
+    REQUIRE(mounted.ok());
+    auto object = SceneObject::createObject("spatial-provider", "child");
+    REQUIRE(object.ok());
+    auto pose = eve::resolveEntitySpatialPose(ecs::handle_of(object.value()));
+    REQUIRE(pose.ok());
+    CHECK(approxEq(static_cast<float>(pose.value().positionX), 12.f));
+    CHECK(approxEq(static_cast<float>(pose.value().positionY), 23.f));
+    CHECK(approxEq(static_cast<float>(pose.value().positionZ), 34.f));
+    auto bone = eve::resolveEntitySpatialPose(ecs::handle_of(object.value()), "hand_r");
+    CHECK(!bone.ok());
+    CHECK(static_cast<int>(bone.status().code()) == static_cast<int>(eve::StatusCode::Unsupported));
 }
 
 TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {

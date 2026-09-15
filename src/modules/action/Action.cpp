@@ -505,6 +505,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
     }
 
     std::vector<ActionTimelineEvent> timelineEvents;
+    std::vector<ActionActiveBlock>   activeBlocks;
     if (execution->definition_.timeline) {
         auto sampled = execution->definition_.timeline->sample(timelinePrevious, execution->totalElapsed_,
                                                                !execution->timelineStarted_);
@@ -514,6 +515,12 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
         }
         timelineEvents              = std::move(sampled).takeValue();
         execution->timelineStarted_ = true;
+        auto active = execution->definition_.timeline->activeBlocks(execution->totalElapsed_);
+        if (!active) {
+            failExecution(*execution, active.status(), tick, &transitions);
+            return failureFrom<ActionAdvance>(execution->status());
+        }
+        activeBlocks = std::move(active).takeValue();
     }
     if (execution->phase_ == ActionPhase::Completed) {
         ActionAdvance result{id,
@@ -521,7 +528,8 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                              std::move(transitions),
                              execution->phaseElapsed_,
                              execution->totalElapsed_,
-                             std::move(timelineEvents)};
+                             std::move(timelineEvents),
+                             std::move(activeBlocks)};
         return Result<ActionAdvance>::success(std::move(result), Status::success(StatusCode::Applied));
     }
     ActionAdvance result{id,
@@ -529,7 +537,8 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                          std::move(transitions),
                          execution->phaseElapsed_,
                          execution->totalElapsed_,
-                         std::move(timelineEvents)};
+                         std::move(timelineEvents),
+                         std::move(activeBlocks)};
     return Result<ActionAdvance>::success(std::move(result), pendingStatus());
 }
 

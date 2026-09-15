@@ -22,7 +22,7 @@ namespace eve::action {
 /** @brief Canonical schema identifier for persisted action timelines. */
 inline constexpr std::string_view kActionTimelineSchemaId = "eve.action.timeline";
 /** @brief Current action timeline schema version. */
-inline constexpr std::uint64_t kActionTimelineSchemaVersion = 3;
+inline constexpr std::uint64_t kActionTimelineSchemaVersion = 4;
 
 /** @brief Built-in deterministic cross-fade curve evaluated without asset callbacks. */
 enum class ActionBlendCurve : std::uint8_t {
@@ -96,6 +96,7 @@ struct ActionNotify {
     LogicalId     type;
     Duration      time = Duration::zero();
     Value::Object payload;
+    bool          enabled = true;
 
     auto operator<=>(const ActionNotify&) const = default;
 };
@@ -107,6 +108,7 @@ struct ActionNotifyState {
     Duration      start = Duration::zero();
     Duration      end   = Duration::zero();
     Value::Object payload;
+    bool          enabled = true;
 
     auto operator<=>(const ActionNotifyState&) const = default;
 };
@@ -144,6 +146,18 @@ struct ActionTimelineEvent {
     auto operator<=>(const ActionTimelineEvent&) const = default;
 };
 
+/** @brief Owning per-step sample of one currently active timeline state. */
+struct ActionActiveBlock {
+    LogicalId     trackId;
+    LogicalId     itemId;
+    LogicalId     type;
+    Duration      localTime = Duration::zero();
+    Duration      duration  = Duration::zero();
+    Value::Object payload;
+
+    auto operator<=>(const ActionActiveBlock&) const = default;
+};
+
 /**
  * @brief Canonical action timeline asset shared by runtime and editor.
  *
@@ -178,6 +192,13 @@ struct ActionTimeline {
      */
     [[nodiscard]] Result<std::vector<ActionTimelineEvent>> sample(Duration previous, Duration current,
                                                                   bool includePrevious = false) const;
+
+    /**
+     * @brief Sample every unmuted state active at one authoritative timeline time.
+     * @param time Timestamp in the closed timeline range; state ends remain exclusive.
+     * @return Owning blocks in stable track/item order, or a validation/range diagnostic.
+     */
+    [[nodiscard]] Result<std::vector<ActionActiveBlock>> activeBlocks(Duration time) const;
 
     /** @brief Encode the canonical schema as an owning deterministic Value. */
     [[nodiscard]] Result<Value> toValue() const;
