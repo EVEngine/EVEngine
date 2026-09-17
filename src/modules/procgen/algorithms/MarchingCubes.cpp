@@ -539,7 +539,7 @@ void MeshRecipeRegistry::registerBuiltins() {
 
     RecipeDescriptor rock = mesh("mesh.rock", "Rock");
     rock.params.push_back(ParamDescriptor::choice("baseShape", "Base Shape", "mixed",
-                                                  {"mixed", "round", "flat", "tall", "angular"}));
+                                                  {"mixed", "boulder", "slab", "block", "shard", "cliff"}));
     rock.params.push_back(ParamDescriptor::integer("subdivisions", "Subdivisions", 3, 0, 6));
     rock.params.push_back(ParamDescriptor::floating("radius", "Radius", 0.72f, 0.05f, 32.f, 0.01f));
     rock.params.push_back(ParamDescriptor::floating("scale", "Scale", 2.4f, 0.25f, 64.f, 0.05f));

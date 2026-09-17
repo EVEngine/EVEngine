@@ -7,8 +7,8 @@ persist mapSeed = 20260917
 persist mapCamera = null
 persist mapFocusX = 12.0
 persist mapFocusZ = 12.0
-persist mapHeight = 18.0
-persist mapTilt = 1.05 // ~60° from horizontal — high oblique top-down like the video
+persist mapHeight = 14.0
+persist mapTilt = 1.0 // ~57° from horizontal — high oblique top-down like the video
 persist mapYaw = 0.55
 persist mapAutoPan = true
 persist mapTime = 0.0
@@ -23,7 +23,7 @@ persist mapGrass = null
 persist mapHeightmap = null
 persist mapLayers = null
 persist mapCellSize = 0.12
-persist mapHeightScale = 5.4
+persist mapHeightScale = 7.2
 persist mapGrid = 193
 persist mapChunk = 64
 persist mapSeaLevel = 0.34
@@ -57,61 +57,101 @@ function sampleSlope(heightmap, gx, gy) {
     return sqrt(dx * dx + dy * dy);
 }
 
+function makeSurface(recipe, seedOffset, size) {
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return { albedo = null, normal = null };
+    local p = retain(paramsResult.value);
+    p.setSeed(mapSeed + seedOffset);
+    p.setSize(size, size);
+    p.setFloat("scale", 4.0);
+    p.setInt("octaves", 5);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    local albedo = null;
+    local normal = null;
+    local tr = procgen.generateTexture(recipe, p, gfx);
+    if (tr.ok) albedo = retain(tr.value);
+    local nr = procgen.generateNormalImage(recipe, p);
+    if (nr.ok) normal = retain(gfx.newTexture(nr.value, true, true));
+    return { albedo = albedo, normal = normal };
+}
+
+function makeDecorMaterial(albedo, normal, masked, cutoff) {
+    local mat = retain(gfx.newMaterial());
+    if (albedo != null) mat.setAlbedoTexture(albedo);
+    if (normal != null) mat.setNormalTexture(normal);
+    mat.setTint(1.0, 1.0, 1.0, 1.0);
+    mat.setMetallic(0.02);
+    mat.setRoughness(0.86);
+    if (masked) {
+        mat.setDoubleSided(true);
+        mat.setSurfaceMode("masked");
+        mat.setAlphaCutoff(cutoff);
+        mat.setAlphaTechnique("coverage");
+    }
+    return mat;
+}
+
 function makePrototype(kind, seedOffset) {
     local paramsResult = procgen.newParams();
     if (!paramsResult.ok) return null;
     local p = retain(paramsResult.value);
     p.setSeed(mapSeed + seedOffset);
+    local mesh = null;
+    local material = null;
     if (kind == "tree") {
-        p.setString("style", "lowpoly");
+        p.setString("style", "realistic");
         p.setString("branchAlgorithm", "weberPenn");
         p.setString("leafMode", "clusters");
-        p.setFloat("leafDensity", 0.62);
-        p.setFloat("height", 4.2);
-        p.setFloat("crownRadius", 1.45);
-        p.setInt("branchLevels", 2);
-        p.setInt("branchCount", 6);
-        p.setFloat("clusterSize", 0.32);
-        p.setFloat("clusterSeparation", 0.48);
-        p.setFloat("clusterLeafScale", 0.9);
-        p.setInt("clusterPlanes", 10);
-        p.setInt("clusterLeaves", 22);
-        p.setInt("clusterLimit", 64);
+        p.setFloat("leafDensity", 0.86);
+        p.setFloat("height", 4.8);
+        p.setFloat("crownRadius", 1.75);
+        p.setInt("branchLevels", 3);
+        p.setInt("branchCount", 8);
+        p.setFloat("clusterSize", 0.26);
+        p.setFloat("clusterSeparation", 0.40);
+        p.setFloat("clusterLeafScale", 0.78);
+        p.setInt("clusterPlanes", 13);
+        p.setInt("clusterLeaves", 32);
+        p.setInt("clusterLimit", 120);
         local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
         if (!meshResult.ok) return null;
-        return retain(meshResult.value);
-    }
-    if (kind == "bush") {
+        mesh = retain(meshResult.value);
+        local surf = makeSurface("tex.tree_atlas", seedOffset + 100, 512);
+        material = makeDecorMaterial(surf.albedo, null, true, 0.28);
+    } else if (kind == "bush") {
         p.setString("style", "mound");
         p.setString("leafMode", "mixed");
-        p.setFloat("height", 1.05);
-        p.setFloat("width", 1.55);
-        p.setInt("blobs", 10);
-        p.setFloat("leafDensity", 0.78);
-        p.setFloat("lobeScale", 0.58);
-        p.setFloat("irregularity", 0.6);
-        p.setInt("rings", 4);
-        p.setInt("radialSegments", 8);
-        p.setFloat("leafSize", 0.2);
-        p.setInt("twigs", 4);
-        p.setFloat("twigLength", 0.32);
+        p.setFloat("height", 1.25);
+        p.setFloat("width", 1.75);
+        p.setInt("blobs", 14);
+        p.setFloat("leafDensity", 0.88);
+        p.setFloat("lobeScale", 0.62);
+        p.setFloat("irregularity", 0.7);
+        p.setInt("rings", 5);
+        p.setInt("radialSegments", 10);
+        p.setFloat("leafSize", 0.18);
+        p.setInt("twigs", 6);
+        p.setFloat("twigLength", 0.34);
         local meshResult = procgen.generateMesh("mesh.bush", p, gfx);
         if (!meshResult.ok) return null;
-        return retain(meshResult.value);
+        mesh = retain(meshResult.value);
+        local surf = makeSurface("tex.foliage", seedOffset + 120, 256);
+        material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.32);
+    } else {
+        // cliff / stone
+        p.setInt("subdivisions", kind == "cliff" ? 3 : 2);
+        p.setString("baseShape", kind == "cliff" ? "cliff" : "boulder");
+        p.setFloat("variation", 0.55);
+        p.setFloat("radius", kind == "cliff" ? 1.05 : 0.55);
+        local meshResult = procgen.generateMesh("mesh.rock", p, gfx);
+        if (!meshResult.ok) return null;
+        mesh = retain(meshResult.value);
+        local recipe = kind == "cliff" ? "tex.moss" : "tex.rock";
+        local surf = makeSurface(recipe, seedOffset + 140, 256);
+        material = makeDecorMaterial(surf.albedo, surf.normal, false, 0.5);
     }
-    // cliff / boulder — chunkier, more angular like Cliff01 / Stone01 in the video
-    p.setInt("subdivisions", 2);
-    p.setString("baseShape", seedOffset % 2 == 0 ? "boulder" : "shard");
-    p.setFloat("variation", 0.55);
-    p.setFloat("radius", kind == "cliff" ? 1.15 : 0.55);
-    p.setFloat("flattening", kind == "cliff" ? 0.12 : 0.22);
-    p.setFloat("angularity", kind == "cliff" ? 0.62 : 0.4);
-    p.setFloat("erosion", 0.1);
-    p.setFloat("scale", 2.4);
-    p.setInt("octaves", 4);
-    local meshResult = procgen.generateMesh("mesh.rock", p, gfx);
-    if (!meshResult.ok) return null;
-    return retain(meshResult.value);
+    return { mesh = mesh, material = material };
 }
 
 function ensurePrototypes() {
@@ -122,15 +162,14 @@ function ensurePrototypes() {
     if (!("cliff" in mapPrototypes)) mapPrototypes.cliff <- makePrototype("cliff", 97);
 }
 
-function placeDecor(mesh, wx, wy, wz, sx, sy, sz, yaw, tintR, tintG, tintB) {
-    if (mesh == null) return;
+function placeDecor(proto, wx, wy, wz, sx, sy, sz, yaw) {
+    if (proto == null || proto.mesh == null) return;
     local ent = retain(eve.Renderable3D());
-    ent.setMesh(mesh);
+    ent.setMesh(proto.mesh);
     ent.setPosition(wx, wy, wz);
     ent.setScale(sx, sy, sz);
     ent.setYaw(yaw);
-    ent.setTint(tintR, tintG, tintB, 1.0);
-    ent.setRoughness(0.86);
+    if (proto.material != null) ent.setMaterial(proto.material);
     ent.setCastShadow(true);
     ent.setReceiveShadow(true);
     mapDecor.append(ent);
@@ -150,7 +189,7 @@ function buildGrassField(heightmap, layers) {
                 continue;
             if (sampleSlope(heightmap, gx, gy) > 1.8) continue;
             local chance = hash01(gx, gy, 19);
-            local dens = biome == "forest" || biome == "rainforest" ? 0.85 : 0.55;
+            local dens = biome == "forest" || biome == "rainforest" ? 0.92 : 0.68;
             if (chance > dens) continue;
             local jitterX = (hash01(gx, gy, 23) - 0.5) * mapCellSize * 1.6;
             local jitterZ = (hash01(gx, gy, 29) - 0.5) * mapCellSize * 1.6;
@@ -170,9 +209,9 @@ function buildGrassField(heightmap, layers) {
             else points.setColor(i, 0.38 + flower * 0.15, 0.72 + flower * 0.12, 0.22, 1.0);
             points.setStringAttribute(i, "asset", "pcg:detail");
             count += 1;
-            if (count >= 1800) break;
+            if (count >= 2800) break;
         }
-        if (count >= 1800) break;
+        if (count >= 2800) break;
     }
     if (count == 0) return;
     points.assignPointIds(mapSeed.tostring());
@@ -215,7 +254,7 @@ function buildGrassField(heightmap, layers) {
 
 function scatterDecorations(heightmap, layers) {
     ensurePrototypes();
-    local step = 4;
+    local step = 3;
     local half = (mapGrid - 1) * mapCellSize * 0.5;
     for (local gy = 4; gy < mapGrid - 4; gy += step) {
         for (local gx = 4; gx < mapGrid - 4; gx += step) {
@@ -231,40 +270,56 @@ function scatterDecorations(heightmap, layers) {
             local yaw = hash01(gx, gy, 13) * 6.2831853;
 
             // Cliffs hug steep slopes / coasts — like Cliff01 in the video hierarchy.
-            if (slope > 2.4 && chance < 0.55 && biome != "beach") {
+            if (slope > 2.2 && chance < 0.62 && biome != "beach") {
                 local s = 0.85 + jitter * 0.9;
                 placeDecor(mapPrototypes.cliff, wx, wy - 0.15, wz,
-                           s * (0.8 + jitter * 0.5), s * (0.9 + jitter * 0.6), s,
-                           yaw, 0.42, 0.44, 0.46);
+                           s * (0.8 + jitter * 0.5), s * (0.9 + jitter * 0.6), s, yaw);
                 continue;
             }
-            if (biome == "beach" && chance < 0.25) {
+            if (biome == "beach" && chance < 0.28) {
                 local s = 0.4 + jitter * 0.5;
-                placeDecor(mapPrototypes.stone, wx, wy, wz, s, s * 0.7, s, yaw, 0.62, 0.58, 0.5);
+                placeDecor(mapPrototypes.stone, wx, wy, wz, s, s * 0.7, s, yaw);
                 continue;
             }
-            if ((biome == "forest" || biome == "rainforest" || biome == "taiga") && chance < 0.7) {
-                local mesh = (jitter < 0.5) ? mapPrototypes.treeA : mapPrototypes.treeB;
+            if ((biome == "forest" || biome == "rainforest" || biome == "taiga") && chance < 0.82) {
+                local proto = (jitter < 0.5) ? mapPrototypes.treeA : mapPrototypes.treeB;
                 local scale = 0.55 + jitter * 0.65;
                 if (biome == "rainforest") scale *= 1.2;
                 if (biome == "taiga") scale *= 0.85;
-                local tintG = biome == "taiga" ? 0.40 : 0.52;
-                placeDecor(mesh, wx, wy, wz, scale, scale, scale, yaw, 0.26, tintG, 0.20);
-            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.28) {
+                placeDecor(proto, wx, wy, wz, scale, scale, scale, yaw);
+            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.36) {
                 local scale = 0.65 + jitter * 0.55;
-                placeDecor(mapPrototypes.bush, wx, wy, wz, scale, scale, scale, yaw, 0.32, 0.58, 0.22);
-            } else if ((biome == "desert" || biome == "alpine" || biome == "tundra") && chance < 0.32) {
+                placeDecor(mapPrototypes.bush, wx, wy, wz, scale, scale, scale, yaw);
+            } else if ((biome == "desert" || biome == "alpine" || biome == "tundra") && chance < 0.38) {
                 local scale = 0.5 + jitter * 0.75;
-                placeDecor(mapPrototypes.stone, wx, wy, wz, scale, scale * 0.75, scale, yaw,
-                           0.52, 0.50, 0.46);
-            } else if (biome == "forest" && chance < 0.9 && jitter > 0.72) {
+                placeDecor(mapPrototypes.stone, wx, wy, wz, scale, scale * 0.75, scale, yaw);
+            } else if (biome == "forest" && chance < 0.95 && jitter > 0.62) {
                 placeDecor(mapPrototypes.bush, wx, wy, wz, 0.55 + jitter * 0.4, 0.55 + jitter * 0.4,
-                           0.55 + jitter * 0.4, yaw, 0.28, 0.50, 0.20);
+                           0.55 + jitter * 0.4, yaw);
             }
         }
     }
     mapFocusX = half;
     mapFocusZ = half * 0.92;
+    // Prefer a land/vegetation pocket for the opening shot (high seaLevel leaves
+    // the geometric center as empty beach in many seeds).
+    local bestScore = -1.0;
+    for (local gy = 8; gy < mapGrid - 8; gy += 6) {
+        for (local gx = 8; gx < mapGrid - 8; gx += 6) {
+            local biome = layers.getBiomeName(gx, gy);
+            local score = 0.0;
+            if (biome == "forest" || biome == "rainforest") score = 3.0;
+            else if (biome == "grassland" || biome == "taiga" || biome == "wetland") score = 2.0;
+            else if (biome == "alpine" || biome == "tundra") score = 1.0;
+            else continue;
+            score += sampleSlope(heightmap, gx, gy) * 0.15;
+            if (score > bestScore) {
+                bestScore = score;
+                mapFocusX = gx * mapCellSize;
+                mapFocusZ = gy * mapCellSize;
+            }
+        }
+    }
 }
 
 function rebuildWorld() {
@@ -387,11 +442,11 @@ function clampFocus() {
 eve_init = function() {
     // Warm daylight sky like the screenshots (not cold gray).
     gfx.setBackgroundColor(0.42, 0.58, 0.72, 1.0);
-    gfx.setDirectionalLight(-0.55, 0.82, 0.25, 1.85, 1.55, 1.15);
+    gfx.setDirectionalLight(-0.62, 0.78, 0.22, 2.45, 2.05, 1.35);
 
     mapCamera = eve.Camera3D();
-    mapCamera.setFov(40.0);
-    mapCamera.setAmbient(0.34, 0.36, 0.32);
+    mapCamera.setFov(38.0);
+    mapCamera.setAmbient(0.18, 0.20, 0.22);
     mapCamera.setClipPlanes(0.2, 180.0);
     mapCamera.setActive(true);
 

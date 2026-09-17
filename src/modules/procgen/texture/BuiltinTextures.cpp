@@ -113,22 +113,26 @@ std::vector<TextureRecipeDef> buildDefs() {
             pbr));
     }
 
-    // --- tex.rock: warm boulder, larger-scale ridged ---
+    // --- tex.rock: warm boulder with deep crevices (darker, more contrast) ---
     {
         ColorRamp ramp;
-        ramp.add(0.00f, 60, 54, 46);
-        ramp.add(0.35f, 96, 88, 76);
-        ramp.add(0.65f, 132, 122, 104);
-        ramp.add(1.00f, 168, 158, 140);
+        ramp.add(0.00f, 38, 34, 28);
+        ramp.add(0.28f, 72, 64, 54);
+        ramp.add(0.55f, 108, 98, 82);
+        ramp.add(0.80f, 138, 126, 108);
+        ramp.add(1.00f, 168, 156, 136);
         PbrParams pbr;
-        pbr.roughnessLow = 0.6f;
-        pbr.roughnessHigh = 0.95f;
-        pbr.aoStrength = 1.3f;
+        pbr.roughnessLow = 0.62f;
+        pbr.roughnessHigh = 0.98f;
+        pbr.aoStrength = 1.7f;
+        pbr.normalStrength = 3.0f;
         defs.push_back(makeDef(
             "tex.rock", std::move(ramp),
             [](float u, float v, const NoiseField &n) {
-                float h = n.ridged(u * 0.8f, v * 0.8f, 4);
-                h       = h * 0.75f + 0.25f * n.fbm(u * 2.5f, v * 2.5f, 2);
+                float h = n.ridged(u * 0.9f, v * 0.9f, 5);
+                const float crack =
+                    std::pow(std::fabs(n.valueNoise(u * 2.2f, v * 2.2f) - 0.5f) * 2.f, 1.6f);
+                h = h * 0.62f + 0.22f * n.fbm(u * 2.8f, v * 2.8f, 3) + (1.f - crack) * 0.16f;
                 return h;
             },
             pbr));
@@ -404,6 +408,59 @@ std::vector<TextureRecipeDef> buildDefs() {
             pbr));
     }
 
+    // --- tex.bark: vertical fissured trunk bark (TreeMesh atlas left half) ---
+    {
+        ColorRamp ramp;
+        ramp.add(0.00f, 28, 18, 12);
+        ramp.add(0.22f, 58, 38, 24);
+        ramp.add(0.48f, 98, 68, 42);
+        ramp.add(0.72f, 138, 102, 64);
+        ramp.add(1.00f, 72, 48, 30);
+        PbrParams pbr;
+        pbr.roughnessLow = 0.58f;
+        pbr.roughnessHigh = 0.98f;
+        pbr.aoStrength = 1.85f;
+        pbr.normalStrength = 3.6f;
+        defs.push_back(makeDef(
+            "tex.bark", std::move(ramp),
+            [](float u, float v, const NoiseField &n) {
+                const float warp = n.warp(u, v, 2.1f, 3);
+                const float grain =
+                    0.5f + 0.5f * std::sin((u * 9.f + warp * 6.f) * 6.28318f);
+                const float ridge = n.ridged(u * 1.6f, v * 0.28f, 5);
+                const float crack =
+                    std::pow(std::fabs(n.valueNoise(u * 1.4f, v * 4.2f) - 0.5f) * 2.f, 1.55f);
+                const float flake = n.fbm(u * 3.2f + 1.7f, v * 0.9f, 3);
+                return grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f;
+            },
+            pbr));
+    }
+
+    // --- tex.moss: cool green-gray rock weathering with vivid moss patches ---
+    {
+        ColorRamp ramp;
+        ramp.add(0.00f, 36, 40, 32);
+        ramp.add(0.30f, 62, 72, 48);
+        ramp.add(0.52f, 78, 108, 52);
+        ramp.add(0.72f, 96, 132, 58);
+        ramp.add(1.00f, 148, 156, 138);
+        PbrParams pbr;
+        pbr.roughnessLow = 0.72f;
+        pbr.roughnessHigh = 1.f;
+        pbr.aoStrength = 1.7f;
+        pbr.normalStrength = 3.1f;
+        defs.push_back(makeDef(
+            "tex.moss", std::move(ramp),
+            [](float u, float v, const NoiseField &n) {
+                float rock = n.ridged(u * 0.95f, v * 0.95f, 5);
+                float moss = smoothstep(0.32f, 0.78f, n.fbm(u * 1.8f + 2.f, v * 1.8f, 4));
+                const float crack =
+                    std::pow(std::fabs(n.valueNoise(u * 2.4f, v * 2.4f) - 0.5f) * 2.f, 1.5f);
+                return rock * (1.f - moss * 0.55f) + moss * 0.62f + (1.f - crack) * 0.08f;
+            },
+            pbr));
+    }
+
     return defs;
 }
 
@@ -476,6 +533,163 @@ std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::stri
     return img;
 }
 
+/**
+ * @brief Lanceolate leaf coverage + interior shade for foliage cards / atlas.
+ *
+ * Stamps overlapping leaf silhouettes so SurfaceMode::Masked cuts organic edges
+ * instead of rendering solid green rectangles.
+ */
+void sampleFoliageCover(const NoiseField &noise, float u, float v, float scale, float &cover,
+                        float &shade) {
+    cover = 0.f;
+    shade = 0.f;
+    const float su = u * scale;
+    const float sv = v * scale;
+    // Dense overlapping leaf cells (voronoi sites act as leaf centres).
+    for (int oy = -1; oy <= 1; ++oy) {
+        for (int ox = -1; ox <= 1; ++ox) {
+            const int cx = int(std::floor(su * 2.6f)) + ox;
+            const int cy = int(std::floor(sv * 2.6f)) + oy;
+            const float px = float(cx) + noise.hash01(cx, cy);
+            const float py = float(cy) + noise.hash01(cx * 7 + 3, cy * 13 + 5);
+            float dx = su * 2.6f - px;
+            float dy = sv * 2.6f - py;
+            const float ang = (noise.hash01(cx * 3 + 1, cy * 5 + 2) - 0.5f) * 1.4f;
+            const float ca = std::cos(ang), sa = std::sin(ang);
+            const float rx = dx * ca - dy * sa;
+            const float ry = dx * sa + dy * ca;
+            // Pointed tip along +Y, wider shoulders below centre (lanceolate).
+            const float halfW = 0.38f * (1.f - 0.45f * std::max(0.f, ry));
+            const float d = (rx * rx) / std::max(1e-4f, halfW * halfW) + (ry * ry) / 0.55f;
+            const float mask = 1.f - smoothstep(0.72f, 1.05f, d);
+            if (mask <= cover) continue;
+            cover = mask;
+            const float vein = std::pow(
+                std::fabs(std::sin(ry * 9.f + noise.valueNoise(px * 0.4f, py * 0.4f) * 3.f)), 3.5f);
+            const float mott =
+                noise.fbm(px * 0.35f + u * 2.f, py * 0.35f + v * 2.f, 3);
+            shade = std::clamp(0.35f + mott * 0.45f + (1.f - vein) * 0.25f, 0.f, 1.f);
+        }
+    }
+    // Tiny gaps / chew marks so the mass does not read as a flat green slab.
+    const float chew = smoothstep(0.55f, 0.85f, noise.fbm(u * 6.f + 3.f, v * 6.f, 2));
+    cover *= 1.f - chew * 0.18f;
+}
+
+/**
+ * tex.tree_atlas — split atlas matching mesh.tree UV layout:
+ *   u in [0, 0.45] bark on the left, u in [0.55, 1] foliage on the right.
+ */
+std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    NoiseField noise;
+    noise.seed = ctx.seed;
+    if (ctx.seamless) {
+        noise.periodX = std::max(1, int(ctx.scale));
+        noise.periodY = noise.periodX;
+    }
+
+    ColorRamp barkRamp;
+    barkRamp.add(0.00f, 28, 18, 12);
+    barkRamp.add(0.22f, 58, 38, 24);
+    barkRamp.add(0.48f, 102, 72, 44);
+    barkRamp.add(0.72f, 148, 110, 70);
+    barkRamp.add(1.00f, 68, 46, 28);
+
+    ColorRamp leafRamp;
+    leafRamp.add(0.00f, 18, 42, 14);
+    leafRamp.add(0.28f, 40, 92, 28);
+    leafRamp.add(0.52f, 68, 138, 42);
+    leafRamp.add(0.78f, 118, 176, 58);
+    leafRamp.add(1.00f, 30, 64, 22);
+
+    const float invW = 1.f / float(std::max(1, ctx.width - 1));
+    const float invH = 1.f / float(std::max(1, ctx.height - 1));
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) * invW;
+            const float v = float(y) * invH;
+            Rgba8 color;
+            if (u < 0.48f) {
+                const float bu = u / 0.48f;
+                const float warp = noise.warp(bu * ctx.scale, v * ctx.scale, 2.1f, 3);
+                const float grain =
+                    0.5f + 0.5f * std::sin((bu * 9.f + warp * 6.f) * 6.28318f);
+                const float ridge = noise.ridged(bu * 1.6f * ctx.scale, v * 0.28f * ctx.scale, 5);
+                const float crack = std::pow(
+                    std::fabs(noise.valueNoise(bu * 1.4f * ctx.scale, v * 4.2f * ctx.scale) - 0.5f) *
+                        2.f,
+                    1.55f);
+                const float flake =
+                    noise.fbm(bu * 3.2f * ctx.scale + 1.7f, v * 0.9f * ctx.scale, 3);
+                const float h = std::clamp(
+                    grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f, 0.f, 1.f);
+                color = barkRamp.sampleBanded(h, ctx.colors);
+            } else if (u > 0.52f) {
+                const float fu = (u - 0.52f) / 0.48f;
+                float cover = 0.f, shade = 0.f;
+                sampleFoliageCover(noise, fu, v, ctx.scale, cover, shade);
+                color = leafRamp.sampleBanded(shade, ctx.colors);
+                // Hard-ish alpha so SurfaceMode::Masked cuts leaf silhouettes
+                // instead of rendering solid green quads.
+                color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+            } else {
+                // Narrow blend strip between bark and foliage regions.
+                color = {72, 86, 48, 255};
+            }
+            img->setPixel(x, y,
+                          image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
+                                                   color.a / 255.f});
+        }
+    }
+    return img;
+}
+
+/** tex.foliage — leaf-card atlas with alpha cutouts for masked bush/tree cards. */
+std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    NoiseField noise;
+    noise.seed = ctx.seed;
+    if (ctx.seamless) {
+        noise.periodX = std::max(1, int(ctx.scale));
+        noise.periodY = noise.periodX;
+    }
+
+    ColorRamp leafRamp;
+    leafRamp.add(0.00f, 18, 42, 14);
+    leafRamp.add(0.28f, 40, 92, 28);
+    leafRamp.add(0.52f, 68, 138, 42);
+    leafRamp.add(0.78f, 118, 176, 58);
+    leafRamp.add(1.00f, 30, 64, 22);
+
+    const float invW = 1.f / float(std::max(1, ctx.width - 1));
+    const float invH = 1.f / float(std::max(1, ctx.height - 1));
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) * invW;
+            const float v = float(y) * invH;
+            float cover = 0.f, shade = 0.f;
+            sampleFoliageCover(noise, u, v, ctx.scale, cover, shade);
+            Rgba8 color = leafRamp.sampleBanded(shade, ctx.colors);
+            color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+            img->setPixel(x, y,
+                          image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
+                                                   color.a / 255.f});
+        }
+    }
+    return img;
+}
+
 }  // namespace
 
 const std::vector<TextureRecipeDef> &builtinTextureDefs() {
@@ -506,6 +720,20 @@ void TextureRecipeRegistry::registerBuiltins() {
     };
     registerRecipe(cloudDescriptor("tex.cloud", "Cloud", false), genCloud);
     registerRecipe(cloudDescriptor("tex.cloud_shadow", "Cloud Shadow", true), genCloudShadow);
+    {
+        RecipeDescriptor atlas = RecipeDescriptor::grid("tex.tree_atlas", "Tree Atlas", "Nature", 1, 1);
+        atlas.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
+        atlas.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
+        atlas.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        registerRecipe(std::move(atlas), genTreeAtlas);
+    }
+    {
+        RecipeDescriptor foliage = RecipeDescriptor::grid("tex.foliage", "Foliage", "Nature", 1, 1);
+        foliage.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
+        foliage.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
+        foliage.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        registerRecipe(std::move(foliage), genFoliage);
+    }
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
         registerRecipe(makeTextureRecipeDescriptor(def), [def](const Params &params, std::string &error) {
             return makeFromHeightFn(params, error, def);

@@ -3163,7 +3163,8 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     TextureRecipeRegistry::instance().registerBuiltins();
     const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
                          "tex.ripple",  "tex.sky_cloud", "tex.wood", "tex.cloth",  "tex.ornament",
-                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud"};
+                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud",
+                         "tex.bark",    "tex.foliage", "tex.moss",   "tex.tree_atlas"};
     for (const char *id : ids) {
         Params p;
         p.setSeed(11);
