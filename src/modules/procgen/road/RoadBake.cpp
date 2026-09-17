@@ -250,17 +250,17 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
                               const RoadBakeOptions& options) {
     auto spline = edgeToSpline(edge);
     if (!spline.ok()) return Result<void>::failure(spline.status());
-    auto length = spline.value().lengthResult(24);
-    if (!length.ok()) return Result<void>::failure(length.status());
+    auto pathLength = spline.value().lengthResult(24);
+    if (!pathLength.ok()) return Result<void>::failure(pathLength.status());
 
     auto fromNode = network.nodeResult(edge.from);
     auto toNode   = network.nodeResult(edge.to);
     if (!fromNode.ok() || !toNode.ok())
         return bakeFail<void>(DiagnosticCode::NotFound, "edge endpoints missing during bake");
 
-    const float trimStart = std::min(fromNode.value().junctionRadius, length.value() * 0.35f);
-    const float trimEnd   = std::min(toNode.value().junctionRadius, length.value() * 0.35f);
-    if (trimStart + trimEnd >= length.value() - 0.5f)
+    const float trimStart = std::min(fromNode.value().junctionRadius, pathLength.value() * 0.35f);
+    const float trimEnd   = std::min(toNode.value().junctionRadius, pathLength.value() * 0.35f);
+    if (trimStart + trimEnd >= pathLength.value() - 0.5f)
         return Result<void>::success();  // fully inside junction; skip strip
 
     const int segments = std::max(4, options.pathSegmentsPerEdge);
@@ -271,8 +271,8 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
     std::vector<SplineFrameSample> trimmed;
     trimmed.reserve(frames.value().size());
     for (const auto& frame : frames.value()) {
-        const float d = frame.sample.normalizedDistance * length.value();
-        if (d + 1e-3f >= trimStart && d - 1e-3f <= length.value() - trimEnd) trimmed.push_back(frame);
+        const float d = frame.sample.normalizedDistance * pathLength.value();
+        if (d + 1e-3f >= trimStart && d - 1e-3f <= pathLength.value() - trimEnd) trimmed.push_back(frame);
     }
     if (trimmed.size() < 2) return Result<void>::success();
 
