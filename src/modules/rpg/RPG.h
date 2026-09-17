@@ -47,6 +47,7 @@ class Party;
 class GameState;
 class WorldState;
 class StoryEventSession;
+class RpgStorySession;
 struct WorldLootRequest;
 
 /** @brief RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。 */
@@ -205,6 +206,22 @@ public:
      * @reentrancy Construction invokes no callbacks.
      */
     StoryEventSession *newStoryEventSession();
+    /** @brief Strictly compile and atomically publish `.dnut` story content for the RPG dialect. */
+    [[nodiscard]] eve::Result<int> replaceStoriesFromDnut(const std::string &source, const std::string &path);
+    /** @brief Clear published `.dnut` story content during teardown or content rollback. */
+    void clearStories();
+    /** @brief Return the number of published `.dnut` stories. */
+    int getStoryCount() const;
+    /** @brief Return whether an exact `.dnut` story id exists. */
+    bool hasStory(const std::string &storyId) const;
+    /**
+     * @brief Create an empty caller-owned `.dnut` story session.
+     * @return Owned nullable session; caller destroys it after use.
+     * @ownership The caller owns the session, which borrows domain objects only for a call.
+     * @thread Create and use on the RPG simulation thread.
+     * @reentrancy Construction invokes no callbacks.
+     */
+    RpgStorySession *newStorySession();
     /** @brief Settle a victory using only rewards declared by the encounter catalogue. */
     [[nodiscard]] eve::Result<BattleVictoryReceipt>
     settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,

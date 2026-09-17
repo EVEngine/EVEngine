@@ -20,6 +20,7 @@
 #include "rpg/Skill.h"
 #include "rpg/StatusSystem.h"
 #include "rpg/StoryEvent.h"
+#include "rpg/RpgDialect.h"
 #include "rpg/SkillSystem.h"
 #include "rpg/Settlement.h"
 #include "rpg/ShopCatalogue.h"
@@ -242,6 +243,13 @@ bool RPG::hasStoryEvent(const std::string &eventId) const {
     return StoryEventCatalogue::contains(eventId);
 }
 StoryEventSession *RPG::newStoryEventSession() { return new StoryEventSession(); }
+eve::Result<int> RPG::replaceStoriesFromDnut(const std::string &source, const std::string &path) {
+    return RpgStoryCatalogue::replaceFromDnutStrict(source, path);
+}
+void RPG::clearStories() { RpgStoryCatalogue::clear(); }
+int RPG::getStoryCount() const { return RpgStoryCatalogue::count(); }
+bool RPG::hasStory(const std::string &storyId) const { return RpgStoryCatalogue::contains(storyId); }
+RpgStorySession *RPG::newStorySession() { return new RpgStorySession(); }
 eve::Result<BattleVictoryReceipt>
 RPG::settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,
                             const std::string &encounterId, const std::string &mapId,
@@ -973,6 +981,64 @@ void RPG::expose(ssq::Table &table) {
         return session ? static_cast<float>(session->getDuration()) : 0.0F;
     });
 
+    auto storySession = table.addClass<RpgStorySession>(
+        "RPGStorySession", std::function<RpgStorySession *()>([]() { return new RpgStorySession(); }), true);
+    storySession.addFunc("begin", [vm](RpgStorySession *session, const std::string &storyId, GameState *gameState,
+                                       Party *party, inventory::Bag *bag, inventory::EquipmentSet *equipment) {
+        if (!session)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
+                        "session", {}, "rpg.squirrel")));
+        return eve::script::projectResult(vm, session->begin(storyId, gameState, party, bag, equipment));
+    });
+    storySession.addFunc("advance", [vm](RpgStorySession *session) {
+        if (!session)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
+                        "session", {}, "rpg.squirrel")));
+        return eve::script::projectResult(vm, session->advance());
+    });
+    storySession.addFunc("select", [vm](RpgStorySession *session, const std::string &routeLabel) {
+        if (!session)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
+                        "session", {}, "rpg.squirrel")));
+        return eve::script::projectResult(vm, session->select(routeLabel));
+    });
+    storySession.addFunc("stop", &RpgStorySession::stop);
+    storySession.addFunc("isActive", &RpgStorySession::isActive);
+    storySession.addFunc("isBlocked", &RpgStorySession::isBlocked);
+    storySession.addFunc("getStoryId", &RpgStorySession::getStoryId);
+    storySession.addFunc("getStepKind", &RpgStorySession::getStepKind);
+    storySession.addFunc("getChoiceLabelCount", [](RpgStorySession *session) -> int {
+        return session ? static_cast<int>(session->getChoiceLabels().size()) : 0;
+    });
+    storySession.addFunc("getChoiceLabel", [](RpgStorySession *session, int index) -> std::string {
+        if (!session) return {};
+        const auto labels = session->getChoiceLabels();
+        if (index < 0 || static_cast<std::size_t>(index) >= labels.size()) return {};
+        return labels[static_cast<std::size_t>(index)];
+    });
+    storySession.addFunc("getStepString", [](RpgStorySession *session, const std::string &fieldName) -> std::string {
+        if (!session) return {};
+        const eve::Value* value = session->getStepPayload().find(fieldName);
+        return value && value->isString() ? value->asString() : std::string{};
+    });
+    storySession.addFunc("getStepNumber", [](RpgStorySession *session, const std::string &fieldName) -> float {
+        if (!session) return 0.0F;
+        const eve::Value* value = session->getStepPayload().find(fieldName);
+        if (!value || !value->isNumeric()) return 0.0F;
+        return value->isInt64() ? static_cast<float>(value->asInt()) : static_cast<float>(value->asDouble());
+    });
+    storySession.addFunc("getStepBool", [](RpgStorySession *session, const std::string &fieldName) -> bool {
+        if (!session) return false;
+        const eve::Value* value = session->getStepPayload().find(fieldName);
+        return value && value->isBool() && value->asBool();
+    });
+
     auto saveSession = table.addClass<RPGSaveSession>(
         "RPGSaveSession", std::function<RPGSaveSession *()>([]() { return new RPGSaveSession(); }), true);
     saveSession.addFunc("bind",
@@ -1246,6 +1312,20 @@ void RPG::expose(ssq::Class &cls) {
     cls.addFunc("getStoryEventCount", &RPG::getStoryEventCount);
     cls.addFunc("hasStoryEvent", &RPG::hasStoryEvent);
     cls.addFunc("newStoryEventSession", &RPG::newStoryEventSession);
+    cls.addFunc("replaceStoriesFromDnut", [vm](RPG *rpg, const std::string &source, const std::string &path) {
+        if (!rpg)
+            return eve::script::projectResult(
+                vm, eve::Result<int>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "replaceStoriesFromDnut requires an RPG module", "rpg")),
+                [](int count) { return eve::Value(count); });
+        return eve::script::projectResult(vm, rpg->replaceStoriesFromDnut(source, path),
+                                          [](int count) { return eve::Value(count); });
+    });
+    cls.addFunc("clearStories", &RPG::clearStories);
+    cls.addFunc("getStoryCount", &RPG::getStoryCount);
+    cls.addFunc("hasStory", &RPG::hasStory);
+    cls.addFunc("newStorySession", &RPG::newStorySession);
     cls.addFunc("settleEncounterVictory",
                 [vm](RPG *rpg, RPGActor *actor, Tracker *tracker, GameState *gameState,
                      const std::string &encounterId, const std::string &mapId,

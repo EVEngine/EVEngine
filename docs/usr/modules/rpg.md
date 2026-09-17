@@ -145,6 +145,118 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 缺失括号、尾随文本、非法 token 与非有限数值会拒绝注册；C++
 `evaluateFormulaChecked()` 在运行时除零返回结构化失败，兼容求值入口投影为 `0`。
 
+## `.dnut` 剧情脚本（RPG 方言）
+
+`.dnut` 是引擎的作者序列语言。**RPG 方言**由 `rpg` 模块注册词表，用一份文本描述
+剧情事件的移动、动画、选取、技能、属性、物品与装备。语言核心（词法、编译、
+跨帧解释器）在 L1 模块 `dnut_interpreter`，RPG 只贡献**词表**与领域 handler。
+
+### 最小例子
+
+```
+story village.arrival {
+    move actor=hero x=10 y=4 duration=0.5
+    skill actor=hero learn=fireball
+    attribute actor=hero name=attack op=add value=5
+    item add=potion count=2
+    equipment actor=hero equip=iron-sword slot=weapon
+    flag name=village.visited state=true
+    message text=Arrived
+}
+```
+
+### 步骤词表
+
+| 步骤 | 字段 | 形状 | 谁执行 |
+| --- | --- | --- | --- |
+| `move` | `actor` `x` `y` `[duration]` | 宿主呈现 | 呈现层（avatar/地图），脚本确认 |
+| `animation` | `target` `clip` `[loop]` `[hold]` | 宿主呈现 | 动画层 |
+| `select` | `object` `[prompt]` | 宿主呈现 | 交互层 |
+| `camera` | `x` `y` `[duration]` | 宿主呈现 | 相机 |
+| `dialogue` | `id` | 宿主呈现 | dialogue 模块 |
+| `message` | `text` | 宿主呈现 | UI |
+| `skill` | `actor` + (`learn` \| `forget`) | 立即 | `RPGActor::learnSkill` / `forgetSkill` |
+| `attribute` | `actor` `name` `op(set\|add\|sub\|mul)` `value` | 立即 | `RPGActor` 基础属性 |
+| `item` | (`add` \| `remove`) `[count=1]` | 立即 | `inventory::Bag` |
+| `equipment` | `actor` + (`equip` `slot` \| `unequip`) | 立即 | `inventory::EquipmentSet` |
+| `flag` | `name` `state` | 立即 | `GameState` 开关 |
+| `variable` | `name` `op(set\|add)` `value` | 立即 | `GameState` 变量 |
+
+控制流：`if <条件> { … } else { … }`、`choice { option "标签" [when <条件>] { … } }`、
+`call <storyId>`、`wait <秒>`、`end`。
+
+条件是 `变量 运算符 字面量`，可用 `&&`、`||`、`!` 和括号组合。变量名用点号寻址
+`GameState`：`switch.<名>`、`variable.<名>`、`self.<scope>.<名>`。
+
+### 使用
+
+```squirrel
+local rpg = getModInst("rpg");
+rpg.replaceStoriesFromDnut(fileContent, "village.dnut");   // 严格校验 + 原子替换
+
+local session = rpg.newStorySession();
+local result  = session.begin("village.arrival", gs, party, bag, equipment);
+if (!result.ok) { print(result.status.summary + "\n"); return; }
+
+while (session.isActive()) {
+    local kind = session.getStepKind();
+    if (kind == "move") {
+        // 呈现层负责移动；完成后确认
+        moveActor(session.getStepString("actor"), session.getStepNumber("x"), session.getStepNumber("y"));
+        session.advance();
+    } else if (kind == "choice") {
+        session.select(session.getChoiceLabel(0));
+    } else if (kind == "message") {
+        showMessage(session.getStepString("text"));
+        session.advance();
+    } else {
+        session.advance();
+    }
+}
+```
+
+### 脚本面（Squirrel）
+
+`eve.rpg` 上的方法：
+
+| 方法 | 作用 |
+| --- | --- |
+| `replaceStoriesFromDnut` | 严格编译并原子替换 `.dnut` 故事目录 |
+| `clearStories` | 清空已发布的故事 |
+| `getStoryCount` | 已发布故事数量 |
+| `hasStory` | 某个 story id 是否存在 |
+| `newStorySession` | 新建一个 `RPGStorySession` |
+
+`RPGStorySession` 上的方法：
+
+| 方法 | 作用 |
+| --- | --- |
+| `begin` | 启动一个 story，运行到第一个挂起点 |
+| `advance` | 确认当前宿主呈现的步骤并继续 |
+| `select` | 按标签回答 `choice` 步骤 |
+| `stop` | 停止并清空会话 |
+| `isActive` | 是否有 story 正在运行 |
+| `isBlocked` | 是否挂起等待确认 |
+| `getStoryId` | 当前 story id |
+| `getStepKind` | 当前步骤类型 |
+| `getChoiceLabelCount` | 当前 `choice` 的选项数 |
+| `getChoiceLabel` | 按序号取选项标签 |
+| `getStepString` | 取当前步骤的字符串字段 |
+| `getStepNumber` | 取当前步骤的数值字段 |
+| `getStepBool` | 取当前步骤的布尔字段 |
+
+### 语义要点
+
+- **严格编译**：字段名、字段类型、跨字段规则（`learn` 与 `forget` 恰有其一）在
+  `replaceStoriesFromDnut` 时报错；含错误的文档**不替换**上一份目录。
+- **宿主呈现的步骤**没有 C++ handler：运行时会挂起，脚本必须 `advance()`；
+  `choice` 必须用 `select(标签)` 回答，`advance()` 会被拒绝。
+- **领域步骤**在运行时立即执行；失败（例如袋中不足）会让 `begin`/`advance` 返回
+  结构化失败并保持游标，不会静默跳过。
+- **完成事实**：不可重复的 story 完成后把 `story.<id>.completed` 写进 `GameState`，
+  再次 `begin` 会失败；`repeatable` story 每次重新开始。
+- **快照**：`begin` 时快照整份目录，热替换不会让活动会话悬空。
+
 ## 常见问题
 
 - 只注册 Skill 未注册其引用的 Effect。
