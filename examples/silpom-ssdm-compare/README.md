@@ -6,8 +6,8 @@ SSDM** on extruded brick cards.
 | Card | Technique | What you should notice |
 | --- | --- | --- |
 | Left (warm) | Classic **POM** | Internal brick depth; **straight geometric** silhouette |
-| Mid (green) | **Full SilPOM** | Solid planar heightfield march + soft border feather + height normals + self-shadow + `FragDepth` → **jagged brick silhouette** (no horizon-trim discard) |
-| Right (cool) | **Full planar SSDM** | Same solid planar heightfield march + soft border limb + `FragDepth` from the geometric hit → **continuous extruded outline** |
+| Mid (green) | **Full SilPOM** | Steep POM + **chart-border** limb discard + height normals + self-shadow + `FragDepth` → **jagged brick silhouette** (no interior horizon punch-through) |
+| Right (cool) | **Full planar SSDM** | Model-space heightfield march; side-face misses discard so brick caps form a **continuous extruded outline** |
 
 Cards are **extruded slabs** (local Z = height axis). That is the correct domain
 for silhouette-changing relief. Cylinders are not — a wrapped UV chart cannot
@@ -48,16 +48,16 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
   `ssdm.glsl` (steep POM, soft coverage, horizon trim, height normals,
   self-shadow, planar heightfield march, screen-warp helpers)
 - Demo shader is self-contained (`shaders/compare.frag`):
-  - **SilPOM / planar SSDM** share one solid model-space heightfield march +
-    soft border feather (no coverage/`horizon` discard — that punched 镂空
-    through mortar) + height normals + self-shadow + `gl_FragDepth`
-  - Misses `chartFill` at the fragment UV so cliff tunnels do not open holes
+  - **SilPOM**: steep POM + soft chart-**border** limb discard (interior stays
+    opaque — full-face horizon trim punched 镂空) + height normals + self-shadow
+    + `gl_FragDepth`
+  - **SSDM**: model-space heightfield march; **front** misses `chartFill` (solid
+    mortar), **side** misses discard so brick caps extrude the silhouette
 - Meshes: thin front card for classic POM; extruded slab for SilPOM/SSDM
 - `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO) so relief never
   punches holes in the floor
-- Grazing views can still read as thin shells: a heightfield has no real
-  vertical brick walls, so mid (more edge-on in the default orbit) looks
-  hollower than right even when both cards use the same mode
+- Height texture uses moderate soft brick ramps (steep enough for edge pop,
+  soft enough to limit cliff-tunnel shells)
 
 ## Honesty bound
 

@@ -1,9 +1,9 @@
 // Full SilPOM vs full SSDM — planar extruded brick cards.
 //
 // Left  = classic POM   (parallax only; geometric silhouette)
-// Mid   = SilPOM        (solid planar heightfield march + soft border feather +
-//                        height normals + self-shadow + FragDepth)
-// Right = SSDM          (same solid planar heightfield march; soft border limb)
+// Mid   = SilPOM        (steep POM + chart-border limb discard + FragDepth)
+// Right = SSDM          (planar heightfield march; side misses discard for
+//                        extruded brick outline)
 //
 // Cards are extruded slabs (local Z = height axis) so SilPOM/SSDM can change
 // the silhouette. Cylinders are the wrong domain for these algorithms.
@@ -24,13 +24,13 @@ persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
 persist cmpTexVer = 0
-const CMP_TEX_VER = 5
+const CMP_TEX_VER = 6
 persist cmpShaderVer = 0
-const CMP_SHADER_VER = 7
-persist cmpYaw = 0.35
-persist cmpPitch = 0.28
+const CMP_SHADER_VER = 8
+persist cmpYaw = 0.42
+persist cmpPitch = 0.30
 persist cmpOrbit = false
-persist cmpScale = 0.08
+persist cmpScale = 0.10
 persist cmpMinLayers = 16.0
 persist cmpMaxLayers = 48.0
 persist cmpFocus = 2
@@ -58,20 +58,19 @@ function brickColor(u, v) {
     local ou = odd ? (bu + 0.5) : bu;
     local fx = fabs(ou - floor(ou) - 0.5);
     local fy = fabs(bv - floor(bv) - 0.5);
-    // Very wide soft ramps: heightfields have no vertical walls. Steep cliffs
-    // make grazing rays slip past brick sides and read as 镂空 shells —
-    // especially on the center panel, which the default camera sees more edge-on.
-    local mx = (fx - 0.12) / 0.38;
-    local my = (fy - 0.10) / 0.38;
+    // Moderate soft ramps: steep enough for clear brick caps / edge protrusion,
+    // soft enough that grazing rays still catch slopes (hard cliffs = 镂空 shells).
+    local mx = (fx - 0.28) / 0.16;
+    local my = (fy - 0.26) / 0.16;
     if (mx < 0.0) mx = 0.0; if (mx > 1.0) mx = 1.0;
     if (my < 0.0) my = 0.0; if (my > 1.0) my = 1.0;
     mx = mx * mx * (3.0 - 2.0 * mx);
     my = my * my * (3.0 - 2.0 * my);
     local mortar = mx;
     if (my > mortar) mortar = my;
-    local hBrick = 0.42 + 0.22 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
-    local h = (1.0 - mortar) * hBrick + mortar * 0.18;
-    if (mortar > 0.65) return [0.52, 0.50, 0.46, h];
+    local hBrick = 0.58 + 0.36 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
+    local h = (1.0 - mortar) * hBrick + mortar * 0.08;
+    if (mortar > 0.72) return [0.52, 0.50, 0.46, h];
     return [0.70 + 0.12 * hBrick, 0.32 + 0.08 * hBrick, 0.24 + 0.05 * hBrick, h];
 }
 
@@ -170,7 +169,7 @@ function makeCard(mode, x) {
     ent.setTint(1.0, 1.0, 1.0, 1.0);
     ent.setCastShadow(false);
     ent.setReceiveShadow(false);
-    local thick = (mode == 0) ? 0.02 : clampf(cmpScale * 1.25, 0.04, 0.20);
+    local thick = (mode == 0) ? 0.02 : clampf(cmpScale * 2.8, 0.10, 0.32);
     ent.setPosition(x, 1.0, 0.0);
     ent.setScale(1.0, 1.0, thick);
     ent.setYaw(-0.15);
@@ -189,7 +188,7 @@ function syncPanel(panel) {
     panel.shader.sendFloat("feather", 0.02);
     panel.shader.sendFloat("horizon", 0.0);
     if (panel.mode > 0.5) {
-        local thick = clampf(asFloat(cmpScale) * 1.25, 0.04, 0.20);
+        local thick = clampf(asFloat(cmpScale) * 2.8, 0.10, 0.32);
         panel.ent.setScale(1.0, 1.0, thick);
     }
 }
@@ -214,7 +213,7 @@ eve_init = function() {
         cmpTexVer = CMP_TEX_VER;
     }
     // Persisted panels keep the previous shader program; bump forces a clean rebuild
-    // so SilPOM no longer runs the old horizon-trim discard path (镂空).
+    // so SilPOM gets chart-border limb discard and SSDM side-miss silhouette back.
     if (cmpShaderVer != CMP_SHADER_VER) {
         cmpPom = null;
         cmpSil = null;
@@ -256,7 +255,7 @@ eve_init = function() {
     cmpSil.ent.setPosition(0.0, 1.0, 0.0);
     cmpSsdm.ent.setPosition(2.8, 1.0, 0.0);
     cmpPom.ent.setScale(1.0, 1.0, 0.02);
-    local thick = clampf(cmpScale * 1.25, 0.04, 0.20);
+    local thick = clampf(cmpScale * 2.8, 0.10, 0.32);
     cmpSil.ent.setScale(1.0, 1.0, thick);
     cmpSsdm.ent.setScale(1.0, 1.0, thick);
     cmpPom.ent.setYaw(-0.15);
@@ -267,7 +266,7 @@ eve_init = function() {
     updateCamera();
     cmpReady = true;
     print("Full SilPOM vs SSDM: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
-    print("Left=POM  Mid=SilPOM (solid height march)  Right=SSDM (planar height march)\n");
+    print("Left=POM  Mid=SilPOM (border limb)  Right=SSDM (side-hit silhouette)\n");
 };
 
 eve_asset_reload <- function(path) {

@@ -3,11 +3,11 @@
 //
 // pc.data[0] mode:
 //   0 = classic POM  — parallax only; geometric silhouette unchanged
-//   1 = SilPOM       — solid geometric heightfield march + soft card-border
-//                      feather + height normals + self-shadow + FragDepth
-//                      (NO horizon-trim discard — that punched 镂空 through mortar)
-//   2 = SSDM         — same solid planar heightfield march + chart softCoverage
-//                      as the silhouette limb signal + FragDepth
+//   1 = SilPOM       — steep POM + soft chart-BORDER limb discard + height
+//                      normals + self-shadow + FragDepth
+//                      (limb only at UV rim — interior horizon discard = 镂空)
+//   2 = SSDM         — planar heightfield march + FragDepth; side-face misses
+//                      discard so brick caps form the extruded outline
 //
 // Height.r: 1 = raised toward the card normal (+Z in model space).
 // Card mesh is a slab with local XY in [-1,1] → UV, local Z in [0,1]
@@ -232,20 +232,23 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
     return vec4(0.0);
 }
 
-// When the heightfield march tunnels past a steep cliff (or a side-face ray
-// never crosses the surface), shade the chart height at this fragment instead
-// of discard — otherwise mortar / cliff gaps read as 镂空 shells.
-void chartFill(vec3 Nw, float scale, float minLayers, float maxLayers,
-               vec3 lightTS, inout vec2 uv, inout vec3 N, inout float coverage,
-               inout float fragDepth, inout float shadow) {
-    // Accept any face: grazing views rasterize slab sides, and those rays are
-    // exactly where cliff tunnels show the background if we require +Z only.
+// Front-face miss fill: keep mortar solid (no interior 镂空). Do NOT use this
+// on slab sides — filling sides flattens the extruded brick silhouette.
+void chartFillFront(vec3 Nw, float scale, float minLayers, float maxLayers,
+                    vec3 lightTS, inout vec2 uv, inout vec3 N, inout float coverage,
+                    inout float fragDepth, inout float shadow) {
     uv = clamp(vUV, 0.0, 1.0);
     float h = heightAt(uv);
     coverage = 1.0;
     fragDepth = fragDepthFromLocal(vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, h));
     N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
     shadow = selfShadow(uv, 1.0 - h, lightTS, scale, minLayers, maxLayers);
+}
+
+bool isFrontFace(vec3 Nw) {
+    // Model +Z is the chart front; sides have |Nz| near 0 in model space.
+    vec3 frontW = normalize(mat3(ubo.model) * vec3(0.0, 0.0, 1.0));
+    return abs(dot(normalize(Nw), frontW)) > 0.55;
 }
 
 vec3 shadeLit(vec3 albedo, vec3 N, vec3 V, float shadow) {
@@ -292,27 +295,63 @@ void main() {
         local.z = mix(local.z, heightAt(uv), 0.85);
         fragDepth = fragDepthFromLocal(local);
         shadow = selfShadow(uv, hit.z, lightTS, scale, minLayers, maxLayers);
+    } else if (mode < 1.5) {
+        // Full SilPOM: steep POM + jagged chart-BORDER silhouette.
+        // Discard only when POM walks off the chart (or soft limb at the rim).
+        // Never apply interior horizonTrim — that punched mortar 镂空.
+        vec4 hit = pomHit(vUV, viewTS, scale, minLayers, maxLayers);
+        uv = hit.xy;
+        float featherAmt = max(feather, 0.018);
+        coverage = softCoverage(uv, featherAmt);
+        // Mild rim height gate: only near the card border, prefer raised bricks
+        // so the silhouette reads as protruding brick caps (not a flat rectangle).
+        float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
+        if (edgeDist < featherAmt * 2.5) {
+            float h = heightAt(clamp(uv, 0.0, 1.0));
+            float ndotv = abs(dot(Nw, V));
+            float rimGate = mix(0.22, 0.55, clamp(1.0 - ndotv / 0.45, 0.0, 1.0));
+            if (h < rimGate)
+                coverage = 0.0;
+        }
+        if (uv.x < -0.01 || uv.y < -0.01 || uv.x > 1.01 || uv.y > 1.01 ||
+            coverage < 0.02)
+            discard;
+        N = normalize(TBN * heightNormalTS(clamp(uv, 0.0, 1.0), scale));
+        vec3 local = localFromWorld(vWorldPos);
+        local.z = mix(local.z, heightAt(clamp(uv, 0.0, 1.0)), 0.92);
+        fragDepth = fragDepthFromLocal(local);
+        shadow = selfShadow(clamp(uv, 0.0, 1.0), hit.z, lightTS, scale,
+                            minLayers, maxLayers);
+        uv = clamp(uv, 0.0, 1.0);
     } else {
-        // SilPOM (mode 1) and planar SSDM (mode 2) share one solid heightfield
-        // march. Soft coverage only dims the border; it must NEVER discard, or
-        // mortar / cliff tunnels read as 镂空. Misses always chart-fill.
+        // Full planar SSDM — geometric heightfield march through the slab.
+        // Front misses chart-fill (solid mortar). Side misses discard so only
+        // heightfield hits remain → extruded brick outline on the silhouette.
         vec3 camL = localFromWorld(vCameraPos);
         vec3 fragL = localFromWorld(vWorldPos);
         vec3 dirL = normalize(fragL - camL);
         vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
+        bool front = isFrontFace(Nw);
         if (hit.z < 0.5) {
-            chartFill(Nw, scale, minLayers, maxLayers, lightTS,
-                      uv, N, coverage, fragDepth, shadow);
+            if (!front)
+                discard;
+            chartFillFront(Nw, scale, minLayers, maxLayers, lightTS,
+                           uv, N, coverage, fragDepth, shadow);
         } else {
             uv = clamp(hit.xy, 0.0, 1.0);
-            // Border limb signal only — keep every interior sample opaque.
+            float featherAmt = max(feather, 0.012);
             float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-            float featherAmt = (mode < 1.5) ? max(feather, 0.02) : max(feather, 0.015);
-            coverage = (edgeDist < 0.04) ? max(softCoverage(uv, featherAmt), 0.35) : 1.0;
+            // Soft limb at chart rim only — interior stays fully opaque.
+            coverage = (edgeDist < featherAmt * 2.0)
+                           ? max(softCoverage(uv, featherAmt), front ? 0.40 : 0.08)
+                           : 1.0;
+            if (!front && coverage < 0.05)
+                discard;
             vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
             fragDepth = fragDepthFromLocal(hitLocal);
             N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-            shadow = selfShadow(uv, 1.0 - hit.w, lightTS, scale, minLayers, maxLayers);
+            shadow = selfShadow(uv, 1.0 - hit.w, lightTS, scale, minLayers,
+                                maxLayers);
         }
     }
 
