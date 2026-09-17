@@ -36,7 +36,10 @@ function retain(value) {
 
 function clearEntities(list) {
     foreach (ent in list) {
-        if (ent != null) ent.setVisible(false);
+        if (ent != null) {
+            ent.setVisible(false);
+            ent.destroy();
+        }
     }
     list.clear();
 }
