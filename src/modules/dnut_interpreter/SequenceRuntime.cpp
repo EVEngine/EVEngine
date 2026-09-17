@@ -84,7 +84,7 @@ eve::Result<void> SequenceRuntime::start(const SequenceAsset* asset, eve::Value 
     blocked_     = false;
     waitingStep_ = false;
     emit(EventKind::Started);
-    if (auto entered = enter(asset_->entry); !entered.ok()) return std::move(entered);
+    if (auto entered = enter(asset_->entry); !entered.ok()) return entered;
     return runUntilBlocked();
 }
 
@@ -136,7 +136,7 @@ eve::Result<void> SequenceRuntime::runUntilBlocked() {
                             diagnostic ? diagnostic->message() : "sequence: branch evaluation failed", "branch");
             }
             const std::string next = target.value();
-            if (auto entered = enter(next); !entered.ok()) return std::move(entered);
+            if (auto entered = enter(next); !entered.ok()) return entered;
             continue;
         }
         if (node->type == "choice") {
@@ -162,7 +162,7 @@ eve::Result<void> SequenceRuntime::runUntilBlocked() {
             asset_    = frame.asset;
             bindings_ = std::move(frame.bindings);
             locals_   = std::move(frame.locals);
-            if (auto entered = enter(frame.returnNode); !entered.ok()) return std::move(entered);
+            if (auto entered = enter(frame.returnNode); !entered.ok()) return entered;
             continue;
         }
         if (node->type == "call") {
@@ -195,7 +195,7 @@ eve::Result<void> SequenceRuntime::runUntilBlocked() {
             asset_    = target;
             bindings_ = std::move(targetBindings);
             locals_   = eve::Value::Object{};
-            if (auto entered = enter(target->entry); !entered.ok()) return std::move(entered);
+            if (auto entered = enter(target->entry); !entered.ok()) return entered;
             continue;
         }
 
@@ -217,7 +217,7 @@ eve::Result<void> SequenceRuntime::runUntilBlocked() {
         }
         lastStepResult_ = std::move(outcome.value);
         emit(EventKind::Stepped, node, node->type);
-        if (auto entered = enter(node->next); !entered.ok()) return std::move(entered);
+        if (auto entered = enter(node->next); !entered.ok()) return entered;
     }
     return eve::Result<void>::success();
 }
@@ -231,7 +231,7 @@ eve::Result<void> SequenceRuntime::advance() {
                     "sequence: select a choice route instead of advancing", "advance");
     const std::string next = node->next;
     waitingStep_           = false;
-    if (auto entered = enter(next); !entered.ok()) return std::move(entered);
+    if (auto entered = enter(next); !entered.ok()) return entered;
     return runUntilBlocked();
 }
 
