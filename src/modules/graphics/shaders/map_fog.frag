@@ -20,6 +20,11 @@ float luma(vec3 c) {
     return dot(c, vec3(0.299, 0.587, 0.114));
 }
 
+vec2 hash22(vec2 p) {
+    return fract(sin(vec2(dot(p, vec2(127.1, 311.7)),
+                          dot(p, vec2(269.5, 183.3)))) * 43758.5453);
+}
+
 float softenEdge(float v, float soft) {
     float lo = clamp(0.5 - soft, 0.0, 1.0);
     float hi = clamp(0.5 + soft, 0.0, 1.0);
@@ -81,7 +86,11 @@ void main() {
 
     // Hard unwarped clear core — warp must not drag fog into the unlock hole.
     vec2 baseUv = fragUV + fix;
-    float clearCore = smoothstep(0.84, 0.96, texture(MaskTex, baseUv).r);
+    // Erode the unlock mask before declaring it fully clear.  A raw mask test
+    // clears the whole soft stamp and clips every cloud exactly at the green
+    // edge; the eroded core leaves room for puffs to overhang the revealed map.
+    float clearCore = smoothstep(0.90, 0.985,
+                                 sampleUnlockSoft(baseUv, max(softRadius * 2.6, 0.018)));
     float warpScale = 1.0 - clearCore;
 
     float warpNoise = luma(mix(
@@ -99,40 +108,83 @@ void main() {
     float selected = maskSample.g;
     float dissolve = maskSample.b;
 
-    // Soft unlock drives approach/frontier. Do NOT multiply fog by (1-unlocked):
-    // that creates a muddy alpha wash. Sparseness is cover islands, not fade.
+    // Build one implicit surface from map distance + cloud height. The map mask
+    // never multiplies cloud alpha, so it cannot slice a lobe in half. Instead,
+    // cloud height pushes the fog boundary outward along the lobe silhouette.
     float unlockedAmt = softenEdge(sampleUnlockSoft(maskUv, softRadius), edgeSoft);
-    float fogAmt = 1.0 - clearCore;
+    float wideUnlock = softenEdge(sampleUnlockSoft(maskUv, max(softRadius * 2.4, 0.040)),
+                                   min(edgeSoft * 1.35, 0.48));
+    float frontier = smoothstep(0.02, 0.20, wideUnlock) *
+                     (1.0 - smoothstep(0.985, 1.0, wideUnlock));
+    // Full procedural puffs are classified once at their centre. The reveal
+    // mask never touches their pixels, so it cannot cut a bite from a lobe.
+    const float puffGrid = 9.0;
+    vec2 drift = vec2(time * 0.035, time * 0.021);
+    vec2 puffPos = floor((cloudUv * puffGrid + drift) * 28.0) / 28.0;
+    vec2 puffCell = floor(puffPos);
+    float puffField = 0.0;
+    float puffShadow = 0.0;
+    for (int py = -1; py <= 1; ++py) {
+        for (int px = -1; px <= 1; ++px) {
+            vec2 cell = puffCell + vec2(px, py);
+            vec2 rnd = hash22(cell);
+            vec2 centre = cell + 0.18 + rnd * 0.64;
+            float radius = 0.62 + hash22(cell + 19.7).x * 0.18;
+            vec2 centreCloud = (centre - drift) / puffGrid;
+            vec2 centreUv = vec2(centreCloud.x / aspect, centreCloud.y) + fix;
+            vec4 centreMask = texture(MaskTex, centreUv);
+            // Keep the cluster alive while its Gaussian core contracts. The
+            // reveal channel only releases it at the very end of the motion.
+            float anchored = 1.0 - smoothstep(0.90, 0.995, centreMask.r);
+            float dissolveAtCentre = clamp(centreMask.b, 0.0, 1.0);
+            // Raising this Gaussian isosurface removes the low-density rim
+            // first, so the cloud contracts organically toward its core.
+            float contraction = smoothstep(0.0, 0.82, dissolveAtCentre);
+            float cloudThreshold = mix(0.18, 0.92, contraction);
+            float clusterScale = mix(1.0, 0.18, contraction);
+            vec2 axis = normalize(vec2(rnd.x - 0.5, rnd.y - 0.5) + vec2(0.17, 0.08));
+            vec2 side = vec2(-axis.y, axis.x);
+            vec2 centres[4] = vec2[4](centre,
+                                      centre + axis * radius * 0.62,
+                                      centre - axis * radius * 0.55 + side * radius * 0.24,
+                                      centre - side * radius * 0.58);
+            float radii[4] = float[4](radius, radius * 0.72, radius * 0.66, radius * 0.58);
+            float cluster = 0.0;
+            float shadowCluster = 0.0;
+            for (int ci = 0; ci < 4; ++ci) {
+                vec2 lobeCentre = centre + (centres[ci] - centre) * clusterScale;
+                vec2 sphereXY = (puffPos - lobeCentre) / max(radii[ci], 0.05);
+                float gaussian = exp(-2.2 * dot(sphereXY, sphereXY));
+                float lobe = smoothstep(cloudThreshold,
+                                        min(cloudThreshold + 0.12, 0.98), gaussian);
+                cluster = max(cluster, lobe);
+                vec2 shadowXY = (puffPos - vec2(0.0, 0.12) - lobeCentre) /
+                                max(radii[ci], 0.05);
+                float shadowGaussian = exp(-2.2 * dot(shadowXY, shadowXY));
+                shadowCluster = max(shadowCluster,
+                    smoothstep(cloudThreshold, min(cloudThreshold + 0.12, 0.98),
+                               shadowGaussian));
+            }
+            // Fade throughout the contraction, not only in its last third.
+            // Multiplying the complete cluster field preserves its silhouette:
+            // lobes become smaller and paler together instead of being clipped.
+            float earlyFade = 1.0 - 0.42 * contraction;
+            float finalFade = 1.0 - smoothstep(0.88, 1.0, dissolveAtCentre);
+            float alive = earlyFade * finalFade * anchored;
+            puffField = max(puffField, cluster * alive);
+            puffShadow = max(puffShadow, shadowCluster * alive);
+        }
+    }
+    float bottomEdge = max(puffShadow - puffField, 0.0);
+    // Coverage comes only from complete cloud clusters. A continuous backing
+    // sheet reads as a white mask beneath the clouds and makes reveals abrupt.
+    float fogKeep = max(puffField, bottomEdge);
 
-    // Frontier peaks mid soft-band; approach rises toward the hole.
-    float frontier = 4.0 * unlockedAmt * (1.0 - unlockedAmt);
-    frontier = clamp(frontier, 0.0, 1.0);
-    frontier = frontier * frontier * (3.0 - 2.0 * frontier);
-    frontier *= (1.0 - clearCore);
-    float approach = smoothstep(0.05, 0.78, unlockedAmt) * (1.0 - clearCore);
-    float breakAmt = clamp(frontier * 0.70 + approach * 0.95, 0.0, 1.0);
-
-    // Sheet always cover-gated so valleys peek; breakAmt raises sparse power
-    // → dense sheet → clumps → floating islands → clear.
-    float sheet = smoothstep(0.08, 0.42, cover);
-    float sparsePow = mix(1.35, 6.2, breakAmt);
-    float fogKeep = fogAmt * mix(sheet, pow(max(cover, 1e-3), sparsePow), breakAmt);
-
-    // Extra valley carve on the rim so islands separate cleanly.
-    float valley = 1.0 - smoothstep(0.10, 0.50, mix(noise, cover, 0.50));
-    fogKeep *= 1.0 - breakAmt * valley * 0.82;
-    fogKeep *= 1.0 - approach * (1.0 - smoothstep(0.32, 0.72, cover)) * 0.65;
-
-    float dissolveNoise = luma(texture(MainTex,
-        cloudUv * dissolveScale + vec2(time * 0.015, -time * 0.02)).rgb);
-    fogKeep *= 1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve);
-
-    // Deep fog stays opaque/bright; breakAmt raises the cover gate → islands only.
-    float gate = densityBias + breakAmt * 0.48;
-    float density = smoothstep(gate, clamp(gate + densityContrast * mix(1.0, 0.42, breakAmt), 0.0, 1.0),
+    float density = smoothstep(densityBias, min(densityBias + densityContrast, 0.98),
                                mix(noise, cover, 0.82));
-    // Opaque cotton clumps (reference): sparse islands still read as solid white.
-    float body = mix(0.94, 1.0, density);
+    // Opaque cotton clumps: transparency belongs in the narrow anti-aliased rim,
+    // not across the whole unexplored region.
+    float body = mix(0.96, 1.0, density);
 
     if (passMode < 0.5) {
         // Drop-shadow of the puff silhouette onto unlocked ground only:
@@ -148,14 +200,21 @@ void main() {
         float puffCast = smoothstep(0.12, 0.52, castCover);
         float a = groundVisible * unlocked * overhang * puffCast *
                   shadowStrength * fogAlpha * fragColor.a;
-        outColor = vec4(0.0, 0.0, 0.0, a);
+        outColor = vec4(0.24, 0.29, 0.38, a * 0.42);
         return;
     }
 
-    // Cool gray underside / milky top — volume like the reference cotton.
-    vec3 cool = fogRgb * vec3(0.88, 0.90, 0.95);
-    vec3 col = mix(cool * cloud, cloud, clamp(density * 1.02, 0.0, 1.0));
-    col = mix(col, fogRgb * 0.98 + cloud * 0.02, 0.03);
+    // Calm pale sheet, sculpted frontier.  This keeps the far unexplored area
+    // readable while retaining strong cool undersides on the visible lobes.
+    // Painterly three-tone ramp from the reference: no PBR or smooth sphere
+    // shading, just white top, pale middle, and a blue-gray lower lip.
+    vec3 cloudTop = vec3(0.945, 0.965, 0.965);
+    vec3 cloudBottom = vec3(0.737, 0.784, 0.800);
+    vec3 sculpted = cloudTop;
+    float frontierPuffs = puffField * smoothstep(0.04, 0.46, wideUnlock);
+    float sculptAmount = mix(0.04, 1.0, max(frontier, frontierPuffs));
+    vec3 col = mix(fogRgb, sculpted, sculptAmount);
+    col = mix(col, cloudBottom, clamp(bottomEdge * 0.88, 0.0, 1.0));
     float blink = selected * selectStrength * selectPulse;
     col = mix(col, col * 1.08 + vec3(0.06, 0.10, 0.14), clamp(blink, 0.0, 1.0));
     float a = fogKeep * body * fogAlpha * fragColor.a;

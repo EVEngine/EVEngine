@@ -85,6 +85,10 @@ fn scrollUV(uv: vec2<f32>, tile: f32, speed: f32, time: f32, dir: f32) -> vec2<f
 fn luma(c: vec3<f32>) -> f32 {
   return dot(c, vec3<f32>(0.299, 0.587, 0.114));
 }
+fn hash22(p: vec2<f32>) -> vec2<f32> {
+  return fract(sin(vec2<f32>(dot(p, vec2<f32>(127.1, 311.7)),
+                              dot(p, vec2<f32>(269.5, 183.3)))) * 43758.5453);
+}
 fn softenEdge(v: f32, soft: f32) -> f32 {
   let lo = clamp(0.5 - soft, 0.0, 1.0);
   let hi = clamp(0.5 + soft, 0.0, 1.0);
@@ -138,7 +142,8 @@ fn sampleUnlockSoft(uv: vec2<f32>, softRadius: f32) -> f32 {
   let softRadius = max(edgeSoft * 0.35, 0.008);
   let baseUv = input.uv + fix;
   // Hard unwarped clear core — warp must not drag fog into the unlock hole.
-  let clearCore = smoothstep(0.84, 0.96, textureSample(maskTex, maskSampler, baseUv).r);
+  let clearCore = smoothstep(0.90, 0.985,
+      sampleUnlockSoft(baseUv, max(softRadius * 2.6, 0.018)));
   let warpScale = 1.0 - clearCore;
 
   let warpNoise = luma(mix(
@@ -155,32 +160,79 @@ fn sampleUnlockSoft(uv: vec2<f32>, softRadius: f32) -> f32 {
   let selected = maskSample.g;
   let dissolve = maskSample.b;
 
-  // Soft unlock drives approach/frontier. Do NOT multiply fog by (1-unlocked):
-  // that creates a muddy alpha wash. Sparseness is cover islands, not fade.
+  // Build one implicit surface from map distance + cloud height. The mask
+  // moves the cloud boundary; it never clips individual lobes.
   let unlockedAmt = softenEdge(sampleUnlockSoft(maskUv, softRadius), edgeSoft);
-  let fogAmt = 1.0 - clearCore;
-  var frontier = 4.0 * unlockedAmt * (1.0 - unlockedAmt);
-  frontier = clamp(frontier, 0.0, 1.0);
-  frontier = frontier * frontier * (3.0 - 2.0 * frontier);
-  frontier = frontier * (1.0 - clearCore);
-  let approach = smoothstep(0.05, 0.78, unlockedAmt) * (1.0 - clearCore);
-  let breakAmt = clamp(frontier * 0.70 + approach * 0.95, 0.0, 1.0);
+  let wideUnlock = softenEdge(
+      sampleUnlockSoft(maskUv, max(softRadius * 2.4, 0.040)),
+      min(edgeSoft * 1.35, 0.48));
+  let frontier = smoothstep(0.02, 0.20, wideUnlock) *
+                 (1.0 - smoothstep(0.985, 1.0, wideUnlock));
+  let puffGrid = 9.0;
+  let drift = vec2<f32>(time * 0.035, time * 0.021);
+  let puffPos = floor((cloudUv * puffGrid + drift) * 28.0) / 28.0;
+  let puffCell = floor(puffPos);
+  var puffField = 0.0;
+  var puffShadow = 0.0;
+  for (var py: i32 = -1; py <= 1; py = py + 1) {
+    for (var px: i32 = -1; px <= 1; px = px + 1) {
+      let cell = puffCell + vec2<f32>(f32(px), f32(py));
+      let rnd = hash22(cell);
+      let centre = cell + vec2<f32>(0.18) + rnd * 0.64;
+      let radius = 0.62 + hash22(cell + vec2<f32>(19.7)).x * 0.18;
+      let centreCloud = (centre - drift) / puffGrid;
+      let centreUv = vec2<f32>(centreCloud.x / aspect, centreCloud.y) + fix;
+      let centreMask = textureSample(maskTex, maskSampler, centreUv);
+      // Keep the cluster alive while its Gaussian core contracts. The
+      // reveal channel only releases it at the very end of the motion.
+      let anchored = 1.0 - smoothstep(0.90, 0.995, centreMask.r);
+      let dissolveAtCentre = clamp(centreMask.b, 0.0, 1.0);
+      // Raising this Gaussian isosurface removes the low-density rim
+      // first, so the cloud contracts organically toward its core.
+      let contraction = smoothstep(0.0, 0.82, dissolveAtCentre);
+      let cloudThreshold = mix(0.18, 0.92, contraction);
+      let clusterScale = mix(1.0, 0.18, contraction);
+      let axis = normalize(vec2<f32>(rnd.x - 0.5, rnd.y - 0.5) + vec2<f32>(0.17, 0.08));
+      let side = vec2<f32>(-axis.y, axis.x);
+      let centres = array<vec2<f32>, 4>(centre,
+        centre + axis * radius * 0.62,
+        centre - axis * radius * 0.55 + side * radius * 0.24,
+        centre - side * radius * 0.58);
+      let radii = array<f32, 4>(radius, radius * 0.72, radius * 0.66, radius * 0.58);
+      var cluster = 0.0;
+      var shadowCluster = 0.0;
+      for (var ci: i32 = 0; ci < 4; ci = ci + 1) {
+        let lobeCentre = centre + (centres[ci] - centre) * clusterScale;
+        let sphereXY = (puffPos - lobeCentre) / max(radii[ci], 0.05);
+        let gaussian = exp(-2.2 * dot(sphereXY, sphereXY));
+        let lobe = smoothstep(cloudThreshold,
+                              min(cloudThreshold + 0.12, 0.98), gaussian);
+        cluster = max(cluster, lobe);
+        let shadowXY = (puffPos - vec2<f32>(0.0, 0.12) - lobeCentre) /
+                       max(radii[ci], 0.05);
+        let shadowGaussian = exp(-2.2 * dot(shadowXY, shadowXY));
+        shadowCluster = max(shadowCluster,
+          smoothstep(cloudThreshold, min(cloudThreshold + 0.12, 0.98),
+                     shadowGaussian));
+      }
+      // Fade throughout the contraction, not only in its last third.
+      // Multiplying the complete cluster field preserves its silhouette:
+      // lobes become smaller and paler together instead of being clipped.
+      let earlyFade = 1.0 - 0.42 * contraction;
+      let finalFade = 1.0 - smoothstep(0.88, 1.0, dissolveAtCentre);
+      let alive = earlyFade * finalFade * anchored;
+      puffField = max(puffField, cluster * alive);
+      puffShadow = max(puffShadow, shadowCluster * alive);
+    }
+  }
+  let bottomEdge = max(puffShadow - puffField, 0.0);
+  // Coverage comes only from complete cloud clusters. A continuous backing
+  // sheet reads as a white mask beneath the clouds and makes reveals abrupt.
+  var fogKeep = max(puffField, bottomEdge);
 
-  let sheet = smoothstep(0.08, 0.42, cover);
-  let sparsePow = mix(1.35, 6.2, breakAmt);
-  var fogKeep = fogAmt * mix(sheet, pow(max(cover, 1e-3), sparsePow), breakAmt);
-  let valley = 1.0 - smoothstep(0.10, 0.50, mix(noise, cover, 0.50));
-  fogKeep = fogKeep * (1.0 - breakAmt * valley * 0.82);
-  fogKeep = fogKeep * (1.0 - approach * (1.0 - smoothstep(0.32, 0.72, cover)) * 0.65);
-
-  let dissolveNoise = luma(textureSample(mainTex, mainSampler,
-      cloudUv * dissolveScale + vec2<f32>(time * 0.015, -time * 0.02)).rgb);
-  fogKeep = fogKeep * (1.0 - smoothstep(dissolve - 0.12, dissolve + 0.12, dissolveNoise) * step(1e-4, dissolve));
-
-  let gate = densityBias + breakAmt * 0.48;
-  let density = smoothstep(gate, clamp(gate + densityContrast * mix(1.0, 0.42, breakAmt), 0.0, 1.0),
+  let density = smoothstep(densityBias, min(densityBias + densityContrast, 0.98),
                            mix(noise, cover, 0.82));
-  let body = mix(0.94, 1.0, density);
+  let body = mix(0.96, 1.0, density);
 
   if (passMode < 0.5) {
     // Drop-shadow of the puff silhouette onto unlocked ground only:
@@ -196,12 +248,16 @@ fn sampleUnlockSoft(uv: vec2<f32>, softRadius: f32) -> f32 {
     let puffCast = smoothstep(0.12, 0.52, castCover);
     let a = groundVisible * unlocked * overhang * puffCast *
             shadowStrength * fogAlpha * input.color.a;
-    return vec4<f32>(0.0, 0.0, 0.0, a);
+    return vec4<f32>(0.24, 0.29, 0.38, a * 0.42);
   }
 
-  let cool = fogRgb * vec3<f32>(0.88, 0.90, 0.95);
-  var col = mix(cool * cloud, cloud, clamp(density * 1.02, 0.0, 1.0));
-  col = mix(col, fogRgb * 0.98 + cloud * 0.02, 0.03);
+  let cloudTop = vec3<f32>(0.945, 0.965, 0.965);
+  let cloudBottom = vec3<f32>(0.737, 0.784, 0.800);
+  let sculpted = cloudTop;
+  let frontierPuffs = puffField * smoothstep(0.04, 0.46, wideUnlock);
+  let sculptAmount = mix(0.04, 1.0, max(frontier, frontierPuffs));
+  var col = mix(fogRgb, sculpted, sculptAmount);
+  col = mix(col, cloudBottom, clamp(bottomEdge * 0.88, 0.0, 1.0));
   let blink = selected * selectStrength * selectPulse;
   col = mix(col, col * 1.08 + vec3<f32>(0.06, 0.10, 0.14), clamp(blink, 0.0, 1.0));
   let a = fogKeep * body * fogAlpha * input.color.a;
@@ -334,11 +390,13 @@ Texture *MapFog::makeCloudTexture(int size) {
             }
         }
     };
-    // Reference cotton: large lit lobes with clear valleys between them.
-    // Deep fog still merges into a sheet; frontier gate sparsifies the rim.
-    addLayer(4, 4, 0.18f, 0.30f, 0xA11CE001u);
-    addLayer(6, 6, 0.08f, 0.15f, 0xBEEF42u);
-    addLayer(9, 9, 0.032f, 0.060f, 0xC0FFEEu);
+    // Separated lobe families.  The previous 4x4 layer used radii up to 0.30,
+    // covering almost every texel several times and collapsing the alpha into
+    // a featureless sheet.  Deep fog is filled by the shader; this texture is
+    // deliberately porous so the frontier can expose individual cotton puffs.
+    addLayer(3, 3, 0.16f, 0.23f, 0xA11CE001u);
+    addLayer(5, 5, 0.070f, 0.115f, 0xBEEF42u);
+    addLayer(7, 7, 0.030f, 0.052f, 0xC0FFEEu);
 
     auto wrapDelta = [](float d) {
         d -= std::floor(d + 0.5f);
@@ -358,11 +416,10 @@ Texture *MapFog::makeCloudTexture(int size) {
                 // Hard-core cotton lobe (reference FoW): flat top, short soft rim.
                 float b = 1.f - d;
                 b       = b * b * (3.f - 2.f * b);  // smoothstep
-                b       = b * b;                     // tighten rim
                 h += b;
             }
             // Soft-max plateau: merged sheet with deeper valleys (terrain peeks).
-            h = std::clamp(h * 0.52f, 0.f, 1.f);
+            h = std::clamp(h * 0.90f, 0.f, 1.f);
             h = h * h * (3.f - 2.f * h);
             height[size_t(y * n + x)] = h;
         }
@@ -382,21 +439,24 @@ Texture *MapFog::makeCloudTexture(int size) {
     for (int y = 0; y < n; ++y) {
         for (int x = 0; x < n; ++x) {
             const float h  = sampleH(x, y);
-            const float hx = sampleH(x + 1, y) - sampleH(x - 1, y);
-            const float hy = sampleH(x, y + 1) - sampleH(x, y - 1);
+            // A one-texel derivative is nearly flat on a 512px texture whose
+            // major lobes span 70-100px.  A wider footprint restores the
+            // directional light/dark roll visible on the reference clouds.
+            const float hx = sampleH(x + 5, y) - sampleH(x - 5, y);
+            const float hy = sampleH(x, y + 5) - sampleH(x, y - 5);
 
             // Directional lobe shading — milky top-left, cool gray underside.
-            float nx = -hx * 3.2f, ny = -hy * 3.2f, nz = 0.48f;
+            float nx = -hx * 4.8f, ny = -hy * 4.8f, nz = 0.42f;
             const float nlen = std::sqrt(nx * nx + ny * ny + nz * nz);
             nx /= nlen;
             ny /= nlen;
             nz /= nlen;
             const float ndotl = std::max(nx * Lx + ny * Ly + nz * Lz, 0.f);
-            const float lit = 0.38f + 0.55f * ndotl;
-            float shade     = std::clamp(0.22f + h * lit * 0.78f, 0.f, 1.f);
-            shade           = std::pow(shade, 0.92f);
+            const float lit = 0.42f + 0.58f * ndotl;
+            float shade     = std::clamp(0.28f + h * lit * 0.72f, 0.f, 1.f);
+            shade           = std::pow(shade, 0.78f);
 
-            const float coolR = 0.68f, coolG = 0.72f, coolB = 0.80f;
+            const float coolR = 0.68f, coolG = 0.74f, coolB = 0.86f;
             const float warmR = 1.00f, warmG = 1.00f, warmB = 0.995f;
             const float t     = std::clamp(shade, 0.f, 1.f);
             const float r =
@@ -406,7 +466,7 @@ Texture *MapFog::makeCloudTexture(int size) {
             const float b = std::clamp(coolB * (1.f - t) + warmB * t, 0.f, 1.f);
 
             // Opaque cores, clearer valleys — terrain peeks only in gaps.
-            float a = std::clamp((h - 0.10f) / 0.26f, 0.f, 1.f);
+            float a = std::clamp((h - 0.07f) / 0.25f, 0.f, 1.f);
             a       = a * a * (3.f - 2.f * a);  // smoothstep
 
             const size_t i = size_t((y * n + x) * 4);
