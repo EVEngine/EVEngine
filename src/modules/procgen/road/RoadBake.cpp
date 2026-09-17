@@ -166,26 +166,23 @@ Result<void> addDeckAndPiers(MeshBuild& mesh, const std::vector<SplineFrameSampl
         const V3    pa{a.sample.x, a.sample.y, a.sample.z};
         const V3    pb{b.sample.x, b.sample.y, b.sample.z};
         const float seg = length(pb - pa);
-        float       local = 0.f;
-        while (traveled + (seg - local) >= nextPier - 1e-4f && seg > 1e-5f) {
-            const float t = (nextPier - traveled) / seg;
-            if (t >= 0.f && t <= 1.f) {
-                const V3 pos = pa + (pb - pa) * t;
-                if (pos.y > style.pierClearance) {
-                    const V3 side = normalize(V3{a.sideX, a.sideY, a.sideZ} + V3{b.sideX, b.sideY, b.sideZ});
-                    const V3 fwd  = normalize(pb - pa);
-                    const V3 up{0.f, 1.f, 0.f};
-                    const float pierH = pos.y - style.deckThickness;
-                    if (pierH > 0.2f) {
-                        const V3 center{pos.x, pierH * 0.5f, pos.z};
-                        appendBox(mesh, center, side, up, fwd, style.pierWidth * 0.5f, pierH * 0.5f,
-                                  style.pierDepth * 0.5f, RoadMaterial::Pier);
-                    }
+        if (seg <= 1e-5f) continue;
+        while (nextPier <= traveled + seg + 1e-4f) {
+            const float t = std::clamp((nextPier - traveled) / seg, 0.f, 1.f);
+            const V3    pos = pa + (pb - pa) * t;
+            if (pos.y > style.pierClearance) {
+                const V3 side = normalize(V3{a.sideX, a.sideY, a.sideZ} + V3{b.sideX, b.sideY, b.sideZ});
+                const V3 fwd  = normalize(pb - pa);
+                const V3 up{0.f, 1.f, 0.f};
+                const float pierH = pos.y - style.deckThickness;
+                if (pierH > 0.2f) {
+                    const V3 center{pos.x, pierH * 0.5f, pos.z};
+                    appendBox(mesh, center, side, up, fwd, style.pierWidth * 0.5f, pierH * 0.5f,
+                              style.pierDepth * 0.5f, RoadMaterial::Pier);
                 }
             }
             nextPier += style.pierSpacing;
-            local = nextPier - traveled;
-            if (nextPier > traveled + seg + style.pierSpacing * 8.f) break;
+            if (nextPier > 1.0e7f) break;
         }
         traveled += seg;
     }
@@ -304,21 +301,26 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
                 const V3 origin{frame.sample.x, frame.sample.y, frame.sample.z};
                 const V3 side{frame.sideX, frame.sideY, frame.sideZ};
                 const V3 up{frame.upX, frame.upY, frame.upZ};
+                if (!std::isfinite(origin.x) || !std::isfinite(origin.y) || !std::isfinite(origin.z)) continue;
                 const V3 pos = origin + side * lateral + up * 0.05f;
                 poly.xyz.push_back(pos.x);
                 poly.xyz.push_back(pos.y);
                 poly.xyz.push_back(pos.z);
                 if (hasPrev) {
                     const float step = length(pos - prev);
-                    traveled += step;
-                    const V3 fwd = normalize(pos - prev);
-                    const V3 lat = normalize(cross(up, fwd));
-                    const float hw = options.navRibbonHalfWidth;
-                    appendStripQuad(mesh, prev + lat * -hw, pos + lat * -hw, pos + lat * hw, prev + lat * hw, up, 0.f,
-                                    1.f, 0.f, 1.f, RoadMaterial::Nav);
-                    while (traveled >= nextArrow) {
-                        appendArrow(mesh, pos, fwd, up, 0.55f);
-                        nextArrow += options.arrowSpacing;
+                    if (std::isfinite(step) && step > 1e-5f && step < 1.0e4f) {
+                        traveled += step;
+                        const V3 fwd = normalize(pos - prev);
+                        const V3 lat = normalize(cross(up, fwd));
+                        const float hw = options.navRibbonHalfWidth;
+                        appendStripQuad(mesh, prev + lat * -hw, pos + lat * -hw, pos + lat * hw, prev + lat * hw, up,
+                                        0.f, 1.f, 0.f, 1.f, RoadMaterial::Nav);
+                        int arrowGuard = 0;
+                        while (traveled >= nextArrow && arrowGuard++ < 64) {
+                            appendArrow(mesh, pos, fwd, up, 0.55f);
+                            nextArrow += std::max(options.arrowSpacing, 0.5f);
+                        }
+                        if (arrowGuard >= 64) nextArrow = traveled + std::max(options.arrowSpacing, 0.5f);
                     }
                 }
                 prev    = pos;

@@ -2,6 +2,7 @@
 
 #include "common/Diagnostic.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -109,11 +110,10 @@ Result<int> RoadNetwork::connectAllTurns(std::uint32_t nodeId) {
             if (outEdge.from != nodeId) continue;
             if (outEdge.id == inEdge.id) continue;
             for (int il = 0; il < inEdge.lanesForward; ++il) {
-                for (int ol = 0; ol < outEdge.lanesForward; ++ol) {
-                    auto r = addLaneLink(RoadLaneLink{inEdge.id, il, outEdge.id, ol});
-                    if (!r.ok()) return Result<int>::failure(r.status());
-                    ++added;
-                }
+                const int ol = std::min(il, outEdge.lanesForward - 1);
+                auto r = addLaneLink(RoadLaneLink{inEdge.id, il, outEdge.id, ol});
+                if (!r.ok()) return Result<int>::failure(r.status());
+                ++added;
             }
         }
     }
